@@ -19,117 +19,121 @@ using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmax
 {
-	public class EnumMinMaxEventPlus : ThreeFormEventPlus
-	{
-		private readonly bool _max;
-		private readonly Type _innerTypeBoxed;
+    public class EnumMinMaxEventPlus : ThreeFormEventPlus
+    {
+        private readonly bool _max;
+        private readonly Type _innerTypeBoxed;
 
-		public EnumMinMaxEventPlus(
-			ExprDotEvalParamLambda lambda,
-			ObjectArrayEventType indexEventType,
-			int numParameters,
-			bool max) : base(lambda, indexEventType, numParameters)
-		{
-			this._max = max;
-			this._innerTypeBoxed = Boxing.GetBoxedType(InnerExpression.EvaluationType);
-		}
+        public EnumMinMaxEventPlus(
+            ExprDotEvalParamLambda lambda,
+            ObjectArrayEventType indexEventType,
+            int numParameters,
+            bool max) : base(lambda, indexEventType, numParameters)
+        {
+            _max = max;
+            _innerTypeBoxed = InnerExpression.EvaluationType.GetBoxedType();
+        }
 
-		public override EnumEval EnumEvaluator {
-			get {
-				var inner = InnerExpression.ExprEvaluator;
-				return new ProxyEnumEval() {
-					ProcEvaluateEnumMethod = (
-						eventsLambda,
-						enumcoll,
-						isNewData,
-						context) => {
-						
-						IComparable minKey = null;
-						var beans = (ICollection<EventBean>) enumcoll;
-						var indexEvent = new ObjectArrayEventBean(new object[2], FieldEventType);
-						var props = indexEvent.Properties;
-						props[1] = enumcoll.Count;
-						eventsLambda[StreamNumLambda + 1] = indexEvent;
-						var count = -1;
+        public override EnumEval EnumEvaluator {
+            get {
+                var inner = InnerExpression.ExprEvaluator;
+                return new ProxyEnumEval() {
+                    ProcEvaluateEnumMethod = (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        IComparable minKey = null;
+                        var beans = (ICollection<EventBean>)enumcoll;
+                        var indexEvent = new ObjectArrayEventBean(new object[2], FieldEventType);
+                        var props = indexEvent.Properties;
+                        props[1] = enumcoll.Count;
+                        eventsLambda[StreamNumLambda + 1] = indexEvent;
+                        var count = -1;
 
-						foreach (var next in beans) {
-							count++;
-							props[0] = count;
-							eventsLambda[StreamNumLambda] = next;
+                        foreach (var next in beans) {
+                            count++;
+                            props[0] = count;
+                            eventsLambda[StreamNumLambda] = next;
 
-							var comparable = inner.Evaluate(eventsLambda, isNewData, context);
-							if (comparable == null) {
-								continue;
-							}
+                            var comparable = inner.Evaluate(eventsLambda, isNewData, context);
+                            if (comparable == null) {
+                                continue;
+                            }
 
-							if (minKey == null) {
-								minKey = (IComparable) comparable;
-							}
-							else {
-								if (_max) {
-									if (minKey.CompareTo(comparable) < 0) {
-										minKey = (IComparable) comparable;
-									}
-								}
-								else {
-									if (minKey.CompareTo(comparable) > 0) {
-										minKey = (IComparable) comparable;
-									}
-								}
-							}
-						}
+                            if (minKey == null) {
+                                minKey = (IComparable)comparable;
+                            }
+                            else {
+                                if (_max) {
+                                    if (minKey.CompareTo(comparable) < 0) {
+                                        minKey = (IComparable)comparable;
+                                    }
+                                }
+                                else {
+                                    if (minKey.CompareTo(comparable) > 0) {
+                                        minKey = (IComparable)comparable;
+                                    }
+                                }
+                            }
+                        }
 
-						return minKey;
-					},
-				};
-			}
-		}
+                        return minKey;
+                    }
+                };
+            }
+        }
 
-		public override Type ReturnType()
-		{
-			return _innerTypeBoxed;
-		}
+        public override Type ReturnTypeOfMethod()
+        {
+            return _innerTypeBoxed;
+        }
 
-		public override CodegenExpression ReturnIfEmptyOptional()
-		{
-			return ConstantNull();
-		}
+        public override CodegenExpression ReturnIfEmptyOptional()
+        {
+            return ConstantNull();
+        }
 
-		public override void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			block.DeclareVar(_innerTypeBoxed, "minKey", ConstantNull());
-		}
+        public override void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            block.DeclareVar(_innerTypeBoxed, "minKey", ConstantNull());
+        }
 
-		public override void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			block.DeclareVar(_innerTypeBoxed, "value", InnerExpression.EvaluateCodegen(_innerTypeBoxed, methodNode, scope, codegenClassScope));
-			if (!InnerExpression.EvaluationType.IsPrimitive) {
-				block.IfRefNull("value").BlockContinue();
-			}
+        public override void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            block.DeclareVar(
+                _innerTypeBoxed,
+                "value",
+                InnerExpression.EvaluateCodegen(_innerTypeBoxed, methodNode, scope, codegenClassScope));
+            if (!InnerExpression.EvaluationType.IsPrimitive) {
+                block.IfRefNull("value").BlockContinue();
+            }
 
-			block
-				.IfCondition(EqualsNull(Ref("minKey")))
-				.AssignRef("minKey", Ref("value"))
-				.IfElse()
-				.IfCondition(Relational(ExprDotMethod(Ref("minKey"), "CompareTo", Ref("value")), _max ? LT : GT, Constant(0)))
-				.AssignRef("minKey", Ref("value"));
-		}
+            block
+                .IfCondition(EqualsNull(Ref("minKey")))
+                .AssignRef("minKey", Ref("value"))
+                .IfElse()
+                .IfCondition(
+                    Relational(ExprDotMethod(Ref("minKey"), "CompareTo", Ref("value")), _max ? LT : GT, Constant(0)))
+                .AssignRef("minKey", Ref("value"));
+        }
 
-		public override void ReturnResult(CodegenBlock block)
-		{
-			block.MethodReturn(Ref("minKey"));
-		}
-	}
+        public override void ReturnResult(CodegenBlock block)
+        {
+            block.MethodReturn(Ref("minKey"));
+        }
+    }
 } // end of namespace

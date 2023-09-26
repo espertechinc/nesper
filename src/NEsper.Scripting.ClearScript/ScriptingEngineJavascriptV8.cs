@@ -150,12 +150,12 @@ namespace NEsper.Scripting.ClearScript
             }
         }
 
-        private void WritePolyfills(StringWriter writer)
+        private void WritePolyfills(TextWriter writer)
         {
             WriteStartsWithPolyfill(writer);
         }
 
-        private void WriteStartsWithPolyfill(StringWriter writer)
+        private void WriteStartsWithPolyfill(TextWriter writer)
         {
             writer.WriteLine("if (!String.prototype.startsWith) {");
             writer.WriteLine("    String.prototype.startsWith = function(searchString, position) {");

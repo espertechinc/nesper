@@ -49,8 +49,8 @@ namespace NEsper.Avro.Getter
                     typeof(object),
                     typeof(AvroEventBeanGetterMappedRuntimeKeyed),
                     codegenClassScope)
-                .AddParam(typeof(EventBean), "@event")
-                .AddParam(typeof(string), "key")
+                .AddParam<EventBean>("@event")
+                .AddParam<string>("key")
                 .Block
                 .DeclareVar<GenericRecord>(
                     "record",

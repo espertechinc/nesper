@@ -17,10 +17,12 @@ namespace com.espertech.esper.common.client.hook.exception
         /// Exception occurred during event processing.
         /// </summary>
         PROCESS,
+
         /// <summary>
         /// Exception occurred upon undeploy.
         /// </summary>
         UNDEPLOY,
+
         /// <summary>
         /// Stage-related exception.
         /// </summary>

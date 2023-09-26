@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.util
                     enumerator.MoveNext();
                     MethodExecutableRank rank = enumerator.Current;
                     Assert.AreEqual(i / 2, rank.ConversionCount, "failed for " + i);
-                    Assert.AreEqual(i % 2 == 1, rank.IsVarargs(), "failed for " + i);
+                    Assert.AreEqual(i % 2 == 1, rank.IsVarargs, "failed for " + i);
                 }
             }
         }

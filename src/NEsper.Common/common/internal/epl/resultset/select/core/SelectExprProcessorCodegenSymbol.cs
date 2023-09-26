@@ -19,12 +19,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
     {
         public const string NAME_ISSYNTHESIZE = "isSynthesize";
         public const string LAMBDA_NAME_ISSYNTHESIZE = "_isSynthesize";
-        
+
         public static readonly CodegenExpressionRef REF_ISSYNTHESIZE =
             new CodegenExpressionRef(NAME_ISSYNTHESIZE);
-        public static readonly CodegenExpressionRef LAMBDA_REF_ISSYNTHESIZE = 
+
+        public static readonly CodegenExpressionRef LAMBDA_REF_ISSYNTHESIZE =
             new CodegenExpressionRef(LAMBDA_NAME_ISSYNTHESIZE);
-        
+
         private CodegenExpressionRef optionalSynthesizeRef;
 
         public CodegenExpressionRef GetAddSynthesize(CodegenMethod processMethod)

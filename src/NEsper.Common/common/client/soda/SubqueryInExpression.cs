@@ -75,20 +75,15 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             Children[0].ToEPL(writer, Precedence);
-            if (notIn)
-            {
+            if (notIn) {
                 writer.Write(" not in (");
             }
-            else
-            {
+            else {
                 writer.Write(" in (");
             }
 

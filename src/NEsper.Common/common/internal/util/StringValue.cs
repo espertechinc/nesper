@@ -25,8 +25,8 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns>parsed value</returns>
         public static string ParseString(string value)
         {
-            if (value.StartsWith("\"") && value.EndsWith("\"") ||
-                value.StartsWith("'") && value.EndsWith("'")) {
+            if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
+                (value.StartsWith("'") && value.EndsWith("'"))) {
                 if (value.Length > 1) {
                     if (value.IndexOf('\\') != -1) {
                         return Unescape(value.Substring(1, value.Length - 2));
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             for (var i = 0; i < identifier.Length; i++) {
-                char c = identifier[i];
+                var c = identifier[i];
                 if (c != '.') {
                     continue;
                 }
@@ -81,9 +81,9 @@ namespace com.espertech.esper.common.@internal.util
                 return identifierToEscape;
             }
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             for (var i = 0; i < identifierToEscape.Length; i++) {
-                char c = identifierToEscape[i];
+                var c = identifierToEscape[i];
                 if (c != '.') {
                     builder.Append(c);
                     continue;
@@ -120,12 +120,12 @@ namespace com.espertech.esper.common.@internal.util
                 return identifierToUnescape;
             }
 
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             var index = -1;
             var max = identifierToUnescape.Length - 1;
             do {
                 index++;
-                char c = identifierToUnescape[index];
+                var c = identifierToUnescape[index];
                 if (c != '\\') {
                     builder.Append(c);
                     continue;
@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.util
             var skip = false;
             do {
                 index++;
-                char c = text[index];
+                var c = text[index];
                 if (c == '`') {
                     skip = !skip;
                 }
@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.util
             TextWriter writer,
             object constant)
         {
-            CompatExtensions.RenderAny(constant, writer);
+            constant.RenderAny(writer);
 
 #if false
             if (constant == null) {
@@ -237,7 +237,7 @@ namespace com.espertech.esper.common.@internal.util
                 return text;
             }
 
-            StringBuilder buf = new StringBuilder();
+            var buf = new StringBuilder();
             buf.Append(text.Substring(0, 30));
             buf.Append("...(");
             buf.Append(Convert.ToString(text.Length - 40));
@@ -255,14 +255,14 @@ namespace com.espertech.esper.common.@internal.util
         {
             int i = 0, len = s.Length;
             char c;
-            StringBuilder sb = new StringBuilder(len);
+            var sb = new StringBuilder(len);
             while (i < len) {
                 c = s[i++];
                 if (c == '\\') {
                     if (i < len) {
                         c = s[i++];
                         if (c == 'u') {
-                            c = (char) Convert.ToInt32(s.Substring(i, 4), 16);
+                            c = (char)Convert.ToInt32(s.Substring(i, 4), 16);
                             i += 4;
                         } // add other cases here as desired...
                     }

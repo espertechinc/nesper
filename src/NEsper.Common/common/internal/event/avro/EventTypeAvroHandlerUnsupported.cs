@@ -114,10 +114,7 @@ namespace com.espertech.esper.common.@internal.@event.avro
             return null;
         }
 
-        private UnsupportedOperationException GetUnsupported()
-        {
-            throw new UnsupportedOperationException(
-                "Esper-Avro is not enabled in the configuration or is not part of your classpath");
-        }
+        public UnsupportedOperationException Unsupported => throw new UnsupportedOperationException(
+            "Esper-Avro is not enabled in the configuration or is not part of your classpath");
     }
 } // end of namespace

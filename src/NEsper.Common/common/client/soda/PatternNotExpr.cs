@@ -27,10 +27,7 @@ namespace com.espertech.esper.common.client.soda
             Children.Add(inner);
         }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
-            get { return PatternExprPrecedenceEnum.EVERY_NOT; }
-        }
+        public override PatternExprPrecedenceEnum Precedence => PatternExprPrecedenceEnum.EVERY_NOT;
 
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,

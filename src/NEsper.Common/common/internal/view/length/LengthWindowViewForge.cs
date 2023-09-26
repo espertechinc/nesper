@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -33,27 +34,18 @@ namespace com.espertech.esper.common.@internal.view.length
             sizeForge = ViewForgeSupport.ValidateSizeSingleParam(ViewName, parameters, viewForgeEnv, streamNumber);
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
-            this.eventType = parentEventType;
+            eventType = parentEventType;
         }
 
-        public override string ViewName {
-            get => "Length";
-        }
+        public override string ViewName => "Length";
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(LengthWindowViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(LengthWindowViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "Length";
-        }
+        internal override string FactoryMethod => "Length";
 
         internal override void Assign(
             CodegenMethod method,
@@ -62,8 +54,18 @@ namespace com.espertech.esper.common.@internal.view.length
             CodegenClassScope classScope)
         {
             var sizeEval = ExprNodeUtilityCodegen
-                .CodegenEvaluator(sizeForge, method, this.GetType(), classScope);
+                .CodegenEvaluator(sizeForge, method, GetType(), classScope);
             method.Block.SetProperty(factory, "SizeEvaluator", sizeEval);
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_LENGTH;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

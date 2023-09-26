@@ -33,14 +33,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(StatementAgentInstanceFactoryCreateExpression),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
-                .DeclareVar<StatementAgentInstanceFactoryCreateExpression>(
-                    "saiff",
-                    NewInstance(typeof(StatementAgentInstanceFactoryCreateExpression)))
+                .DeclareVarNewInstance<StatementAgentInstanceFactoryCreateExpression>("saiff")
                 .SetProperty(
                     Ref("saiff"),
                     "StatementEventType",

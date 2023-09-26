@@ -48,8 +48,8 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             _hashCode = total;
-            this._keys = keys;
-            this._eventBean = eventBean;
+            _keys = keys;
+            _eventBean = eventBean;
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             if (other is HashableMultiKeyEventPair otherKeys) {
-                return CompatExtensions.AreEqual(_keys, otherKeys._keys);
+                return _keys.AreEqual(otherKeys._keys);
             }
 
             return false;

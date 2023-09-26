@@ -42,25 +42,19 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the lambda expression parameters.
         /// </summary>
         /// <returns>lambda expression parameters</returns>
-        public IList<string> Parameters
-        {
+        public IList<string> Parameters {
             get => parameters;
-            set { parameters = value; }
+            set => parameters = value;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.MINIMUM;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.MINIMUM;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (parameters.Count > 1)
-            {
+            if (parameters.Count > 1) {
                 writer.Write("(");
-                string delimiter = "";
-                foreach (string parameter in parameters)
-                {
+                var delimiter = "";
+                foreach (var parameter in parameters) {
                     writer.Write(delimiter);
                     writer.Write(parameter);
                     delimiter = ",";
@@ -68,8 +62,7 @@ namespace com.espertech.esper.common.client.soda
 
                 writer.Write(")");
             }
-            else
-            {
+            else {
                 writer.Write(parameters[0]);
             }
 

@@ -49,9 +49,8 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            string delimiter = "";
-            foreach (ContextDescriptorCategoryItem item in Items)
-            {
+            var delimiter = "";
+            foreach (var item in Items) {
                 writer.Write(delimiter);
                 item.ToEPL(writer, formatter);
                 delimiter = ", ";

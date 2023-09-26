@@ -28,29 +28,35 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-WithParameterInjectionCallback(execs);
-WithOperatorInjectionCallback(execs);
+#if REGRESSION_EXECUTIONS
+            WithParameterInjectionCallback(execs);
+            With(OperatorInjectionCallback)(execs);
+#endif
             return execs;
         }
-public static IList<RegressionExecution> WithOperatorInjectionCallback(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowOperatorInjectionCallback());
-    return execs;
-}public static IList<RegressionExecution> WithParameterInjectionCallback(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowParameterInjectionCallback());
-    return execs;
-}
+
+        public static IList<RegressionExecution> WithOperatorInjectionCallback(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowOperatorInjectionCallback());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithParameterInjectionCallback(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowParameterInjectionCallback());
+            return execs;
+        }
+
         internal class EPLDataflowParameterInjectionCallback : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne MyOp -> outstream<SomeType> {propOne:'abc', propThree:'xyz'}",
+                    "@name('flow') create dataflow MyDataFlowOne MyOp -> outstream<SomeType> {propOne:'abc', propThree:'xyz'}",
                     path);
 
                 var options = new EPDataFlowInstantiationOptions();
@@ -80,6 +86,11 @@ public static IList<RegressionExecution> WithOperatorInjectionCallback(IList<Reg
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
         internal class EPLDataflowOperatorInjectionCallback : RegressionExecution
@@ -87,9 +98,9 @@ public static IList<RegressionExecution> WithOperatorInjectionCallback(IList<Reg
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne MyOp -> outstream<SomeType> {propOne:'abc', propThree:'xyz'}",
+                    "@name('flow') create dataflow MyDataFlowOne MyOp -> outstream<SomeType> {propOne:'abc', propThree:'xyz'}",
                     path);
 
                 var myOperatorProvider = new MyOperatorProvider();
@@ -104,6 +115,11 @@ public static IList<RegressionExecution> WithOperatorInjectionCallback(IList<Reg
                 Assert.AreEqual("MyDataFlowOne", context.DataFlowName);
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 

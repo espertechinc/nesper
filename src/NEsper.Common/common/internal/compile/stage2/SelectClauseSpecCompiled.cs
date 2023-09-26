@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Linq;
 
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -17,7 +18,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     /// </summary>
     public class SelectClauseSpecCompiled
     {
-        private static readonly SelectClauseElementCompiled[] EMPTY = new SelectClauseElementCompiled[0];
+        private static readonly SelectClauseElementCompiled[] EMPTY = Array.Empty<SelectClauseElementCompiled>();
 
         private readonly bool _isDistinct;
         private SelectClauseElementCompiled[] _selectClauseElements;

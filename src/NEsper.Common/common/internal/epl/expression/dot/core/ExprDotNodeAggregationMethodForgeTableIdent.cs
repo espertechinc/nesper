@@ -54,10 +54,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             var method = parent.MakeChild(requiredType, GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(AggregationRow),
+                .DeclareVar<AggregationRow>(
                     "row",
-                    StaticMethod(typeof(ExprTableIdentNode), "TableColumnRow", Constant(identNode.StreamNum), symbols.GetAddEPS(method)))
+                    StaticMethod(
+                        typeof(ExprTableIdentNode),
+                        "TableColumnRow",
+                        Constant(identNode.StreamNum),
+                        symbols.GetAddEPS(method)))
                 .IfRefNullReturnNull("row")
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(

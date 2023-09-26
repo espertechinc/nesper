@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.collection;
@@ -17,7 +18,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
     public class ContextControllerInitTermSvcLevelOne : ContextControllerInitTermSvc
     {
-        private static readonly object[] EMPTY_PARENT_PARTITION_KEYS = new object[0];
+        private static readonly object[] EMPTY_PARENT_PARTITION_KEYS = Array.Empty<object>();
 
         private int currentSubpath;
 
@@ -63,7 +64,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         {
             return currentSubpath++;
         }
-        
+
         public ContextControllerCondition MgmtGetStartCondition(IntSeqKey conditionPath)
         {
             return startCondition;
@@ -76,13 +77,13 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ContextControllerInitTermPartitionKey partitionKey)
         {
             endConditions.Put(
-                ((IntSeqKeyOne) endConditionPath).One,
+                ((IntSeqKeyOne)endConditionPath).One,
                 new ContextControllerInitTermSvcEntry(subpathIdOrCPId, endCondition, partitionKey));
         }
 
         public ContextControllerInitTermSvcEntry EndDelete(IntSeqKey conditionPath)
         {
-            return endConditions.Delete(((IntSeqKeyOne) conditionPath).One);
+            return endConditions.Delete(((IntSeqKeyOne)conditionPath).One);
         }
 
         public ICollection<ContextControllerInitTermSvcEntry> EndDeleteByParentPath(IntSeqKey controllerPath)

@@ -30,16 +30,12 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         {
         }
 
-        public Thread CurrentThread {
-            get => Thread.CurrentThread;
-        }
+        public Thread CurrentThread => Thread.CurrentThread;
 
         public override void Done()
         {
         }
 
-        public override NamedWindowConsumerLatch Earlier {
-            get => null;
-        }
+        public override NamedWindowConsumerLatch Earlier => null;
     }
 } // end of namespace

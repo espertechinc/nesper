@@ -94,6 +94,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             if (Modifiers.IsOverride()) {
                 builder.Append("override ");
             }
+
             if (Modifiers.IsVirtual()) {
                 builder.Append("virtual ");
             }
@@ -171,6 +172,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             if (Modifiers.IsOverride()) {
                 tokenList = tokenList.Add(Token(SyntaxKind.OverrideKeyword));
             }
+
             if (Modifiers.IsVirtual()) {
                 tokenList = tokenList.Add(Token(SyntaxKind.VirtualKeyword));
             }

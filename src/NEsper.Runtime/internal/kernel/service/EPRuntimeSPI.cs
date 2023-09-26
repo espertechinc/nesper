@@ -23,6 +23,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         void Initialize(long? currentTime);
 
+        void Initialize(Consumer<EPRuntimeSPIRunAfterDestroyCtx> runAfterDestroy);
+
         IContainer Container { get; }
 
         EPServicesContext ServicesContext { get; }

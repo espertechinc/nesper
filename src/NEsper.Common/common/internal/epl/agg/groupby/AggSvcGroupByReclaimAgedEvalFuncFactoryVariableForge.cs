@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
 
         public CodegenExpressionInstanceField Make(CodegenClassScope classScope)
         {
-            CodegenExpression resolve = VariableDeployTimeResolver.MakeResolveVariable(
+            var resolve = VariableDeployTimeResolver.MakeResolveVariable(
                 variableMetaData,
                 EPStatementInitServicesConstants.REF);
             return classScope.AddDefaultFieldUnshared(

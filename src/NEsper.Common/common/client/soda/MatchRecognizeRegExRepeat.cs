@@ -71,12 +71,10 @@ namespace com.espertech.esper.common.client.soda
         public void WriteEPL(TextWriter writer)
         {
             writer.Write("{");
-            if (Single != null)
-            {
+            if (Single != null) {
                 Single.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
-            else
-            {
+            else {
                 Low?.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
                 writer.Write(",");

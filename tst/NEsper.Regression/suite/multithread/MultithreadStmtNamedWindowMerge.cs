@@ -6,7 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -22,6 +25,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtNamedWindowMerge : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             TrySend(env, 3, 100);
@@ -35,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             // setup statements
             var path = new RegressionPath();
-            env.CompileDeploy("create window MyWindow#keepall as select * from SupportBean", path);
+            env.CompileDeploy("@public create window MyWindow#keepall as select * from SupportBean", path);
             env.CompileDeploy(
                 "on SupportBean sb " +
                 "merge MyWindow nw where nw.TheString = sb.TheString " +
@@ -64,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             //long deltaTime = endTime - startTime;
-            //System.out.println("Totals updated: " + totalUpdates + "  Delta cumu: " + deltaCumulative + "  Delta pooled: " + deltaTime);
+            //Console.WriteLine("Totals updated: " + totalUpdates + "  Delta cumu: " + deltaCumulative + "  Delta pooled: " + deltaTime);
             env.UndeployAll();
         }
     }

@@ -53,9 +53,9 @@ namespace com.espertech.esper.common.@internal.context.util
                 Log.Debug(
                     ".Update Received Update, " +
                     "  newData.Length==" +
-                    (newData == null ? 0 : newData.Length) +
+                    (newData?.Length ?? 0) +
                     "  oldData.Length==" +
-                    (oldData == null ? 0 : oldData.Length));
+                    (oldData?.Length ?? 0));
             }
         }
 
@@ -73,12 +73,12 @@ namespace com.espertech.esper.common.@internal.context.util
         {
             try {
                 if (StatementResultService.IsMakeNatural) {
-                    var natural = new NaturalEventBean(_eventType, new[] {newEvent.Underlying}, newEvent);
-                    var naturalOld = new NaturalEventBean(_eventType, new[] {oldEvent.Underlying}, oldEvent);
-                    child.Update(new[] {natural}, new[] {naturalOld});
+                    var natural = new NaturalEventBean(_eventType, new[] { newEvent.Underlying }, newEvent);
+                    var naturalOld = new NaturalEventBean(_eventType, new[] { oldEvent.Underlying }, oldEvent);
+                    child.Update(new[] { natural }, new[] { naturalOld });
                 }
                 else {
-                    child.Update(new[] {newEvent}, new[] {oldEvent});
+                    child.Update(new[] { newEvent }, new[] { oldEvent });
                 }
             }
             catch (Exception ex) {

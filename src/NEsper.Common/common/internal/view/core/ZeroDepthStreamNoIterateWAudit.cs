@@ -29,11 +29,11 @@ namespace com.espertech.esper.common.@internal.view.core
             int subselectNumber)
             : base(eventType)
         {
-            this._agentInstanceContext = agentInstanceContext;
-            _filterSpecText = filterSpec.GetFilterText();
-            this._streamNumber = streamNumber;
-            this._subselect = subselect;
-            this._subselectNumber = subselectNumber;
+            _agentInstanceContext = agentInstanceContext;
+            _filterSpecText = filterSpec.FilterText;
+            _streamNumber = streamNumber;
+            _subselect = subselect;
+            _subselectNumber = subselectNumber;
         }
 
         public override void Insert(EventBean theEvent)

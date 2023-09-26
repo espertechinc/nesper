@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.util
 #if MIXING_DEFAULT
     public default TriConsumer<T, U, V> andThen(TriConsumer<? super T, ? super U, ? super V> after) {
             Objects.requireNonNull(after);
-            return (a, b, c)-> {
+            return (a, b, c)=> {
                 accept(a, b, c);
                 after.accept(a, b, c);
             }

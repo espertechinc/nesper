@@ -33,10 +33,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             CodegenClassMethods methods,
             CodegenClassProperties properties,
             IList<CodegenInnerClass> innerClasses)
-            : this(classType, className, codegenClassScope, explicitMembers, optionalCtor, methods, properties, innerClasses)
+            : this(
+                classType,
+                className,
+                codegenClassScope,
+                explicitMembers,
+                optionalCtor,
+                methods,
+                properties,
+                innerClasses)
         {
             BaseList.AssignType(optionalInterfaceImplemented);
         }
+
         public CodegenClass(
             CodegenClassType classType,
             string className,
@@ -60,13 +69,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             allInnerClasses.AddAll(codegenClassScope.AdditionalInnerClasses);
             InnerClasses = allInnerClasses;
         }
-        
+
         public CodegenClassType ClassType { get; }
 
         public string Namespace { get; }
 
         public string ClassName { get; }
-        
+
         public CodegenClassBaseList BaseList { get; }
 
         public IList<CodegenTypedParam> ExplicitMembers { get; }
@@ -97,7 +106,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             ISet<Type> classes = new HashSet<Type>();
             AddReferencedClasses(
                 BaseList,
-                Methods, 
+                Methods,
                 Properties,
                 classes);
             AddReferencedClasses(ExplicitMembers, classes);
@@ -105,8 +114,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
             foreach (var inner in InnerClasses) {
                 AddReferencedClasses(
-                    inner.BaseList, 
-                    inner.Methods, 
+                    inner.BaseList,
+                    inner.Methods,
                     inner.Properties,
                     classes);
                 AddReferencedClasses(inner.ExplicitMembers, classes);
@@ -167,10 +176,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             var fieldList = List<MemberDeclarationSyntax>();
 
             // Fields
-            foreach (var member in ExplicitMembers)
-            {
+            foreach (var member in ExplicitMembers) {
                 fieldList = fieldList.Add(member.CodegenSyntaxAsField());
             }
+
             // Add members that are captured via the optional constructor's parameters
             OptionalCtor?.CtorParams
                 .Where(member => member.IsMemberWhenCtorParam)
@@ -235,8 +244,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         {
             var innerClassList = List<MemberDeclarationSyntax>();
 
-            foreach (var innerClass in InnerClasses)
-            {
+            foreach (var innerClass in InnerClasses) {
             }
 
             return innerClassList;

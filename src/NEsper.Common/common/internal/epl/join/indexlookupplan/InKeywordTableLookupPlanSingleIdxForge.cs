@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             EventType[] typesPerStream,
             TableLookupIndexReqKey indexNum,
             ExprNode[] expressions)
-            : base(lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] {indexNum})
+            : base(lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] { indexNum })
 
         {
             Expressions = expressions;

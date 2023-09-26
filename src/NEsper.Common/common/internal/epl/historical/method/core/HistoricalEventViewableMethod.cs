@@ -26,10 +26,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
         {
             try {
-                ConfigurationCommonMethodRef configCache =
+                var configCache =
                     agentInstanceContext.ImportServiceRuntime.GetConfigurationMethodRef(factory.ConfigurationName);
-                ConfigurationCommonCache dataCacheDesc = configCache != null ? configCache.DataCacheDesc : null;
-                this.DataCache = agentInstanceContext.HistoricalDataCacheFactory.GetDataCache(
+                var dataCacheDesc = configCache?.DataCacheDesc;
+                dataCache = agentInstanceContext.HistoricalDataCacheFactory.GetDataCache(
                     dataCacheDesc,
                     agentInstanceContext,
                     factory.StreamNumber,

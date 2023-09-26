@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             var eventBean = map.Get(_propertyName);
 
-            var theEvent = (EventBean) eventBean;
+            var theEvent = (EventBean)eventBean;
             return theEvent?.Underlying;
         }
 

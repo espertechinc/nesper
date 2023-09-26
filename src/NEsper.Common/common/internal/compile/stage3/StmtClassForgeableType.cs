@@ -8,17 +8,18 @@
 
 namespace com.espertech.esper.common.@internal.compile.stage3
 {
-	public enum StmtClassForgeableType {
-	    FIELDS,
-	    AIFACTORYPROVIDER,
-	    STMTPROVIDER,
-	    RSPPROVIDER,
-	    OPVPROVIDER,
-	    FAF,
-	    MULTIKEY,
-	    JSONEVENT,
-	    JSON_DELEGATE,
-	    JSON_DESERIALIZER,
-	    JSON_SERIALIZER
-	}
+    public enum StmtClassForgeableType
+    {
+        FIELDS,
+        AIFACTORYPROVIDER,
+        STMTPROVIDER,
+        RSPPROVIDER,
+        OPVPROVIDER,
+        FAF,
+        MULTIKEY,
+        JSONEVENT,
+        JSON_DELEGATE,
+        JSON_DESERIALIZER,
+        JSON_SERIALIZER
+    }
 } // end of namespace

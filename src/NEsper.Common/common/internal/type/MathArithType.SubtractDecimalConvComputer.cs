@@ -45,8 +45,8 @@ namespace com.espertech.esper.common.@internal.type
                 object d1,
                 object d2)
             {
-                decimal s1 = convOne.CoerceBoxed(d1).AsDecimal();
-                decimal s2 = convTwo.CoerceBoxed(d2).AsDecimal();
+                var s1 = convOne.CoerceBoxed(d1).AsDecimal();
+                var s2 = convTwo.CoerceBoxed(d2).AsDecimal();
                 return s1 - s2;
             }
 

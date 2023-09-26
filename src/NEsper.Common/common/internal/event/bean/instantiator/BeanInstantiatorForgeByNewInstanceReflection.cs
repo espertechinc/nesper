@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,7 +22,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
         BeanInstantiator
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         private readonly Type clazz;
 
         public BeanInstantiatorForgeByNewInstanceReflection(Type clazz)
@@ -50,8 +49,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
             return NewInstance(clazz);
         }
 
-        public BeanInstantiator BeanInstantiator => this;
-
         private object Handle(Exception e)
         {
             var message = "Unexpected exception encountered invoking newInstance on class '" +
@@ -61,5 +58,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
             Log.Error(message, e);
             return null;
         }
+
+        public BeanInstantiator BeanInstantiator => this;
     }
 } // end of namespace

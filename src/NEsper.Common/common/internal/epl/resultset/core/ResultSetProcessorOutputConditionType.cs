@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 return false;
             }
 
-            bool opt = configuration.Compiler.ViewResources.IsOutputLimitOpt;
+            var opt = configuration.Compiler.ViewResources.IsOutputLimitOpt;
             if (annotations == null) {
                 return opt;
             }

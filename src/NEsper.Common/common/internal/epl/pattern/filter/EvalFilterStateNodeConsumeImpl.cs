@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
                 return;
             }
 
-            EvalFilterConsumptionHandler handler = EvalFilterNode.Context.ConsumptionHandler;
+            var handler = EvalFilterNode.Context.ConsumptionHandler;
             ProcessMatches(handler, theEvent, allStmtMatches);
         }
 
@@ -57,16 +57,15 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             handler.LastEvent = theEvent;
 
             // evaluate consumption for all same-pattern filters
-            ArrayDeque<FilterHandleCallback> matches = new ArrayDeque<FilterHandleCallback>();
+            var matches = new ArrayDeque<FilterHandleCallback>();
 
-            int currentConsumption = int.MinValue;
-            foreach (FilterHandleCallback callback in allStmtMatches) {
-                if (!(callback is EvalFilterStateNodeConsume)) {
+            var currentConsumption = int.MinValue;
+            foreach (var callback in allStmtMatches) {
+                if (!(callback is EvalFilterStateNodeConsume node)) {
                     continue;
                 }
 
-                EvalFilterStateNodeConsume node = (EvalFilterStateNodeConsume) callback;
-                int? consumption = node.EvalFilterNode.FactoryNode.ConsumptionLevel;
+                var consumption = node.EvalFilterNode.FactoryNode.ConsumptionLevel;
                 if (consumption == null) {
                     consumption = 0;
                 }
@@ -82,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             }
 
             // execute matches
-            foreach (FilterHandleCallback match in matches) {
+            foreach (var match in matches) {
                 match.MatchFound(theEvent, null);
             }
         }

@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
 using Microsoft.CodeAnalysis;
 
 #if NETCOREAPP3_0_OR_GREATER
-using System.Runtime.Loader;
 #endif
 
 namespace com.espertech.esper.common.client.artifact
@@ -22,7 +19,7 @@ namespace com.espertech.esper.common.client.artifact
         /// Dictionary that maps ids to artifacts.
         /// </summary>
         private readonly IDictionary<string, IArtifact> _idToArtifact;
-        
+
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -54,8 +51,8 @@ namespace com.espertech.esper.common.client.artifact
         }
 
         protected abstract Supplier<Assembly> MaterializeAssemblySupplier(byte[] image);
-        
-        
+
+
         /// <summary>
         /// Registers an image with the repository and returns a unique id for that artifact.
         /// </summary>
@@ -79,7 +76,7 @@ namespace com.espertech.esper.common.client.artifact
 
             return artifact;
         }
-      
+
         /// <summary>
         /// Resolves an artifact from the repository.
         /// </summary>
@@ -91,14 +88,15 @@ namespace com.espertech.esper.common.client.artifact
                 _idToArtifact.TryGetValue(artifactId, out var artifact);
                 if (artifact is IRuntimeArtifact runtimeArtifact) {
                     return runtimeArtifact;
-                } else if (artifact is ICompileArtifact compileArtifact) {
+                }
+                else if (artifact is ICompileArtifact compileArtifact) {
                     throw new NotSupportedException();
                 }
 
                 return null;
             }
         }
-        
+
         /// <summary>
         /// Returns an enumeration of all metadata references.
         /// </summary>

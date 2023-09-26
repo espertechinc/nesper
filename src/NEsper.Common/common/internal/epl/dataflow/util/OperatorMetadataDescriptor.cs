@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
                     "OperatorAnnotations",
                     OperatorAnnotations == null
                         ? ConstantNull()
-                        : LocalMethod(MakeAnnotations(typeof(Attribute[]), OperatorAnnotations, method, classScope)))
+                        : MakeAnnotations(typeof(Attribute[]), OperatorAnnotations, method, classScope))
                 .SetProperty(Ref("op"), "NumOutputPorts", Constant(NumOutputPorts))
                 .SetProperty(Ref("op"), "OperatorName", Constant(OperatorName))
                 .MethodReturn(Ref("op"));

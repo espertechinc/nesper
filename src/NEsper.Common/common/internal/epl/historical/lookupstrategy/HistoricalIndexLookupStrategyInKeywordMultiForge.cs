@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
 
         public string ToQueryPlan()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
 
         public CodegenExpression Make(
@@ -38,20 +38,18 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(HistoricalIndexLookupStrategyInKeywordMulti),
-                this.GetType(),
+                GetType(),
                 classScope);
 
             method.Block
-                .DeclareVar<HistoricalIndexLookupStrategyInKeywordMulti>(
-                    "strat",
-                    NewInstance(typeof(HistoricalIndexLookupStrategyInKeywordMulti)))
+                .DeclareVarNewInstance<HistoricalIndexLookupStrategyInKeywordMulti>("strat")
                 .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
                 .SetProperty(
                     Ref("strat"),
                     "Evaluator",
-                    ExprNodeUtilityCodegen.CodegenEvaluator(evaluator.Forge, method, this.GetType(), classScope))
+                    ExprNodeUtilityCodegen.CodegenEvaluator(evaluator.Forge, method, GetType(), classScope))
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }

@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         public ViewableActivationResult[] ViewableActivationResults { get; }
 
         public JoinSetComposer JoinSetComposer { get; }
-        
+
         public ResultSetProcessor ResultSetProcessor { get; }
     }
 } // end of namespace

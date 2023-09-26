@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Threading;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
@@ -21,10 +22,15 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadUpdateIStreamSubselect : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                "@Name('s0') update istream SupportBean as sb set LongPrimitive = (select count(*) from SupportBean_S0#keepall as S0 where S0.P00 = sb.TheString)");
+                "@name('s0') update istream SupportBean as sb set LongPrimitive = (select count(*) from SupportBean_S0#keepall as S0 where S0.P00 = sb.TheString)");
             var listener = new SupportUpdateListener();
             env.Statement("s0").AddListener(listener);
 

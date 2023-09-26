@@ -34,12 +34,12 @@ namespace com.espertech.esper.regressionlib.support.json
 			string statementNameOfDeployment,
 			string typeName)
 		{
-			string deploymentId = env.DeploymentId(statementNameOfDeployment);
+			var deploymentId = env.DeploymentId(statementNameOfDeployment);
 			if (deploymentId == null) {
 				throw new ArgumentException("Failed to find deployment id for statement '" + statementNameOfDeployment + "'");
 			}
 
-			EventType eventType = env.Runtime.EventTypeService.GetEventType(deploymentId, typeName);
+			var eventType = env.Runtime.EventTypeService.GetEventType(deploymentId, typeName);
 			if (eventType == null) {
 				throw new ArgumentException("Failed to find event type '" + typeName + "' for deployment '" + deploymentId + "'");
 			}
@@ -47,11 +47,12 @@ namespace com.espertech.esper.regressionlib.support.json
 			return eventType.UnderlyingType;
 		}
 
+#if OBSOLETE
 		public static Type GetNestedUnderlyingType(
 			JsonEventType eventType,
 			string propertyName)
 		{
-			object type = eventType.Types.Get(propertyName);
+			var type = eventType.Types.Get(propertyName);
 			EventType innerType;
 			if (type is TypeBeanOrUnderlying) {
 				innerType = ((TypeBeanOrUnderlying) type).EventType;
@@ -62,7 +63,8 @@ namespace com.espertech.esper.regressionlib.support.json
 
 			return innerType.UnderlyingType;
 		}
-
+#endif
+		
 		public static void AssertJsonWrite(
 			string jsonExpected,
 			EventBean eventBean)

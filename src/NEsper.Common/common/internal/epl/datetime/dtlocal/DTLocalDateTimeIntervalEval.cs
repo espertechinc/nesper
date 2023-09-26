@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var time = DatetimeLongCoercerDateTime.CoerceToMillis((DateTime) target);
+            var time = DatetimeLongCoercerDateTime.CoerceToMillis((DateTime)target);
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDateTimeIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTime), "target");
+                .AddParam<DateTime>("target");
 
             methodNode.Block
                 .DeclareVar<long>(
@@ -65,8 +65,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var start = DatetimeLongCoercerDateTime.CoerceToMillis((DateTime) startTimestamp);
-            var end = DatetimeLongCoercerDateTime.CoerceToMillis((DateTime) endTimestamp);
+            var start = DatetimeLongCoercerDateTime.CoerceToMillis((DateTime)startTimestamp);
+            var end = DatetimeLongCoercerDateTime.CoerceToMillis((DateTime)endTimestamp);
             return intervalOp.Evaluate(start, end, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -80,8 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDateTimeIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTime), "startTimestamp")
-                .AddParam(typeof(DateTime), "endTimestamp");
+                .AddParam<DateTime>("startTimestamp")
+                .AddParam<DateTime>("endTimestamp");
 
             methodNode.Block
                 .DeclareVar<long>(

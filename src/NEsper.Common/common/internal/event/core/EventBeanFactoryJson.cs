@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public EventBean Wrap(object underlying)
         {
-            var und = _type.Parse((string) underlying);
+            var und = _type.Parse((string)underlying);
             return _factory.AdapterForTypedJson(und, _type);
         }
     }

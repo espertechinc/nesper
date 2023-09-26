@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprDotNodeForgeStaticMethod inner)
             : base(parent, false)
         {
-            this._inner = inner;
+            _inner = inner;
         }
 
         public override MethodInfo Method => _inner.StaticMethod;
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             return _inner.EvaluateCodegen(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
         }
-        
+
         public override CodegenExpression EventBeanWithCtxGet(
             CodegenExpression beanExpression,
             CodegenExpression ctxExpression,

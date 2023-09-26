@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                    "lookupStrategy=" +
                    LookupStrategy +
                    ", expressionsTexts=" +
-                   (ExpressionsTexts == null ? null : ExpressionsTexts) +
+                   ExpressionsTexts +
                    '}';
         }
     }

@@ -37,7 +37,10 @@ namespace com.espertech.esper.common.@internal.view.unique
     {
         private readonly AgentInstanceContext _agentInstanceContext;
         private readonly EventBean[] _eventsPerStream = new EventBean[1];
-        private readonly IDictionary<object, EventBean> _mostRecentEvents = new Dictionary<object, EventBean>().WithNullKeySupport();
+
+        private readonly IDictionary<object, EventBean> _mostRecentEvents =
+            new Dictionary<object, EventBean>().WithNullKeySupport();
+
         private readonly UniqueByPropertyViewFactory _viewFactory;
 
         public UniqueByPropertyView(
@@ -68,7 +71,7 @@ namespace com.espertech.esper.common.@internal.view.unique
                 var key = GetUniqueKey(newData[0]);
                 var lastValue = _mostRecentEvents.Push(key, newData[0]);
                 if (child != null) {
-                    var oldDataToPost = lastValue == null ? null : new[] {lastValue};
+                    var oldDataToPost = lastValue == null ? null : new[] { lastValue };
                     _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, oldDataToPost);
                     child.Update(newData, oldDataToPost);
                     _agentInstanceContext.InstrumentationProvider.AViewIndicate();
@@ -127,7 +130,7 @@ namespace com.espertech.esper.common.@internal.view.unique
                         _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                     else {
-                        EventBean[] postOldDataArray = postOldData.ToArray();
+                        var postOldDataArray = postOldData.ToArray();
                         _agentInstanceContext.InstrumentationProvider.QViewIndicate(
                             _viewFactory,
                             newData,
@@ -151,12 +154,9 @@ namespace com.espertech.esper.common.@internal.view.unique
                 _mostRecentEvents.Count);
         }
 
-        public override EventType EventType {
-            get {
-                // The schema is the parent view's schema
-                return Parent.EventType;
-            }
-        }
+        public override EventType EventType =>
+            // The schema is the parent view's schema
+            Parent.EventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {

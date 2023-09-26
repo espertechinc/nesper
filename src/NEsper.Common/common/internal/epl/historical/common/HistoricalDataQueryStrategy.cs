@@ -79,29 +79,29 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             else {
                 // Prepare rows with each row Count events where Count is the number of streams
                 lookupRows = new EventBean[lookupEvents.Length][];
-                for (int i = 0; i < lookupEvents.Length; i++) {
+                for (var i = 0; i < lookupEvents.Length; i++) {
                     lookupRows[i] = new EventBean[2];
                     lookupRows[i][_myStreamNumber] = lookupEvents[i];
                 }
             }
 
-            EventTable[][] indexPerLookupRow = _historicalEventViewable.Poll(
+            var indexPerLookupRow = _historicalEventViewable.Poll(
                 lookupRows,
                 _pollResultIndexingStrategy,
                 exprEvaluatorContext);
 
-            int count = 0;
-            foreach (EventTable[] index in indexPerLookupRow) {
+            var count = 0;
+            foreach (var index in indexPerLookupRow) {
                 // Using the index, determine a subset of the whole indexed table to process, unless
                 // the strategy is a full table scan
-                IEnumerator<EventBean> subsetIter =
+                var subsetIter =
                     _indexLookupStrategy.Lookup(lookupEvents[count], index, exprEvaluatorContext);
 
                 // Ensure that the subset enumerator is advanced; assuming that there
                 // was an iterator at all.
-                bool subsetIterAdvanced =
-                    (subsetIter != null) &&
-                    (subsetIter.MoveNext());
+                var subsetIterAdvanced =
+                    subsetIter != null &&
+                    subsetIter.MoveNext();
 
                 // In an outer join
                 if (_isOuterJoin && !subsetIterAdvanced) {
@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                     joinSet.Add(new MultiKeyArrayOfKeys<EventBean>(resultRow));
                 }
                 else {
-                    bool foundMatch = false;
+                    var foundMatch = false;
                     if (subsetIterAdvanced) {
                         // Add each row to the join result or, for outer joins, run through the outer join filter
 
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                                     resultRow,
                                     true,
                                     exprEvaluatorContext);
-                                if ((compareResult != null) && true.Equals(compareResult)) {
+                                if (compareResult != null && true.Equals(compareResult)) {
                                     joinSet.Add(new MultiKeyArrayOfKeys<EventBean>(resultRow));
                                     foundMatch = true;
                                 }
@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                         } while (subsetIter.MoveNext());
                     }
 
-                    if ((_isOuterJoin) && (!foundMatch)) {
+                    if (_isOuterJoin && !foundMatch) {
                         var resultRow = new EventBean[2];
                         resultRow[_myStreamNumber] = lookupEvents[count];
                         joinSet.Add(new MultiKeyArrayOfKeys<EventBean>(resultRow));

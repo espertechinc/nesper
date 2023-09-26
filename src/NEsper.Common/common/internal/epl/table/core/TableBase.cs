@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
             var statementResourceService = statementContextCreateTable.StatementCPCacheService.StatementResourceService;
             var holder = statementResourceService.GetPartitioned(agentInstanceId);
-            return holder == null ? null : holder.TableInstance;
+            return holder?.TableInstance;
         }
 
         public TableInstance TableInstanceNoContextNoRemake {
@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                 var statementResourceService =
                     statementContextCreateTable.StatementCPCacheService.StatementResourceService;
                 var holder = statementResourceService.Unpartitioned;
-                return holder == null ? null : holder.TableInstance;
+                return holder?.TableInstance;
             }
         }
 

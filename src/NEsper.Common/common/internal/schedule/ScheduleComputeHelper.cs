@@ -67,9 +67,11 @@ namespace com.espertech.esper.common.@internal.schedule
             // Add the minimum resolution to the Start time to ensure we don't get the same exact time
             if (spec.UnitValues.ContainsKey(ScheduleUnit.MICROSECONDS) && timeAbacus.OneSecond == 1000000L) {
                 afterTimeInMillis += 1;
-            } else if (spec.UnitValues.ContainsKey(ScheduleUnit.MILLISECONDS)) {
+            }
+            else if (spec.UnitValues.ContainsKey(ScheduleUnit.MILLISECONDS)) {
                 afterTimeInMillis += timeAbacus.OneSecond / 1000;
-            } else if (spec.UnitValues.ContainsKey(ScheduleUnit.SECONDS)) {
+            }
+            else if (spec.UnitValues.ContainsKey(ScheduleUnit.SECONDS)) {
                 afterTimeInMillis += timeAbacus.OneSecond;
             }
             else {
@@ -105,15 +107,15 @@ namespace com.espertech.esper.common.@internal.schedule
             TimeZoneInfo timeZone,
             TimeAbacus timeAbacus)
         {
-            ICollection<int> minutesSet = spec.UnitValues.Get(ScheduleUnit.MINUTES);
-            ICollection<int> hoursSet = spec.UnitValues.Get(ScheduleUnit.HOURS);
-            ICollection<int> monthsSet = spec.UnitValues.Get(ScheduleUnit.MONTHS);
-            bool isSecondsSpecified = spec.UnitValues.ContainsKey(ScheduleUnit.SECONDS);
-            ICollection<int> secondsSet = isSecondsSpecified ? spec.UnitValues.Get(ScheduleUnit.SECONDS) : null;
-            bool isMillisecondsSpecified = spec.UnitValues.ContainsKey(ScheduleUnit.MILLISECONDS);
-            ICollection<int> millisecondsSet = isMillisecondsSpecified ? spec.UnitValues.Get(ScheduleUnit.MILLISECONDS) : null;
-            bool isMicrosecondsSpecified = spec.UnitValues.ContainsKey(ScheduleUnit.MICROSECONDS);
-            ICollection<int> microsecondsSet = isMillisecondsSpecified ? spec.UnitValues.Get(ScheduleUnit.MICROSECONDS) : null;
+            var minutesSet = spec.UnitValues.Get(ScheduleUnit.MINUTES);
+            var hoursSet = spec.UnitValues.Get(ScheduleUnit.HOURS);
+            var monthsSet = spec.UnitValues.Get(ScheduleUnit.MONTHS);
+            var isSecondsSpecified = spec.UnitValues.ContainsKey(ScheduleUnit.SECONDS);
+            var secondsSet = isSecondsSpecified ? spec.UnitValues.Get(ScheduleUnit.SECONDS) : null;
+            var isMillisecondsSpecified = spec.UnitValues.ContainsKey(ScheduleUnit.MILLISECONDS);
+            var millisecondsSet = isMillisecondsSpecified ? spec.UnitValues.Get(ScheduleUnit.MILLISECONDS) : null;
+            var isMicrosecondsSpecified = spec.UnitValues.ContainsKey(ScheduleUnit.MICROSECONDS);
+            var microsecondsSet = isMillisecondsSpecified ? spec.UnitValues.Get(ScheduleUnit.MICROSECONDS) : null;
 
             while (true) {
                 DateTimeEx after;
@@ -135,17 +137,18 @@ namespace com.espertech.esper.common.@internal.schedule
                 }
 
                 var remainder = timeAbacus.DateTimeSet(afterTimeInMillis, after);
-                var result = new ScheduleCalendar {Milliseconds = after.Millisecond};
+                var result = new ScheduleCalendar { Milliseconds = after.Millisecond };
 
                 if (isMicrosecondsSpecified) {
-                    long nextValue = NextValue(microsecondsSet, (int) remainder);
+                    long nextValue = NextValue(microsecondsSet, (int)remainder);
                     remainder = nextValue;
                     if (nextValue == -1) {
                         nextValue = NextValue(microsecondsSet, 0);
                         remainder = nextValue;
                         after.AddMilliseconds(1);
                     }
-                } else {
+                }
+                else {
                     result.Milliseconds = after.Millisecond;
                 }
 
@@ -155,7 +158,8 @@ namespace com.espertech.esper.common.@internal.schedule
                         result.Milliseconds = NextValue(millisecondsSet, 0);
                         after.AddSeconds(1);
                     }
-                } else {
+                }
+                else {
                     result.Milliseconds = after.Millisecond;
                 }
 
@@ -192,7 +196,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 // They may be reset to minimum values if the day rolled
                 result.DayOfMonth = DetermineDayOfMonth(spec, after, result);
 
-                bool dayMatchRealDate = false;
+                var dayMatchRealDate = false;
                 while (!dayMatchRealDate) {
                     if (CheckDayValidInMonth(timeZone, result.DayOfMonth, after.Month, after.Year)) {
                         dayMatchRealDate = true;
@@ -202,7 +206,7 @@ namespace com.espertech.esper.common.@internal.schedule
                     }
                 }
 
-                int currentMonth = after.Month;
+                var currentMonth = after.Month;
                 result.Month = NextValue(monthsSet, currentMonth);
                 if (result.Month != currentMonth) {
                     result.Second = NextValue(secondsSet, 0);
@@ -217,7 +221,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 }
 
                 // Perform a last valid date check, if failing, try to compute a new date based on this altered after date
-                int year = after.Year;
+                var year = after.Year;
                 if (!CheckDayValidInMonth(timeZone, result.DayOfMonth, result.Month, year)) {
                     afterTimeInMillis = timeAbacus.DateTimeGet(after, remainder);
                     continue;
@@ -240,11 +244,11 @@ namespace com.espertech.esper.common.@internal.schedule
             DateTimeEx after,
             ScheduleCalendar result)
         {
-            ICollection<int> daysOfMonthSet = spec.UnitValues.Get(ScheduleUnit.DAYS_OF_MONTH);
-            ICollection<int> daysOfWeekSet = spec.UnitValues.Get(ScheduleUnit.DAYS_OF_WEEK);
-            ICollection<int> secondsSet = spec.UnitValues.Get(ScheduleUnit.SECONDS);
-            ICollection<int> minutesSet = spec.UnitValues.Get(ScheduleUnit.MINUTES);
-            ICollection<int> hoursSet = spec.UnitValues.Get(ScheduleUnit.HOURS);
+            var daysOfMonthSet = spec.UnitValues.Get(ScheduleUnit.DAYS_OF_MONTH);
+            var daysOfWeekSet = spec.UnitValues.Get(ScheduleUnit.DAYS_OF_WEEK);
+            var secondsSet = spec.UnitValues.Get(ScheduleUnit.SECONDS);
+            var minutesSet = spec.UnitValues.Get(ScheduleUnit.MINUTES);
+            var hoursSet = spec.UnitValues.Get(ScheduleUnit.HOURS);
 
             int dayOfMonth;
 
@@ -259,15 +263,15 @@ namespace com.espertech.esper.common.@internal.schedule
 
                 // may return the current day or a future day in the same month,
                 // and may advance the "after" date to the next month
-                int currentYYMMDD = GetTimeYYYYMMDD(after);
+                var currentYYMMDD = GetTimeYYYYMMDD(after);
                 IncreaseAfterDayOfMonthSpecialOp(op.Operator, op.Day, op.Month, isWeek, after);
-                int rolledYYMMDD = GetTimeYYYYMMDD(after);
+                var rolledYYMMDD = GetTimeYYYYMMDD(after);
 
                 // if rolled then reset time portion
                 if (rolledYYMMDD > currentYYMMDD) {
-                    result.Second = (NextValue(secondsSet, 0));
-                    result.Minute = (NextValue(minutesSet, 0));
-                    result.Hour = (NextValue(hoursSet, 0));
+                    result.Second = NextValue(secondsSet, 0);
+                    result.Minute = NextValue(minutesSet, 0);
+                    result.Hour = NextValue(hoursSet, 0);
                     return after.GetFieldValue(DateTimeFieldEnum.DAY_OF_MONTH);
                 }
                 // rolling backwards is not allowed
@@ -309,7 +313,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 // Loop to find the next day of month that works for the specified day of week values
                 while (true) {
                     dayOfMonth = after.Day;
-                    int dayOfWeek = (int) after.DayOfWeek;
+                    var dayOfWeek = after.DayOfWeek;
 
                     // TODO
                     //
@@ -339,14 +343,14 @@ namespace com.espertech.esper.common.@internal.schedule
                 // Loop to find the next day of month that works for either day of month  OR   day of week
                 while (true) {
                     dayOfMonth = after.Day;
-                    int dayOfWeek = (int) after.DayOfWeek;
+                    var dayOfWeek = after.DayOfWeek;
 
                     // TODO
                     //
                     // See my discussion above about day of week conversion
 
                     // If the day matches neither the day of month nor the day of week
-                    if ((!daysOfWeekSet.Contains(dayOfWeek)) && (!daysOfMonthSet.Contains(dayOfMonth))) {
+                    if (!daysOfWeekSet.Contains(dayOfWeek) && !daysOfMonthSet.Contains(dayOfMonth)) {
                         result.Second = NextValue(secondsSet, 0);
                         result.Minute = NextValue(minutesSet, 0);
                         result.Hour = NextValue(hoursSet, 0);
@@ -452,7 +456,7 @@ namespace com.espertech.esper.common.@internal.schedule
             ICollection<int> valueSet,
             int startValue)
         {
-            if ((valueSet == null) || (valueSet.IsEmpty())) {
+            if (valueSet == null || valueSet.IsEmpty()) {
                 return startValue;
             }
 
@@ -498,7 +502,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 checker = new DateCheckerMonthWeekday(day, month);
             }
 
-            int dayCount = 0;
+            var dayCount = 0;
             while (!checker.Fits(after)) {
                 after.AddUsingField(DateTimeFieldEnum.DAY_OF_MONTH, 1);
                 dayCount++;
@@ -526,7 +530,7 @@ namespace com.espertech.esper.common.@internal.schedule
                     throw new ArgumentException("Last xx day of the month has to be a day of week (0-7)");
                 }
 
-                _dayCode = (DayOfWeek) day;
+                _dayCode = (DayOfWeek)day;
                 _month = month;
             }
 
@@ -560,7 +564,7 @@ namespace com.espertech.esper.common.@internal.schedule
                         throw new ArgumentException("Last xx day of the month has to be a day of week (0-7)");
                     }
 
-                    _dayCode = (DayOfWeek) day;
+                    _dayCode = (DayOfWeek)day;
                 }
                 else {
                     _dayCode = null;
@@ -579,7 +583,7 @@ namespace com.espertech.esper.common.@internal.schedule
                     return false;
                 }
 
-                return (dateTime.Day == dateTime.GetActualMaximum());
+                return dateTime.Day == dateTime.GetActualMaximum();
             }
         }
 
@@ -598,7 +602,7 @@ namespace com.espertech.esper.common.@internal.schedule
                     return false;
                 }
 
-                return (dateTime.DayOfWeekEnum == DayOfWeek.Saturday);
+                return dateTime.DayOfWeekEnum == DayOfWeek.Saturday;
             }
         }
 
@@ -616,7 +620,7 @@ namespace com.espertech.esper.common.@internal.schedule
                         throw new ArgumentException("Last xx day of the month has to be a day of week (0-7)");
                     }
 
-                    _dayCode = (DayOfWeek) day;
+                    _dayCode = (DayOfWeek)day;
                 }
                 else {
                     _dayCode = null;
@@ -639,8 +643,8 @@ namespace com.espertech.esper.common.@internal.schedule
                     return false;
                 }
 
-                int day = dateTime.Day;
-                int max = dateTime.GetActualMaximum();
+                var day = dateTime.Day;
+                var max = dateTime.GetActualMaximum();
                 if (day == max) {
                     return true;
                 }
@@ -692,7 +696,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 int day,
                 DateTimeEx work)
             {
-                int max = work.GetActualMaximum();
+                var max = work.GetActualMaximum();
                 if (day <= max) {
                     work = work.SetFieldValue(DateTimeFieldEnum.DAY_OF_MONTH, day);
                 }

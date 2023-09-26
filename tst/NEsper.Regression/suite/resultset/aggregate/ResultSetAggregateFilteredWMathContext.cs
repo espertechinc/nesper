@@ -20,13 +20,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select avg(DecimalOne) as c0 from SupportBeanNumeric";
+            var epl = "@name('s0') select avg(DecimalOne) as c0 from SupportBeanNumeric";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventBean(new SupportBeanNumeric(null, MakeDecimal(0, 2, MidpointRounding.AwayFromZero)));
             env.SendEventBean(new SupportBeanNumeric(null, MakeDecimal(0, 2, MidpointRounding.AwayFromZero)));
             env.SendEventBean(new SupportBeanNumeric(null, MakeDecimal(1, 2, MidpointRounding.AwayFromZero)));
-            Assert.AreEqual(0.33m, env.Listener("s0").GetAndResetLastNewData()[0].Get("c0").AsDecimal());
+            env.AssertListener(
+                "s0",
+                listener => Assert.AreEqual(0.33m, listener.GetAndResetLastNewData()[0].Get("c0").AsDecimal()));
 
             env.UndeployAll();
         }

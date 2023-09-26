@@ -24,7 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.codegen
         public static readonly CodegenExpressionRef REF_EPS = Ref(NAME_EPS);
 
         public static readonly CodegenNamedParam FP_ENUMCOLL = new CodegenNamedParam(
-            typeof(FlexCollection), REF_ENUMCOLL);
+            typeof(FlexCollection),
+            REF_ENUMCOLL);
 
         public static readonly IList<CodegenNamedParam> PARAMS = Collections.List(
             FP_EPS,

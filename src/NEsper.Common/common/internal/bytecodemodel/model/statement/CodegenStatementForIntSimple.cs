@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             Block.MergeClasses(classes);
             _upperLimit.MergeClasses(classes);
         }
-        
+
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             consumer.Invoke(_upperLimit);

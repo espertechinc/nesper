@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             var descending = new bool[orderBy.Length];
             for (var i = 0; i < orderBy.Length; i++) {
                 nodes[i] = orderBy[i].ExprNode;
-                descending[i] = orderBy[i].IsDescending();
+                descending[i] = orderBy[i].IsDescending;
             }
 
             var types = ExprNodeUtilityQuery.GetExprResultTypes(nodes);

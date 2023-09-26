@@ -9,11 +9,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
+using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
@@ -24,9 +27,9 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternStartStop
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
             WithStartStopOne(execs);
             WithAddRemoveListener(execs);
             WithStartStopTwo(execs);
@@ -54,43 +57,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             return execs;
         }
 
-        private static void SendAndAssert(RegressionEnvironment env)
+        private class PatternStartStopTwo : RegressionExecution
         {
-            for (var i = 0; i < 1000; i++) {
-                object theEvent = null;
-                if (i % 3 == 0) {
-                    theEvent = new SupportBean();
-                }
-                else {
-                    theEvent = SupportBeanComplexProps.MakeDefaultBean();
-                }
-
-                env.SendEventBean(theEvent);
-
-                var eventBean = env.Listener("s0").AssertOneGetNewAndReset();
-                if (theEvent is SupportBean) {
-                    Assert.AreSame(theEvent, eventBean.Get("a"));
-                    Assert.IsNull(eventBean.Get("b"));
-                }
-                else {
-                    Assert.AreSame(theEvent, eventBean.Get("b"));
-                    Assert.IsNull(eventBean.Get("a"));
-                }
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.OBSERVEROPS);
             }
-        }
 
-        private static SupportBean SendEvent(RegressionEnvironment env)
-        {
-            var theEvent = new SupportBean();
-            env.SendEventBean(theEvent);
-            return theEvent;
-        }
-
-        internal class PatternStartStopTwo : RegressionExecution
-        {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select * from pattern [every(a=SupportBean or b=SupportBeanComplexProps)]";
+                var stmtText = "@name('s0') select * from pattern [every(a=SupportBean or b=SupportBeanComplexProps)]";
                 var compiled = env.Compile(stmtText);
                 env.Deploy(compiled).AddListener("s0");
 
@@ -112,20 +88,23 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             }
         }
 
-        internal class PatternStartStopOne : RegressionExecution
+        private class PatternStartStopOne : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') @IterableUnbound select * from pattern[every tag=SupportBean]";
+                var epl = "@name('s0') @IterableUnbound select * from pattern[every tag=SupportBean]";
                 var compiled = env.Compile(epl);
                 env.Deploy(compiled).AddListener("s0");
-                Assert.AreEqual(StatementType.SELECT, env.Statement("s0").GetProperty(StatementProperty.STATEMENTTYPE));
+                var stmt = env.Statement("s0");
+                Assert.AreEqual(StatementType.SELECT, stmt.GetProperty(StatementProperty.STATEMENTTYPE));
+                Assert.IsNull(stmt.GetProperty(StatementProperty.CONTEXTNAME));
+                Assert.IsNull(stmt.GetProperty(StatementProperty.CONTEXTDEPLOYMENTID));
 
                 // Pattern started when created
                 Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
-                using (var safe = env.Statement("s0").GetSafeEnumerator()) {
-                    Assert.IsFalse(safe.MoveNext());
-                }
+                var safe = env.Statement("s0").GetSafeEnumerator();
+                Assert.IsFalse(safe.MoveNext());
+                safe.Dispose();
 
                 // Stop pattern
                 var listener = env.Listener("s0");
@@ -142,14 +121,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // Send event
                 var theEvent = SendEvent(env);
                 Assert.AreSame(theEvent, env.GetEnumerator("s0").Advance().Get("tag"));
-                using (var safe = env.Statement("s0").GetSafeEnumerator()) {
-                    Assert.AreSame(theEvent, safe.Advance().Get("tag"));
-                }
+                safe = env.Statement("s0").GetSafeEnumerator();
+                Assert.AreSame(theEvent, safe.Advance().Get("tag"));
+                safe.Dispose();
 
                 // Stop pattern
                 listener = env.Listener("s0");
                 listener.Reset();
-                var stmt = env.Statement("s0");
+                stmt = env.Statement("s0");
                 env.UndeployModuleContaining("s0");
                 SendEvent(env);
                 try {
@@ -166,13 +145,18 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 Assert.IsFalse(env.GetEnumerator("s0").MoveNext());
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
         }
 
-        internal class PatternAddRemoveListener : RegressionExecution
+        private class PatternAddRemoveListener : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') @IterableUnbound select * from pattern[every tag=SupportBean]";
+                var epl = "@name('s0') @IterableUnbound select * from pattern[every tag=SupportBean]";
                 env.CompileDeploy(epl);
 
                 // Pattern started when created
@@ -202,6 +186,46 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
+
+        private static void SendAndAssert(RegressionEnvironment env)
+        {
+            for (var i = 0; i < 1000; i++) {
+                object theEvent;
+                if (i % 3 == 0) {
+                    theEvent = new SupportBean();
+                }
+                else {
+                    theEvent = SupportBeanComplexProps.MakeDefaultBean();
+                }
+
+                env.SendEventBean(theEvent);
+
+                env.AssertEventNew(
+                    "s0",
+                    eventBean => {
+                        if (theEvent is SupportBean) {
+                            Assert.AreSame(theEvent, eventBean.Get("a"));
+                            Assert.IsNull(eventBean.Get("b"));
+                        }
+                        else {
+                            Assert.AreSame(theEvent, eventBean.Get("b"));
+                            Assert.IsNull(eventBean.Get("a"));
+                        }
+                    });
+            }
+        }
+
+        private static SupportBean SendEvent(RegressionEnvironment env)
+        {
+            var theEvent = new SupportBean();
+            env.SendEventBean(theEvent);
+            return theEvent;
         }
     }
 } // end of namespace

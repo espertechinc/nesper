@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
@@ -18,22 +20,33 @@ namespace com.espertech.esper.common.client.soda
     [Serializable]
     public class InsertIntoClause
     {
-        /// <summary>Ctor. </summary>
+        private StreamSelector streamSelector;
+        private string streamName;
+        private IList<string> columnNames;
+        private Expression eventPrecedence;
+
+        /// <summary>
+        /// Ctor.
+        /// </summary>
         public InsertIntoClause()
         {
         }
 
-        /// <summary>Creates the insert-into clause. </summary>
-        /// <param name="streamName">the name of the stream to insert into</param>
+        /// <summary>
+        /// Creates the insert-into clause.
+        /// </summary>
+        /// <param name = "streamName">the name of the stream to insert into</param>
         /// <returns>clause</returns>
         public static InsertIntoClause Create(string streamName)
         {
             return new InsertIntoClause(streamName);
         }
 
-        /// <summary>Creates the insert-into clause. </summary>
-        /// <param name="streamName">the name of the stream to insert into</param>
-        /// <param name="columns">is a list of column names</param>
+        /// <summary>
+        /// Creates the insert-into clause.
+        /// </summary>
+        /// <param name = "streamName">the name of the stream to insert into</param>
+        /// <param name = "columns">is a list of column names</param>
         /// <returns>clause</returns>
         public static InsertIntoClause Create(
             string streamName,
@@ -42,82 +55,115 @@ namespace com.espertech.esper.common.client.soda
             return new InsertIntoClause(streamName, columns);
         }
 
-        /// <summary>Creates the insert-into clause. </summary>
-        /// <param name="streamName">the name of the stream to insert into</param>
-        /// <param name="columns">is a list of column names</param>
-        /// <param name="streamSelector">selects the stream</param>
+        /// <summary>
+        /// Creates the insert-into clause.
+        /// </summary>
+        /// <param name = "streamName">the name of the stream to insert into</param>
+        /// <param name = "columns">is a list of column names</param>
+        /// <param name = "streamSelector">selects the stream</param>
         /// <returns>clause</returns>
         public static InsertIntoClause Create(
             string streamName,
             string[] columns,
             StreamSelector streamSelector)
         {
-            if (streamSelector == StreamSelector.RSTREAM_ISTREAM_BOTH)
-            {
+            return Create(streamName, columns, streamSelector, null);
+        }
+
+        /// <summary>
+        /// Creates the insert-into clause.
+        /// </summary>
+        /// <param name = "streamName">the name of the stream to insert into</param>
+        /// <param name = "columns">is a list of column names</param>
+        /// <param name = "streamSelector">selects the stream</param>
+        /// <param name = "precedence">event precedence or null when not applicable</param>
+        /// <returns>clause</returns>
+        public static InsertIntoClause Create(
+            string streamName,
+            string[] columns,
+            StreamSelector streamSelector,
+            Expression precedence)
+        {
+            if (streamSelector == StreamSelector.RSTREAM_ISTREAM_BOTH) {
                 throw new ArgumentException("Insert into only allows istream or rstream selection, not both");
             }
 
-            return new InsertIntoClause(streamName, columns, streamSelector);
+            return new InsertIntoClause(streamName, Arrays.AsList(columns), streamSelector, precedence);
         }
 
-        /// <summary>Ctor. </summary>
-        /// <param name="streamName">is the stream name to insert into</param>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name = "streamName">is the stream name to insert into</param>
         public InsertIntoClause(string streamName)
         {
-            StreamSelector = StreamSelector.ISTREAM_ONLY;
-            StreamName = streamName;
-            ColumnNames = new List<string>();
+            streamSelector = StreamSelector.ISTREAM_ONLY;
+            this.streamName = streamName;
+            columnNames = new List<string>();
         }
 
-        /// <summary>Ctor. </summary>
-        /// <param name="streamName">is the stream name to insert into</param>
-        /// <param name="columnNames">column names</param>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name = "streamName">is the stream name to insert into</param>
+        /// <param name = "columnNames">column names</param>
         public InsertIntoClause(
             string streamName,
             string[] columnNames)
         {
-            StreamSelector = StreamSelector.ISTREAM_ONLY;
-            StreamName = streamName;
-            ColumnNames = columnNames;
+            streamSelector = StreamSelector.ISTREAM_ONLY;
+            this.streamName = streamName;
+            this.columnNames = Arrays.AsList(columnNames);
         }
 
-        /// <summary>Ctor. </summary>
-        /// <param name="streamName">is the stream name to insert into</param>
-        /// <param name="columnNames">column names</param>
-        /// <param name="streamSelector">selector for either insert stream (the default) or remove stream or both</param>
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name = "streamName">is the stream name to insert into</param>
+        /// <param name = "columnNames">column names</param>
+        /// <param name = "streamSelector">selector for either insert stream (the default) or remove stream or both</param>
         public InsertIntoClause(
             string streamName,
             IList<string> columnNames,
             StreamSelector streamSelector)
+            : this(streamName, columnNames, streamSelector, null)
         {
-            StreamSelector = streamSelector;
-            StreamName = streamName;
-            ColumnNames = columnNames;
         }
 
-        /// <summary>Returns the stream selector for the insert into. </summary>
-        /// <value>stream selector</value>
-        public StreamSelector StreamSelector { get; set; }
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name = "streamName">is the stream name to insert into</param>
+        /// <param name = "columnNames">column names</param>
+        /// <param name = "streamSelector">selector for either insert stream (the default) or remove stream or both</param>
+        /// <param name = "eventPrecedence">event precedence or null if none provided</param>
+        public InsertIntoClause(
+            string streamName,
+            IList<string> columnNames,
+            StreamSelector streamSelector,
+            Expression eventPrecedence)
+        {
+            this.streamSelector = streamSelector;
+            this.streamName = streamName;
+            this.columnNames = columnNames;
+            this.eventPrecedence = eventPrecedence;
+        }
 
-        /// <summary>Returns name of stream name to use for insert-into stream. </summary>
-        /// <value>stream name</value>
-        public string StreamName { get; set; }
-
-        /// <summary>Returns a list of column names specified optionally in the insert-into clause, or empty if none specified. </summary>
-        /// <value>column names or empty list if none supplied</value>
-        public IList<string> ColumnNames { get; set; }
-
-        /// <summary>Add a column name to the insert-into clause. </summary>
-        /// <param name="columnName">to add</param>
+        /// <summary>
+        /// Add a column name to the insert-into clause.
+        /// </summary>
+        /// <param name = "columnName">to add</param>
         public void Add(string columnName)
         {
-            ColumnNames.Add(columnName);
+            columnNames.Add(columnName);
         }
 
-        /// <summary>Renders the clause in textual representation. </summary>
-        /// <param name="writer">to output to</param>
-        /// <param name="formatter">for NewLine-whitespace formatting</param>
-        /// <param name="isTopLevel">to indicate if this insert-into-clause is inside other clauses.</param>
+        /// <summary>
+        /// Renders the clause in textual representation.
+        /// </summary>
+        /// <param name = "writer">to output to</param>
+        /// <param name = "formatter">for newline-whitespace formatting</param>
+        /// <param name = "isTopLevel">to indicate if this insert-into-clause is inside other clauses.</param>
         public void ToEPL(
             TextWriter writer,
             EPStatementFormatter formatter,
@@ -125,21 +171,17 @@ namespace com.espertech.esper.common.client.soda
         {
             formatter.BeginInsertInto(writer, isTopLevel);
             writer.Write("insert ");
-            if (StreamSelector != StreamSelector.ISTREAM_ONLY)
-            {
-                writer.Write(StreamSelector.GetEPL());
+            if (streamSelector != StreamSelector.ISTREAM_ONLY) {
+                writer.Write(streamSelector.GetEPL());
                 writer.Write(" ");
             }
 
             writer.Write("into ");
-            writer.Write(StreamName);
-
-            if (ColumnNames.Count > 0)
-            {
+            writer.Write(streamName);
+            if (columnNames.Count > 0) {
                 writer.Write("(");
-                string delimiter = "";
-                foreach (var name in ColumnNames)
-                {
+                var delimiter = "";
+                foreach (var name in columnNames) {
                     writer.Write(delimiter);
                     writer.Write(name);
                     delimiter = ", ";
@@ -147,6 +189,37 @@ namespace com.espertech.esper.common.client.soda
 
                 writer.Write(")");
             }
+
+            writer.Write(" ");
+            if (eventPrecedence != null) {
+                writer.Write("event-precedence(");
+                eventPrecedence.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                writer.Write(") ");
+            }
+        }
+
+        public StreamSelector StreamSelector {
+            get => streamSelector;
+
+            set => streamSelector = value;
+        }
+
+        public string StreamName {
+            get => streamName;
+
+            set => streamName = value;
+        }
+
+        public IList<string> ColumnNames {
+            get => columnNames;
+
+            set => columnNames = value;
+        }
+
+        public Expression EventPrecedence {
+            get => eventPrecedence;
+
+            set => eventPrecedence = value;
         }
     }
-}
+} // end of namespace

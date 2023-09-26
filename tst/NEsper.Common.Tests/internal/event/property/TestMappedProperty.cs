@@ -57,20 +57,17 @@ namespace com.espertech.esper.common.@internal.@event.property
         [Test]
         public void TestGetPropertyType()
         {
-            Type[] expected = new Type[] { typeof(string), typeof(string) };
             for (int i = 0; i < mapped.Length; i++)
             {
-                Assert.AreEqual(expected[i], mapped[i].GetPropertyType(eventType,
+                Assert.AreEqual(typeof(string), mapped[i].GetPropertyType(eventType,
                     supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
             }
 
             // try invalid case
             MappedProperty mpd = new MappedProperty("dummy", "dummy");
-            Assert.IsNull(mpd.GetPropertyType(eventType,
-                supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            Assert.IsNull(mpd.GetPropertyType(eventType, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
             mpd = new MappedProperty("MapProperty", "dummy");
-            Assert.AreEqual(typeof(string), mpd.GetPropertyType(eventType,
-                supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            Assert.AreEqual(typeof(string), mpd.GetPropertyType(eventType, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
         }
     }
 } // end of namespace

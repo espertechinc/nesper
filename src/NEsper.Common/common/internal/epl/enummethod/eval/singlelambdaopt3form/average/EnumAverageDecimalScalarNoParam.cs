@@ -19,62 +19,63 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.average
 {
-	public class EnumAverageDecimalScalarNoParam : EnumForgeBasePlain,
-		EnumEval
-	{
-		public EnumAverageDecimalScalarNoParam(int streamCountIncoming) : base(streamCountIncoming)
-		{
-		}
+    public class EnumAverageDecimalScalarNoParam : EnumForgeBasePlain,
+        EnumEval
+    {
+        public EnumAverageDecimalScalarNoParam(int streamCountIncoming) : base(streamCountIncoming)
+        {
+        }
 
-		public override EnumEval EnumEvaluator => this;
+        public override EnumEval EnumEvaluator => this;
 
-		public object EvaluateEnumMethod(
-			EventBean[] eventsLambda,
-			ICollection<object> enumcoll,
-			bool isNewData,
-			ExprEvaluatorContext context)
-		{
-			var sum = 0.0m;
-			var count = 0;
+        public object EvaluateEnumMethod(
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            var sum = 0.0m;
+            var count = 0;
 
-			foreach (var next in enumcoll) {
-				var num = next;
-				if (num == null) {
-					continue;
-				}
+            foreach (var next in enumcoll) {
+                var num = next;
+                if (num == null) {
+                    continue;
+                }
 
-				count++;
-				sum += num.AsDecimal();
-			}
+                count++;
+                sum += num.AsDecimal();
+            }
 
-			if (count == 0) {
-				return null;
-			}
+            if (count == 0) {
+                return null;
+            }
 
-			return sum / count;
-		}
+            return sum / count;
+        }
 
-		public override CodegenExpression Codegen(
-			EnumForgeCodegenParams args,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			var method = codegenMethodScope
-				.MakeChild(typeof(decimal?), typeof(EnumAverageDecimalScalarNoParam), codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS)
-				.Block
-				.DeclareVar<decimal>("sum", Constant(0.0m))
-				.DeclareVar<int>("count", Constant(0))
-				.ForEach(typeof(object), "num", EnumForgeCodegenNames.REF_ENUMCOLL)
-				.IfRefNull("num")
-				.BlockContinue()
-				.IncrementRef("count")
-				.AssignRef("sum", Op(Ref("sum"), "+", ExprDotMethod(Ref("num"), "AsDecimal")))
-				.BlockEnd()
-				.IfCondition(EqualsIdentity(Ref("count"), Constant(0)))
-				.BlockReturn(ConstantNull())
-				.MethodReturn(Op(Ref("sum"), "/", Ref("count")));
-			return LocalMethod(method, args.Expressions);
-		}
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var method = codegenMethodScope
+                .MakeChild(typeof(decimal?), typeof(EnumAverageDecimalScalarNoParam), codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
+                .DeclareVar<decimal>("sum", Constant(0.0m))
+                .DeclareVar<int>("count", Constant(0))
+                .DeclareVar<ICollection<object>>("coll", EnumForgeCodegenNames.REF_ENUMCOLL)
+                .ForEach(typeof(object), "num", Ref("coll"))
+                .IfRefNull("num")
+                .BlockContinue()
+                .IncrementRef("count")
+                .AssignRef("sum", Op(Ref("sum"), "+", ExprDotMethod(Ref("num"), "AsDecimal")))
+                .BlockEnd()
+                .IfCondition(EqualsIdentity(Ref("count"), Constant(0)))
+                .BlockReturn(ConstantNull())
+                .MethodReturn(Op(Ref("sum"), "/", Ref("count")));
+            return LocalMethod(method, args.Expressions);
+        }
+    }
 } // end of namespace

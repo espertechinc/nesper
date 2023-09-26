@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             IList<ExprOrNode> orNodes = new List<ExprOrNode>(unassigned.Count);
 
             foreach (var node in unassigned) {
-                if (node is ExprOrNode) {
-                    orNodes.Add((ExprOrNode) node);
+                if (node is ExprOrNode orNode) {
+                    orNodes.Add(orNode);
                 }
             }
 
@@ -95,15 +95,16 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             // consolidate across
             FilterSpecCompilerConsolidateUtil.Consolidate(mapAll, args.statementRawInfo.StatementName);
 
-            IList<FilterSpecPlanPathTripletForge> filterParams = new List<FilterSpecPlanPathTripletForge>(mapAll.Triplets);
+            IList<FilterSpecPlanPathTripletForge> filterParams =
+                new List<FilterSpecPlanPathTripletForge>(mapAll.Triplets);
             var countUnassigned = mapAll.CountUnassignedExpressions();
 
             if (countUnassigned != 0) {
-                FilterSpecPlanPathTripletForge node = MakeRemainingNode(mapAll.UnassignedExpressions, args);
+                var node = MakeRemainingNode(mapAll.UnassignedExpressions, args);
                 filterParams.Add(node);
             }
 
-            FilterSpecPlanPathTripletForge[] triplets = filterParams.ToArray();
+            var triplets = filterParams.ToArray();
             return new FilterSpecPlanPathForge(triplets, null);
         }
     }

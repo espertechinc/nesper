@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,7 +19,13 @@ namespace com.espertech.esper.common.@internal.context.module
 {
     public class ModuleIndexMeta
     {
-        public static readonly ModuleIndexMeta[] EMPTY_ARRAY = new ModuleIndexMeta[0];
+        public static readonly ModuleIndexMeta[] EMPTY_ARRAY = Array.Empty<ModuleIndexMeta>();
+        
+        private readonly bool namedWindow;
+        private readonly string infraName;
+        private readonly string infraModuleName;
+        private readonly string indexName;
+        private readonly string indexModuleName;
 
         public ModuleIndexMeta(
             bool namedWindow,
@@ -27,27 +34,19 @@ namespace com.espertech.esper.common.@internal.context.module
             string indexName,
             string indexModuleName)
         {
-            IsNamedWindow = namedWindow;
-            InfraName = infraName;
-            InfraModuleName = infraModuleName;
-            IndexName = indexName;
-            IndexModuleName = indexModuleName;
+            this.namedWindow = namedWindow;
+            this.infraName = infraName;
+            this.infraModuleName = infraModuleName;
+            this.indexName = indexName;
+            this.indexModuleName = indexModuleName;
         }
 
-        public bool IsNamedWindow { get; }
+        public bool IsNamedWindow => namedWindow;
 
-        public string InfraName { get; }
-
-        public string IndexName { get; }
-
-        public string InfraModuleName { get; }
-
-        public string IndexModuleName { get; }
-
-        public static CodegenExpression MakeArray(ICollection<ModuleIndexMeta> names)
+        public static CodegenExpression MakeArrayNullIfEmpty(ICollection<ModuleIndexMeta> names)
         {
             if (names.IsEmpty()) {
-                return EnumValue(typeof(ModuleIndexMeta), "EMPTY_ARRAY");
+                return ConstantNull();
             }
 
             var expressions = new CodegenExpression[names.Count];
@@ -61,12 +60,13 @@ namespace com.espertech.esper.common.@internal.context.module
 
         private CodegenExpression Make()
         {
-            return NewInstance<ModuleIndexMeta>(
-                Constant(IsNamedWindow),
-                Constant(InfraName),
-                Constant(InfraModuleName),
-                Constant(IndexName),
-                Constant(IndexModuleName));
+            return NewInstance(
+                typeof(ModuleIndexMeta),
+                Constant(namedWindow),
+                Constant(infraName),
+                Constant(infraModuleName),
+                Constant(indexName),
+                Constant(indexModuleName));
         }
 
         public static ModuleIndexMeta[] ToArray(ISet<ModuleIndexMeta> moduleIndexes)
@@ -88,35 +88,42 @@ namespace com.espertech.esper.common.@internal.context.module
                 return false;
             }
 
-            var that = (ModuleIndexMeta) o;
-
-            if (IsNamedWindow != that.IsNamedWindow) {
+            var that = (ModuleIndexMeta)o;
+            if (namedWindow != that.namedWindow) {
                 return false;
             }
 
-            if (!InfraName?.Equals(that.InfraName) ?? that.InfraName != null) {
+            if (!infraName?.Equals(that.infraName) ?? that.infraName != null) {
                 return false;
             }
 
-            if (!InfraModuleName?.Equals(that.InfraModuleName) ?? that.InfraModuleName != null) {
+            if (!infraModuleName?.Equals(that.infraModuleName) ?? that.infraModuleName != null) {
                 return false;
             }
 
-            if (!IndexName?.Equals(that.IndexName) ?? that.IndexName != null) {
+            if (!indexName?.Equals(that.indexName) ?? that.indexName != null) {
                 return false;
             }
 
-            return IndexModuleName?.Equals(that.IndexModuleName) ?? that.IndexModuleName == null;
+            return indexModuleName?.Equals(that.indexModuleName) ?? that.indexModuleName == null;
         }
 
         public override int GetHashCode()
         {
-            var result = IsNamedWindow ? 1 : 0;
-            result = 31 * result + (InfraName != null ? InfraName.GetHashCode() : 0);
-            result = 31 * result + (InfraModuleName != null ? InfraModuleName.GetHashCode() : 0);
-            result = 31 * result + (IndexName != null ? IndexName.GetHashCode() : 0);
-            result = 31 * result + (IndexModuleName != null ? IndexModuleName.GetHashCode() : 0);
+            var result = namedWindow ? 1 : 0;
+            result = 31 * result + (infraName != null ? infraName.GetHashCode() : 0);
+            result = 31 * result + (infraModuleName != null ? infraModuleName.GetHashCode() : 0);
+            result = 31 * result + (indexName != null ? indexName.GetHashCode() : 0);
+            result = 31 * result + (indexModuleName != null ? indexModuleName.GetHashCode() : 0);
             return result;
         }
+
+        public string InfraName => infraName;
+
+        public string IndexName => indexName;
+
+        public string InfraModuleName => infraModuleName;
+
+        public string IndexModuleName => indexModuleName;
     }
 } // end of namespace

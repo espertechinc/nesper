@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.@join.rep;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.supportunit.util
@@ -72,7 +73,7 @@ namespace com.espertech.esper.common.@internal.supportunit.util
                 return null;
             }
 
-            ISet<EventBean> set = new HashSet<EventBean>();
+            ISet<EventBean> set = new LinkedHashSet<EventBean>();
             for (var i = 0; i < numObjects; i++)
             {
                 set.Add(MakeEvent());
@@ -83,7 +84,7 @@ namespace com.espertech.esper.common.@internal.supportunit.util
 
         public ISet<EventBean>[] MakeEventSets(int[] numObjectsPerSet)
         {
-            ISet<EventBean>[] sets = new HashSet<EventBean>[numObjectsPerSet.Length];
+            ISet<EventBean>[] sets = new ISet<EventBean>[numObjectsPerSet.Length];
             for (var i = 0; i < numObjectsPerSet.Length; i++)
             {
                 if (numObjectsPerSet[i] == 0)

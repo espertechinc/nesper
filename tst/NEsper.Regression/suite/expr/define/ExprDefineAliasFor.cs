@@ -8,61 +8,101 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.expr.define
 {
     public class ExprDefineAliasFor
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ExprDefineContextPartition());
-            execs.Add(new ExprDefineDocSamples());
-            execs.Add(new ExprDefineNestedAlias());
-            execs.Add(new ExprDefineAliasAggregation());
-            execs.Add(new ExprDefineGlobalAliasAndSODA());
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithContextPartition(execs);
+            WithDocSamples(execs);
+            WithNestedAlias(execs);
+            WithAliasAggregation(execs);
+            WithGlobalAliasAndSODA(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprDefineInvalid());
             return execs;
         }
 
-        internal class ExprDefineContextPartition : RegressionExecution
+        public static IList<RegressionExecution> WithGlobalAliasAndSODA(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineGlobalAliasAndSODA());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAliasAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineAliasAggregation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNestedAlias(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineNestedAlias());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineDocSamples());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithContextPartition(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineContextPartition());
+            return execs;
+        }
+
+        private class ExprDefineContextPartition : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create expression the_expr alias for {TheString='a' and IntPrimitive=1};\n" +
+                var epl = "create expression the_expr alias for {theString='a' and intPrimitive=1};\n" +
                           "create context the_context start @now end after 10 minutes;\n" +
-                          "@Name('s0') context the_context select * from SupportBean(the_expr)\n";
+                          "@name('s0') context the_context select * from SupportBean(the_expr)\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("a", 1));
-                Assert.IsTrue(env.Listener("s0").IsInvokedAndReset());
+                env.AssertListenerInvoked("s0");
 
                 env.SendEventBean(new SupportBean("b", 1));
-                Assert.IsFalse(env.Listener("s0").IsInvokedAndReset());
+                env.AssertListenerNotInvoked("s0");
 
                 env.UndeployAll();
             }
         }
 
-        internal class ExprDefineDocSamples : RegressionExecution
+        private class ExprDefineDocSamples : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SampleEvent()", path);
+                env.CompileDeploy("@public create schema SampleEvent()", path);
                 env.CompileDeploy(
                     "expression twoPI alias for {Math.PI * 2}\n" +
                     "select twoPI from SampleEvent",
                     path);
 
-                env.CompileDeploy("create schema EnterRoomEvent()", path);
+                env.CompileDeploy("@public create schema EnterRoomEvent()", path);
                 env.CompileDeploy(
                     "expression countPeople alias for {count(*)} \n" +
                     "select countPeople from EnterRoomEvent#time(10 seconds) having countPeople > 10",
@@ -72,95 +112,88 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             }
         }
 
-        internal class ExprDefineNestedAlias : RegressionExecution
+        private class ExprDefineNestedAlias : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] {"c0"};
+                var fields = "c0".SplitCsv();
 
                 var path = new RegressionPath();
-                env.CompileDeploy("create expression F1 alias for {10}", path);
-                env.CompileDeploy("create expression F2 alias for {20}", path);
-                env.CompileDeploy("create expression F3 alias for {F1+F2}", path);
-                env.CompileDeploy("@Name('s0') select F3 as c0 from SupportBean", path).AddListener("s0");
+                env.CompileDeploy("@public create expression F1 alias for {10}", path);
+                env.CompileDeploy("@public create expression F2 alias for {20}", path);
+                env.CompileDeploy("@public create expression F3 alias for {F1+F2}", path);
+                env.CompileDeploy("@name('s0') select F3 as c0 from SupportBean", path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {30});
+                env.AssertPropsNew("s0", fields, new object[] { 30 });
 
                 env.UndeployAll();
             }
         }
 
-        internal class ExprDefineAliasAggregation : RegressionExecution
+        private class ExprDefineAliasAggregation : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') @Audit expression total alias for {sum(IntPrimitive)} " +
+                var epl = "@name('s0') @Audit expression total alias for {sum(intPrimitive)} " +
                           "select total, total+1 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new[] {"total", "total+1"};
-                foreach (var field in fields) {
-                    Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType(field));
-                }
+                var fields = "total,total+1".SplitCsv();
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        foreach (var field in fields) {
+                            Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType(field));
+                        }
+                    });
 
                 env.SendEventBean(new SupportBean("E1", 10));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {10, 11});
+                env.AssertPropsNew("s0", fields, new object[] { 10, 11 });
 
                 env.UndeployAll();
             }
         }
 
-        internal class ExprDefineGlobalAliasAndSODA : RegressionExecution
+        private class ExprDefineGlobalAliasAndSODA : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var eplDeclare = "create expression myaliastwo alias for {2}";
+                var eplDeclare = "@public create expression myaliastwo alias for {2}";
                 env.CompileDeploy(eplDeclare, path);
 
-                env.CompileDeploy("create expression myalias alias for {1}", path);
-                env.CompileDeploy("@Name('s0') select myaliastwo from SupportBean(IntPrimitive = myalias)", path)
+                env.CompileDeploy("@public create expression myalias alias for {1}", path);
+                env.CompileDeploy("@name('s0') select myaliastwo from SupportBean(intPrimitive = myalias)", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
-                Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("myaliastwo"));
+                env.AssertEqualsNew("s0", "myaliastwo", 2);
 
                 env.UndeployAll();
             }
         }
 
-        internal class ExprDefineInvalid : RegressionExecution
+        private class ExprDefineInvalid : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "expression total alias for {sum(xxx)} select total+1 from SupportBean",
                     "Failed to validate select-clause expression 'total+1': Failed to validate expression alias 'total': Failed to validate alias expression body expression 'sum(xxx)': Property named 'xxx' is not valid in any stream [expression total alias for {sum(xxx)} select total+1 from SupportBean]");
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "expression total xxx for {1} select total+1 from SupportBean",
                     "For expression alias 'total' expecting 'alias' keyword but received 'xxx' [expression total xxx for {1} select total+1 from SupportBean]");
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "expression total(a) alias for {1} select total+1 from SupportBean",
                     "For expression alias 'total' expecting no parameters but received 'a' [expression total(a) alias for {1} select total+1 from SupportBean]");
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "expression total alias for {a -> 1} select total+1 from SupportBean",
                     "For expression alias 'total' expecting an expression without parameters but received 'a ->' [expression total alias for {a -> 1} select total+1 from SupportBean]");
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "expression total alias for ['some text'] select total+1 from SupportBean",
                     "For expression alias 'total' expecting an expression but received a script [expression total alias for ['some text'] select total+1 from SupportBean]");
             }

@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
         public string ToQueryPlan()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
     }
 } // end of namespace

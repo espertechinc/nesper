@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope)
-				.AddParam(GET_FILTER_VALUE_FP);
+                .AddParam(GET_FILTER_VALUE_FP);
 
             method.Block
                 .DeclareVar<EventBean>("props", ExprDotName(REF_EXPREVALCONTEXT, "ContextProperties"))
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (FilterForEvalContextPropForge) o;
+            var that = (FilterForEvalContextPropForge)o;
 
             if (!_propertyName.Equals(that._propertyName)) {
                 return false;
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             return _propertyName.GetHashCode();
         }
-        
+
         public void ValueToString(StringBuilder @out)
         {
             @out.Append("context property '")

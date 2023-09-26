@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.client.meta
         /// Avro type.
         /// </summary>
         AVRO,
-        
+
         /// <summary>
         /// Json type.
         /// </summary>

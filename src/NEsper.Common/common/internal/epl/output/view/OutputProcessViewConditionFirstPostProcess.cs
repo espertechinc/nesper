@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.resultset.core;
@@ -31,14 +32,16 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             bool afterConditionSatisfied,
             OutputProcessViewConditionFactory parent,
             AgentInstanceContext agentInstanceContext,
-            OutputStrategyPostProcess postProcessor)
+            OutputStrategyPostProcess postProcessor,
+            StateMgmtSetting stateMgmtSetting)
             : base(
                 resultSetProcessor,
                 afterConditionTime,
                 afterConditionNumberOfEvents,
                 afterConditionSatisfied,
                 parent,
-                agentInstanceContext)
+                agentInstanceContext,
+                stateMgmtSetting)
         {
             _postProcessor = postProcessor;
         }

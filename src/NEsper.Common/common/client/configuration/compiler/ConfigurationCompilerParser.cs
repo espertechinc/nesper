@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         {
             var eventTypeNodeEnumerator = DOMElementEnumerator.Create(compilerElement.ChildNodes);
             while (eventTypeNodeEnumerator.MoveNext()) {
-                XmlElement element = eventTypeNodeEnumerator.Current;
+                var element = eventTypeNodeEnumerator.Current;
                 var nodeName = element.Name;
                 switch (nodeName) {
                     case "plugin-view":
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
                     case "plugin-pattern-observer":
                         HandlePlugInPatternObserver(compiler, element);
                         break;
-                    
+
                     case "plugin-method-datetime":
                         HandlePlugInDateTimeMethod(compiler, element);
                         break;
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
                     case "view-resources":
                         HandleViewResources(compiler, element);
                         break;
-                    
+
                     case "serde-settings":
                         HandleSerdeSettings(compiler, element);
                         break;
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         {
             var nodeEnumerator = DOMElementEnumerator.Create(element.ChildNodes);
             while (nodeEnumerator.MoveNext()) {
-                XmlElement subElement = nodeEnumerator.Current;
+                var subElement = nodeEnumerator.Current;
                 if (subElement.Name == "iterable-unbound") {
                     var valueText = DOMExtensions.GetRequiredAttribute(subElement, "enabled");
                     var value = bool.Parse(valueText);
@@ -148,10 +148,11 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 element,
                 "enable-declared-expr-value-cache",
                 b => compiler.Execution.EnabledDeclaredExprValueCache = b);
-                
+
             var filterIndexPlanningStr = DOMExtensions.GetOptionalAttribute(element, "filter-index-planning");
             if (filterIndexPlanningStr != null) {
-                compiler.Execution.FilterIndexPlanning = EnumHelper.Parse<ConfigurationCompilerExecution.FilterIndexPlanningEnum>(filterIndexPlanningStr);
+                compiler.Execution.FilterIndexPlanning =
+                    EnumHelper.Parse<ConfigurationCompilerExecution.FilterIndexPlanningEnum>(filterIndexPlanningStr);
             }
         }
 
@@ -209,7 +210,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
             }
 
             ParseOptionalBoolean(element, "enabled", b => compiler.Scripts.IsEnabled = b);
-
         }
 
         private static void HandleLanguage(
@@ -225,7 +225,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         {
             var nodeEnumerator = DOMElementEnumerator.Create(element.ChildNodes);
             while (nodeEnumerator.MoveNext()) {
-                XmlElement subElement = nodeEnumerator.Current;
+                var subElement = nodeEnumerator.Current;
                 if (subElement.Name == "stream-selector") {
                     var valueText = DOMExtensions.GetRequiredAttribute(subElement, "value");
                     if (valueText == null) {
@@ -259,7 +259,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         {
             var nodeEnumerator = DOMElementEnumerator.Create(element.ChildNodes);
             while (nodeEnumerator.MoveNext()) {
-                XmlElement subElement = nodeEnumerator.Current;
+                var subElement = nodeEnumerator.Current;
                 switch (subElement.Name) {
                     case "code":
                         ParseRequiredBoolean(subElement, "enabled", b => compiler.Logging.EnableCode = b);
@@ -281,14 +281,17 @@ namespace com.espertech.esper.common.client.configuration.compiler
             XmlElement element)
         {
             var codegen = compiler.ByteCode;
-            ParseOptionalBoolean(element, "include-debugsymbols", v => codegen.IncludeDebugSymbols = v);
-            ParseOptionalBoolean(element, "include-comments", v => codegen.IncludeComments = v);
-            ParseOptionalBoolean(element, "attach-epl", v => codegen.AttachEPL = v);
-            ParseOptionalBoolean(element, "attach-module-epl", v => codegen.AttachModuleEPL = v);
-            ParseOptionalBoolean(element, "attach-pattern-epl", v => codegen.AttachPatternEPL = v);
-            ParseOptionalBoolean(element, "instrumented", v => codegen.Instrumented = v);
-            ParseOptionalBoolean(element, "allow-subscriber", v => codegen.AllowSubscriber = v);
-            ParseOptionalInteger(element, "threadpool-compiler-num-threads", v => codegen.ThreadPoolCompilerNumThreads = v);
+            ParseOptionalBoolean(element, "include-debugsymbols", v => codegen.IsIncludeDebugSymbols = v);
+            ParseOptionalBoolean(element, "include-comments", v => codegen.IsIncludeComments = v);
+            ParseOptionalBoolean(element, "attach-epl", v => codegen.IsAttachEPL = v);
+            ParseOptionalBoolean(element, "attach-module-epl", v => codegen.IsAttachModuleEPL = v);
+            ParseOptionalBoolean(element, "attach-pattern-epl", v => codegen.IsAttachPatternEPL = v);
+            ParseOptionalBoolean(element, "instrumented", v => codegen.IsInstrumented = v);
+            ParseOptionalBoolean(element, "allow-subscriber", v => codegen.IsAllowSubscriber = v);
+            ParseOptionalInteger(
+                element,
+                "threadpool-compiler-num-threads",
+                v => codegen.ThreadPoolCompilerNumThreads = v);
             ParseOptionalInteger(element, "threadpool-compiler-capacity", v => codegen.ThreadPoolCompilerCapacity = v);
             ParseOptionalInteger(element, "max-methods-per-class", v => codegen.MaxMethodsPerClass = v);
             ParseOptionalBoolean(element, "allow-inlined-class", v => codegen.IsAllowInlinedClass = v);
@@ -300,6 +303,10 @@ namespace com.espertech.esper.common.client.configuration.compiler
             ParseOptionalAccessMod(element, "access-modifier-script", v => codegen.AccessModifierScript = v);
             ParseOptionalAccessMod(element, "access-modifier-table", v => codegen.AccessModifierTable = v);
             ParseOptionalAccessMod(element, "access-modifier-variable", v => codegen.AccessModifierVariable = v);
+            ParseOptionalAccessMod(
+                element,
+                "access-modifier-inlined-class",
+                v => codegen.AccessModifierInlinedClass = v);
 
             var busModifierEventType = DOMExtensions.GetOptionalAttribute(element, "bus-modifier-event-type");
             if (busModifierEventType != null) {
@@ -357,14 +364,14 @@ namespace com.espertech.esper.common.client.configuration.compiler
             var forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
             configuration.AddPlugInAggregationFunctionForge(name, forgeClassName);
         }
-        
-        
+
+
         private static void HandlePlugInDateTimeMethod(
             ConfigurationCompiler configuration,
             XmlElement element)
         {
-            String methodName = DOMExtensions.GetRequiredAttribute(element, "method-name");
-            String forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
+            var methodName = DOMExtensions.GetRequiredAttribute(element, "method-name");
+            var forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
             configuration.AddPlugInDateTimeMethod(methodName, forgeClassName);
         }
 
@@ -372,8 +379,8 @@ namespace com.espertech.esper.common.client.configuration.compiler
             ConfigurationCompiler configuration,
             XmlElement element)
         {
-            String methodName = DOMExtensions.GetRequiredAttribute(element, "method-name");
-            String forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
+            var methodName = DOMExtensions.GetRequiredAttribute(element, "method-name");
+            var forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
             configuration.AddPlugInEnumMethod(methodName, forgeClassName);
         }
 
@@ -387,7 +394,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
             var nodeEnumerator = DOMElementEnumerator.Create(element.ChildNodes);
             IDictionary<string, object> additionalProps = null;
             while (nodeEnumerator.MoveNext()) {
-                XmlElement subElement = nodeEnumerator.Current;
+                var subElement = nodeEnumerator.Current;
                 if (subElement.Name == "init-arg") {
                     var name = DOMExtensions.GetRequiredAttribute(subElement, "name");
                     var value = DOMExtensions.GetRequiredAttribute(subElement, "value");
@@ -465,12 +472,12 @@ namespace com.espertech.esper.common.client.configuration.compiler
             var forgeClassName = DOMExtensions.GetRequiredAttribute(element, "forge-class");
             configuration.AddPlugInPatternObserver(@namespace, name, forgeClassName);
         }
-        
+
         private static void HandleSerdeSettings(
             ConfigurationCompiler configuration,
             XmlElement parentElement)
         {
-            String text = DOMExtensions.GetOptionalAttribute(parentElement, "enable-serializable");
+            var text = DOMExtensions.GetOptionalAttribute(parentElement, "enable-serializable");
             if (text != null) {
                 configuration.Serde.IsEnableSerializable = bool.Parse(text);
             }

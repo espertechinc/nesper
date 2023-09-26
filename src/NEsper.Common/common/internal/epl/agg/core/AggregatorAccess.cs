@@ -10,11 +10,18 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.fabric;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public interface AggregatorAccess
     {
+        void InitAccessForge(
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope);
+
         void ApplyEnterCodegen(
             CodegenMethod method,
             ExprForgeCodegenSymbol symbols,
@@ -31,12 +38,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenMethod method,
             CodegenClassScope classScope);
 
-        void WriteCodegen(
+        public void WriteCodegen(
             CodegenExpressionRef row,
             int col,
-            CodegenExpressionRef @ref,
-            CodegenExpressionRef unitKey,
             CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
             CodegenMethod method,
             CodegenClassScope classScope);
 
@@ -47,5 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenMethod method,
             CodegenExpressionRef unitKey,
             CodegenClassScope classScope);
+
+        void CollectFabricType(FabricTypeCollector collector);
     }
 } // end of namespace

@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.view.firstunique
                     }
 
                     if (oldDataToPost == null) {
-                        oldDataToPost = new[] {oldEvent};
+                        oldDataToPost = new[] { oldEvent };
                     }
                     else {
                         oldDataToPost = EventBeanUtility.AddToArray(oldDataToPost, oldEvent);
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.view.firstunique
 
                     // Post the new value
                     if (newDataToPost == null) {
-                        newDataToPost = new[] {newEvent};
+                        newDataToPost = new[] { newEvent };
                     }
                     else {
                         newDataToPost = EventBeanUtility.AddToArray(newDataToPost, newEvent);

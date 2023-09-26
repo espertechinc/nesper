@@ -6,161 +6,222 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.compiler.client.option;
 
 namespace com.espertech.esper.compiler.client
 {
-    /// <summary>
-    ///     Callbacks and optional values for the compiler to determine modifiers, statement name,
-    ///     statement user object, module name and module-uses.
-    ///     All values are optional and can be null.
-    /// </summary>
-    public class CompilerOptions
-    {
-        /// <summary>
-        ///     Returns the callback that determines the access modifier of a given event type
-        /// </summary>
-        /// <returns>callback returning an access modifier for an event type</returns>
-        public AccessModifierEventTypeOption AccessModifierEventType { get; set; }
+	/// <summary>
+	/// Callbacks and optional values for the compiler to determine modifiers, statement name,
+	/// statement user object, module name and module-uses.
+	/// All values are optional and can be null.
+	/// </summary>
+	public class CompilerOptions {
+		public CompilerOptions() {
+	    }
 
-        /// <summary>
-        ///     Returns the callback that determines a compiler-time statement user object for a
-        ///     statement. The user object is available from EPStatement by method {@code getUserObjectCompileTime}.
-        /// </summary>
-        /// <returns>callback to set a compile-time statement user object</returns>
-        public StatementUserObjectOption StatementUserObject { get; set; }
+	    public BusModifierEventTypeOption BusModifierEventType { get; set; }
 
-        /// <summary>
-        ///     Returns the callback that determines whether the event type is visible in the event bus i.e.
-        ///     available for use with send-event.
-        /// </summary>
-        /// <returns>callback to set the event type bus modifier value</returns>
-        public BusModifierEventTypeOption BusModifierEventType { get; set; }
+	    public AccessModifierContextOption AccessModifierContext { get; set; }
 
-        /// <summary>
-        ///     Returns the callback that determines the access modifier of a given context.
-        /// </summary>
-        /// <returns>callback returning an access modifier for a context</returns>
-        public AccessModifierContextOption AccessModifierContext { get; set; }
+	    public AccessModifierEventTypeOption AccessModifierEventType { get; set; }
 
-        /// <summary>
-        ///     Returns the callback that determines the access modifier of a given variable.
-        /// </summary>
-        /// <returns>callback returning an access modifier for a variable</returns>
-        public AccessModifierVariableOption AccessModifierVariable { get; set; }
+	    public AccessModifierExpressionOption AccessModifierExpression { get; set; }
 
-        /// <summary>
-        ///     Returns the callback that determines the access modifier of a given declared expression.
-        /// </summary>
-        /// <returns>callback returning an access modifier for a declared expression</returns>
-        public AccessModifierExpressionOption AccessModifierExpression { get; set; }
+	    public AccessModifierNamedWindowOption AccessModifierNamedWindow { get; set; }
 
-        /// <summary>
-        ///     Returns the callback that determines the access modifier of a given declared expression.
-        /// </summary>
-        /// <returns>callback returning an access modifier for a declared expression</returns>
-        public AccessModifierTableOption AccessModifierTable { get; set; }
+	    public AccessModifierScriptOption AccessModifierScript { get; set; }
 
-        /// <summary>
-        ///     Returns the callback that determines the statement name
-        /// </summary>
-        /// <returns>callback returning the statement name</returns>
-        public StatementNameOption StatementName { get; set; }
+	    public AccessModifierTableOption AccessModifierTable { get; set; }
 
-        /// <summary>
-        ///     Returns the callback that determines the access modifier of a given named window.
-        /// </summary>
-        /// <returns>callback returning an access modifier for an named window</returns>
-        public AccessModifierNamedWindowOption AccessModifierNamedWindow { get; set; }
+	    public AccessModifierVariableOption AccessModifierVariable { get; set; }
 
-        /// <summary>
-        ///     Returns the callback that determines the access modifier of a given script.
-        /// </summary>
-        /// <returns>callback returning an access modifier for a script</returns>
-        public AccessModifierScriptOption AccessModifierScript { get; set; }
+	    public AccessModifierInlinedClassOption AccessModifierInlinedClass { get; set; }
 
-        /// <summary>
-        ///     Returns the callback that determines the module name.
-        /// </summary>
-        /// <returns>callback returning the module name to use</returns>
-        public ModuleNameOption ModuleName { get; set; }
+	    public StatementUserObjectOption StatementUserObject { get; set; }
 
-        /// <summary>
-        ///     Returns the callback that determines the module uses.
-        /// </summary>
-        /// <returns>callback returning the module uses</returns>
-        public ModuleUsesOption ModuleUses { get; set; }
+	    public StatementNameOption StatementName { get; set; }
 
-        public CompilerOptions SetAccessModifierEventType(AccessModifierEventTypeOption value)
-        {
-            AccessModifierEventType = value;
-            return this;
-        }
+	    public ModuleNameOption ModuleName { get; set; }
 
-        public CompilerOptions SetStatementUserObject(StatementUserObjectOption value)
-        {
-            StatementUserObject = value;
-            return this;
-        }
+	    public ModuleUsesOption ModuleUses { get; set; }
 
-        public CompilerOptions SetBusModifierEventType(BusModifierEventTypeOption value)
-        {
-            BusModifierEventType = value;
-            return this;
-        }
+	    public InlinedClassInspectionOption InlinedClassInspection { get; set; }
 
-        public CompilerOptions SetAccessModifierContext(AccessModifierContextOption value)
-        {
-            AccessModifierContext = value;
-            return this;
-        }
+	    public StateMgmtSettingOption StateMgmtSetting { get; set; }
 
-        public CompilerOptions SetAccessModifierVariable(AccessModifierVariableOption value)
-        {
-            AccessModifierVariable = value;
-            return this;
-        }
+	    public CompilerPathCache PathCache { get; set; }
 
-        public CompilerOptions SetAccessModifierExpression(AccessModifierExpressionOption value)
-        {
-            AccessModifierExpression = value;
-            return this;
-        }
+	    public CompilerHookOption CompilerHook { get; set; }
 
-        public CompilerOptions SetAccessModifierTable(AccessModifierTableOption value)
-        {
-            AccessModifierTable = value;
-            return this;
-        }
+	    /// <summary>
+	    /// Sets the callback that determines the access modifier of a given event type.
+	    /// </summary>
+	    /// <param name="accessModifierEventType">callback returning an access modifier for an event type</param>
+	    /// <returns>itself</returns>
+	    public CompilerOptions SetAccessModifierEventType(AccessModifierEventTypeOption accessModifierEventType) {
+	        AccessModifierEventType = accessModifierEventType;
+	        return this;
+	    }
 
-        public CompilerOptions SetStatementName(StatementNameOption value)
-        {
-            StatementName = value;
-            return this;
-        }
+	    /// <summary>
+	    /// Sets the callback that determines a compiler-time statement user object for a
+	    /// statement. The user object is available from EPStatement by method {@code getUserObjectCompileTime}.
+	    /// </summary>
+	    /// <param name="statementUserObject">callback to set a compile-time statement user object</param>
+	    /// <returns>itself</returns>
+	    public CompilerOptions SetStatementUserObject(StatementUserObjectOption statementUserObject) {
+	        StatementUserObject = statementUserObject;
+	        return this;
+	    }
 
-        public CompilerOptions SetAccessModifierNamedWindow(AccessModifierNamedWindowOption value)
-        {
-            AccessModifierNamedWindow = value;
-            return this;
-        }
+	    /// <summary>
+	    /// Sets the callback that determines whether the event type is visible in the event bus i.e.
+	    /// available for use with send-event.
+	    /// </summary>
+	    /// <param name="busModifierEventType">callback to set the event type bus modifier value</param>
+	    /// <returns>itself</returns>
+	    public CompilerOptions SetBusModifierEventType(BusModifierEventTypeOption busModifierEventType) {
+	        BusModifierEventType = busModifierEventType;
+	        return this;
+	    }
 
-        public CompilerOptions SetAccessModifierScript(AccessModifierScriptOption value)
-        {
-            AccessModifierScript = value;
-            return this;
-        }
+	    /// <summary>
+	    /// Sets the callback that determines the access modifier of a given context.
+	    /// </summary>
+	    /// <param name="accessModifierContext">callback returning an access modifier for a context</param>
+	    /// <returns>itself</returns>
+	    public CompilerOptions SetAccessModifierContext(AccessModifierContextOption accessModifierContext) {
+	        AccessModifierContext = accessModifierContext;
+	        return this;
+	    }
 
-        public CompilerOptions SetModuleName(ModuleNameOption value)
-        {
-            ModuleName = value;
-            return this;
-        }
+	    /// <summary>
+	    /// Sets the callback that determines the access modifier of a given variable.
+	    /// </summary>
+	    /// <param name="accessModifierVariable">callback returning an access modifier for a variable</param>
+	    /// <returns>itself</returns>
+	    public CompilerOptions SetAccessModifierVariable(AccessModifierVariableOption accessModifierVariable) {
+	        AccessModifierVariable = accessModifierVariable;
+	        return this;
+	    }
 
-        public CompilerOptions SetModuleUses(ModuleUsesOption value)
-        {
-            ModuleUses = value;
-            return this;
-        }
-    }
+	    /// <summary>
+	    /// Sets the callback that determines the access modifier of a given inlined-class.
+	    /// </summary>
+	    /// <param name="accessModifierInlinedClass">callback returning an access modifier for an inlined-class</param>
+	    /// <returns>itself</returns>
+	    public CompilerOptions SetAccessModifierInlinedClass(AccessModifierInlinedClassOption accessModifierInlinedClass) {
+	        AccessModifierInlinedClass = accessModifierInlinedClass;
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Sets the callback that determines the access modifier of a given declared expression.
+	    /// </summary>
+	    /// <param name="accessModifierExpression">callback returning an access modifier for a declared expression</param>
+	    /// <returns>itself</returns>
+	    public CompilerOptions SetAccessModifierExpression(AccessModifierExpressionOption accessModifierExpression) {
+	        AccessModifierExpression = accessModifierExpression;
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Returns the callback that determines the access modifier of a given table.
+	    /// </summary>
+	    /// <param name="accessModifierTable">callback returning an access modifier for a table</param>
+	    /// <returns>itself</returns>
+	    public CompilerOptions SetAccessModifierTable(AccessModifierTableOption accessModifierTable) {
+	        AccessModifierTable = accessModifierTable;
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Sets the callback that determines the statement name
+	    /// </summary>
+	    /// <param name="statementName">callback returning the statement name</param>
+	    /// <returns>itself</returns>
+	    public CompilerOptions SetStatementName(StatementNameOption statementName) {
+	        StatementName = statementName;
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Sets the callback that determines the access modifier of a given named window.
+	    /// </summary>
+	    /// <param name="accessModifierNamedWindow">callback returning an access modifier for an named window</param>
+	    /// <returns>itself</returns>
+	    public CompilerOptions SetAccessModifierNamedWindow(AccessModifierNamedWindowOption accessModifierNamedWindow) {
+	        AccessModifierNamedWindow = accessModifierNamedWindow;
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Sets the callback that determines the access modifier of a given script.
+	    /// </summary>
+	    /// <param name="accessModifierScript">callback returning an access modifier for a script</param>
+	    /// <returns>itself</returns>
+	    public CompilerOptions SetAccessModifierScript(AccessModifierScriptOption accessModifierScript) {
+	        AccessModifierScript = accessModifierScript;
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Sets the callback that determines the module name.
+	    /// </summary>
+	    /// <param name="moduleName">callback returning the module name to use</param>
+	    /// <returns>itself</returns>
+	    public CompilerOptions SetModuleName(ModuleNameOption moduleName) {
+	        ModuleName = moduleName;
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Sets the callback that determines the module uses.
+	    /// </summary>
+	    /// <param name="moduleUses">callback returning the module uses</param>
+	    /// <returns>itself</returns>
+	    public CompilerOptions SetModuleUses(ModuleUsesOption moduleUses) {
+	        ModuleUses = moduleUses;
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Sets the classback for inlined-class compilation wherein the callback receives class output
+	    /// </summary>
+	    /// <param name="inlinedClassInspection">callback</param>
+	    public CompilerOptions SetInlinedClassInspection(InlinedClassInspectionOption inlinedClassInspection) {
+	        InlinedClassInspection = inlinedClassInspection;
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// For internal-use-only and subject-to-change-between-versions, state-management settings
+	    /// </summary>
+	    /// <param name="stateMgmtSetting">settings option</param>
+	    public CompilerOptions SetStateMgmtSetting(StateMgmtSettingOption stateMgmtSetting) {
+	        StateMgmtSetting = stateMgmtSetting;
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Sets the cache, or null if not using a cache, that retains for each <seealso cref="EPCompiled" />
+	    /// the EPL objects that the <seealso cref="EPCompiled" /> provides.
+	    /// </summary>
+	    /// <param name="pathCache">or null if not using a cache</param>
+	    public CompilerOptions SetPathCache(CompilerPathCache pathCache) {
+	        PathCache = pathCache;
+	        return this;
+	    }
+
+	    /// <summary>
+	    /// Experimental API: Sets the provider of the compiler to use
+	    /// <para />NOTE: Experimental API and not supported
+	    /// </summary>
+	    /// <param name="compilerHook">provider of the compiler to that replaces the default compiler</param>
+	    public CompilerOptions SetCompilerHook(CompilerHookOption compilerHook) {
+	        CompilerHook = compilerHook;
+	        return this;
+	    }
+	}
 } // end of namespace

@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             double height,
             EventBean eventBean,
             TT target,
-            QuadTreeCollector<TT> collector, 
+            QuadTreeCollector<TT> collector,
             ExprEvaluatorContext ctx)
         {
             CollectRange(quadTree.Root, x, y, width, height, eventBean, target, collector, ctx);
@@ -43,13 +43,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             QuadTreeCollector<TT> collector,
             ExprEvaluatorContext ctx)
         {
-            if (node is MXCIFQuadTreeNodeLeaf leaf)
-            {
+            if (node is MXCIFQuadTreeNodeLeaf leaf) {
                 CollectNode(leaf, x, y, width, height, eventBean, target, collector, ctx);
                 return;
             }
 
-            MXCIFQuadTreeNodeBranch branch = (MXCIFQuadTreeNodeBranch) node;
+            var branch = (MXCIFQuadTreeNodeBranch)node;
             CollectNode(branch, x, y, width, height, eventBean, target, collector, ctx);
             CollectRange(branch.Nw, x, y, width, height, eventBean, target, collector, ctx);
             CollectRange(branch.Ne, x, y, width, height, eventBean, target, collector, ctx);
@@ -68,21 +67,21 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             QuadTreeCollector<TT> collector,
             ExprEvaluatorContext ctx)
         {
-            object rectangles = node.Data;
+            var rectangles = node.Data;
             if (rectangles == null) {
                 return;
             }
 
             if (rectangles is XYWHRectangleWValue rectangleWValue) {
                 if (BoundingBox.IntersectsBoxIncludingEnd(
-                    x,
-                    y,
-                    x + width,
-                    y + height,
-                    rectangleWValue.X,
-                    rectangleWValue.Y,
-                    rectangleWValue.W,
-                    rectangleWValue.H)) {
+                        x,
+                        y,
+                        x + width,
+                        y + height,
+                        rectangleWValue.X,
+                        rectangleWValue.Y,
+                        rectangleWValue.W,
+                        rectangleWValue.H)) {
                     collector.CollectInto(eventBean, rectangleWValue.Value, target, ctx);
                 }
             }
@@ -96,14 +95,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 for (var ii = 0; ii < listWithTypeCount; ii++) {
                     var rectangle = listWithType[ii];
                     if (BoundingBox.IntersectsBoxIncludingEnd(
-                        x,
-                        y,
-                        x + width,
-                        y + height,
-                        rectangle.X,
-                        rectangle.Y,
-                        rectangle.W,
-                        rectangle.H)) {
+                            x,
+                            y,
+                            x + width,
+                            y + height,
+                            rectangle.X,
+                            rectangle.Y,
+                            rectangle.W,
+                            rectangle.H)) {
                         collector.CollectInto(eventBean, rectangle.Value, target, ctx);
                     }
                 }
@@ -111,14 +110,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             else if (rectangles is IEnumerable<XYWHRectangleWValue> enumerableWithType) {
                 foreach (var rectangle in enumerableWithType) {
                     if (BoundingBox.IntersectsBoxIncludingEnd(
-                        x,
-                        y,
-                        x + width,
-                        y + height,
-                        rectangle.X,
-                        rectangle.Y,
-                        rectangle.W,
-                        rectangle.H)) {
+                            x,
+                            y,
+                            x + width,
+                            y + height,
+                            rectangle.X,
+                            rectangle.Y,
+                            rectangle.W,
+                            rectangle.H)) {
                         collector.CollectInto(eventBean, rectangle.Value, target, ctx);
                     }
                 }
@@ -126,6 +125,6 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             else {
                 throw new IllegalStateException("unknown type for rectangles");
             }
-            }
+        }
     }
 } // end of namespace

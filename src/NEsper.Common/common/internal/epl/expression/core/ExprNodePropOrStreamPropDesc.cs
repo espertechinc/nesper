@@ -27,9 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public int StreamNum { get; private set; }
 
-        public string Textual {
-            get { return "property '" + PropertyName + "'"; }
-        }
+        public string Textual => "property '" + PropertyName + "'";
 
         protected bool Equals(ExprNodePropOrStreamPropDesc other)
         {
@@ -38,13 +36,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
+            if (ReferenceEquals(null, obj)) {
                 return false;
-            if (ReferenceEquals(this, obj))
+            }
+
+            if (ReferenceEquals(this, obj)) {
                 return true;
-            if (obj.GetType() != GetType())
+            }
+
+            if (obj.GetType() != GetType()) {
                 return false;
-            return Equals((ExprNodePropOrStreamPropDesc) obj);
+            }
+
+            return Equals((ExprNodePropOrStreamPropDesc)obj);
         }
 
         public override int GetHashCode()

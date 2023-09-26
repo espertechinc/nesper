@@ -16,40 +16,42 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.serializers.forge
 {
-	public class JsonSerializerForgePropertyMap : JsonSerializerForge
-	{
-		private readonly JsonSerializerForge _valueForge;
-		private readonly Type _valueType;
-		
-		public JsonSerializerForgePropertyMap(JsonSerializerForge valueForge, Type valueType)
-		{
-			_valueForge = valueForge;
-			_valueType = valueType;
-		}
+    public class JsonSerializerForgePropertyMap : JsonSerializerForge
+    {
+        private readonly JsonSerializerForge _valueForge;
+        private readonly Type _valueType;
 
-		public CodegenExpression CodegenSerialize(
-			JsonSerializerForgeRefs refs,
-			CodegenMethod method,
-			CodegenClassScope classScope)
-		{
-			var subRefs = new JsonSerializerForgeRefs(
-				Ref("_context"),
-				Ref("_value"),
-				Ref("_name"));
-			
-			var serializationExpr = _valueForge.CodegenSerialize(subRefs, method, classScope);
-			var itemSerializer = new CodegenExpressionLambda(method.Block)
-				.WithParam(typeof(JsonSerializationContext), "_context")
-				.WithParam(_valueType, "_value")
-				.WithBody(block => block.Expression(serializationExpr));
+        public JsonSerializerForgePropertyMap(
+            JsonSerializerForge valueForge,
+            Type valueType)
+        {
+            _valueForge = valueForge;
+            _valueType = valueType;
+        }
 
-			return StaticMethod(
-				typeof(JsonSerializerUtil),
-				"WriteJsonMap",
-				new [] { _valueType },
-				refs.Context,
-				refs.Field,
-				itemSerializer);
-		}
-	}
+        public CodegenExpression CodegenSerialize(
+            JsonSerializerForgeRefs refs,
+            CodegenMethod method,
+            CodegenClassScope classScope)
+        {
+            var subRefs = new JsonSerializerForgeRefs(
+                Ref("_context"),
+                Ref("_value"),
+                Ref("_name"));
+
+            var serializationExpr = _valueForge.CodegenSerialize(subRefs, method, classScope);
+            var itemSerializer = new CodegenExpressionLambda(method.Block)
+                .WithParam<JsonSerializationContext>("_context")
+                .WithParam(_valueType, "_value")
+                .WithBody(block => block.Expression(serializationExpr));
+
+            return StaticMethod(
+                typeof(JsonSerializerUtil),
+                "WriteJsonMap",
+                new[] { _valueType },
+                refs.Context,
+                refs.Field,
+                itemSerializer);
+        }
+    }
 } // end of namespace

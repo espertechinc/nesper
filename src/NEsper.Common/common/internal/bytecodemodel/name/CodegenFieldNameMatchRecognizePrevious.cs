@@ -19,8 +19,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
         {
         }
 
-        public string Name {
-            get => CodegenNamespaceScopeNames.PreviousMatchRecognize();
-        }
+        public string Name => CodegenNamespaceScopeNames.PreviousMatchRecognize();
     }
 } // end of namespace

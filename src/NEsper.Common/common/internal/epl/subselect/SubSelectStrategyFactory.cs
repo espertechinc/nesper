@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.view.core;
 
@@ -25,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.subselect
 
         SubSelectStrategyRealization Instantiate(
             Viewable viewableRoot,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             IList<AgentInstanceMgmtCallback> stopCallbackList,
             int subqueryNumber,
             bool isRecoveringResilient);

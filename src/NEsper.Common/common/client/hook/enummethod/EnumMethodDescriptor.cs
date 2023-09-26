@@ -10,24 +10,24 @@ using com.espertech.esper.common.@internal.epl.methodbase;
 
 namespace com.espertech.esper.common.client.hook.enummethod
 {
-	/// <summary>
-	///     Provides footprint information for enumeration method extension.
-	/// </summary>
-	public class EnumMethodDescriptor
+    /// <summary>
+    ///     Provides footprint information for enumeration method extension.
+    /// </summary>
+    public class EnumMethodDescriptor
     {
-	    /// <summary>
-	    ///     Ctor.
-	    /// </summary>
-	    /// <param name="footprints">footprint array, one array item for each distinct footprint</param>
-	    public EnumMethodDescriptor(DotMethodFP[] footprints)
+        /// <summary>
+        ///     Ctor.
+        /// </summary>
+        /// <param name="footprints">footprint array, one array item for each distinct footprint</param>
+        public EnumMethodDescriptor(DotMethodFP[] footprints)
         {
             Footprints = footprints;
         }
 
-	    /// <summary>
-	    ///     Returns the footprints
-	    /// </summary>
-	    /// <value>footprints</value>
-	    public DotMethodFP[] Footprints { get; }
+        /// <summary>
+        ///     Returns the footprints
+        /// </summary>
+        /// <value>footprints</value>
+        public DotMethodFP[] Footprints { get; }
     }
 } // end of namespace

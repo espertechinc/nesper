@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
             FlexCollection result)
         {
             var copy = EventBeanUtility.CopyArray(eventsPerStream);
-            var entry = new ExpressionResultCacheEntryEventBeanArrayAndCollBean(copy, result: result);
+            var entry = new ExpressionResultCacheEntryEventBeanArrayAndCollBean(copy, result);
             exprDeclCacheCollection.Put(
                 node,
                 new SoftReference<ExpressionResultCacheEntryEventBeanArrayAndCollBean>(entry));

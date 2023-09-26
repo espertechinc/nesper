@@ -38,15 +38,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(table, codegenClassScope, this.GetType());
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var eventToPublic =
+                TableDeployTimeResolver.MakeTableEventToPublicField(table, codegenClassScope, GetType());
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-            CodegenExpression refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
-            CodegenExpressionRef refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
+            var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(0)))
                 .IfRefNullReturnNull("@event")
@@ -55,8 +55,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             return methodNode;
         }
 
-        public EventType ResultEventType {
-            get => table.PublicEventType;
-        }
+        public EventType ResultEventType => table.PublicEventType;
     }
 } // end of namespace

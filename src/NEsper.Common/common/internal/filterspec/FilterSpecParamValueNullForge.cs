@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -38,8 +38,10 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar<FilterOperator>("filterOperator", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
-            
+                .DeclareVar<FilterOperator>(
+                    "filterOperator",
+                    EnumValue(typeof(FilterOperator), filterOperator.GetName()));
+
             var getFilterValue = new CodegenExpressionLambda(method.Block)
                 .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
             var inner = NewInstance<ProxyFilterSpecParam>(
@@ -52,10 +54,12 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .BlockReturn(FilterValueSetParamImpl.CodegenNew(ConstantNull()));
 
             method.Block.MethodReturn(inner);
-            return method;
+            return LocalMethod(method);
         }
 
-        public override void ValueExprToString(StringBuilder @out, int i)
+        public override void ValueExprToString(
+            StringBuilder @out,
+            int i)
         {
             @out.Append("(no value expression)");
         }

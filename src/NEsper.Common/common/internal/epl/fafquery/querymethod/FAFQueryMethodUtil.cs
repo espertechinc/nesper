@@ -30,17 +30,17 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 processor.ContextDeploymentId,
                 processor.ContextName);
             return contextManager.Realization.GetAgentInstanceIds(
-                optionalSelector == null ? ContextPartitionSelectorAll.INSTANCE : optionalSelector);
+                optionalSelector ?? ContextPartitionSelectorAll.INSTANCE);
         }
 
         public static EPException RuntimeDestroyed()
         {
             return new EPException("Runtime has already been destroyed");
         }
-        
+
         public static void InitializeSubselects(
             StatementContextRuntimeServices svc,
-            Attribute[] annotations, 
+            Attribute[] annotations,
             IDictionary<int, SubSelectFactory> subselects)
         {
             EventTableFactoryFactoryContext tableFactoryContext = new ProxyEventTableFactoryFactoryContext(
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             SubSelectStrategyFactoryContext context = new ProxySubSelectStrategyFactoryContext(
                 () => svc.EventTableIndexService,
                 () => tableFactoryContext);
-            
+
             foreach (var subselect in subselects) {
                 subselect.Value.Ready(context, false);
             }

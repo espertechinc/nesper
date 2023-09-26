@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod inner = joinWildcardProcessorForge.ProcessCodegen(
+            var inner = joinWildcardProcessorForge.ProcessCodegen(
                 resultEventType,
                 eventBeanFactory,
                 methodNode,

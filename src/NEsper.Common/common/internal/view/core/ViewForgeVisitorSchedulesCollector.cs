@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public void Visit(ViewFactoryForge forge)
         {
-            if (forge is ScheduleHandleCallbackProvider) {
-                providers.Add((ScheduleHandleCallbackProvider) forge);
+            if (forge is ScheduleHandleCallbackProvider provider) {
+                providers.Add(provider);
             }
         }
     }

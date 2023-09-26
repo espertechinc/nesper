@@ -12,6 +12,7 @@ using System.IO;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -22,13 +23,25 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
     {
         public static IList<RegressionExecution> Executions()
         {
-            IList<RegressionExecution> executions = new List<RegressionExecution>();
-            executions.Add(new ExprFilterWhereClauseNoDataWindowPerf());
-            return executions;
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withf(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withf(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterWhereClauseNoDataWindowPerf());
+            return execs;
         }
 
         private class ExprFilterWhereClauseNoDataWindowPerf : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
             // Compares the performance of
             //     select * from SupportBean(TheString = 'xyz')
             //  against
@@ -40,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 for (var i = 0; i < 100; i++) {
                     var epl = string.Format(
-                        "@Name('s{0}') select * from SupportBean where TheString = '{1}';\n",
+                        "@name('s{0}') select * from SupportBean where TheString = '{1}';\n",
                         i,
                         Convert.ToString(i));
                     module.Write(epl);

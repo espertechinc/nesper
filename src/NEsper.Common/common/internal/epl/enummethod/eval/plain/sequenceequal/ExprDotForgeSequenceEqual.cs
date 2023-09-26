@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             DotMethodFP footprint,
             IList<ExprNode> parameters,
             EnumMethodEnum enumMethod,
-            String enumMethodUsedName,
+            string enumMethodUsedName,
             EventType inputEventType,
             Type collectionComponentType,
             ExprValidationContext validationContext)
@@ -36,6 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
         private class EnumForgeDescFactorySeqEqual : EnumForgeDescFactory
         {
             private readonly bool _isScalar;
+
             public EnumForgeDescFactorySeqEqual(bool isScalar)
             {
                 _isScalar = isScalar;
@@ -52,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 StatementCompileTimeServices services)
             {
                 var body = bodiesAndParameters[0].BodyForge;
-                var type = EPTypeHelper.SingleValue(typeof(bool?));
+                var type = EPChainableTypeHelper.SingleValue(typeof(bool?));
                 EnumForge forge = new EnumSequenceEqualForge(body, streamCountIncoming, _isScalar);
                 return new EnumForgeDesc(type, forge);
             }

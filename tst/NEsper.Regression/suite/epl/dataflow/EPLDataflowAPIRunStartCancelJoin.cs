@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
@@ -16,166 +15,152 @@ using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 
+using static com.espertech.esper.regressionlib.support.epl.SupportStaticMethodLib; // sleep
 using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.support.epl.SupportStaticMethodLib;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
     public class EPLDataflowAPIRunStartCancelJoin
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
-WithNonBlockingJoinCancel(execs);
-WithNonBlockingJoinException(execs);
-WithNonBlockingException(execs);
-WithBlockingException(execs);
-WithBlockingCancel(execs);
-WithNonBlockingCancel(execs);
-WithInvalidJoinRun(execs);
-WithNonBlockingJoinMultipleRunnable(execs);
-WithBlockingMultipleRunnable(execs);
-WithNonBlockingJoinSingleRunnable(execs);
-WithFastCompleteBlocking(execs);
-WithRunBlocking(execs);
-WithFastCompleteNonBlocking(execs);
-WithBlockingRunJoin(execs);
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithNonBlockingJoinCancel(execs);
+            WithNonBlockingJoinException(execs);
+            WithNonBlockingException(execs);
+            WithBlockingException(execs);
+            WithBlockingCancel(execs);
+            WithNonBlockingCancel(execs);
+            WithInvalidJoinRun(execs);
+            WithNonBlockingJoinMultipleRunnable(execs);
+            WithBlockingMultipleRunnable(execs);
+            WithNonBlockingJoinSingleRunnable(execs);
+            WithFastCompleteBlocking(execs);
+            WithRunBlocking(execs);
+            WithFastCompleteNonBlocking(execs);
+            WithBlockingRunJoin(execs);
             return execs;
         }
-public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowBlockingRunJoin());
-    return execs;
-}public static IList<RegressionExecution> WithFastCompleteNonBlocking(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowFastCompleteNonBlocking());
-    return execs;
-}public static IList<RegressionExecution> WithRunBlocking(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowRunBlocking());
-    return execs;
-}public static IList<RegressionExecution> WithFastCompleteBlocking(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowFastCompleteBlocking());
-    return execs;
-}public static IList<RegressionExecution> WithNonBlockingJoinSingleRunnable(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowNonBlockingJoinSingleRunnable());
-    return execs;
-}public static IList<RegressionExecution> WithBlockingMultipleRunnable(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowBlockingMultipleRunnable());
-    return execs;
-}public static IList<RegressionExecution> WithNonBlockingJoinMultipleRunnable(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowNonBlockingJoinMultipleRunnable());
-    return execs;
-}public static IList<RegressionExecution> WithInvalidJoinRun(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowInvalidJoinRun());
-    return execs;
-}public static IList<RegressionExecution> WithNonBlockingCancel(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowNonBlockingCancel());
-    return execs;
-}public static IList<RegressionExecution> WithBlockingCancel(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowBlockingCancel());
-    return execs;
-}public static IList<RegressionExecution> WithBlockingException(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowBlockingException());
-    return execs;
-}public static IList<RegressionExecution> WithNonBlockingException(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowNonBlockingException());
-    return execs;
-}public static IList<RegressionExecution> WithNonBlockingJoinException(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowNonBlockingJoinException());
-    return execs;
-}public static IList<RegressionExecution> WithNonBlockingJoinCancel(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowNonBlockingJoinCancel());
-    return execs;
-}
-        private static void TryAssertionAfterExec(EPDataFlowInstance df)
+
+        public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExecution> execs = null)
         {
-            // cancel and join ignored
-            try {
-                df.Join();
-            }
-            catch (ThreadInterruptedException e) {
-                throw new EPException(e);
-            }
-
-            // can't start or run again
-            try {
-                df.Run();
-                Assert.Fail();
-            }
-            catch (IllegalStateException ex) {
-                Assert.AreEqual(
-                    "Data flow 'MyDataFlowOne' instance has already completed, please use instantiate to run the data flow again",
-                    ex.Message);
-            }
-
-            try {
-                df.Start();
-                Assert.Fail();
-            }
-            catch (IllegalStateException ex) {
-                Assert.AreEqual(
-                    "Data flow 'MyDataFlowOne' instance has already completed, please use instantiate to run the data flow again",
-                    ex.Message);
-            }
-
-            df.Cancel();
-            try {
-                df.Join();
-            }
-            catch (ThreadInterruptedException e) {
-                throw new EPException(e);
-            }
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowBlockingRunJoin());
+            return execs;
         }
 
-        internal class EPLDataflowNonBlockingJoinCancel : RegressionExecution
+        public static IList<RegressionExecution> WithFastCompleteNonBlocking(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowFastCompleteNonBlocking());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRunBlocking(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowRunBlocking());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFastCompleteBlocking(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowFastCompleteBlocking());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNonBlockingJoinSingleRunnable(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowNonBlockingJoinSingleRunnable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBlockingMultipleRunnable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowBlockingMultipleRunnable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNonBlockingJoinMultipleRunnable(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowNonBlockingJoinMultipleRunnable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalidJoinRun(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowInvalidJoinRun());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNonBlockingCancel(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowNonBlockingCancel());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBlockingCancel(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowBlockingCancel());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBlockingException(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowBlockingException());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNonBlockingException(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowNonBlockingException());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNonBlockingJoinException(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowNonBlockingJoinException());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNonBlockingJoinCancel(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowNonBlockingJoinCancel());
+            return execs;
+        }
+
+        private class EPLDataflowNonBlockingJoinCancel : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
                 var latchOne = new CountDownLatch(1);
-                var src = new DefaultSupportSourceOp(new object[] {latchOne});
-                var output = new DefaultSupportCaptureOp();
+                var src = new DefaultSupportSourceOp(new object[] { latchOne });
+                var output = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
                 var options =
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(
                         new DefaultSupportGraphOpProvider(src, output));
@@ -190,16 +175,17 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                             dfOne.Cancel();
                         }
                         catch (Exception e) {
-                            log.Error("Unexpected exception", e);
+                            Console.WriteLine(e.StackTrace);
                         }
                     });
-                cancellingThread.Name = GetType().Name + "-cancelling";
+
+                cancellingThread.Name = this.GetType().Name + "-cancelling";
                 cancellingThread.Start();
                 try {
                     dfOne.Join();
                 }
                 catch (ThreadInterruptedException e) {
-                    throw new EPException(e);
+                    throw new EPRuntimeException(e);
                 }
 
                 Assert.AreEqual(EPDataFlowState.CANCELLED, dfOne.State);
@@ -207,23 +193,29 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowNonBlockingJoinException : RegressionExecution
+        private class EPLDataflowNonBlockingJoinException : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
                 var latchOne = new CountDownLatch(1);
-                var src = new DefaultSupportSourceOp(new object[] {latchOne, new MyException("TestException")});
-                var output = new DefaultSupportCaptureOp();
+                var src = new DefaultSupportSourceOp(
+                    new object[] { latchOne, new MyRuntimeException("TestException") });
+                var output = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
                 var options =
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(
                         new DefaultSupportGraphOpProvider(src, output));
@@ -238,39 +230,45 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                             latchOne.CountDown();
                         }
                         catch (Exception e) {
-                            log.Error("Unexpected exception", e);
+                            Console.WriteLine(e.StackTrace);
                         }
                     });
-                unlatchingThread.Name = GetType().Name + "-unlatching";
-                unlatchingThread.Start();
 
+                unlatchingThread.Name = this.GetType().Name + "-unlatching";
+
+                unlatchingThread.Start();
                 try {
                     dfOne.Join();
                 }
                 catch (ThreadInterruptedException e) {
-                    throw new EPException(e);
+                    throw new EPRuntimeException(e);
                 }
 
                 Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
                 Assert.AreEqual(0, output.GetAndReset().Count);
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowNonBlockingException : RegressionExecution
+        private class EPLDataflowNonBlockingException : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
-                var src = new DefaultSupportSourceOp(new object[] {new MyException("TestException")});
-                var output = new DefaultSupportCaptureOp();
+                var src = new DefaultSupportSourceOp(new object[] { new MyRuntimeException("TestException") });
+                var output = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
                 var options =
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(
                         new DefaultSupportGraphOpProvider(src, output));
@@ -282,22 +280,27 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                 Assert.AreEqual(0, output.GetAndReset().Count);
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowBlockingException : RegressionExecution
+        private class EPLDataflowBlockingException : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
-                var src = new DefaultSupportSourceOp(new object[] {new MyException("TestException")});
-                var output = new DefaultSupportCaptureOp();
+                var src = new DefaultSupportSourceOp(new object[] { new MyRuntimeException("TestException") });
+                var output = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
                 var options =
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(
                         new DefaultSupportGraphOpProvider(src, output));
@@ -308,7 +311,7 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                     Assert.Fail();
                 }
                 catch (EPDataFlowExecutionException ex) {
-                    Assert.IsTrue(ex.InnerException.InnerException is MyException);
+                    Assert.IsTrue(ex.InnerException.InnerException is MyRuntimeException);
                     Assert.AreEqual(
                         "Support-graph-source generated exception: TestException",
                         ex.InnerException.Message);
@@ -318,17 +321,22 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                 Assert.AreEqual(0, output.GetAndReset().Count);
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowBlockingCancel : RegressionExecution
+        private class EPLDataflowBlockingCancel : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // declare
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
@@ -338,12 +346,8 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                 IDictionary<string, object> ops = new Dictionary<string, object>();
                 ops.Put(
                     "DefaultSupportSourceOp",
-                    new DefaultSupportSourceOp(
-                        new object[] {
-                            latchOne,
-                            new object[] {1}
-                        }));
-                var output = new DefaultSupportCaptureOp();
+                    new DefaultSupportSourceOp(new object[] { latchOne, new object[] { 1 } }));
+                var output = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
                 ops.Put("DefaultSupportCaptureOp", output);
 
                 var options =
@@ -358,10 +362,11 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                             dfOne.Cancel();
                         }
                         catch (Exception e) {
-                            log.Error("Unexpected exception", e);
+                            Console.WriteLine(e.StackTrace);
                         }
                     });
-                cancellingThread.Name = GetType().Name + "-cancelling";
+
+                cancellingThread.Name = this.GetType().Name + "-cancelling";
                 cancellingThread.Start();
 
                 try {
@@ -376,17 +381,22 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                 Assert.AreEqual(0, output.GetAndReset().Count);
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowNonBlockingCancel : RegressionExecution
+        private class EPLDataflowNonBlockingCancel : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // declare
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
@@ -396,12 +406,8 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                 IDictionary<string, object> ops = new Dictionary<string, object>();
                 ops.Put(
                     "DefaultSupportSourceOp",
-                    new DefaultSupportSourceOp(
-                        new object[] {
-                            latchOne,
-                            new object[] {1}
-                        }));
-                var output = new DefaultSupportCaptureOp();
+                    new DefaultSupportSourceOp(new object[] { latchOne, new object[] { 1 } }));
+                var output = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
                 ops.Put("DefaultSupportCaptureOp", output);
 
                 var options =
@@ -420,17 +426,22 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                 Assert.AreEqual(0, output.GetAndReset().Count);
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowInvalidJoinRun : RegressionExecution
+        private class EPLDataflowInvalidJoinRun : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "BeaconSource -> BeaconStream {iterations : 1}");
 
-                var source = new DefaultSupportSourceOp(new object[] {5000});
+                var source = new DefaultSupportSourceOp(new object[] { 5000 });
                 var options =
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(
                         new DefaultSupportGraphOpProvider(source));
@@ -447,7 +458,7 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                         ex.Message);
                 }
                 catch (ThreadInterruptedException ex) {
-                    throw new EPException(ex);
+                    throw new EPRuntimeException(ex);
                 }
 
                 // cancel
@@ -478,17 +489,22 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                 dfOne.Cancel();
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowNonBlockingJoinMultipleRunnable : RegressionExecution
+        private class EPLDataflowNonBlockingJoinMultipleRunnable : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // declare
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> outstream<SomeType> { name: 'SourceOne' }" +
                     "DefaultSupportSourceOp -> outstream<SomeType> { name: 'SourceTwo' }" +
                     "DefaultSupportCaptureOp(outstream) {}",
@@ -498,21 +514,9 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                 var latchOne = new CountDownLatch(1);
                 var latchTwo = new CountDownLatch(1);
                 IDictionary<string, object> ops = new Dictionary<string, object>();
-                ops.Put(
-                    "SourceOne",
-                    new DefaultSupportSourceOp(
-                        new object[] {
-                            latchOne,
-                            new object[] {1}
-                        }));
-                ops.Put(
-                    "SourceTwo",
-                    new DefaultSupportSourceOp(
-                        new object[] {
-                            latchTwo,
-                            new object[] {1}
-                        }));
-                var future = new DefaultSupportCaptureOp(2, env.Container.LockManager());
+                ops.Put("SourceOne", new DefaultSupportSourceOp(new object[] { latchOne, new object[] { 1 } }));
+                ops.Put("SourceTwo", new DefaultSupportSourceOp(new object[] { latchTwo, new object[] { 1 } }));
+                var future = new DefaultSupportCaptureOp<object>(2, env.Container.LockManager());
                 ops.Put("DefaultSupportCaptureOp", future);
 
                 var options =
@@ -533,24 +537,29 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                     dfOne.Join();
                 }
                 catch (ThreadInterruptedException e) {
-                    throw new EPException(e);
+                    throw new EPRuntimeException(e);
                 }
 
                 Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
                 Assert.AreEqual(2, future.GetAndReset().Count);
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowBlockingMultipleRunnable : RegressionExecution
+        private class EPLDataflowBlockingMultipleRunnable : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // declare
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> outstream<SomeType> {name: 'SourceOne'}" +
                     "DefaultSupportSourceOp -> outstream<SomeType> {name: 'SourceTwo'}" +
                     "DefaultSupportCaptureOp(outstream) {}",
@@ -560,21 +569,9 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                 var latchOne = new CountDownLatch(1);
                 var latchTwo = new CountDownLatch(1);
                 IDictionary<string, object> ops = new Dictionary<string, object>();
-                ops.Put(
-                    "SourceOne",
-                    new DefaultSupportSourceOp(
-                        new object[] {
-                            latchOne,
-                            new object[] {1}
-                        }));
-                ops.Put(
-                    "SourceTwo",
-                    new DefaultSupportSourceOp(
-                        new object[] {
-                            latchTwo,
-                            new object[] {1}
-                        }));
-                var future = new DefaultSupportCaptureOp(2, env.Container.LockManager());
+                ops.Put("SourceOne", new DefaultSupportSourceOp(new object[] { latchOne, new object[] { 1 } }));
+                ops.Put("SourceTwo", new DefaultSupportSourceOp(new object[] { latchTwo, new object[] { 1 } }));
+                var future = new DefaultSupportCaptureOp<object>(2, env.Container.LockManager());
                 ops.Put("DefaultSupportCaptureOp", future);
 
                 var options =
@@ -599,36 +596,37 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                     dfOne.Join();
                 }
                 catch (ThreadInterruptedException e) {
-                    throw new EPException(e);
+                    throw new EPRuntimeException(e);
                 }
 
                 Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
                 Assert.AreEqual(2, future.GetAndReset().Count);
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowNonBlockingJoinSingleRunnable : RegressionExecution
+        private class EPLDataflowNonBlockingJoinSingleRunnable : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // declare
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> outstream<SomeType> {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
                 // instantiate
                 var latch = new CountDownLatch(1);
-                var source = new DefaultSupportSourceOp(
-                    new object[] {
-                        latch,
-                        new object[] {1}
-                    });
-                var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
+                var source = new DefaultSupportSourceOp(new object[] { latch, new object[] { 1 } });
+                var future = new DefaultSupportCaptureOp<object>(1, env.Container.LockManager());
                 var options =
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(
                         new DefaultSupportGraphOpProvider(source, future));
@@ -645,7 +643,7 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                     dfOne.Join();
                 }
                 catch (ThreadInterruptedException e) {
-                    throw new EPException(e);
+                    throw new EPRuntimeException(e);
                 }
 
                 Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
@@ -656,29 +654,30 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                 Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowBlockingRunJoin : RegressionExecution
+        private class EPLDataflowBlockingRunJoin : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // declare
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> s<SomeType> {}" +
                     "DefaultSupportCaptureOp(s) {}",
                     path);
 
                 // instantiate
                 var latch = new CountDownLatch(1);
-                var source = new DefaultSupportSourceOp(
-                    new object[] {
-                        latch,
-                        new object[] {1}
-                    });
-                var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
+                var source = new DefaultSupportSourceOp(new object[] { latch, new object[] { 1 } });
+                var future = new DefaultSupportCaptureOp<object>(1, env.Container.LockManager());
                 var options =
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(
                         new DefaultSupportGraphOpProvider(source, future));
@@ -688,7 +687,7 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
 
                 var joiningRunnable = new MyJoiningRunnable(dfOne);
                 var joiningThread = new Thread(joiningRunnable.Run);
-                joiningThread.Name = GetType().Name + "-joining";
+                joiningThread.Name = this.GetType().Name + "-joining";
 
                 var unlatchingThread = new Thread(
                     () => {
@@ -701,10 +700,11 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                             latch.CountDown();
                         }
                         catch (Exception e) {
-                            log.Error("Unexpected exception", e);
+                            Console.WriteLine(e.StackTrace);
                         }
                     });
-                unlatchingThread.Name = GetType().Name + "-unlatching";
+
+                unlatchingThread.Name = this.GetType().Name + "-unlatching";
 
                 joiningThread.Start();
                 unlatchingThread.Start();
@@ -719,27 +719,32 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                     unlatchingThread.Join();
                 }
                 catch (ThreadInterruptedException e) {
-                    throw new EPException(e);
+                    throw new EPRuntimeException(e);
                 }
 
                 var deltaJoin = joiningRunnable.End - joiningRunnable.Start;
-                Assert.IsTrue(deltaJoin >= 500, "deltaJoin=" + deltaJoin);
+                Assert.That(deltaJoin, Is.GreaterThanOrEqualTo(500));
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 
-        internal class EPLDataflowFastCompleteBlocking : RegressionExecution
+        private class EPLDataflowFastCompleteBlocking : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // declare
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "BeaconSource -> BeaconStream {iterations : 1}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
 
                 // instantiate
-                var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
+                var future = new DefaultSupportCaptureOp<object>(1, env.Container.LockManager());
                 var options =
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(
                         new DefaultSupportGraphOpProvider(future));
@@ -755,10 +760,10 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                 dfOne.Run();
                 Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
                 try {
-                    Assert.AreEqual(1, future.GetValueOrDefault().Length);
+                    Assert.AreEqual(1, future.Get().Length);
                 }
-                catch (Exception t) {
-                    throw new EPException(t);
+                catch (Exception ex) {
+                    throw new EPRuntimeException(ex);
                 }
 
                 // assert past-exec
@@ -766,33 +771,36 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowRunBlocking : RegressionExecution
+        private class EPLDataflowRunBlocking : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // declare
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema SomeType ()", path);
+                env.CompileDeploy("@public create schema SomeType ()", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> s<SomeType> {}" +
                     "DefaultSupportCaptureOp(s) {}",
                     path);
 
                 // instantiate
                 var latch = new CountDownLatch(1);
-                var source = new DefaultSupportSourceOp(
-                    new object[] {
-                        latch,
-                        new object[] {1}
-                    });
-                var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
-                var options =
-                    new EPDataFlowInstantiationOptions().WithOperatorProvider(
-                        new DefaultSupportGraphOpProvider(future, source));
-                var dfOne = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
+                var source = new DefaultSupportSourceOp(new object[] { latch, new object[] { 1 } });
+                var future = new DefaultSupportCaptureOp<object>(1, env.Container.LockManager());
+                var options = new EPDataFlowInstantiationOptions()
+                    .WithOperatorProvider(new DefaultSupportGraphOpProvider(future, source));
+                var dfOne = env.Runtime.DataFlowService.Instantiate(
+                    env.DeploymentId("flow"),
+                    "MyDataFlowOne",
+                    options);
                 Assert.AreEqual("MyDataFlowOne", dfOne.DataFlowName);
                 Assert.AreEqual(EPDataFlowState.INSTANTIATED, dfOne.State);
 
@@ -807,10 +815,11 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                             latch.CountDown();
                         }
                         catch (Exception e) {
-                            log.Error("Unexpected exception", e);
+                            Console.WriteLine(e.StackTrace);
                         }
-                    });
-                unlatchingThread.Name = GetType().Name + "-unlatching";
+                    }) {
+                    Name = this.GetType().Name + "-unlatching"
+                };
 
                 // blocking run
                 unlatchingThread.Start();
@@ -822,25 +831,30 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                     unlatchingThread.Join();
                 }
                 catch (ThreadInterruptedException e) {
-                    throw new EPException(e);
+                    throw new EPRuntimeException(e);
                 }
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowFastCompleteNonBlocking : RegressionExecution
+        private class EPLDataflowFastCompleteNonBlocking : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // declare
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "BeaconSource -> BeaconStream {iterations : 1}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
 
                 // instantiate
-                var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
+                var future = new DefaultSupportCaptureOp<object>(1, env.Container.LockManager());
                 var options =
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(
                         new DefaultSupportGraphOpProvider(future));
@@ -859,30 +873,73 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                 }
 
                 try {
-                    Assert.AreEqual(1, future.GetValueOrDefault().Length);
+                    Assert.AreEqual(1, future.Get().Length);
                 }
-                catch (Exception t) {
-                    throw new EPException(t);
+                catch (Exception ex) {
+                    throw new EPRuntimeException(ex);
                 }
 
                 // assert past-exec
                 TryAssertionAfterExec(dfOne);
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        public class MyJoiningRunnable : IRunnable
+        private static void TryAssertionAfterExec(EPDataFlowInstance df)
+        {
+            // cancel and join ignored
+            try {
+                df.Join();
+            }
+            catch (ThreadInterruptedException e) {
+                throw new EPRuntimeException(e);
+            }
+
+            // can't start or run again
+            try {
+                df.Run();
+                Assert.Fail();
+            }
+            catch (IllegalStateException ex) {
+                Assert.AreEqual(
+                    "Data flow 'MyDataFlowOne' instance has already completed, please use instantiate to run the data flow again",
+                    ex.Message);
+            }
+
+            try {
+                df.Start();
+                Assert.Fail();
+            }
+            catch (IllegalStateException ex) {
+                Assert.AreEqual(
+                    "Data flow 'MyDataFlowOne' instance has already completed, please use instantiate to run the data flow again",
+                    ex.Message);
+            }
+
+            df.Cancel();
+            try {
+                df.Join();
+            }
+            catch (ThreadInterruptedException e) {
+                throw new EPRuntimeException(e);
+            }
+        }
+
+        public class MyJoiningRunnable
         {
             private readonly EPDataFlowInstance instance;
+            private long start;
+            private long end;
 
             public MyJoiningRunnable(EPDataFlowInstance instance)
             {
                 this.instance = instance;
             }
-
-            public long Start { get; private set; }
-
-            public long End { get; private set; }
 
             public void Run()
             {
@@ -891,19 +948,23 @@ public static IList<RegressionExecution> WithBlockingRunJoin(IList<RegressionExe
                         Thread.Sleep(0);
                     }
 
-                    Start = PerformanceObserver.MilliTime;
+                    start = PerformanceObserver.MilliTime;
                     instance.Join();
-                    End = PerformanceObserver.MilliTime;
+                    end = PerformanceObserver.MilliTime;
                 }
                 catch (ThreadInterruptedException e) {
-                    log.Error("Unexpected exception", e);
+                    Console.WriteLine(e.StackTrace);
                 }
             }
+
+            public long Start => start;
+
+            public long End => end;
         }
 
-        public class MyException : EPRuntimeException
+        public class MyRuntimeException : EPRuntimeException
         {
-            public MyException(string message) : base(message)
+            public MyRuntimeException(string message) : base(message)
             {
             }
         }

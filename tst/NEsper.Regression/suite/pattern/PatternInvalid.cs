@@ -11,6 +11,7 @@ using System.Reflection;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
@@ -31,9 +32,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithInvalidExpr(execs);
             WithStatementException(execs);
-            WithUseResult(execs);
+            With(UseResult)(execs);
+#endif
             return execs;
         }
 
@@ -126,6 +129,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         internal class PatternInvalidExpr : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 var exceptionText = GetSyntaxExceptionPattern(env, "SupportBean_N(DoublePrimitive='ss'");
@@ -141,8 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.CompileDeploy(epl);
                 env.SendEventBean(new SupportBean("E1", 100));
 
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "select * from pattern[timer:interval((select waitTime from WaitWindow))]",
                     "Subselects are not allowed within pattern observer parameters, please consider using a variable instead");
 
@@ -152,6 +159,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         internal class PatternStatementException : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 EPCompileException exception;
@@ -272,6 +284,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         internal class PatternUseResult : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 var @event = nameof(SupportBean_N);

@@ -8,10 +8,10 @@
 
 namespace com.espertech.esper.common.client.serde
 {
-	/// <summary>
-	///     Context provided to serde provider factories for runtime-contextual information.
-	/// </summary>
-	public class SerdeProviderFactoryContext
+    /// <summary>
+    ///     Context provided to serde provider factories for runtime-contextual information.
+    /// </summary>
+    public class SerdeProviderFactoryContext
     {
     }
 } // end of namespace

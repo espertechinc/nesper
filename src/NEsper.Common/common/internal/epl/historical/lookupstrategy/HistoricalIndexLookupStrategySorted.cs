@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             ExprEvaluatorContext context)
         {
             if (index[0] is PropertySortedEventTable) {
-                var idx = (PropertySortedEventTable) index[0];
+                var idx = (PropertySortedEventTable)index[0];
                 var events = strategy.Lookup(lookupEvent, idx, context);
                 return events?.GetEnumerator();
             }

@@ -8,21 +8,23 @@
 
 using System;
 
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
+using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.agg.groupby
 {
     public interface AggSvcGroupByReclaimAgedEvalFuncFactory
     {
-        AggSvcGroupByReclaimAgedEvalFunc Make(AgentInstanceContext agentInstanceContext);
+        AggSvcGroupByReclaimAgedEvalFunc Make(ExprEvaluatorContext exprEvaluatorContext);
     }
 
     public class ProxyAggSvcGroupByReclaimAgedEvalFuncFactory : AggSvcGroupByReclaimAgedEvalFuncFactory
     {
-        public Func<AgentInstanceContext, AggSvcGroupByReclaimAgedEvalFunc> ProcMake;
+        public Func<ExprEvaluatorContext, AggSvcGroupByReclaimAgedEvalFunc> ProcMake;
 
-        public AggSvcGroupByReclaimAgedEvalFunc Make(AgentInstanceContext agentInstanceContext)
-            => ProcMake(agentInstanceContext);
+        public AggSvcGroupByReclaimAgedEvalFunc Make(ExprEvaluatorContext exprEvaluatorContext)
+        {
+            return ProcMake(exprEvaluatorContext);
+        }
     }
 } // end of namespace

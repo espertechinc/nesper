@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionrun.suite.rowrecog
         [Test, RunInApplicationDomain]
         public void TestRowRecogRepetition()
         {
-            RegressionRunner.Run(_session, new RowRecogRepetition());
+            RegressionRunner.Run(_session, RowRecogRepetition.Executions());
         }
 
         [Test, RunInApplicationDomain]

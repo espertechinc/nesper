@@ -16,8 +16,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
     {
         public void Run(RegressionEnvironment env)
         {
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 "expression js:abc [ bla; ] select abc() from SupportBean",
                 "Failed to validate select-clause expression 'abc()': Script compilation has been disabled by configuration");
         }

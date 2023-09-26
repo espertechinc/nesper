@@ -43,6 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             CodegenExpression eps = symbols.GetAddEPS(method);
             CodegenExpression evalCtx = symbols.GetAddExprEvalCtx(method);
@@ -50,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             if (havingEval != null) {
                 CodegenExpression having = LocalMethod(
-                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope, true),
+                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope),
                     eps,
                     ConstantTrue(),
                     evalCtx);
@@ -62,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             CodegenExpression rhsSide = LocalMethod(
-                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope, true),
+                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope),
                 eps,
                 ConstantTrue(),
                 evalCtx);

@@ -27,11 +27,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var path = new RegressionPath();
 
             env.CompileDeploy(
-                "@Name('create') create table MyTable as (\n" +
+                "@name('create') @public create table MyTable as (\n" +
                 "key string primary key, thesum sum(int))",
                 path);
             env.CompileDeploy(
-                "@Name('intotable') into table MyTable " +
+                "@name('intotable') into table MyTable " +
                 "select sum(IntPrimitive) as thesum from SupportBean group by TheString",
                 path);
 
@@ -43,21 +43,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportBean("E1", 30));
             env.UndeployModuleContaining("intotable");
 
-            env.CompileDeploy("@Name('s0') select key, thesum from MyTable output snapshot every 1 seconds", path)
+            env.CompileDeploy("@name('s0') select key, thesum from MyTable output snapshot every 1 seconds", path)
                 .AddListener("s0");
 
             currentTime.Set(currentTime.Get() + 1000L);
             env.AdvanceTime(currentTime.Get());
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.Listener("s0").GetAndResetLastNewData(),
-                new[] {"key", "thesum"},
-                new[] {new object[] {"E1", 40}, new object[] {"E2", 20}});
+            env.AssertPropsPerRowLastNewAnyOrder(
+                "s0",
+                new[] { "key", "thesum" },
+                new[] { new object[] { "E1", 40 }, new object[] { "E2", 20 } });
 
             env.Milestone(1);
 
             currentTime.Set(currentTime.Get() + 1000L);
             env.AdvanceTime(currentTime.Get());
-            Assert.IsTrue(env.Listener("s0").IsInvoked);
+            env.AssertListenerInvoked("s0");
 
             env.UndeployAll();
         }

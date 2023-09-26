@@ -353,7 +353,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             IList<SelectClauseElementRaw> expressions = new List<SelectClauseElementRaw>(StatementSpec.SelectClauseSpec.SelectExprList);
             StatementSpec.SelectClauseSpec.SelectExprList.Clear();
             var columsList = ASTUtil.GetIdentList(ctx.columnList());
-            _mergeInsertNoMatch = new OnTriggerMergeActionInsert(null, null, columsList, expressions);
+            _mergeInsertNoMatch = new OnTriggerMergeActionInsert(null, null, columsList, expressions, null);
         }
 
         public void ExitMergeUnmatchedItem(EsperEPL2GrammarParser.MergeUnmatchedItemContext ctx)
@@ -613,6 +613,11 @@ namespace com.espertech.esper.compiler.@internal.parse
                         insertIntoDesc.Add(node.GetText());
                     }
                 }
+            }
+
+            if (ctx.insertIntoEventPrecedence() != null) {
+                ExprNode node = ASTExprHelper.ExprCollectSubNodes(ctx.insertIntoEventPrecedence(), 0, _astExprNodeMap)[0];
+                insertIntoDesc.EventPrecedence = node;
             }
 
             StatementSpec.InsertIntoDesc = insertIntoDesc;
@@ -1074,10 +1079,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                             throw ASTWalkException.From("Failed to compile SQL parameter '" + expression + "': " + e.Expression, e);
                         }
 
-                        if (raw.SubstitutionParameters != null && raw.SubstitutionParameters.Count > 0)
-                        {
-                            throw ASTWalkException.From("EPL substitution parameters are not allowed in SQL ${...} expressions, consider using a variable instead");
-                        }
+                        _substitutionParamNodes.AddAll(raw.SubstitutionParameters);
 
                         StatementSpec.TableExpressions.AddAll(raw.TableExpressions);
                         StatementSpec.ReferencedVariables.AddAll(raw.ReferencedVariables);
@@ -1368,13 +1370,12 @@ namespace com.espertech.esper.compiler.@internal.parse
                 newNode.AddChildNodes(expressions);
                 _astExprNodeMap.Put(ctx, newNode);
             }
-            if (ctx.NEWKW() != null && ctx.classIdentifier() != null)
-            {
-                var classIdent = ASTUtil.UnescapeClassIdent(ctx.classIdentifier());
+            if (ctx.NEWKW() != null && ctx.classIdentifierNoDimensions() != null) {
+                var classIdentNoDimensions = ASTClassIdentifierHelper.Walk(ctx.classIdentifierNoDimensions());
                 var numArrayDimensions = ctx.LBRACK().Length;
 
                 ExprNode exprNode;
-                ExprNode newNode = new ExprNewInstanceNode(classIdent, numArrayDimensions);
+                ExprNode newNode = new ExprNewInstanceNode(classIdentNoDimensions, numArrayDimensions);
                 if (ASTChainSpecHelper.HasChain(ctx.chainableElements())) {
                     IList<Chainable> chainSpec = ASTChainSpecHelper.GetChainables(ctx.chainableElements(), _astExprNodeMap);
                     ExprDotNode dotNode = new ExprDotNodeImpl(chainSpec, _mapEnv.Configuration.Compiler.Expression.IsDuckTyping,
@@ -1584,24 +1585,34 @@ namespace com.espertech.esper.compiler.@internal.parse
 
                     // on the statement spec, the deepest spec is the outermost
                     var splitStreams = new List<OnTriggerSplitStream>();
-                    var statementSpecList = Enumerable.Reverse(_statementItemStack).ToArray();
-                    for (var ii = 1; ii < statementSpecList.Length ; ii++)
-                    {
-                        var raw = statementSpecList[ii].StatementSpec;
-                        var fromClauseInner = _onTriggerSplitPropertyEvals?.Get(raw);
-                        splitStreams.Add(new OnTriggerSplitStream(raw.InsertIntoDesc, raw.SelectClauseSpec, fromClauseInner, raw.WhereClause));
-                    }
+                    if (!_statementItemStack.IsEmpty()) {
+                        var statementSpecList = Enumerable.Reverse(_statementItemStack).ToArray();
+                        for (var ii = 1; ii < statementSpecList.Length; ii++) {
+                            var raw = statementSpecList[ii].StatementSpec;
+                            var fromClauseInner = _onTriggerSplitPropertyEvals?.Get(raw);
+                            splitStreams.Add(
+                                new OnTriggerSplitStream(
+                                    raw.InsertIntoDesc,
+                                    raw.SelectClauseSpec,
+                                    fromClauseInner,
+                                    raw.WhereClause));
+                        }
 
-                    var fromClause = _onTriggerSplitPropertyEvals?.Get(StatementSpec);
-                    splitStreams.Add(new OnTriggerSplitStream(StatementSpec.InsertIntoDesc, StatementSpec.SelectClauseSpec, fromClause, StatementSpec.WhereClause));
-                    if (!statementSpecList.IsEmpty())
-                    {
+                        var fromClause = _onTriggerSplitPropertyEvals?.Get(StatementSpec);
+                        splitStreams.Add(
+                            new OnTriggerSplitStream(
+                                StatementSpec.InsertIntoDesc,
+                                StatementSpec.SelectClauseSpec,
+                                fromClause,
+                                StatementSpec.WhereClause));
+
                         // The last item in the stack is the "first" item, unfortunately, the Java source is not
                         // very clear about this, instead they reference index 0, which is heavily dependent on
                         // how the stack is implemented.
-                        
+
                         StatementSpec = _statementItemStack.Last.Value.StatementSpec;
                     }
+
                     var isFirst = ctx.outputClauseInsert() == null || ctx.outputClauseInsert().ALL() == null;
 
                     StatementSpec.OnTriggerDesc = new OnTriggerSplitStreamDesc(OnTriggerType.ON_SPLITSTREAM, isFirst, splitStreams);
@@ -1936,7 +1947,7 @@ namespace com.espertech.esper.compiler.@internal.parse
         public void ExitBuiltin_firstlastwindow(EsperEPL2GrammarParser.Builtin_firstlastwindowContext ctx)
         {
             var stateType = AggregationAccessorLinearTypeExtensions.FromString(ctx.firstLastWindowAggregation().q.Text);
-            ExprNode expr = new ExprAggMultiFunctionLinearAccessNode(stateType);
+            ExprNode expr = new ExprAggMultiFunctionLinearAccessNode(stateType!.Value);
             ASTExprHelper.ExprCollectAddSubNodes(expr, ctx.firstLastWindowAggregation().expressionListWithNamed(), _astExprNodeMap);
             if (ASTChainSpecHelper.HasChain(ctx.firstLastWindowAggregation().chainableElements()))
             {
@@ -2026,13 +2037,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 
         public void ExitFafInsert(EsperEPL2GrammarParser.FafInsertContext ctx)
         {
-            IList<EsperEPL2GrammarParser.ExpressionContext> valueExprs = ctx.expressionList().expression();
-            foreach (var valueExpr in valueExprs)
-            {
-                var expr = ASTExprHelper.ExprCollectSubNodes(valueExpr, 0, _astExprNodeMap)[0];
-                StatementSpec.SelectClauseSpec.Add(new SelectClauseExprRawSpec(expr, null, false));
-            }
-            StatementSpec.FireAndForgetSpec = new FireAndForgetSpecInsert(true);
+            var rows = ASTFireAndForgetHelper.WalkInsertInto(ctx, _astExprNodeMap);
+            StatementSpec.FireAndForgetSpec = new FireAndForgetSpecInsert(true, rows);
         }
 
         public void ExitBuiltin_grouping(EsperEPL2GrammarParser.Builtin_groupingContext ctx)
@@ -3847,6 +3853,30 @@ namespace com.espertech.esper.compiler.@internal.parse
         public void ExitColumnListKeywordAllowed(EsperEPL2GrammarParser.ColumnListKeywordAllowedContext ctx) {
         }       
 
+        public void EnterTypeParameters(EsperEPL2GrammarParser.TypeParametersContext ctx) {
+        }
+
+        public void ExitTypeParameters(EsperEPL2GrammarParser.TypeParametersContext ctx) {
+        }
+
+        public void EnterClassIdentifierNoDimensions(EsperEPL2GrammarParser.ClassIdentifierNoDimensionsContext ctx) {
+        }
+
+        public void ExitClassIdentifierNoDimensions(EsperEPL2GrammarParser.ClassIdentifierNoDimensionsContext ctx) {
+        }
+
+        public void EnterFafInsertRow(EsperEPL2GrammarParser.FafInsertRowContext ctx) {
+        }
+
+        public void ExitFafInsertRow(EsperEPL2GrammarParser.FafInsertRowContext ctx) {
+        }
+
+        public void EnterInsertIntoEventPrecedence(EsperEPL2GrammarParser.InsertIntoEventPrecedenceContext ctx) {
+        }
+
+        public void ExitInsertIntoEventPrecedence(EsperEPL2GrammarParser.InsertIntoEventPrecedenceContext ctx) {
+        }
+        
         /// <summary>
         /// Pushes a statement into the stack, creating a new empty statement to fill in.
         /// The leave node method for lookup statements pops from the stack.
@@ -3976,7 +4006,13 @@ namespace com.espertech.esper.compiler.@internal.parse
 
             var optionalInsertName = mergeInsertContext.classIdentifier() != null ? ASTUtil.UnescapeClassIdent(mergeInsertContext.classIdentifier()) : null;
             var columnsList = ASTUtil.GetIdentList(mergeInsertContext.columnList());
-            _mergeActions.Add(new OnTriggerMergeActionInsert(whereCond, optionalInsertName, columnsList, expressions));
+            
+            ExprNode eventPrecedence = null;
+            if (mergeInsertContext.insertIntoEventPrecedence() != null) {
+                eventPrecedence = ASTExprHelper.ExprCollectSubNodes(mergeInsertContext.insertIntoEventPrecedence(), 0, _astExprNodeMap)[0];
+            }
+            
+            _mergeActions.Add(new OnTriggerMergeActionInsert(whereCond, optionalInsertName, columnsList, expressions, eventPrecedence));
         }
 
         private void HandleChainedFunction(ParserRuleContext parentCtx, EsperEPL2GrammarParser.ChainableElementsContext chainedCtx, ExprNode childExpression) {
@@ -4021,7 +4057,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 StatementSpec.StreamSpecs.IsEmpty() &&
                 StatementSpec.FireAndForgetSpec == null)
             {
-                StatementSpec.FireAndForgetSpec = new FireAndForgetSpecInsert(false);
+                StatementSpec.FireAndForgetSpec = new FireAndForgetSpecInsert(false, EmptyList<IList<ExprNode>>.Instance);
             }
 
             StatementSpec.SubstitutionParameters = _substitutionParamNodes;

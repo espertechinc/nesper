@@ -44,8 +44,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns property name.
         /// </summary>
         /// <returns>name</returns>
-        public string Name
-        {
+        public string Name {
             get => name;
             set => name = value;
         }
@@ -54,8 +53,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns property type.
         /// </summary>
         /// <returns>type</returns>
-        public string Type
-        {
+        public string Type {
             get => type;
             set => type = value;
         }

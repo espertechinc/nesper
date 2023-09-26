@@ -39,9 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public IList<QueryGraphValueDescForge> Items { get; }
 
-        public bool IsEmptyNotNavigable {
-            get { return Items.IsEmpty(); }
-        }
+        public bool IsEmptyNotNavigable => Items.IsEmpty();
 
         /// <summary>
         ///     Add key and index property.
@@ -56,9 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             ExprIdentNode indexPropertyIdent)
         {
             var value = FindIdentEntry(indexPropertyIdent);
-            if (value != null && value.Entry is QueryGraphValueEntryHashKeyedForgeExpr) {
+            if (value != null && value.Entry is QueryGraphValueEntryHashKeyedForgeExpr expr) {
                 // if this index property exists and is compared to a constant, ignore the index prop
-                var expr = (QueryGraphValueEntryHashKeyedForgeExpr) value.Entry;
                 if (expr.IsConstant) {
                     return false;
                 }
@@ -70,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             Items.Add(
                 new QueryGraphValueDescForge(
-                    new ExprNode[] {indexPropertyIdent},
+                    new ExprNode[] { indexPropertyIdent },
                     new QueryGraphValueEntryHashKeyedForgeProp(
                         keyPropNode,
                         keyProperty,
@@ -95,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             Items.Add(
                 new QueryGraphValueDescForge(
-                    new ExprNode[] {propertyValueIdent},
+                    new ExprNode[] { propertyValueIdent },
                     new QueryGraphValueEntryRangeInForge(rangeType, propertyStart, propertyEnd, true)));
         }
 
@@ -106,23 +103,22 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             bool isBetweenOrIn)
         {
             // Note: Read as follows:
-            // System.out.println("If I have an index on '" + propertyValue + "' I'm evaluating " + propertyKey + " and finding all values of " + propertyValue + " " + op + " then " + propertyKey);
+            // Console.WriteLine("If I have an index on '" + propertyValue + "' I'm evaluating " + propertyKey + " and finding all values of " + propertyValue + " " + op + " then " + propertyKey);
 
             // Check if there is an opportunity to convert this to a range or remove an earlier specification
             var existing = FindIdentEntry(propertyValueIdent);
             if (existing == null) {
                 Items.Add(
                     new QueryGraphValueDescForge(
-                        new ExprNode[] {propertyValueIdent},
+                        new ExprNode[] { propertyValueIdent },
                         new QueryGraphValueEntryRangeRelOpForge(op, propertyKey, isBetweenOrIn)));
                 return;
             }
 
-            if (!(existing.Entry is QueryGraphValueEntryRangeRelOpForge)) {
+            if (!(existing.Entry is QueryGraphValueEntryRangeRelOpForge relOp)) {
                 return; // another comparison exists already, don't add range
             }
 
-            var relOp = (QueryGraphValueEntryRangeRelOpForge) existing.Entry;
             var opsDesc = QueryGraphRangeUtil.GetCanConsolidate(op, relOp.Type);
             if (opsDesc != null) {
                 var start = !opsDesc.IsReverse ? relOp.Expression : propertyKey;
@@ -138,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             Items.Add(
                 new QueryGraphValueDescForge(
-                    new ExprNode[] {indexedPropIdent},
+                    new ExprNode[] { indexedPropIdent },
                     new QueryGraphValueEntryHashKeyedForgeExpr(exprNodeNoIdent, false)));
         }
 
@@ -148,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             Items.Add(
                 new QueryGraphValueDescForge(
-                    new ExprNode[] {indexedPropIdent},
+                    new ExprNode[] { indexedPropIdent },
                     new QueryGraphValueEntryHashKeyedForgeExpr(exprNodeNoIdent, true)));
         }
 
@@ -157,8 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 IList<QueryGraphValueEntryHashKeyedForge> keys = new List<QueryGraphValueEntryHashKeyedForge>();
                 Deque<string> indexed = new ArrayDeque<string>();
                 foreach (var desc in Items) {
-                    if (desc.Entry is QueryGraphValueEntryHashKeyedForge) {
-                        var keyprop = (QueryGraphValueEntryHashKeyedForge) desc.Entry;
+                    if (desc.Entry is QueryGraphValueEntryHashKeyedForge keyprop) {
                         keys.Add(keyprop);
                         indexed.Add(GetSingleIdentNodeProp(desc.IndexExprs));
                     }
@@ -168,8 +163,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 var count = 0;
                 foreach (var desc in Items) {
                     if (desc.Entry is QueryGraphValueEntryHashKeyedForge) {
-                        if (desc.Entry is QueryGraphValueEntryHashKeyedForgeProp) {
-                            var keyprop = (QueryGraphValueEntryHashKeyedForgeProp) desc.Entry;
+                        if (desc.Entry is QueryGraphValueEntryHashKeyedForgeProp keyprop) {
                             strictKeys[count] = keyprop.KeyProperty;
                         }
 
@@ -186,8 +180,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 Deque<string> indexed = new ArrayDeque<string>();
                 IList<QueryGraphValueEntryRangeForge> keys = new List<QueryGraphValueEntryRangeForge>();
                 foreach (var desc in Items) {
-                    if (desc.Entry is QueryGraphValueEntryRangeForge) {
-                        var keyprop = (QueryGraphValueEntryRangeForge) desc.Entry;
+                    if (desc.Entry is QueryGraphValueEntryRangeForge keyprop) {
                         keys.Add(keyprop);
                         indexed.Add(GetSingleIdentNodeProp(desc.IndexExprs));
                     }
@@ -225,19 +218,18 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             ExprNode testPropIdent,
             ExprNode[] setPropExpr)
         {
-            var indexExpressions = new ExprNode[] {testPropIdent};
+            var indexExpressions = new ExprNode[] { testPropIdent };
             var found = FindEntry(indexExpressions);
 
             var setExpressions = setPropExpr;
-            if (found != null && found.Entry is QueryGraphValueEntryInKeywordSingleIdxForge) {
-                var existing = (QueryGraphValueEntryInKeywordSingleIdxForge) found.Entry;
-                setExpressions = (ExprNode[]) CollectionUtil.AddArrays(existing.KeyExprs, setPropExpr);
+            if (found != null && found.Entry is QueryGraphValueEntryInKeywordSingleIdxForge existing) {
+                setExpressions = (ExprNode[])CollectionUtil.AddArrays(existing.KeyExprs, setPropExpr);
                 Items.Remove(found);
             }
 
             Items.Add(
                 new QueryGraphValueDescForge(
-                    new[] {testPropIdent},
+                    new[] { testPropIdent },
                     new QueryGraphValueEntryInKeywordSingleIdxForge(setExpressions)));
         }
 
@@ -247,8 +239,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 IList<QueryGraphValueEntryInKeywordSingleIdxForge> single =
                     new List<QueryGraphValueEntryInKeywordSingleIdxForge>();
                 foreach (var desc in Items) {
-                    if (desc.Entry is QueryGraphValueEntryInKeywordSingleIdxForge) {
-                        var keyprop = (QueryGraphValueEntryInKeywordSingleIdxForge) desc.Entry;
+                    if (desc.Entry is QueryGraphValueEntryInKeywordSingleIdxForge keyprop) {
                         single.Add(keyprop);
                         indexedProps.Add(GetSingleIdentNodeProp(desc.IndexExprs));
                     }
@@ -262,8 +253,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             get {
                 IList<QueryGraphValuePairInKWMultiIdx> multi = new List<QueryGraphValuePairInKWMultiIdx>();
                 foreach (var desc in Items) {
-                    if (desc.Entry is QueryGraphValueEntryInKeywordMultiIdxForge) {
-                        var keyprop = (QueryGraphValueEntryInKeywordMultiIdxForge) desc.Entry;
+                    if (desc.Entry is QueryGraphValueEntryInKeywordMultiIdxForge keyprop) {
                         multi.Add(new QueryGraphValuePairInKWMultiIdx(desc.IndexExprs, keyprop));
                     }
                 }
@@ -281,9 +271,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             // find existing custom-entry for same index expressions
             QueryGraphValueEntryCustomForge found = null;
             foreach (var desc in Items) {
-                if (desc.Entry is QueryGraphValueEntryCustomForge) {
+                if (desc.Entry is QueryGraphValueEntryCustomForge forge) {
                     if (ExprNodeUtilityCompare.DeepEquals(desc.IndexExprs, indexExpressions, true)) {
-                        found = (QueryGraphValueEntryCustomForge) desc.Entry;
+                        found = forge;
                         break;
                     }
                 }
@@ -296,7 +286,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             // find/create operation against the indexed fields
             var key = new QueryGraphValueEntryCustomKeyForge(operationName, indexExpressions);
-            QueryGraphValueEntryCustomOperationForge op = found.Operations.Get(key);
+            var op = found.Operations.Get(key);
             if (op == null) {
                 op = new QueryGraphValueEntryCustomOperationForge();
                 found.Operations.Put(key, op);
@@ -312,7 +302,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                     continue;
                 }
 
-                var other = (ExprIdentNode) desc.IndexExprs[0];
+                var other = (ExprIdentNode)desc.IndexExprs[0];
                 if (search.ResolvedPropertyName.Equals(other.ResolvedPropertyName)) {
                     return desc;
                 }
@@ -338,7 +328,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 throw new IllegalStateException("Incorrect number of index expressions");
             }
 
-            var identNode = (ExprIdentNode) indexExprs[0];
+            var identNode = (ExprIdentNode)indexExprs[0];
             return identNode.ResolvedPropertyName;
         }
 
@@ -348,7 +338,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(QueryGraphValue), GetType(), classScope);
-            method.Block.DeclareVar<IList<QueryGraphValueDesc>>("items", NewInstance<List<QueryGraphValueDesc>>(Constant(Items.Count)));
+            method.Block.DeclareVar<IList<QueryGraphValueDesc>>(
+                "items",
+                NewInstance<List<QueryGraphValueDesc>>(Constant(Items.Count)));
             for (var i = 0; i < Items.Count; i++) {
                 method.Block.ExprDotMethod(Ref("items"), "Add", Items[i].Make(method, symbols, classScope));
             }

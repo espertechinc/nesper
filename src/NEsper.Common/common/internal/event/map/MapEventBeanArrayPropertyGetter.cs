@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         public object GetMap(IDictionary<string, object> map)
         {
             var mapValue = map.Get(propertyName);
-            return BaseNestableEventUtil.GetArrayPropertyAsUnderlyingsArray(underlyingType, (EventBean[]) mapValue);
+            return BaseNestableEventUtil.GetArrayPropertyAsUnderlyingsArray(underlyingType, (EventBean[])mapValue);
         }
 
         public bool IsMapExistsProperty(IDictionary<string, object> map)

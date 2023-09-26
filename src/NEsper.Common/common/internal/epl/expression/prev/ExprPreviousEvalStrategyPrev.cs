@@ -37,13 +37,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             int? constantIndexNumber,
             bool tail)
         {
-            this._streamNumber = streamNumber;
-            this._indexNode = indexNode;
-            this._evalNode = evalNode;
-            this._randomAccessGetter = randomAccessGetter;
-            this._relativeAccessGetter = relativeAccessGetter;
+            _streamNumber = streamNumber;
+            _indexNode = indexNode;
+            _evalNode = evalNode;
+            _randomAccessGetter = randomAccessGetter;
+            _relativeAccessGetter = relativeAccessGetter;
             _isConstantIndex = constantIndex;
-            this._constantIndexNumber = constantIndexNumber;
+            _constantIndexNumber = constantIndexNumber;
             _isTail = tail;
         }
 
@@ -51,15 +51,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             EventBean[] eventsPerStream,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean substituteEvent = GetSubstitute(eventsPerStream, exprEvaluatorContext);
+            var substituteEvent = GetSubstitute(eventsPerStream, exprEvaluatorContext);
             if (substituteEvent == null) {
                 return null;
             }
 
             // Substitute original event with prior event, evaluate inner expression
-            EventBean originalEvent = eventsPerStream[_streamNumber];
+            var originalEvent = eventsPerStream[_streamNumber];
             eventsPerStream[_streamNumber] = substituteEvent;
-            object evalResult = _evalNode.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            var evalResult = _evalNode.Evaluate(eventsPerStream, true, exprEvaluatorContext);
             eventsPerStream[_streamNumber] = originalEvent;
 
             return evalResult;
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             EventBean[] eventsPerStream,
             ExprEvaluatorContext context)
         {
-            object result = Evaluate(eventsPerStream, context);
+            var result = Evaluate(eventsPerStream, context);
             if (result == null) {
                 return null;
             }
@@ -102,18 +102,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             }
             else {
                 // evaluate first child, which returns the index
-                object indexResult = _indexNode.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                var indexResult = _indexNode.Evaluate(eventsPerStream, true, exprEvaluatorContext);
                 if (indexResult == null) {
                     return null;
                 }
 
-                index = (indexResult).AsInt32();
+                index = indexResult.AsInt32();
             }
 
             // access based on index returned
             EventBean substituteEvent;
             if (_randomAccessGetter != null) {
-                RandomAccessByIndex randomAccess = _randomAccessGetter.Accessor;
+                var randomAccess = _randomAccessGetter.Accessor;
                 if (!_isTail) {
                     substituteEvent = randomAccess.GetNewData(index.Value);
                 }
@@ -122,8 +122,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 }
             }
             else {
-                EventBean evalEvent = eventsPerStream[_streamNumber];
-                RelativeAccessByEventNIndex relativeAccess = _relativeAccessGetter.GetAccessor(evalEvent);
+                var evalEvent = eventsPerStream[_streamNumber];
+                var relativeAccess = _relativeAccessGetter.GetAccessor(evalEvent);
                 if (relativeAccess == null) {
                     return null;
                 }

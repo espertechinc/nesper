@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -19,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         EventAdvancedIndexFactoryForge Forge { get; }
 
         AdvancedIndexConfigContextPartition ConfigureContextPartition(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             EventType eventType,
             EventAdvancedIndexProvisionRuntime advancedIndexProvisionDesc,
             EventTableOrganization organization);

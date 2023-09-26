@@ -22,8 +22,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfigured(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -68,45 +70,49 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         private static void RunAssertion(
             RegressionEnvironment env,
-            String eventTypeName,
+            string eventTypeName,
             RegressionPath path)
         {
-            var stmtSelectWild = "@Name('s0') select * from " + eventTypeName;
+            var stmtSelectWild = "@name('s0') select * from " + eventTypeName;
             env.CompileDeploy(stmtSelectWild, path).AddListener("s0");
 
-            var type = env.Statement("s0").EventType;
-            SupportEventTypeAssertionUtil.AssertConsistency(type);
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    var type = statement.EventType;
+                    SupportEventTypeAssertionUtil.AssertConsistency(type);
 
-            object[][] types = {
-                new object[] {"attrNonPositiveInteger", typeof(int?)},
-                new object[] {"attrNonNegativeInteger", typeof(int?)},
-                new object[] {"attrNegativeInteger", typeof(int?)},
-                new object[] {"attrPositiveInteger", typeof(int?)},
-                new object[] {"attrLong", typeof(long?)},
-                new object[] {"attrUnsignedLong", typeof(ulong?)},
-                new object[] {"attrInt", typeof(int?)},
-                new object[] {"attrUnsignedInt", typeof(uint?)},
-                new object[] {"attrDecimal", typeof(double?)},
-                new object[] {"attrInteger", typeof(int?)},
-                new object[] {"attrFloat", typeof(float?)},
-                new object[] {"attrDouble", typeof(double?)},
-                new object[] {"attrString", typeof(string)},
-                new object[] {"attrShort", typeof(short?)},
-                new object[] {"attrUnsignedShort", typeof(ushort?)},
-                new object[] {"attrByte", typeof(byte?)},
-                new object[] {"attrUnsignedByte", typeof(byte?)},
-                new object[] {"attrBoolean", typeof(bool?)},
-                new object[] {"attrDateTime", typeof(string)},
-                new object[] {"attrDate", typeof(string)},
-                new object[] {"attrTime", typeof(string)}
-            };
+                    object[][] types = {
+                        new object[] { "attrNonPositiveInteger", typeof(int?) },
+                        new object[] { "attrNonNegativeInteger", typeof(int?) },
+                        new object[] { "attrNegativeInteger", typeof(int?) },
+                        new object[] { "attrPositiveInteger", typeof(int?) },
+                        new object[] { "attrLong", typeof(long?) },
+                        new object[] { "attrUnsignedLong", typeof(ulong?) },
+                        new object[] { "attrInt", typeof(int?) },
+                        new object[] { "attrUnsignedInt", typeof(uint?) },
+                        new object[] { "attrDecimal", typeof(double?) },
+                        new object[] { "attrInteger", typeof(int?) },
+                        new object[] { "attrFloat", typeof(float?) },
+                        new object[] { "attrDouble", typeof(double?) },
+                        new object[] { "attrString", typeof(string) },
+                        new object[] { "attrShort", typeof(short?) },
+                        new object[] { "attrUnsignedShort", typeof(ushort?) },
+                        new object[] { "attrByte", typeof(byte?) },
+                        new object[] { "attrUnsignedByte", typeof(byte?) },
+                        new object[] { "attrBoolean", typeof(bool?) },
+                        new object[] { "attrDateTime", typeof(string) },
+                        new object[] { "attrDate", typeof(string) },
+                        new object[] { "attrTime", typeof(string) }
+                    };
 
-            for (var i = 0; i < types.Length; i++) {
-                var name = types[i][0].ToString();
-                var desc = type.GetPropertyDescriptor(name);
-                var expected = (Type) types[i][1];
-                Assert.AreEqual(expected, desc.PropertyType, "Failed for " + name);
-            }
+                    for (var i = 0; i < types.Length; i++) {
+                        var name = types[i][0].ToString();
+                        var desc = type.GetPropertyDescriptor(name);
+                        var expected = (Type)types[i][1];
+                        Assert.AreEqual(expected, desc.PropertyType, "Failed for " + name);
+                    }
+                });
 
             env.UndeployAll();
         }

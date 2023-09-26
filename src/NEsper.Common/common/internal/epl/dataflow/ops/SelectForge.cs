@@ -92,9 +92,9 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 throw new ExprValidationException("Selecting remove-stream is not supported");
             }
 
-            ExprNodeSubselectDeclaredDotVisitor visitor =
+            var visitor =
                 StatementSpecRawWalkerSubselectAndDeclaredDot.WalkSubselectAndDeclaredDotExpr(select);
-            GroupByClauseExpressions groupByExpressions = GroupByExpressionHelper.GetGroupByRollupExpressions(
+            var groupByExpressions = GroupByExpressionHelper.GetGroupByRollupExpressions(
                 select.GroupByExpressions,
                 select.SelectClauseSpec,
                 select.WhereClause,
@@ -106,13 +106,13 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
 
             IDictionary<int, FilterStreamSpecRaw> streams = new Dictionary<int, FilterStreamSpecRaw>();
             for (var streamNum = 0; streamNum < select.StreamSpecs.Count; streamNum++) {
-                StreamSpecRaw rawStreamSpec = select.StreamSpecs[streamNum];
-                if (!(rawStreamSpec is FilterStreamSpecRaw)) {
+                var rawStreamSpec = select.StreamSpecs[streamNum];
+                if (!(rawStreamSpec is FilterStreamSpecRaw raw)) {
                     throw new ExprValidationException(
                         "From-clause must contain only streams and cannot contain patterns or other constructs");
                 }
 
-                streams.Put(streamNum, (FilterStreamSpecRaw) rawStreamSpec);
+                streams.Put(streamNum, raw);
             }
 
             // compile offered streams
@@ -126,14 +126,18 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                         "Failed to find stream '" +
                         filter.RawFilterSpec.EventTypeName +
                         "' among input ports, input ports are " +
-                        CompatExtensions.RenderAny(GetInputPortNames(context.InputPorts)));
+                        GetInputPortNames(context.InputPorts).RenderAny());
                 }
 
                 var inputPortValue = inputPort.Value;
                 var eventType = inputPortValue.Value.TypeDesc.EventType;
                 originatingStreamToViewableStream[inputPortValue.Key] = streamNum;
                 var streamAlias = filter.OptionalStreamName;
-                var filterSpecCompiled = new FilterSpecCompiled(eventType, streamAlias, FilterSpecPlanForge.EMPTY, null);
+                var filterSpecCompiled = new FilterSpecCompiled(
+                    eventType,
+                    streamAlias,
+                    FilterSpecPlanForge.EMPTY,
+                    null);
                 var viewSpecs = select.StreamSpecs[streamNum].ViewSpecs;
                 var filterStreamSpecCompiled = new FilterStreamSpecCompiled(
                     filterSpecCompiled,
@@ -146,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             // create compiled statement spec
             var selectClauseCompiled = StatementLifecycleSvcUtil.CompileSelectClause(select.SelectClauseSpec);
 
-            Attribute[] mergedAnnotations = AnnotationUtil.MergeAnnotations(
+            var mergedAnnotations = AnnotationUtil.MergeAnnotations(
                 context.StatementRawInfo.Annotations,
                 context.OperatorAnnotations);
             mergedAnnotations = AddObjectArrayRepresentation(mergedAnnotations);
@@ -189,16 +193,17 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             // return the statement spec
             context.Base.StatementSpec = containerStatement;
 
-            EventType outputEventType = forgeablesResult.EventType;
+            var outputEventType = forgeablesResult.EventType;
 
             var initializeResult = new DataFlowOpForgeInitializeResult();
-            initializeResult.TypeDescriptors = new[] {new GraphTypeDesc(false, true, outputEventType)};
+            initializeResult.TypeDescriptors = new[] { new GraphTypeDesc(false, true, outputEventType) };
             initializeResult.AdditionalForgeables = forgeablesResult.ForgeResult;
 
             foreach (var forgable in forgeablesResult.ForgeResult.Forgeables) {
                 if (forgable.ForgeableType == StmtClassForgeableType.AIFACTORYPROVIDER) {
                     classNameAIFactoryProvider = forgable.ClassName;
-                } else if (forgable.ForgeableType == StmtClassForgeableType.FIELDS) {
+                }
+                else if (forgable.ForgeableType == StmtClassForgeableType.FIELDS) {
                     classNameFieldsFactoryProvider = forgable.ClassName;
                 }
             }
@@ -238,7 +243,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                         classNameAIFactoryProvider,
                         symbols.GetAddInitSvc(builder.Method()),
                         NewInstanceInner(classNameFieldsFactoryProvider)
-                        ))
+                    ))
                 .Build();
         }
 

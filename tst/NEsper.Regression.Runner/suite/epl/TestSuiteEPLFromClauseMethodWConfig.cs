@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             using RegressionSession session = RegressionRunner.Session(Container);
 
             ConfigurationCommonMethodRef methodConfig = new ConfigurationCommonMethodRef();
-            methodConfig.SetLRUCache(3);
+            methodConfig.LRUCache = (3);
             session.Configuration.Common.AddMethodRef(typeof(SupportStaticMethodInvocations), methodConfig);
             session.Configuration.Common.AddImportNamespace(typeof(SupportStaticMethodInvocations));
             session.Configuration.Common.AddEventType(typeof(SupportBean));
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             using RegressionSession session = RegressionRunner.Session(Container);
 
             ConfigurationCommonMethodRef configMethod = new ConfigurationCommonMethodRef();
-            configMethod.SetLRUCache(10);
+            configMethod.LRUCache = (10);
             session.Configuration.Common.AddMethodRef(typeof(SupportJoinMethods), configMethod);
             session.Configuration.Common.AddEventType(typeof(SupportBeanInt));
             session.Configuration.Common.AddImportType(typeof(SupportJoinMethods));

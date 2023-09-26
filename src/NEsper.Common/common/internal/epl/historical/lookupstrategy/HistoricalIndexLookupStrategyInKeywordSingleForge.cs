@@ -42,9 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategyInKeywordSingle), GetType(), classScope);
 
             method.Block
-                .DeclareVar<HistoricalIndexLookupStrategyInKeywordSingle>(
-                    "strat",
-                    NewInstance(typeof(HistoricalIndexLookupStrategyInKeywordSingle)))
+                .DeclareVarNewInstance<HistoricalIndexLookupStrategyInKeywordSingle>("strat")
                 .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
                 .SetProperty(
                     Ref("strat"),

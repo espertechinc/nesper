@@ -8,32 +8,36 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
     public class InfraNWTableSubqCorrelJoin
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
-            // named window
-            execs.Add(new InfraNWTableSubqCorrelJoinAssertion(true, false)); // disable index-share
-            execs.Add(new InfraNWTableSubqCorrelJoinAssertion(true, true)); // enable-index-share
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withn(execs);
+            return execs;
+        }
 
+        public static IList<RegressionExecution> Withn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            // named window
+            execs.Add(new InfraNWTableSubqCorrelJoinAssertion(true, false));
+            execs.Add(new InfraNWTableSubqCorrelJoinAssertion(true, true));
             // table
             execs.Add(new InfraNWTableSubqCorrelJoinAssertion(false, false));
             return execs;
         }
 
-        internal class InfraNWTableSubqCorrelJoinAssertion : RegressionExecution
+        private class InfraNWTableSubqCorrelJoinAssertion : RegressionExecution
         {
-            private readonly bool enableIndexShareCreate;
             private readonly bool namedWindow;
+            private readonly bool enableIndexShareCreate;
 
             public InfraNWTableSubqCorrelJoinAssertion(
                 bool namedWindow,
@@ -47,54 +51,53 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var createEpl = namedWindow
-                    ? "create window MyInfra#unique(TheString) as select * from SupportBean"
-                    : "create table MyInfra(TheString string primary key, IntPrimitive int primary key)";
+                    ? "@Public create window MyInfra#unique(theString) as select * from SupportBean"
+                    : "@Public create table MyInfra(theString string primary key, intPrimitive int primary key)";
                 if (enableIndexShareCreate) {
                     createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
                 }
 
                 env.CompileDeploy(createEpl, path);
-                env.CompileDeploy("insert into MyInfra select TheString, IntPrimitive from SupportBean", path);
+                env.CompileDeploy("insert into MyInfra select theString, intPrimitive from SupportBean", path);
 
                 var consumeEpl =
-                    "@Name('s0') select (select IntPrimitive from MyInfra where TheString = S1.P10) as val from SupportBean_S0#lastevent as S0, SupportBean_S1#lastevent as S1";
+                    "@name('s0') select (select intPrimitive from MyInfra where theString = s1.p10) as val from SupportBean_S0#lastevent as s0, SupportBean_S1#lastevent as s1";
                 env.CompileDeploy(consumeEpl, path).AddListener("s0");
 
-                var fields = new [] { "val" };
+                var fields = "val".SplitCsv();
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E2", 20));
                 env.SendEventBean(new SupportBean("E3", 30));
 
                 env.SendEventBean(new SupportBean_S0(1, "E1"));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportBean_S1(1, "E2"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {20});
+                env.AssertPropsNew("s0", fields, new object[] { 20 });
 
                 env.SendEventBean(new SupportBean_S0(1, "E3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {20});
+                env.AssertPropsNew("s0", fields, new object[] { 20 });
 
                 env.SendEventBean(new SupportBean_S1(1, "E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {10});
+                env.AssertPropsNew("s0", fields, new object[] { 10 });
 
                 env.SendEventBean(new SupportBean_S1(1, "E3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {30});
+                env.AssertPropsNew("s0", fields, new object[] { 30 });
 
                 env.UndeployModuleContaining("s0");
                 env.UndeployAll();
+            }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "namedWindow=" +
+                       namedWindow +
+                       ", enableIndexShareCreate=" +
+                       enableIndexShareCreate +
+                       '}';
             }
         }
     }

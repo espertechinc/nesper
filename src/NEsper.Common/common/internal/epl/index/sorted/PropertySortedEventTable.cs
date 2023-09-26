@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
 
         public abstract ICollection<EventBean> LookupGreaterColl(object keyStart);
 
-        public abstract ISet<EventBean> LookupConstants(RangeIndexLookupValue lookupValueBase);
+        public abstract ISet<EventBean> LookupConstantsFAF(RangeIndexLookupValue lookupValueBase);
 
         public PropertySortedEventTable(PropertySortedEventTableFactory factory)
         {
@@ -95,13 +95,13 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             exprEvaluatorContext.InstrumentationProvider.QIndexAddRemove(this, newData, oldData);
 
             if (newData != null) {
-                foreach (EventBean theEvent in newData) {
+                foreach (var theEvent in newData) {
                     Add(theEvent, exprEvaluatorContext);
                 }
             }
 
             if (oldData != null) {
-                foreach (EventBean theEvent in oldData) {
+                foreach (var theEvent in oldData) {
                     Remove(theEvent, exprEvaluatorContext);
                 }
             }
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null) {
-                foreach (EventBean theEvent in events) {
+                foreach (var theEvent in events) {
                     Add(theEvent, exprEvaluatorContext);
                 }
             }
@@ -138,15 +138,13 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null) {
-                foreach (EventBean theEvent in events) {
+                foreach (var theEvent in events) {
                     Remove(theEvent, exprEvaluatorContext);
                 }
             }
         }
 
-        public virtual int? NumberOfEvents {
-            get => null;
-        }
+        public virtual int? NumberOfEvents => null;
 
         protected internal static ISet<EventBean> Normalize(IDictionary<object, ISet<EventBean>> submap)
         {
@@ -159,7 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             }
 
             ISet<EventBean> result = new LinkedHashSet<EventBean>();
-            foreach (KeyValuePair<object, ISet<EventBean>> entry in submap) {
+            foreach (var entry in submap) {
                 result.AddAll(entry.Value);
             }
 
@@ -178,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             }
 
             Deque<EventBean> result = new ArrayDeque<EventBean>();
-            foreach (KeyValuePair<object, ISet<EventBean>> entry in submap) {
+            foreach (var entry in submap) {
                 result.AddAll(entry.Value);
             }
 
@@ -197,12 +195,12 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
                 return NormalizeCollection(submapOne);
             }
 
-            ArrayDeque<EventBean> result = new ArrayDeque<EventBean>();
-            foreach (KeyValuePair<object, ISet<EventBean>> entry in submapOne) {
+            var result = new ArrayDeque<EventBean>();
+            foreach (var entry in submapOne) {
                 result.AddAll(entry.Value);
             }
 
-            foreach (KeyValuePair<object, ISet<EventBean>> entry in submapTwo) {
+            foreach (var entry in submapTwo) {
                 result.AddAll(entry.Value);
             }
 
@@ -222,11 +220,11 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             }
 
             ISet<EventBean> result = new LinkedHashSet<EventBean>();
-            foreach (KeyValuePair<object, ISet<EventBean>> entry in submapOne) {
+            foreach (var entry in submapOne) {
                 result.AddAll(entry.Value);
             }
 
-            foreach (KeyValuePair<object, ISet<EventBean>> entry in submapTwo) {
+            foreach (var entry in submapTwo) {
                 result.AddAll(entry.Value);
             }
 
@@ -235,18 +233,14 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
 
         public string ToQueryPlan()
         {
-            return this.GetType().GetSimpleName() +
+            return GetType().GetSimpleName() +
                    " streamNum=" +
                    factory.Organization.StreamNum;
         }
 
-        public EventTableOrganization Organization {
-            get => factory.Organization;
-        }
+        public EventTableOrganization Organization => factory.Organization;
 
-        public Type ValueType {
-            get => factory.valueType;
-        }
+        public Type ValueType => factory.valueType;
 
         IEnumerator IEnumerable.GetEnumerator()
         {

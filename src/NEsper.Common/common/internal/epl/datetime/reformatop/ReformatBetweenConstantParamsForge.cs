@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 throw new ExprValidationException("Date-time method 'between' requires non-null parameter values");
             }
 
-            return (bool) value;
+            return (bool)value;
         }
 
         public object EvaluateInternal(long ts)

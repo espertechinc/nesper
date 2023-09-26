@@ -12,7 +12,7 @@ namespace com.espertech.esper.runtime.client.option
     ///     Implement this interface to provide values for substitution parameters.
     /// </summary>
 
-    public delegate void StatementSubstitutionParameterOption(StatementSubstitutionParameterContext value);
+    public delegate void  StatementSubstitutionParameterOption(StatementSubstitutionParameterContext value);
 
 #if DEPRECATED_INTERFACE
     public interface StatementSubstitutionParameterOption

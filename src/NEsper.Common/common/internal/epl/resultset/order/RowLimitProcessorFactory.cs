@@ -6,7 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.variable.core;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.order
@@ -38,22 +38,22 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             set => currentOffset = value;
         }
 
-        public RowLimitProcessor Instantiate(AgentInstanceContext agentInstanceContext)
+        public RowLimitProcessor Instantiate(ExprEvaluatorContext exprEvaluatorContext)
         {
             VariableReader numRowsVariableReader = null;
             if (numRowsVariable != null) {
-                numRowsVariableReader = agentInstanceContext.VariableManagementService.GetReader(
+                numRowsVariableReader = exprEvaluatorContext.VariableManagementService.GetReader(
                     numRowsVariable.DeploymentId,
                     numRowsVariable.MetaData.VariableName,
-                    agentInstanceContext.AgentInstanceId);
+                    exprEvaluatorContext.AgentInstanceId);
             }
 
             VariableReader offsetVariableReader = null;
             if (offsetVariable != null) {
-                offsetVariableReader = agentInstanceContext.StatementContext.VariableManagementService.GetReader(
+                offsetVariableReader = exprEvaluatorContext.VariableManagementService.GetReader(
                     offsetVariable.DeploymentId,
                     offsetVariable.MetaData.VariableName,
-                    agentInstanceContext.AgentInstanceId);
+                    exprEvaluatorContext.AgentInstanceId);
             }
 
             return new RowLimitProcessor(numRowsVariableReader, offsetVariableReader, currentRowLimit, currentOffset);

@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.enummethod;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.methodbase;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.rettype;
@@ -19,15 +18,15 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
 
-namespace com.espertech.esper.regressionlib.suite.client.extension {
 
+namespace com.espertech.esper.regressionlib.suite.client.extension
+{
     public class ClientExtendEnumMethod
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
             WithScalarNoParamMedian(execs);
@@ -51,14 +50,16 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             return execs;
         }
 
-        public static IList<RegressionExecution> WithLambdaScalarInputValueAndIndex(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithLambdaScalarInputValueAndIndex(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientExtendEnumLambdaScalarInputValueAndIndex());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithLambdaEventInputValueAndIndex(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithLambdaEventInputValueAndIndex(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientExtendEnumLambdaEventInputValueAndIndex());
@@ -125,10 +126,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select Strvals.enumPlugInLambdaScalarWStateAndValue('X', (r, v) => r || v) as c0 " +
-                          "from SupportCollection";
+                var epl =
+                    "@name('s0') select Strvals.enumPlugInLambdaScalarWStateAndValue('X', (r, v) => r || v) as c0 " +
+                    "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("c0"));
+                env.AssertStatement(
+                    "s0",
+                    statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("c0")));
 
                 SendAssert(env, "Xa", "a");
                 SendAssert(env, "Xab", "a,b");
@@ -142,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string csv)
             {
                 env.SendEventBean(SupportCollection.MakeString(csv));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0".SplitCsv(), new object[] { expected });
+                env.AssertPropsNew("s0", "c0".SplitCsv(), new object[] { expected });
             }
         }
 
@@ -150,10 +154,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select Intvals.enumPlugInLambdaScalarWPredicateAndIndex((v, ind) => v > 0 and ind < 3) as c0 " +
-                          "from SupportCollection";
+                var epl =
+                    "@name('s0') select Intvals.enumPlugInLambdaScalarWPredicateAndIndex((v, ind) => v > 0 and ind < 3) as c0 " +
+                    "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("c0"));
+                env.AssertStatement(
+                    "s0",
+                    statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c0")));
 
                 SendAssert(env, 0, "-1,-2");
                 SendAssert(env, 1, "-1,2");
@@ -170,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string csv)
             {
                 env.SendEventBean(SupportCollection.MakeNumeric(csv));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0".SplitCsv(), new object[] { expected });
+                env.AssertPropsNew("s0", "c0".SplitCsv(), new object[] { expected });
             }
         }
 
@@ -178,11 +185,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "(select * from SupportBean#keepall).enumPlugInLambdaEventWPredicateAndIndex((v, ind) => v.IntPrimitive > 0 and ind < 3) as c0 " +
                           "from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("c0"));
+                env.AssertStatement(
+                    "s0",
+                    statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c0")));
 
                 SendAssert(env, null);
 
@@ -206,7 +215,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 int? expected)
             {
                 env.SendEventBean(new SupportBean_S0(0));
-                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+                env.AssertEqualsNew("s0", "c0", expected);
             }
         }
 
@@ -214,11 +223,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "(select * from SupportBean#keepall).enumPlugInTwoLambda(l1 -> 2*IntPrimitive, l2 -> 3*IntPrimitive) as c0 " +
                           "from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("c0"));
+                env.AssertStatement(
+                    "s0",
+                    statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c0")));
 
                 SendAssert(env, null);
 
@@ -239,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 int? expected)
             {
                 env.SendEventBean(new SupportBean_S0(0));
-                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+                env.AssertEqualsNew("s0", "c0", expected);
             }
         }
 
@@ -247,11 +258,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "(select * from SupportBean#keepall).enumPlugInReturnSingleEvent(v => IntPrimitive > 0).TheString as c0 " +
                           "from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("c0"));
+                env.AssertStatement(
+                    "s0",
+                    statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("c0")));
 
                 SendAssert(env, null);
 
@@ -275,7 +288,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string expected)
             {
                 env.SendEventBean(new SupportBean_S0(0));
-                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+                env.AssertEqualsNew("s0", "c0", expected);
             }
         }
 
@@ -283,11 +296,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "(select * from SupportBean#keepall).enumPlugInReturnEvents(v => IntPrimitive > 0).lastOf().TheString as c0 " +
                           "from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("c0"));
+                env.AssertStatement(
+                    "s0",
+                    statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("c0")));
 
                 SendAssert(env, null);
 
@@ -311,7 +326,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string expected)
             {
                 env.SendEventBean(new SupportBean_S0(0));
-                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+                env.AssertEqualsNew("s0", "c0", expected);
             }
         }
 
@@ -320,11 +335,11 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public void Run(RegressionEnvironment env)
             {
                 var fields = "val0".SplitCsv();
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "Intvals.enumPlugInEarlyExit() as val0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] { typeof(int?) });
+                env.AssertStmtTypes("s0", fields, new Type[] { typeof(int?) });
 
                 SendAssert(env, fields, 12, "12,1,1");
                 SendAssert(env, fields, 10, "5,5,5");
@@ -339,7 +354,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string csv)
             {
                 env.SendEventBean(SupportCollection.MakeNumeric(csv));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { expected });
+                env.AssertPropsNew("s0", fields, new object[] { expected });
             }
         }
 
@@ -348,11 +363,11 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public void Run(RegressionEnvironment env)
             {
                 var fields = "val0".SplitCsv();
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "Intvals.enumPlugInOne(10, 20) as val0 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] { typeof(int?) });
+                env.AssertStmtTypes("s0", fields, new Type[] { typeof(int?) });
 
                 SendAssert(env, fields, 11, "1,2,11,3");
                 SendAssert(env, fields, 0, "");
@@ -368,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string csv)
             {
                 env.SendEventBean(SupportCollection.MakeNumeric(csv));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { expected });
+                env.AssertPropsNew("s0", fields, new object[] { expected });
             }
         }
 
@@ -377,13 +392,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public void Run(RegressionEnvironment env)
             {
                 var fields = "c0,c1,c2".SplitCsv();
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "Strvals.enumPlugInMedian(v => extractNum(v)) as c0," +
                           "Strvals.enumPlugInMedian((v, i) => extractNum(v) + i*10) as c1," +
                           "Strvals.enumPlugInMedian((v, i, s) => extractNum(v) + i*10+s*100) as c2 " +
                           "from SupportCollection";
                 env.CompileDeploy(epl).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] { typeof(double?), typeof(double?), typeof(double?) });
+                env.AssertStmtTypes("s0", fields, new Type[] { typeof(double?), typeof(double?), typeof(double?) });
 
                 SendAssert(env, fields, 3d, 18d, 418d, "E2,E1,E5,E4");
                 SendAssert(env, fields, null, null, null, "E1");
@@ -402,7 +417,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string csv)
             {
                 env.SendEventBean(SupportCollection.MakeString(csv));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { c0, c1, c2 });
+                env.AssertPropsNew("s0", fields, new object[] { c0, c1, c2 });
             }
         }
 
@@ -411,12 +426,12 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public void Run(RegressionEnvironment env)
             {
                 var fields = "val0".SplitCsv();
-                var epl = "@Name('s0') select " +
+                var epl = "@name('s0') select " +
                           "Contained.enumPlugInMedian(x => P00) as val0 " +
                           "from SupportBean_ST0_Container";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] { typeof(double?) });
+                env.AssertStmtTypes("s0", fields, new Type[] { typeof(double?) });
 
                 SendAssert(env, fields, 11d, "E1,12", "E2,11", "E3,2");
                 SendAssert(env, fields, null, null);
@@ -433,7 +448,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 params string[] values)
             {
                 env.SendEventBean(SupportBean_ST0_Container.Make2Value(values));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { expected });
+                env.AssertPropsNew("s0", fields, new object[] { expected });
             }
         }
 
@@ -442,10 +457,10 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public void Run(RegressionEnvironment env)
             {
                 var fields = "val0".SplitCsv();
-                var eplFragment = "@Name('s0') select Intvals.enumPlugInMedian() as val0 from SupportCollection";
+                var eplFragment = "@name('s0') select Intvals.enumPlugInMedian() as val0 from SupportCollection";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(env.Statement("s0").EventType, fields, new Type[] { typeof(double?) });
+                env.AssertStmtTypes("s0", fields, new Type[] { typeof(double?) });
 
                 SendAssert(env, fields, 2d, "1,2,2,4");
                 SendAssert(env, fields, 2d, "1,2,2,10");
@@ -469,7 +484,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 string intcsv)
             {
                 env.SendEventBean(SupportCollection.MakeNumeric(intcsv));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { expected });
+                env.AssertPropsNew("s0", fields, new object[] { expected });
             }
         }
 
@@ -482,12 +497,24 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
         {
             public static readonly DotMethodFP[] FOOTPRINTS = new DotMethodFP[] {
                 new DotMethodFP(DotMethodFPInputEnum.SCALAR_NUMERIC),
-                new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY, new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.NUMERIC)),
-                new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.NUMERIC)),
-                new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY, new DotMethodFPParam(2, "(value-selector, index)", EPLExpressionParamType.NUMERIC)),
-                new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(2, "(value-selector, index)", EPLExpressionParamType.NUMERIC)),
-                new DotMethodFP(DotMethodFPInputEnum.SCALAR_ANY, new DotMethodFPParam(3, "(value-selector, index, size)", EPLExpressionParamType.NUMERIC)),
-                new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(3, "(value-selector, index, size)", EPLExpressionParamType.NUMERIC))
+                new DotMethodFP(
+                    DotMethodFPInputEnum.SCALAR_ANY,
+                    new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.NUMERIC)),
+                new DotMethodFP(
+                    DotMethodFPInputEnum.EVENTCOLL,
+                    new DotMethodFPParam(1, "value-selector", EPLExpressionParamType.NUMERIC)),
+                new DotMethodFP(
+                    DotMethodFPInputEnum.SCALAR_ANY,
+                    new DotMethodFPParam(2, "(value-selector, index)", EPLExpressionParamType.NUMERIC)),
+                new DotMethodFP(
+                    DotMethodFPInputEnum.EVENTCOLL,
+                    new DotMethodFPParam(2, "(value-selector, index)", EPLExpressionParamType.NUMERIC)),
+                new DotMethodFP(
+                    DotMethodFPInputEnum.SCALAR_ANY,
+                    new DotMethodFPParam(3, "(value-selector, index, size)", EPLExpressionParamType.NUMERIC)),
+                new DotMethodFP(
+                    DotMethodFPInputEnum.EVENTCOLL,
+                    new DotMethodFPParam(3, "(value-selector, index, size)", EPLExpressionParamType.NUMERIC))
             };
 
             public EnumMethodDescriptor Initialize(EnumMethodInitializeContext context)
@@ -500,7 +527,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 var stateClass = typeof(MyLocalEnumMethodMedianState); // the class providing state
                 var serviceClass = typeof(MyLocalEnumMethodMedianService); // the class providing the processing method
                 var methodName = "Next"; // the name of the method for processing an item of input values
-                EPType returnType = new ClassEPType(typeof(double?)); // indicate that we are returning a Double-type value
+                EPChainableType
+                    returnType =
+                        new EPChainableTypeClass(typeof(double?)); // indicate that we are returning a Double-type value
                 var earlyExit = false;
 
                 var mode = new EnumMethodModeStaticMethod(stateClass, serviceClass, methodName, returnType, earlyExit);
@@ -539,7 +568,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     if (totalElements % 2 == 0) {
                         var sumOfMiddleElements = list[totalElements / 2] + list[totalElements / 2 - 1];
                         // calculate average of middle elements
-                        return ((double)sumOfMiddleElements) / 2;
+                        return (double)sumOfMiddleElements / 2;
                     }
 
                     return (double)list[totalElements / 2];
@@ -598,7 +627,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeOneState),
                     typeof(MyLocalEnumMethodForgeOneState),
                     "Next",
-                    new ClassEPType(typeof(int?)),
+                    new EPChainableTypeClass(typeof(int?)),
                     false);
             }
         }
@@ -658,7 +687,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeEarlyExitState),
                     typeof(MyLocalEnumMethodForgeEarlyExitState),
                     "Next",
-                    new ClassEPType(typeof(int?)),
+                    new EPChainableTypeClass(typeof(int?)),
                     true);
             }
         }
@@ -690,14 +719,16 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public EnumMethodDescriptor Initialize(EnumMethodInitializeContext context)
             {
                 var footprints = new DotMethodFP[] {
-                    new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "predicate", EPLExpressionParamType.BOOLEAN))
+                    new DotMethodFP(
+                        DotMethodFPInputEnum.EVENTCOLL,
+                        new DotMethodFPParam(1, "predicate", EPLExpressionParamType.BOOLEAN))
                 };
                 return new EnumMethodDescriptor(footprints);
             }
 
             public EnumMethodMode Validate(EnumMethodValidateContext context)
             {
-                var type = EPTypeHelper.CollectionOfEvents(context.InputEventType);
+                var type = EPChainableTypeHelper.CollectionOfEvents(context.InputEventType);
                 return new EnumMethodModeStaticMethod(
                     typeof(MyLocalEnumMethodForgePredicateReturnEventsState),
                     typeof(MyLocalEnumMethodForgePredicateReturnEvents),
@@ -742,14 +773,16 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public EnumMethodDescriptor Initialize(EnumMethodInitializeContext context)
             {
                 var footprints = new DotMethodFP[] {
-                    new DotMethodFP(DotMethodFPInputEnum.EVENTCOLL, new DotMethodFPParam(1, "predicate", EPLExpressionParamType.BOOLEAN))
+                    new DotMethodFP(
+                        DotMethodFPInputEnum.EVENTCOLL,
+                        new DotMethodFPParam(1, "predicate", EPLExpressionParamType.BOOLEAN))
                 };
                 return new EnumMethodDescriptor(footprints);
             }
 
             public EnumMethodMode Validate(EnumMethodValidateContext context)
             {
-                var type = new EventEPType(context.InputEventType);
+                var type = new EPChainableTypeEventSingle(context.InputEventType);
                 return new EnumMethodModeStaticMethod(
                     typeof(MyLocalEnumMethodForgePredicateReturnSingleEventState),
                     typeof(MyLocalEnumMethodForgePredicateReturnSingleEvent),
@@ -808,7 +841,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeTwoLambdaState),
                     typeof(MyLocalEnumMethodForgeTwoLambdaState),
                     "Next",
-                    new ClassEPType(typeof(int?)),
+                    new EPChainableTypeClass(typeof(int?)),
                     false);
             }
         }
@@ -854,7 +887,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
             public EnumMethodDescriptor Initialize(EnumMethodInitializeContext context)
             {
                 var footprints = new DotMethodFP[] {
-                    new DotMethodFP(DotMethodFPInputEnum.ANY, new DotMethodFPParam(2, "value, index", EPLExpressionParamType.BOOLEAN))
+                    new DotMethodFP(
+                        DotMethodFPInputEnum.ANY,
+                        new DotMethodFPParam(2, "value, index", EPLExpressionParamType.BOOLEAN))
                 };
 
                 return new EnumMethodDescriptor(footprints);
@@ -866,16 +901,15 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeThreeState),
                     typeof(MyLocalEnumMethodForgeThree),
                     "Next",
-                    new ClassEPType(typeof(int?)),
+                    new EPChainableTypeClass(typeof(int?)),
                     false);
-                mode.LambdaParameters =
-                    descriptor => {
-                        if (descriptor.LambdaParameterNumber == 0) {
-                            return EnumMethodLambdaParameterTypeValue.INSTANCE;
-                        }
+                mode.LambdaParameters = descriptor => {
+                    if (descriptor.LambdaParameterNumber == 0) {
+                        return EnumMethodLambdaParameterTypeValue.INSTANCE;
+                    }
 
-                        return EnumMethodLambdaParameterTypeIndex.INSTANCE;
-                    };
+                    return EnumMethodLambdaParameterTypeIndex.INSTANCE;
+                };
                 return mode;
             }
 
@@ -939,16 +973,15 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeStateWValueState),
                     typeof(MyLocalEnumMethodForgeStateWValueState),
                     "Next",
-                    new ClassEPType(typeof(string)),
+                    new EPChainableTypeClass(typeof(string)),
                     false);
-                mode.LambdaParameters =
-                    descriptor => {
-                        if (descriptor.LambdaParameterNumber == 0) {
-                            return new EnumMethodLambdaParameterTypeStateGetter(typeof(string), "Result");
-                        }
+                mode.LambdaParameters = descriptor => {
+                    if (descriptor.LambdaParameterNumber == 0) {
+                        return new EnumMethodLambdaParameterTypeStateGetter(typeof(string), "Result");
+                    }
 
-                        return EnumMethodLambdaParameterTypeValue.INSTANCE;
-                    };
+                    return EnumMethodLambdaParameterTypeValue.INSTANCE;
+                };
                 return mode;
             }
         }

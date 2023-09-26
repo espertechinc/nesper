@@ -124,23 +124,18 @@ namespace com.espertech.esper.common.client.soda
         public virtual void ToEPL(TextWriter writer)
         {
             writer.Write("create");
-            if (IsConstant)
-            {
+            if (IsConstant) {
                 writer.Write(" constant");
             }
 
             writer.Write(" variable ");
-            if (VariableType != null)
-            {
+            if (VariableType != null) {
                 writer.Write(VariableType);
-                if (IsArray)
-                {
-                    if (IsArrayOfPrimitive)
-                    {
+                if (IsArray) {
+                    if (IsArrayOfPrimitive) {
                         writer.Write("[primitive]");
                     }
-                    else
-                    {
+                    else {
                         writer.Write("[]");
                     }
                 }
@@ -149,8 +144,7 @@ namespace com.espertech.esper.common.client.soda
             }
 
             writer.Write(VariableName);
-            if (OptionalAssignment != null)
-            {
+            if (OptionalAssignment != null) {
                 writer.Write(" = ");
                 OptionalAssignment.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

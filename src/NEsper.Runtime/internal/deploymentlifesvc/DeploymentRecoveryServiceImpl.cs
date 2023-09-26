@@ -32,7 +32,8 @@ namespace com.espertech.esper.runtime.@internal.deploymentlifesvc
             EPCompiled compiled,
             IDictionary<int, object> userObjectsRuntime,
             IDictionary<int, string> statementNamesWhenProvidedByAPI,
-            IDictionary<int, IDictionary<int, object>> substitutionParameters)
+            IDictionary<int, IDictionary<int, object>> substitutionParameters,
+            string[] deploymentIdsConsumed)
         {
             // no action
         }

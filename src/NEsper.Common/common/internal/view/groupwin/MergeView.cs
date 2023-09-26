@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         public override IEnumerator<EventBean> GetEnumerator()
         {
             // The merge data view has multiple parent views which are AddPropertyValueView
-            ArrayDeque<IEnumerable<EventBean>> iterables = new ArrayDeque<IEnumerable<EventBean>>();
+            var iterables = new ArrayDeque<IEnumerable<EventBean>>();
 
             foreach (var dataView in parentViews) {
                 iterables.Add(dataView);

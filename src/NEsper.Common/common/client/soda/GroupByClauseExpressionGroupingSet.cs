@@ -34,18 +34,16 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns list of expressions in grouping set. </summary>
         /// <value>group-by expressions</value>
-        public IList<GroupByClauseExpression> Expressions
-        {
-            get { return _expressions; }
-            set { _expressions = value; }
+        public IList<GroupByClauseExpression> Expressions {
+            get => _expressions;
+            set => _expressions = value;
         }
 
         public void ToEPL(TextWriter writer)
         {
             writer.Write("grouping sets(");
-            string delimiter = "";
-            foreach (GroupByClauseExpression child in _expressions)
-            {
+            var delimiter = "";
+            foreach (var child in _expressions) {
                 writer.Write(delimiter);
                 child.ToEPL(writer);
                 delimiter = ", ";

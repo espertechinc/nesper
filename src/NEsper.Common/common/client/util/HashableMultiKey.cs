@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.client.util
         /// </summary>
         /// <param name="key">is the single key object</param>
         public HashableMultiKey(object key)
-            : this(new[] {key})
+            : this(new[] { key })
         {
         }
 
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.client.util
         public HashableMultiKey(
             object key1,
             object key2)
-            : this(new[] {key1, key2})
+            : this(new[] { key1, key2 })
         {
         }
 
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.client.util
             object key1,
             object key2,
             object key3)
-            : this(new[] {key1, key2, key3})
+            : this(new[] { key1, key2, key3 })
         {
         }
 
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.client.util
             object key2,
             object key3,
             object key4)
-            : this(new[] {key1, key2, key3, key4})
+            : this(new[] { key1, key2, key3, key4 })
         {
         }
 
@@ -103,9 +103,8 @@ namespace com.espertech.esper.common.client.util
                 return true;
             }
 
-            if (other is HashableMultiKey) {
-                var otherKeys = (HashableMultiKey) other;
-                return CompatExtensions.AreEqual(Keys, otherKeys.Keys);
+            if (other is HashableMultiKey otherKeys) {
+                return Keys.AreEqual(otherKeys.Keys);
             }
 
             return false;

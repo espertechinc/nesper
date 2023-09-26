@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionrun.runner
                 config.Runtime.ExceptionHandling.UndeployRethrowPolicy = UndeployRethrowPolicy.RETHROW_FIRST;
                 
                 // Compiler
-                config.Compiler.ByteCode.AttachEPL = true;
+                config.Compiler.ByteCode.IsAttachEPL = true;
 
                 if (Environment.GetEnvironmentVariable(SYSTEM_PROPERTY_LOG_CODE) != null)
                 {

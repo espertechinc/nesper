@@ -22,90 +22,90 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.allofanyof
 {
-	public class EnumAllOfAnyOfEvent : ThreeFormEventPlain
-	{
-		private readonly bool all;
+    public class EnumAllOfAnyOfEvent : ThreeFormEventPlain
+    {
+        private readonly bool all;
 
-		public EnumAllOfAnyOfEvent(
-			ExprDotEvalParamLambda lambda,
-			bool all) : base(lambda)
-		{
-			this.all = all;
-		}
+        public EnumAllOfAnyOfEvent(
+            ExprDotEvalParamLambda lambda,
+            bool all) : base(lambda)
+        {
+            this.all = all;
+        }
 
-		public override EnumEval EnumEvaluator {
-			get {
-				ExprEvaluator inner = InnerExpression.ExprEvaluator;
-				return new ProxyEnumEval() {
-					ProcEvaluateEnumMethod = (
-						eventsLambda,
-						enumcoll,
-						isNewData,
-						context) => {
-						if (enumcoll.IsEmpty()) {
-							return all;
-						}
+        public override EnumEval EnumEvaluator {
+            get {
+                var inner = InnerExpression.ExprEvaluator;
+                return new ProxyEnumEval() {
+                    ProcEvaluateEnumMethod = (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        if (enumcoll.IsEmpty()) {
+                            return all;
+                        }
 
-						ICollection<EventBean> beans = (ICollection<EventBean>) enumcoll;
-						foreach (EventBean next in beans) {
-							eventsLambda[StreamNumLambda] = next;
+                        var beans = (ICollection<EventBean>)enumcoll;
+                        foreach (var next in beans) {
+                            eventsLambda[StreamNumLambda] = next;
 
-							object pass = inner.Evaluate(eventsLambda, isNewData, context);
-							if (all) {
-								if (pass == null || false.Equals(pass)) {
-									return false;
-								}
-							}
-							else {
-								if (pass != null && ((Boolean) pass)) {
-									return true;
-								}
-							}
-						}
+                            var pass = inner.Evaluate(eventsLambda, isNewData, context);
+                            if (all) {
+                                if (pass == null || false.Equals(pass)) {
+                                    return false;
+                                }
+                            }
+                            else {
+                                if (pass != null && (bool)pass) {
+                                    return true;
+                                }
+                            }
+                        }
 
-						return all;
-					},
-				};
-			}
-		}
+                        return all;
+                    }
+                };
+            }
+        }
 
-		public override Type ReturnType()
-		{
-			return typeof(bool);
-		}
+        public override Type ReturnTypeOfMethod()
+        {
+            return typeof(bool);
+        }
 
-		public override CodegenExpression ReturnIfEmptyOptional()
-		{
-			return Constant(all);
-		}
+        public override CodegenExpression ReturnIfEmptyOptional()
+        {
+            return Constant(all);
+        }
 
-		public override void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-		}
+        public override void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+        }
 
-		public override void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			CodegenLegoBooleanExpression.CodegenReturnBoolIfNullOrBool(
-				block,
-				InnerExpression.EvaluationType,
-				InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope),
-				all,
-				all ? false : (bool?) null,
-				!all,
-				!all);
-		}
+        public override void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenLegoBooleanExpression.CodegenReturnBoolIfNullOrBool(
+                block,
+                InnerExpression.EvaluationType,
+                InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope),
+                all,
+                all ? false : (bool?)null,
+                !all,
+                !all);
+        }
 
-		public override void ReturnResult(CodegenBlock block)
-		{
-			block.MethodReturn(Constant(all));
-		}
-	}
+        public override void ReturnResult(CodegenBlock block)
+        {
+            block.MethodReturn(Constant(all));
+        }
+    }
 } // end of namespace

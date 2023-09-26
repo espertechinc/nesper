@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -34,11 +34,13 @@ namespace com.espertech.esper.common.@internal.@event.xml
     public class SchemaXMLEventType : BaseXMLEventType
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly bool isPropertyExpressionXPath;
         private readonly IDictionary<string, EventPropertyGetterSPI> propertyGetterCache;
         private readonly string rootElementNamespace;
 
         private readonly SchemaElementComplex schemaModelRoot;
+        private readonly EventTypeXMLXSDHandler xmlxsdHandler;
 
         public SchemaXMLEventType(
             EventTypeMetadata eventTypeMetadata,
@@ -48,13 +50,13 @@ namespace com.espertech.esper.common.@internal.@event.xml
             string representsOriginalTypeName,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             EventTypeNameResolver eventTypeResolver,
-            XMLFragmentEventTypeFactory xmlEventTypeFactory)
-            : base(
-                eventTypeMetadata,
-                config,
-                eventBeanTypedEventFactory,
-                eventTypeResolver,
-                xmlEventTypeFactory)
+            XMLFragmentEventTypeFactory xmlEventTypeFactory,
+            EventTypeXMLXSDHandler xmlxsdHandler) : base(
+            eventTypeMetadata,
+            config,
+            eventBeanTypedEventFactory,
+            eventTypeResolver,
+            xmlEventTypeFactory)
         {
             propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
             SchemaModel = schemaModel;
@@ -63,6 +65,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             isPropertyExpressionXPath = config.IsXPathPropertyExpr;
             RepresentsFragmentOfProperty = representsFragmentOfProperty;
             RepresentsOriginalTypeName = representsOriginalTypeName;
+            this.xmlxsdHandler = xmlxsdHandler;
 
             // Set of namespace context for XPath expressions
             var ctx = new XPathNamespaceContext();
@@ -80,25 +83,22 @@ namespace com.espertech.esper.common.@internal.@event.xml
             IList<ExplicitPropertyDescriptor> additionalSchemaProps = new List<ExplicitPropertyDescriptor>();
 
             // Add a property for each complex child element
-            foreach (SchemaElementComplex complex in schemaModelRoot.ComplexElements) {
+            foreach (var complex in schemaModelRoot.ComplexElements) {
                 var propertyName = complex.Name;
                 var returnType = typeof(XmlNode);
-                Type propertyComponentType = null;
 
                 if (complex.OptionalSimpleType != null) {
-                    returnType = SchemaUtil.ToReturnType(complex);
-                    if (returnType == typeof(string)) {
-                        propertyComponentType = typeof(char);
-                    }
+                    returnType = SchemaUtil.ToReturnType(complex, xmlxsdHandler);
                 }
 
                 if (complex.IsArray) {
-                    returnType = typeof(XmlNode[]); // We use Node[] for arrays and NodeList for XPath-Expressions returning Nodeset
-                    propertyComponentType = typeof(XmlNode);
+                    returnType =
+                        typeof(XmlNode[]); // We use Node[] for arrays and NodeList for XPath-Expressions returning Nodeset
                 }
 
                 var isFragment = false;
-                if (ConfigurationEventTypeXMLDOM.IsAutoFragment && !ConfigurationEventTypeXMLDOM.IsXPathPropertyExpr) {
+                if (ConfigurationEventTypeXMLDOM.IsAutoFragment &&
+                    !ConfigurationEventTypeXMLDOM.IsXPathPropertyExpr) {
                     isFragment = CanFragment(complex);
                 }
 
@@ -106,7 +106,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 var desc = new EventPropertyDescriptor(
                     propertyName,
                     returnType,
-                    propertyComponentType,
                     false,
                     false,
                     complex.IsArray,
@@ -119,17 +118,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
             // Add a property for each simple child element
             foreach (var simple in schemaModelRoot.SimpleElements) {
                 var propertyName = simple.Name;
-                var returnType = SchemaUtil.ToReturnType(simple);
-                var componentType = GenericExtensions.GetComponentType(returnType);
-                var isIndexed = simple.IsArray || componentType != null;
+                var returnType = SchemaUtil.ToReturnType(simple, xmlxsdHandler);
                 var getter = DoResolvePropertyGetter(propertyName, true);
                 var desc = new EventPropertyDescriptor(
                     propertyName,
                     returnType,
-                    componentType,
                     false,
                     false,
-                    isIndexed,
+                    simple.IsArray,
                     false,
                     false);
                 var @explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
@@ -139,17 +135,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
             // Add a property for each attribute
             foreach (var attribute in schemaModelRoot.Attributes) {
                 var propertyName = attribute.Name;
-                var returnType = SchemaUtil.ToReturnType(attribute);
-                var componentType = GenericExtensions.GetComponentType(returnType);
-                var isIndexed = componentType != null;
+                var returnType = SchemaUtil.ToReturnType(attribute, xmlxsdHandler);
                 var getter = DoResolvePropertyGetter(propertyName, true);
                 var desc = new EventPropertyDescriptor(
                     propertyName,
                     returnType,
-                    componentType,
                     false,
                     false,
-                    isIndexed,
+                    false,
                     false,
                     false);
                 var @explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
@@ -168,7 +161,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         protected override FragmentEventType DoResolveFragmentType(string property)
         {
-            if (!ConfigurationEventTypeXMLDOM.IsAutoFragment || ConfigurationEventTypeXMLDOM.IsXPathPropertyExpr) {
+            if (!ConfigurationEventTypeXMLDOM.IsAutoFragment ||
+                ConfigurationEventTypeXMLDOM.IsXPathPropertyExpr) {
                 return null;
             }
 
@@ -179,7 +173,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return null;
             }
 
-            var complex = (SchemaElementComplex) item;
+            var complex = (SchemaElementComplex)item;
 
             // build name of event type
             var atomicProps = prop.ToPropertyArray();
@@ -195,7 +189,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             // check if the type exists, use the existing type if found
             var existingType = XmlEventTypeFactory.GetTypeByName(derivedEventTypeName);
             if (existingType != null) {
-                return new FragmentEventType(existingType, complex.IsArray, false);
+                return new FragmentEventType(existingType, complex.IsArray, false, false);
             }
 
             EventType newType;
@@ -212,15 +206,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
             catch (Exception ex) {
                 Log.Error(
-                    "Failed to add dynamic event type for fragment of XML schema for property '" +
-                    property +
-                    "' :" +
-                    ex.Message,
+                    $"Failed to add dynamic event type for fragment of XML schema for property '{property}' :{ex.Message}",
                     ex);
                 return null;
             }
 
-            return new FragmentEventType(newType, complex.IsArray, false);
+            return new FragmentEventType(newType, complex.IsArray, false, false);
         }
 
         protected override Type DoResolvePropertyType(string propertyExpression)
@@ -238,12 +229,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 // parse, can be an indexed property
                 var property = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
                 if (!property.IsDynamic) {
-                    if (!(property is IndexedProperty)) {
+                    if (!(property is IndexedProperty indexedProp)) {
                         return null;
                     }
 
-                    var indexedProp = (IndexedProperty) property;
-                    var descriptor = PropertyDescriptorMap.Get(indexedProp.PropertyNameAtomic);
+                    var descriptor = propertyDescriptorMap.Get(indexedProp.PropertyNameAtomic);
 
                     return descriptor?.PropertyType;
                 }
@@ -259,7 +249,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return null;
             }
 
-            return SchemaUtil.ToReturnType(item);
+            return SchemaUtil.ToReturnType(item, xmlxsdHandler);
         }
 
         protected override EventPropertyGetterSPI DoResolvePropertyGetter(string property)
@@ -283,17 +273,16 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     // parse, can be an indexed property
                     var property = PropertyParser.ParseAndWalkLaxToSimple(propertyExpression);
                     if (!property.IsDynamic) {
-                        if (!(property is IndexedProperty)) {
+                        if (!(property is IndexedProperty indexedProp)) {
                             return null;
                         }
 
-                        var indexedProp = (IndexedProperty) property;
                         getter = propertyGetters.Get(indexedProp.PropertyNameAtomic);
                         if (null == getter) {
                             return null;
                         }
 
-                        var descriptor = PropertyDescriptorMap.Get(indexedProp.PropertyNameAtomic);
+                        var descriptor = propertyDescriptorMap.Get(indexedProp.PropertyNameAtomic);
                         if (descriptor == null) {
                             return null;
                         }
@@ -303,12 +292,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         }
 
                         if (descriptor.PropertyType == typeof(XmlNodeList)) {
-                            FragmentFactorySPI fragmentFactory = new FragmentFactoryDOMGetter(
-                                EventBeanTypedEventFactory,
-                                this,
-                                indexedProp.PropertyNameAtomic);
-                            return new XPathPropertyArrayItemGetter(getter, indexedProp.Index, fragmentFactory);
-                        } else if (descriptor.PropertyType == typeof(string)) {
                             FragmentFactorySPI fragmentFactory = new FragmentFactoryDOMGetter(
                                 EventBeanTypedEventFactory,
                                 this,
@@ -329,19 +312,23 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         return null;
                     }
 
-                    getter = prop.GetGetterDOM(schemaModelRoot, EventBeanTypedEventFactory, this, propertyExpression);
+                    getter = prop.GetGetterDOM(
+                        schemaModelRoot,
+                        EventBeanTypedEventFactory,
+                        this,
+                        propertyExpression);
                     if (getter == null) {
                         return null;
                     }
 
-                    var returnType = SchemaUtil.ToReturnType(item);
+                    var returnType = SchemaUtil.ToReturnType(item, xmlxsdHandler);
                     if (returnType != typeof(XmlNode) && returnType != typeof(XmlNodeList)) {
                         if (!returnType.IsArray) {
-                            getter = new DOMConvertingGetter((DOMPropertyGetter) getter, returnType);
+                            getter = new DOMConvertingGetter((DOMPropertyGetter)getter, returnType);
                         }
                         else {
                             getter = new DOMConvertingArrayGetter(
-                                (DOMPropertyGetter) getter,
+                                (DOMPropertyGetter)getter,
                                 returnType.GetElementType());
                         }
                     }
@@ -361,7 +348,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     EventBeanTypedEventFactory,
                     this,
                     allowFragments,
-                    ConfigurationEventTypeXMLDOM.DefaultNamespace);
+                    ConfigurationEventTypeXMLDOM.DefaultNamespace,
+                    xmlxsdHandler);
             }
 
             propertyGetterCache.Put(propertyExpression, getter);
@@ -370,11 +358,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         private bool CanFragment(SchemaItem item)
         {
-            if (!(item is SchemaElementComplex)) {
+            if (!(item is SchemaElementComplex complex)) {
                 return false;
             }
 
-            var complex = (SchemaElementComplex) item;
             if (complex.OptionalSimpleType != null) {
                 return false; // no transposing if the complex type also has a simple value else that is hidden
             }

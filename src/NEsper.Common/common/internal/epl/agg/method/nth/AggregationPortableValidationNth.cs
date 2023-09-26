@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             : base(distinct, hasFilter, inputValueType)
 
         {
-            this.Size = size;
+            Size = size;
         }
 
         public AggregationPortableValidationNth()
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
             string intoExpression,
             AggregationForgeFactory factory)
         {
-            AggregationPortableValidationNth that = (AggregationPortableValidationNth) intoTableAgg;
+            var that = (AggregationPortableValidationNth)intoTableAgg;
             if (Size != that.Size) {
                 throw new ExprValidationException(
                     "The size is " +

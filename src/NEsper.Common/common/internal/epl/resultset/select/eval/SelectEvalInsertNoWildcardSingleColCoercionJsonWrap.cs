@@ -21,47 +21,56 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
-	public class SelectEvalInsertNoWildcardSingleColCoercionJsonWrap : SelectEvalBaseFirstPropFromWrap
-	{
-	    public SelectEvalInsertNoWildcardSingleColCoercionJsonWrap(SelectExprForgeContext selectExprForgeContext, WrapperEventType wrapper)
-			: base(selectExprForgeContext, wrapper)
-	    {
-	    }
+    public class SelectEvalInsertNoWildcardSingleColCoercionJsonWrap : SelectEvalBaseFirstPropFromWrap
+    {
+        public SelectEvalInsertNoWildcardSingleColCoercionJsonWrap(
+            SelectExprForgeContext selectExprForgeContext,
+            WrapperEventType wrapper)
+            : base(selectExprForgeContext, wrapper)
+        {
+        }
 
-	    protected override CodegenExpression ProcessFirstColCodegen(
-		    Type evaluationType,
-		    CodegenExpression expression,
-		    CodegenExpression resultEventType,
-		    CodegenExpression eventBeanFactory,
-		    CodegenMethodScope codegenMethodScope,
-		    CodegenClassScope codegenClassScope)
-	    {
-			var memberUndType = codegenClassScope.AddDefaultFieldUnshared(
-			    true,
-			    typeof(JsonEventType),
-			    Cast(typeof(JsonEventType), EventTypeUtility.ResolveTypeCodegen(wrapper.UnderlyingEventType, EPStatementInitServicesConstants.REF)));
-		    var memberWrapperType = codegenClassScope.AddDefaultFieldUnshared(
-			    true,
-			    typeof(WrapperEventType),
-			    Cast(typeof(WrapperEventType), EventTypeUtility.ResolveTypeCodegen(wrapper, EPStatementInitServicesConstants.REF)));
-		    var method = codegenMethodScope
-			    .MakeChild(typeof(EventBean), this.GetType(), codegenClassScope)
-			    .AddParam(evaluationType, "result")
-			    .Block
-			    .DeclareVar(typeof(string), "json", Cast(typeof(string), Ref("result")))
-			    .IfNullReturnNull(Ref("json"))
-			    .DeclareVar<object>("und",
-				    ExprDotMethod(memberUndType, "Parse", Ref("json")))
-			    .DeclareVar(typeof(EventBean), "bean",
-				    ExprDotMethod(eventBeanFactory, "AdapterForTypedJson", Ref("und"), memberUndType))
-			    .MethodReturn(
-				    ExprDotMethod(
-					    eventBeanFactory,
-					    "AdapterForTypedWrapper",
-					    Ref("bean"),
-					    EnumValue(typeof(EmptyDictionary<string, object>), "Instance"),
-					    memberWrapperType));
-		    return LocalMethodBuild(method).Pass(expression).Call();
-	    }
-	}
+        protected override CodegenExpression ProcessFirstColCodegen(
+            Type evaluationType,
+            CodegenExpression expression,
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var memberUndType = codegenClassScope.AddDefaultFieldUnshared(
+                true,
+                typeof(JsonEventType),
+                Cast(
+                    typeof(JsonEventType),
+                    EventTypeUtility.ResolveTypeCodegen(
+                        wrapper.UnderlyingEventType,
+                        EPStatementInitServicesConstants.REF)));
+            var memberWrapperType = codegenClassScope.AddDefaultFieldUnshared(
+                true,
+                typeof(WrapperEventType),
+                Cast(
+                    typeof(WrapperEventType),
+                    EventTypeUtility.ResolveTypeCodegen(wrapper, EPStatementInitServicesConstants.REF)));
+            var method = codegenMethodScope
+                .MakeChild(typeof(EventBean), GetType(), codegenClassScope)
+                .AddParam(evaluationType, "result")
+                .Block
+                .DeclareVar<string>("json", Cast(typeof(string), Ref("result")))
+                .IfNullReturnNull(Ref("json"))
+                .DeclareVar<object>(
+                    "und",
+                    ExprDotMethod(memberUndType, "Parse", Ref("json")))
+                .DeclareVar<EventBean>("bean",
+                    ExprDotMethod(eventBeanFactory, "AdapterForTypedJson", Ref("und"), memberUndType))
+                .MethodReturn(
+                    ExprDotMethod(
+                        eventBeanFactory,
+                        "AdapterForTypedWrapper",
+                        Ref("bean"),
+                        EnumValue(typeof(EmptyDictionary<string, object>), "Instance"),
+                        memberWrapperType));
+            return LocalMethodBuild(method).Pass(expression).Call();
+        }
+    }
 } // end of namespace

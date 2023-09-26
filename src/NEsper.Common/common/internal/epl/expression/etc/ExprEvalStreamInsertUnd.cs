@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             return new InstrumentationBuilderExpr(
-                this.GetType(),
+                GetType(),
                 this,
                 "ExprStreamUndSelectClause",
                 requiredType,
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 .DeclareVar<EventBean>("bean", ArrayAtIndex(refEPS, Constant(_streamNum)))
                 .IfRefNullReturnNull("bean")
                 .MethodReturn(FlexCast(_returnType, ExprDotUnderlying(Ref("bean"))));
-            
+
             return LocalMethod(methodNode);
         }
 

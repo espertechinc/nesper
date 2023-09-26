@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
         {
         }
 
-       
+
         public CodegenExpression CodegenDeserialize(
             CodegenMethod method,
             CodegenClassScope classScope,

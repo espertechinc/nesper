@@ -49,12 +49,10 @@ namespace com.espertech.esper.common.client.soda
             this.@operator = @operator.Trim();
             AddChild(left);
 
-            if (right != null)
-            {
+            if (right != null) {
                 AddChild(right);
             }
-            else
-            {
+            else {
                 AddChild(new ConstantExpression(null));
             }
         }
@@ -63,17 +61,14 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the operator to use.
         /// </summary>
         /// <returns>operator.</returns>
-        public string Operator
-        {
+        public string Operator {
             get => @operator;
             set => @operator = value;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
+        public override ExpressionPrecedenceEnum Precedence {
             get {
-                if (@operator.Equals("="))
-                {
+                if (@operator.Equals("=")) {
                     return ExpressionPrecedenceEnum.EQUALS;
                 }
 
@@ -85,14 +80,12 @@ namespace com.espertech.esper.common.client.soda
         {
             Children[0].ToEPL(writer, Precedence);
             if (@operator.ToLowerInvariant().Trim().Equals("is") ||
-                @operator.ToLowerInvariant().Trim().Equals("is not"))
-            {
+                @operator.ToLowerInvariant().Trim().Equals("is not")) {
                 writer.Write(' ');
                 writer.Write(@operator);
                 writer.Write(' ');
             }
-            else
-            {
+            else {
                 writer.Write(@operator);
             }
 

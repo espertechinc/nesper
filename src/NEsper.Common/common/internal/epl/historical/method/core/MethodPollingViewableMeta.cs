@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.historical.method.poll;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
@@ -61,5 +62,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
         public Type MethodProviderClass { get; }
 
         public bool IsStaticMethod { get; }
+
+        public string GetConfigurationName(MethodStreamSpec methodStreamSpec)
+        {
+            return MethodProviderClass != null
+                ? MethodProviderClass.Name
+                : methodStreamSpec.MethodName;
+        }
     }
 } // end of namespace

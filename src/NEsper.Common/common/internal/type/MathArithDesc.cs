@@ -15,7 +15,10 @@ namespace com.espertech.esper.common.@internal.type
         private readonly Type _type;
         private readonly MathArithTypeEnum _arith;
 
-        public MathArithDesc(Type type, MathArithTypeEnum arith) {
+        public MathArithDesc(
+            Type type,
+            MathArithTypeEnum arith)
+        {
             _type = type;
             _arith = arith;
         }
@@ -39,17 +42,17 @@ namespace com.espertech.esper.common.@internal.type
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
-            return Equals((MathArithDesc) obj);
+            return Equals((MathArithDesc)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked {
-                return ((_type != null ? _type.GetHashCode() : 0) * 397) ^ (int) _arith;
+                return ((_type != null ? _type.GetHashCode() : 0) * 397) ^ (int)_arith;
             }
         }
 

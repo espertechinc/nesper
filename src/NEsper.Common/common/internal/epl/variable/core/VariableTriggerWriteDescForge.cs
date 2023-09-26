@@ -69,7 +69,6 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                     EventTypeUtility.CodegenWriter(
                         Type,
                         evaluationType,
-                        getterType,
                         Writer,
                         method,
                         GetType(),

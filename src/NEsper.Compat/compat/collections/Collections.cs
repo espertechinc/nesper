@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace com.espertech.esper.compat.collections
 {
@@ -149,6 +150,11 @@ namespace com.espertech.esper.compat.collections
         public static ISet<T> GetEmptySet<T>()
         {
             return EmptySet<T>.Instance;
+        }
+
+        public static SortedSet<T> GetEmptySortedSet<T>()
+        {
+            return new SortedSet<T>();
         }
 
         /// <summary>
@@ -451,6 +457,16 @@ namespace com.espertech.esper.compat.collections
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Returns a collection type with the given collection type.
+        /// </summary>
+        /// <param name="collectionType"></param>
+        /// <returns></returns>
+        public static Type CollectionOf(Type collectionType)
+        {
+            return typeof(ICollection<>).MakeGenericType(collectionType);
         }
     }
 }

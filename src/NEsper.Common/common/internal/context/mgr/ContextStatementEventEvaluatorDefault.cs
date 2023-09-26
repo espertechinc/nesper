@@ -32,17 +32,20 @@ namespace com.espertech.esper.common.@internal.context.mgr
             AgentInstanceContext agentInstanceContextCreate)
         {
             // context was created - reevaluate for the given event
-            ArrayDeque<FilterHandle> callbacks = new ArrayDeque<FilterHandle>(2);
-            agentInstanceContextCreate.FilterService.Evaluate(theEvent, callbacks, agentInstanceContextCreate); // evaluates for ALL statements
+            var callbacks = new ArrayDeque<FilterHandle>(2);
+            agentInstanceContextCreate.FilterService.Evaluate(
+                theEvent,
+                callbacks,
+                agentInstanceContextCreate); // evaluates for ALL statements
             if (callbacks.IsEmpty()) {
                 return;
             }
 
             // there is a single callback and a single context, if they match we are done
             if (agentInstances.Count == 1 && callbacks.Count == 1) {
-                AgentInstance agentInstance = agentInstances[0];
-                AgentInstanceContext agentInstanceContext = agentInstance.AgentInstanceContext;
-                FilterHandle callback = callbacks.First;
+                var agentInstance = agentInstances[0];
+                var agentInstanceContext = agentInstance.AgentInstanceContext;
+                var callback = callbacks.First;
                 if (agentInstanceContext.StatementId == callback.StatementId &&
                     agentInstanceContext.AgentInstanceId == callback.AgentInstanceId) {
                     Process(agentInstance, callbacks, theEvent);
@@ -52,7 +55,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
             }
 
             // use the right sorted/unsorted Map keyed by AgentInstance to sort
-            bool isPrioritized = agentInstanceContextCreate.RuntimeSettingsService.ConfigurationRuntime.Execution
+            var isPrioritized = agentInstanceContextCreate.RuntimeSettingsService.ConfigurationRuntime.Execution
                 .IsPrioritized;
             IDictionary<AgentInstance, object> stmtCallbacks;
             if (!isPrioritized) {
@@ -63,14 +66,14 @@ namespace com.espertech.esper.common.@internal.context.mgr
             }
 
             // process all callbacks
-            foreach (FilterHandle filterHandle in callbacks) {
-                EPStatementHandleCallbackFilter handleCallback = (EPStatementHandleCallbackFilter) filterHandle;
+            foreach (var filterHandle in callbacks) {
+                var handleCallback = (EPStatementHandleCallbackFilter)filterHandle;
 
                 // determine if this filter entry applies to any of the affected agent instances
-                int statementId = filterHandle.StatementId;
+                var statementId = filterHandle.StatementId;
                 AgentInstance agentInstanceFound = null;
-                foreach (AgentInstance agentInstance in agentInstances) {
-                    AgentInstanceContext agentInstanceContext = agentInstance.AgentInstanceContext;
+                foreach (var agentInstance in agentInstances) {
+                    var agentInstanceContext = agentInstance.AgentInstanceContext;
                     if (agentInstanceContext.StatementId == statementId &&
                         agentInstanceContext.AgentInstanceId == handleCallback.AgentInstanceId) {
                         agentInstanceFound = agentInstance;
@@ -82,7 +85,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
                     continue;
                 }
 
-                EPStatementAgentInstanceHandle handle = handleCallback.AgentInstanceHandle;
+                var handle = handleCallback.AgentInstanceHandle;
 
                 // Self-joins require that the internal dispatch happens after all streams are evaluated.
                 // Priority or preemptive settings also require special ordering.
@@ -99,7 +102,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
                     }
                     else {
                         var filterDeque = new ArrayDeque<FilterHandle>(4);
-                        filterDeque.Add((FilterHandle) stmtCallback);
+                        filterDeque.Add((FilterHandle)stmtCallback);
                         if (stmtCallback != handleCallback) { // De-duplicate for Filter OR expression paths
                             filterDeque.Add(handleCallback);
                         }
@@ -119,16 +122,16 @@ namespace com.espertech.esper.common.@internal.context.mgr
             }
 
             // Process self-join or sorted prioritized callbacks
-            foreach (KeyValuePair<AgentInstance, object> entry in stmtCallbacks) {
-                AgentInstance agentInstance = entry.Key;
-                object callbackList = entry.Value;
+            foreach (var entry in stmtCallbacks) {
+                var agentInstance = entry.Key;
+                var callbackList = entry.Value;
                 if (callbackList is ICollection<FilterHandle> filterHandleCollection) {
                     Process(agentInstance, filterHandleCollection, theEvent);
                 }
                 else {
                     Process(
                         agentInstance,
-                        Collections.SingletonList<FilterHandle>((FilterHandle) callbackList),
+                        Collections.SingletonList<FilterHandle>((FilterHandle)callbackList),
                         theEvent);
                 }
 
@@ -143,14 +146,14 @@ namespace com.espertech.esper.common.@internal.context.mgr
             ICollection<FilterHandle> callbacks,
             EventBean theEvent)
         {
-            AgentInstanceContext agentInstanceContext = agentInstance.AgentInstanceContext;
+            var agentInstanceContext = agentInstance.AgentInstanceContext;
             using (agentInstance.AgentInstanceContext.AgentInstanceLock.AcquireWriteLock()) {
                 try {
                     agentInstance.AgentInstanceContext.VariableManagementService.SetLocalVersion();
 
                     // sub-selects always go first
-                    foreach (FilterHandle handle in callbacks) {
-                        EPStatementHandleCallbackFilter callback = (EPStatementHandleCallbackFilter) handle;
+                    foreach (var handle in callbacks) {
+                        var callback = (EPStatementHandleCallbackFilter)handle;
                         if (callback.AgentInstanceHandle != agentInstanceContext.EpStatementAgentInstanceHandle) {
                             continue;
                         }

@@ -71,15 +71,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             string condition,
             string tsa,
             string tsb,
-            bool IsInvoked,
+            bool isInvoked,
             AtomicLong milestone)
         {
-            var epl = "@Name('s0') select * from pattern [a=A -> b=B] as abc where " + condition;
+            var epl = "@name('s0') select * from pattern [a=A -> b=B] as abc where " + condition;
             env.CompileDeploy(epl).AddListener("s0").MilestoneInc(milestone);
 
             env.SendEventBean(SupportTimeStartEndA.Make("E1", tsa, 0), "A");
             env.SendEventBean(SupportTimeStartEndB.Make("E2", tsb, 0), "B");
-            Assert.AreEqual(IsInvoked, env.Listener("s0").GetAndClearIsInvoked());
+            env.AssertListenerInvokedFlag("s0", isInvoked);
 
             env.UndeployAll();
         }

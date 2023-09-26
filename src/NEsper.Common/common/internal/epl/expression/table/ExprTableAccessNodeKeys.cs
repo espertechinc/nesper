@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         protected override string InstrumentationQName => "ExprTableTop";
 
-        protected override CodegenExpression[] InstrumentationQParams => new CodegenExpression[0];
+        protected override CodegenExpression[] InstrumentationQParams => Array.Empty<CodegenExpression>();
 
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,

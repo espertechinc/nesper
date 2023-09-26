@@ -23,5 +23,9 @@ namespace com.espertech.esper.common.@internal.context.cpidsvc
         void Destroy();
 
         void Clear();
+        
+        void ClearCaches();
+
+        long Count { get; }
     }
 } // end of namespace

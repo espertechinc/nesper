@@ -39,18 +39,18 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         }
 
         public bool HasAggregation {
-            get => this.hasAggregation;
-            set => this.hasAggregation = value;
+            get => hasAggregation;
+            set => hasAggregation = value;
         }
 
         public bool HasPrior {
-            get => this.hasPrior;
-            set => this.hasPrior = value;
+            get => hasPrior;
+            set => hasPrior = value;
         }
 
         public bool HasPrevious {
-            get => this.hasPrevious;
-            set => this.hasPrevious = value;
+            get => hasPrevious;
+            set => hasPrevious = value;
         }
 
         public void Ready(
@@ -68,12 +68,11 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             strategyFactory.Ready(subselectFactoryContext, activator.EventType);
         }
 
-        public AIRegistryRequirementSubquery RegistryRequirements {
-            get => new AIRegistryRequirementSubquery(
+        public AIRegistryRequirementSubquery RegistryRequirements =>
+            new AIRegistryRequirementSubquery(
                 hasAggregation,
                 hasPrior,
                 hasPrevious,
                 strategyFactory.LookupStrategyDesc);
-        }
     }
 } // end of namespace

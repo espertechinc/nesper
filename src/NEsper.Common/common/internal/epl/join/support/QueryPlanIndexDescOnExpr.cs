@@ -25,12 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.join.support
             this.tableLookupStrategy = tableLookupStrategy;
         }
 
-        public string StrategyName {
-            get => strategyName;
-        }
+        public string StrategyName => strategyName;
 
-        public string TableLookupStrategy {
-            get => tableLookupStrategy;
-        }
+        public string TableLookupStrategy => tableLookupStrategy;
     }
 } // end of namespace

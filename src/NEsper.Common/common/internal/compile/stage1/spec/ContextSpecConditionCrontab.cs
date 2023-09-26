@@ -55,9 +55,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             var method = parent
                 .MakeChild(typeof(ContextConditionDescriptorCrontab), GetType(), classScope);
             method.Block
-                .DeclareVar<ContextConditionDescriptorCrontab>(
-                    "condition",
-                    NewInstance(typeof(ContextConditionDescriptorCrontab)))
+                .DeclareVarNewInstance<ContextConditionDescriptorCrontab>("condition")
                 .SetProperty(
                     Ref("condition"),
                     "EvaluatorsPerCrontab",
@@ -73,6 +71,11 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 .MethodReturn(
                     Ref("condition"));
             return LocalMethod(method);
+        }
+
+        public T Accept<T>(ContextSpecConditionVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

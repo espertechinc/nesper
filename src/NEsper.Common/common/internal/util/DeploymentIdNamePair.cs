@@ -55,11 +55,11 @@ namespace com.espertech.esper.common.@internal.util
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
-            return Equals((DeploymentIdNamePair) obj);
+            return Equals((DeploymentIdNamePair)obj);
         }
 
         public override int GetHashCode()

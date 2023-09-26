@@ -70,8 +70,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             foreach (var property in eventBeanToObjectProps) {
                 var value = props.Get(property);
-                if (value is EventBean) {
-                    props.Put(property, ((EventBean) value).Underlying);
+                if (value is EventBean bean) {
+                    props.Put(property, bean.Underlying);
                 }
             }
 

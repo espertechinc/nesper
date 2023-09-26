@@ -35,11 +35,11 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
             ModuleDependenciesCompileTime moduleDependencies,
             bool isFireAndForget)
         {
-            this._moduleName = moduleName;
-            this._moduleUses = moduleUses;
-            this._locals = locals;
-            this._path = path;
-            this._moduleDependencies = moduleDependencies;
+            _moduleName = moduleName;
+            _moduleUses = moduleUses;
+            _locals = locals;
+            _path = path;
+            _moduleDependencies = moduleDependencies;
             _isFireAndForget = isFireAndForget;
         }
 
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
             var key = new NameAndParamNum(name, numParameters);
 
             // try self-originated protected types first
-            ExpressionScriptProvided localExpr = _locals.Scripts.Get(key);
+            var localExpr = _locals.Scripts.Get(key);
             if (localExpr != null) {
                 return localExpr;
             }
@@ -62,9 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
                 if (expression != null) {
                     if (!_isFireAndForget &&
                         !NameAccessModifierExtensions.Visible(
-                        expression.First.Visibility,
-                        expression.First.ModuleName,
-                        _moduleName)) {
+                            expression.First.Visibility,
+                            expression.First.ModuleName,
+                            _moduleName)) {
                         return null;
                     }
 

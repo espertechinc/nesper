@@ -16,7 +16,8 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
@@ -33,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             this.indexExpression = indexExpression;
         }
 
-        public EPType TypeInfo => forge.TypeInfo;
+        public EPChainableType TypeInfo => forge.TypeInfo;
 
         public object Evaluate(
             object target,
@@ -72,7 +73,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var methodNode = codegenMethodScope.MakeChild(forge.TypeInfo.GetNormalizedClass(), typeof(ExprDotForgeGetArrayEval), codegenClassScope)
+            var returnType = forge.TypeInfo.GetNormalizedType();
+            if (returnType == null) {
+                return ConstantNull();
+            }
+
+            var methodNode = codegenMethodScope.MakeChild(
+                    forge.TypeInfo.GetNormalizedType(),
+                    typeof(ExprDotForgeGetArrayEval),
+                    codegenClassScope)
                 .AddParam(innerType, "target");
 
             var block = methodNode.Block;
@@ -81,10 +90,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             var targetType = forge.TypeInfo.GetCodegenReturnType();
-            block.DeclareVar<int>("index", forge.IndexExpression.EvaluateCodegen(typeof(int), methodNode, exprSymbol, codegenClassScope))
+            block.DeclareVar<int>(
+                    "index",
+                    forge.IndexExpression.EvaluateCodegen(typeof(int), methodNode, exprSymbol, codegenClassScope))
                 .IfCondition(Relational(ArrayLength(Ref("target")), LE, Ref("index")))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(CodegenLegoCast.CastSafeFromObjectType(targetType, ArrayAtIndex(Ref("target"), Ref("index"))));
+                .MethodReturn(
+                    CodegenLegoCast.CastSafeFromObjectType(targetType, ArrayAtIndex(Ref("target"), Ref("index"))));
             return LocalMethod(methodNode, inner);
         }
     }

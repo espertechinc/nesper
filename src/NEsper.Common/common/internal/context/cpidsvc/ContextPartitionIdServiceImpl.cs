@@ -60,5 +60,12 @@ namespace com.espertech.esper.common.@internal.context.cpidsvc
         {
             // no action, service discarded and GC'd
         }
+
+        public void ClearCaches()
+        {
+            // not memory-managed
+        }
+
+        public long Count => cpids.Count;
     }
 } // end of namespace

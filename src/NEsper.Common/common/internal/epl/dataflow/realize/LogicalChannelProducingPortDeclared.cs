@@ -35,29 +35,17 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             this.hasPunctuation = hasPunctuation;
         }
 
-        public string ProducingOpPrettyPrint {
-            get => producingOpPrettyPrint;
-        }
+        public string ProducingOpPrettyPrint => producingOpPrettyPrint;
 
-        public int ProducingOpNum {
-            get => producingOpNum;
-        }
+        public int ProducingOpNum => producingOpNum;
 
-        public string StreamName {
-            get => streamName;
-        }
+        public string StreamName => streamName;
 
-        public int StreamNumber {
-            get => streamNumber;
-        }
+        public int StreamNumber => streamNumber;
 
-        public bool HasPunctuation {
-            get => hasPunctuation;
-        }
+        public bool HasPunctuation => hasPunctuation;
 
-        public GraphTypeDesc TypeDesc {
-            get => typeDesc;
-        }
+        public GraphTypeDesc TypeDesc => typeDesc;
 
         public override string ToString()
         {

@@ -33,7 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         {
         }
 
-        public ProxySubSelectStrategyFactoryContext(Func<EventTableIndexService> procEventTableIndexService,
+        public ProxySubSelectStrategyFactoryContext(
+            Func<EventTableIndexService> procEventTableIndexService,
             Func<EventTableFactoryFactoryContext> procEventTableFactoryContext)
         {
             ProcEventTableIndexService = procEventTableIndexService;

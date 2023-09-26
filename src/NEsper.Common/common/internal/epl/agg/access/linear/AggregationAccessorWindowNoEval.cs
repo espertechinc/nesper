@@ -32,12 +32,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 context.Method,
                 context.NamedMethods);
 
-            context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0)))
+            var arrayType = TypeHelper.GetArrayType(forge.ComponentType);
+            context.Method.Block
+                .IfCondition(EqualsIdentity(size, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(
-                    TypeHelper.GetArrayType(forge.ComponentType),
-                    "array",
-                    NewArrayByLength(forge.ComponentType, size))
+                .DeclareVar(arrayType, "array", NewArrayByLength(forge.ComponentType, size))
                 .DeclareVar<int>("count", Constant(0))
                 .DeclareVar<IEnumerator<EventBean>>("enumerator", enumerator)
                 .WhileLoop(ExprDotMethod(Ref("enumerator"), "MoveNext"))

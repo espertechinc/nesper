@@ -52,14 +52,14 @@ namespace com.espertech.esper.common.@internal.collection
         ///     largest key value, null if none
         /// </returns>
 
-        public virtual TK MaxValue => _refSet.Count != 0 ? _refSet.Keys[RefSet.Count - 1] : default(TK);
+        public virtual TK MaxValue => _refSet.Count != 0 ? _refSet.Keys[RefSet.Count - 1] : default;
 
         /// <summary> Returns the smallest key value, or null if the collection is empty.</summary>
         /// <returns>
         ///     smallest key value, default(K) if none
         /// </returns>
 
-        public virtual TK MinValue => _refSet.Count != 0 ? _refSet.Keys[0] : default(TK);
+        public virtual TK MinValue => _refSet.Count != 0 ? _refSet.Keys[0] : default;
 
         /// <summary>
         ///     Add a key to the set. Add with a reference count of one if the key didn't exist in the set.
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             --_countPoints;
-            
+
             if (value.DecrementAndGet() == 0) {
                 _refSet.Remove(key);
             }

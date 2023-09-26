@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         {
             // not applicable
         }
-
+        
         public void Accept(AggregationServiceVisitor visitor)
         {
             throw new UnsupportedOperationException("Not applicable");

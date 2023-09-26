@@ -7,8 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -22,6 +24,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtNamedWindowIterate : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             var path = SetupStmts(env);
@@ -37,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "create window MyWindow#groupwin(TheString)#keepall as select TheString, LongPrimitive from SupportBean",
+                "@public create window MyWindow#groupwin(TheString)#keepall as select TheString, LongPrimitive from SupportBean",
                 path);
             env.CompileDeploy(
                 "insert into MyWindow(TheString, LongPrimitive) select Symbol, Volume from SupportMarketDataBean",

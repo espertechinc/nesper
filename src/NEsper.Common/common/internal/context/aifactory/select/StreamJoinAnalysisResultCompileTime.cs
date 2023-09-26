@@ -169,9 +169,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         {
             var method = parent.MakeChild(typeof(StreamJoinAnalysisResultRuntime), GetType(), classScope);
             method.Block
-                .DeclareVar<StreamJoinAnalysisResultRuntime>(
-                    "ar",
-                    NewInstance(typeof(StreamJoinAnalysisResultRuntime)))
+                .DeclareVarNewInstance<StreamJoinAnalysisResultRuntime>("ar")
                 .SetProperty(Ref("ar"), "IsPureSelfJoin", Constant(IsPureSelfJoin))
                 .SetProperty(Ref("ar"), "Unidirectional", Constant(UnidirectionalInd))
                 .SetProperty(Ref("ar"), "UnidirectionalNonDriving", Constant(_unidirectionalNonDriving))
@@ -226,7 +224,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             }
 
             if (forges[0] is GroupByViewFactoryForge) {
-                var grouped = (GroupByViewFactoryForge) forges[0];
+                var grouped = (GroupByViewFactoryForge)forges[0];
                 var criteria = grouped.CriteriaExpressions;
                 var groupedCriteria = ExprNodeUtilityQuery.GetPropertyNamesIfAllProps(criteria);
                 if (groupedCriteria == null) {
@@ -234,8 +232,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 }
 
                 var inner = grouped.Groupeds[0];
-                if (inner is DataWindowViewForgeUniqueCandidate && !disableUniqueImplicit) {
-                    var uniqueFactory = (DataWindowViewForgeUniqueCandidate) inner;
+                if (inner is DataWindowViewForgeUniqueCandidate uniqueFactory && !disableUniqueImplicit) {
                     var uniqueCandidates = uniqueFactory.UniquenessCandidatePropertyNames;
                     uniqueCandidates?.AddAll(groupedCriteria);
 
@@ -246,7 +243,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             }
 
             if (forges[0] is DataWindowViewForgeUniqueCandidate && !disableUniqueImplicit) {
-                var uniqueFactory = (DataWindowViewForgeUniqueCandidate) forges[0];
+                var uniqueFactory = (DataWindowViewForgeUniqueCandidate)forges[0];
                 return uniqueFactory.UniquenessCandidatePropertyNames;
             }
 

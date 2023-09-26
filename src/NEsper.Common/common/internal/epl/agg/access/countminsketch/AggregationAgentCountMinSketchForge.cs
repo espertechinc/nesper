@@ -29,22 +29,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             this.optionalFilterForge = optionalFilterForge;
         }
 
-        public ExprForge OptionalFilter {
-            get => optionalFilterForge;
-        }
+        public ExprForge OptionalFilter => optionalFilterForge;
 
         public CodegenExpression Make(
             CodegenMethod parent,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(AggregationAgentCountMinSketch), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(AggregationAgentCountMinSketch), GetType(), classScope);
             method.Block
                 .DeclareVar<AggregationAgentCountMinSketch>("cms", NewInstance(typeof(AggregationAgentCountMinSketch)))
                 .SetProperty(
                     Ref("cms"),
                     "StringEval",
-                    ExprNodeUtilityCodegen.CodegenEvaluator(stringEvaluator, method, this.GetType(), classScope))
+                    ExprNodeUtilityCodegen.CodegenEvaluator(stringEvaluator, method, GetType(), classScope))
                 .SetProperty(
                     Ref("cms"),
                     "OptionalFilterEval",
@@ -53,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
                             optionalFilterForge,
                             method,
-                            this.GetType(),
+                            GetType(),
                             classScope))
                 .MethodReturn(Ref("cms"));
             return LocalMethod(method);

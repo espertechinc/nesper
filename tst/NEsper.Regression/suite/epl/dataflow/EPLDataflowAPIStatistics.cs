@@ -6,11 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -22,14 +25,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                "@Name('flow') create dataflow MyGraph " +
+                "@name('flow') create dataflow MyGraph " +
                 "DefaultSupportSourceOp -> outstream<SupportBean> {} " +
                 "DefaultSupportCaptureOp(outstream) {}");
-            Assert.AreEqual(StatementType.CREATE_DATAFLOW, env.Statement("flow").GetProperty(StatementProperty.STATEMENTTYPE));
+            Assert.AreEqual(
+                StatementType.CREATE_DATAFLOW,
+                env.Statement("flow").GetProperty(StatementProperty.STATEMENTTYPE));
             Assert.AreEqual("MyGraph", env.Statement("flow").GetProperty(StatementProperty.CREATEOBJECTNAME));
 
 
-            var source = new DefaultSupportSourceOp(new object[] {new SupportBean("E1", 1), new SupportBean("E2", 2)});
+            var source =
+                new DefaultSupportSourceOp(new object[] { new SupportBean("E1", 1), new SupportBean("E2", 2) });
             var capture = new DefaultSupportCaptureOp();
             var options = new EPDataFlowInstantiationOptions()
                 .WithOperatorProvider(new DefaultSupportGraphOpProvider(source, capture))
@@ -48,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             Assert.AreEqual(0, sourceStat.OperatorNumber);
             Assert.AreEqual("DefaultSupportSourceOp#0() -> outstream<SupportBean>", sourceStat.OperatorPrettyPrint);
             Assert.AreEqual(2, sourceStat.SubmittedOverallCount);
-            EPAssertionUtil.AssertEqualsExactOrder(new[] {2L}, sourceStat.SubmittedPerPortCount);
+            EPAssertionUtil.AssertEqualsExactOrder(new[] { 2L }, sourceStat.SubmittedPerPortCount);
             Assert.IsTrue(sourceStat.TimeOverall > 0);
             Assert.AreEqual(sourceStat.TimeOverall, sourceStat.TimePerPort[0]);
 
@@ -62,6 +68,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             Assert.AreEqual(0, destStat.TimePerPort.Length);
 
             env.UndeployAll();
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.DATAFLOW);
         }
     }
 } // end of namespace

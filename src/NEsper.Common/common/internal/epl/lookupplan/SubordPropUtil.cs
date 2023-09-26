@@ -62,11 +62,10 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
             var result = new string[descList.Count];
             var count = 0;
             foreach (var desc in descList) {
-                if (!(desc.HashKey is QueryGraphValueEntryHashKeyedForgeProp)) {
+                if (!(desc.HashKey is QueryGraphValueEntryHashKeyedForgeProp keyed)) {
                     throw new UnsupportedOperationException("Not a strict key compare");
                 }
 
-                var keyed = (QueryGraphValueEntryHashKeyedForgeProp) desc.HashKey;
                 result[count++] = keyed.KeyProperty;
             }
 
@@ -83,11 +82,10 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
             var result = new string[descList.Length];
             var count = 0;
             foreach (var desc in descList) {
-                if (!(desc.HashKey is QueryGraphValueEntryHashKeyedForgeProp)) {
+                if (!(desc.HashKey is QueryGraphValueEntryHashKeyedForgeProp keyed)) {
                     throw new UnsupportedOperationException("Not a strict key compare");
                 }
 
-                var keyed = (QueryGraphValueEntryHashKeyedForgeProp) desc.HashKey;
                 result[count++] = keyed.KeyProperty;
             }
 

@@ -19,70 +19,93 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-	public class ExprStreamUnderlyingNodeEnumerationForge : ExprEnumerationForge {
-	    private readonly string streamName;
-	    private readonly int streamNum;
-	    private readonly EventType eventType;
+    public class ExprStreamUnderlyingNodeEnumerationForge : ExprEnumerationForge
+    {
+        private readonly string streamName;
+        private readonly int streamNum;
+        private readonly EventType eventType;
 
-	    public ExprStreamUnderlyingNodeEnumerationForge(string streamName, int streamNum, EventType eventType) {
-	        this.streamName = streamName;
-	        this.streamNum = streamNum;
-	        this.eventType = eventType;
-	    }
+        public ExprStreamUnderlyingNodeEnumerationForge(
+            string streamName,
+            int streamNum,
+            EventType eventType)
+        {
+            this.streamName = streamName;
+            this.streamNum = streamNum;
+            this.eventType = eventType;
+        }
 
-	    public Type ComponentTypeCollection => null;
+        public Type ComponentTypeCollection => null;
 
-	    public EventType GetEventTypeCollection(StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices) {
-	        return null;
-	    }
+        public EventType GetEventTypeCollection(
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
+        {
+            return null;
+        }
 
-	    public EventType GetEventTypeSingle(StatementRawInfo statementRawInfo, StatementCompileTimeServices compileTimeServices) {
-	        return eventType;
-	    }
+        public EventType GetEventTypeSingle(
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices compileTimeServices)
+        {
+            return eventType;
+        }
 
-	    public CodegenExpression EvaluateGetROCollectionEventsCodegen(CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
+        public CodegenExpression EvaluateGetROCollectionEventsCodegen(
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public CodegenExpression EvaluateGetROCollectionScalarCodegen(CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return ConstantNull();
-	    }
+        public CodegenExpression EvaluateGetROCollectionScalarCodegen(
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return ConstantNull();
+        }
 
-	    public CodegenExpression EvaluateGetEventBeanCodegen(CodegenMethodScope codegenMethodScope, ExprForgeCodegenSymbol exprSymbol, CodegenClassScope codegenClassScope) {
-	        return ArrayAtIndex(exprSymbol.GetAddEPS(codegenMethodScope), Constant(streamNum));
-	    }
+        public CodegenExpression EvaluateGetEventBeanCodegen(
+            CodegenMethodScope codegenMethodScope,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return ArrayAtIndex(exprSymbol.GetAddEPS(codegenMethodScope), Constant(streamNum));
+        }
 
 
-	    public ExprNodeRenderable EnumForgeRenderable {
-		    get {
-			    return new ProxyExprNodeRenderable() {
-				    ProcToEPL = (
-					    writer,
-					    parentPrecedence,
-					    flags) => {
-					    writer.Write(streamName);
-				    },
-			    };
-		    }
-	    }
+        public ExprNodeRenderable EnumForgeRenderable {
+            get {
+                return new ProxyExprNodeRenderable() {
+                    ProcToEPL = (
+                        writer,
+                        parentPrecedence,
+                        flags) => {
+                        writer.Write(streamName);
+                    }
+                };
+            }
+        }
 
-	    public ExprEnumerationEval ExprEvaluatorEnumeration {
-		    get {
-			    return new ProxyExprEnumerationEval() {
-				    ProcEvaluateGetROCollectionEvents = (
-					    eventsPerStream,
-					    isNewData,
-					    context) => null,
-				    ProcEvaluateGetROCollectionScalar = (
-					    eventsPerStream,
-					    isNewData,
-					    context) => null,
-				    ProcEvaluateGetEventBean = (
-					    eventsPerStream,
-					    isNewData,
-					    context) => eventsPerStream[streamNum],
-			    };
-		    }
-	    }
-	}
+        public ExprEnumerationEval ExprEvaluatorEnumeration {
+            get {
+                return new ProxyExprEnumerationEval() {
+                    ProcEvaluateGetROCollectionEvents = (
+                        eventsPerStream,
+                        isNewData,
+                        context) => null,
+                    ProcEvaluateGetROCollectionScalar = (
+                        eventsPerStream,
+                        isNewData,
+                        context) => null,
+                    ProcEvaluateGetEventBean = (
+                        eventsPerStream,
+                        isNewData,
+                        context) => eventsPerStream[streamNum]
+                };
+            }
+        }
+    }
 } // end of namespace

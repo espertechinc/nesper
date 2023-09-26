@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <summary>Set filter version. </summary>
         /// <value>to set</value>
         public long StmtFilterVersion {
-            get { return _stmtFilterVersion; }
-            set { _stmtFilterVersion = value; }
+            get => _stmtFilterVersion;
+            set => _stmtFilterVersion = value;
         }
 
         /// <summary>Check current filter. </summary>

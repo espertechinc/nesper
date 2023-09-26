@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -32,8 +33,10 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
@@ -48,6 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public class AggregationServiceFactoryFactory
     {
         public static AggregationServiceForgeDesc GetService(
+            AggregationAttributionKey attributionKey,
             IList<ExprAggregateNode> selectAggregateExprNodes,
             IDictionary<ExprNode, string> selectClauseNamedNodes,
             IList<ExprDeclaredNode> declaredExpressions,
@@ -72,9 +76,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             bool isOnSelect,
             ImportServiceCompileTime importService,
             StatementRawInfo raw,
-            SerdeCompileTimeResolver serdeResolver)
+            SerdeCompileTimeResolver serdeResolver,
+            StateMgmtSettingsProvider stateMgmtSettingsProvider)
         {
             // No aggregates used, we do not need this service
+            var fabricCharge = stateMgmtSettingsProvider.NewCharge();
             if (selectAggregateExprNodes.IsEmpty() && havingAggregateExprNodes.IsEmpty()) {
                 if (intoTableSpec != null) {
                     throw new ExprValidationException("Into-table requires at least one aggregation function");
@@ -84,7 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     AggregationServiceNullFactory.INSTANCE,
                     EmptyList<AggregationServiceAggExpressionDesc>.Instance,
                     EmptyList<ExprAggregateNodeGroupKey>.Instance,
-                    EmptyList<StmtClassForgeableFactory>.Instance);
+                    EmptyList<StmtClassForgeableFactory>.Instance,
+                    fabricCharge);
             }
 
             // Validate the absence of "prev" function in where-clause:
@@ -96,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 havingClause?.Accept(visitor);
 
                 if (visitor.Previous != null && !visitor.Previous.IsEmpty()) {
-                    string funcname = visitor.Previous[0]
+                    var funcname = visitor.Previous[0]
                         .Second.PreviousType.ToString()
                         .ToLowerInvariant();
                     throw new ExprValidationException(
@@ -157,7 +164,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
                 // validate group keys
                 var groupByTypes = ExprNodeUtilityQuery.GetExprResultTypes(groupByNodes);
-                var keyTypes = metadata.IsKeyed ? metadata.KeyTypes : new Type[0];
+                var keyTypes = metadata.IsKeyed ? metadata.KeyTypes : Type.EmptyTypes;
                 ExprTableNodeUtil.ValidateExpressions(
                     intoTableSpec.Name,
                     groupByTypes,
@@ -184,20 +191,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     bindingMatchResult.TargetStates,
                     bindingMatchResult.Agents,
                     groupByRollupDesc);
-                return new AggregationServiceForgeDesc(serviceForgeX, aggregations, groupKeyExpressions, EmptyList<StmtClassForgeableFactory>.Instance);
+                return new AggregationServiceForgeDesc(
+                    serviceForgeX,
+                    aggregations,
+                    groupKeyExpressions,
+                    EmptyList<StmtClassForgeableFactory>.Instance,
+                    fabricCharge);
             }
 
             // Assign a column number to each aggregation node. The regular aggregation goes first followed by access-aggregation.
             var columnNumber = 0;
             foreach (var entry in aggregations) {
                 if (!entry.Factory.IsAccessAggregation) {
-                    entry.SetColumnNum(columnNumber++);
+                    entry.ColumnNum = columnNumber++;
                 }
             }
 
             foreach (var entry in aggregations) {
                 if (entry.Factory.IsAccessAggregation) {
-                    entry.SetColumnNum(columnNumber++);
+                    entry.ColumnNum = columnNumber++;
                 }
             }
 
@@ -216,10 +228,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             // handle access aggregations
             var multiFunctionAggPlan = AggregationMultiFunctionAnalysisHelper.AnalyzeAccessAggregations(
                 aggregations,
-                importService,
-                isFireAndForget,
-                raw.StatementName,
-                groupByNodes);
+                groupByNodes,
+                typesPerStream.Length > 1);
             var accessorPairsForge = multiFunctionAggPlan.AccessorPairsForge;
             var accessFactories = multiFunctionAggPlan.StateFactoryForges;
             var hasAccessAgg = accessorPairsForge.Length > 0;
@@ -232,7 +242,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             // analyze local group by
             AggregationLocalGroupByPlanForge localGroupByPlan = null;
             if (localGroupDesc != null) {
-                AggregationLocalGroupByPlanDesc plan = AggregationGroupByLocalGroupByAnalyzer.Analyze(
+                var plan = AggregationGroupByLocalGroupByAnalyzer.Analyze(
                     methodAggForges,
                     methodAggFactories,
                     accessFactories,
@@ -246,7 +256,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 additionalForgeables.AddAll(plan.AdditionalForgeables);
 
                 try {
-                    var hook = (AggregationLocalLevelHook) ImportUtil.GetAnnotationHook(
+                    var hook = (AggregationLocalLevelHook)ImportUtil.GetAnnotationHook(
                         annotations,
                         HookType.INTERNAL_AGGLOCALLEVEL,
                         typeof(AggregationLocalLevelHook),
@@ -318,7 +328,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 }
             }
 
-            return new AggregationServiceForgeDesc(serviceForge, aggregations, groupKeyExpressions, additionalForgeables);
+            var setting = stateMgmtSettingsProvider.Aggregation(fabricCharge, attributionKey, raw, serviceForge);
+            serviceForge.StateMgmtSetting = setting;
+
+            return new AggregationServiceForgeDesc(
+                serviceForge,
+                aggregations,
+                groupKeyExpressions,
+                additionalForgeables,
+                fabricCharge);
         }
 
         private static void AddEquivalent(
@@ -340,28 +358,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 }
 
                 if (!ExprNodeUtilityCompare.DeepEquals(
-                    aggNode.PositionalParams,
-                    aggNodeToAdd.PositionalParams,
-                    false)) {
+                        aggNode.PositionalParams,
+                        aggNodeToAdd.PositionalParams,
+                        false)) {
                     continue;
                 }
 
                 if (!ExprNodeUtilityCompare.DeepEqualsNullChecked(
-                    aggNode.OptionalFilter,
-                    aggNodeToAdd.OptionalFilter,
-                    false)) {
+                        aggNode.OptionalFilter,
+                        aggNodeToAdd.OptionalFilter,
+                        false)) {
                     continue;
                 }
 
                 if (aggNode.OptionalLocalGroupBy != null || aggNodeToAdd.OptionalLocalGroupBy != null) {
-                    if (aggNode.OptionalLocalGroupBy == null && aggNodeToAdd.OptionalLocalGroupBy != null ||
-                        aggNode.OptionalLocalGroupBy != null && aggNodeToAdd.OptionalLocalGroupBy == null) {
+                    if ((aggNode.OptionalLocalGroupBy == null && aggNodeToAdd.OptionalLocalGroupBy != null) ||
+                        (aggNode.OptionalLocalGroupBy != null && aggNodeToAdd.OptionalLocalGroupBy == null)) {
                         continue;
                     }
 
                     if (!ExprNodeUtilityCompare.DeepEqualsIgnoreDupAndOrder(
-                        aggNode.OptionalLocalGroupBy.PartitionExpressions,
-                        aggNodeToAdd.OptionalLocalGroupBy.PartitionExpressions)) {
+                            aggNode.OptionalLocalGroupBy.PartitionExpressions,
+                            aggNodeToAdd.OptionalLocalGroupBy.PartitionExpressions)) {
                         continue;
                     }
                 }
@@ -502,7 +520,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 }
 
                 // determine binding metadata
-                var columnMetadata = (TableMetadataColumnAggregation) metadata.Columns.Get(columnName);
+                var columnMetadata = (TableMetadataColumnAggregation)metadata.Columns.Get(columnName);
                 if (columnMetadata == null) {
                     throw new ExprValidationException(
                         "Failed to find name '" + columnName + "' among the columns for table '" + bindings.Name + "'");
@@ -525,12 +543,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             foreach (var methodEntry in methodAggs) {
                 methodIndex++;
                 var column = methodEntry.Value.Column;
-                ExprForge[] forges = methodAggForgesList[methodIndex];
+                var forges = methodAggForgesList[methodIndex];
                 methodPairs[methodIndex] = new TableColumnMethodPairForge(
                     forges,
                     column,
                     methodEntry.Key.AggregationNode);
-                methodEntry.Key.SetColumnNum(column);
+                methodEntry.Key.ColumnNum = column;
             }
 
             // handle access-aggs
@@ -545,7 +563,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 var accessorForge = aggregationMethodFactory.AccessorForge;
                 accessSlots.Put(column, accessEntry.Key.AggregationNode);
                 accessReadPairs.Add(new AggregationAccessorSlotPairForge(column, accessorForge));
-                accessEntry.Key.SetColumnNum(column);
+                accessEntry.Key.ColumnNum = column;
                 agents.Add(aggregationMethodFactory.GetAggregationStateAgent(importService, statementName));
             }
 
@@ -632,7 +650,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         {
             var variableMetaData = variableCompileTimeResolver.Resolve(hintValue);
             if (variableMetaData != null) {
-                if (!variableMetaData.Type.IsNumeric()) {
+                if (!variableMetaData.Type.IsTypeNumeric()) {
                     throw new ExprValidationException(
                         "Variable type of variable '" + variableMetaData.VariableName + "' is not numeric");
                 }
@@ -647,7 +665,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
             double valueDouble;
             try {
-                valueDouble = Double.Parse(hintValue);
+                valueDouble = double.Parse(hintValue);
             }
             catch (EPException) {
                 throw;

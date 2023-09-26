@@ -35,8 +35,7 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(first);
             AddChild(second);
-            for (int i = 0; i < patternExprs.Length; i++)
-            {
+            for (var i = 0; i < patternExprs.Length; i++) {
                 AddChild(patternExprs[i]);
             }
         }
@@ -50,18 +49,14 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
-            get { return PatternExprPrecedenceEnum.AND; }
-        }
+        public override PatternExprPrecedenceEnum Precedence => PatternExprPrecedenceEnum.AND;
 
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            string delimiter = "";
-            foreach (PatternExpr child in Children)
-            {
+            var delimiter = "";
+            foreach (var child in Children) {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence, formatter);
                 delimiter = " and ";

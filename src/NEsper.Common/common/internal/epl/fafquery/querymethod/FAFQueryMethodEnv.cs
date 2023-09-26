@@ -19,8 +19,6 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             this.contextManagementService = contextManagementService;
         }
 
-        public ContextManagementService ContextManagementService {
-            get => contextManagementService;
-        }
+        public ContextManagementService ContextManagementService => contextManagementService;
     }
 } // end of namespace

@@ -37,64 +37,121 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     if (lhsType != null && lhsType.IsArray) {
                         var componentType = lhsType.GetElementType();
                         if (componentType == typeof(bool)) {
-                            return new ExprEqualsNodeForgeNCEvalEqualsArrayBoolean(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                            return new ExprEqualsNodeForgeNCEvalEqualsArrayBoolean(
+                                ForgeRenderable,
+                                lhs.ExprEvaluator,
+                                rhs.ExprEvaluator);
                         }
                         else if (componentType == typeof(byte)) {
-                            return new ExprEqualsNodeForgeNCEvalEqualsArrayByte(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                            return new ExprEqualsNodeForgeNCEvalEqualsArrayByte(
+                                ForgeRenderable,
+                                lhs.ExprEvaluator,
+                                rhs.ExprEvaluator);
                         }
                         else if (componentType == typeof(char)) {
-                            return new ExprEqualsNodeForgeNCEvalEqualsArrayChar(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                            return new ExprEqualsNodeForgeNCEvalEqualsArrayChar(
+                                ForgeRenderable,
+                                lhs.ExprEvaluator,
+                                rhs.ExprEvaluator);
                         }
                         else if (componentType == typeof(long)) {
-                            return new ExprEqualsNodeForgeNCEvalEqualsArrayLong(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                            return new ExprEqualsNodeForgeNCEvalEqualsArrayLong(
+                                ForgeRenderable,
+                                lhs.ExprEvaluator,
+                                rhs.ExprEvaluator);
                         }
                         else if (componentType == typeof(double)) {
-                            return new ExprEqualsNodeForgeNCEvalEqualsArrayDouble(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                            return new ExprEqualsNodeForgeNCEvalEqualsArrayDouble(
+                                ForgeRenderable,
+                                lhs.ExprEvaluator,
+                                rhs.ExprEvaluator);
                         }
                         else if (componentType == typeof(float)) {
-                            return new ExprEqualsNodeForgeNCEvalEqualsArrayFloat(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                            return new ExprEqualsNodeForgeNCEvalEqualsArrayFloat(
+                                ForgeRenderable,
+                                lhs.ExprEvaluator,
+                                rhs.ExprEvaluator);
                         }
                         else if (componentType == typeof(short)) {
-                            return new ExprEqualsNodeForgeNCEvalEqualsArrayShort(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                            return new ExprEqualsNodeForgeNCEvalEqualsArrayShort(
+                                ForgeRenderable,
+                                lhs.ExprEvaluator,
+                                rhs.ExprEvaluator);
                         }
                         else if (componentType == typeof(int)) {
-                            return new ExprEqualsNodeForgeNCEvalEqualsArrayInt(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                            return new ExprEqualsNodeForgeNCEvalEqualsArrayInt(
+                                ForgeRenderable,
+                                lhs.ExprEvaluator,
+                                rhs.ExprEvaluator);
                         }
 
-                        return new ExprEqualsNodeForgeNCEvalEqualsArrayObject(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                        return new ExprEqualsNodeForgeNCEvalEqualsArrayObject(
+                            ForgeRenderable,
+                            lhs.ExprEvaluator,
+                            rhs.ExprEvaluator);
                     }
 
-                    return new ExprEqualsNodeForgeNCEvalEqualsNonArray(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                    return new ExprEqualsNodeForgeNCEvalEqualsNonArray(
+                        ForgeRenderable,
+                        lhs.ExprEvaluator,
+                        rhs.ExprEvaluator);
                 }
 
                 if (lhsType != null && lhsType.IsArray) {
                     var componentType = lhsType.GetElementType();
                     if (componentType == typeof(bool)) {
-                        return new ExprEqualsNodeForgeNCEvalIsArrayBoolean(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                        return new ExprEqualsNodeForgeNCEvalIsArrayBoolean(
+                            ForgeRenderable,
+                            lhs.ExprEvaluator,
+                            rhs.ExprEvaluator);
                     }
                     else if (componentType == typeof(byte)) {
-                        return new ExprEqualsNodeForgeNCEvalIsArrayByte(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                        return new ExprEqualsNodeForgeNCEvalIsArrayByte(
+                            ForgeRenderable,
+                            lhs.ExprEvaluator,
+                            rhs.ExprEvaluator);
                     }
                     else if (componentType == typeof(char)) {
-                        return new ExprEqualsNodeForgeNCEvalIsArrayChar(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                        return new ExprEqualsNodeForgeNCEvalIsArrayChar(
+                            ForgeRenderable,
+                            lhs.ExprEvaluator,
+                            rhs.ExprEvaluator);
                     }
                     else if (componentType == typeof(long)) {
-                        return new ExprEqualsNodeForgeNCEvalIsArrayLong(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                        return new ExprEqualsNodeForgeNCEvalIsArrayLong(
+                            ForgeRenderable,
+                            lhs.ExprEvaluator,
+                            rhs.ExprEvaluator);
                     }
                     else if (componentType == typeof(double)) {
-                        return new ExprEqualsNodeForgeNCEvalIsArrayDouble(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                        return new ExprEqualsNodeForgeNCEvalIsArrayDouble(
+                            ForgeRenderable,
+                            lhs.ExprEvaluator,
+                            rhs.ExprEvaluator);
                     }
                     else if (componentType == typeof(float)) {
-                        return new ExprEqualsNodeForgeNCEvalIsArrayFloat(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                        return new ExprEqualsNodeForgeNCEvalIsArrayFloat(
+                            ForgeRenderable,
+                            lhs.ExprEvaluator,
+                            rhs.ExprEvaluator);
                     }
                     else if (componentType == typeof(short)) {
-                        return new ExprEqualsNodeForgeNCEvalIsArrayShort(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                        return new ExprEqualsNodeForgeNCEvalIsArrayShort(
+                            ForgeRenderable,
+                            lhs.ExprEvaluator,
+                            rhs.ExprEvaluator);
                     }
                     else if (componentType == typeof(int)) {
-                        return new ExprEqualsNodeForgeNCEvalIsArrayInt(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                        return new ExprEqualsNodeForgeNCEvalIsArrayInt(
+                            ForgeRenderable,
+                            lhs.ExprEvaluator,
+                            rhs.ExprEvaluator);
                     }
 
-                    return new ExprEqualsNodeForgeNCEvalIsArrayObject(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
+                    return new ExprEqualsNodeForgeNCEvalIsArrayObject(
+                        ForgeRenderable,
+                        lhs.ExprEvaluator,
+                        rhs.ExprEvaluator);
                 }
 
                 return new ExprEqualsNodeForgeNCEvalIsNonArray(ForgeRenderable, lhs.ExprEvaluator, rhs.ExprEvaluator);
@@ -142,7 +199,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             return LocalMethod(
                 ExprEqualsNodeForgeNCForgeIs.Codegen(
-                    this, 
+                    this,
                     codegenMethodScope,
                     exprSymbol,
                     codegenClassScope,

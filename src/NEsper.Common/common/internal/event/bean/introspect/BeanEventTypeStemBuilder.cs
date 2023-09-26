@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
@@ -42,7 +41,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             }
 
             _smartResolutionStyle = _propertyResolutionStyle.Equals(PropertyResolutionStyle.CASE_INSENSITIVE) ||
-                                   _propertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE);
+                                    _propertyResolutionStyle.Equals(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE);
         }
 
         public BeanEventTypeStem Make(Type clazz)
@@ -52,9 +51,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             var propertyListBuilder = PropertyListBuilderFactory.CreateBuilder(_optionalConfig);
             var properties = propertyListBuilder.AssessProperties(clazz);
 
-            var propertyDescriptors = new List<EventPropertyDescriptor>();
+            var propertyDescriptors = new EventPropertyDescriptor[properties.Count];
             var propertyDescriptorMap = new Dictionary<string, EventPropertyDescriptor>();
-            var propertyNames = new SortedSet<string>();
+            var propertyNames = new string[properties.Count];
             var simpleProperties = new Dictionary<string, PropertyInfo>();
             var mappedPropertyDescriptors = new Dictionary<string, PropertyStem>();
             var indexedPropertyDescriptors = new Dictionary<string, PropertyStem>();
@@ -68,264 +67,145 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                 indexedSmartPropertyTable = new Dictionary<string, IList<PropertyInfo>>();
             }
 
+            var count = 0;
             foreach (var desc in properties) {
                 var propertyName = desc.PropertyName;
-                Type underlyingType = null;
-                Type componentType = null;
-                bool isRequiresIndex = false;
-                bool isRequiresMapkey = false;
-                bool isIndexed = false;
-                bool isMapped = false;
-                bool isFragment = false;
-                bool isSimple = false;
+                Type underlyingType;
+                bool isRequiresIndex;
+                bool isRequiresMapkey;
+                bool isIndexed;
+                bool isMapped;
+                bool isFragment;
 
-                if (desc.PropertyType.IsUndefined()) {
-                    continue;
-                }
-
-                EventPropertyGetterSPIFactory getter = null;
-
-                // SIMPLE
-
-                if (desc.PropertyType.IsSimple())
-                {
+                if (desc.PropertyType.IsSimple()) {
+                    EventPropertyGetterSPIFactory getter;
+                    Type type;
                     if (desc.ReadMethod != null) {
                         getter = new ReflectionPropMethodGetterFactory(desc.ReadMethod);
-                        underlyingType = desc.ReadMethod.ReturnType;
+                        type = desc.ReadMethod.ReturnType;
                     }
                     else if (desc.AccessorProp != null) {
                         getter = new ReflectionPropPropertyGetterFactory(desc.AccessorProp);
-                        underlyingType = desc.AccessorProp.PropertyType;
+                        type = desc.AccessorProp.PropertyType;
                     }
                     else if (desc.AccessorField != null) {
                         getter = new ReflectionPropFieldGetterFactory(desc.AccessorField);
-                        underlyingType = desc.AccessorField.FieldType;
+                        type = desc.AccessorField.FieldType;
                     }
                     else {
-                        throw new IllegalStateException($"invalid property descriptor: {desc}");
+                        // ignore property
+                        continue;
                     }
 
-                    isSimple = true;
-                    isFragment = underlyingType.IsFragmentableType();
-
-#if false
-                    if (TypeHelper.IsImplementsInterface(type, typeof(IDictionary<object, object>))) {
+                    underlyingType = type;
+                    isRequiresIndex = false;
+                    isRequiresMapkey = false;
+                    isIndexed = false;
+                    isMapped = false;
+                    if (type.IsGenericStringDictionary()) {
                         isMapped = true;
                         // We do not yet allow to fragment maps entries.
-                        // Class genericType = TypeHelper.getGenericReturnTypeMap(desc.getReadMethod(), desc.getAccessorField());
+                        // Class genericType = JavaClassHelper.getGenericReturnTypeMap(desc.getReadMethod(), desc.getAccessorField());
                         isFragment = false;
-
-                        if (desc.ReadMethod != null) {
-                            componentType = TypeHelper.GetGenericReturnTypeMap(desc.ReadMethod, false);
-                        }
-                        else if (desc.AccessorProp != null) {
-                            componentType = TypeHelper.GetGenericPropertyTypeMap(desc.AccessorProp, false);
-                        }
-                        else if (desc.AccessorField != null) {
-                            componentType = TypeHelper.GetGenericFieldTypeMap(desc.AccessorField, false);
-                        }
-                        else {
-                            componentType = typeof(object);
-                        }
                     }
                     else if (type.IsArray) {
                         isIndexed = true;
-                        isFragment = type.GetElementType().IsFragmentableType();
-                        componentType = type.GetElementType();
+                        isFragment = type.GetComponentType().IsFragmentableType();
                     }
                     else if (type.IsGenericEnumerable()) {
                         isIndexed = true;
-                        var genericType = TypeHelper.GetGenericReturnType(
-                            desc.ReadMethod,
-                            desc.AccessorField,
-                            desc.AccessorProp,
-                            true);
+                        var genericType = type.GetComponentType();
                         isFragment = genericType.IsFragmentableType();
-                        if (genericType != null) {
-                            componentType = genericType;
-                        }
-                        else {
-                            componentType = typeof(object);
-                        }
                     }
                     else {
                         isMapped = false;
                         isFragment = type.IsFragmentableType();
                     }
-#endif
 
-                    simpleProperties.Put(propertyName, new PropertyInfo(underlyingType, getter, desc));
-                }
+                    simpleProperties.Put(propertyName, new PropertyInfo(type, getter, desc));
 
-                // MAPPED
-
-                if (desc.PropertyType.IsMapped()) {
-                    // Local function: CheckComponentType
-                    void CheckComponentType()
-                    {
-                        if (underlyingType.IsGenericDictionary()) {
-                            componentType = underlyingType.GetDictionaryValueType();
-                        }
-                    }
-
-
-                    underlyingType = desc.ReturnType;
-                    componentType = typeof(object);
-
-                    if (desc.ReadMethod != null) {
-                        isRequiresMapkey = desc.ReadMethod.GetParameters().Length > 0;
-                        if (isRequiresMapkey) {
-                            componentType = desc.ReadMethod.GetParameters()[0].ParameterType;
-                        }
-                        else {
-                            CheckComponentType();
-                        }
-                    }
-                    else if (desc.AccessorProp != null) {
-                        isRequiresMapkey = false; // not required, you can "get" the property
-                        CheckComponentType();
-                    }
-                    else if (desc.AccessorField != null) {
-                        isRequiresMapkey = false; // not required, you can "get" the property
-                        CheckComponentType();
-                    }
-                    else {
-                        throw new IllegalStateException($"invalid property descriptor: {desc}");
-                    }
-
-                    isMapped = true;
-                    isFragment = false;
-
-                    mappedPropertyDescriptors.Put(propertyName, desc);
-                }
-
-                // INDEXED
-
-                if (desc.PropertyType.IsIndexed()) {
-                    // Local function: CheckFragmentation
-                    void CheckFragmentation()
-                    {
-                        if (underlyingType.IsArray) {
-                            isFragment = underlyingType.GetElementType().IsFragmentableType();
-                            componentType = underlyingType.GetElementType();
-                        }
-                        else if (underlyingType.IsGenericEnumerable()) {
-                            var genericType = TypeHelper.GetGenericReturnType(
-                                desc.ReadMethod,
-                                desc.AccessorField,
-                                desc.AccessorProp,
-                                true);
-                            isFragment = genericType.IsFragmentableType();
-                            componentType = genericType != null ? genericType : typeof(object);
-                        }
-                        else {
-                            isFragment = false;
-                            componentType = typeof(object);
-                        }
-                    }
-
-                    underlyingType = desc.ReturnType;
-
-                    if (desc.ReadMethod != null) {
-                        var rmParameters = desc.ReadMethod.GetParameters() ?? new ParameterInfo[0];
-                        isRequiresIndex = rmParameters.Length > 0;
-                        if (!isRequiresIndex) {
-                            //componentType = TypeHelper.GetGenericReturnTypeMap(desc.ReadMethod, false);
-                            CheckFragmentation();
-                        }
-                    }
-                    else if (desc.AccessorProp != null) {
-                        isRequiresIndex = false; // not required, you can "get" the index
-                        //componentType = TypeHelper.GetGenericPropertyTypeMap(desc.AccessorProp, false);
-                        CheckFragmentation();
-                    }
-                    else if (desc.AccessorField != null) {
-                        isRequiresIndex = false; // not required, you can "get" the index
-                        //componentType = TypeHelper.GetGenericFieldTypeMap(desc.AccessorField, false);
-                        CheckFragmentation();
-                    }
-                    else {
-                        throw new IllegalStateException($"invalid property descriptor: {desc}");
-                    }
-
-                    //componentType = null;
-                    isIndexed = true;
-                    indexedPropertyDescriptors.Put(propertyName, desc);
-                }
-
-                // ----------------------------------------------------------------------------------------------
-                // SMART-INDEXING: Recognize that there may be properties with overlapping case-insensitive names
-                // ----------------------------------------------------------------------------------------------
-
-                if (_smartResolutionStyle) {
-                    // SIMPLE
-
-                    if (isSimple)
-                    {
+                    // Recognize that there may be properties with overlapping case-insentitive names
+                    if (_smartResolutionStyle) {
                         // Find the property in the smart property table
                         var smartPropertyName = propertyName.ToLowerInvariant();
                         var propertyInfoList = simpleSmartPropertyTable.Get(smartPropertyName);
-                        if (propertyInfoList == null)
-                        {
+                        if (propertyInfoList == null) {
                             propertyInfoList = new List<PropertyInfo>();
                             simpleSmartPropertyTable.Put(smartPropertyName, propertyInfoList);
                         }
 
                         // Enter the property into the smart property list
-                        var propertyInfo = new PropertyInfo(underlyingType, getter, desc);
-                        propertyInfoList.Add(propertyInfo);
-                    }
-
-                    // MAPPED
-
-                    if (isMapped) {
-                        // Find the property in the smart property table
-                        var smartPropertyName = propertyName.ToLowerInvariant();
-                        var propertyInfoList = mappedSmartPropertyTable.Get(smartPropertyName);
-                        if (propertyInfoList == null) {
-                            propertyInfoList = new List<PropertyInfo>();
-                            mappedSmartPropertyTable.Put(smartPropertyName, propertyInfoList);
-                        }
-
-                        // Enter the property into the smart property list
-                        var propertyInfo = new PropertyInfo(underlyingType, null, desc);
-                        propertyInfoList.Add(propertyInfo);
-                    }
-
-                    // INDEXED
-
-                    if (isIndexed) {
-                        // Find the property in the smart property table
-                        var smartPropertyName = propertyName.ToLowerInvariant();
-                        var propertyInfoList = indexedSmartPropertyTable.Get(smartPropertyName);
-                        if (propertyInfoList == null) {
-                            propertyInfoList = new List<PropertyInfo>();
-                            indexedSmartPropertyTable.Put(smartPropertyName, propertyInfoList);
-                        }
-
-                        // Enter the property into the smart property list
-                        var propertyInfo = new PropertyInfo(underlyingType, null, desc);
+                        var propertyInfo = new PropertyInfo(type, getter, desc);
                         propertyInfoList.Add(propertyInfo);
                     }
                 }
+                else {
+                    var parameterTypes = desc.ReadMethod.GetParameterTypes();
 
-                // ----------------------------------------------------------------------------------------------
-                // STANDARD-INDEXING
-                // ----------------------------------------------------------------------------------------------
+                    if (desc.PropertyType.IsMapped()) {
+                        mappedPropertyDescriptors.Put(propertyName, desc);
 
-                propertyNames.Add(desc.PropertyName);
+                        underlyingType = desc.ReturnType;
+                        isRequiresIndex = false;
+                        isRequiresMapkey = parameterTypes.Length > 0;
+                        isIndexed = false;
+                        isMapped = true;
+                        isFragment = false;
 
+                        // Recognize that there may be properties with overlapping case-insentitive names
+                        if (_smartResolutionStyle) {
+                            // Find the property in the smart property table
+                            var smartPropertyName = propertyName.ToLowerInvariant();
+                            var propertyInfoList = mappedSmartPropertyTable.Get(smartPropertyName);
+                            if (propertyInfoList == null) {
+                                propertyInfoList = new List<PropertyInfo>();
+                                mappedSmartPropertyTable.Put(smartPropertyName, propertyInfoList);
+                            }
+
+                            // Enter the property into the smart property list
+                            var propertyInfo = new PropertyInfo(desc.ReturnType, null, desc);
+                            propertyInfoList.Add(propertyInfo);
+                        }
+                    }
+                    else if (desc.PropertyType.IsIndexed()) {
+                        indexedPropertyDescriptors.Put(propertyName, desc);
+
+                        underlyingType = desc.ReturnType;
+                        isRequiresIndex = parameterTypes.Length > 0;
+                        isRequiresMapkey = false;
+                        isIndexed = true;
+                        isMapped = false;
+                        isFragment = desc.ReturnType.IsFragmentableType();
+
+                        if (_smartResolutionStyle) {
+                            // Find the property in the smart property table
+                            var smartPropertyName = propertyName.ToLowerInvariant();
+                            var propertyInfoList = indexedSmartPropertyTable.Get(smartPropertyName);
+                            if (propertyInfoList == null) {
+                                propertyInfoList = new List<PropertyInfo>();
+                                indexedSmartPropertyTable.Put(smartPropertyName, propertyInfoList);
+                            }
+
+                            // Enter the property into the smart property list
+                            var propertyInfo = new PropertyInfo(desc.ReturnType, null, desc);
+                            propertyInfoList.Add(propertyInfo);
+                        }
+                    }
+                    else {
+                        continue;
+                    }
+                }
+
+                propertyNames[count] = desc.PropertyName;
                 var descriptor = new EventPropertyDescriptor(
                     desc.PropertyName,
                     underlyingType,
-                    componentType,
                     isRequiresIndex,
                     isRequiresMapkey,
                     isIndexed,
                     isMapped,
                     isFragment);
-
-                propertyDescriptors.Add(descriptor);
+                propertyDescriptors[count++] = descriptor;
                 propertyDescriptorMap.Put(descriptor.PropertyName, descriptor);
             }
 
@@ -344,7 +224,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             return new BeanEventTypeStem(
                 clazz,
                 _optionalConfig,
-                propertyNames.ToArray(),
+                propertyNames,
                 simpleProperties,
                 mappedPropertyDescriptors,
                 indexedPropertyDescriptors,

@@ -8,8 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 
 using com.espertech.esper.common.client;
@@ -25,479 +23,510 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
-    public class SupportSpatialUtil
-    {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+	public class SupportSpatialUtil
+	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(SupportSpatialUtil));
 
-        public static IList<SupportSpatialEventRectangle> RandomRectangles(
-            Random random,
-            int numPoints,
-            double x,
-            double y,
-            double width,
-            double height)
-        {
-            IList<SupportSpatialEventRectangle> rectangles = new List<SupportSpatialEventRectangle>();
-            for (var i = 0; i < numPoints; i++) {
-                var rx = random.NextDouble() * width + x;
-                var ry = random.NextDouble() * height + y;
-                var rw = random.NextDouble() * width * 0.3;
-                var rh = random.NextDouble() * height * 0.3;
-                rectangles.Add(new SupportSpatialEventRectangle("R" + i, rx, ry, rw, rh));
-            }
+		public static IList<SupportSpatialEventRectangle> RandomRectangles(
+			Random random,
+			int numPoints,
+			double x,
+			double y,
+			double width,
+			double height)
+		{
+			IList<SupportSpatialEventRectangle> rectangles = new List<SupportSpatialEventRectangle>();
+			for (var i = 0; i < numPoints; i++) {
+				var rx = random.NextDouble() * width + x;
+				var ry = random.NextDouble() * height + y;
+				var rw = random.NextDouble() * width * 0.3;
+				var rh = random.NextDouble() * height * 0.3;
+				rectangles.Add(new SupportSpatialEventRectangle("R" + i, rx, ry, rw, rh));
+			}
 
-            return rectangles;
-        }
+			return rectangles;
+		}
 
-        public static void AssertAllRectangles(
-            RegressionEnvironment env,
-            ICollection<SupportSpatialEventRectangle> expected,
-            double x,
-            double y,
-            double width,
-            double height)
-        {
-            env.SendEventBean(new SupportSpatialAABB("", x, y, width, height));
-            var events = env.Listener("out").GetAndResetLastNewData();
-            if (events == null || events.Length == 0) {
-                Assert.IsTrue(expected.IsEmpty());
-                return;
-            }
+		public static void AssertAllRectangles(
+			RegressionEnvironment env,
+			ICollection<SupportSpatialEventRectangle> expected,
+			double x,
+			double y,
+			double width,
+			double height)
+		{
+			env.SendEventBean(new SupportSpatialAABB("", x, y, width, height));
+			var events = env.Listener("s0").GetAndResetLastNewData();
+			if (events == null || events.Length == 0) {
+				Assert.IsTrue(expected.IsEmpty());
+				return;
+			}
 
-            if (expected.Count != events.Length) {
-                var eventsNames = events
-                    .Select(v => v.Underlying.AsStringDictionary())
-                    .Where(v => v != null)
-                    .SelectMany(v => v.Values)
-                    .Cast<string>()
-                    .ToList();
-                var expectedNames = expected
-                    .Select(v => v.Id)
-                    .ToList();
-                CollectionAssert.AreEquivalent(expectedNames, eventsNames);
-            }
-            
-            Assert.AreEqual(expected.Count, events.Length);
-            ISet<string> received = new HashSet<string>();
-            foreach (var @event in events) {
-                received.Add(@event.Get("c0").ToString());
-            }
+			Assert.AreEqual(expected.Count, events.Length);
+			ISet<string> received = new HashSet<string>();
+			foreach (var @event in events) {
+				received.Add(@event.Get("c0").ToString());
+			}
 
-            Assert.AreEqual(expected.Count, received.Count);
-            foreach (var r in expected) {
-                Assert.IsTrue(received.Contains(r.Id));
-            }
-        }
+			Assert.AreEqual(expected.Count, received.Count);
+			foreach (var r in expected) {
+				Assert.IsTrue(received.Contains(r.Id));
+			}
+		}
 
-        public static void AssertBBTreeRectangles(
-            RegressionEnvironment env,
-            BoundingBox.BoundingBoxNode bbtree,
-            IList<SupportSpatialEventRectangle> rectangles)
-        {
-            AssertBBRectangles(env, bbtree.bb, rectangles);
-            if (bbtree.nw != null) {
-                AssertBBTreeRectangles(env, bbtree.nw, rectangles);
-            }
+		public static void AssertBBTreeRectangles(
+			RegressionEnvironment env,
+			string stmtName,
+			BoundingBox.BoundingBoxNode bbtree,
+			IList<SupportSpatialEventRectangle> rectangles)
+		{
+			AssertBBRectangles(env, stmtName, bbtree.bb, rectangles);
+			if (bbtree.nw != null) {
+				AssertBBTreeRectangles(env, stmtName, bbtree.nw, rectangles);
+			}
 
-            if (bbtree.ne != null) {
-                AssertBBTreeRectangles(env, bbtree.ne, rectangles);
-            }
+			if (bbtree.ne != null) {
+				AssertBBTreeRectangles(env, stmtName, bbtree.ne, rectangles);
+			}
 
-            if (bbtree.sw != null) {
-                AssertBBTreeRectangles(env, bbtree.sw, rectangles);
-            }
+			if (bbtree.sw != null) {
+				AssertBBTreeRectangles(env, stmtName, bbtree.sw, rectangles);
+			}
 
-            if (bbtree.se != null) {
-                AssertBBTreeRectangles(env, bbtree.se, rectangles);
-            }
-        }
+			if (bbtree.se != null) {
+				AssertBBTreeRectangles(env, stmtName, bbtree.se, rectangles);
+			}
+		}
 
-        public static void AddSendRectangle(
-            RegressionEnvironment env,
-            IList<SupportSpatialEventRectangle> rectangles,
-            string id,
-            double x,
-            double y,
-            double width,
-            double height)
-        {
-            var rectangle = new SupportSpatialEventRectangle(id, x, y, width, height);
-            rectangles.Add(rectangle);
-            env.SendEventBean(rectangle);
-        }
+		public static void AddSendRectangle(
+			RegressionEnvironment env,
+			IList<SupportSpatialEventRectangle> rectangles,
+			string id,
+			double x,
+			double y,
+			double width,
+			double height)
+		{
+			var rectangle = new SupportSpatialEventRectangle(id, x, y, width, height);
+			rectangles.Add(rectangle);
+			env.SendEventBean(rectangle);
+		}
 
-        public static IList<SupportSpatialPoint> RandomPoints(
-            Random random,
-            int numPoints,
-            double x,
-            double y,
-            double width,
-            double height)
-        {
-            IList<SupportSpatialPoint> points = new List<SupportSpatialPoint>();
-            for (var i = 0; i < numPoints; i++) {
-                var px = random.NextDouble() * width + x;
-                var py = random.NextDouble() * height + y;
-                points.Add(new SupportSpatialPoint("P" + i, px, py));
-            }
+		public static IList<SupportSpatialPoint> RandomPoints(
+			Random random,
+			int numPoints,
+			double x,
+			double y,
+			double width,
+			double height)
+		{
+			IList<SupportSpatialPoint> points = new List<SupportSpatialPoint>();
+			for (var i = 0; i < numPoints; i++) {
+				var px = random.NextDouble() * width + x;
+				var py = random.NextDouble() * height + y;
+				points.Add(new SupportSpatialPoint("P" + i, px, py));
+			}
 
-            return points;
-        }
+			return points;
+		}
 
-        public static void AssertBBTreePoints(
-            RegressionEnvironment env,
-            BoundingBox.BoundingBoxNode bbtree,
-            IList<SupportSpatialPoint> points)
-        {
-            AssertBBPoints(env, bbtree.bb, points);
-            if (bbtree.nw != null) {
-                AssertBBTreePoints(env, bbtree.nw, points);
-            }
+		public static void AssertBBTreePoints(
+			RegressionEnvironment env,
+			BoundingBox.BoundingBoxNode bbtree,
+			IList<SupportSpatialPoint> points)
+		{
+			AssertBBPoints(env, bbtree.bb, points);
+			if (bbtree.nw != null) {
+				AssertBBTreePoints(env, bbtree.nw, points);
+			}
 
-            if (bbtree.ne != null) {
-                AssertBBTreePoints(env, bbtree.ne, points);
-            }
+			if (bbtree.ne != null) {
+				AssertBBTreePoints(env, bbtree.ne, points);
+			}
 
-            if (bbtree.sw != null) {
-                AssertBBTreePoints(env, bbtree.sw, points);
-            }
+			if (bbtree.sw != null) {
+				AssertBBTreePoints(env, bbtree.sw, points);
+			}
 
-            if (bbtree.se != null) {
-                AssertBBTreePoints(env, bbtree.se, points);
-            }
-        }
+			if (bbtree.se != null) {
+				AssertBBTreePoints(env, bbtree.se, points);
+			}
+		}
 
-        public static void AddSendPoint(
-            RegressionEnvironment env,
-            IList<SupportSpatialPoint> points,
-            string id,
-            double x,
-            double y)
-        {
-            var point = new SupportSpatialPoint(id, x, y);
-            points.Add(point);
-            env.SendEventBean(point);
-        }
+		public static void AddSendPoint(
+			RegressionEnvironment env,
+			IList<SupportSpatialPoint> points,
+			string id,
+			double x,
+			double y)
+		{
+			var point = new SupportSpatialPoint(id, x, y);
+			points.Add(point);
+			env.SendEventBean(point);
+		}
 
-        public static void AssertAllPoints(
-            RegressionEnvironment env,
-            ICollection<SupportSpatialPoint> expected,
-            double x,
-            double y,
-            double width,
-            double height)
-        {
-            env.SendEventBean(new SupportSpatialAABB("", x, y, width, height));
-            var events = env.Listener("out").GetAndResetLastNewData();
-            if (events == null || events.Length == 0) {
-                Assert.IsTrue(expected.IsEmpty());
-                return;
-            }
+		public static void AssertAllPoints(
+			RegressionEnvironment env,
+			ICollection<SupportSpatialPoint> expected,
+			double x,
+			double y,
+			double width,
+			double height)
+		{
+			env.SendEventBean(new SupportSpatialAABB("", x, y, width, height));
+			var events = env.Listener("s0").GetAndResetLastNewData();
+			if (events == null || events.Length == 0) {
+				Assert.IsTrue(expected.IsEmpty());
+				return;
+			}
 
-            Assert.AreEqual(expected.Count, events.Length);
-            ISet<string> received = new HashSet<string>();
-            foreach (var @event in events) {
-                received.Add(@event.Get("c0").ToString());
-            }
+			Assert.AreEqual(expected.Count, events.Length);
+			ISet<string> received = new HashSet<string>();
+			foreach (var @event in events) {
+				received.Add(@event.Get("c0").ToString());
+			}
 
-            Assert.AreEqual(expected.Count, received.Count);
-            foreach (var p in expected) {
-                Assert.IsTrue(received.Contains(p.Id));
-            }
-        }
+			Assert.AreEqual(expected.Count, received.Count);
+			foreach (var p in expected) {
+				Assert.IsTrue(received.Contains(p.Id));
+			}
+		}
 
-        public static void SendAddPoint(
-            RegressionEnvironment env,
-            IList<SupportSpatialPoint> points,
-            string id,
-            double x,
-            double y)
-        {
-            var point = new SupportSpatialPoint(id, x, y);
-            points.Add(point);
-            env.SendEventBean(point);
-        }
+		public static void SendAddPoint(
+			RegressionEnvironment env,
+			IList<SupportSpatialPoint> points,
+			string id,
+			double x,
+			double y)
+		{
+			var point = new SupportSpatialPoint(id, x, y);
+			points.Add(point);
+			env.SendEventBean(point);
+		}
 
-        public static void AssertBBPoints(
-            RegressionEnvironment env,
-            BoundingBox bb,
-            IList<SupportSpatialPoint> points)
-        {
-            env.SendEventBean(new SupportSpatialAABB("", bb.MinX, bb.MinY, bb.MaxX - bb.MinX, bb.MaxY - bb.MinY));
-            var received = SortJoinProperty(env.Listener("out").GetAndResetLastNewData(), "c0");
-            var expected = SortGetExpectedPoints(bb, points);
-            Assert.AreEqual(expected, received);
-        }
+		public static void AssertBBPoints(
+			RegressionEnvironment env,
+			BoundingBox bb,
+			IList<SupportSpatialPoint> points)
+		{
+			env.SendEventBean(new SupportSpatialAABB("", bb.MinX, bb.MinY, bb.MaxX - bb.MinX, bb.MaxY - bb.MinY));
+			env.AssertListener(
+				"s0",
+				listener => {
+					var received = SortJoinProperty(listener.GetAndResetLastNewData(), "c0");
+					var expected = SortGetExpectedPoints(bb, points);
+					Assert.AreEqual(expected, received);
+				});
+		}
 
-        public static string SortGetExpectedPoints(
-            BoundingBox bb,
-            IList<SupportSpatialPoint> points)
-        {
-            var joiner = new StringJoiner(",");
-            foreach (var point in points) {
-                if (bb.ContainsPoint(point.Px.Value, point.Py.Value)) {
-                    joiner.Add(point.Id);
-                }
-            }
+		public static string SortGetExpectedPoints(
+			BoundingBox bb,
+			IList<SupportSpatialPoint> points)
+		{
+			var joiner = new StringJoiner(",");
+			foreach (var point in points) {
+				if (bb.ContainsPoint(point.Px.Value, point.Py.Value)) {
+					joiner.Add(point.Id);
+				}
+			}
 
-            return joiner.ToString();
-        }
+			return joiner.ToString();
+		}
 
-        public static void SendAddRectangle(
-            RegressionEnvironment env,
-            IList<SupportSpatialEventRectangle> rectangles,
-            string id,
-            double x,
-            double y,
-            double width,
-            double height)
-        {
-            var rectangle = new SupportSpatialEventRectangle(id, x, y, width, height);
-            rectangles.Add(rectangle);
-            env.SendEventBean(rectangle);
-        }
+		public static void SendAddRectangle(
+			RegressionEnvironment env,
+			IList<SupportSpatialEventRectangle> rectangles,
+			string id,
+			double x,
+			double y,
+			double width,
+			double height)
+		{
+			var rectangle = new SupportSpatialEventRectangle(id, x, y, width, height);
+			rectangles.Add(rectangle);
+			env.SendEventBean(rectangle);
+		}
 
-        public static void AssertBBRectangles(
-            RegressionEnvironment env,
-            BoundingBox bb,
-            IList<SupportSpatialEventRectangle> rectangles)
-        {
-            env.SendEventBean(new SupportSpatialAABB("", bb.MinX, bb.MinY, bb.MaxX - bb.MinX, bb.MaxY - bb.MinY));
-            var received = SortJoinProperty(env.Listener("out").GetAndResetLastNewData(), "c0");
-            var expected = SortGetExpectedRectangles(bb, rectangles);
-            if (!received.Equals(expected)) {
-                log.Error("Expected: " + expected);
-                log.Error("Received: " + received);
-            }
+		public static void AssertBBRectangles(
+			RegressionEnvironment env,
+			string stmtName,
+			BoundingBox bb,
+			IList<SupportSpatialEventRectangle> rectangles)
+		{
+			env.SendEventBean(new SupportSpatialAABB("", bb.MinX, bb.MinY, bb.MaxX - bb.MinX, bb.MaxY - bb.MinY));
+			env.AssertListener(
+				stmtName,
+				listener => {
+					var received = SortJoinProperty(listener.GetAndResetLastNewData(), "c0");
+					var expected = SortGetExpectedRectangles(bb, rectangles);
+					if (!received.Equals(expected)) {
+						log.Error("Expected: " + expected);
+						log.Error("Received: " + received);
+					}
 
-            Assert.AreEqual(expected, received);
-        }
+					Assert.AreEqual(expected, received);
+				});
+		}
 
-        public static void SendEventRectangle(
-            RegressionEnvironment env,
-            string id,
-            double x,
-            double y,
-            double width,
-            double height)
-        {
-            env.SendEventBean(new SupportSpatialEventRectangle(id, x, y, width, height));
-        }
+		public static void SendEventRectangle(
+			RegressionEnvironment env,
+			string id,
+			double x,
+			double y,
+			double width,
+			double height)
+		{
+			env.SendEventBean(new SupportSpatialEventRectangle(id, x, y, width, height));
+		}
 
-        public static void AssertRectanglesSingleValue(
-            RegressionEnvironment env,
-            SupportListener listener,
-            IList<BoundingBox> rectangles,
-            params string[] matches)
-        {
-            for (var i = 0; i < rectangles.Count; i++) {
-                var box = rectangles[i];
-                SendRectangle(env, "R" + box, box.MinX, box.MinY, box.MaxX - box.MinX, box.MaxY - box.MinY);
-                var c0 = listener.AssertOneGetNewAndReset().Get("c0").ToString();
-                Assert.AreEqual(matches[i], c0, "for box " + i);
-            }
-        }
+		public static void AssertRectanglesSingleValueAssertS0S1(
+			RegressionEnvironment env,
+			SupportUpdateListener listener,
+			IList<BoundingBox> rectangles,
+			params string[] matches)
+		{
+			for (var i = 0; i < rectangles.Count; i++) {
+				var box = rectangles[i];
+				SendRectangle(env, "R" + box.ToString(), box.MinX, box.MinY, box.MaxX - box.MinX, box.MaxY - box.MinY);
+				var c0 = listener.AssertOneGetNewAndReset().Get("c0").ToString();
+				Assert.AreEqual(matches[i], c0, "for box " + i);
+			}
+		}
 
-        public static void AssertRectanglesManyRow(
-            RegressionEnvironment env,
-            SupportListener listener,
-            IList<BoundingBox> rectangles,
-            params string[] matches)
-        {
-            for (var i = 0; i < rectangles.Count; i++) {
-                var box = rectangles[i];
-                SendRectangle(env, "R" + box, box.MinX, box.MinY, box.MaxX - box.MinX, box.MaxY - box.MinY);
-                if (matches[i] == null) {
-                    if (listener.IsInvoked) {
-                        Assert.Fail(
-                            "Unexpected output for box " +
-                            i +
-                            ": " +
-                            SortJoinProperty(listener.GetAndResetLastNewData(), "c0"));
-                    }
-                }
-                else {
-                    if (!listener.IsInvoked) {
-                        Assert.Fail("No output for box " + i);
-                    }
+		public static void AssertRectanglesSingleValueAssertS0(
+			RegressionEnvironment env,
+			IList<BoundingBox> rectangles,
+			params string[] matches)
+		{
+			for (var i = 0; i < rectangles.Count; i++) {
+				var box = rectangles[i];
+				SendRectangle(env, "R" + box.ToString(), box.MinX, box.MinY, box.MaxX - box.MinX, box.MaxY - box.MinY);
+				var index = i;
+				env.AssertEventNew(
+					"s0",
+					@event => {
+						var c0 = @event.Get("c0").ToString();
+						Assert.AreEqual(matches[index], c0, "for box " + index);
+					});
+			}
+		}
 
-                    Assert.AreEqual(matches[i], SortJoinProperty(listener.GetAndResetLastNewData(), "c0"));
-                }
-            }
-        }
+		public static void AssertRectanglesManyRow(
+			RegressionEnvironment env,
+			IList<BoundingBox> rectangles,
+			params string[] matches)
+		{
+			for (var i = 0; i < rectangles.Count; i++) {
+				var box = rectangles[i];
+				SendRectangle(env, "R" + box.ToString(), box.MinX, box.MinY, box.MaxX - box.MinX, box.MaxY - box.MinY);
+				var index = i;
+				env.AssertListener(
+					"s0",
+					listener => {
+						if (matches[index] == null) {
+							if (listener.IsInvoked) {
+								Assert.Fail(
+									"Unexpected output for box " +
+									index +
+									": " +
+									SortJoinProperty(listener.GetAndResetLastNewData(), "c0"));
+							}
+						}
+						else {
+							if (!listener.IsInvoked) {
+								Assert.Fail("No output for box " + index);
+							}
 
-        public static void SendPoint(
-            RegressionEnvironment env,
-            string id,
-            double? x,
-            double? y)
-        {
-            env.SendEventBean(new SupportSpatialPoint(id, x, y));
-        }
+							Assert.AreEqual(matches[index], SortJoinProperty(listener.GetAndResetLastNewData(), "c0"));
+						}
+					});
+			}
+		}
 
-        public static void SendPoint(
-            RegressionEnvironment env,
-            string id,
-            double? x,
-            double? y,
-            string category)
-        {
-            env.SendEventBean(new SupportSpatialPoint(id, x, y, category));
-        }
+		public static void SendPoint(
+			RegressionEnvironment env,
+			string id,
+			double x,
+			double y)
+		{
+			env.SendEventBean(new SupportSpatialPoint(id, x, y));
+		}
 
-        public static void SendRectangle(
-            RegressionEnvironment env,
-            string id,
-            double x,
-            double y,
-            double width,
-            double height)
-        {
-            env.SendEventBean(new SupportSpatialAABB(id, x, y, width, height));
-        }
+		public static void SendPoint(
+			RegressionEnvironment env,
+			string id,
+			double x,
+			double y,
+			string category)
+		{
+			env.SendEventBean(new SupportSpatialPoint(id, x, y, category));
+		}
 
-        public static void SendAssert(
-            RegressionEnvironment env,
-            SupportListener listener,
-            double px,
-            double py,
-            double x,
-            double y,
-            double width,
-            double height,
-            bool expected)
-        {
-            SendAssertWNull(env, listener, px, py, x, y, width, height, expected);
-        }
+		public static void SendRectangle(
+			RegressionEnvironment env,
+			string id,
+			double x,
+			double y,
+			double width,
+			double height)
+		{
+			env.SendEventBean(new SupportSpatialAABB(id, x, y, width, height));
+		}
 
-        public static void SendAssertWNull(
-            RegressionEnvironment env,
-            SupportListener listener,
-            double? px,
-            double? py,
-            double? x,
-            double? y,
-            double? width,
-            double? height,
-            bool? expected)
-        {
-            env.SendEventBean(new SupportEventRectangleWithOffset("E", px, py, x, y, width, height));
-            Assert.AreEqual(expected, listener.AssertOneGetNewAndReset().Get("c0"));
-        }
+		public static void SendAssert(
+			RegressionEnvironment env,
+			double px,
+			double py,
+			double x,
+			double y,
+			double width,
+			double height,
+			bool expected)
+		{
+			SendAssertWNull(env, px, py, x, y, width, height, expected);
+		}
 
-        public static string SortJoinProperty(
-            EventBean[] events,
-            string propertyName)
-        {
-            var sorted = new SortedDictionary<int, string>();
-            if (events != null) {
-                foreach (var @event in events) {
-                    var value = @event.Get(propertyName).ToString();
-                    var num = int.Parse(value.Substring(1));
-                    sorted.Put(num, value);
-                }
-            }
+		public static void SendAssertWNull(
+			RegressionEnvironment env,
+			double? px,
+			double? py,
+			double? x,
+			double? y,
+			double? width,
+			double? height,
+			bool? expected)
+		{
+			env.SendEventBean(new SupportEventRectangleWithOffset("E", px, py, x, y, width, height));
+			env.AssertEqualsNew("s0", "c0", expected);
+		}
 
-            var joiner = new StringJoiner(",");
-            foreach (var data in sorted.Values) {
-                joiner.Add(data);
-            }
+		public static string SortJoinProperty(
+			EventBean[] events,
+			string propertyName)
+		{
+			var sorted = new SortedDictionary<int, string>();
+			if (events != null) {
+				foreach (var @event in events) {
+					var value = @event.Get(propertyName).ToString();
+					var num = int.Parse(value.Substring(1));
+					sorted.Put(num, value);
+				}
+			}
 
-            return joiner.ToString();
-        }
+			var joiner = new StringJoiner(",");
+			foreach (var data in sorted.Values) {
+				joiner.Add(data);
+			}
 
-        public static void SendSpatialPoints(
-            RegressionEnvironment env,
-            int numX,
-            int numY)
-        {
-            for (var x = 0; x < numX; x++) {
-                for (var y = 0; y < numY; y++) {
-                    env.SendEventBean(new SupportSpatialPoint("P_" + x + "_" + y, x, y));
-                }
-            }
-        }
+			return joiner.ToString();
+		}
 
-        public static object[][] GetExpected(
-            IList<SupportSpatialPoint> points,
-            double x,
-            double y,
-            double width,
-            double height)
-        {
-            ISet<string> expected = new SortedSet<string>();
-            var boundingBox = new BoundingBox(x, y, x + width, y + height);
-            foreach (var p in points) {
-                if (boundingBox.ContainsPoint(p.Px.Value, p.Py.Value)) {
-                    if (expected.Contains(p.Id)) {
-                        Assert.Fail();
-                    }
+		public static void SendSpatialPoints(
+			RegressionEnvironment env,
+			int numX,
+			int numY)
+		{
+			for (var x = 0; x < numX; x++) {
+				for (var y = 0; y < numY; y++) {
+					env.SendEventBean(new SupportSpatialPoint("P_" + x + "_" + y, (double)x, (double)y));
+				}
+			}
+		}
 
-                    expected.Add(p.Id);
-                }
-            }
+		public static object[][] GetExpected(
+			IList<SupportSpatialPoint> points,
+			double x,
+			double y,
+			double width,
+			double height)
+		{
+			ISet<string> expected = new SortedSet<string>();
+			var boundingBox = new BoundingBox(x, y, x + width, y + height);
+			foreach (var p in points) {
+				if (boundingBox.ContainsPoint(p.Px.Value, p.Py.Value)) {
+					if (expected.Contains(p.Id)) {
+						Assert.Fail();
+					}
 
-            var rows = new object[expected.Count][];
-            var index = 0;
-            foreach (var id in expected) {
-                rows[index++] = new object[] {id};
-            }
+					expected.Add(p.Id);
+				}
+			}
 
-            return rows;
-        }
+			var rows = new object[expected.Count][];
+			var index = 0;
+			foreach (var id in expected) {
+				rows[index++] = new object[] { id };
+			}
 
-        public static void SendAssertSpatialAABB(
-            RegressionEnvironment env,
-            SupportListener listener,
-            int numX,
-            int numY,
-            long deltaMSec)
-        {
-            var start = PerformanceObserver.MilliTime;
-            for (var x = 0; x < numX; x++) {
-                for (var y = 0; y < numY; y++) {
-                    env.SendEventBean(new SupportSpatialAABB("", x, y, 0.1, 0.1));
-                    listener.AssertOneGetNewAndReset();
-                }
-            }
+			return rows;
+		}
 
-            var delta = PerformanceObserver.MilliTime - start;
-            Assert.That(delta, Is.LessThan(deltaMSec), "Delta: " + delta);
-        }
+		public static void SendAssertSpatialAABB(
+			RegressionEnvironment env,
+			int numX,
+			int numY,
+			long deltaMSec)
+		{
+			var start = PerformanceObserver.MilliTime;
+			for (var x = 0; x < numX; x++) {
+				for (var y = 0; y < numY; y++) {
+					env.SendEventBean(new SupportSpatialAABB("", x, y, 0.1, 0.1));
+					env.AssertEventNew("s0", @event => { });
+				}
+			}
 
-        public static string SortGetExpectedRectangles(
-            BoundingBox bb,
-            IList<SupportSpatialEventRectangle> rectangles)
-        {
-            var joiner = new StringJoiner(",");
-            foreach (var rect in rectangles) {
-                if (bb.IntersectsBoxIncludingEnd(
-                    rect.X.Value,
-                    rect.Y.Value,
-                    rect.Width.Value,
-                    rect.Height.Value)) {
-                    joiner.Add(rect.Id);
-                }
-            }
+			var delta = PerformanceObserver.MilliTime - start;
+			Assert.That(delta, Is.LessThan(deltaMSec));
+		}
 
-            return joiner.ToString();
-        }
+		public static void SendAssertSpatialAABB(
+			RegressionEnvironment env,
+			SupportListener listener,
+			int numX,
+			int numY,
+			long deltaMSec)
+		{
+			var start = PerformanceObserver.MilliTime;
+			for (var x = 0; x < numX; x++) {
+				for (var y = 0; y < numY; y++) {
+					env.SendEventBean(new SupportSpatialAABB("", x, y, 0.1, 0.1));
+					listener.AssertOneGetNewAndReset();
+				}
+			}
 
-        public static string BuildDeleteQueryWithInClause(
-            string infraName,
-            string field,
-            IList<string> idList)
-        {
-            var query = new StringBuilder();
-            query.Append("delete from ").Append(infraName).Append(" where ").Append(field).Append(" in (");
-            var delimiter = "";
-            foreach (var id in idList) {
-                query.Append(delimiter).Append('\'').Append(id).Append("\'");
-                delimiter = ",";
-            }
+			var delta = PerformanceObserver.MilliTime - start;
+			Assert.That(delta, Is.LessThan(deltaMSec));
+		}
 
-            query.Append(")");
-            return query.ToString();
-        }
-    }
+		public static string SortGetExpectedRectangles(
+			BoundingBox bb,
+			IList<SupportSpatialEventRectangle> rectangles)
+		{
+			var joiner = new StringJoiner(",");
+			foreach (var rect in rectangles) {
+				if (bb.IntersectsBoxIncludingEnd(rect.X.Value, rect.Y.Value, rect.Width.Value, rect.Height.Value)) {
+					joiner.Add(rect.Id);
+				}
+			}
+
+			return joiner.ToString();
+		}
+
+		public static string BuildDeleteQueryWithInClause(
+			string infraName,
+			string field,
+			IList<string> idList)
+		{
+			var query = new StringBuilder();
+			query.Append("delete from ").Append(infraName).Append(" where ").Append(field).Append(" in (");
+			var delimiter = "";
+			foreach (var id in idList) {
+				query.Append(delimiter).Append('\'').Append(id).Append("\'");
+				delimiter = ",";
+			}
+
+			query.Append(")");
+			return query.ToString();
+		}
+	}
 } // end of namespace

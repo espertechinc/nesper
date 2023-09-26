@@ -13,6 +13,7 @@ using System.Threading;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
@@ -39,6 +40,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             configuration.Runtime.Threading.ThreadPoolTimerExecNumThreads = 5;
             configuration.Common.AddEventType("MyMap", new Dictionary<string, object>());
             configuration.Common.AddImportNamespace(typeof(SupportStaticMethodLib));
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.OBSERVEROPS);
         }
 
         public void Run(RegressionEnvironment env)

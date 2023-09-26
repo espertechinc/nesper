@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionrun.suite.client
 
             configuration.Common.AddVariable("preconfigured_variable", typeof(int), 5, true);
 
-            configuration.Compiler.ByteCode.AttachModuleEPL = true;
+            configuration.Compiler.ByteCode.IsAttachModuleEPL = true;
             configuration.Common.AddImportType(typeof(SupportBean));
             configuration.Common.AddImportType(typeof(ClientCompileSubstitutionParams.IKey));
             configuration.Common.AddImportType(typeof(ClientCompileSubstitutionParams.MyObjectKeyConcrete));
@@ -365,7 +365,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             [Test, RunInApplicationDomain]
             public void WithODAInvalidConstantUseSubsParamsInstead() => RegressionRunner.Run(
                 _session,
-                ClientCompileSubstitutionParams.WithODAInvalidConstantUseSubsParamsInstead());
+                ClientCompileSubstitutionParams.WithSODAInvalidConstantUseSubsParamsInstead());
 
             [Test, RunInApplicationDomain]
             public void WithSubstParamArray() => RegressionRunner.Run(

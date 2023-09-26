@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
         public override void SubmitInternal(object @object)
         {
-            object[] parameters = {streamNum, @object};
+            object[] parameters = { streamNum, @object };
             try {
                 exceptionHandler.HandleAudit(targetObject, parameters);
                 fastMethod.Invoke(targetObject, parameters);

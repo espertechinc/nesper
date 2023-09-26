@@ -14,7 +14,7 @@ using com.espertech.esper.common.@internal.view.core;
 namespace com.espertech.esper.common.@internal.view.firsttime
 {
     /// <summary>
-    /// Factory for <seealso cref="FirstTimeView" />.
+    /// Factory for <seealso cref = "FirstTimeView"/>.
     /// </summary>
     public class FirstTimeViewFactory : ViewFactory
     {
@@ -30,32 +30,27 @@ namespace com.espertech.esper.common.@internal.view.firsttime
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            TimePeriodProvide timePeriodProvide =
+            var timePeriodProvide =
                 timePeriodCompute.GetNonVariableProvide(agentInstanceViewFactoryContext.AgentInstanceContext);
             return new FirstTimeView(this, agentInstanceViewFactoryContext, timePeriodProvide);
         }
 
         public EventType EventType {
             get => eventType;
-            set { this.eventType = value; }
-        }
-
-        private string GetViewParamMessage()
-        {
-            return ViewName + " view requires a single numeric or time period parameter";
+            set => eventType = value;
         }
 
         public TimePeriodCompute TimePeriodCompute {
-            set { this.timePeriodCompute = value; }
+            set => timePeriodCompute = value;
         }
 
         public int ScheduleCallbackId {
             get => scheduleCallbackId;
-            set { this.scheduleCallbackId = value; }
+            set => scheduleCallbackId = value;
         }
 
-        public string ViewName {
-            get => ViewEnum.FIRST_TIME_WINDOW.GetViewName();
-        }
+        public string ViewName => ViewEnum.FIRST_TIME_WINDOW.GetViewName();
+
+        public string ViewParamMessage => ViewName + " view requires a single numeric or time period parameter";
     }
 } // end of namespace

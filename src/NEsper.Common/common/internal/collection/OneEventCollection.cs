@@ -76,11 +76,11 @@ namespace com.espertech.esper.common.@internal.collection
         public EventBean[] ToArray()
         {
             if (FirstEvent == null) {
-                return new EventBean[0];
+                return Array.Empty<EventBean>();
             }
 
             if (AdditionalEvents == null) {
-                return new[] {FirstEvent};
+                return new[] { FirstEvent };
             }
 
             var events = new EventBean[1 + AdditionalEvents.Count];

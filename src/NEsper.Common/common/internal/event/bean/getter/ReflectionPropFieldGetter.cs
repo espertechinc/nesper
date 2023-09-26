@@ -36,8 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                field.FieldType,
-                TypeHelper.GetGenericFieldType(field, true))
+                field.FieldType)
         {
             _field = field;
         }
@@ -63,7 +62,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => _field.FieldType;
+        //public override Type BeanPropType => _field.FieldType;
 
         public override Type TargetType => _field.DeclaringType;
 

@@ -9,8 +9,6 @@
 using System;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
@@ -18,88 +16,76 @@ using com.espertech.esper.common.@internal.epl.expression.agg.method;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
+
 namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
 {
-	public class AggregationForgeFactoryMinMax : AggregationForgeFactoryBase
-	{
-		private readonly ExprMinMaxAggrNode parent;
-		private readonly Type type;
-		private readonly bool hasDataWindows;
-		private readonly DataInputOutputSerdeForge serde;
-		private readonly DataInputOutputSerdeForge distinctSerde;
-		private AggregatorMethod aggregator;
+    public class AggregationForgeFactoryMinMax : AggregationForgeFactoryBase
+    {
+        private readonly ExprMinMaxAggrNode _parent;
+        private readonly Type _resultType;
+        private readonly bool _hasDataWindows;
+        private readonly DataInputOutputSerdeForge _serde;
+        private readonly DataInputOutputSerdeForge _distinctSerde;
+        private readonly AggregatorMethod aggregator;
 
-		public AggregationForgeFactoryMinMax(
-			ExprMinMaxAggrNode parent,
-			Type type,
-			bool hasDataWindows,
-			DataInputOutputSerdeForge serde,
-			DataInputOutputSerdeForge distinctSerde)
-		{
-			this.parent = parent;
-			this.type = type;
-			this.hasDataWindows = hasDataWindows;
-			this.serde = serde;
-			this.distinctSerde = distinctSerde;
-		}
+        public DataInputOutputSerdeForge Serde => _serde;
 
-		public DataInputOutputSerdeForge Serde => serde;
+        public DataInputOutputSerdeForge DistinctSerde => _distinctSerde;
 
-		public override Type ResultType => type;
+        public AggregationForgeFactoryMinMax(
+            ExprMinMaxAggrNode parent,
+            Type resultType,
+            bool hasDataWindows,
+            DataInputOutputSerdeForge serde,
+            DataInputOutputSerdeForge distinctSerde)
+        {
+            _parent = parent;
+            _resultType = resultType;
+            _hasDataWindows = hasDataWindows;
+            _serde = serde;
+            _distinctSerde = distinctSerde;
 
-		public override ExprAggregateNodeBase AggregationExpression => parent;
+            var distinctType = !parent.IsDistinct ? null : resultType;
+            if (!hasDataWindows) {
+                aggregator = new AggregatorMinMaxEver(
+                    this,
+                    distinctType,
+                    distinctSerde,
+                    parent.HasFilter,
+                    parent.OptionalFilter,
+                    serde);
+            }
+            else {
+                aggregator = new AggregatorMinMax(
+                    this,
+                    distinctType,
+                    distinctSerde,
+                    parent.HasFilter,
+                    parent.OptionalFilter);
+            }
+        }
 
-		public override void InitMethodForge(
-			int col,
-			CodegenCtor rowCtor,
-			CodegenMemberCol membersColumnized,
-			CodegenClassScope classScope)
-		{
-			Type distinctType = !parent.IsDistinct ? null : type;
-			if (!hasDataWindows) {
-				aggregator = new AggregatorMinMaxEver(
-					this,
-					col,
-					rowCtor,
-					membersColumnized,
-					classScope,
-					distinctType,
-					distinctSerde,
-					parent.HasFilter,
-					parent.OptionalFilter,
-					serde);
-			}
-			else {
-				aggregator = new AggregatorMinMax(
-					this,
-					col,
-					rowCtor,
-					membersColumnized,
-					classScope,
-					distinctType,
-					distinctSerde,
-					parent.HasFilter,
-					parent.OptionalFilter);
-			}
-		}
+        public override Type ResultType => _resultType;
 
-		public override AggregatorMethod Aggregator => aggregator;
+        public override ExprAggregateNodeBase AggregationExpression => _parent;
 
-		public override AggregationPortableValidation AggregationPortableValidation =>
-			new AggregationPortableValidationMinMax(
-				parent.IsDistinct,
-				parent.HasFilter,
-				parent.ChildNodes[0].Forge.EvaluationType,
-				parent.MinMaxTypeEnum,
-				hasDataWindows);
+        public override AggregatorMethod Aggregator => aggregator;
 
-		public override ExprForge[] GetMethodAggregationForge(
-			bool join,
-			EventType[] typesPerStream)
-		{
-			return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
-		}
+        public override AggregationPortableValidation AggregationPortableValidation =>
+            new AggregationPortableValidationMinMax(
+                _parent.IsDistinct,
+                _parent.HasFilter,
+                _parent.ChildNodes[0].Forge.EvaluationType,
+                _parent.MinMaxTypeEnum,
+                _hasDataWindows);
 
-		public ExprMinMaxAggrNode Parent => parent;
-	}
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
+        {
+            return ExprMethodAggUtil.GetDefaultForges(_parent.PositionalParams, join, typesPerStream);
+        }
+
+        public ExprMinMaxAggrNode Parent => _parent;
+    }
 } // end of namespace

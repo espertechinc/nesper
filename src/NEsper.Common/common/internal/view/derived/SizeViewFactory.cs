@@ -37,16 +37,14 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public EventType EventType {
             get => eventType;
-            set { this.eventType = value; }
+            set => eventType = value;
         }
 
         public StatViewAdditionalPropsEval AdditionalProps {
             get => additionalProps;
-            set { this.additionalProps = value; }
+            set => additionalProps = value;
         }
 
-        public string ViewName {
-            get => ViewEnum.SIZE.GetViewName();
-        }
+        public string ViewName => ViewEnum.SIZE.GetViewName();
     }
 } // end of namespace

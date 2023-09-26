@@ -8,15 +8,15 @@
 
 namespace com.espertech.esper.common.client.hook.enummethod
 {
-	/// <summary>
-	///     A lambda parameter that assumes an index value.
-	/// </summary>
-	public class EnumMethodLambdaParameterTypeIndex : EnumMethodLambdaParameterType
+    /// <summary>
+    ///     A lambda parameter that assumes an index value.
+    /// </summary>
+    public class EnumMethodLambdaParameterTypeIndex : EnumMethodLambdaParameterType
     {
-	    /// <summary>
-	    ///     Instance.
-	    /// </summary>
-	    public static readonly EnumMethodLambdaParameterTypeIndex INSTANCE = new EnumMethodLambdaParameterTypeIndex();
+        /// <summary>
+        ///     Instance.
+        /// </summary>
+        public static readonly EnumMethodLambdaParameterTypeIndex INSTANCE = new EnumMethodLambdaParameterTypeIndex();
 
         private EnumMethodLambdaParameterTypeIndex()
         {

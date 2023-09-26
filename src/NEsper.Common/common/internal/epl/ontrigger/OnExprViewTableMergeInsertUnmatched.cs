@@ -78,13 +78,13 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                     changeHandlerAdded,
                     null,
                     agentInstanceContext);
+            }
 
-                // The on-delete listeners receive the events deleted, but only if there is interest
-                if (postResultsToListeners) {
-                    var postedNew = changeHandlerAdded.Events;
-                    if (postedNew != null) {
-                        Child.Update(postedNew, null);
-                    }
+            // The on-delete listeners receive the events deleted, but only if there is interest
+            if (postResultsToListeners) {
+                var postedNew = changeHandlerAdded.Events;
+                if (postedNew != null) {
+                    Child.Update(postedNew, null);
                 }
             }
 

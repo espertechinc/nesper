@@ -48,8 +48,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             var hasFilterStream = false;
             foreach (var streamSpec in spec.StreamSpecs) {
-                if (streamSpec is FilterStreamSpecCompiled) {
-                    var type = ((FilterStreamSpecCompiled) streamSpec).FilterSpecCompiled.FilterForEventType;
+                if (streamSpec is FilterStreamSpecCompiled compiled) {
+                    var type = compiled.FilterSpecCompiled.FilterForEventType;
                     filteredTypes.Add(type);
                     hasFilterStream = true;
                 }
@@ -116,17 +116,17 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             ISet<EventType> set = null;
             foreach (var subselect in subSelectExpressions) {
                 foreach (var streamSpec in subselect.StatementSpecCompiled.StreamSpecs) {
-                    if (streamSpec is FilterStreamSpecCompiled) {
-                        var type = ((FilterStreamSpecCompiled) streamSpec).FilterSpecCompiled.FilterForEventType;
+                    if (streamSpec is FilterStreamSpecCompiled compiled) {
+                        var type = compiled.FilterSpecCompiled.FilterForEventType;
                         if (set == null) {
                             set = new HashSet<EventType>();
                         }
 
                         set.Add(type);
                     }
-                    else if (streamSpec is PatternStreamSpecCompiled) {
+                    else if (streamSpec is PatternStreamSpecCompiled specCompiled) {
                         var evalNodeAnalysisResult =
-                            EvalNodeUtil.RecursiveAnalyzeChildNodes(((PatternStreamSpecCompiled) streamSpec).Root);
+                            EvalNodeUtil.RecursiveAnalyzeChildNodes(specCompiled.Root);
                         var filterNodes = evalNodeAnalysisResult.FilterNodes;
                         foreach (var filterNode in filterNodes) {
                             if (set == null) {

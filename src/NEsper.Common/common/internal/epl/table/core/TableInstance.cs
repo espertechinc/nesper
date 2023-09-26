@@ -50,9 +50,13 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             QueryPlanIndexItem explicitIndexDesc,
             bool isRecoveringResilient);
 
-        void RemoveExplicitIndex(string indexName);
+        void RemoveExplicitIndex(
+            string indexName,
+            string indexModuleName);
 
-        EventTable GetIndex(string indexName);
+        EventTable GetIndex(
+            string indexName,
+            string indexModuleName);
 
         void HandleRowUpdateKeyBeforeUpdate(ObjectArrayBackedEventBean updatedEvent);
 

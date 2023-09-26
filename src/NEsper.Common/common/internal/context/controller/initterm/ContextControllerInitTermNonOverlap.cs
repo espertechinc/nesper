@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,8 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+
+using Castle.MicroKernel.Internal;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
@@ -22,16 +24,13 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
     public class ContextControllerInitTermNonOverlap : ContextControllerInitTermBase,
         ContextControllerInitTermWLastTrigger
     {
+        private EventBean _lastTriggerEvent;
+
         public ContextControllerInitTermNonOverlap(
             ContextControllerInitTermFactory factory,
-            ContextManagerRealization realization)
-            : base(
-                factory,
-                realization)
+            ContextManagerRealization realization) : base(factory, realization)
         {
         }
-
-        public EventBean LastTriggerEvent { get; private set; }
 
         public override void Activate(
             IntSeqKey path,
@@ -44,15 +43,17 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             var startCondition = ContextControllerConditionFactory.GetEndpoint(
                 path,
                 parentPartitionKeys,
-                factory.initTermSpec.StartCondition,
+                _factory.initTermSpec.StartCondition,
                 this,
-                this,
-                true);
+                this);
             var currentlyRunning = DetermineCurrentlyRunning(startCondition, this);
 
             if (!currentlyRunning) {
                 initTermSvc.MgmtUpdSetStartCondition(path, startCondition);
-                var isTriggeringEventMatchesFilter = startCondition.Activate(optionalTriggeringEvent, null, optionalTriggeringPattern);
+                var isTriggeringEventMatchesFilter = startCondition.Activate(
+                    optionalTriggeringEvent,
+                    null,
+                    optionalTriggeringPattern);
                 if (isTriggeringEventMatchesFilter) {
                     RangeNotificationStart(path, optionalTriggeringEvent, null, null, null);
                 }
@@ -73,19 +74,21 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern,
             EventBean optionalTriggeringEventPattern,
-            IDictionary<string, object> optionalPatternForInclusiveEval)
+            IDictionary<string, object> optionalPatternForInclusiveEval,
+            IDictionary<string, object> terminationProperties)
         {
-            bool endConditionNotification = originCondition.Descriptor != factory.InitTermSpec.StartCondition;
+            var endConditionNotification = originCondition.Descriptor != _factory.InitTermSpec.StartCondition;
             if (endConditionNotification) {
                 RangeNotificationEnd(
                     conditionPath,
                     originCondition,
                     optionalTriggeringEvent,
                     optionalTriggeringPattern,
-                    optionalTriggeringEventPattern);
+                    optionalTriggeringEventPattern,
+                    terminationProperties);
             }
             else {
-                LastTriggerEvent = optionalTriggeringEvent;
+                _lastTriggerEvent = optionalTriggeringEvent;
                 RangeNotificationStart(
                     conditionPath,
                     optionalTriggeringEvent,
@@ -94,6 +97,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                     optionalPatternForInclusiveEval);
             }
         }
+
+        public EventBean LastTriggerEvent => _lastTriggerEvent;
 
         private void RangeNotificationStart(
             IntSeqKey controllerPath,
@@ -121,7 +126,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ContextControllerConditionNonHA endCondition,
             EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern,
-            EventBean optionalTriggeringEventPattern)
+            EventBean optionalTriggeringEventPattern,
+            IDictionary<string, object> terminationProperties)
         {
             if (endCondition.IsRunning) {
                 endCondition.Deactivate();
@@ -133,7 +139,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             }
 
             // start "@now" we maintain the locks
-            var startNow = factory.InitTermSpec.StartCondition is ContextConditionDescriptorImmediate;
+            var startNow = _factory.InitTermSpec.StartCondition is ContextConditionDescriptorImmediate;
             IList<AgentInstance> agentInstancesLocksHeld = null;
             if (startNow) {
                 realization.AgentInstanceContextCreate.FilterService.AcquireWriteLock();
@@ -144,7 +150,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 conditionPath.RemoveFromEnd(),
                 instance.SubpathIdOrCPId,
                 this,
-                optionalTriggeringPattern,
+                terminationProperties,
                 startNow,
                 agentInstancesLocksHeld);
 
@@ -152,14 +158,13 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 var controllerPath = conditionPath.RemoveFromEnd();
                 var partitionKeys = initTermSvc.MgmtGetParentPartitionKeys(controllerPath);
 
-                var startDesc = factory.initTermSpec.StartCondition;
+                var startDesc = _factory.initTermSpec.StartCondition;
                 var startCondition = ContextControllerConditionFactory.GetEndpoint(
                     controllerPath,
                     partitionKeys,
                     startDesc,
                     this,
-                    this,
-                    true);
+                    this);
                 if (!startCondition.IsImmediate) {
                     startCondition.Activate(optionalTriggeringEvent, null, optionalTriggeringPattern);
                     initTermSvc.MgmtUpdSetStartCondition(controllerPath, startCondition);
@@ -196,7 +201,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 return;
             }
 
-            if (!(factory.InitTermSpec.StartCondition is ContextConditionDescriptorFilter)) {
+            if (!(_factory.InitTermSpec.StartCondition is ContextConditionDescriptorFilter)) {
                 return;
             }
 
@@ -225,7 +230,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 // b) Timer thread destroys CP1
                 // c) App thread processes E1 for CP1, filter-faulting and ending up reprocessing the event against CTX because of this handler
                 var aiCreate = contextControllerInitTerm.Realization.AgentInstanceContextCreate;
-                using (aiCreate.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireWriteLock()) {
+                var @lock = aiCreate.EpStatementAgentInstanceHandle.StatementAgentInstanceLock;
+                using (@lock.AcquireWriteLock()) {
                     var trigger = contextControllerInitTerm.LastTriggerEvent;
                     if (theEvent != trigger) {
                         AgentInstanceUtil.EvaluateEventForStatement(

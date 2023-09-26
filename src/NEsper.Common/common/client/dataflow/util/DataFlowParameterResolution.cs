@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.client.dataflow.util
             object defaultValue,
             DataFlowOpInitializeContext context)
         {
-            object resolvedFromProvider = TryParameterProvider<object>(name, context);
+            var resolvedFromProvider = TryParameterProvider<object>(name, context);
             if (resolvedFromProvider != null) {
                 return resolvedFromProvider;
             }
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.client.dataflow.util
                 return defaultValue;
             }
 
-            object value = (object) optionalEvaluator.Evaluate(null, true, context.AgentInstanceContext);
+            var value = optionalEvaluator.Evaluate(null, true, context.AgentInstanceContext);
             if (value == null) {
                 throw new EPException("Parameter '" + name + "' is null and is expected to have a value");
             }
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.client.dataflow.util
             ExprEvaluator optionalEvaluator,
             DataFlowOpInitializeContext context)
         {
-            string resolvedFromProvider = TryParameterProvider<string>(name, context);
+            var resolvedFromProvider = TryParameterProvider<string>(name, context);
             if (resolvedFromProvider != null) {
                 return resolvedFromProvider;
             }
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.client.dataflow.util
                 throw new EPException("Parameter by name '" + name + "' has no value");
             }
 
-            string value = (string) optionalEvaluator.Evaluate(null, true, context.AgentInstanceContext);
+            var value = (string)optionalEvaluator.Evaluate(null, true, context.AgentInstanceContext);
             if (value == null) {
                 throw new EPException("Parameter by name '" + name + "' has a null value");
             }
@@ -101,12 +101,12 @@ namespace com.espertech.esper.common.client.dataflow.util
             ExprEvaluator optionalEvaluator,
             DataFlowOpInitializeContext context)
         {
-            string resolvedFromProvider = TryParameterProvider<string>(name, context);
+            var resolvedFromProvider = TryParameterProvider<string>(name, context);
             if (resolvedFromProvider != null) {
                 return resolvedFromProvider;
             }
 
-            return (string) optionalEvaluator?.Evaluate(null, true, context.AgentInstanceContext);
+            return (string)optionalEvaluator?.Evaluate(null, true, context.AgentInstanceContext);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.client.dataflow.util
             T defaultValue,
             DataFlowOpInitializeContext context)
         {
-            T resolvedFromProvider = TryParameterProvider<T>(name, context);
+            var resolvedFromProvider = TryParameterProvider<T>(name, context);
             if (resolvedFromProvider != null) {
                 return resolvedFromProvider;
             }
@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.client.dataflow.util
                 return defaultValue;
             }
 
-            T result = (T) optionalEvaluator.Evaluate(null, true, context.AgentInstanceContext);
+            var result = (T)optionalEvaluator.Evaluate(null, true, context.AgentInstanceContext);
             if (result == null) {
                 return defaultValue;
             }
@@ -148,12 +148,16 @@ namespace com.espertech.esper.common.client.dataflow.util
             }
 
             //if (TypeHelper.IsSubclassOrImplementsInterface(result.GetType().GetBoxedType(), typeof(object))) {
-            if (result.GetType().GetBoxedType().IsNumeric()) {
-                return (T) SimpleNumberCoercerFactory.GetCoercer(result.GetType(), clazz.GetBoxedType())
+            if (result.GetType().GetBoxedType().IsTypeNumeric()) {
+                // Type classTypeBoxed = JavaClassHelper.getBoxedType(ClassHelperGenericType.getClassEPType(clazz));
+                // Type resultType = ClassHelperGenericType.getClassEPType(result.getClass());
+                // return (T) SimpleNumberCoercerFactory.getCoercer(resultType, classTypeBoxed).coerceBoxed((Number) result);
+                return (T)SimpleNumberCoercerFactory
+                    .GetCoercer(result.GetType(), clazz.GetBoxedType())
                     .CoerceBoxed(result);
             }
 
-            return (T) result;
+            return result;
         }
 
         /// <summary>
@@ -169,7 +173,7 @@ namespace com.espertech.esper.common.client.dataflow.util
             DataFlowOpInitializeContext context)
             where T : class
         {
-            T resolvedFromProvider = TryParameterProvider<T>(name, context);
+            var resolvedFromProvider = TryParameterProvider<T>(name, context);
             if (resolvedFromProvider != null) {
                 return resolvedFromProvider;
             }
@@ -178,14 +182,17 @@ namespace com.espertech.esper.common.client.dataflow.util
                 return null;
             }
 
-            string className = (string) configuration.Get("class");
+            var className = (string)configuration.Get("class");
             if (className == null) {
                 throw new EPException("Failed to find 'class' parameter for parameter '" + name + "'");
             }
 
             Type theClass;
             try {
-                theClass = context.AgentInstanceContext.ImportServiceRuntime.ResolveType(className, false, ExtensionClassEmpty.INSTANCE);
+                theClass = context.AgentInstanceContext.ImportServiceRuntime.ResolveType(
+                    className,
+                    false,
+                    ExtensionClassEmpty.INSTANCE);
             }
             catch (ImportException e) {
                 throw new EPException("Failed to find class for parameter '" + name + "': " + e.Message, e);
@@ -221,10 +228,10 @@ namespace com.espertech.esper.common.client.dataflow.util
             }
 
             var map = new LinkedHashMap<string, object>();
-            foreach (KeyValuePair<string, object> entry in evals) {
-                if (entry.Value is ExprEvaluator) {
+            foreach (var entry in evals) {
+                if (entry.Value is ExprEvaluator evaluator) {
                     try {
-                        map.Put(name, ((ExprEvaluator) entry.Value).Evaluate(null, true, context.AgentInstanceContext));
+                        map.Put(name, evaluator.Evaluate(null, true, context.AgentInstanceContext));
                     }
                     catch (EPException) {
                         throw;
@@ -253,23 +260,23 @@ namespace com.espertech.esper.common.client.dataflow.util
             DataFlowOpInitializeContext context)
         {
             if (context.AdditionalParameters != null && context.AdditionalParameters.ContainsKey(name)) {
-                return (T) context.AdditionalParameters.Get(name);
+                return (T)context.AdditionalParameters.Get(name);
             }
 
             if (context.ParameterProvider == null) {
-                return default(T);
+                return default;
             }
 
-            EPDataFlowOperatorParameterProviderContext ctx =
+            var ctx =
                 new EPDataFlowOperatorParameterProviderContext(context, name);
-            object value = context.ParameterProvider.Provide(ctx);
+            var value = context.ParameterProvider.Provide(ctx);
             if (value == null) {
-                return default(T);
+                return default;
             }
 
             var clazz = typeof(T);
-            if (TypeHelper.IsAssignmentCompatible(value.GetType(), clazz)) {
-                return (T) value;
+            if (value.GetType().IsAssignmentCompatible(clazz)) {
+                return (T)value;
             }
 
             throw new EPException(

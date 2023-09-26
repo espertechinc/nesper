@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -20,11 +21,11 @@ using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     /// <summary>
-    ///     NOTE: More table-related tests in "nwtable"
+    /// NOTE: More table-related tests in "nwtable"
     /// </summary>
     public class InfraTableOnMerge
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
             WithTableOnMergeSimple(execs);
@@ -58,7 +59,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             return execs;
         }
 
-        public static IList<RegressionExecution> WithMergeSelectWithAggReadAndEnum(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithMergeSelectWithAggReadAndEnum(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraMergeSelectWithAggReadAndEnum());
@@ -86,394 +88,27 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             return execs;
         }
 
-        private static void RunOnMergeInsertUpdDeleteUngrouped(
-            RegressionEnvironment env,
-            bool soda)
-        {
-            var path = new RegressionPath();
-            var eplDeclare = "create table varaggIUD (p0 string, sumint sum(int))";
-            env.CompileDeploy(soda, eplDeclare, path);
-
-            var fields = new[] {"c0", "c1"};
-            var eplRead =
-                "@Name('s0') select varaggIUD.p0 as c0, varaggIUD.sumint as c1, varaggIUD as c2 from SupportBean_S0";
-            env.CompileDeploy(soda, eplRead, path).AddListener("s0");
-
-            // assert selected column types
-            object[][] expectedAggType = {new object[] {"c0", typeof(string)}, new object[] {"c1", typeof(int?)}};
-            SupportEventTypeAssertionUtil.AssertEventTypeProperties(
-                expectedAggType,
-                env.Statement("s0").EventType,
-                SupportEventTypeAssertionEnum.NAME,
-                SupportEventTypeAssertionEnum.TYPE);
-
-            // assert no row
-            env.SendEventBean(new SupportBean_S0(0));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {null, null});
-
-            // create merge
-            var eplMerge = "on SupportBean merge varaggIUD" +
-                           " when not matched then" +
-                           " insert select TheString as p0" +
-                           " when matched and TheString like \"U%\" then" +
-                           " update set p0=\"updated\"" +
-                           " when matched and TheString like \"D%\" then" +
-                           " delete";
-            env.CompileDeploy(soda, eplMerge, path);
-
-            // merge for varagg
-            env.SendEventBean(new SupportBean("E1", 0));
-
-            // assert
-            env.SendEventBean(new SupportBean_S0(0));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"E1", null});
-
-            // also aggregate-into the same key
-            env.CompileDeploy(soda, "into table varaggIUD select sum(50) as sumint from SupportBean_S1", path);
-            env.SendEventBean(new SupportBean_S1(0));
-
-            env.Milestone(0);
-
-            env.SendEventBean(new SupportBean_S0(0));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"E1", 50});
-
-            // update for varagg
-            env.SendEventBean(new SupportBean("U2", 10));
-
-            env.Milestone(1);
-
-            env.SendEventBean(new SupportBean_S0(0));
-            var received = env.Listener("s0").AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(
-                received,
-                fields,
-                new object[] {"updated", 50});
-            EPAssertionUtil.AssertPropsMap(
-                (IDictionary<string, object>) received.Get("c2"),
-                new[] {"p0", "sumint"},
-                "updated",
-                50);
-
-            // delete for varagg
-            env.SendEventBean(new SupportBean("D3", 0));
-
-            env.Milestone(2);
-
-            env.SendEventBean(new SupportBean_S0(0));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {null, null});
-
-            env.UndeployAll();
-        }
-
-        private static void RunOnMergeInsertUpdDeleteSingleKey(
-            RegressionEnvironment env,
-            bool soda)
-        {
-            var fieldsTable = new[] {"key", "p0", "p1", "p2", "sumint"};
-            var path = new RegressionPath();
-            var eplDeclare =
-                "create table varaggMIU (key int primary key, p0 string, p1 int, p2 int[], sumint sum(int))";
-            env.CompileDeploy(soda, eplDeclare, path);
-
-            var fields = new[] {"c0", "c1", "c2", "c3"};
-            var eplRead =
-                "@Name('s0') select varaggMIU[Id].p0 as c0, varaggMIU[Id].p1 as c1, varaggMIU[Id].p2 as c2, varaggMIU[Id].sumint as c3 from SupportBean_S0";
-            env.CompileDeploy(soda, eplRead, path).AddListener("s0");
-
-            // assert selected column types
-            object[][] expectedAggType = {
-                new object[] {"c0", typeof(string)}, new object[] {"c1", typeof(int?)},
-                new object[] {"c2", typeof(int?[])}, new object[] {"c3", typeof(int?)}
-            };
-            SupportEventTypeAssertionUtil.AssertEventTypeProperties(
-                expectedAggType,
-                env.Statement("s0").EventType,
-                SupportEventTypeAssertionEnum.NAME,
-                SupportEventTypeAssertionEnum.TYPE);
-
-            // assert no row
-            env.SendEventBean(new SupportBean_S0(10));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {null, null, null, null});
-
-            // create merge
-            var eplMerge = "@Name('merge') on SupportBean merge varaggMIU" +
-                           " where IntPrimitive=key" +
-                           " when not matched then" +
-                           " insert select IntPrimitive as key, \"v1\" as p0, 1000 as p1, {1,2} as p2" +
-                           " when matched and TheString like \"U%\" then" +
-                           " update set p0=\"v2\", p1=2000, p2={3,4}" +
-                           " when matched and TheString like \"D%\" then" +
-                           " delete";
-            env.CompileDeploy(soda, eplMerge, path).AddListener("merge");
-
-            // merge for varagg[10]
-            env.SendEventBean(new SupportBean("E1", 10));
-            EPAssertionUtil.AssertProps(
-                env.Listener("merge").AssertOneGetNewAndReset(),
-                fieldsTable,
-                new object[] {10, "v1", 1000, new[] {1, 2}, null});
-
-            // assert key "10"
-            env.SendEventBean(new SupportBean_S0(10));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"v1", 1000, new int?[] {1, 2}, null});
-
-            // also aggregate-into the same key
-            env.CompileDeploy(
-                soda,
-                "into table varaggMIU select sum(50) as sumint from SupportBean_S1 group by Id",
-                path);
-            env.SendEventBean(new SupportBean_S1(10));
-
-            env.Milestone(0);
-
-            env.SendEventBean(new SupportBean_S0(10));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"v1", 1000, new int?[] {1, 2}, 50});
-
-            // update for varagg[10]
-            env.SendEventBean(new SupportBean("U2", 10));
-            EPAssertionUtil.AssertProps(
-                env.Listener("merge").LastNewData[0],
-                fieldsTable,
-                new object[] {10, "v2", 2000, new[] {3, 4}, 50});
-            EPAssertionUtil.AssertProps(
-                env.Listener("merge").GetAndResetLastOldData()[0],
-                fieldsTable,
-                new object[] {10, "v1", 1000, new[] {1, 2}, 50});
-
-            env.Milestone(1);
-
-            env.SendEventBean(new SupportBean_S0(10));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"v2", 2000, new int?[] {3, 4}, 50});
-
-            // delete for varagg[10]
-            env.SendEventBean(new SupportBean("D3", 10));
-            EPAssertionUtil.AssertProps(
-                env.Listener("merge").AssertOneGetOldAndReset(),
-                fieldsTable,
-                new object[] {10, "v2", 2000, new[] {3, 4}, 50});
-
-            env.Milestone(2);
-
-            env.SendEventBean(new SupportBean_S0(10));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {null, null, null, null});
-
-            env.UndeployAll();
-        }
-
-        private static void RunOnMergeInsertUpdDeleteTwoKey(
-            RegressionEnvironment env,
-            bool soda)
-        {
-            var path = new RegressionPath();
-            var eplDeclare = "create table varaggMIUD (keyOne int primary key, keyTwo string primary key, prop string)";
-            env.CompileDeploy(soda, eplDeclare, path);
-
-            var fields = new[] {"c0", "c1", "c2"};
-            var eplRead =
-                "@Name('s0') select varaggMIUD[Id,P00].keyOne as c0, varaggMIUD[Id,P00].keyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
-            env.CompileDeploy(soda, eplRead, path).AddListener("s0");
-
-            // assert selected column types
-            object[][] expectedAggType = {
-                new object[] {"c0", typeof(int?)}, new object[] {"c1", typeof(string)},
-                new object[] {"c2", typeof(string)}
-            };
-            SupportEventTypeAssertionUtil.AssertEventTypeProperties(
-                expectedAggType,
-                env.Statement("s0").EventType,
-                SupportEventTypeAssertionEnum.NAME,
-                SupportEventTypeAssertionEnum.TYPE);
-
-            // assert no row
-            env.SendEventBean(new SupportBean_S0(10, "A"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {null, null, null});
-
-            // create merge
-            var eplMerge = "@Name('merge') on SupportBean merge varaggMIUD" +
-                           " where IntPrimitive=keyOne and TheString=keyTwo" +
-                           " when not matched then" +
-                           " insert select IntPrimitive as keyOne, TheString as keyTwo, \"inserted\" as prop" +
-                           " when matched and LongPrimitive>0 then" +
-                           " update set prop=\"updated\"" +
-                           " when matched and LongPrimitive<0 then" +
-                           " delete";
-            env.CompileDeploy(soda, eplMerge, path);
-            object[][] expectedType = {
-                new object[] {"keyOne", typeof(int?)}, new object[] {"keyTwo", typeof(string)},
-                new object[] {"prop", typeof(string)}
-            };
-            SupportEventTypeAssertionUtil.AssertEventTypeProperties(
-                expectedType,
-                env.Statement("merge").EventType,
-                SupportEventTypeAssertionEnum.NAME,
-                SupportEventTypeAssertionEnum.TYPE);
-
-            // merge for varagg[10, "A"]
-            env.SendEventBean(new SupportBean("A", 10));
-
-            env.Milestone(0);
-
-            // assert key {"10", "A"}
-            env.SendEventBean(new SupportBean_S0(10, "A"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {10, "A", "inserted"});
-
-            // update for varagg[10, "A"]
-            env.SendEventBean(MakeSupportBean("A", 10, 1));
-
-            env.Milestone(1);
-
-            env.SendEventBean(new SupportBean_S0(10, "A"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {10, "A", "updated"});
-
-            // test typable output
-            env.CompileDeploy(
-                    "@Name('convert') insert into LocalBean select varaggMIUD[10, 'A'] as val0 from SupportBean_S1",
-                    path)
-                .AddListener("convert");
-            env.SendEventBean(new SupportBean_S1(2));
-            EPAssertionUtil.AssertProps(
-                env.Listener("convert").AssertOneGetNewAndReset(),
-                new[] {"val0.keyOne"},
-                new object[] {10});
-
-            // delete for varagg[10, "A"]
-            env.SendEventBean(MakeSupportBean("A", 10, -1));
-
-            env.Milestone(2);
-
-            env.SendEventBean(new SupportBean_S0(10, "A"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {null, null, null});
-
-            env.UndeployAll();
-        }
-
-
-        private static void SendAssertEMA(
-            RegressionEnvironment env,
-            string id,
-            double x,
-            double? expected)
-        {
-            var @event = new Dictionary<string, object>();
-            @event.Put("id", id);
-            @event.Put("x", x);
-            env.SendEventMap(@event, "MyEvent");
-            var burn = env.Listener("output").AssertOneGetNewAndReset().Get("burn").AsBoxedDouble();
-            if (expected == null) {
-                Assert.IsNull(burn);
-            }
-            else {
-                Assert.NotNull(burn);
-                Assert.AreEqual(expected.Value, burn, 1e-10);
-            }
-        }
-
-        private static SupportBean MakeSupportBean(
-            string theString,
-            int intPrimitive,
-            long longPrimitive)
-        {
-            var bean = new SupportBean(theString, intPrimitive);
-            bean.LongPrimitive = longPrimitive;
-            return bean;
-        }
-
-        private static void AssertResultAggRead(
-            RegressionEnvironment env,
-            object[] objects,
-            int total)
-        {
-            var fields = new[] {"eventset", "total"};
-            env.SendEventBean(new SupportBean_S0(0));
-            var @event = env.Listener("s0").AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(
-                @event,
-                fields,
-                new object[] {objects, total});
-            EPAssertionUtil.AssertEqualsExactOrder(
-                new[] {objects[objects.Length - 1]},
-                ((ICollection<object>) @event.Get("c0")).ToArray());
-        }
-
-        private static void AssertKeyFound(
-            RegressionEnvironment env,
-            string keyCsv,
-            bool[] expected)
-        {
-            var split = keyCsv.SplitCsv();
-            for (var i = 0; i < split.Length; i++) {
-                var key = split[i];
-                env.SendEventBean(new SupportBean_S0(0, key));
-                var expectedString = expected[i] ? key : null;
-                Assert.AreEqual(
-                    expectedString,
-                    env.Listener("s0").AssertOneGetNewAndReset().Get("c0"),
-                    "failed for key '" + key + "'"
-                );
-            }
-        }
-
-        internal class InfraTableArrayAssignmentBoxed : RegressionExecution
+        private class InfraTableArrayAssignmentBoxed : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl =
+                var epl =
                     "create table MyTable(dbls double[]);\n" +
-                    "@priority(2) on SupportBean merge MyTable when not matched then insert select new `System.Nullable<System.Double>`[3] as dbls;\n" +
-                    "@priority(1) on SupportBean merge MyTable when matched then update set dbls[IntPrimitive] = 1;\n" +
-                    "@Name('s0') select MyTable.dbls as c0 from SupportBean;\n";
+                    "@priority(2) on SupportBean merge MyTable when not matched then insert select new System.Double[3] as dbls;\n" +
+                    "@priority(1) on SupportBean merge MyTable when matched then update set dbls[intPrimitive] = 1;\n" +
+                    "@name('s0') select MyTable.dbls as c0 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
-
-                CollectionAssert.AreEquivalent(
-                    new double?[] {null, 1d, null},
-                    env.Listener("s0").AssertOneGetNewAndReset().Get("c0").UnwrapIntoArray<double?>());
+                env.AssertEventNew(
+                    "s0",
+                    @event => CollectionAssert.AreEqual(new double?[] { null, 1d, null }, (double?[])@event.Get("c0")));
 
                 env.UndeployAll();
             }
         }
 
-        internal class InfraTableEMACompute : RegressionExecution
+        private class InfraTableEMACompute : RegressionExecution
         {
             /// <summary>
             /// let p = 0.1
@@ -486,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             /// </summary>
             public void Run(RegressionEnvironment env)
             {
-                string epl =
+                var epl =
                     "@public @buseventtype create schema MyEvent(id string, x double);\n" +
                     "create constant variable int BURN_LENGTH = 5;\n" +
                     "create constant variable double ALPHA = 0.1;\n" +
@@ -498,14 +133,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "" +
                     "inlined_class \"\"\"\n" +
                     "  public class Helper {\n" +
-                    "    public static double ComputeInitialValue(double alpha, double[] burnValues) {\n" +
+                    "    public static double computeInitialValue(double alpha, double[] burnValues) {\n" +
                     "      double total = 0;\n" +
-                    "      foreach (double v in burnValues) {\n" +
-                    "        total = total + v;\n" +
+                    "      for (int i = 0; i < burnValues.length; i++) {\n" +
+                    "        total = total + burnValues[i];\n" +
                     "      }\n" +
-                    "      double value = total / burnValues.Length;\n" +
-                    "      foreach (double v in burnValues) {\n" +
-                    "        value = alpha * v + (1 - alpha) * value;\n" +
+                    "      double value = total / burnValues.length;\n" +
+                    "      for (int i = 0; i < burnValues.length; i++) {\n" +
+                    "        value = alpha * burnValues[i] + (1 - alpha) * value;\n" +
                     "      }\n" +
                     "      return value;" +
                     "    }\n" +
@@ -514,11 +149,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "// Update the 'value' field with the current value\n" +
                     "@priority(1) on MyEvent merge EMA as ema\n" +
                     "  when matched and cnt < BURN_LENGTH - 1 then update set burnValues[cnt] = x, cnt = cnt + 1\n" +
-                    "  when matched and cnt = BURN_LENGTH - 1 then update set burnValues[cnt] = x, cnt = cnt + 1, value = Helper.ComputeInitialValue(ALPHA, burnValues), burnValues = null\n" +
+                    "  when matched and cnt = BURN_LENGTH - 1 then update set burnValues[cnt] = x, cnt = cnt + 1, value = Helper.computeInitialValue(ALPHA, burnValues), burnValues = null\n" +
                     "  when matched then update set value = ALPHA * x + (1 - ALPHA) * value;\n" +
                     "" +
                     "// Output value\n" +
-                    "@Name('output') select EMA.value as burn from MyEvent;\n";
+                    "@name('output') select EMA.value as burn from MyEvent;\n";
                 env.CompileDeploy(epl).AddListener("output");
 
                 SendAssertEMA(env, "E1", 1, null);
@@ -551,27 +186,27 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             }
         }
 
-        internal class InfraMergeTwoTables : RegressionExecution
+        private class InfraMergeTwoTables : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl =
-                    "@Name('T0') create table TableZero(k0 string primary key, v0 int);\n" +
-                    "@Name('T1') create table TableOne(k1 string primary key, v1 int);\n" +
+                var epl =
+                    "@name('T0') create table TableZero(k0 string primary key, v0 int);\n" +
+                    "@name('T1') create table TableOne(k1 string primary key, v1 int);\n" +
                     "on SupportBean merge TableZero " +
-                    "  where TheString = k0 when not matched " +
-                    "  then insert select TheString as k0, IntPrimitive as v0" +
-                    "  then insert into TableOne(k1, v1) select TheString, IntPrimitive;\n";
+                    "  where theString = k0 when not matched " +
+                    "  then insert select theString as k0, intPrimitive as v0" +
+                    "  then insert into TableOne(k1, v1) select theString, intPrimitive;\n";
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportBean("E1", 1));
-                AssertTables(env, new object[][] {new object[] {"E1", 1}});
+                AssertTables(env, new object[][] { new object[] { "E1", 1 } });
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("E2", 2));
                 env.SendEventBean(new SupportBean("E2", 3));
-                AssertTables(env, new object[][] {new object[] {"E1", 1}, new object[] {"E2", 2}});
+                AssertTables(env, new object[][] { new object[] { "E1", 1 }, new object[] { "E2", 2 } });
 
                 env.UndeployAll();
             }
@@ -580,170 +215,501 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 RegressionEnvironment env,
                 object[][] expected)
             {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("T0"), "k0,v0".SplitCsv(), expected);
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(env.GetEnumerator("T1"), "k1,v1".SplitCsv(), expected);
+                env.AssertPropsPerRowIteratorAnyOrder("T0", "k0,v0".SplitCsv(), expected);
+                env.AssertPropsPerRowIteratorAnyOrder("T1", "k1,v1".SplitCsv(), expected);
             }
         }
 
-        internal class InfraTableOnMergeSimple : RegressionExecution
+        private class InfraTableOnMergeSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = new[] {"k1", "v1"};
+                var fields = "k1,v1".SplitCsv();
 
-                env.CompileDeploy("@Name('tbl') create table varaggKV (k1 string primary key, v1 int)", path);
+                env.CompileDeploy("@name('tbl') @public create table varaggKV (k1 string primary key, v1 int)", path);
                 env.CompileDeploy(
-                    "on SupportBean as sb merge varaggKV as va where sb.TheString = va.k1 " +
-                    "when not matched then insert select TheString as k1, IntPrimitive as v1 " +
-                    "when matched then update set v1 = IntPrimitive",
+                    "on SupportBean as sb merge varaggKV as va where sb.theString = va.k1 " +
+                    "when not matched then insert select theString as k1, intPrimitive as v1 " +
+                    "when matched then update set v1 = intPrimitive",
                     path);
 
                 env.SendEventBean(new SupportBean("E1", 10));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("tbl"),
-                    fields,
-                    new[] {new object[] {"E1", 10}});
+                env.AssertPropsPerRowIterator("tbl", fields, new object[][] { new object[] { "E1", 10 } });
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("E1", 11));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("tbl"),
-                    fields,
-                    new[] {new object[] {"E1", 11}});
+                env.AssertPropsPerRowIterator("tbl", fields, new object[][] { new object[] { "E1", 11 } });
 
                 env.Milestone(1);
 
                 env.SendEventBean(new SupportBean("E2", 100));
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.GetEnumerator("tbl"),
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "tbl",
                     fields,
-                    new[] {new object[] {"E1", 11}, new object[] {"E2", 100}});
+                    new object[][] { new object[] { "E1", 11 }, new object[] { "E2", 100 } });
 
                 env.Milestone(2);
 
                 env.SendEventBean(new SupportBean("E2", 101));
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.GetEnumerator("tbl"),
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "tbl",
                     fields,
-                    new[] {new object[] {"E1", 11}, new object[] {"E2", 101}});
+                    new object[][] { new object[] { "E1", 11 }, new object[] { "E2", 101 } });
 
                 env.UndeployAll();
             }
         }
 
-        internal class InfraMergeWhereWithMethodRead : RegressionExecution
+        private class InfraMergeWhereWithMethodRead : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create table varaggMMR (keyOne string primary key, cnt count(*))", path);
+                env.CompileDeploy("@public create table varaggMMR (keyOne string primary key, cnt count(*))", path);
                 env.CompileDeploy(
                     "into table varaggMMR select count(*) as cnt " +
-                    "from SupportBean#lastevent group by TheString",
+                    "from SupportBean#lastevent group by theString",
                     path);
 
-                env.CompileDeploy("@Name('s0') select varaggMMR[P00].keyOne as c0 from SupportBean_S0", path)
+                env.CompileDeploy("@name('s0') select varaggMMR[p00].keyOne as c0 from SupportBean_S0", path)
                     .AddListener("s0");
                 env.CompileDeploy("on SupportBean_S1 merge varaggMMR where cnt = 0 when matched then delete", path);
 
                 env.SendEventBean(new SupportBean("G1", 0));
                 env.SendEventBean(new SupportBean("G2", 0));
-                AssertKeyFound(env, "G1,G2,G3", new[] {true, true, false});
+                AssertKeyFound(env, "G1,G2,G3", new bool[] { true, true, false });
 
                 env.SendEventBean(new SupportBean_S1(0)); // delete
-                AssertKeyFound(env, "G1,G2,G3", new[] {false, true, false});
+                AssertKeyFound(env, "G1,G2,G3", new bool[] { false, true, false });
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("G3", 0));
-                AssertKeyFound(env, "G1,G2,G3", new[] {false, true, true});
+                AssertKeyFound(env, "G1,G2,G3", new bool[] { false, true, true });
 
                 env.SendEventBean(new SupportBean_S1(0)); // delete
-                AssertKeyFound(env, "G1,G2,G3", new[] {false, false, true});
+                AssertKeyFound(env, "G1,G2,G3", new bool[] { false, false, true });
 
                 env.UndeployAll();
             }
         }
 
-        internal class InfraMergeSelectWithAggReadAndEnum : RegressionExecution
+        private class InfraMergeSelectWithAggReadAndEnum : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create table varaggMS (eventset window(*) @type(SupportBean), total sum(int))",
+                    "@public create table varaggMS (eventset window(*) @type(SupportBean), total sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table varaggMS select window(*) as eventset, " +
-                    "sum(IntPrimitive) as total from SupportBean#length(2)",
+                    "sum(intPrimitive) as total from SupportBean#length(2)",
                     path);
                 env.CompileDeploy(
-                    "on SupportBean_S0 merge varaggMS " +
+                    "@public on SupportBean_S0 merge varaggMS " +
                     "when matched then insert into ResultStream select eventset, total, eventset.takeLast(1) as c0",
                     path);
-                env.CompileDeploy("@Name('s0') select * from ResultStream", path).AddListener("s0");
+                env.CompileDeploy("@name('s0') select * from ResultStream", path).AddListener("s0");
 
                 var e1 = new SupportBean("E1", 15);
                 env.SendEventBean(e1);
 
-                AssertResultAggRead(
-                    env,
-                    new object[] {e1},
-                    15);
+                AssertResultAggRead(env, new object[] { e1 }, 15);
 
                 env.Milestone(0);
 
                 var e2 = new SupportBean("E2", 20);
                 env.SendEventBean(e2);
 
-                AssertResultAggRead(
-                    env,
-                    new object[] {e1, e2},
-                    35);
+                AssertResultAggRead(env, new object[] { e1, e2 }, 35);
 
                 env.Milestone(1);
 
                 var e3 = new SupportBean("E3", 30);
                 env.SendEventBean(e3);
 
-                AssertResultAggRead(
-                    env,
-                    new object[] {e2, e3},
-                    50);
+                AssertResultAggRead(env, new object[] { e2, e3 }, 50);
 
                 env.UndeployAll();
             }
         }
 
-        internal class InfraOnMergePlainPropsAnyKeyed : RegressionExecution
+        private class InfraOnMergePlainPropsAnyKeyed : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                RunOnMergeInsertUpdDeleteSingleKey(env, false);
-                RunOnMergeInsertUpdDeleteSingleKey(env, true);
+                var milestone = new AtomicLong();
+                RunOnMergeInsertUpdDeleteSingleKey(env, false, milestone);
+                RunOnMergeInsertUpdDeleteSingleKey(env, true, milestone);
 
-                RunOnMergeInsertUpdDeleteTwoKey(env, false);
-                RunOnMergeInsertUpdDeleteTwoKey(env, true);
+                RunOnMergeInsertUpdDeleteTwoKey(env, false, milestone);
+                RunOnMergeInsertUpdDeleteTwoKey(env, true, milestone);
 
-                RunOnMergeInsertUpdDeleteUngrouped(env, false);
-                RunOnMergeInsertUpdDeleteUngrouped(env, true);
+                RunOnMergeInsertUpdDeleteUngrouped(env, false, milestone);
+                RunOnMergeInsertUpdDeleteUngrouped(env, true, milestone);
+            }
+        }
+
+        private static void RunOnMergeInsertUpdDeleteUngrouped(
+            RegressionEnvironment env,
+            bool soda,
+            AtomicLong milestone)
+        {
+            var path = new RegressionPath();
+            var eplDeclare = "@public create table varaggIUD (p0 string, sumint sum(int))";
+            env.CompileDeploy(soda, eplDeclare, path);
+
+            var fields = "c0,c1".SplitCsv();
+            var eplRead =
+                "@name('s0') select varaggIUD.p0 as c0, varaggIUD.sumint as c1, varaggIUD as c2 from SupportBean_S0";
+            env.CompileDeploy(soda, eplRead, path).AddListener("s0");
+
+            // assert selected column types
+            var expectedAggType = new object[][]
+                { new object[] { "c0", typeof(string) }, new object[] { "c1", typeof(int?) } };
+            env.AssertStatement(
+                "s0",
+                statement => SupportEventTypeAssertionUtil.AssertEventTypeProperties(
+                    expectedAggType,
+                    statement.EventType,
+                    SupportEventTypeAssertionEnum.NAME,
+                    SupportEventTypeAssertionEnum.TYPE));
+
+            // assert no row
+            env.SendEventBean(new SupportBean_S0(0));
+            env.AssertPropsNew("s0", fields, new object[] { null, null });
+
+            // create merge
+            var eplMerge = "on SupportBean merge varaggIUD" +
+                           " when not matched then" +
+                           " insert select theString as p0" +
+                           " when matched and theString like \"U%\" then" +
+                           " update set p0=\"updated\"" +
+                           " when matched and theString like \"D%\" then" +
+                           " delete";
+            env.CompileDeploy(soda, eplMerge, path);
+
+            // merge for varagg
+            env.SendEventBean(new SupportBean("E1", 0));
+
+            // assert
+            env.SendEventBean(new SupportBean_S0(0));
+            env.AssertPropsNew("s0", fields, new object[] { "E1", null });
+
+            // also aggregate-into the same key
+            env.CompileDeploy(soda, "into table varaggIUD select sum(50) as sumint from SupportBean_S1", path);
+            env.SendEventBean(new SupportBean_S1(0));
+
+            env.MilestoneInc(milestone);
+
+            env.SendEventBean(new SupportBean_S0(0));
+            env.AssertPropsNew("s0", fields, new object[] { "E1", 50 });
+
+            // update for varagg
+            env.SendEventBean(new SupportBean("U2", 10));
+
+            env.MilestoneInc(milestone);
+
+            env.SendEventBean(new SupportBean_S0(0));
+            env.AssertEventNew(
+                "s0",
+                received => {
+                    EPAssertionUtil.AssertProps(received, fields, new object[] { "updated", 50 });
+                    EPAssertionUtil.AssertPropsMap(
+                        (IDictionary<string, object>)received.Get("c2"),
+                        "p0,sumint".SplitCsv(),
+                        new object[] { "updated", 50 });
+                });
+
+            // delete for varagg
+            env.SendEventBean(new SupportBean("D3", 0));
+
+            env.MilestoneInc(milestone);
+
+            env.SendEventBean(new SupportBean_S0(0));
+            env.AssertPropsNew("s0", fields, new object[] { null, null });
+
+            env.UndeployAll();
+        }
+
+        private static void RunOnMergeInsertUpdDeleteSingleKey(
+            RegressionEnvironment env,
+            bool soda,
+            AtomicLong milestone)
+        {
+            var fieldsTable = "key,p0,p1,p2,sumint".SplitCsv();
+            var path = new RegressionPath();
+            var eplDeclare =
+                "@public create table varaggMIU (key int primary key, p0 string, p1 int, p2 int[], sumint sum(int))";
+            env.CompileDeploy(soda, eplDeclare, path);
+
+            var fields = "c0,c1,c2,c3".SplitCsv();
+            var eplRead =
+                "@name('s0') select varaggMIU[id].p0 as c0, varaggMIU[id].p1 as c1, varaggMIU[id].p2 as c2, varaggMIU[id].sumint as c3 from SupportBean_S0";
+            env.CompileDeploy(soda, eplRead, path).AddListener("s0");
+
+            // assert selected column types
+            var expectedAggType = new object[][] {
+                new object[] { "c0", typeof(string) }, new object[] { "c1", typeof(int?) },
+                new object[] { "c2", typeof(int?[]) }, new object[] { "c3", typeof(int?) }
+            };
+            env.AssertStatement(
+                "s0",
+                statement => SupportEventTypeAssertionUtil.AssertEventTypeProperties(
+                    expectedAggType,
+                    statement.EventType,
+                    SupportEventTypeAssertionEnum.NAME,
+                    SupportEventTypeAssertionEnum.TYPE));
+
+            // assert no row
+            env.SendEventBean(new SupportBean_S0(10));
+            env.AssertPropsNew("s0", fields, new object[] { null, null, null, null });
+
+            // create merge
+            var eplMerge = "@name('merge') on SupportBean merge varaggMIU" +
+                           " where intPrimitive=key" +
+                           " when not matched then" +
+                           " insert select intPrimitive as key, \"v1\" as p0, 1000 as p1, new object[] {1,2} as p2" +
+                           " when matched and theString like \"U%\" then" +
+                           " update set p0=\"v2\", p1=2000, p2={3,4}" +
+                           " when matched and theString like \"D%\" then" +
+                           " delete";
+            env.CompileDeploy(soda, eplMerge, path).AddListener("merge");
+
+            // merge for varagg[10]
+            env.SendEventBean(new SupportBean("E1", 10));
+            env.AssertPropsNew("merge", fieldsTable, new object[] { 10, "v1", 1000, new int?[] { 1, 2 }, null });
+
+            // assert key "10"
+            env.SendEventBean(new SupportBean_S0(10));
+            env.AssertPropsNew("s0", fields, new object[] { "v1", 1000, new int?[] { 1, 2 }, null });
+
+            // also aggregate-into the same key
+            env.CompileDeploy(
+                soda,
+                "into table varaggMIU select sum(50) as sumint from SupportBean_S1 group by id",
+                path);
+            env.SendEventBean(new SupportBean_S1(10));
+
+            env.MilestoneInc(milestone);
+
+            env.SendEventBean(new SupportBean_S0(10));
+            env.AssertPropsNew("s0", fields, new object[] { "v1", 1000, new int?[] { 1, 2 }, 50 });
+
+            // update for varagg[10]
+            env.SendEventBean(new SupportBean("U2", 10));
+            env.AssertPropsIRPair(
+                "merge",
+                fieldsTable,
+                new object[] { 10, "v2", 2000, new int?[] { 3, 4 }, 50 },
+                new object[] { 10, "v1", 1000, new int?[] { 1, 2 }, 50 });
+
+            env.MilestoneInc(milestone);
+
+            env.SendEventBean(new SupportBean_S0(10));
+            env.AssertPropsNew("s0", fields, new object[] { "v2", 2000, new int?[] { 3, 4 }, 50 });
+
+            // delete for varagg[10]
+            env.SendEventBean(new SupportBean("D3", 10));
+            env.AssertPropsOld("merge", fieldsTable, new object[] { 10, "v2", 2000, new int?[] { 3, 4 }, 50 });
+
+            env.MilestoneInc(milestone);
+
+            env.SendEventBean(new SupportBean_S0(10));
+            env.AssertPropsNew("s0", fields, new object[] { null, null, null, null });
+
+            env.UndeployAll();
+        }
+
+        private static void RunOnMergeInsertUpdDeleteTwoKey(
+            RegressionEnvironment env,
+            bool soda,
+            AtomicLong milestone)
+        {
+            var path = new RegressionPath();
+            var eplDeclare =
+                "@public create table varaggMIUD (keyOne int primary key, keyTwo string primary key, prop string)";
+            env.CompileDeploy(soda, eplDeclare, path);
+
+            var fields = "c0,c1,c2".SplitCsv();
+            var eplRead =
+                "@name('s0') select varaggMIUD[id,p00].keyOne as c0, varaggMIUD[id,p00].keyTwo as c1, varaggMIUD[id,p00].prop as c2 from SupportBean_S0";
+            env.CompileDeploy(soda, eplRead, path).AddListener("s0");
+
+            // assert selected column types
+            var expectedAggType = new object[][] {
+                new object[] { "c0", typeof(int?) }, new object[] { "c1", typeof(string) },
+                new object[] { "c2", typeof(string) }
+            };
+            env.AssertStatement(
+                "s0",
+                statement => SupportEventTypeAssertionUtil.AssertEventTypeProperties(
+                    expectedAggType,
+                    statement.EventType,
+                    SupportEventTypeAssertionEnum.NAME,
+                    SupportEventTypeAssertionEnum.TYPE));
+
+            // assert no row
+            env.SendEventBean(new SupportBean_S0(10, "A"));
+            env.AssertPropsNew("s0", fields, new object[] { null, null, null });
+
+            // create merge
+            var eplMerge = "@name('merge') on SupportBean merge varaggMIUD" +
+                           " where intPrimitive=keyOne and theString=keyTwo" +
+                           " when not matched then" +
+                           " insert select intPrimitive as keyOne, theString as keyTwo, \"inserted\" as prop" +
+                           " when matched and longPrimitive>0 then" +
+                           " update set prop=\"updated\"" +
+                           " when matched and longPrimitive<0 then" +
+                           " delete";
+            env.CompileDeploy(soda, eplMerge, path);
+            var expectedType = new object[][] {
+                new object[] { "keyOne", typeof(int?) }, new object[] { "keyTwo", typeof(string) },
+                new object[] { "prop", typeof(string) }
+            };
+            env.AssertStatement(
+                "merge",
+                statement => SupportEventTypeAssertionUtil.AssertEventTypeProperties(
+                    expectedType,
+                    statement.EventType,
+                    SupportEventTypeAssertionEnum.NAME,
+                    SupportEventTypeAssertionEnum.TYPE));
+
+            // merge for varagg[10, "A"]
+            env.SendEventBean(new SupportBean("A", 10));
+
+            env.MilestoneInc(milestone);
+
+            // assert key {"10", "A"}
+            env.SendEventBean(new SupportBean_S0(10, "A"));
+            env.AssertPropsNew("s0", fields, new object[] { 10, "A", "inserted" });
+
+            // update for varagg[10, "A"]
+            env.SendEventBean(MakeSupportBean("A", 10, 1));
+
+            env.MilestoneInc(milestone);
+
+            env.SendEventBean(new SupportBean_S0(10, "A"));
+            env.AssertPropsNew("s0", fields, new object[] { 10, "A", "updated" });
+
+            // test typable output
+            env.CompileDeploy(
+                    "@name('convert') insert into LocalBean select varaggMIUD[10, 'A'] as val0 from SupportBean_S1",
+                    path)
+                .AddListener("convert");
+            env.SendEventBean(new SupportBean_S1(2));
+            env.AssertPropsNew("convert", "val0.keyOne".SplitCsv(), new object[] { 10 });
+
+            // delete for varagg[10, "A"]
+            env.SendEventBean(MakeSupportBean("A", 10, -1));
+
+            env.MilestoneInc(milestone);
+
+            env.SendEventBean(new SupportBean_S0(10, "A"));
+            env.AssertPropsNew("s0", fields, new object[] { null, null, null });
+
+            env.UndeployAll();
+        }
+
+        private static void SendAssertEMA(
+            RegressionEnvironment env,
+            string id,
+            double x,
+            double? expected)
+        {
+            IDictionary<string, object> @event = new Dictionary<string, object>();
+            @event.Put("id", id);
+            @event.Put("x", x);
+            env.SendEventMap(@event, "MyEvent");
+            env.AssertEventNew(
+                "output",
+                output => {
+                    var burn = output.Get("burn").AsBoxedDouble();
+                    if (expected == null) {
+                        Assert.IsNull(burn);
+                    }
+                    else {
+                        Assert.AreEqual(expected.Value, burn, 1e-10);
+                    }
+                });
+        }
+
+        private static SupportBean MakeSupportBean(
+            string theString,
+            int intPrimitive,
+            long longPrimitive)
+        {
+            var bean = new SupportBean(theString, intPrimitive);
+            bean.LongPrimitive = longPrimitive;
+            return bean;
+        }
+
+        private static void AssertResultAggRead(
+            RegressionEnvironment env,
+            object[] objects,
+            int total)
+        {
+            var fields = "eventset,total".SplitCsv();
+            env.SendEventBean(new SupportBean_S0(0));
+            env.AssertEventNew(
+                "s0",
+                @event => {
+                    EPAssertionUtil.AssertProps(@event, fields, new object[] { objects, total });
+                    EPAssertionUtil.AssertEqualsExactOrder(
+                        new object[] { objects[^1] },
+                        ((ICollection<object>)@event.Get("c0")).ToArray());
+                });
+        }
+
+        private static void AssertKeyFound(
+            RegressionEnvironment env,
+            string keyCsv,
+            bool[] expected)
+        {
+            var split = keyCsv.SplitCsv();
+            for (var i = 0; i < split.Length; i++) {
+                var key = split[i];
+                env.SendEventBean(new SupportBean_S0(0, key));
+                var expectedString = expected[i] ? key : null;
+                env.AssertEventNew(
+                    "s0",
+                    @event => Assert.AreEqual(expectedString, @event.Get("c0"), "failed for key '" + key + "'"));
             }
         }
 
         public class LocalSubBean
         {
-            public int KeyOne { get; set; }
+            private int keyOne;
+            private string keyTwo;
+            private string prop;
 
-            public string KeyTwo { get; set; }
+            public int KeyOne {
+                get => keyOne;
+                set => keyOne = value;
+            }
 
-            public string Prop { get; set; }
+            public string KeyTwo {
+                get => keyTwo;
+                set => keyTwo = value;
+            }
+
+            public string Prop {
+                get => prop;
+                set => prop = value;
+            }
         }
 
         public class LocalBean
         {
-            public LocalSubBean Val0 { get; set; }
+            private LocalSubBean val0;
+
+            public LocalSubBean Val0 {
+                get => val0;
+                set => val0 = value;
+            }
         }
     }
 } // end of namespace

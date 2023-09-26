@@ -32,16 +32,16 @@ namespace com.espertech.esper.common.@internal.epl.contained
             EventBean[] eventsPerStream,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            Array result = evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext) as Array;
+            var result = evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext) as Array;
             if (result == null) {
                 return null;
             }
 
-            EventBean[] events = new EventBean[result.Length];
-            for (int i = 0; i < events.Length; i++) {
-                object column = result.GetValue(i);
+            var events = new EventBean[result.Length];
+            for (var i = 0; i < events.Length; i++) {
+                var column = result.GetValue(i);
                 if (column != null) {
-                    events[i] = manufacturer.Make(new object[] {column});
+                    events[i] = manufacturer.Make(new object[] { column });
                 }
             }
 

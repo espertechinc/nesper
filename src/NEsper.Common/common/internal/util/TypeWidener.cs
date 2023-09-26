@@ -26,7 +26,11 @@ namespace com.espertech.esper.common.@internal.util
     public class ProxyTypeWidener : TypeWidener
     {
         public Func<object, object> ProcWiden;
-        public object Widen(object input) => ProcWiden(input);
+
+        public object Widen(object input)
+        {
+            return ProcWiden(input);
+        }
 
         public ProxyTypeWidener()
         {

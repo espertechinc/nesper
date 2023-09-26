@@ -37,8 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                         break;
                     }
                 }
-                else if (aPartial is EventBean[]) {
-                    var events = (EventBean[]) aPartial;
+                else if (aPartial is EventBean[] events) {
                     foreach (var @event in events) {
                         if (matchEvent.Contains(@event)) {
                             quit = true;

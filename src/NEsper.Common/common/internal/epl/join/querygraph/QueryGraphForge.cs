@@ -179,7 +179,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 return false;
             }
 
-            QueryGraphValuePairHashKeyIndexForge hashKeys = value.HashKeyProps;
+            var hashKeys = value.HashKeyProps;
             var strictKeyProps = hashKeys.StrictKeys;
             var indexProps = hashKeys.Indexed;
 
@@ -235,7 +235,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 }
 
                 var value = queryGraph.GetGraphValue(otherStream, indexedStream);
-                QueryGraphValuePairHashKeyIndexForge hashKeys = value.HashKeyProps;
+                var hashKeys = value.HashKeyProps;
 
                 var otherStrictKeyProps = hashKeys.StrictKeys;
                 var otherIndexProps = hashKeys.Indexed;
@@ -481,8 +481,8 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 return;
             }
 
-            optionalStartStreamNum = optionalStartStreamNum != null ? optionalStartStreamNum : -1;
-            optionalEndStreamNum = optionalEndStreamNum != null ? optionalEndStreamNum : -1;
+            optionalStartStreamNum = optionalStartStreamNum ?? -1;
+            optionalEndStreamNum = optionalEndStreamNum ?? -1;
 
             // add for a specific stream only
             if (optionalStartStreamNum.Equals(optionalEndStreamNum) || optionalEndStreamNum.Equals(-1)) {

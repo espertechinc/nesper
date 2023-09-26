@@ -191,7 +191,8 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the object-array event types.
         /// </summary>
         /// <value>object-array event types</value>
-        public IDictionary<string, IDictionary<string, object>> EventTypesNestableObjectArrayEvents => nestableObjectArrayNames;
+        public IDictionary<string, IDictionary<string, object>> EventTypesNestableObjectArrayEvents =>
+            nestableObjectArrayNames;
 
         /// <summary>
         ///     Returns the mapping of event type name to XML DOM event type information.
@@ -233,7 +234,8 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the object-array event type configurations.
         /// </summary>
         /// <value>type configs</value>
-        public IDictionary<string, ConfigurationCommonEventTypeObjectArray> ObjectArrayTypeConfigurations => objectArrayTypeConfigurations;
+        public IDictionary<string, ConfigurationCommonEventTypeObjectArray> ObjectArrayTypeConfigurations =>
+            objectArrayTypeConfigurations;
 
         /// <summary>
         ///     Returns the preconfigured variables
@@ -943,7 +945,7 @@ namespace com.espertech.esper.common.client.configuration.common
             imports = new List<Import>();
             annotationImports = new List<Import>();
             AddDefaultImports();
-            variables = new Dictionary<string, ConfigurationCommonVariable>();
+            variables = new LinkedHashMap<string, ConfigurationCommonVariable>();
             methodInvocationReferences = new Dictionary<string, ConfigurationCommonMethodRef>();
             variantStreams = new Dictionary<string, ConfigurationCommonVariantStream>();
             mapTypeConfigurations = new Dictionary<string, ConfigurationCommonEventTypeMap>();
@@ -952,7 +954,7 @@ namespace com.espertech.esper.common.client.configuration.common
             logging = new ConfigurationCommonLogging();
             timeSource = new ConfigurationCommonTimeSource();
             transientConfiguration = new Dictionary<string, object>(2);
-            eventTypeAutoNameNamespaces = new HashSet<string>();
+            eventTypeAutoNameNamespaces = new LinkedHashSet<string>();
             execution = new ConfigurationCommonExecution();
             scripting = new ConfigurationCommonScripting();
         }

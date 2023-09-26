@@ -34,10 +34,9 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns the expression. </summary>
         /// <value>expressions</value>
-        public Expression Expression
-        {
-            get { return _expression; }
-            set { _expression = value; }
+        public Expression Expression {
+            get => _expression;
+            set => _expression = value;
         }
 
         public void ToEPL(TextWriter writer)

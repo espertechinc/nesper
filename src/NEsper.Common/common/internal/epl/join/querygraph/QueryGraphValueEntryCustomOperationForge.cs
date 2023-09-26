@@ -39,9 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             }
 
             method.Block
-                .DeclareVar<QueryGraphValueEntryCustomOperation>(
-                    "op",
-                    NewInstance(typeof(QueryGraphValueEntryCustomOperation)))
+                .DeclareVarNewInstance<QueryGraphValueEntryCustomOperation>("op")
                 .SetProperty(Ref("op"), "PositionalExpressions", Ref("map"))
                 .MethodReturn(Ref("op"));
             return LocalMethod(method);

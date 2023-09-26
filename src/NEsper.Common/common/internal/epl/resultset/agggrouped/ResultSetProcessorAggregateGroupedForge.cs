@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,10 +10,13 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.output.polled;
@@ -21,23 +24,46 @@ using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.grouped;
 using com.espertech.esper.common.@internal.epl.resultset.rowforall;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
+using static com.espertech.esper.common.@internal.epl.resultset.core.ResultSetProcessorOutputConditionType;
+using static com.espertech.esper.common.@internal.epl.resultset.grouped.ResultSetProcessorGroupedUtil;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 {
     /// <summary>
-    ///     Result-set processor prototype for the aggregate-grouped case:
-    ///     there is a group-by and one or more non-aggregation event properties in the select clause are not listed in the
-    ///     group by,
-    ///     and there are aggregation functions.
+    /// Result-set processor prototype for the aggregate-grouped case:
+    /// there is a group-by and one or more non-aggregation event properties in the select clause are not listed in the group by,
+    /// and there are aggregation functions.
     /// </summary>
-    public class ResultSetProcessorAggregateGroupedForge : ResultSetProcessorFactoryForge
+    public class ResultSetProcessorAggregateGroupedForge : ResultSetProcessorFactoryForgeBase
     {
+        private readonly ExprNode[] groupKeyNodeExpressions;
+        private readonly ExprForge optionalHavingNode;
+        private readonly bool isSorting;
+        private readonly bool isSelectRStream;
+        private readonly bool isUnidirectional;
+        private readonly OutputLimitSpec outputLimitSpec;
+        private readonly bool isHistoricalOnly;
+        private readonly ResultSetProcessorOutputConditionType outputConditionType;
+        private readonly OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory;
+        private readonly Type[] groupKeyTypes;
+        private readonly MultiKeyClassRef multiKeyClassRef;
+        private StateMgmtSetting outputFirstHelperSettings;
+        private StateMgmtSetting outputAllHelperSettings;
+        private StateMgmtSetting outputAllOptSettings;
+        private StateMgmtSetting outputLastOptSettings;
+
+        private CodegenMethod generateGroupKeySingle;
+        private CodegenMethod generateGroupKeyArrayView;
+        private CodegenMethod generateGroupKeyArrayJoin;
+
         public ResultSetProcessorAggregateGroupedForge(
             EventType resultEventType,
+            EventType[] typesPerStream,
             ExprNode[] groupKeyNodeExpressions,
             ExprForge optionalHavingNode,
             bool isSelectRStream,
@@ -45,113 +71,112 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             OutputLimitSpec outputLimitSpec,
             bool isSorting,
             bool isHistoricalOnly,
-            ResultSetProcessorOutputConditionType? outputConditionType,
+            ResultSetProcessorOutputConditionType outputConditionType,
             OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory,
-            EventType[] eventTypes,
-            MultiKeyClassRef multiKeyClassRef)
+            MultiKeyClassRef multiKeyClassRef) : base(resultEventType, typesPerStream)
         {
-            ResultEventType = resultEventType;
-            GroupKeyNodeExpressions = groupKeyNodeExpressions;
-            OptionalHavingNode = optionalHavingNode;
-            IsSorting = isSorting;
-            IsSelectRStream = isSelectRStream;
-            IsUnidirectional = isUnidirectional;
-            OutputLimitSpec = outputLimitSpec;
-            IsHistoricalOnly = isHistoricalOnly;
-            OutputConditionType = outputConditionType;
-            OptionalOutputFirstConditionFactory = optionalOutputFirstConditionFactory;
-            EventTypes = eventTypes;
-            GroupKeyTypes = ExprNodeUtilityQuery.GetExprResultTypes(groupKeyNodeExpressions);
-            MultiKeyClassRef = multiKeyClassRef;
+            this.groupKeyNodeExpressions = groupKeyNodeExpressions;
+            this.optionalHavingNode = optionalHavingNode;
+            this.isSorting = isSorting;
+            this.isSelectRStream = isSelectRStream;
+            this.isUnidirectional = isUnidirectional;
+            this.outputLimitSpec = outputLimitSpec;
+            this.isHistoricalOnly = isHistoricalOnly;
+            this.outputConditionType = outputConditionType;
+            this.optionalOutputFirstConditionFactory = optionalOutputFirstConditionFactory;
+            groupKeyTypes = ExprNodeUtilityQuery.GetExprResultTypes(groupKeyNodeExpressions);
+            this.multiKeyClassRef = multiKeyClassRef;
+            outputLastOptSettings = outputLastOptSettings;
         }
 
-        public EventType ResultEventType { get; }
+        public ExprForge OptionalHavingNode => optionalHavingNode;
 
-        public ExprForge OptionalHavingNode { get; }
+        public bool IsSorting => isSorting;
 
-        public OutputLimitSpec OutputLimitSpec { get; }
+        public bool IsSelectRStream => isSelectRStream;
 
-        public OutputConditionPolledFactoryForge OptionalOutputFirstConditionFactory { get; }
+        public bool IsUnidirectional => isUnidirectional;
 
-        public ResultSetProcessorOutputConditionType? OutputConditionType { get; }
+        public OutputLimitSpec OutputLimitSpec => outputLimitSpec;
 
-        public int NumStreams => EventTypes.Length;
+        public ExprNode[] GroupKeyNodeExpressions => groupKeyNodeExpressions;
 
-        public bool IsSorting { get; }
+        public bool IsHistoricalOnly => isHistoricalOnly;
 
-        public bool IsSelectRStream { get; }
-
-        public bool IsUnidirectional { get; }
-
-        public ExprNode[] GroupKeyNodeExpressions { get; }
-
-        public bool IsHistoricalOnly { get; }
+        public OutputConditionPolledFactoryForge OptionalOutputFirstConditionFactory =>
+            optionalOutputFirstConditionFactory;
 
         public bool IsOutputLast =>
-            OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST;
+            outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST;
 
-        public bool IsOutputAll => OutputLimitSpec != null && OutputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL;
+        public bool IsOutputAll => outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL;
 
-        public EventType[] EventTypes { get; }
+        public bool IsOutputFirst =>
+            outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.FIRST;
 
-        public Type[] GroupKeyTypes { get; }
+        public ResultSetProcessorOutputConditionType OutputConditionType => outputConditionType;
 
-        public Type InterfaceClass => typeof(ResultSetProcessorAggregateGrouped);
+        public int NumStreams => typesPerStream.Length;
 
-        public string InstrumentedQName => "ResultSetProcessGroupedRowPerEvent";
-        
-        public MultiKeyClassRef MultiKeyClassRef { get; }
+        public Type[] GroupKeyTypes => groupKeyTypes;
 
-        public CodegenMethod GenerateGroupKeySingle { get; private set; }
-        public CodegenMethod GenerateGroupKeyArrayView { get; private set; }
-        public CodegenMethod GenerateGroupKeyArrayJoin { get; private set; }
+        public override Type InterfaceClass => typeof(ResultSetProcessorAggregateGrouped);
 
-        public void InstanceCodegen(
+        public override void InstanceCodegen(
             CodegenInstanceAux instance,
             CodegenClassScope classScope,
             CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
-            instance.Properties.AddProperty(
-                typeof(SelectExprProcessor),
-                "SelectExprProcessor",
-                GetType(),
-                classScope,
-                propertyNode => propertyNode.GetterBlock.BlockReturn(MEMBER_SELECTEXPRPROCESSOR));
-            instance.Properties.AddProperty(
-                typeof(AggregationService),
-                "AggregationService",
-                GetType(),
-                classScope,
-                propertyNode => propertyNode.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
             instance.Methods.AddMethod(
-                typeof(ExprEvaluatorContext),
-                "GetAgentInstanceContext",
+                typeof(SelectExprProcessor),
+                "getSelectExprProcessor",
                 EmptyList<CodegenNamedParam>.Instance,
                 GetType(),
                 classScope,
-                node => node.Block.ReturnMethodOrBlock(MEMBER_AGENTINSTANCECONTEXT));
-            instance.Properties.AddProperty(
-                typeof(bool),
-                "HasHavingClause",
+                methodNode => methodNode.Block.MethodReturn(MEMBER_SELECTEXPRPROCESSOR));
+            instance.Methods.AddMethod(
+                typeof(AggregationService),
+                "getAggregationService",
+                EmptyList<CodegenNamedParam>.Instance,
                 GetType(),
                 classScope,
-                propertyNode => propertyNode.GetterBlock.BlockReturn(Constant(OptionalHavingNode != null)));
-            instance.Properties.AddProperty(
+                methodNode => methodNode.Block.MethodReturn(MEMBER_AGGREGATIONSVC));
+            instance.Methods.AddMethod(
+                typeof(ExprEvaluatorContext),
+                "GetExprEvaluatorContext",
+                EmptyList<CodegenNamedParam>.Instance, 
+                GetType(),
+                classScope,
+                methodNode => methodNode.Block.MethodReturn(MEMBER_EXPREVALCONTEXT));
+            instance.Methods.AddMethod(
+                typeof(bool),
+                "HasHavingClause",
+                EmptyList<CodegenNamedParam>.Instance, 
+                GetType(),
+                classScope,
+                methodNode => methodNode.Block.MethodReturn(Constant(optionalHavingNode != null)));
+            instance.Methods.AddMethod(
                 typeof(bool),
                 "IsSelectRStream",
+                EmptyList<CodegenNamedParam>.Instance, 
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                propertyNode => propertyNode.GetterBlock.BlockReturn(Constant(IsSelectRStream)));
-            ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
+                methodNode => methodNode.Block.MethodReturn(Constant(isSelectRStream)));
+            ResultSetProcessorUtil.EvaluateHavingClauseCodegen(optionalHavingNode, classScope, instance);
             ResultSetProcessorAggregateGroupedImpl.RemovedAggregationGroupKeyCodegen(classScope, instance);
 
-            GenerateGroupKeySingle = ResultSetProcessorGroupedUtil.GenerateGroupKeySingleCodegen(
-                GroupKeyNodeExpressions, MultiKeyClassRef, classScope, instance);
-            GenerateGroupKeyArrayView = ResultSetProcessorGroupedUtil.GenerateGroupKeyArrayViewCodegen(
-                GenerateGroupKeySingle, classScope, instance);
-            GenerateGroupKeyArrayJoin = ResultSetProcessorGroupedUtil.GenerateGroupKeyArrayJoinCodegen(
-                GenerateGroupKeySingle, classScope, instance);
+            generateGroupKeySingle = GenerateGroupKeySingleCodegen(
+                groupKeyNodeExpressions,
+                multiKeyClassRef,
+                classScope,
+                instance);
+            generateGroupKeyArrayView = GenerateGroupKeyArrayViewCodegen(generateGroupKeySingle, classScope, instance);
+            generateGroupKeyArrayJoin =
+                GenerateGroupKeyArrayJoinCodegen(
+                    generateGroupKeySingle,
+                    classScope,
+                    instance);
 
             ResultSetProcessorAggregateGroupedImpl.GenerateOutputBatchedSingleCodegen(this, classScope, instance);
             ResultSetProcessorAggregateGroupedImpl.GenerateOutputBatchedViewUnkeyedCodegen(this, classScope, instance);
@@ -160,7 +185,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.GenerateOutputBatchedViewPerKeyCodegen(this, classScope, instance);
         }
 
-        public void ProcessViewResultCodegen(
+        public override void ProcessViewResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -168,7 +193,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.ProcessViewResultCodegen(this, classScope, method, instance);
         }
 
-        public void ProcessJoinResultCodegen(
+        public override void ProcessJoinResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -176,7 +201,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.ProcessJoinResultCodegen(this, classScope, method, instance);
         }
 
-        public void GetEnumeratorViewCodegen(
+        public override void GetEnumeratorViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -184,7 +209,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.GetEnumeratorViewCodegen(this, classScope, method, instance);
         }
 
-        public void GetEnumeratorJoinCodegen(
+        public override void GetEnumeratorJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -192,7 +217,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.GetEnumeratorJoinCodegen(this, classScope, method, instance);
         }
 
-        public void ProcessOutputLimitedViewCodegen(
+        public override void ProcessOutputLimitedViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -200,7 +225,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.ProcessOutputLimitedViewCodegen(this, classScope, method, instance);
         }
 
-        public void ProcessOutputLimitedJoinCodegen(
+        public override void ProcessOutputLimitedJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -208,7 +233,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.ProcessOutputLimitedJoinCodegen(this, classScope, method, instance);
         }
 
-        public void ApplyViewResultCodegen(
+        public override void ApplyViewResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -216,7 +241,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.ApplyViewResultCodegen(this, classScope, method, instance);
         }
 
-        public void ApplyJoinResultCodegen(
+        public override void ApplyJoinResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -224,7 +249,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.ApplyJoinResultCodegen(this, classScope, method, instance);
         }
 
-        public void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
+        public override void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -232,7 +257,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.ContinueOutputLimitedLastAllNonBufferedViewCodegen(this, method);
         }
 
-        public void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
+        public override void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -240,7 +265,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.ContinueOutputLimitedLastAllNonBufferedJoinCodegen(this, method);
         }
 
-        public void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
+        public override void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -252,7 +277,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 instance);
         }
 
-        public void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
+        public override void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -264,7 +289,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 instance);
         }
 
-        public void AcceptHelperVisitorCodegen(
+        public override void AcceptHelperVisitorCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -272,7 +297,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.AcceptHelperVisitorCodegen(method, instance);
         }
 
-        public void StopMethodCodegen(
+        public override void StopMethodCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -280,11 +305,57 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             ResultSetProcessorAggregateGroupedImpl.StopMethodCodegen(method, instance);
         }
 
-        public void ClearMethodCodegen(
+        public override void ClearMethodCodegen(
             CodegenClassScope classScope,
             CodegenMethod method)
         {
             ResultSetProcessorAggregateGroupedImpl.ClearMethodCodegen(method);
+        }
+
+        public override string InstrumentedQName => "ResultSetProcessGroupedRowPerEvent";
+
+        public CodegenMethod GenerateGroupKeySingle => generateGroupKeySingle;
+
+        public CodegenMethod GenerateGroupKeyArrayView => generateGroupKeyArrayView;
+
+        public CodegenMethod GenerateGroupKeyArrayJoin => generateGroupKeyArrayJoin;
+
+        public MultiKeyClassRef MultiKeyClassRef => multiKeyClassRef;
+
+        public StateMgmtSetting OutputFirstHelperSettings => outputFirstHelperSettings;
+
+        public StateMgmtSetting OutputAllHelperSettings => outputAllHelperSettings;
+
+        public StateMgmtSetting OutputAllOptSettings => outputAllOptSettings;
+
+        public StateMgmtSetting OutputLastOptSettings => outputLastOptSettings;
+
+        public void PlanStateSettings(
+            FabricCharge fabricCharge,
+            StatementRawInfo statementRawInfo,
+            ResultSetProcessorFlags flags,
+            StatementCompileTimeServices services)
+        {
+            if (IsOutputFirst) {
+                outputFirstHelperSettings = services.StateMgmtSettingsProvider.ResultSet
+                    .AggGroupedOutputFirst(fabricCharge, statementRawInfo, this);
+            }
+            else if (IsOutputAll) {
+                if (flags.OutputConditionType == POLICY_LASTALL_UNORDERED) {
+                    outputAllOptSettings = services.StateMgmtSettingsProvider.ResultSet
+                        .AggGroupedOutputAllOpt(fabricCharge, statementRawInfo, this);
+                }
+                else {
+                    outputAllHelperSettings = services.StateMgmtSettingsProvider.ResultSet
+                        .AggGroupedOutputAll(fabricCharge, statementRawInfo, this);
+                }
+            }
+            else if (IsOutputLast) {
+                if (flags.OutputConditionType == POLICY_LASTALL_UNORDERED) {
+                    outputLastOptSettings = services.StateMgmtSettingsProvider.ResultSet
+                        .AggGroupedOutputLast(fabricCharge, statementRawInfo, this);
+                }
+            }
         }
     }
 } // end of namespace

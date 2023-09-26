@@ -21,18 +21,14 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            if ((Children == null) || (Children.Count == 0))
-            {
+            if (Children == null || Children.Count == 0) {
                 return;
             }
 
-            PatternExpr patternExpr = Children[0];
+            var patternExpr = Children[0];
             patternExpr?.ToEPL(writer, Precedence, formatter);
         }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
-            get { return PatternExprPrecedenceEnum.MINIMUM; }
-        }
+        public override PatternExprPrecedenceEnum Precedence => PatternExprPrecedenceEnum.MINIMUM;
     }
 }

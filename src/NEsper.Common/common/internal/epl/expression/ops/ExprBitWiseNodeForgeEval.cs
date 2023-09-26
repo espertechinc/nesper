@@ -31,9 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluator lhs,
             ExprEvaluator rhs)
         {
-            this._forge = forge;
-            this._lhs = lhs;
-            this._rhs = rhs;
+            _forge = forge;
+            _lhs = lhs;
+            _rhs = rhs;
         }
 
         public object Evaluate(

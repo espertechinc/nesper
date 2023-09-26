@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             EventBean[] events,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            foreach (EventBean added in events) {
+            foreach (var added in events) {
                 Add(added, exprEvaluatorContext);
             }
         }
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             EventBean[] events,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            foreach (EventBean removed in events) {
+            foreach (var removed in events) {
                 Remove(removed, exprEvaluatorContext);
             }
         }
@@ -87,35 +87,35 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             ExprEvaluatorContext exprEvaluatorContext)
         {
             eventsPerStream[0] = @event;
-            double x = EvalDoubleColumn(
+            var x = EvalDoubleColumn(
                 config.XEval,
                 organization.IndexName,
                 COL_X,
                 eventsPerStream,
                 true,
                 exprEvaluatorContext);
-            double y = EvalDoubleColumn(
+            var y = EvalDoubleColumn(
                 config.YEval,
                 organization.IndexName,
                 COL_Y,
                 eventsPerStream,
                 true,
                 exprEvaluatorContext);
-            double width = EvalDoubleColumn(
+            var width = EvalDoubleColumn(
                 config.WidthEval,
                 organization.IndexName,
                 COL_WIDTH,
                 eventsPerStream,
                 true,
                 exprEvaluatorContext);
-            double height = EvalDoubleColumn(
+            var height = EvalDoubleColumn(
                 config.HeightEval,
                 organization.IndexName,
                 COL_HEIGHT,
                 eventsPerStream,
                 true,
                 exprEvaluatorContext);
-            bool added = MXCIFQuadTreeRowIndexAdd.Add(
+            var added = MXCIFQuadTreeRowIndexAdd.Add(
                 x,
                 y,
                 width,
@@ -128,7 +128,15 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 throw InvalidColumnValue(
                     organization.IndexName,
                     "(X,Y,Width,Height)",
-                    "(" + x.RenderAny() + "," + y.RenderAny() + "," + width.RenderAny() + "," + height.RenderAny() + ")",
+                    "(" +
+                    x.RenderAny() +
+                    "," +
+                    y.RenderAny() +
+                    "," +
+                    width.RenderAny() +
+                    "," +
+                    height.RenderAny() +
+                    ")",
                     "a value intersecting index bounding box (range-end-inclusive) " + quadTree.Root.Bb);
             }
         }
@@ -138,28 +146,28 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             ExprEvaluatorContext exprEvaluatorContext)
         {
             eventsPerStream[0] = @event;
-            double x = EvalDoubleColumn(
+            var x = EvalDoubleColumn(
                 config.XEval,
                 organization.IndexName,
                 COL_X,
                 eventsPerStream,
                 false,
                 exprEvaluatorContext);
-            double y = EvalDoubleColumn(
+            var y = EvalDoubleColumn(
                 config.YEval,
                 organization.IndexName,
                 COL_Y,
                 eventsPerStream,
                 false,
                 exprEvaluatorContext);
-            double width = EvalDoubleColumn(
+            var width = EvalDoubleColumn(
                 config.WidthEval,
                 organization.IndexName,
                 COL_WIDTH,
                 eventsPerStream,
                 false,
                 exprEvaluatorContext);
-            double height = EvalDoubleColumn(
+            var height = EvalDoubleColumn(
                 config.HeightEval,
                 organization.IndexName,
                 COL_HEIGHT,
@@ -176,8 +184,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
         public IEnumerator<EventBean> GetEnumerator()
         {
-            BoundingBox bb = quadTree.Root.Bb;
-            ICollection<EventBean> events = QueryRange(bb.MinX, bb.MinY, bb.MaxX - bb.MinX, bb.MaxY - bb.MinY);
+            var bb = quadTree.Root.Bb;
+            var events = QueryRange(bb.MinX, bb.MinY, bb.MaxX - bb.MinX, bb.MaxY - bb.MinY);
             return events.GetEnumerator();
         }
 
@@ -194,27 +202,17 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
         public string ToQueryPlan()
         {
-            return this.GetType().ToString();
+            return GetType().ToString();
         }
 
-        public Type ProviderClass {
-            get => this.GetType();
-        }
+        public Type ProviderClass => GetType();
 
-        public int? NumberOfEvents {
-            get => null;
-        }
+        public int? NumberOfEvents => null;
 
-        public int NumKeys {
-            get => -1;
-        }
+        public int NumKeys => -1;
 
-        public object Index {
-            get => quadTree;
-        }
+        public object Index => quadTree;
 
-        public EventTableOrganization Organization {
-            get => organization;
-        }
+        public EventTableOrganization Organization => organization;
     }
 } // end of namespace

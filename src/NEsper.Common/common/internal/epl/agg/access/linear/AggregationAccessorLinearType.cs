@@ -50,14 +50,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         /// </summary>
         public static string GetName(this AggregationAccessorLinearType value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case AggregationAccessorLinearType.FIRST:
                     return "FIRST";
+
                 case AggregationAccessorLinearType.LAST:
                     return "LAST";
+
                 case AggregationAccessorLinearType.WINDOW:
                     return "WINDOW";
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }

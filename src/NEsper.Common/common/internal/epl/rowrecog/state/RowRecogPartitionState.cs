@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
     {
         RowRecogStateRandomAccess RandomAccess { get; }
 
-        IEnumerator<RowRecogNFAStateEntry> CurrentStatesIterator { get; }
+        IEnumerator<RowRecogNFAStateEntry> CurrentStatesEnumerator { get; }
 
         IList<RowRecogNFAStateEntry> CurrentStates { get; set; }
 

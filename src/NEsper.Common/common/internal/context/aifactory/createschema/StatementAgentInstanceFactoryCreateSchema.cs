@@ -23,16 +23,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
 
         public EventType EventType {
             set {
-                this.eventType = value;
-                this.viewable = new ViewableDefaultImpl(value);
+                eventType = value;
+                viewable = new ViewableDefaultImpl(value);
             }
         }
 
-        public EventType StatementEventType {
-            get => viewable.EventType;
-        }
+        public EventType StatementEventType => viewable.EventType;
 
-        public void StatementCreate(StatementContext statementContext)
+        public void StatementCreate(StatementContext value)
         {
             if (eventType.Metadata.AccessModifier == NameAccessModifier.PRECONFIGURED) {
                 throw new EPException("Unexpected visibility of value " + NameAccessModifier.PRECONFIGURED);
@@ -57,15 +55,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
                 agentInstanceContext);
         }
 
-        public AIRegistryRequirements RegistryRequirements {
-            get => AIRegistryRequirements.NoRequirements();
-        }
+        public AIRegistryRequirements RegistryRequirements => AIRegistryRequirements.NoRequirements();
 
         public IReaderWriterLock ObtainAgentInstanceLock(
             StatementContext statementContext,
             int agentInstanceId)
         {
-            return AgentInstanceUtil.NewLock(statementContext);
+            return AgentInstanceUtil.NewLock(statementContext, agentInstanceId);
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,13 +21,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 {
     public class PollResultIndexingStrategyCompositeForge : PollResultIndexingStrategyForge
     {
+        private readonly int streamNum;
         private readonly EventType eventType;
-        private readonly Type[] optHashCoercedTypes;
         private readonly string[] optHashPropertyNames;
+        private readonly Type[] optHashCoercedTypes;
         private readonly MultiKeyClassRef optHashMultiKeyClasses;
         private readonly string[] rangeProps;
         private readonly Type[] rangeTypes;
-        private readonly int streamNum;
 
         public PollResultIndexingStrategyCompositeForge(
             int streamNum,
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 NewArrayByLength(typeof(EventPropertyValueGetter), Constant(rangeProps.Length)));
             for (var i = 0; i < rangeProps.Length; i++) {
                 var propertyType = eventType.GetPropertyType(rangeProps[i]);
-                var getterSPI = ((EventTypeSPI) eventType).GetGetterSPI(rangeProps[i]);
+                var getterSPI = ((EventTypeSPI)eventType).GetGetterSPI(rangeProps[i]);
                 var getter = EventTypeUtility.CodegenGetterWCoerce(
                     getterSPI,
                     propertyType,
@@ -90,17 +90,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             }
 
             method.Block
-                .DeclareVar<PollResultIndexingStrategyComposite>(
-                    "strat",
-                    NewInstance(typeof(PollResultIndexingStrategyComposite)))
-                .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
-                .SetProperty(Ref("strat"), "OptionalKeyedProps", Constant(optHashPropertyNames))
-                .SetProperty(Ref("strat"), "OptKeyCoercedTypes", Constant(optHashCoercedTypes))
-                .SetProperty(Ref("strat"), "HashGetter", hashGetter)
-                .SetProperty(Ref("strat"), "RangeProps", Constant(rangeProps))
-                .SetProperty(Ref("strat"), "OptRangeCoercedTypes", Constant(rangeTypes))
-                .SetProperty(Ref("strat"), "RangeGetters", Ref("rangeGetters"))
-                .ExprDotMethod(Ref("strat"), "Init")
+                .DeclareVarNewInstance(typeof(PollResultIndexingStrategyComposite), "strat")
+                .ExprDotMethod(Ref("strat"), "setStreamNum", Constant(streamNum))
+                .ExprDotMethod(Ref("strat"), "setOptionalKeyedProps", Constant(optHashPropertyNames))
+                .ExprDotMethod(Ref("strat"), "setOptKeyCoercedTypes", Constant(optHashCoercedTypes))
+                .ExprDotMethod(Ref("strat"), "setHashGetter", hashGetter)
+                .ExprDotMethod(Ref("strat"), "setRangeProps", Constant(rangeProps))
+                .ExprDotMethod(Ref("strat"), "setOptRangeCoercedTypes", Constant(rangeTypes))
+                .ExprDotMethod(Ref("strat"), "setRangeGetters", Ref("rangeGetters"))
+                .ExprDotMethod(Ref("strat"), "init")
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }

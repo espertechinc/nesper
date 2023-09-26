@@ -23,7 +23,6 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         private readonly ExprEvaluator _hashGetter;
         private readonly bool _isNwOnTrigger;
         private readonly int _lookupStream;
-
         private CompositeIndexQuery _next;
 
         public CompositeIndexQueryKeyed(
@@ -32,22 +31,15 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             int numStreams,
             ExprEvaluator hashGetter)
         {
-            this._hashGetter = hashGetter;
-            this._isNwOnTrigger = isNWOnTrigger;
-            this._lookupStream = lookupStream;
-
+            _hashGetter = hashGetter;
+            _isNwOnTrigger = isNWOnTrigger;
+            _lookupStream = lookupStream;
             if (lookupStream != -1) {
                 _events = new EventBean[lookupStream + 1];
             }
             else {
                 _events = new EventBean[numStreams + 1];
             }
-        }
-
-        public CompositeIndexQuery SetNext(CompositeIndexQuery next)
-        {
-            this._next = next;
-            return this;
         }
 
         public ICollection<EventBean> Get(
@@ -166,6 +158,12 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
             throw new UnsupportedOperationException();
+        }
+
+        public CompositeIndexQuery SetNext(CompositeIndexQuery value)
+        {
+            _next = value;
+            return this;
         }
     }
 } // end of namespace

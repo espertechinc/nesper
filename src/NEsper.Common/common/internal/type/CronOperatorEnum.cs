@@ -33,13 +33,13 @@ namespace com.espertech.esper.common.@internal.type
         {
             switch (value) {
                 case CronOperatorEnum.LASTDAY:
-                    return ("last");
+                    return "last";
 
                 case CronOperatorEnum.WEEKDAY:
-                    return ("weekday");
+                    return "weekday";
 
                 case CronOperatorEnum.LASTWEEKDAY:
-                    return ("lastweekday");
+                    return "lastweekday";
             }
 
             throw new ArgumentException();

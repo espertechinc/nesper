@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.type
                     "Expected base numeric type for computation result but got type " + coercedType);
             }
 
-            if (coercedType.IsDecimal()) {
+            if (coercedType.IsTypeDecimal()) {
                 return MakeDecimalComputer(
                     operation,
                     typeOne,
@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.type
                     optionalMathContext);
             }
 
-            if (coercedType.IsBigInteger()) {
+            if (coercedType.IsTypeBigInteger()) {
                 return MakeBigIntegerComputer(
                     operation,
                     typeOne,
@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.type
             bool divisionByZeroReturnsNull,
             MathContext optionalMathContext)
         {
-            if (typeOne.IsDecimal() && typeTwo.IsDecimal()) {
+            if (typeOne.IsTypeDecimal() && typeTwo.IsTypeDecimal()) {
                 if (operation == MathArithTypeEnum.DIVIDE) {
                     if (optionalMathContext != null) {
                         return new DivideDecimalWMathContext(divisionByZeroReturnsNull, optionalMathContext);
@@ -240,11 +240,11 @@ namespace com.espertech.esper.common.@internal.type
             Type typeOne,
             Type typeTwo)
         {
-            if (typeOne.IsDecimal() && typeTwo.IsDecimal()) {
+            if (typeOne.IsTypeDecimal() && typeTwo.IsTypeDecimal()) {
                 return computers.Get(new MathArithDesc(typeof(decimal?), operation));
             }
 
-            if (typeOne.IsBigInteger() && typeTwo.IsBigInteger()) {
+            if (typeOne.IsTypeBigInteger() && typeTwo.IsTypeBigInteger()) {
                 var computer = computers.Get(new MathArithDesc(typeof(BigInteger), operation));
                 if (computer != null) {
                     return computer;

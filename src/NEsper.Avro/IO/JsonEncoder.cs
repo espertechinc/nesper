@@ -120,5 +120,10 @@ namespace NEsper.Avro.IO
             Array.Copy(data, start, value, 0, len);
             _jsonWriter.WriteValue(value);
         }
+
+        public void Flush()
+        {
+            _jsonWriter.Flush();
+        }
     }
 }

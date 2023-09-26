@@ -34,9 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         {
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategyMulti), GetType(), classScope);
             method.Block
-                .DeclareVar<HistoricalIndexLookupStrategyMulti>(
-                    "strat",
-                    NewInstance(typeof(HistoricalIndexLookupStrategyMulti)))
+                .DeclareVarNewInstance<HistoricalIndexLookupStrategyMulti>("strat")
                 .SetProperty(Ref("strat"), "IndexUsed", Constant(indexUsed))
                 .SetProperty(Ref("strat"), "InnerLookupStrategy", innerLookupStrategy.Make(method, symbols, classScope))
                 .MethodReturn(Ref("strat"));

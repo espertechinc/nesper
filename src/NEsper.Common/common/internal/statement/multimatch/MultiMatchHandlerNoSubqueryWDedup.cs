@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
 {
     public class MultiMatchHandlerNoSubqueryWDedup : MultiMatchHandler
     {
-        private readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> dedupes = 
+        private readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> dedupes =
             new FastThreadLocal<LinkedHashSet<FilterHandleCallback>>(
                 () => new LinkedHashSet<FilterHandleCallback>());
 
@@ -61,8 +61,8 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
                 return false;
             }
 
-            int index = 0;
-            foreach (FilterHandleCallback candidate in callbacks) {
+            var index = 0;
+            foreach (var candidate in callbacks) {
                 if (candidate == callback) {
                     return true;
                 }

@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         typeof(DateTimeEx),
                         typeof(StringToDateTimeExWExprFormatComputerEval),
                         codegenClassScope)
-                    .AddParam(typeof(object), "input");
+                    .AddParam<object>("input");
                 CodegenExpression format;
                 if (dateFormatForge.ForgeConstantType.IsConstant) {
                     format = FormatFieldExpr(typeof(DateFormat), dateFormatForge, codegenClassScope);

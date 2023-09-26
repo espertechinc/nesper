@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -28,6 +30,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     public class InfraTableMTGroupedSubqueryReadMergeWriteSecondaryIndexUpd : RegressionExecution
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         /// <summary>
         ///     Primary key is composite: {topgroup, subgroup}. Secondary index on {topgroup}.
@@ -52,7 +59,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numSeconds)
         {
             var path = new RegressionPath();
-            var eplCreateVariable = "create table vartotal (topgroup int primary key, subgroup int primary key)";
+            var eplCreateVariable =
+                "@public create table vartotal (topgroup int primary key, subgroup int primary key)";
             env.CompileDeploy(eplCreateVariable, path);
 
             var eplCreateIndex = "create index myindex on vartotal (topgroup)";
@@ -70,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // select/read
             var eplSubselect =
-                "@Name('s0') select (select count(*) from vartotal where topgroup=sb.IntPrimitive) as c0 " +
+                "@name('s0') select (select count(*) from vartotal where topgroup=sb.IntPrimitive) as c0 " +
                 "from SupportBean as sb";
             env.CompileDeploy(eplSubselect, path).AddListener("s0");
 
@@ -184,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     while (!shutdown) {
                         env.SendEventBean(new SupportBean(null, 0));
                         var value = listener.AssertOneGetNewAndReset().Get("c0");
-                        Assert.IsTrue((long?) value >= 1);
+                        Assert.IsTrue((long?)value >= 1);
                         numQueries++;
                     }
                 }

@@ -63,8 +63,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns variable name.
         /// </summary>
         /// <returns>name</returns>
-        public string Name
-        {
+        public string Name {
             get => name;
             set => name = value;
         }
@@ -73,8 +72,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns multiplicity.
         /// </summary>
         /// <returns>multiplicity</returns>
-        public MatchRecogizePatternElementType Type
-        {
+        public MatchRecogizePatternElementType Type {
             get => type;
             set => type = value;
         }
@@ -83,8 +81,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the repetition if any is defined
         /// </summary>
         /// <returns>repetition</returns>
-        public MatchRecognizeRegExRepeat OptionalRepeat
-        {
+        public MatchRecognizeRegExRepeat OptionalRepeat {
             get => optionalRepeat;
             set => optionalRepeat = value;
         }

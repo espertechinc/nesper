@@ -43,16 +43,14 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public ExprNode ExprEnd { get; }
 
-        public override ExprNode[] Expressions => new[] {ExprStart, ExprEnd};
+        public override ExprNode[] Expressions => new[] { ExprStart, ExprEnd };
 
         public override string ToQueryPlan()
         {
             return GetType().Name;
         }
 
-        protected override Type ResultType {
-            get { return ExprStart.Forge.EvaluationType; }
-        }
+        protected override Type ResultType => ExprStart.Forge.EvaluationType;
 
         public override CodegenExpression Make(
             Type optCoercionType,

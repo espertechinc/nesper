@@ -54,20 +54,18 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the table name
         /// </summary>
         /// <returns>table name</returns>
-        public string TableName
-        {
+        public string TableName {
             get => tableName;
-            set { tableName = value; }
+            set => tableName = value;
         }
 
         /// <summary>
         /// Returns the table columns
         /// </summary>
         /// <returns>table columns</returns>
-        public IList<CreateTableColumn> Columns
-        {
+        public IList<CreateTableColumn> Columns {
             get => columns;
-            set { columns = value; }
+            set => columns = value;
         }
 
         /// <summary>
@@ -79,9 +77,8 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("create table ");
             writer.Write(tableName);
             writer.Write(" (");
-            string delimiter = "";
-            foreach (CreateTableColumn col in columns)
-            {
+            var delimiter = "";
+            foreach (var col in columns) {
                 writer.Write(delimiter);
                 col.ToEPL(writer);
                 delimiter = ", ";

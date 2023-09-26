@@ -35,14 +35,11 @@ namespace com.espertech.esper.common.client.soda
             this.className = className;
 
             IList<Expression> parameterList = new List<Expression>();
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                if (parameters[i] is Expression)
-                {
-                    parameterList.Add((Expression) parameters[i]);
+            for (var i = 0; i < parameters.Length; i++) {
+                if (parameters[i] is Expression) {
+                    parameterList.Add((Expression)parameters[i]);
                 }
-                else
-                {
+                else {
                     parameterList.Add(new ConstantExpression(parameters[i]));
                 }
             }
@@ -82,10 +79,7 @@ namespace com.espertech.esper.common.client.soda
             this.chain = chain;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {

@@ -34,27 +34,35 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-WithLargeNumOpsDataFlow(execs);
-WithFanInOut(execs);
-WithFactorial(execs);
+#if REGRESSION_EXECUTIONS
+            WithLargeNumOpsDataFlow(execs);
+            WithFanInOut(execs);
+            With(Factorial)(execs);
+#endif
             return execs;
         }
-public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowFactorial());
-    return execs;
-}public static IList<RegressionExecution> WithFanInOut(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowFanInOut());
-    return execs;
-}public static IList<RegressionExecution> WithLargeNumOpsDataFlow(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowLargeNumOpsDataFlow());
-    return execs;
-}
+
+        public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowFactorial());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFanInOut(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowFanInOut());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLargeNumOpsDataFlow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowLargeNumOpsDataFlow());
+            return execs;
+        }
+
         internal class EPLDataflowLargeNumOpsDataFlow : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -63,7 +71,7 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
                     return;
                 }
 
-                var epl = "@Name('flow') create dataflow MyGraph \n" +
+                var epl = "@name('flow') create dataflow MyGraph \n" +
                           "" +
                           "create objectarray schema SchemaOne (p1 string),\n" +
                           "\n" +
@@ -106,9 +114,14 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
                     throw new EPException(t);
                 }
 
-                EPAssertionUtil.AssertEqualsAnyOrder(new[] {new object[] {"A1"}}, result);
+                EPAssertionUtil.AssertEqualsAnyOrder(new[] { new object[] { "A1" } }, result);
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 
@@ -116,7 +129,7 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('flow') create dataflow MultiInMultiOutGraph \n" +
+                var epl = "@name('flow') create dataflow MultiInMultiOutGraph \n" +
                           "" +
                           "create objectarray schema SchemaOne (p1 string),\n" +
                           "create objectarray schema SchemaTwo (p2 int),\n" +
@@ -153,16 +166,16 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
 
                 try {
                     EPAssertionUtil.AssertEqualsAnyOrder(
-                        new[] {new object[] {"S1-10"}, new object[] {"S1-20"}},
+                        new[] { new object[] { "S1-10" }, new object[] { "S1-20" } },
                         futureOneA.GetValue(3, TimeUnit.SECONDS));
                     EPAssertionUtil.AssertEqualsAnyOrder(
-                        new[] {new object[] {"S1-10"}, new object[] {"S1-20"}},
+                        new[] { new object[] { "S1-10" }, new object[] { "S1-20" } },
                         futureOneB.GetValue(3, TimeUnit.SECONDS));
                     EPAssertionUtil.AssertEqualsAnyOrder(
-                        new[] {new object[] {"S0-A1"}, new object[] {"S0-A2"}},
+                        new[] { new object[] { "S0-A1" }, new object[] { "S0-A2" } },
                         futureTwoA.GetValue(3, TimeUnit.SECONDS));
                     EPAssertionUtil.AssertEqualsAnyOrder(
-                        new[] {new object[] {"S0-A1"}, new object[] {"S0-A2"}},
+                        new[] { new object[] { "S0-A1" }, new object[] { "S0-A2" } },
                         futureTwoB.GetValue(3, TimeUnit.SECONDS));
                 }
                 catch (Exception t) {
@@ -171,13 +184,18 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
         internal class EPLDataflowFactorial : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('flow') create dataflow FactorialGraph \n" +
+                var epl = "@name('flow') create dataflow FactorialGraph \n" +
                           "" +
                           "create objectarray schema InputSchema (number int),\n" +
                           "create objectarray schema TempSchema (current int, temp long),\n" +
@@ -205,9 +223,14 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
                 }
 
                 Assert.AreEqual(1, result.Length);
-                Assert.AreEqual((long) 5 * 4 * 3 * 2, ((object[]) result[0])[0]);
+                Assert.AreEqual((long)5 * 4 * 3 * 2, ((object[])result[0])[0]);
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 
@@ -243,7 +266,7 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
             {
                 graphContext.SubmitPort(
                     0,
-                    new object[] {number, (long) number});
+                    new object[] { number, (long)number });
             }
 
             public void OnTemp(
@@ -253,14 +276,14 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
                 if (current == 1) {
                     graphContext.SubmitPort(
                         1,
-                        new object[] {temp}); // we are done
+                        new object[] { temp }); // we are done
                 }
                 else {
                     current--;
                     var result = temp * current;
                     graphContext.SubmitPort(
                         0,
-                        new object[] {current, result});
+                        new object[] { current, result });
                 }
             }
         }
@@ -298,7 +321,7 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
                 var output = "S0-" + value;
                 graphContext.SubmitPort(
                     1,
-                    new object[] {output});
+                    new object[] { output });
             }
 
             public void OnS1(int value)
@@ -306,7 +329,7 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
                 var output = "S1-" + value;
                 graphContext.SubmitPort(
                     0,
-                    new object[] {output});
+                    new object[] { output });
             }
         }
     }

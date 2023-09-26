@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             EventType namedWindowAsType,
             Type returnType)
         {
-            this._streamNum = streamNum;
-            this._namedWindowAsType = namedWindowAsType;
-            this._returnType = returnType;
+            _streamNum = streamNum;
+            _namedWindowAsType = namedWindowAsType;
+            _returnType = returnType;
         }
 
         public object Evaluate(
@@ -48,13 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             throw new UnsupportedOperationException("Cannot evaluate at runtime");
         }
 
-        public int StreamNum {
-            get => _streamNum;
-        }
+        public int StreamNum => _streamNum;
 
-        public ExprEvaluator ExprEvaluator {
-            get => this;
-        }
+        public ExprEvaluator ExprEvaluator => this;
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -88,23 +84,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             return LocalMethod(methodNode);
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public Type EvaluationType {
-            get => _returnType;
-        }
+        public Type EvaluationType => _returnType;
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => this;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(this.GetType().Name);
+            writer.Write(GetType().Name);
         }
     }
 } // end of namespace

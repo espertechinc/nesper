@@ -17,13 +17,11 @@ namespace com.espertech.esper.common.@internal.@event.core
     /// </summary>
     public class FlushedEventBuffer
     {
-        private readonly List<EventBean[]> _remainEvents =
-            new List<EventBean[]>();
-
+        private readonly List<EventBean[]> _remainEvents = new List<EventBean[]>();
         private int _remainEventsCount;
 
         /// <summary>Add an event array to buffer.</summary>
-        /// <param name="events">to add</param>
+        /// <param name = "events">to add</param>
         public void Add(EventBean[] events)
         {
             if (events != null) {
@@ -32,10 +30,13 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
         }
 
-        /// <summary>
-        ///     Get the events currently buffered. Returns null if the buffer is empty. Flushes the buffer.
-        /// </summary>
-        /// <returns>array of events in buffer or null if empty</returns>
+        /// <summary>EmptyFalse buffer.</summary>
+        public void Flush()
+        {
+            _remainEvents.Clear();
+            _remainEventsCount = 0;
+        }
+
         public EventBean[] GetAndFlush()
         {
             if (_remainEventsCount == 0) {
@@ -53,15 +54,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             _remainEvents.Clear();
             _remainEventsCount = 0;
-
             return flattened;
-        }
-
-        /// <summary>EmptyFalse buffer.</summary>
-        public void Flush()
-        {
-            _remainEvents.Clear();
-            _remainEventsCount = 0;
         }
     }
 } // End of namespace

@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var dtx = ((DateTimeEx) target).Clone();
+            var dtx = ((DateTimeEx)target).Clone();
             EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
             var time = dtx.UtcMillis;
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtxOpsIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "target");
+                .AddParam<DateTimeEx>("target");
 
             var block = methodNode.Block
                 .DeclareVar<DateTimeEx>("dtx", Cast(typeof(DateTimeEx), ExprDotMethod(Ref("target"), "Clone")));
@@ -82,8 +82,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var startLong = ((DateTimeEx) startTimestamp).UtcMillis;
-            var endLong = ((DateTimeEx) endTimestamp).UtcMillis;
+            var startLong = ((DateTimeEx)startTimestamp).UtcMillis;
+            var endLong = ((DateTimeEx)endTimestamp).UtcMillis;
             var dtx = DateTimeEx.GetInstance(timeZone);
             dtx.SetUtcMillis(startLong);
             EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -104,8 +104,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtxOpsIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "startTimestamp")
-                .AddParam(typeof(DateTimeEx), "endTimestamp");
+                .AddParam<DateTimeEx>("startTimestamp")
+                .AddParam<DateTimeEx>("endTimestamp");
 
             var block = methodNode.Block
                 .DeclareVar<long>("startLong", ExprDotName(Ref("startTimestamp"), "UtcMillis"))

@@ -12,30 +12,46 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
+
 namespace com.espertech.esper.common.@internal.compile.multikey
 {
-	public class MultiKeyClassRefWSerde : MultiKeyClassRef
-	{
-		private readonly DataInputOutputSerdeForge forge;
-		private readonly Type[] types;
+    public class MultiKeyClassRefWSerde : MultiKeyClassRef
+    {
+        private readonly DataInputOutputSerdeForge forge;
+        private readonly Type[] types;
 
-		public MultiKeyClassRefWSerde(
-			DataInputOutputSerdeForge forge,
-			Type[] types)
-		{
-			this.forge = forge;
-			this.types = types;
-		}
+        public MultiKeyClassRefWSerde(
+            DataInputOutputSerdeForge forge,
+            Type[] types)
+        {
+            this.forge = forge;
+            this.types = types;
+        }
 
-		public NameOrType ClassNameMK => null;
+        public CodegenExpression GetExprMKSerde(
+            CodegenMethod method,
+            CodegenClassScope classScope)
+        {
+            return forge.Codegen(method, classScope, null);
+        }
 
-		public Type[] MKTypes => types;
+        public T Accept<T>(MultiKeyClassRefVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
 
-		public CodegenExpression GetExprMKSerde(
-			CodegenMethod method,
-			CodegenClassScope classScope)
-		{
-			return forge.Codegen(method, classScope, null);
-		}
-	}
+        public NameOrType ClassNameMK => null;
+
+        public Type[] MKTypes => types;
+
+        public DataInputOutputSerdeForge Forge => forge;
+
+        public DataInputOutputSerdeForge[] SerdeForges {
+            get {
+                return new DataInputOutputSerdeForge[] {
+                    forge
+                };
+            }
+        }
+    }
 } // end of namespace

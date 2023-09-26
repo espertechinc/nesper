@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+        <TargetFrameworks>netcoreapp3.1;net6.0;net7.0</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -20,9 +20,5 @@
         <ProjectReference Include="..\NEsper.Common\NEsper.Common.csproj" />
         <ProjectReference Include="..\NEsper.Compat\NEsper.Compat.csproj" />
         <ProjectReference Include="..\NEsper.Grammar\NEsper.Grammar.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
     </ItemGroup>
 </Project>

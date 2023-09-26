@@ -78,9 +78,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             return new WrapperEventBean(decoratedUnderlying, map, wrapperEventType);
         }
 
-        private IllegalStateException GetUnsupported()
-        {
-            return new IllegalStateException("Event bean generation not supported at compile time");
-        }
+        public IllegalStateException Unsupported =>
+            new IllegalStateException("Event bean generation not supported at compile time");
     }
 } // end of namespace

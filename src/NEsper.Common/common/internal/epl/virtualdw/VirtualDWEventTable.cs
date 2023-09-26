@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         public object Index => null;
 
         public EventTableOrganization Organization { get; }
-        
+
         public VirtualDWView VirtualDWViewMayNull { get; }
 
         public Type ProviderClass => typeof(VirtualDWEventTable);

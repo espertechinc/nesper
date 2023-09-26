@@ -25,12 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.join.support
             this.tableLookupStrategy = tableLookupStrategy;
         }
 
-        public int SubqueryNum {
-            get => subqueryNum;
-        }
+        public int SubqueryNum => subqueryNum;
 
-        public string TableLookupStrategy {
-            get => tableLookupStrategy;
-        }
+        public string TableLookupStrategy => tableLookupStrategy;
     }
 } // end of namespace

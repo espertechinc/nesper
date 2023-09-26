@@ -22,7 +22,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             double height)
         {
             if (!bb.IntersectsBoxIncludingEnd(x, y, width, height)) {
-                throw new EPException($"Rectangle ({x.RenderAny()},{y.RenderAny()},{width.RenderAny()},{height.RenderAny()}) not in {bb}");
+                throw new EPException(
+                    $"Rectangle ({x.RenderAny()},{y.RenderAny()},{width.RenderAny()},{height.RenderAny()}) not in {bb}");
             }
         }
     }

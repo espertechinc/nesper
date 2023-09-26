@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.extend.aggfunc;
@@ -27,7 +28,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithRuntimeExHandlerInvalidAgg(execs);
+#if REGRESSION_EXECUTIONS
+            With(RuntimeExHandlerInvalidAgg)(execs);
+#endif
             return execs;
         }
 
@@ -42,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('ABCName') select myinvalidagg() from SupportBean";
+                var epl = "@name('ABCName') select myinvalidagg() from SupportBean";
                 env.CompileDeploy(epl);
 
                 try {
@@ -54,6 +57,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 }
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
 
@@ -80,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 SupportExceptionHandlerFactory.Handlers.Clear();
                 runtime.Initialize();
 
-                var epl = "@Name('ABCName') select myinvalidagg() from SupportBean";
+                var epl = "@name('ABCName') select myinvalidagg() from SupportBean";
                 EPDeployment deployment;
                 try {
                     var compiled = EPCompilerProvider.Compiler.Compile(epl, new CompilerArguments(configuration));
@@ -128,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     nameof(ClientRuntimeExceptionHandlerNoHandler),
                     configuration);
 
-                var epl = "@Name('ABCName') select myinvalidagg() from SupportBean";
+                var epl = "@name('ABCName') select myinvalidagg() from SupportBean";
                 EPDeployment deployment;
                 try {
                     var compiled = EPCompilerProvider.Compiler.Compile(epl, new CompilerArguments(configuration));

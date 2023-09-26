@@ -20,13 +20,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             TryCaseInsensitive(
                 env,
                 "BeanWCIED",
-                "@Name('s0') select THESTRING, INTPRIMITIVE from BeanWCIED where THESTRING='A'",
+                "@name('s0') select THESTRING, INTPRIMITIVE from BeanWCIED where THESTRING='A'",
                 "THESTRING",
                 "INTPRIMITIVE");
             TryCaseInsensitive(
                 env,
                 "BeanWCIED",
-                "@Name('s0') select ThEsTrInG, INTprimitIVE from BeanWCIED where THESTRing='A'",
+                "@name('s0') select ThEsTrInG, INTprimitIVE from BeanWCIED where THESTRing='A'",
                 "ThEsTrInG",
                 "INTprimitIVE");
         }
@@ -41,9 +41,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             env.CompileDeploy(stmtText).AddListener("s0");
 
             env.SendEventBean(new SupportBean("A", 10), eventTypeName);
-            var result = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("A", result.Get(propOneName));
-            Assert.AreEqual(10, result.Get(propTwoName));
+            env.AssertEventNew(
+                "s0",
+                result => {
+                    Assert.AreEqual("A", result.Get(propOneName));
+                    Assert.AreEqual(10, result.Get(propTwoName));
+                });
 
             env.UndeployAll();
         }

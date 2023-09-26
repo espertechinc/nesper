@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.view.firstlength
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            int size = ViewFactoryUtil.EvaluateSizeParam(
+            var size = ViewFactoryUtil.EvaluateSizeParam(
                 ViewName,
                 this.size,
                 agentInstanceViewFactoryContext.AgentInstanceContext);
@@ -38,11 +38,11 @@ namespace com.espertech.esper.common.@internal.view.firstlength
 
         public EventType EventType {
             get => eventType;
-            set => this.eventType = value;
+            set => eventType = value;
         }
 
         public ExprEvaluator SizeEvaluator {
-            set => this.size = value;
+            set => size = value;
         }
 
         public string ViewName => ViewEnum.FIRST_LENGTH_WINDOW.GetViewName();

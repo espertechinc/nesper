@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -22,21 +23,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-WithDocSamplesRun(execs);
-WithSODA(execs);
+#if REGRESSION_EXECUTIONS
+            WithDocSamplesRun(execs);
+            With(SODA)(execs);
+#endif
             return execs;
         }
-public static IList<RegressionExecution> WithSODA(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowSODA());
-    return execs;
-}public static IList<RegressionExecution> WithDocSamplesRun(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowDocSamplesRun());
-    return execs;
-}
+
+        public static IList<RegressionExecution> WithSODA(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowSODA());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDocSamplesRun(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowDocSamplesRun());
+            return execs;
+        }
+
         private static void TryEpl(
             RegressionEnvironment env,
             string epl)
@@ -53,7 +60,7 @@ public static IList<RegressionExecution> WithSODA(IList<RegressionExecution> exe
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('flow') create dataflow HelloWorldDataFlow\n" +
+                var epl = "@name('flow') create dataflow HelloWorldDataFlow\n" +
                           "BeaconSource -> helloworldStream { text: 'hello world', iterations : 1 }\n" +
                           "LogSink(helloworldStream) {}";
                 env.CompileDeploy(epl);
@@ -142,13 +149,18 @@ public static IList<RegressionExecution> WithSODA(IList<RegressionExecution> exe
                     "  }\n" +
                     "}");
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
         internal class EPLDataflowSODA : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var soda = "@Name('create dataflow full')\n" +
+                var soda = "@name('create dataflow full')\n" +
                            "create dataflow DFFull\n" +
                            "create map schema ABC1 as (col1 int, col2 int),\n" +
                            "create map schema ABC2 as (col1 int, col2 int),\n" +
@@ -165,6 +177,11 @@ public static IList<RegressionExecution> WithSODA(IList<RegressionExecution> exe
                            "}\n";
                 var model = env.EplToModel(soda);
                 EPAssertionUtil.AssertEqualsIgnoreNewline(soda, model.ToEPL(new EPStatementFormatter(true)));
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
     }

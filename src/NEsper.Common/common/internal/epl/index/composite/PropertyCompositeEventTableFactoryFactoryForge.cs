@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,17 +26,16 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
 {
     public class PropertyCompositeEventTableFactoryFactoryForge : EventTableFactoryFactoryForge
     {
-        private readonly EventType _eventType;
-        private readonly int _indexedStreamNum;
-        private readonly bool _isFireAndForget;
-        private readonly string[] _optKeyProps;
-        private readonly Type[] _optKeyTypes;
-        private readonly MultiKeyClassRef _hashMultikeyClasses;
-        private readonly string[] _rangeProps;
-        private readonly Type[] _rangeTypes;
-        private readonly DataInputOutputSerdeForge[] _rangeSerdes;
-
-        private readonly int? _subqueryNum;
+        private readonly int indexedStreamNum;
+        private readonly int? subqueryNum;
+        private readonly bool isFireAndForget;
+        private readonly string[] optKeyProps;
+        private readonly Type[] optKeyTypes;
+        private readonly MultiKeyClassRef hashMultikeyClasses;
+        private readonly string[] rangeProps;
+        private readonly Type[] rangeTypes;
+        private readonly DataInputOutputSerdeForge[] rangeSerdes;
+        private readonly EventType eventType;
 
         public PropertyCompositeEventTableFactoryFactoryForge(
             int indexedStreamNum,
@@ -50,31 +49,28 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             DataInputOutputSerdeForge[] rangeSerdes,
             EventType eventType)
         {
-            _indexedStreamNum = indexedStreamNum;
-            _subqueryNum = subqueryNum;
-            _isFireAndForget = isFireAndForget;
-            _optKeyProps = optKeyProps;
-            _optKeyTypes = optKeyTypes;
-            _hashMultikeyClasses = hashMultikeyClasses;
-            _rangeProps = rangeProps;
-            _rangeTypes = rangeTypes;
-            _rangeSerdes = rangeSerdes;
-            _eventType = eventType;
+            this.indexedStreamNum = indexedStreamNum;
+            this.subqueryNum = subqueryNum;
+            this.isFireAndForget = isFireAndForget;
+            this.optKeyProps = optKeyProps;
+            this.optKeyTypes = optKeyTypes;
+            this.hashMultikeyClasses = hashMultikeyClasses;
+            this.rangeProps = rangeProps;
+            this.rangeTypes = rangeTypes;
+            this.rangeSerdes = rangeSerdes;
+            this.eventType = eventType;
         }
 
         public string ToQueryPlan()
         {
             return GetType().Name +
                    " streamNum=" +
-                   _indexedStreamNum +
+                   indexedStreamNum +
                    " keys=" +
-                   _optKeyProps ==
-                   null
-                ? "none"
-                : _optKeyProps.RenderAny() + " ranges=" + _rangeProps.RenderAny();
+                   (optKeyProps == null ? "none" : optKeyProps.RenderAny()) +
+                   " ranges=" +
+                   rangeProps.RenderAny();
         }
-
-        public Type EventTableClass => typeof(PropertyCompositeEventTable);
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
@@ -82,25 +78,31 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(PropertyCompositeEventTableFactoryFactory), GetType(), classScope);
-
             var hashGetter = ConstantNull();
-            if (_optKeyProps != null && _optKeyProps.Length > 0) {
-                var propertyTypes = EventTypeUtility.GetPropertyTypes(_eventType, _optKeyProps);
-                var getters = EventTypeUtility.GetGetters(_eventType, _optKeyProps);
+            if (optKeyProps != null && optKeyProps.Length > 0) {
+                var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, optKeyProps);
+                var getters = EventTypeUtility.GetGetters(eventType, optKeyProps);
                 hashGetter = MultiKeyCodegen.CodegenGetterMayMultiKey(
-                    _eventType, getters, propertyTypes, _optKeyTypes, _hashMultikeyClasses, method, classScope);
+                    eventType,
+                    getters,
+                    propertyTypes,
+                    optKeyTypes,
+                    hashMultikeyClasses,
+                    method,
+                    classScope);
             }
 
-            method.Block.DeclareVar<EventPropertyValueGetter[]>(
+            method.Block.DeclareVar(
+                typeof(EventPropertyValueGetter[]),
                 "rangeGetters",
-                NewArrayByLength(typeof(EventPropertyValueGetter), Constant(_rangeProps.Length)));
-            for (var i = 0; i < _rangeProps.Length; i++) {
-                var propertyType = _eventType.GetPropertyType(_rangeProps[i]);
-                var getterSPI = ((EventTypeSPI) _eventType).GetGetterSPI(_rangeProps[i]);
+                NewArrayByLength(typeof(EventPropertyValueGetter), Constant(rangeProps.Length)));
+            for (var i = 0; i < rangeProps.Length; i++) {
+                var propertyType = eventType.GetPropertyType(rangeProps[i]);
+                var getterSPI = ((EventTypeSPI)eventType).GetGetterSPI(rangeProps[i]);
                 var getter = EventTypeUtility.CodegenGetterWCoerce(
                     getterSPI,
                     propertyType,
-                    _rangeTypes[i],
+                    rangeTypes[i],
                     method,
                     GetType(),
                     classScope);
@@ -108,21 +110,22 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             }
 
             IList<CodegenExpression> @params = new List<CodegenExpression>();
-            @params.Add(Constant(_indexedStreamNum));
-            @params.Add(Constant(_subqueryNum));
-            @params.Add(Constant(_isFireAndForget));
-            @params.Add(Constant(_optKeyProps));
-            @params.Add(Constant(_optKeyTypes));
+            @params.Add(Constant(indexedStreamNum));
+            @params.Add(Constant(subqueryNum));
+            @params.Add(Constant(isFireAndForget));
+            @params.Add(Constant(optKeyProps));
+            @params.Add(Constant(optKeyTypes));
             @params.Add(hashGetter);
-            @params.Add(_hashMultikeyClasses.GetExprMKSerde(method, classScope));
-            @params.Add(Constant(_rangeProps));
-            @params.Add(Constant(_rangeTypes));
+            @params.Add(hashMultikeyClasses.GetExprMKSerde(method, classScope));
+            @params.Add(Constant(rangeProps));
+            @params.Add(Constant(rangeTypes));
             @params.Add(Ref("rangeGetters"));
-            @params.Add(DataInputOutputSerdeForgeExtensions.CodegenArray(_rangeSerdes, method, classScope, null));
-
+            @params.Add(DataInputOutputSerdeForgeExtensions.CodegenArray(rangeSerdes, method, classScope, null));
             method.Block.MethodReturn(
-                NewInstance<PropertyCompositeEventTableFactoryFactory>(@params.ToArray()));
+                NewInstance(typeof(PropertyCompositeEventTableFactoryFactory), @params.ToArray()));
             return LocalMethod(method);
         }
+
+        public Type EventTableClass => typeof(PropertyCompositeEventTable);
     }
 } // end of namespace

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.table;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
@@ -165,19 +166,16 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public string OptionalContextName { get; set; }
 
         public IList<ExpressionScriptProvided> ScriptExpressions { get; set; }
-        
-        public IList<String> ClassProvidedList { get; set; }
+
+        public IList<string> ClassProvidedList { get; set; }
 
         public CreateDataFlowDesc CreateDataFlowDesc { get; set; }
 
         public CreateExpressionDesc CreateExpressionDesc { get; set; }
-        
-        public String CreateClassProvided { get; set; }
 
-        public FireAndForgetSpec FireAndForgetSpec {
-            get;
-            set;
-        }
+        public string CreateClassProvided { get; set; }
+
+        public FireAndForgetSpec FireAndForgetSpec { get; set; }
 
         public IntoTableSpec IntoTableSpec { get; set; }
 
@@ -193,6 +191,17 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// <value>to be set</value>
         public SelectClauseStreamSelectorEnum SelectStreamDirEnum {
             set => SelectStreamSelectorEnum = value;
+        }
+
+
+        public void AddSubstitutionParameters(IList<ExprSubstitutionNode> toAdd)
+        {
+            if (SubstitutionParameters == null) {
+                SubstitutionParameters = new List<ExprSubstitutionNode>(toAdd);
+            }
+            else {
+                SubstitutionParameters.AddAll(toAdd);
+            }
         }
     }
 } // end of namespac

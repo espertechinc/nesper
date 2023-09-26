@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
 
         public ExprPriorEvalStrategyRelativeAccess(RelativeAccessByEventNIndex relativeAccess)
         {
-            this._relativeAccess = relativeAccess;
+            _relativeAccess = relativeAccess;
         }
 
         public EventBean GetSubstituteEvent(

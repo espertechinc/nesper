@@ -48,11 +48,10 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return true;
             }
 
-            if (!(obj is FilterForEvalConstantDoubleForge)) {
+            if (!(obj is FilterForEvalConstantDoubleForge other)) {
                 return false;
             }
 
-            var other = (FilterForEvalConstantDoubleForge) obj;
             return other._doubleValue == _doubleValue;
         }
 

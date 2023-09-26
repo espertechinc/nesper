@@ -39,15 +39,15 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             FAFQueryMethodAssignerSetter assignerSetter,
             ContextManagementService contextManagementService)
         {
-            int numStreams = select.Processors.Length;
-            ICollection<EventBean>[] snapshots = new ICollection<EventBean>[numStreams];
+            var numStreams = select.Processors.Length;
+            var snapshots = new ICollection<EventBean>[numStreams];
 
             AgentInstanceContext agentInstanceContext = null;
-            Viewable[] viewablePerStream = new Viewable[numStreams];
+            var viewablePerStream = new Viewable[numStreams];
 
-            for (int i = 0; i < numStreams; i++) {
-                FireAndForgetProcessor processor = select.Processors[i];
-                FireAndForgetInstance processorInstance = processor.ProcessorInstanceNoContext;
+            for (var i = 0; i < numStreams; i++) {
+                var processor = select.Processors[i];
+                var processorInstance = processor.ProcessorInstanceNoContext;
                 snapshots[i] = Snapshot(
                     select.ConsumerFilters[i],
                     processorInstance,
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             }
 
             // get RSP
-            ResultSetProcessor resultSetProcessor = ProcessorWithAssign(
+            var resultSetProcessor = ProcessorWithAssign(
                 select.ResultSetProcessorFactoryProvider,
                 agentInstanceContext,
                 assignerSetter,
@@ -66,20 +66,20 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 select.Subselects);
 
             // determine join
-            JoinSetComposerDesc joinSetComposerDesc = select.JoinSetComposerPrototype.Create(
+            var joinSetComposerDesc = select.JoinSetComposerPrototype.Create(
                 viewablePerStream,
                 true,
                 agentInstanceContext,
                 false);
-            JoinSetComposer joinComposer = joinSetComposerDesc.JoinSetComposer;
+            var joinComposer = joinSetComposerDesc.JoinSetComposer;
 
-            EventBean[][] oldDataPerStream = new EventBean[numStreams][];
-            EventBean[][] newDataPerStream = new EventBean[numStreams][];
-            for (int i = 0; i < numStreams; i++) {
+            var oldDataPerStream = new EventBean[numStreams][];
+            var newDataPerStream = new EventBean[numStreams][];
+            for (var i = 0; i < numStreams; i++) {
                 newDataPerStream[i] = snapshots[i].ToArray();
             }
 
-            UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> result = joinComposer.Join(
+            var result = joinComposer.Join(
                 newDataPerStream,
                 oldDataPerStream,
                 agentInstanceContext);
@@ -91,14 +91,19 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     agentInstanceContext);
             }
 
-            UniformPair<EventBean[]> results = resultSetProcessor.ProcessJoinResult(
+            var results = resultSetProcessor.ProcessJoinResult(
                 result.First,
                 EmptySet<MultiKeyArrayOfKeys<EventBean>>.Instance,
                 true);
 
-            EventBean[] distinct = EventBeanUtility.GetDistinctByProp(results?.First, select.DistinctKeyGetter);
+            var distinct = EventBeanUtility.GetDistinctByProp(results?.First, select.DistinctKeyGetter);
 
             return new EPPreparedQueryResult(resultSetProcessor.ResultEventType, distinct);
+        }
+
+        public void ReleaseTableLocks(FireAndForgetProcessor[] processors)
+        {
+            FAFQueryMethodSelectExecUtil.ReleaseTableLocks(processors);
         }
     }
 } // end of namespace

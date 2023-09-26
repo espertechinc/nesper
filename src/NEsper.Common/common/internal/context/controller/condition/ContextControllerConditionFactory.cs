@@ -20,17 +20,14 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             object[] partitionKeys,
             ContextConditionDescriptor endpoint,
             ContextControllerConditionCallback callback,
-            ContextController controller,
-            bool isStartEndpoint)
+            ContextController controller)
         {
-            if (endpoint is ContextConditionDescriptorFilter) {
-                ContextConditionDescriptorFilter filter = (ContextConditionDescriptorFilter) endpoint;
+            if (endpoint is ContextConditionDescriptorFilter filter) {
                 return new ContextControllerConditionFilter(conditionPath, partitionKeys, filter, callback, controller);
             }
 
-            if (endpoint is ContextConditionDescriptorTimePeriod) {
-                ContextConditionDescriptorTimePeriod timePeriod = (ContextConditionDescriptorTimePeriod) endpoint;
-                long scheduleSlot = controller.Realization.AgentInstanceContextCreate.ScheduleBucket.AllocateSlot();
+            if (endpoint is ContextConditionDescriptorTimePeriod timePeriod) {
+                var scheduleSlot = controller.Realization.AgentInstanceContextCreate.ScheduleBucket.AllocateSlot();
                 return new ContextControllerConditionTimePeriod(
                     scheduleSlot,
                     timePeriod,
@@ -39,18 +36,25 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                     controller);
             }
 
-            if (endpoint is ContextConditionDescriptorCrontab) {
-                ContextConditionDescriptorCrontab crontab = (ContextConditionDescriptorCrontab) endpoint;
-                ScheduleSpec[] schedules = new ScheduleSpec[crontab.EvaluatorsPerCrontab.Length];
-                for (int i = 0; i < schedules.Length; i++) {
-                    schedules[i] = ScheduleExpressionUtil.CrontabScheduleBuild(crontab.EvaluatorsPerCrontab[i], controller.Realization.AgentInstanceContextCreate);
+            if (endpoint is ContextConditionDescriptorCrontab crontab) {
+                var schedules = new ScheduleSpec[crontab.EvaluatorsPerCrontab.Length];
+                for (var i = 0; i < schedules.Length; i++) {
+                    schedules[i] = ScheduleExpressionUtil.CrontabScheduleBuild(
+                        crontab.EvaluatorsPerCrontab[i],
+                        controller.Realization.AgentInstanceContextCreate);
                 }
-                long scheduleSlot = controller.Realization.AgentInstanceContextCreate.ScheduleBucket.AllocateSlot();
-                return new ContextControllerConditionCrontabImpl(conditionPath, scheduleSlot, schedules, crontab, callback, controller);
+
+                var scheduleSlot = controller.Realization.AgentInstanceContextCreate.ScheduleBucket.AllocateSlot();
+                return new ContextControllerConditionCrontabImpl(
+                    conditionPath,
+                    scheduleSlot,
+                    schedules,
+                    crontab,
+                    callback,
+                    controller);
             }
 
-            if (endpoint is ContextConditionDescriptorPattern) {
-                ContextConditionDescriptorPattern pattern = (ContextConditionDescriptorPattern) endpoint;
+            if (endpoint is ContextConditionDescriptorPattern pattern) {
                 return new ContextControllerConditionPattern(
                     conditionPath,
                     partitionKeys,

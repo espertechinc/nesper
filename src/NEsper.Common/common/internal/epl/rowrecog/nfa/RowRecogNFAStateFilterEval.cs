@@ -44,11 +44,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
         }
 
         public ExprEvaluator Expression {
-            set => this.expression = value;
+            set => expression = value;
         }
 
         public string ExpressionTextForAudit {
-            set => this.expressionTextForAudit = value;
+            set => expressionTextForAudit = value;
         }
     }
 } // end of namespace

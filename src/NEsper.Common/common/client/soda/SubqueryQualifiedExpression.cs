@@ -65,12 +65,10 @@ namespace com.espertech.esper.common.client.soda
             Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             writer.Write(' ');
             writer.Write(Operator);
-            if (IsAll)
-            {
+            if (IsAll) {
                 writer.Write(" all (");
             }
-            else
-            {
+            else {
                 writer.Write(" any (");
             }
 

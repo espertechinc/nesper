@@ -90,18 +90,17 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public object Get(EventBean obj)
         {
             // The underlying is expected to be a map
-            if (!(obj.Underlying is XmlNode)) {
+            if (!(obj.Underlying is XmlNode underlying)) {
                 throw new PropertyAccessException(
                     "Mismatched property getter to event bean type, " +
                     "the underlying data object is not of type Node");
             }
 
             if (!isArray) {
-                var node = (XmlNode) obj.Underlying;
-                return GetValueAsNode(node);
+                return GetValueAsNode(underlying);
             }
             else {
-                var node = (XmlNode) obj.Underlying;
+                var node = underlying;
                 return GetValueAsNodeArray(node);
             }
         }
@@ -114,13 +113,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public object GetFragment(EventBean obj)
         {
             // The underlying is expected to be a map
-            if (!(obj.Underlying is XmlNode)) {
+            if (!(obj.Underlying is XmlNode node)) {
                 throw new PropertyAccessException(
                     "Mismatched property getter to event bean type, " +
                     "the underlying data object is not of type Node");
             }
 
-            var node = (XmlNode) obj.Underlying;
             return GetValueAsFragment(node);
         }
 
@@ -254,7 +252,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             if (count == 0) {
-                return new XmlNode[0];
+                return Array.Empty<XmlNode>();
             }
 
             var nodes = new XmlNode[count];
@@ -275,7 +273,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             if (realized == 0) {
-                return new XmlNode[0];
+                return Array.Empty<XmlNode>();
             }
 
             var shrunk = new XmlNode[realized];
@@ -317,7 +315,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         {
             var result = GetValueAsNodeArray(node, propertyName);
             if (result == null || result.Length == 0) {
-                return new EventBean[0];
+                return Array.Empty<EventBean>();
             }
 
             var events = new EventBean[result.Length];

@@ -24,8 +24,12 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
     /// </summary>
     public class JoinSetComposerAllUnidirectionalOuter : JoinSetComposer
     {
-        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> emptyResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
-        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> newResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> emptyResults =
+            new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+
+        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> newResults =
+            new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+
         private readonly QueryStrategy[] queryStrategies;
 
         public JoinSetComposerAllUnidirectionalOuter(QueryStrategy[] queryStrategies)

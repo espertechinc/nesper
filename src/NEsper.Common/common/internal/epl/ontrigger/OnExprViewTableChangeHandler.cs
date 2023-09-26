@@ -24,11 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             this.table = table;
         }
 
-        public EventBean[] Events {
-            get {
-                return coll?.ToArray();
-            }
-        }
+        public EventBean[] Events => coll?.ToArray();
 
         public void Add(
             EventBean theEvent,
@@ -40,8 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 coll = new OneEventCollection();
             }
 
-            if (theEvent is NaturalEventBean) {
-                theEvent = ((NaturalEventBean) theEvent).OptionalSynthetic;
+            if (theEvent is NaturalEventBean bean) {
+                theEvent = bean.OptionalSynthetic;
             }
 
             coll.Add(table.EventToPublic.Convert(theEvent, eventsPerStream, isNewData, context));

@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         private MultiKeyFromObjectArray _primaryKeyObjectArrayTransform;
         private MultiKeyFromMultiKey _primaryKeyIntoTableTransform;
         private DataInputOutputSerde[] _propertyForges;
-        
+
         private Table _table;
         private string _tableName;
         private EventType _publicEventType;
@@ -91,11 +91,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             set => _propertyForges = value;
         }
 
-        public EventType StatementEventType {
-            get => _publicEventType;
-        }
+        public EventType StatementEventType => _publicEventType;
 
-        public void StatementCreate(StatementContext statementContext)
+        public void StatementCreate(StatementContext value)
         {
         }
 
@@ -141,7 +139,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             StatementContext statementContext,
             int agentInstanceId)
         {
-            return AgentInstanceUtil.NewLock(statementContext);
+            return AgentInstanceUtil.NewLock(statementContext, agentInstanceId);
         }
 
         public void Ready(

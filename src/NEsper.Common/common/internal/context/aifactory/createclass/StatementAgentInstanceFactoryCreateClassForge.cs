@@ -31,7 +31,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createclass
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            return new SAIFFInitializeBuilder(typeof(StatementAgentInstanceFactoryCreateClass), GetType(), "saiff", parent, symbols, classScope)
+            return new SAIFFInitializeBuilder(
+                    typeof(StatementAgentInstanceFactoryCreateClass),
+                    GetType(),
+                    "saiff",
+                    parent,
+                    symbols,
+                    classScope)
                 .Eventtype("statementEventType", statementEventType)
                 .Constant("className", className)
                 .BuildMethod();

@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             get {
                 var descending = new bool[OrderBy.Length];
                 for (var i = 0; i < OrderBy.Length; i++) {
-                    descending[i] = OrderBy[i].IsDescending();
+                    descending[i] = OrderBy[i].IsDescending;
                 }
 
                 return descending;

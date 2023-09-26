@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.support
         {
             var moduleServices = new ModuleCompileTimeServices(container);
             moduleServices.Configuration = new Configuration();
-            moduleServices.ImportServiceCompileTime = SupportClasspathImport.GetInstance(container);
+            moduleServices.ImportServiceCompileTime = SupportImport.GetInstance(container);
             var services = new StatementCompileTimeServices(1, moduleServices);
             var raw = new StatementRawInfo(1, "abc", null, StatementType.SELECT, null, null, null, null);
             return new ExprValidationContextBuilder(streamTypeService, raw, services).Build();

@@ -8,9 +8,11 @@
 
 using System;
 using System.Xml;
+using System.Xml.Schema;
 using System.Xml.XPath;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
+using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.container;
 using NUnit.Framework;
 
@@ -37,7 +39,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 null,
                 container.ResourceManager());
             var eventTypeNoNS = new SchemaXMLEventType(
-                null, configNoNS, model, null, null, null, null, null);
+                null, configNoNS, model, null, null, null, null, null, new EventTypeXMLXSDHandlerImpl());
 
             using (var stream = container.ResourceManager().GetResourceAsStream("regression/simpleWithSchema.xml")) {
                 var noNSDoc = new XmlDocument();
@@ -113,6 +115,30 @@ namespace com.espertech.esper.common.@internal.@event.xml
             {
                 //Expected
             }
+        }
+    }
+
+    public class EventTypeXMLXSDHandlerImpl : EventTypeXMLXSDHandler
+    {
+        public XPathResultType SimpleTypeToResultType(XmlSchemaSimpleType type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Type ToReturnType(
+            XmlSchemaSimpleType xsType,
+            string typeName,
+            int? optionalFractionDigits)
+        {
+            throw new NotImplementedException();
+        }
+
+        public SchemaModel LoadAndMap(
+            string schemaResource,
+            string schemaText,
+            ImportService importService)
+        {
+            throw new NotImplementedException();
         }
     }
 } // end of namespace

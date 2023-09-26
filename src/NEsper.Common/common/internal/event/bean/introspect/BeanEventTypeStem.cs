@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -55,8 +55,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
         public ConfigurationCommonEventTypeBean OptionalLegacyDef { get; }
 
-        public PropertyResolutionStyle PropertyResolutionStyle { get; }
-
         public string[] PropertyNames { get; }
 
         public IDictionary<string, PropertyInfo> SimpleProperties { get; }
@@ -69,6 +67,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
         public ISet<Type> DeepSuperTypes { get; }
 
+        public PropertyResolutionStyle PropertyResolutionStyle { get; }
+
         public IDictionary<string, IList<PropertyInfo>> SimpleSmartPropertyTable { get; }
 
         public IDictionary<string, IList<PropertyInfo>> IndexedSmartPropertyTable { get; }
@@ -79,8 +79,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
         public IDictionary<string, EventPropertyDescriptor> PropertyDescriptorMap { get; }
 
-        public bool IsPublicFields =>
-            (OptionalLegacyDef != null) &&
-            (OptionalLegacyDef.AccessorStyle == AccessorStyle.PUBLIC);
+        public bool IsPublicFields => OptionalLegacyDef is { AccessorStyle: AccessorStyle.PUBLIC };
     }
 } // end of namespace

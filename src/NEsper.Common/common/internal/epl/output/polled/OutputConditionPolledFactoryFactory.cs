@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
                 return new OutputConditionPolledCountFactoryForge(rate, variableMetaData);
             }
 
-            if (variableMetaData != null && !variableMetaData.Type.IsNumeric()) {
+            if (variableMetaData != null && !variableMetaData.Type.IsTypeNumeric()) {
                 throw new ArgumentException(
                     "Variable named '" + outputLimitSpec.VariableName + "' must be of numeric type");
             }

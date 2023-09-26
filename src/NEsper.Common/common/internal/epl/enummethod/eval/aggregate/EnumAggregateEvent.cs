@@ -24,122 +24,137 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 {
-	public class EnumAggregateEvent : EnumForgeBasePlain
-	{
-		private readonly ExprForge _initialization;
-		private readonly ExprForge _innerExpression;
-		private readonly ObjectArrayEventType _eventType;
-		private readonly int _numParameters;
+    public class EnumAggregateEvent : EnumForgeBasePlain
+    {
+        private readonly ExprForge _initialization;
+        private readonly ExprForge _innerExpression;
+        private readonly ObjectArrayEventType _eventType;
+        private readonly int _numParameters;
 
-		public EnumAggregateEvent(
-			int streamCountIncoming,
-			ExprForge initialization,
-			ExprForge innerExpression,
-			ObjectArrayEventType eventType,
-			int numParameters)
-			: base(streamCountIncoming)
-		{
-			_initialization = initialization;
-			_innerExpression = innerExpression;
-			_eventType = eventType;
-			_numParameters = numParameters;
-		}
+        public EnumAggregateEvent(
+            int streamCountIncoming,
+            ExprForge initialization,
+            ExprForge innerExpression,
+            ObjectArrayEventType eventType,
+            int numParameters)
+            : base(streamCountIncoming)
+        {
+            _initialization = initialization;
+            _innerExpression = innerExpression;
+            _eventType = eventType;
+            _numParameters = numParameters;
+        }
 
-		public override EnumEval EnumEvaluator {
-			get {
-				var init = _initialization.ExprEvaluator;
-				var inner = _innerExpression.ExprEvaluator;
-				return new ProxyEnumEval(
-					(
-						eventsLambda,
-						enumcoll,
-						isNewData,
-						context) => {
-						var value = init.Evaluate(eventsLambda, isNewData, context);
+        public override EnumEval EnumEvaluator {
+            get {
+                var init = _initialization.ExprEvaluator;
+                var inner = _innerExpression.ExprEvaluator;
+                return new ProxyEnumEval(
+                    (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        var value = init.Evaluate(eventsLambda, isNewData, context);
 
-						if (enumcoll.IsEmpty()) {
-							return value;
-						}
+                        if (enumcoll.IsEmpty()) {
+                            return value;
+                        }
 
-						var beans = (ICollection<EventBean>) enumcoll;
-						var resultEvent = new ObjectArrayEventBean(new object[3], _eventType);
-						eventsLambda[StreamNumLambda] = resultEvent;
-						var props = resultEvent.Properties;
-						props[2] = enumcoll.Count;
+                        var beans = (ICollection<EventBean>)enumcoll;
+                        var resultEvent = new ObjectArrayEventBean(new object[3], _eventType);
+                        eventsLambda[StreamNumLambda] = resultEvent;
+                        var props = resultEvent.Properties;
+                        props[2] = enumcoll.Count;
 
-						var count = -1;
-						foreach (var next in beans) {
-							count++;
-							props[0] = value;
-							props[1] = count;
-							eventsLambda[StreamNumLambda + 1] = next;
-							value = inner.Evaluate(eventsLambda, isNewData, context);
-						}
+                        var count = -1;
+                        foreach (var next in beans) {
+                            count++;
+                            props[0] = value;
+                            props[1] = count;
+                            eventsLambda[StreamNumLambda + 1] = next;
+                            value = inner.Evaluate(eventsLambda, isNewData, context);
+                        }
 
-						return value;
-					});
-			}
-		}
+                        return value;
+                    });
+            }
+        }
 
-		public override CodegenExpression Codegen(
-			EnumForgeCodegenParams premade,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			var typeMember = codegenClassScope.AddDefaultFieldUnshared(
-				true,
-				typeof(ObjectArrayEventType),
-				Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF)));
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var typeMember = codegenClassScope.AddDefaultFieldUnshared(
+                true,
+                typeof(ObjectArrayEventType),
+                Cast(
+                    typeof(ObjectArrayEventType),
+                    EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF)));
 
-			var innerType = _innerExpression.EvaluationType;
-			var initType = _initialization.EvaluationType;
-			if (initType != innerType && initType.GetBoxedType() == innerType) {
-				initType = innerType;
-			}
+            var innerType = _innerExpression.EvaluationType;
+            var initType = _initialization.EvaluationType;
+            if (initType != innerType && initType.GetBoxedType() == innerType) {
+                initType = innerType;
+            }
 
-			var scope = new ExprForgeCodegenSymbol(false, null);
-			var methodNode = codegenMethodScope
-				.MakeChildWithScope(initType, typeof(EnumAggregateEvent), scope, codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS);
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope
+                .MakeChildWithScope(initType, typeof(EnumAggregateEvent), scope, codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
-			var block = methodNode.Block;
-			block
-				.DeclareVar(initType, "value", _initialization.EvaluateCodegen(initType, methodNode, scope, codegenClassScope))
-				.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
-				.BlockReturn(Ref("value"));
-			block
-				.DeclareVar<ObjectArrayEventBean>("resultEvent", NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(_numParameters - 1)), typeMember))
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
-				.DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
-			if (_numParameters > 3) {
-				block.AssignArrayElement("props", Constant(2), ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"));
-			}
+            var block = methodNode.Block;
+            block
+                .DeclareVar(
+                    initType,
+                    "value",
+                    _initialization.EvaluateCodegen(initType, methodNode, scope, codegenClassScope))
+                .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
+                .BlockReturn(Ref("value"));
+            block
+                .DeclareVar<ObjectArrayEventBean>(
+                    "resultEvent",
+                    NewInstance(
+                        typeof(ObjectArrayEventBean),
+                        NewArrayByLength(typeof(object), Constant(_numParameters - 1)),
+                        typeMember))
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
+            if (_numParameters > 3) {
+                block.AssignArrayElement(
+                    "props",
+                    Constant(2),
+                    ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"));
+            }
 
-			if (_numParameters > 2) {
-				block.DeclareVar<int>("count", Constant(-1));
-			}
+            if (_numParameters > 2) {
+                block.DeclareVar<int>("count", Constant(-1));
+            }
 
-			var forEach = block
-				.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-				.AssignArrayElement("props", Constant(0), Ref("value"));
-			
-			if (_numParameters > 2) {
-				forEach
-					.IncrementRef("count")
-					.AssignArrayElement("props", Constant(1), Ref("count"));
-			}
+            var forEach = block
+                .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+                .AssignArrayElement("props", Constant(0), Ref("value"));
 
-			var innerCodegen = _innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope);
-			
-			forEach
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda + 1), Ref("next"))
-				.AssignRef("value", innerCodegen)
-				.BlockEnd();
-			
-			block.MethodReturn(Ref("value"));
-			return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
-		}
+            if (_numParameters > 2) {
+                forEach
+                    .IncrementRef("count")
+                    .AssignArrayElement("props", Constant(1), Ref("count"));
+            }
 
-		public override int StreamNumSize => StreamNumLambda + 2;
-	}
+            var innerCodegen = innerType == null
+                ? ConstantNull()
+                : InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope);
+
+            forEach
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda + 1), Ref("next"))
+                .AssignRef("value", innerCodegen)
+                .BlockEnd();
+
+            block.MethodReturn(Ref("value"));
+            return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
+        }
+
+        public override int StreamNumSize => StreamNumLambda + 2;
+    }
 } // end of namespace

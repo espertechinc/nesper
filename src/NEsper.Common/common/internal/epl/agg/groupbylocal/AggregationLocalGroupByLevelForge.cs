@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
         public AggregationStateFactoryForge[] AccessStateForges { get; }
 
         public ExprNode[] PartitionForges { get; }
-        
+
         public MultiKeyClassRef PartitionMKClasses { get; }
 
         public bool IsDefaultLevel { get; }

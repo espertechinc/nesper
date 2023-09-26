@@ -17,18 +17,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select A, B from ISupportA#length(10), ISupportB#length(10) where A = B";
+            var epl = "@name('s0') select A, B from ISupportA#length(10), ISupportB#length(10) where A = B";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             env.SendEventBean(new ISupportAImpl("1", "ab1"));
             env.SendEventBean(new ISupportBImpl("2", "ab2"));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.SendEventBean(new ISupportBImpl("1", "ab3"));
-            Assert.IsTrue(env.Listener("s0").IsInvoked);
-            var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-            Assert.AreEqual("1", theEvent.Get("A"));
-            Assert.AreEqual("1", theEvent.Get("B"));
+
+            env.AssertListener(
+                "s0",
+                listener => {
+                    Assert.IsTrue(listener.IsInvoked);
+                    var theEvent = listener.GetAndResetLastNewData()[0];
+                    Assert.AreEqual("1", theEvent.Get("A"));
+                    Assert.AreEqual("1", theEvent.Get("B"));
+                });
 
             env.UndeployAll();
         }

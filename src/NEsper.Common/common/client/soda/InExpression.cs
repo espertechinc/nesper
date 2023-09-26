@@ -50,14 +50,11 @@ namespace com.espertech.esper.common.client.soda
         {
             notIn = isNotIn;
             Children.Add(value);
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                if (parameters[i] is Expression)
-                {
-                    Children.Add((Expression) parameters[i]);
+            for (var i = 0; i < parameters.Length; i++) {
+                if (parameters[i] is Expression) {
+                    Children.Add((Expression)parameters[i]);
                 }
-                else
-                {
+                else {
                     Children.Add(new ConstantExpression(parameters[i]));
                 }
             }
@@ -76,8 +73,7 @@ namespace com.espertech.esper.common.client.soda
         {
             notIn = isNotIn;
             Children.Add(value);
-            foreach (Expression parameter in parameters)
-            {
+            foreach (var parameter in parameters) {
                 Children.Add(parameter);
             }
         }
@@ -86,10 +82,7 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for the not-in expression, or false for an in-expression.
         /// </summary>
         /// <returns>true for not-in</returns>
-        public bool IsNotIn
-        {
-            get => notIn;
-        }
+        public bool IsNotIn => notIn;
 
         /// <summary>
         /// Returns true for the not-in expression, or false for an in-expression.
@@ -143,26 +136,20 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.RELATIONAL_BETWEEN_IN;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.RELATIONAL_BETWEEN_IN;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             Children[0].ToEPL(writer, Precedence);
-            if (notIn)
-            {
+            if (notIn) {
                 writer.Write(" not in (");
             }
-            else
-            {
+            else {
                 writer.Write(" in (");
             }
 
-            string delimiter = "";
-            for (int i = 1; i < Children.Count; i++)
-            {
+            var delimiter = "";
+            for (var i = 1; i < Children.Count; i++) {
                 writer.Write(delimiter);
                 Children[i].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";

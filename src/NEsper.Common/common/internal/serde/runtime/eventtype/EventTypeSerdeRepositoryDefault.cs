@@ -14,25 +14,24 @@ using com.espertech.esper.common.@internal.@event.path;
 
 namespace com.espertech.esper.common.@internal.serde.runtime.eventtype
 {
-	public class EventTypeSerdeRepositoryDefault : EventTypeSerdeRepository
-	{
+    public class EventTypeSerdeRepositoryDefault : EventTypeSerdeRepository
+    {
+        public static readonly EventTypeSerdeRepositoryDefault INSTANCE = new EventTypeSerdeRepositoryDefault();
 
-		public static readonly EventTypeSerdeRepositoryDefault INSTANCE = new EventTypeSerdeRepositoryDefault();
+        private EventTypeSerdeRepositoryDefault()
+        {
+        }
 
-		private EventTypeSerdeRepositoryDefault()
-		{
-		}
+        public void AddSerdes(
+            string deploymentId,
+            IList<EventTypeCollectedSerde> serdes,
+            IDictionary<string, EventType> moduleEventTypes,
+            BeanEventTypeFactoryPrivate beanEventTypeFactory)
+        {
+        }
 
-		public void AddSerdes(
-			string deploymentId,
-			IList<EventTypeCollectedSerde> serdes,
-			IDictionary<string, EventType> moduleEventTypes,
-			BeanEventTypeFactoryPrivate beanEventTypeFactory)
-		{
-		}
-
-		public void RemoveSerdes(string deploymentId)
-		{
-		}
-	}
+        public void RemoveSerdes(string deploymentId)
+        {
+        }
+    }
 } // end of namespace

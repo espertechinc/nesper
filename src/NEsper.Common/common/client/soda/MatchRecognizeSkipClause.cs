@@ -29,16 +29,15 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>textual</returns>
         public static string GetText(this MatchRecognizeSkipClause value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case MatchRecognizeSkipClause.TO_CURRENT_ROW:
-                    return ("to current row");
+                    return "to current row";
 
                 case MatchRecognizeSkipClause.TO_NEXT_ROW:
-                    return ("to next row");
+                    return "to next row";
 
                 case MatchRecognizeSkipClause.PAST_LAST_ROW:
-                    return ("past last row");
+                    return "past last row";
             }
 
             throw new ArgumentException("vanameof(value)value");

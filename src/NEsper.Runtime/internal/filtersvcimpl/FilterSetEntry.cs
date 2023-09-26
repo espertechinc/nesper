@@ -39,7 +39,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
         public FilterValueSetParam[][] ValueSet { get; }
 
-        public void AppendTo(StringWriter writer)
+        public void AppendTo(TextWriter writer)
         {
             writer.Write(EventType.Name);
             writer.Write("(");
@@ -55,7 +55,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         }
 
         private void AppendTo(
-            StringWriter writer,
+            TextWriter writer,
             FilterValueSetParam[] parameters)
         {
             var delimiter = "";

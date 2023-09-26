@@ -46,12 +46,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
         {
             var method = parent.MakeChild(typeof(TimePeriodComputeConstGivenCalAddEval), GetType(), classScope);
             method.Block
-                .DeclareVar<TimePeriodComputeConstGivenCalAddEval>(
-                    "eval",
-                    NewInstance(typeof(TimePeriodComputeConstGivenCalAddEval)))
+                .DeclareVarNewInstance<TimePeriodComputeConstGivenCalAddEval>("eval")
                 .SetProperty(Ref("eval"), "Adders", TimePeriodAdderUtil.MakeArray(adders, parent, classScope))
                 .SetProperty(Ref("eval"), "Added", Constant(added))
-                .SetProperty(Ref("eval"), "TimeAbacus", classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE))
+                .SetProperty(
+                    Ref("eval"),
+                    "TimeAbacus",
+                    classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE))
                 .SetProperty(Ref("eval"), "IndexMicroseconds", Constant(indexMicroseconds))
                 .SetProperty(
                     Ref("eval"),

@@ -10,7 +10,7 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.compat;
 
@@ -31,15 +31,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
 
         public object Invoke(
             object lookupValues,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             var target = reader.Value;
             if (target == null) {
                 return null;
             }
 
-            if (target is EventBean) {
-                target = ((EventBean) target).Underlying;
+            if (target is EventBean bean) {
+                target = bean.Underlying;
             }
 
             try {
@@ -48,10 +48,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
                         return factory.method.Invoke(target, null);
 
                     case MethodTargetStrategyStaticMethodInvokeType.SINGLE:
-                        return factory.method.Invoke(target, new object[] {lookupValues});
+                        return factory.method.Invoke(target, new object[] { lookupValues });
 
                     case MethodTargetStrategyStaticMethodInvokeType.MULTIKEY:
-                        return factory.method.Invoke(target, (object[]) lookupValues);
+                        return factory.method.Invoke(target, (object[])lookupValues);
 
                     default:
                         throw new IllegalStateException("Unrecognized value for " + factory.invokeType);

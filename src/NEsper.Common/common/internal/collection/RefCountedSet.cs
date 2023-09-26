@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.io;
+
 namespace com.espertech.esper.common.@internal.collection
 {
     /// <summary> reference-counting set based on a HashMap implementation that stores keys and a reference counter for
@@ -171,10 +173,10 @@ namespace com.espertech.esper.common.@internal.collection
         public IEnumerator<KeyValuePair<TK, int>> GetEnumerator()
         {
             if (_hasNullEntry) {
-                yield return new KeyValuePair<TK, int>(default(TK), _nullEntry);
+                yield return new KeyValuePair<TK, int>(default, _nullEntry);
             }
 
-            foreach (KeyValuePair<TK, int> value in _refSet) {
+            foreach (var value in _refSet) {
                 yield return value;
             }
         }
@@ -183,17 +185,13 @@ namespace com.espertech.esper.common.@internal.collection
         /// Gets the keys.
         /// </summary>
         /// <value>The keys.</value>
-        public ICollection<TK> Keys {
-            get { return _refSet.Keys; }
-        }
+        public ICollection<TK> Keys => _refSet.Keys;
 
         /// <summary> Returns the number of values in the collection.</summary>
         /// <returns> size
         /// </returns>
 
-        public virtual int Count {
-            get { return _numValues; }
-        }
+        public virtual int Count => _numValues;
 
         /// <summary>
         /// Clear out the collection.
@@ -204,13 +202,46 @@ namespace com.espertech.esper.common.@internal.collection
             _numValues = 0;
         }
 
-        public IDictionary<TK, int> RefSet {
-            get { return _refSet; }
-        }
+        public IDictionary<TK, int> RefSet => _refSet;
 
         public int NumValues {
-            get { return _numValues; }
-            set { _numValues = value; }
+            get => _numValues;
+            set => _numValues = value;
+        }
+
+
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        public static void WritePointsDouble(
+            DataOutput output,
+            RefCountedSet<double> valueSet)
+        {
+            var refSet = valueSet.RefSet;
+            output.WriteInt(refSet.Count);
+            output.WriteInt(valueSet.NumValues);
+            foreach (var kv in valueSet.RefSet) {
+                output.WriteDouble(kv.Key);
+                output.WriteInt(kv.Value);
+            }
+        }
+
+        /// <summary>
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        public static RefCountedSet<double> ReadPointsDouble(DataInput input)
+        {
+            var valueSet = new RefCountedSet<double>();
+            var und = valueSet.RefSet;
+            var size = input.ReadInt();
+            valueSet.NumValues = input.ReadInt();
+            for (var i = 0; i < size; i++) {
+                var key = input.ReadDouble();
+                var val = input.ReadInt();
+                und[key] = val;
+            }
+
+            return valueSet;
         }
     }
 }

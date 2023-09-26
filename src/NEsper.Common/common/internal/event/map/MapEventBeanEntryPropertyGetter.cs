@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
 
             // Object within the map
-            var theEvent = (EventBean) value;
+            var theEvent = (EventBean)value;
             return eventBeanEntryGetter.Get(theEvent);
         }
 
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
 
             // Object within the map
-            var theEvent = (EventBean) value;
+            var theEvent = (EventBean)value;
             return eventBeanEntryGetter.GetFragment(theEvent);
         }
 

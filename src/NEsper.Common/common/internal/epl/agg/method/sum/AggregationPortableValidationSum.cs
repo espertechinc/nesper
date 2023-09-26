@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,9 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         public AggregationPortableValidationSum(
             bool distinct,
             bool hasFilter,
-            Type inputValueType)
-            : base(distinct, hasFilter, inputValueType)
-
+            Type inputValueType) : base(distinct, hasFilter, inputValueType)
         {
         }
 
@@ -50,5 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             AggregationForgeFactory factory)
         {
         }
+
+        public new Type InputValueType { get; set; }
+
+        public bool HasFilter { get; set; }
     }
 } // end of namespace

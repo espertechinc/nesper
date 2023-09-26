@@ -82,7 +82,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {

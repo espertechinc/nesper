@@ -15,7 +15,10 @@ namespace com.espertech.esper.common.@internal.type
         private readonly Type _type;
         private readonly BitWiseOpEnum _bitwise;
 
-        public BitWiseOpDesc(Type type, BitWiseOpEnum bitwise) {
+        public BitWiseOpDesc(
+            Type type,
+            BitWiseOpEnum bitwise)
+        {
             _type = type;
             _bitwise = bitwise;
         }
@@ -43,13 +46,14 @@ namespace com.espertech.esper.common.@internal.type
                 return false;
             }
 
-            return Equals((BitWiseOpDesc) obj);
+            return Equals((BitWiseOpDesc)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked {
-                return ((_type != null ? _type.GetHashCode() : 0) * 397) ^ (_bitwise != null ? _bitwise.GetHashCode() : 0);
+                return ((_type != null ? _type.GetHashCode() : 0) * 397) ^
+                       (_bitwise != null ? _bitwise.GetHashCode() : 0);
             }
         }
 

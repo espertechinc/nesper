@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 "getters",
                 NewArrayByLength(typeof(EventPropertyValueGetter), Constant(propertyNames.Length)));
             for (var i = 0; i < propertyNames.Length; i++) {
-                var getter = ((EventTypeSPI) eventType).GetGetterSPI(propertyNames[i]);
+                var getter = ((EventTypeSPI)eventType).GetGetterSPI(propertyNames[i]);
                 var getterType = eventType.GetPropertyType(propertyNames[i]);
                 var eval = EventTypeUtility.CodegenGetterWCoerce(
                     getter,
@@ -61,9 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             }
 
             method.Block
-                .DeclareVar<PollResultIndexingStrategyInKeywordMulti>(
-                    "strat",
-                    NewInstance(typeof(PollResultIndexingStrategyInKeywordMulti)))
+                .DeclareVarNewInstance<PollResultIndexingStrategyInKeywordMulti>("strat")
                 .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
                 .SetProperty(Ref("strat"), "PropertyNames", Constant(propertyNames))
                 .SetProperty(Ref("strat"), "ValueGetters", Ref("getters"))

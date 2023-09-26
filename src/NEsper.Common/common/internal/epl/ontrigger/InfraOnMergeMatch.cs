@@ -39,8 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 return true;
             }
 
-            object result = optionalCond.Evaluate(eventsPerStream, true, context);
-            return result != null && (Boolean) result;
+            var result = optionalCond.Evaluate(eventsPerStream, true, context);
+            return result != null && (bool)result;
         }
 
         public void ApplyNamedWindow(
@@ -50,15 +50,15 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             OneEventCollection oldData,
             AgentInstanceContext agentInstanceContext)
         {
-            InstrumentationCommon instrumentationCommon = agentInstanceContext.InstrumentationProvider;
+            var instrumentationCommon = agentInstanceContext.InstrumentationProvider;
             instrumentationCommon.QInfraMergeWhenThenActions(actions.Count);
 
-            int count = -1;
-            foreach (InfraOnMergeAction action in actions) {
+            var count = -1;
+            foreach (var action in actions) {
                 count++;
                 instrumentationCommon.QInfraMergeWhenThenActionItem(count, action.Name);
 
-                bool applies = action.IsApplies(eventsPerStream, agentInstanceContext);
+                var applies = action.IsApplies(eventsPerStream, agentInstanceContext);
                 if (applies) {
                     action.Apply(matchingEvent, eventsPerStream, newData, oldData, agentInstanceContext);
                 }
@@ -77,15 +77,15 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             OnExprViewTableChangeHandler changeHandlerRemoved,
             AgentInstanceContext agentInstanceContext)
         {
-            InstrumentationCommon instrumentationCommon = agentInstanceContext.InstrumentationProvider;
+            var instrumentationCommon = agentInstanceContext.InstrumentationProvider;
             instrumentationCommon.QInfraMergeWhenThenActions(actions.Count);
 
-            int count = -1;
-            foreach (InfraOnMergeAction action in actions) {
+            var count = -1;
+            foreach (var action in actions) {
                 count++;
                 instrumentationCommon.QInfraMergeWhenThenActionItem(count, action.Name);
 
-                bool applies = action.IsApplies(eventsPerStream, agentInstanceContext);
+                var applies = action.IsApplies(eventsPerStream, agentInstanceContext);
                 if (applies) {
                     action.Apply(
                         matchingEvent,

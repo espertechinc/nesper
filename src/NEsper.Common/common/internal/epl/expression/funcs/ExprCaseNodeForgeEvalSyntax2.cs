@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -16,7 +17,6 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.funcs.ExprCaseNodeForgeEvalSyntax1;
@@ -25,11 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprCaseNodeForgeEvalSyntax2 : ExprEvaluator
     {
-        private readonly ExprEvaluator compareExprNode;
-
         private readonly ExprCaseNodeForge forge;
-        private readonly ExprEvaluator optionalElseExprNode;
         private readonly IList<UniformPair<ExprEvaluator>> whenThenNodeList;
+        private readonly ExprEvaluator compareExprNode;
+        private readonly ExprEvaluator optionalElseExprNode;
 
         internal ExprCaseNodeForgeEvalSyntax2(
             ExprCaseNodeForge forge,
@@ -84,16 +83,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var evaluationType = forge.EvaluationType == null
-                ? typeof(IDictionary<object, object>)
-                : forge.EvaluationType;
+            var evaluationType = forge.EvaluationType ?? typeof(IDictionary<string, object>);
             var compareType = forge.OptionalCompareExprNode.Forge.EvaluationType;
             var methodNode = codegenMethodScope.MakeChild(
                 evaluationType,
                 typeof(ExprCaseNodeForgeEvalSyntax2),
                 codegenClassScope);
 
-            var checkResultType = compareType == null ? typeof(object) : compareType;
+            var checkResultType = compareType ?? typeof(object);
             var block = methodNode.Block
                 .DeclareVar(
                     checkResultType,
@@ -107,7 +104,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             foreach (var pair in forge.WhenThenNodeList) {
                 var refname = "r" + num;
                 var lhsType = pair.First.Forge.EvaluationType;
-                var lhsDeclaredType = lhsType == null ? typeof(object) : lhsType;
+                var lhsTypeClass = lhsType;
+                var lhsDeclaredType = lhsTypeClass ?? typeof(object);
                 block.DeclareVar(
                     lhsDeclaredType,
                     refname,
@@ -116,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     Ref("checkResult"),
                     compareType,
                     Ref(refname),
-                    pair.First.Forge.EvaluationType,
+                    lhsTypeClass,
                     forge,
                     methodNode,
                     codegenClassScope);
@@ -151,10 +149,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             if (!forge.IsMustCoerce) {
                 return leftResult.Equals(rightResult);
             }
-
-            var left = forge.Coercer.CoerceBoxed(leftResult);
-            var right = forge.Coercer.CoerceBoxed(rightResult);
-            return left.Equals(right);
+            else {
+                var left = forge.Coercer.CoerceBoxed(leftResult);
+                var right = forge.Coercer.CoerceBoxed(rightResult);
+                return left.Equals(right);
+            }
         }
 
         private static CodegenExpression CodegenCompare(
@@ -174,18 +173,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return EqualsNull(lhs);
             }
 
-            if (lhsType.CanNotBeNull() && rhsType.CanNotBeNull() && !forge.IsMustCoerce) {
-                return CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(lhs, lhsType, rhs, rhsType);
+            var lhsClass = lhsType;
+            var rhsClass = rhsType;
+            if (lhsClass.IsPrimitive && rhsClass.IsPrimitive && !forge.IsMustCoerce) {
+                return CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(lhs, lhsClass, rhs, rhsClass);
             }
 
             var block = codegenMethodScope
                 .MakeChild(typeof(bool), typeof(ExprCaseNodeForgeEvalSyntax2), codegenClassScope)
-                .AddParam(lhsType, "leftResult")
-                .AddParam(rhsType, "rightResult")
+                .AddParam(lhsClass, "leftResult")
+                .AddParam(rhsClass, "rightResult")
                 .Block;
-            if (lhsType.CanBeNull()) {
+            if (!lhsClass.IsPrimitive) {
                 var ifBlock = block.IfCondition(EqualsNull(Ref("leftResult")));
-                if (rhsType.CanNotBeNull()) {
+                if (rhsClass.IsPrimitive) {
                     ifBlock.BlockReturn(ConstantFalse());
                 }
                 else {
@@ -193,7 +194,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
 
-            if (rhsType.CanBeNull()) {
+            if (!rhsClass.IsPrimitive) {
                 block.IfCondition(EqualsNull(Ref("rightResult"))).BlockReturn(ConstantFalse());
             }
 
@@ -202,14 +203,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 method = block.MethodReturn(
                     CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
                         Ref("leftResult"),
-                        lhsType,
+                        lhsClass,
                         Ref("rightResult"),
-                        rhsType));
+                        rhsClass));
             }
             else {
-                block.DeclareVar<object>("left", forge.Coercer.CoerceCodegen(Ref("leftResult"), lhsType));
-                block.DeclareVar<object>("right", forge.Coercer.CoerceCodegen(Ref("rightResult"), rhsType));
-                method = block.MethodReturn(StaticMethod<object>("Equals", Ref("left"), Ref("right")));
+                block.DeclareVar(
+                    typeof(object),
+                    "left",
+                    forge.Coercer.CoerceCodegen(Ref("leftResult"), lhsClass));
+                block.DeclareVar(
+                    typeof(object),
+                    "right",
+                    forge.Coercer.CoerceCodegen(Ref("rightResult"), rhsClass));
+                method = block.MethodReturn(ExprDotMethod(Ref("left"), "equals", Ref("right")));
             }
 
             return LocalMethodBuild(method).Pass(lhs).Pass(rhs).Call();

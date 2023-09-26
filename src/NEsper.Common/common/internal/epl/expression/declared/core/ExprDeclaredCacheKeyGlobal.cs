@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.core
                 return false;
             }
 
-            var that = (ExprDeclaredCacheKeyGlobal) o;
+            var that = (ExprDeclaredCacheKeyGlobal)o;
 
             if (!DeploymentIdExpr.Equals(that.DeploymentIdExpr)) {
                 return false;

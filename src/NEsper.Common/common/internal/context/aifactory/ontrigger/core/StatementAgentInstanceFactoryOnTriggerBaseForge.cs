@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
         {
             var method = parent.MakeChild(TypeOfSubclass(), GetType(), classScope);
             method.Block
-                .DeclareVar(TypeOfSubclass(), "saiff", NewInstance(TypeOfSubclass()))
+                .DeclareVarNewInstance(TypeOfSubclass(), "saiff")
                 .SetProperty(Ref("saiff"), "Activator", activator.MakeCodegen(method, symbols, classScope))
                 .SetProperty(
                     Ref("saiff"),

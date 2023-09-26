@@ -48,7 +48,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementCompileTimeServices compileTimeServices)
         {
             IList<StreamSpecCompiled> compiledStreams;
-            ISet<string> eventTypeReferences = new HashSet<string>();
             IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
 
             if (!isOnDemandQuery && spec.FireAndForgetSpec != null) {
@@ -68,7 +67,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 !isOnDemandQuery &&
                 (tableAccessNodes == null || tableAccessNodes.IsEmpty())) {
                 bool disqualified;
-                ExprNode whereClause = spec.WhereClause;
+                var whereClause = spec.WhereClause;
 
                 var visitorX = new ExprNodeSubselectDeclaredDotVisitor();
                 whereClause.Accept(visitorX);
@@ -80,8 +79,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     whereClause.Accept(viewResourceVisitor);
                     disqualified = viewResourceVisitor.ExprNodes.Count > 0;
                 }
-                
-                var streamSpec = (FilterStreamSpecRaw) spec.StreamSpecs[0];
+
+                var streamSpec = (FilterStreamSpecRaw)spec.StreamSpecs[0];
                 if (streamSpec.RawFilterSpec.OptionalPropertyEvalSpec != null) {
                     disqualified = true;
                 }
@@ -135,14 +134,19 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 RowRecogExprNode expandedPatternNode;
                 try {
                     var copier = new ExpressionCopier(
-                        spec, statementRawInfo.OptionalContextDescriptor, compileTimeServices, visitor);
+                        spec,
+                        statementRawInfo.OptionalContextDescriptor,
+                        compileTimeServices,
+                        visitor);
                     expandedPatternNode = RowRecogPatternExpandUtil.Expand(spec.MatchRecognizeSpec.Pattern, copier);
-                } catch (ExprValidationException ex) {
+                }
+                catch (ExprValidationException ex) {
                     throw new StatementSpecCompileException(ex.Message, ex, compilable.ToEPL());
                 }
+
                 spec.MatchRecognizeSpec.Pattern = expandedPatternNode;
             }
-            
+
             if (isSubquery && !visitor.Subselects.IsEmpty()) {
                 throw new StatementSpecCompileException(
                     "Invalid nested subquery, subquery-within-subquery is not supported",
@@ -189,8 +193,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     streamNum++;
                     var desc = StreamSpecCompiler.Compile(
                         rawSpec,
-                        eventTypeReferences,
-                        spec.InsertIntoDesc != null,
                         spec.StreamSpecs.Count > 1,
                         false,
                         spec.OnTriggerDesc != null,
@@ -198,6 +200,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                         streamNum,
                         statementRawInfo,
                         compileTimeServices);
+
                     additionalForgeables.AddAll(desc.AdditionalForgeables);
                     compiledStreams.Add(desc.StreamSpecCompiled);
                 }
@@ -241,21 +244,18 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         {
             IList<SelectClauseElementCompiled> selectElements = new List<SelectClauseElementCompiled>();
             foreach (var raw in spec.SelectExprList) {
-                if (raw is SelectClauseExprRawSpec) {
-                    var rawExpr = (SelectClauseExprRawSpec) raw;
+                if (raw is SelectClauseExprRawSpec expr) {
                     selectElements.Add(
                         new SelectClauseExprCompiledSpec(
-                            rawExpr.SelectExpression,
-                            rawExpr.OptionalAsName,
-                            rawExpr.OptionalAsName,
-                            rawExpr.IsEvents));
+                            expr.SelectExpression,
+                            expr.OptionalAsName,
+                            expr.OptionalAsName,
+                            expr.IsEvents));
                 }
-                else if (raw is SelectClauseStreamRawSpec) {
-                    var rawExpr = (SelectClauseStreamRawSpec) raw;
+                else if (raw is SelectClauseStreamRawSpec rawExpr) {
                     selectElements.Add(new SelectClauseStreamCompiledSpec(rawExpr.StreamName, rawExpr.OptionalAsName));
                 }
-                else if (raw is SelectClauseElementWildcard) {
-                    var wildcard = (SelectClauseElementWildcard) raw;
+                else if (raw is SelectClauseElementWildcard wildcard) {
                     selectElements.Add(wildcard);
                 }
                 else {

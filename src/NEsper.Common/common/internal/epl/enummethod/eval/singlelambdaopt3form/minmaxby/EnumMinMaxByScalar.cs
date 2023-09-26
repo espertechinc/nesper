@@ -20,126 +20,131 @@ using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmaxby
 {
-	public class EnumMinMaxByScalar : ThreeFormScalar
-	{
-		private readonly bool _max;
-		private readonly EPType _resultType;
-		private readonly Type _innerTypeBoxed;
-		private readonly Type _resultTypeBoxed;
+    public class EnumMinMaxByScalar : ThreeFormScalar
+    {
+        private readonly bool _max;
+        private readonly EPChainableType _resultType;
+        private readonly Type _innerTypeBoxed;
+        private readonly Type _resultTypeBoxed;
 
-		public EnumMinMaxByScalar(
-			ExprDotEvalParamLambda lambda,
-			ObjectArrayEventType fieldEventType,
-			int numParameters,
-			bool max,
-			EPType resultType) : base(lambda, fieldEventType, numParameters)
-		{
-			this._max = max;
-			this._resultType = resultType;
-			this._innerTypeBoxed = Boxing.GetBoxedType(InnerExpression.EvaluationType);
-			this._resultTypeBoxed = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(resultType));
-		}
+        public EnumMinMaxByScalar(
+            ExprDotEvalParamLambda lambda,
+            ObjectArrayEventType fieldEventType,
+            int numParameters,
+            bool max,
+            EPChainableType resultType) : base(lambda, fieldEventType, numParameters)
+        {
+            _max = max;
+            _resultType = resultType;
+            _innerTypeBoxed = InnerExpression.EvaluationType.GetBoxedType();
+            _resultTypeBoxed = resultType.GetCodegenReturnType().GetBoxedType();
+        }
 
-		public override EnumEval EnumEvaluator {
-			get {
-				ExprEvaluator inner = InnerExpression.ExprEvaluator;
-				return new ProxyEnumEval() {
-					ProcEvaluateEnumMethod = (
-						eventsLambda,
-						enumcoll,
-						isNewData,
-						context) => {
-						IComparable minKey = null;
-						object result = null;
-						ObjectArrayEventBean resultEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
-						eventsLambda[StreamNumLambda] = resultEvent;
-						object[] props = resultEvent.Properties;
-						props[2] = enumcoll.Count;
-						ICollection<object> values = (ICollection<object>) enumcoll;
+        public override EnumEval EnumEvaluator {
+            get {
+                var inner = InnerExpression.ExprEvaluator;
+                return new ProxyEnumEval() {
+                    ProcEvaluateEnumMethod = (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        IComparable minKey = null;
+                        object result = null;
+                        var resultEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+                        eventsLambda[StreamNumLambda] = resultEvent;
+                        var props = resultEvent.Properties;
+                        props[2] = enumcoll.Count;
+                        var values = enumcoll;
 
-						int count = -1;
-						foreach (object next in values) {
-							count++;
-							props[1] = count;
-							props[0] = next;
+                        var count = -1;
+                        foreach (var next in values) {
+                            count++;
+                            props[1] = count;
+                            props[0] = next;
 
-							object comparable = inner.Evaluate(eventsLambda, isNewData, context);
-							if (comparable == null) {
-								continue;
-							}
+                            var comparable = inner.Evaluate(eventsLambda, isNewData, context);
+                            if (comparable == null) {
+                                continue;
+                            }
 
-							if (minKey == null) {
-								minKey = (IComparable) comparable;
-								result = next;
-							}
-							else {
-								if (_max) {
-									if (minKey.CompareTo(comparable) < 0) {
-										minKey = (IComparable) comparable;
-										result = next;
-									}
-								}
-								else {
-									if (minKey.CompareTo(comparable) > 0) {
-										minKey = (IComparable) comparable;
-										result = next;
-									}
-								}
-							}
-						}
+                            if (minKey == null) {
+                                minKey = (IComparable)comparable;
+                                result = next;
+                            }
+                            else {
+                                if (_max) {
+                                    if (minKey.CompareTo(comparable) < 0) {
+                                        minKey = (IComparable)comparable;
+                                        result = next;
+                                    }
+                                }
+                                else {
+                                    if (minKey.CompareTo(comparable) > 0) {
+                                        minKey = (IComparable)comparable;
+                                        result = next;
+                                    }
+                                }
+                            }
+                        }
 
-						return result;
-					},
-				};
-			}
-		}
+                        return result;
+                    }
+                };
+            }
+        }
 
-		public override Type ReturnType()
-		{
-			return _resultTypeBoxed;
-		}
+        public override Type ReturnTypeOfMethod()
+        {
+            return _resultTypeBoxed;
+        }
 
-		public override CodegenExpression ReturnIfEmptyOptional()
-		{
-			return ConstantNull();
-		}
+        public override CodegenExpression ReturnIfEmptyOptional()
+        {
+            return ConstantNull();
+        }
 
-		public override void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			block.DeclareVar(_innerTypeBoxed, "minKey", ConstantNull())
-				.DeclareVar(_resultTypeBoxed, "result", ConstantNull());
-		}
+        public override void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            block.DeclareVar(_innerTypeBoxed, "minKey", ConstantNull())
+                .DeclareVar(_resultTypeBoxed, "result", ConstantNull());
+        }
 
-		public override void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			block
-				.DeclareVar(_innerTypeBoxed, "value", InnerExpression.EvaluateCodegen(_innerTypeBoxed, methodNode, scope, codegenClassScope))
-				.IfRefNull("value")
-				.BlockContinue()
-				.IfCondition(EqualsNull(Ref("minKey")))
-				.AssignRef("minKey", Ref("value"))
-				.AssignRef("result", Cast(_resultTypeBoxed, Ref("next")))
-				.IfElse()
-				.IfCondition(Relational(ExprDotMethod(Ref("minKey"), "CompareTo", Ref("value")), _max ? LT : GT, Constant(0)))
-				.AssignRef("minKey", Ref("value"))
-				.AssignRef("result", Cast(_resultTypeBoxed, Ref("next")));
-		}
+        public override void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            block
+                .DeclareVar(
+                    _innerTypeBoxed,
+                    "value",
+                    InnerExpression.EvaluateCodegen(_innerTypeBoxed, methodNode, scope, codegenClassScope))
+                .IfRefNull("value")
+                .BlockContinue()
+                .IfCondition(EqualsNull(Ref("minKey")))
+                .AssignRef("minKey", Ref("value"))
+                .AssignRef("result", Cast(_resultTypeBoxed, Ref("next")))
+                .IfElse()
+                .IfCondition(
+                    Relational(ExprDotMethod(Ref("minKey"), "CompareTo", Ref("value")), _max ? LT : GT, Constant(0)))
+                .AssignRef("minKey", Ref("value"))
+                .AssignRef("result", Cast(_resultTypeBoxed, Ref("next")));
+        }
 
-		public override void ReturnResult(CodegenBlock block)
-		{
-			block.MethodReturn(Ref("result"));
-		}
-	}
+        public override void ReturnResult(CodegenBlock block)
+        {
+            block.MethodReturn(Ref("result"));
+        }
+    }
 } // end of namespace

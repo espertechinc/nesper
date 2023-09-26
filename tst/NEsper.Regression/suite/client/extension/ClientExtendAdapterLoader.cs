@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat.collections;
@@ -46,6 +47,11 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             Assert.AreEqual("val", SupportPluginLoader.Destroys[1].Get("name"));
 
             SupportPluginLoader.Reset();
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.STATICHOOK);
         }
 
         private object GetFromEnv(

@@ -55,8 +55,7 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the arithmatic operator.
         /// </summary>
         /// <returns>operator</returns>
-        public string Operator
-        {
+        public string Operator {
             get => @operator;
             set => @operator = value;
         }
@@ -94,15 +93,12 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
+        public override ExpressionPrecedenceEnum Precedence {
             get {
-                if (@operator.Equals("*") || @operator.Equals("/") || @operator.Equals("%"))
-                {
+                if (@operator.Equals("*") || @operator.Equals("/") || @operator.Equals("%")) {
                     return ExpressionPrecedenceEnum.MULTIPLY;
                 }
-                else
-                {
+                else {
                     return ExpressionPrecedenceEnum.ADDITIVE;
                 }
             }
@@ -110,9 +106,8 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            string delimiter = "";
-            foreach (Expression child in Children)
-            {
+            var delimiter = "";
+            foreach (var child in Children) {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence);
                 delimiter = @operator;

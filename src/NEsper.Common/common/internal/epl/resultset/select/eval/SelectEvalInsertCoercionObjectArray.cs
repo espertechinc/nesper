@@ -26,9 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             this.resultEventType = resultEventType;
         }
 
-        public EventType ResultEventType {
-            get => resultEventType;
-        }
+        public EventType ResultEventType => resultEventType;
 
         public CodegenMethod ProcessCodegen(
             CodegenExpression resultEventType,
@@ -38,11 +36,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
             CodegenExpression bean = ExprDotName(
                 Cast(typeof(ObjectArrayBackedEventBean), ArrayAtIndex(refEPS, Constant(0))),
                 "Properties");

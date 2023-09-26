@@ -32,9 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
             InKeywordTableLookupPlanSingleIdxFactory factory,
             PropertyHashedEventTable index)
         {
-            this._factory = factory;
-            this._index = index;
-            this._eventsPerStream = new EventBean[factory.LookupStream + 1];
+            _factory = factory;
+            _index = index;
+            _eventsPerStream = new EventBean[factory.LookupStream + 1];
         }
 
         public ICollection<EventBean> Lookup(
@@ -42,11 +42,11 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
             Cursor cursor,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
+            var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             instrumentationCommon.QIndexJoinLookup(this, _index);
 
             _eventsPerStream[_factory.LookupStream] = theEvent;
-            ISet<EventBean> result = InKeywordTableLookupUtil.SingleIndexLookup(
+            var result = InKeywordTableLookupUtil.SingleIndexLookup(
                 _factory.Expressions,
                 _eventsPerStream,
                 exprEvaluatorContext,
@@ -64,8 +64,6 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
                    ')';
         }
 
-        public LookupStrategyType LookupStrategyType {
-            get => LookupStrategyType.INKEYWORDSINGLEIDX;
-        }
+        public LookupStrategyType LookupStrategyType => LookupStrategyType.INKEYWORDSINGLEIDX;
     }
 } // end of namespace

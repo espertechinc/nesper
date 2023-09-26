@@ -21,17 +21,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public class ExprNodeUtilityQuery
     {
-        public static readonly ExprNode[] EMPTY_EXPR_ARRAY = new ExprNode[0];
-        public static readonly ExprForge[] EMPTY_FORGE_ARRAY = new ExprForge[0];
+        public static readonly ExprNode[] EMPTY_EXPR_ARRAY = Array.Empty<ExprNode>();
+        public static readonly ExprForge[] EMPTY_FORGE_ARRAY = Array.Empty<ExprForge>();
 
         public static ExprForge[] ForgesForProperties(
             IList<EventType> eventTypes,
-            String[] propertyNames,
+            string[] propertyNames,
             int[] keyStreamNums)
         {
-            ExprForge[] forges = new ExprForge[propertyNames.Length];
-            for (int i = 0; i < propertyNames.Length; i++) {
-                ExprIdentNodeImpl node = new ExprIdentNodeImpl(eventTypes[keyStreamNums[i]], propertyNames[i], keyStreamNums[i]);
+            var forges = new ExprForge[propertyNames.Length];
+            for (var i = 0; i < propertyNames.Length; i++) {
+                var node = new ExprIdentNodeImpl(eventTypes[keyStreamNums[i]], propertyNames[i], keyStreamNums[i]);
                 forges[i] = node.Forge;
             }
 
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
             ISet<string> uniquePropertyNames = new HashSet<string>();
             foreach (var expression in expressions) {
-                var identNode = (ExprIdentNode) expression;
+                var identNode = (ExprIdentNode)expression;
                 uniquePropertyNames.Add(identNode.UnresolvedPropertyName);
             }
 
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     throw new ArgumentException("Expressions are not ident nodes");
                 }
 
-                propertyNames[i] = ((ExprIdentNode) nodes[i]).ResolvedPropertyName;
+                propertyNames[i] = ((ExprIdentNode)nodes[i]).ResolvedPropertyName;
             }
 
             return propertyNames;

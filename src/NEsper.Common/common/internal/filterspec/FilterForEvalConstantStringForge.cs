@@ -68,11 +68,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (FilterForEvalConstantStringForge) o;
+            var that = (FilterForEvalConstantStringForge)o;
 
-            if (_theStringValue != null
-                ? !_theStringValue.Equals(that._theStringValue)
-                : that._theStringValue != null) {
+            if (!_theStringValue?.Equals(that._theStringValue) ?? that._theStringValue != null) {
                 return false;
             }
 

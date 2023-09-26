@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return true;
             }
 
-            value = default(TV);
+            value = default;
             return false;
         }
 

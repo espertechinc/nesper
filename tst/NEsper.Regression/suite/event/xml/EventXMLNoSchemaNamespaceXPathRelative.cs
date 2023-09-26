@@ -25,8 +25,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -70,19 +72,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         private static void RunAssertion(
             RegressionEnvironment env,
-            String eventTypeName,
+            string eventTypeName,
             RegressionPath path)
         {
-            var stmt = "@Name('s0') select request.symbol as symbol_a, symbol as symbol_b from " + eventTypeName;
+            var stmt = "@name('s0') select request.symbol as symbol_a, symbol as symbol_b from " + eventTypeName;
             env.CompileDeploy(stmt, path).AddListener("s0");
 
             var xml =
                 "<m0:getQuote xmlns:m0=\"http://services.samples/xsd\"><m0:request><m0:symbol>IBM</m0:symbol></m0:request></m0:getQuote>";
             SendXMLEvent(env, xml, eventTypeName);
 
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("IBM", theEvent.Get("symbol_a"));
-            Assert.AreEqual("IBM", theEvent.Get("symbol_b"));
+            env.AssertEventNew(
+                "s0",
+                theEvent => {
+                    Assert.AreEqual("IBM", theEvent.Get("symbol_a"));
+                    Assert.AreEqual("IBM", theEvent.Get("symbol_b"));
+                });
 
             env.UndeployAll();
         }

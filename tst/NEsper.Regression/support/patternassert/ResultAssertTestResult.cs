@@ -74,9 +74,6 @@ namespace com.espertech.esper.regressionlib.support.patternassert
             stepMap.Put(step, new StepDesc(step, newDataPerRow, oldDataPerRow));
         }
 
-        public SortedDictionary<long, IDictionary<int, StepDesc>> GetAssertions()
-        {
-            return assertions;
-        }
+        public SortedDictionary<long, IDictionary<int, StepDesc>> Assertions => assertions;
     }
 } // end of namespace

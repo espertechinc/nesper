@@ -22,9 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             this.timeDelta = timeDelta;
         }
 
-        public TimePeriodCompute Evaluator {
-            get => new TimePeriodComputeConstGivenDeltaEval(timeDelta);
-        }
+        public TimePeriodCompute Evaluator => new TimePeriodComputeConstGivenDeltaEval(timeDelta);
 
         public CodegenExpression MakeEvaluator(
             CodegenMethodScope parent,

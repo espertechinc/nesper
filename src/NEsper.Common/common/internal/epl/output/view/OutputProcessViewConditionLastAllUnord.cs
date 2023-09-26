@@ -67,9 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 Log.Debug(
                     ".update Received update, " +
                     "  newData.length==" +
-                    (newData == null ? 0 : newData.Length) +
+                    (newData?.Length ?? 0) +
                     "  oldData.length==" +
-                    (oldData == null ? 0 : oldData.Length));
+                    (oldData?.Length ?? 0));
             }
 
             var isGenerateSynthetic = _agentInstanceContext.StatementResultService.IsMakeSynthetic;
@@ -107,9 +107,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 Log.Debug(
                     ".process Received update, " +
                     "  newData.length==" +
-                    (newEvents == null ? 0 : newEvents.Count) +
+                    (newEvents?.Count ?? 0) +
                     "  oldData.length==" +
-                    (oldEvents == null ? 0 : oldEvents.Count));
+                    (oldEvents?.Count ?? 0));
             }
 
             var isGenerateSynthetic = _agentInstanceContext.StatementResultService.IsMakeSynthetic;
@@ -231,7 +231,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
             if (_parent.IsDistinct && newOldEvents != null) {
                 newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.DistinctKeyGetter);
-                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.DistinctKeyGetter);
+                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(
+                    newOldEvents.Second,
+                    _parent.DistinctKeyGetter);
             }
 
             if (doOutput) {

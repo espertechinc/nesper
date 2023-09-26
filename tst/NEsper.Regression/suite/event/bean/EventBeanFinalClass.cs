@@ -17,12 +17,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
     {
         public void Run(RegressionEnvironment env)
         {
-            var statementText = "@Name('s0') select IntPrimitive from MyFinalEvent#length(5)";
+            var statementText = "@name('s0') select IntPrimitive from MyFinalEvent#length(5)";
             env.CompileDeploy(statementText).AddListener("s0");
 
             var theEvent = new SupportBeanFinal(10);
             env.SendEventBean(theEvent, "MyFinalEvent");
-            Assert.AreEqual(10, env.Listener("s0").LastNewData[0].Get("IntPrimitive"));
+            env.AssertEqualsNew("s0", "IntPrimitive", 10);
 
             env.UndeployAll();
         }

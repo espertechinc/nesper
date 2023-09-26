@@ -8,23 +8,22 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     /// <summary>
-    ///     NOTE: More table-related tests in "nwtable"
+    /// NOTE: More table-related tests in "nwtable"
     /// </summary>
     public class InfraTableSubquery
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
             WithAgainstKeyed(execs);
             WithAgainstUnkeyed(execs);
             WithSecondaryIndex(execs);
@@ -60,52 +59,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             return execs;
         }
 
-        private static void AssertValues(
-            RegressionEnvironment env,
-            string keys,
-            int?[] values)
-        {
-            var keyarr = keys.SplitCsv();
-            for (var i = 0; i < keyarr.Length; i++) {
-                env.SendEventBean(new SupportBean_S0(0, keyarr[i]));
-                var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(
-                    values[i],
-                    @event.Get("value"),
-                    "Failed for key '" + keyarr[i] + "'");
-            }
-        }
-
-        private static void SendInsertUpdate(
-            RegressionEnvironment env,
-            string p00,
-            string p01,
-            string p02,
-            int value)
-        {
-            env.SendEventBean(new SupportBean_S0(value, p00, p01, p02));
-        }
-
-        private static void AssertSubselect(
-            RegressionEnvironment env,
-            string @string,
-            int? expectedSum)
-        {
-            var fields = new[] {"c0"};
-            env.SendEventBean(new SupportBean(@string, -1));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {expectedSum});
-        }
-
-        internal class InfraTableSubqueryInFilter : RegressionExecution
+        private class InfraTableSubqueryInFilter : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "create table MyTable(tablecol string primary key);\n" +
-                             "insert into MyTable select P00 as tablecol from SupportBean_S0;\n" +
-                             "@Name('s0') select * from SupportBean(TheString=(select tablecol from MyTable).orderBy().firstOf())";
+                var epl = "create table MyTable(tablecol string primary key);\n" +
+                          "insert into MyTable select p00 as tablecol from SupportBean_S0;\n" +
+                          "@name('s0') select * from SupportBean(theString=(select tablecol from MyTable).orderBy().firstOf())";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssert(env, "E", false);
@@ -139,55 +99,55 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 bool expected)
             {
                 env.SendEventBean(new SupportBean(theString, 0));
-                Assert.AreEqual(expected, env.Listener("s0").IsInvokedAndReset());
+                env.AssertListenerInvokedFlag("s0", expected);
             }
         }
 
-        internal class InfraTableSubqueryAgainstKeyed : RegressionExecution
+        private class InfraTableSubqueryAgainstKeyed : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
 
                 env.CompileDeploy(
-                    "create table varagg as (" +
+                    "@public create table varagg as (" +
                     "key string primary key, total sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table varagg " +
-                    "select sum(IntPrimitive) as total from SupportBean group by TheString",
+                    "select sum(intPrimitive) as total from SupportBean group by theString",
                     path);
                 env.CompileDeploy(
-                        "@Name('s0') select (select total from varagg where key = S0.P00) as value " +
-                        "from SupportBean_S0 as S0",
+                        "@name('s0') select (select total from varagg where key = s0.p00) as value " +
+                        "from SupportBean_S0 as s0",
                         path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("G2", 200));
-                AssertValues(env, "G1,G2", new int?[] {null, 200});
+                AssertValues(env, "G1,G2", new int?[] { null, 200 });
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("G1", 100));
-                AssertValues(env, "G1,G2", new int?[] {100, 200});
+                AssertValues(env, "G1,G2", new int?[] { 100, 200 });
 
                 env.UndeployAll();
             }
         }
 
-        internal class InfraTableSubqueryAgainstUnkeyed : RegressionExecution
+        private class InfraTableSubqueryAgainstUnkeyed : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
 
-                env.CompileDeploy("create table InfraOne (string string, IntPrimitive int)", path);
+                env.CompileDeploy("@public create table InfraOne (string string, intPrimitive int)", path);
                 env.CompileDeploy(
-                        "@Name('s0') select (select IntPrimitive from InfraOne where string = S0.P00) as c0 from SupportBean_S0 as S0",
+                        "@name('s0') select (select intPrimitive from InfraOne where string = s0.p00) as c0 from SupportBean_S0 as s0",
                         path)
                     .AddListener("s0");
                 env.CompileDeploy(
-                    "insert into InfraOne select TheString as string, IntPrimitive from SupportBean",
+                    "insert into InfraOne select theString as string, intPrimitive from SupportBean",
                     path);
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -195,36 +155,33 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean_S0(0, "E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"c0"},
-                    new object[] {10});
+                env.AssertPropsNew("s0", "c0".SplitCsv(), new object[] { 10 });
 
                 env.UndeployAll();
             }
         }
 
-        internal class InfraTableSubquerySecondaryIndex : RegressionExecution
+        private class InfraTableSubquerySecondaryIndex : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
 
                 var eplTable =
-                    "create table MyTable(k0 string primary key, k1 string primary key, p2 string, value int)";
+                    "@public create table MyTable(k0 string primary key, k1 string primary key, p2 string, value int)";
                 env.CompileDeploy(eplTable, path);
 
                 var eplIndex = "create index MyIndex on MyTable(p2)";
                 env.CompileDeploy(eplIndex, path);
 
                 var eplInto = "on SupportBean_S0 merge MyTable " +
-                              "where P00 = k0 and P01 = k1 " +
-                              "when not matched then insert select P00 as k0, P01 as k1, P02 as p2, Id as value " +
-                              "when matched then update set p2 = P02, value = Id ";
+                              "where p00 = k0 and p01 = k1 " +
+                              "when not matched then insert select p00 as k0, p01 as k1, p02 as p2, id as value " +
+                              "when matched then update set p2 = p02, value = id ";
                 env.CompileDeploy(eplInto, path);
 
                 var eplSubselect =
-                    "@Name('s0') select (select value from MyTable as tbl where sb.TheString = tbl.p2) as c0 from SupportBean as sb";
+                    "@name('s0') select (select value from MyTable as tbl where sb.theString = tbl.p2) as c0 from SupportBean as sb";
                 env.CompileDeploy(eplSubselect, path).AddListener("s0");
 
                 SendInsertUpdate(env, "G1", "SG1", "P2_1", 10);
@@ -241,6 +198,39 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.UndeployAll();
             }
+        }
+
+        private static void AssertValues(
+            RegressionEnvironment env,
+            string keys,
+            int?[] values)
+        {
+            var keyarr = keys.SplitCsv();
+            for (var i = 0; i < keyarr.Length; i++) {
+                env.SendEventBean(new SupportBean_S0(0, keyarr[i]));
+                var index = i;
+                env.AssertEventNew("s0", @event => Assert.AreEqual(values[index], @event.Get("value")));
+            }
+        }
+
+        private static void SendInsertUpdate(
+            RegressionEnvironment env,
+            string p00,
+            string p01,
+            string p02,
+            int value)
+        {
+            env.SendEventBean(new SupportBean_S0(value, p00, p01, p02));
+        }
+
+        private static void AssertSubselect(
+            RegressionEnvironment env,
+            string @string,
+            int? expectedSum)
+        {
+            var fields = "c0".SplitCsv();
+            env.SendEventBean(new SupportBean(@string, -1));
+            env.AssertPropsNew("s0", fields, new object[] { expectedSum });
         }
     }
 } // end of namespace

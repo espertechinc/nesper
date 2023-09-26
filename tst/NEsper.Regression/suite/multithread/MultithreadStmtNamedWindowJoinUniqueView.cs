@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -22,6 +23,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadStmtNamedWindowJoinUniqueView : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             var epl = "create window A#unique(Key) as MyEventA;\n" +
@@ -29,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                       "insert into A select * from MyEventA;\n" +
                       "insert into B select * from MyEventB;\n" +
                       "\n" +
-                      "@Name('stmt') select sum(A.Data) as aTotal,sum(B.Data) as bTotal " +
+                      "@name('stmt') select sum(A.Data) as aTotal,sum(B.Data) as bTotal " +
                       "from A unidirectional, B where A.Key = B.Key;\n";
             env.CompileDeploy(epl);
 

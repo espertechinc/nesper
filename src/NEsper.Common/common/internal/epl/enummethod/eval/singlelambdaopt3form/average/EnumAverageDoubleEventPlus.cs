@@ -23,103 +23,106 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.average
 {
-	public class EnumAverageDoubleEventPlus : ThreeFormEventPlus
-	{
-		public EnumAverageDoubleEventPlus(
-			ExprDotEvalParamLambda lambda,
-			ObjectArrayEventType indexEventType,
-			int numParameters) : base(lambda, indexEventType, numParameters)
-		{
-		}
+    public class EnumAverageDoubleEventPlus : ThreeFormEventPlus
+    {
+        public EnumAverageDoubleEventPlus(
+            ExprDotEvalParamLambda lambda,
+            ObjectArrayEventType indexEventType,
+            int numParameters) : base(lambda, indexEventType, numParameters)
+        {
+        }
 
-		public override EnumEval EnumEvaluator {
-			get {
-				var inner = InnerExpression.ExprEvaluator;
+        public override EnumEval EnumEvaluator {
+            get {
+                var inner = InnerExpression.ExprEvaluator;
 
-				return new ProxyEnumEval(
-					(
-						eventsLambda,
-						enumcoll,
-						isNewData,
-						context) => {
-						var sum = 0d;
-						var count = 0;
+                return new ProxyEnumEval(
+                    (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        var sum = 0d;
+                        var count = 0;
 
-						var indexEvent = new ObjectArrayEventBean(new object[2], FieldEventType);
-						eventsLambda[StreamNumLambda + 1] = indexEvent;
-						var props = indexEvent.Properties;
-						props[1] = enumcoll.Count;
-						var beans = (ICollection<EventBean>) enumcoll;
+                        var indexEvent = new ObjectArrayEventBean(new object[2], FieldEventType);
+                        eventsLambda[StreamNumLambda + 1] = indexEvent;
+                        var props = indexEvent.Properties;
+                        props[1] = enumcoll.Count;
+                        var beans = (ICollection<EventBean>)enumcoll;
 
-						var index = -1;
-						foreach (var next in beans) {
-							index++;
-							props[0] = index;
-							eventsLambda[StreamNumLambda] = next;
+                        var index = -1;
+                        foreach (var next in beans) {
+                            index++;
+                            props[0] = index;
+                            eventsLambda[StreamNumLambda] = next;
 
-							var num = inner.Evaluate(eventsLambda, isNewData, context);
-							if (num == null) {
-								continue;
-							}
+                            var num = inner.Evaluate(eventsLambda, isNewData, context);
+                            if (num == null) {
+                                continue;
+                            }
 
-							count++;
-							sum += num.AsDouble();
-						}
+                            count++;
+                            sum += num.AsDouble();
+                        }
 
-						if (count == 0) {
-							return null;
-						}
+                        if (count == 0) {
+                            return null;
+                        }
 
-						return sum / count;
-					});
-			}
-		}
+                        return sum / count;
+                    });
+            }
+        }
 
-		public override Type ReturnType()
-		{
-			return typeof(double?);
-		}
+        public override Type ReturnTypeOfMethod()
+        {
+            return typeof(double?);
+        }
 
-		public override CodegenExpression ReturnIfEmptyOptional()
-		{
-			return null;
-		}
+        public override CodegenExpression ReturnIfEmptyOptional()
+        {
+            return null;
+        }
 
-		public override void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			block.DeclareVar<double>("sum", Constant(0d))
-				.DeclareVar<int>("rowcount", Constant(0));
-		}
+        public override void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            block.DeclareVar<double>("sum", Constant(0d))
+                .DeclareVar<int>("rowcount", Constant(0));
+        }
 
-		public override void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			var innerType = InnerExpression.EvaluationType;
-			block.DeclareVar(innerType, "num", InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
-			if (!innerType.IsPrimitive) {
-				block.IfRefNull("num").BlockContinue();
-			}
-			
-			var lhs = Ref("sum");
-			var rhs = SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(Ref("num"), innerType);
+        public override void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            var innerType = InnerExpression.EvaluationType;
+            block.DeclareVar(
+                innerType,
+                "num",
+                InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
+            if (!innerType.IsPrimitive) {
+                block.IfRefNull("num").BlockContinue();
+            }
 
-			block.IncrementRef("rowcount")
-				.AssignRef("sum", Op(lhs, "+", rhs))
-				.BlockEnd();
-		}
+            var lhs = Ref("sum");
+            var rhs = SimpleNumberCoercerFactory.CoercerDouble.CodegenDouble(Ref("num"), innerType);
 
-		public override void ReturnResult(CodegenBlock block)
-		{
-			block.IfCondition(EqualsIdentity(Ref("rowcount"), Constant(0)))
-				.BlockReturn(ConstantNull())
-				.MethodReturn(Op(Ref("sum"), "/", Ref("rowcount")));
-		}
-	}
+            block.IncrementRef("rowcount")
+                .AssignRef("sum", Op(lhs, "+", rhs))
+                .BlockEnd();
+        }
+
+        public override void ReturnResult(CodegenBlock block)
+        {
+            block.IfCondition(EqualsIdentity(Ref("rowcount"), Constant(0)))
+                .BlockReturn(ConstantNull())
+                .MethodReturn(Op(Ref("sum"), "/", Ref("rowcount")));
+        }
+    }
 } // end of namespace

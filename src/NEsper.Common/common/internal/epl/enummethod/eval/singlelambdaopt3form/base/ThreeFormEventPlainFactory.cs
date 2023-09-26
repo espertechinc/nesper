@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -15,40 +13,40 @@ using com.espertech.esper.common.@internal.rettype;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base
 {
-	public class ThreeFormEventPlainFactory : ThreeFormBaseFactory
-	{
-		private readonly EventType eventType;
-		private readonly string streamName;
-		private readonly ForgeFunction function;
+    public class ThreeFormEventPlainFactory : ThreeFormBaseFactory
+    {
+        private readonly EventType eventType;
+        private readonly string streamName;
+        private readonly ForgeFunction function;
 
-		public ThreeFormEventPlainFactory(
-			Func<ExprDotEvalParamLambda, EPType> returnType,
-			EventType eventType,
-			string streamName,
-			ForgeFunction function)
-			: base(returnType)
-		{
-			this.eventType = eventType;
-			this.streamName = streamName;
-			this.function = function;
-		}
+        public ThreeFormEventPlainFactory(
+            ThreeFormInitFunction returnType,
+            EventType eventType,
+            string streamName,
+            ForgeFunction function)
+            : base(returnType)
+        {
+            this.eventType = eventType;
+            this.streamName = streamName;
+            this.function = function;
+        }
 
-		public override EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)
-		{
-			return new EnumForgeLambdaDesc(new EventType[] {eventType}, new string[] {streamName});
-		}
+        public override EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)
+        {
+            return new EnumForgeLambdaDesc(new EventType[] { eventType }, new string[] { streamName });
+        }
 
-		protected override EnumForge MakeForgeWithParam(
-			ExprDotEvalParamLambda lambda,
-			EPType typeInfo,
-			StatementCompileTimeServices services)
-		{
-			return function.Invoke(lambda, typeInfo, services);
-		}
+        protected override EnumForge MakeForgeWithParam(
+            ExprDotEvalParamLambda lambda,
+            EPChainableType typeInfo,
+            StatementCompileTimeServices services)
+        {
+            return function.Invoke(lambda, typeInfo, services);
+        }
 
-		public delegate EnumForge ForgeFunction(
-			ExprDotEvalParamLambda lambda,
-			EPType typeInfo,
-			StatementCompileTimeServices services);
-	}
+        public delegate EnumForge ForgeFunction(
+            ExprDotEvalParamLambda lambda,
+            EPChainableType typeInfo,
+            StatementCompileTimeServices services);
+    }
 } // end of namespace

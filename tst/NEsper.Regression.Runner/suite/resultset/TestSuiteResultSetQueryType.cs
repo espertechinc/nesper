@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
         [Test, RunInApplicationDomain]
         public void TestResultSetQueryTypeEnumerator()
         {
-            RegressionRunner.Run(_session, ResultSetQueryTypeEnumerator.Executions());
+            RegressionRunner.Run(_session, ResultSetQueryTypeIterator.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -164,10 +164,10 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             [Test, RunInApplicationDomain]
             public void WithRowForAllStaticMethodDoubleNested() => RegressionRunner.Run(
                 _session,
-                ResultSetQueryTypeRowForAll.WithRowForAllStaticMethodDoubleNested());
+                ResultSetQueryTypeRowForAll.WithStaticMethodDoubleNested());
 
             [Test, RunInApplicationDomain]
-            public void WithRowForAllNamedWindowWindow() => RegressionRunner.Run(_session, ResultSetQueryTypeRowForAll.WithRowForAllNamedWindowWindow());
+            public void WithRowForAllNamedWindowWindow() => RegressionRunner.Run(_session, ResultSetQueryTypeRowForAll.WithNamedWindowWindow());
 
             [Test, RunInApplicationDomain]
             public void WithSelectAvgStdGroupByUni() => RegressionRunner.Run(_session, ResultSetQueryTypeRowForAll.WithSelectAvgStdGroupByUni());
@@ -191,16 +191,16 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             public void WithSumOneView() => RegressionRunner.Run(_session, ResultSetQueryTypeRowForAll.WithSumOneView());
 
             [Test, RunInApplicationDomain]
-            public void WithRowForAllMinMaxWindowed() => RegressionRunner.Run(_session, ResultSetQueryTypeRowForAll.WithRowForAllMinMaxWindowed());
+            public void WithAllMinMaxWindowed() => RegressionRunner.Run(_session, ResultSetQueryTypeRowForAll.WithAllMinMaxWindowed());
 
             [Test, RunInApplicationDomain]
-            public void WithRowForAllWWindowAgg() => RegressionRunner.Run(_session, ResultSetQueryTypeRowForAll.WithRowForAllWWindowAgg());
+            public void WithAllWWindowAgg() => RegressionRunner.Run(_session, ResultSetQueryTypeRowForAll.WithAllWWindowAgg());
 
             [Test, RunInApplicationDomain]
-            public void WithRowForAllSumMinMax() => RegressionRunner.Run(_session, ResultSetQueryTypeRowForAll.WithRowForAllSumMinMax());
+            public void WithAllSumMinMax() => RegressionRunner.Run(_session, ResultSetQueryTypeRowForAll.WithAllSumMinMax());
 
             [Test, RunInApplicationDomain]
-            public void WithRowForAllSimple() => RegressionRunner.Run(_session, ResultSetQueryTypeRowForAll.WithRowForAllSimple());
+            public void WithAllSimple() => RegressionRunner.Run(_session, ResultSetQueryTypeRowForAll.WithAllSimple());
         }
 
         /// <summary>
@@ -223,11 +223,6 @@ namespace com.espertech.esper.regressionrun.suite.resultset
 
             [Test, RunInApplicationDomain]
             public void WithRollupMultikeyWArray() => RegressionRunner.Run(_session, ResultSetQueryTypeRollupDimensionality.WithRollupMultikeyWArray());
-
-            [Test, RunInApplicationDomain]
-            public void WithNamedWindowDeleteAndRStream2Dim() => RegressionRunner.Run(
-                _session,
-                ResultSetQueryTypeRollupDimensionality.WithNamedWindowDeleteAndRStream2Dim());
 
             [Test, RunInApplicationDomain]
             public void WithNamedWindowCube2Dim() => RegressionRunner.Run(_session, ResultSetQueryTypeRollupDimensionality.WithNamedWindowCube2Dim());

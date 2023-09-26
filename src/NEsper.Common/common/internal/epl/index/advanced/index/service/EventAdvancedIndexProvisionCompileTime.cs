@@ -50,9 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
                 ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceAsArray(IndexDesc.IndexedExpressions);
             var indexProperties = GetPropertiesPerExpressionExpectSingle(IndexDesc.IndexedExpressions);
             method.Block
-                .DeclareVar<EventAdvancedIndexProvisionRuntime>(
-                    "desc",
-                    NewInstance(typeof(EventAdvancedIndexProvisionRuntime)))
+                .DeclareVarNewInstance<EventAdvancedIndexProvisionRuntime>("desc")
                 .SetProperty(Ref("desc"), "IndexExpressionTexts", Constant(indexExpressions))
                 .SetProperty(Ref("desc"), "IndexProperties", Constant(indexProperties))
                 .SetProperty(

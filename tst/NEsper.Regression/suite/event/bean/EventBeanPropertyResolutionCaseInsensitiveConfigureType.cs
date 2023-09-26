@@ -17,13 +17,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             EventBeanPropertyResolutionCaseInsensitiveEngineDefault.TryCaseInsensitive(
                 env,
                 "BeanWithCaseInsensitive",
-                "@Name('s0') select THESTRING, INTPRIMITIVE from BeanWithCaseInsensitive where THESTRING='A'",
+                "@name('s0') select THESTRING, INTPRIMITIVE from BeanWithCaseInsensitive where THESTRING='A'",
                 "THESTRING",
                 "INTPRIMITIVE");
             EventBeanPropertyResolutionCaseInsensitiveEngineDefault.TryCaseInsensitive(
                 env,
                 "BeanWithCaseInsensitive",
-                "@Name('s0') select ThEsTrInG, INTprimitIVE from BeanWithCaseInsensitive where THESTRing='A'",
+                "@name('s0') select ThEsTrInG, INTprimitIVE from BeanWithCaseInsensitive where THESTRing='A'",
                 "ThEsTrInG",
                 "INTprimitIVE");
         }

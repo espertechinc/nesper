@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            return Equals((FilterSpecParamAdvancedIndexQuadTreeMXCIF) obj);
+            return Equals((FilterSpecParamAdvancedIndexQuadTreeMXCIF)obj);
         }
 
         public override int GetHashCode()

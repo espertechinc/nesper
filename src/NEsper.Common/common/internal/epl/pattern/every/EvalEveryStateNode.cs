@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
             EvalStateNode fromNode,
             bool restartable)
         {
-            AgentInstanceContext agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryEvalFalse(evalEveryNode.factoryNode);
 
             fromNode.Quit();
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
             // During the start of a child we need to use the temporary evaluator to catch any event created during a start
             // Such events can be raised when the "not" operator is used.
             var spawnEvaluator = new EvalEveryStateSpawnEvaluator(evalEveryNode.Context.StatementName);
-            EvalStateNode spawned = evalEveryNode.ChildNode.NewState(spawnEvaluator);
+            var spawned = evalEveryNode.ChildNode.NewState(spawnEvaluator);
             spawned.Start(beginState);
 
             // If the whole spawned expression already turned true, quit it again
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
             bool isQuitted,
             EventBean optionalTriggeringEvent)
         {
-            AgentInstanceContext agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryEvaluateTrue(
                 evalEveryNode.factoryNode,
                 matchEvent);
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
                 // During the start of a child we need to use the temporary evaluator to catch any event created during a start
                 // Such events can be raised when the "not" operator is used.
                 var spawnEvaluator = new EvalEveryStateSpawnEvaluator(evalEveryNode.Context.StatementName);
-                EvalStateNode spawned = evalEveryNode.ChildNode.NewState(spawnEvaluator);
+                var spawned = evalEveryNode.ChildNode.NewState(spawnEvaluator);
                 spawned.Start(beginState);
 
                 // If the whole spawned expression already turned true, quit it again
@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
         {
             if (PatternConsumptionUtil.ContainsEvent(matchEvent, beginState)) {
                 Quit();
-                AgentInstanceContext agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
+                var agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
                 agentInstanceContext.AuditProvider.PatternFalse(evalEveryNode.FactoryNode, this, agentInstanceContext);
                 ParentEvaluator.EvaluateFalse(this, true);
             }
@@ -153,12 +153,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
 
         public override void Start(MatchedEventMap beginState)
         {
-            AgentInstanceContext agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryStart(evalEveryNode.factoryNode, beginState);
             agentInstanceContext.AuditProvider.PatternInstance(true, evalEveryNode.factoryNode, agentInstanceContext);
 
             this.beginState = beginState.ShallowCopy();
-            EvalStateNode childState = evalEveryNode.ChildNode.NewState(this);
+            var childState = evalEveryNode.ChildNode.NewState(this);
             spawnedNodes.Add(childState);
 
             // During the start of the child we need to use the temporary evaluator to catch any event created during a start.
@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.every
 
         public override void Quit()
         {
-            AgentInstanceContext agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalEveryNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternEveryQuit(evalEveryNode.factoryNode);
             agentInstanceContext.AuditProvider.PatternInstance(false, evalEveryNode.factoryNode, agentInstanceContext);
 

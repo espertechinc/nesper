@@ -21,89 +21,92 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof
 {
-	public class EnumSumEventPlus : ThreeFormEventPlus
-	{
-		private readonly ExprDotEvalSumMethodFactory _sumMethodFactory;
+    public class EnumSumEventPlus : ThreeFormEventPlus
+    {
+        private readonly ExprDotEvalSumMethodFactory _sumMethodFactory;
 
-		public EnumSumEventPlus(
-			ExprDotEvalParamLambda lambda,
-			ObjectArrayEventType indexEventType,
-			int numParameters,
-			ExprDotEvalSumMethodFactory sumMethodFactory) : base(lambda, indexEventType, numParameters)
-		{
-			this._sumMethodFactory = sumMethodFactory;
-		}
+        public EnumSumEventPlus(
+            ExprDotEvalParamLambda lambda,
+            ObjectArrayEventType indexEventType,
+            int numParameters,
+            ExprDotEvalSumMethodFactory sumMethodFactory) : base(lambda, indexEventType, numParameters)
+        {
+            _sumMethodFactory = sumMethodFactory;
+        }
 
-		public override EnumEval EnumEvaluator {
-			get {
-				var inner = InnerExpression.ExprEvaluator;
+        public override EnumEval EnumEvaluator {
+            get {
+                var inner = InnerExpression.ExprEvaluator;
 
-				return new ProxyEnumEval() {
-					ProcEvaluateEnumMethod = (
-						eventsLambda,
-						enumcoll,
-						isNewData,
-						context) => {
-						var method = _sumMethodFactory.SumAggregator;
-						var beans = (ICollection<EventBean>) enumcoll;
-						var indexEvent = new ObjectArrayEventBean(new object[2], FieldEventType);
-						var props = indexEvent.Properties;
-						props[1] = enumcoll.Count;
-						eventsLambda[StreamNumLambda + 1] = indexEvent;
+                return new ProxyEnumEval() {
+                    ProcEvaluateEnumMethod = (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        var method = _sumMethodFactory.SumAggregator;
+                        var beans = (ICollection<EventBean>)enumcoll;
+                        var indexEvent = new ObjectArrayEventBean(new object[2], FieldEventType);
+                        var props = indexEvent.Properties;
+                        props[1] = enumcoll.Count;
+                        eventsLambda[StreamNumLambda + 1] = indexEvent;
 
-						var count = -1;
-						foreach (var next in beans) {
-							count++;
-							props[0] = count;
-							eventsLambda[StreamNumLambda] = next;
+                        var count = -1;
+                        foreach (var next in beans) {
+                            count++;
+                            props[0] = count;
+                            eventsLambda[StreamNumLambda] = next;
 
-							var value = inner.Evaluate(eventsLambda, isNewData, context);
-							method.Enter(value);
-						}
+                            var value = inner.Evaluate(eventsLambda, isNewData, context);
+                            method.Enter(value);
+                        }
 
-						return method.Value;
-					},
-				};
-			}
-		}
+                        return method.Value;
+                    }
+                };
+            }
+        }
 
-		public override Type ReturnType()
-		{
-			return _sumMethodFactory.ValueType;
-		}
+        public override Type ReturnTypeOfMethod()
+        {
+            return _sumMethodFactory.ValueType;
+        }
 
-		public override CodegenExpression ReturnIfEmptyOptional()
-		{
-			return null;
-		}
+        public override CodegenExpression ReturnIfEmptyOptional()
+        {
+            return null;
+        }
 
-		public override void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			_sumMethodFactory.CodegenDeclare(block);
-		}
+        public override void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            _sumMethodFactory.CodegenDeclare(block);
+        }
 
-		public override void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			var innerType = InnerExpression.EvaluationType;
-			block.DeclareVar(innerType, "value", InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
-			if (!innerType.IsPrimitive) {
-				block.IfRefNull("value").BlockContinue();
-			}
+        public override void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            var innerType = InnerExpression.EvaluationType;
+            block.DeclareVar(
+                innerType,
+                "value",
+                InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
+            if (!innerType.IsPrimitive) {
+                block.IfRefNull("value").BlockContinue();
+            }
 
-			_sumMethodFactory.CodegenEnterNumberTypedNonNull(block, Ref("value"));
-		}
+            _sumMethodFactory.CodegenEnterNumberTypedNonNull(block, Ref("value"));
+        }
 
-		public override void ReturnResult(CodegenBlock block)
-		{
-			_sumMethodFactory.CodegenReturn(block);
-		}
-	}
+        public override void ReturnResult(CodegenBlock block)
+        {
+            _sumMethodFactory.CodegenReturn(block);
+        }
+    }
 } // end of namespace

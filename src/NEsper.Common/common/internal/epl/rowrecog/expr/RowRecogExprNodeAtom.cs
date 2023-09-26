@@ -61,7 +61,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 
         public override RowRecogExprNode CheckedCopySelf(ExpressionCopier expressionCopier)
         {
-            return new RowRecogExprNodeAtom(Tag, Type, OptionalRepeat == null ? null : OptionalRepeat.CheckedCopy(expressionCopier));
+            return new RowRecogExprNodeAtom(
+                Tag,
+                Type,
+                OptionalRepeat?.CheckedCopy(expressionCopier));
         }
     }
 } // end of namespace

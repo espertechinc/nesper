@@ -198,7 +198,7 @@ namespace NEsper.Avro.Getter
                 EventTypeUtility.ResolveTypeCodegen(_fragmentType, EPStatementInitServicesConstants.REF));
             return codegenMethodScope
                 .MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record")
+                .AddParam<GenericRecord>("record")
                 .Block
                 .DeclareVar<object>(
                     "value",

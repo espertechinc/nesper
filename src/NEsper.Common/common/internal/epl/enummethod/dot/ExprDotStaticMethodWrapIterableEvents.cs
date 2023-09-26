@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             this.type = type;
         }
 
-        public EPType TypeInfo => EPTypeHelper.CollectionOfEvents(type);
+        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfEvents(type);
 
         public ICollection<EventBean> ConvertNonNull(object result)
         {
@@ -55,7 +55,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope classScope)
         {
-            var eventSvcMember = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var eventSvcMember =
+                classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var typeMember = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(BeanEventType),

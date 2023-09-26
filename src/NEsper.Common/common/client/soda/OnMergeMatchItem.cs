@@ -44,23 +44,19 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             formatter.BeginMergeWhenMatched(writer);
-            if (IsMatched)
-            {
+            if (IsMatched) {
                 writer.Write("when matched");
             }
-            else
-            {
+            else {
                 writer.Write("when not matched");
             }
 
-            if (OptionalCondition != null)
-            {
+            if (OptionalCondition != null) {
                 writer.Write(" and ");
                 OptionalCondition.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
 
-            foreach (OnMergeMatchedAction action in Actions)
-            {
+            foreach (var action in Actions) {
                 formatter.BeginMergeAction(writer);
                 action.ToEPL(writer);
             }

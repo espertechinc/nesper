@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.view.previous
         {
             IStreamRandomAccess randomAccess = null;
             if (agentInstanceViewFactoryContext.PreviousNodeGetter != null) {
-                var getter = (RandomAccessByIndexGetter) agentInstanceViewFactoryContext.PreviousNodeGetter;
+                var getter = (RandomAccessByIndexGetter)agentInstanceViewFactoryContext.PreviousNodeGetter;
                 randomAccess = new IStreamRandomAccess(getter);
                 getter.Updated(randomAccess);
             }
@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.view.previous
         {
             IStreamRelativeAccess relativeAccessByEvent = null;
             if (agentInstanceViewFactoryContext.PreviousNodeGetter != null) {
-                var getter = (RelativeAccessByEventNIndexGetter) agentInstanceViewFactoryContext.PreviousNodeGetter;
-                var observer = (IStreamRelativeAccess.IStreamRelativeAccessUpdateObserver) getter;
+                var getter = (RelativeAccessByEventNIndexGetter)agentInstanceViewFactoryContext.PreviousNodeGetter;
+                var observer = (IStreamRelativeAccess.IStreamRelativeAccessUpdateObserver)getter;
                 relativeAccessByEvent = new IStreamRelativeAccess(observer);
                 observer.Updated(relativeAccessByEvent, null);
             }
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.view.previous
         {
             IStreamSortRankRandomAccess rankedRandomAccess = null;
             if (agentInstanceViewFactoryContext.PreviousNodeGetter != null) {
-                var getter = (RandomAccessByIndexGetter) agentInstanceViewFactoryContext.PreviousNodeGetter;
+                var getter = (RandomAccessByIndexGetter)agentInstanceViewFactoryContext.PreviousNodeGetter;
                 rankedRandomAccess = new IStreamSortRankRandomAccessImpl(getter);
                 getter.Updated(rankedRandomAccess);
             }

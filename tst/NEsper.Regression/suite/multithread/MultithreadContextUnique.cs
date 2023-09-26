@@ -26,24 +26,30 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadContextUnique : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
-            var epl = "create schema ScoreCycle (userId string, keyword string, ProductId string, score long);\n" +
-                      "\n" +
-                      "create schema UserKeywordTotalStream (userId string, keyword string, sumScore long);\n" +
-                      "\n" +
-                      "create context HashByUserCtx as\n" +
-                      "coalesce by consistent_hash_crc32(userId) from ScoreCycle,\n" +
-                      "consistent_hash_crc32(userId) from UserKeywordTotalStream \n" +
-                      "granularity 10000000;\n" +
-                      "\n" +
-                      "context HashByUserCtx create window ScoreCycleWindow#unique(userId, keyword, ProductId) as ScoreCycle;\n" +
-                      "\n" +
-                      "context HashByUserCtx insert into ScoreCycleWindow select * from ScoreCycle;\n" +
-                      "\n" +
-                      "@Name('Select') context HashByUserCtx insert into UserKeywordTotalStream\n" +
-                      "select userId, keyword, sum(score) as sumScore from ScoreCycleWindow group by userId, keyword;";
-            env.CompileDeployWBusPublicType(epl, new RegressionPath());
+            var epl =
+                "@public @buseventtype create schema ScoreCycle (userId string, keyword string, ProductId string, score long);\n" +
+                "\n" +
+                "@public @buseventtype create schema UserKeywordTotalStream (userId string, keyword string, sumScore long);\n" +
+                "\n" +
+                "create context HashByUserCtx as\n" +
+                "coalesce by consistent_hash_crc32(userId) from ScoreCycle,\n" +
+                "consistent_hash_crc32(userId) from UserKeywordTotalStream \n" +
+                "granularity 10000000;\n" +
+                "\n" +
+                "context HashByUserCtx create window ScoreCycleWindow#unique(userId, keyword, ProductId) as ScoreCycle;\n" +
+                "\n" +
+                "context HashByUserCtx insert into ScoreCycleWindow select * from ScoreCycle;\n" +
+                "\n" +
+                "@name('Select') context HashByUserCtx insert into UserKeywordTotalStream\n" +
+                "select userId, keyword, sum(score) as sumScore from ScoreCycleWindow group by userId, keyword;";
+            env.CompileDeploy(epl, new RegressionPath());
             var listener = new MyUpdateListener();
             env.Statement("Select").AddListener(listener);
 

@@ -29,11 +29,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtNamedWindowConsume : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@Name('window') create window MyWindow#keepall as select TheString, LongPrimitive from SupportBean",
+                "@name('window') @public create window MyWindow#keepall as select TheString, LongPrimitive from SupportBean",
                 path);
             var listenerWindow = new SupportMTUpdateListener();
             env.Statement("window").AddListener(listenerWindow);
@@ -105,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // compute list of received
             for (var i = 0; i < listenerConsumers.Length; i++) {
-                var newEvents = listenerConsumers[i].GetNewDataListFlattened();
+                var newEvents = listenerConsumers[i].NewDataListFlattened;
                 var receivedIds = new string[newEvents.Length];
                 for (var j = 0; j < newEvents.Length; j++) {
                     receivedIds[j] = (string) newEvents[j].Get("TheString");

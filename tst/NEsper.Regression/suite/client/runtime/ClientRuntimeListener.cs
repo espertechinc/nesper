@@ -35,7 +35,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            Withe(execs);
+#if REGRESSION_EXECUTIONS
+            With(e)(execs);
+#endif
             return execs;
         }
 
@@ -51,24 +53,24 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('bean') select * from " +
+                    "@name('bean') select * from " +
                     BEAN_TYPENAME +
                     ";\n" +
-                    "@Name('map') select * from " +
+                    "@name('map') select * from " +
                     MAP_TYPENAME +
                     ";\n" +
-                    "@Name('oa') select * from " +
+                    "@name('oa') select * from " +
                     OA_TYPENAME +
                     ";\n" +
-                    "@Name('xml') select * from " +
+                    "@name('xml') select * from " +
                     XML_TYPENAME +
                     ";\n" +
-                    "@Name('avro') select * from " +
+                    "@name('avro') select * from " +
                     AVRO_TYPENAME +
                     ";\n" +
                     "@public @buseventtype create json schema JsonEvent(Ident string);\n" +
-                    "@Name('json') select * from JsonEvent;\n" +
-                    "@Name('trigger') select * from SupportBean;";
+                    "@name('json') select * from JsonEvent;\n" +
+                    "@name('trigger') select * from SupportBean;";
                 env.CompileDeploy(epl)
                     .AddListener("map")
                     .AddListener("oa")
@@ -82,16 +84,17 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     updateEventArgs) => {
                     var newEvents = updateEventArgs.NewEvents;
                     var processEvent = updateEventArgs.Runtime.EventService;
-                    var ident = (string) newEvents[0].Get("TheString");
+                    var ident = (string)newEvents[0].Get("TheString");
 
                     processEvent.RouteEventBean(new RoutedBeanEvent(ident), BEAN_TYPENAME);
                     processEvent.RouteEventMap(Collections.SingletonDataMap("Ident", ident), MAP_TYPENAME);
-                    processEvent.RouteEventObjectArray(new object[] {ident}, OA_TYPENAME);
+                    processEvent.RouteEventObjectArray(new object[] { ident }, OA_TYPENAME);
 
                     var xml = "<Myevent Ident=\"XXXXXX\"></Myevent>\n".Replace("XXXXXX", ident);
                     processEvent.RouteEventXMLDOM(SupportXML.GetDocument(xml).DocumentElement, XML_TYPENAME);
 
-                    var avroSchema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
+                    var avroSchema = AvroSchemaUtil.ResolveAvroSchema(
+                        env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME));
                     var datum = new GenericRecord(avroSchema.AsRecordSchema());
                     datum.Put("Ident", ident);
                     processEvent.RouteEventAvro(datum, AVRO_TYPENAME);
@@ -102,13 +105,18 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 env.SendEventBean(new SupportBean("xy", -1));
 
-                foreach (var name in new[] {"map", "bean", "oa", "xml", "avro", "json"}) {
+                foreach (var name in new[] { "map", "bean", "oa", "xml", "avro", "json" }) {
                     var listener = env.Listener(name);
                     Assert.IsTrue(listener.IsInvoked, "failed for " + name);
                     Assert.AreEqual("xy", env.Listener(name).AssertOneGetNewAndReset().Get("Ident"));
                 }
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
 

@@ -1,10 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
+
 
 using System.Collections.Generic;
 
@@ -22,9 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public class SubselectForgeNRExistsWGroupByWHaving : SubselectForgeNR
     {
-        private readonly ExprForge havingEval;
-
         private readonly ExprSubselectNode subselect;
+        private readonly ExprForge havingEval;
 
         public SubselectForgeNRExistsWGroupByWHaving(
             ExprSubselectNode subselect,
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
@@ -48,13 +48,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             method.Block
                 .ApplyTri(new ReturnIfNoMatch(ConstantFalse(), ConstantFalse()), method, symbols)
-                .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar<AggregationService>(
+                .DeclareVar(typeof(int), "cpid", ExprDotName(evalCtx, "AgentInstanceId"))
+                .DeclareVar(
+                    typeof(AggregationService),
                     "aggregationService",
-                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar<ICollection<object>>(
+                    ExprDotMethod(aggService, "getContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar(
+                    typeof(ICollection<object>),
                     "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx));
+                    ExprDotMethod(Ref("aggregationService"), "getGroupKeys", evalCtx));
             method.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));

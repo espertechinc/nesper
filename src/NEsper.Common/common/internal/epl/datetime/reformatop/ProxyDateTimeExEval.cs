@@ -16,9 +16,17 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
     public class ProxyDateTimeExEval : DateTimeExEval
     {
         public Func<DateTimeEx, object> ProcEvaluateInternal;
-        public object EvaluateInternal(DateTimeEx dateTime) => ProcEvaluateInternal?.Invoke(dateTime);
+
+        public object EvaluateInternal(DateTimeEx dateTime)
+        {
+            return ProcEvaluateInternal?.Invoke(dateTime);
+        }
 
         public Func<CodegenExpression, CodegenExpression> ProcCodegen;
-        public CodegenExpression Codegen(CodegenExpression dateTime) => ProcCodegen?.Invoke(dateTime);
+
+        public CodegenExpression Codegen(CodegenExpression dateTime)
+        {
+            return ProcCodegen?.Invoke(dateTime);
+        }
     }
 }

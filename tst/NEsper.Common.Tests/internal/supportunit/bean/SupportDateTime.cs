@@ -14,6 +14,7 @@ using com.espertech.esper.compat.datetime;
 
 namespace com.espertech.esper.common.@internal.supportunit.bean
 {
+    [Serializable]
     public class SupportDateTime
     {
         public SupportDateTime(

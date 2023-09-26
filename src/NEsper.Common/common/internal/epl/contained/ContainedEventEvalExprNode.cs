@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
             EPStatementInitServices initServices)
         {
             this.evaluator = evaluator;
-            this.eventBeanFactory = EventTypeUtility.GetFactoryForType(
+            eventBeanFactory = EventTypeUtility.GetFactoryForType(
                 eventType,
                 initServices.EventBeanTypedEventFactory,
                 initServices.EventTypeAvroHandler);
@@ -39,15 +39,15 @@ namespace com.espertech.esper.common.@internal.epl.contained
             EventBean[] eventsPerStream,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object result = evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            var result = evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
 
             if (result == null) {
                 return null;
             }
 
             if (result is Array asArray) {
-                EventBean[] events = new EventBean[asArray.Length];
-                for (int i = 0; i < events.Length; i++) {
+                var events = new EventBean[asArray.Length];
+                for (var i = 0; i < events.Length; i++) {
                     var arrayItem = asArray.GetValue(i);
                     if (arrayItem != null) {
                         events[i] = eventBeanFactory.Wrap(arrayItem);

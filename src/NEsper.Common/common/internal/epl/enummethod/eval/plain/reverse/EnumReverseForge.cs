@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             result.Reverse();
             return result;
         }
-        
+
         public virtual EnumEval EnumEvaluator => this;
 
         public int StreamNumSize { get; }
@@ -62,11 +62,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             var collectionType = IsScalar
                 ? typeof(List<object>)
                 : typeof(List<EventBean>);
-            
+
             var method = codegenMethodScope
                 .MakeChild(returnType, typeof(EnumReverseForge), codegenClassScope)
                 .AddParam(namedParams);
-                
+
             var block = method.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             if (IsScalar) {
                 var listType = typeof(List<object>);
                 block.DeclareVar(
-                    listType, 
+                    listType,
                     "result",
                     NewInstance(
                         listType,
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             else {
                 var listType = typeof(List<EventBean>);
                 block.DeclareVar(
-                    listType, 
+                    listType,
                     "result",
                     NewInstance(
                         listType,
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             block
                 .ExprDotMethod(Ref("result"), "Reverse")
                 .MethodReturn(FlexWrap(Ref("result")));
-            
+
             return LocalMethod(method, args.Expressions);
         }
     }

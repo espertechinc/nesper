@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             bool allowReverseRange)
             : base(isNWOnTrigger, lookupStream, numStreams, start, includeStart, end, includeEnd)
         {
-            this._allowReverseRange = allowReverseRange;
+            _allowReverseRange = allowReverseRange;
         }
 
         public ICollection<EventBean> Lookup(
@@ -42,24 +42,24 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<object> optionalKeyCollector,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            object comparableStart = base.EvaluateLookupStart(theEvent, context);
+            var comparableStart = EvaluateLookupStart(theEvent, context);
             optionalKeyCollector?.Add(comparableStart);
 
             if (comparableStart == null) {
                 return null;
             }
 
-            object comparableEnd = base.EvaluateLookupEnd(theEvent, context);
+            var comparableEnd = EvaluateLookupEnd(theEvent, context);
             optionalKeyCollector?.Add(comparableEnd);
 
             if (comparableEnd == null) {
                 return null;
             }
 
-            IOrderedDictionary<object, CompositeIndexEntry> index =
-                (IOrderedDictionary<object, CompositeIndexEntry>) parent;
+            var index =
+                (IOrderedDictionary<object, CompositeIndexEntry>)parent;
 
-            
+
             IDictionary<object, CompositeIndexEntry> submap;
             if (index.KeyComparer.Compare(comparableStart, comparableEnd) <= 0) {
                 submap = index.Between(comparableStart, includeStart, comparableEnd, includeEnd);
@@ -83,22 +83,22 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             ICollection<object> optionalKeyCollector,
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
-            object comparableStart = base.EvaluatePerStreamStart(eventPerStream, context);
+            var comparableStart = EvaluatePerStreamStart(eventPerStream, context);
             optionalKeyCollector?.Add(comparableStart);
 
             if (comparableStart == null) {
                 return null;
             }
 
-            object comparableEnd = base.EvaluatePerStreamEnd(eventPerStream, context);
+            var comparableEnd = EvaluatePerStreamEnd(eventPerStream, context);
             optionalKeyCollector?.Add(comparableEnd);
 
             if (comparableEnd == null) {
                 return null;
             }
 
-            var index = (IOrderedDictionary<object, CompositeIndexEntry>) parent;
-         
+            var index = (IOrderedDictionary<object, CompositeIndexEntry>)parent;
+
             IDictionary<object, CompositeIndexEntry> submap;
 
             if (index.KeyComparer.Compare(comparableStart, comparableEnd) <= 0) {

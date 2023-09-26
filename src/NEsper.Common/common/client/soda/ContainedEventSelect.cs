@@ -44,8 +44,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the property alias.
         /// </summary>
         /// <returns>alias</returns>
-        public string OptionalAsName
-        {
+        public string OptionalAsName {
             get => optionalAsName;
             set => optionalAsName = value;
         }
@@ -54,8 +53,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the select clause.
         /// </summary>
         /// <returns>select clause</returns>
-        public SelectClause SelectClause
-        {
+        public SelectClause SelectClause {
             get => selectClause;
             set => selectClause = value;
         }
@@ -64,8 +62,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the where clause.
         /// </summary>
         /// <returns>where clause</returns>
-        public Expression WhereClause
-        {
+        public Expression WhereClause {
             get => whereClause;
             set => whereClause = value;
         }
@@ -74,8 +71,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the event type name assigned to events that result by applying the split (contained event) expression.
         /// </summary>
         /// <returns>type name, or null if none assigned</returns>
-        public string OptionalSplitExpressionTypeName
-        {
+        public string OptionalSplitExpressionTypeName {
             get => optionalSplitExpressionTypeName;
             set => optionalSplitExpressionTypeName = value;
         }
@@ -84,8 +80,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the expression that returns the contained events.
         /// </summary>
         /// <returns>contained event expression</returns>
-        public Expression SplitExpression
-        {
+        public Expression SplitExpression {
             get => splitExpression;
             set => splitExpression = value;
         }
@@ -99,28 +94,24 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            if (selectClause != null)
-            {
+            if (selectClause != null) {
                 selectClause.ToEPL(writer, formatter, false, false);
                 writer.Write(" from ");
             }
 
             splitExpression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            if (optionalSplitExpressionTypeName != null)
-            {
+            if (optionalSplitExpressionTypeName != null) {
                 writer.Write("@type(");
                 writer.Write(optionalSplitExpressionTypeName);
                 writer.Write(")");
             }
 
-            if (optionalAsName != null)
-            {
+            if (optionalAsName != null) {
                 writer.Write(" as ");
                 writer.Write(optionalAsName);
             }
 
-            if (whereClause != null)
-            {
+            if (whereClause != null) {
                 writer.Write(" where ");
                 whereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
@@ -137,8 +128,7 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter,
             IList<ContainedEventSelect> items)
         {
-            foreach (var propertySelect in items)
-            {
+            foreach (var propertySelect in items) {
                 writer.Write('[');
                 propertySelect.ToEPL(writer, formatter);
                 writer.Write(']');

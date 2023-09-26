@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionrun.suite.context
                 SupportDatabaseService.DefaultProperties);
             configuration.Common.AddDatabaseReference("MyDB", configDB);
 
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber =true;
             configuration.Compiler.AddPlugInVirtualDataWindow(
                 "test",
                 "vdw",

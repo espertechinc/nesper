@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
@@ -49,9 +50,8 @@ namespace com.espertech.esper.common.@internal.view.unique
             _viewParameters = parameters;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             _criteriaExpressions = ViewForgeSupport.Validate(
@@ -59,8 +59,7 @@ namespace com.espertech.esper.common.@internal.view.unique
                 parentEventType,
                 _viewParameters,
                 false,
-                viewForgeEnv,
-                streamNumber);
+                viewForgeEnv);
 
             if (_criteriaExpressions.Length == 0) {
                 var errorMessage =
@@ -68,7 +67,7 @@ namespace com.espertech.esper.common.@internal.view.unique
                 throw new ViewParameterException(errorMessage);
             }
 
-            this.eventType = parentEventType;
+            eventType = parentEventType;
         }
 
 
@@ -83,15 +82,9 @@ namespace com.espertech.esper.common.@internal.view.unique
             return desc.MultiKeyForgeables;
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(UniqueByPropertyViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(UniqueByPropertyViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "Unique";
-        }
+        internal override string FactoryMethod => "Unique";
 
         internal override void Assign(
             CodegenMethod method,
@@ -100,6 +93,18 @@ namespace com.espertech.esper.common.@internal.view.unique
             CodegenClassScope classScope)
         {
             ViewMultiKeyHelper.Assign(_criteriaExpressions, _multiKeyClassNames, method, factory, symbols, classScope);
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_UNIQUE;
+        }
+
+        public MultiKeyClassRef MultiKeyClassNames => _multiKeyClassNames;
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

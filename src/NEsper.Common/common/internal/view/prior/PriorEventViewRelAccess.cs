@@ -44,16 +44,10 @@ namespace com.espertech.esper.common.@internal.view.prior
             return null;
         }
 
-        public IEnumerator<EventBean> WindowToEvent {
-            get => null;
-        }
+        public IEnumerator<EventBean> WindowToEvent => null;
 
-        public ICollection<EventBean> WindowToEventCollReadOnly {
-            get => null;
-        }
+        public ICollection<EventBean> WindowToEventCollReadOnly => null;
 
-        public int WindowToEventCount {
-            get => 0;
-        }
+        public int WindowToEventCount => 0;
     }
 } // end of namespace

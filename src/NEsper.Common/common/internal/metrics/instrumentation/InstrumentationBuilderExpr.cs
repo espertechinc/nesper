@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -22,14 +23,14 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 {
     public class InstrumentationBuilderExpr
     {
-        private readonly Type generator;
-        private readonly ExprForgeInstrumentable forge;
-        private readonly string qname;
-        private readonly Type requiredType;
+        private readonly CodegenClassScope codegenClassScope;
         private readonly CodegenMethodScope codegenMethodScope;
         private readonly ExprForgeCodegenSymbol exprSymbol;
-        private readonly CodegenClassScope codegenClassScope;
+        private readonly ExprForgeInstrumentable forge;
+        private readonly Type generator;
+        private readonly string qname;
         private readonly IList<CodegenExpression> qParams = new List<CodegenExpression>();
+        private readonly Type requiredType;
 
         public InstrumentationBuilderExpr(
             Type generator,
@@ -48,8 +49,8 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
             this.exprSymbol = exprSymbol;
             this.codegenClassScope = codegenClassScope;
 
-            string text = ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(forge);
-            this.qParams.Insert(0, Constant(text));
+            var text = ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(forge);
+            qParams.Insert(0, Constant(text));
         }
 
         public CodegenExpression Build()
@@ -63,13 +64,13 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
             }
 
             var evaluationType = forge.EvaluationType;
-            if (evaluationType == typeof(void)) {
+            if (evaluationType != null && evaluationType.IsTypeVoid()) {
                 return ConstantNull();
             }
 
             if (evaluationType == null) {
-                CodegenMethod methodX = codegenMethodScope.MakeChild(typeof(object), generator, codegenClassScope);
-                methodX.Block
+                var method = codegenMethodScope.MakeChild(typeof(object), generator, codegenClassScope);
+                method.Block
                     .IfCondition(PublicConstValue(InstrumentationConstants.RUNTIME_HELPER_CLASS, "ENABLED"))
                     .Expression(
                         ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "Get"))
@@ -79,16 +80,17 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
                             .Add("a" + qname, ConstantNull()))
                     .BlockEnd()
                     .MethodReturn(ConstantNull());
-                return LocalMethod(methodX);
+                return LocalMethod(method);
             }
 
-            CodegenMethod method = codegenMethodScope.MakeChild(evaluationType, generator, codegenClassScope);
-            CodegenExpression expr = forge.EvaluateCodegenUninstrumented(
-                evaluationType,
-                method,
+            var evalTypeClass = evaluationType;
+            var methodX = codegenMethodScope.MakeChild(evalTypeClass, generator, codegenClassScope);
+            var expr = forge.EvaluateCodegenUninstrumented(
+                evalTypeClass,
+                methodX,
                 exprSymbol,
                 codegenClassScope);
-            method.Block
+            methodX.Block
                 .IfCondition(PublicConstValue(InstrumentationConstants.RUNTIME_HELPER_CLASS, "ENABLED"))
                 .Expression(
                     ExprDotMethodChain(StaticMethod(InstrumentationConstants.RUNTIME_HELPER_CLASS, "Get"))
@@ -99,7 +101,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
                         .Add("a" + qname, Ref("result")))
                 .BlockReturn(Ref("result"))
                 .MethodReturn(expr);
-            return LocalMethod(method);
+            return LocalMethod(methodX);
         }
 
         public InstrumentationBuilderExpr Noqparam()
@@ -110,13 +112,13 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
 
         public InstrumentationBuilderExpr Qparam(CodegenExpression qparam)
         {
-            this.qParams.Add(qparam);
+            qParams.Add(qparam);
             return this;
         }
 
         public InstrumentationBuilderExpr Qparams(params CodegenExpression[] qparams)
         {
-            this.qParams.AddAll(qparams);
+            qParams.AddAll(Arrays.AsList(qparams));
             return this;
         }
     }

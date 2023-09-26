@@ -21,65 +21,67 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
-	public class ExprDotForgePropertyFragment : ExprDotEval,
-		ExprDotForge
-	{
+    public class ExprDotForgePropertyFragment : ExprDotEval,
+        ExprDotForge
+    {
+        private readonly EventPropertyGetterSPI getter;
+        private readonly EPChainableType returnType;
 
-		private readonly EventPropertyGetterSPI _getter;
-		private readonly EPType _returnType;
+        public ExprDotForgePropertyFragment(
+            EventPropertyGetterSPI getter,
+            EPChainableType returnType)
+        {
+            this.getter = getter;
+            this.returnType = returnType;
+        }
 
-		public ExprDotForgePropertyFragment(
-			EventPropertyGetterSPI getter,
-			EPType returnType)
-		{
-			_getter = getter;
-			_returnType = returnType;
-		}
+        public object Evaluate(
+            object target,
+            EventBean[] eventsPerStream,
+            bool isNewData,
+            ExprEvaluatorContext exprEvaluatorContext)
+        {
+            if (!(target is EventBean bean)) {
+                return null;
+            }
 
-		public object Evaluate(
-			object target,
-			EventBean[] eventsPerStream,
-			bool isNewData,
-			ExprEvaluatorContext exprEvaluatorContext)
-		{
-			if (!(target is EventBean)) {
-				return null;
-			}
+            return getter.GetFragment(bean);
+        }
 
-			return _getter.GetFragment((EventBean) target);
-		}
+        public void Visit(ExprDotEvalVisitor visitor)
+        {
+            visitor.VisitPropertySource();
+        }
 
-		public EPType TypeInfo => _returnType;
+        public CodegenExpression Codegen(
+            CodegenExpression inner,
+            Type innerType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            var type = returnType.GetCodegenReturnType();
+            if (innerType == typeof(EventBean)) {
+                return CodegenLegoCast.CastSafeFromObjectType(
+                    type,
+                    getter.EventBeanFragmentCodegen(inner, parent, classScope));
+            }
 
-		public void Visit(ExprDotEvalVisitor visitor)
-		{
-			visitor.VisitPropertySource();
-		}
+            var methodNode = parent.MakeChild(type, typeof(ExprDotForgePropertyFragment), classScope)
+                .AddParam(innerType, "target");
+            methodNode.Block.IfInstanceOf("target", typeof(EventBean))
+                .BlockReturn(
+                    CodegenLegoCast.CastSafeFromObjectType(
+                        type,
+                        getter.EventBeanFragmentCodegen(Cast(typeof(EventBean), inner), methodNode, classScope)))
+                .MethodReturn(ConstantNull());
+            return LocalMethod(methodNode, inner);
+        }
 
-		public ExprDotEval DotEvaluator => this;
+        public EPChainableType TypeInfo => returnType;
 
-		public ExprDotForge DotForge => this;
+        public ExprDotEval DotEvaluator => this;
 
-		public CodegenExpression Codegen(
-			CodegenExpression inner,
-			Type innerType,
-			CodegenMethodScope parent,
-			ExprForgeCodegenSymbol symbols,
-			CodegenClassScope classScope)
-		{
-			var type = EPTypeHelper.GetCodegenReturnType(_returnType);
-			if (innerType == typeof(EventBean)) {
-				return CodegenLegoCast.CastSafeFromObjectType(type, _getter.EventBeanFragmentCodegen(inner, parent, classScope));
-			}
-
-			var methodNode = parent.MakeChild(type, typeof(ExprDotForgePropertyFragment), classScope).AddParam(innerType, "target");
-
-			methodNode.Block
-				.IfInstanceOf("target", typeof(EventBean))
-				.BlockReturn(
-					CodegenLegoCast.CastSafeFromObjectType(type, _getter.EventBeanFragmentCodegen(Cast(typeof(EventBean), inner), methodNode, classScope)))
-				.MethodReturn(ConstantNull());
-			return LocalMethod(methodNode, inner);
-		}
-	}
+        public ExprDotForge DotForge => this;
+    }
 } // end of namespace

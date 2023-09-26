@@ -37,9 +37,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryUpdate), GetType(), classScope);
             method.Block
-                .DeclareVar<StatementAgentInstanceFactoryUpdate>(
-                    "saiff",
-                    NewInstance(typeof(StatementAgentInstanceFactoryUpdate)))
+                .DeclareVarNewInstance<StatementAgentInstanceFactoryUpdate>("saiff")
                 .SetProperty(Ref("saiff"), "Desc", forge.Make(method, symbols, classScope))
                 .SetProperty(
                     Ref("saiff"),

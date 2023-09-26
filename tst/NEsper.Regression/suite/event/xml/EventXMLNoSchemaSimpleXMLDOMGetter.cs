@@ -20,8 +20,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -62,10 +64,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         private static void RunAssertion(
             RegressionEnvironment env,
-            String eventTypeName,
+            string eventTypeName,
             RegressionPath path)
         {
-            var stmt = "@Name('s0') select " +
+            var stmt = "@name('s0') select " +
                        "element1, " +
                        "invalidelement, " +
                        "element4.element41 as nestedElement," +
@@ -92,27 +94,31 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string element1,
             bool isInvalidReturnsEmptyString)
         {
-            Assert.IsNotNull(env.Listener("s0").LastNewData);
-            var theEvent = env.Listener("s0").LastNewData[0];
+            env.AssertListener(
+                "s0",
+                listener => {
+                    Assert.IsNotNull(listener.LastNewData);
+                    var theEvent = listener.LastNewData[0];
 
-            Assert.AreEqual(element1, theEvent.Get("element1"));
-            Assert.AreEqual("VAL4-1", theEvent.Get("nestedElement"));
-            Assert.AreEqual("VAL21-2", theEvent.Get("mappedElement"));
-            Assert.AreEqual("VAL21-2", theEvent.Get("indexedElement"));
+                    Assert.AreEqual(element1, theEvent.Get("element1"));
+                    Assert.AreEqual("VAL4-1", theEvent.Get("nestedElement"));
+                    Assert.AreEqual("VAL21-2", theEvent.Get("mappedElement"));
+                    Assert.AreEqual("VAL21-2", theEvent.Get("indexedElement"));
 
 #if true
-            Assert.AreEqual(null, theEvent.Get("invalidelement"));
-            Assert.AreEqual(null, theEvent.Get("invalidattribute"));
+                    Assert.AreEqual(null, theEvent.Get("invalidelement"));
+                    Assert.AreEqual(null, theEvent.Get("invalidattribute"));
 #else
-            if (isInvalidReturnsEmptyString) {
-                Assert.AreEqual("", theEvent.Get("invalidelement"));
-                Assert.AreEqual("", theEvent.Get("invalidattribute"));
-            }
-            else {
-                Assert.AreEqual(null, theEvent.Get("invalidelement"));
-                Assert.AreEqual(null, theEvent.Get("invalidattribute"));
-            }
+                    if (isInvalidReturnsEmptyString) {
+                        Assert.AreEqual("", theEvent.Get("invalidelement"));
+                        Assert.AreEqual("", theEvent.Get("invalidattribute"));
+                    }
+                    else {
+                        Assert.AreEqual(null, theEvent.Get("invalidelement"));
+                        Assert.AreEqual(null, theEvent.Get("invalidattribute"));
+                    }
 #endif
+                });
         }
     }
 } // end of namespace

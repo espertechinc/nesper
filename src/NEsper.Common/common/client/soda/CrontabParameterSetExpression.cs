@@ -24,17 +24,13 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            string delimiter = "";
+            var delimiter = "";
             writer.Write("[");
-            foreach (Expression expr in Children)
-            {
+            foreach (var expr in Children) {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";

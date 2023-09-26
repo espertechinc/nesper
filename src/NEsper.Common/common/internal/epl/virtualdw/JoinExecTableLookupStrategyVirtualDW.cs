@@ -44,12 +44,12 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
             var hashKeys = tableLookupPlan.VirtualDWHashEvals;
             if (hashKeys == null) {
-                hashKeys = new ExprEvaluator[0];
+                hashKeys = Array.Empty<ExprEvaluator>();
             }
 
             var rangeKeys = tableLookupPlan.VirtualDWRangeEvals;
             if (rangeKeys == null) {
-                rangeKeys = new QueryGraphValueEntryRange[0];
+                rangeKeys = Array.Empty<QueryGraphValueEntryRange>();
             }
 
             evaluators = new ExternalEvaluator[hashKeys.Length + rangeKeys.Length];
@@ -63,13 +63,13 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
             foreach (var rangeKey in rangeKeys) {
                 if (rangeKey.Type.IsRange()) {
-                    var range = (QueryGraphValueEntryRangeIn) rangeKey;
+                    var range = (QueryGraphValueEntryRangeIn)rangeKey;
                     var evaluatorStart = range.ExprStart;
                     var evaluatorEnd = range.ExprEnd;
                     evaluators[count] = new ExternalEvaluatorBtreeRange(evaluatorStart, evaluatorEnd);
                 }
                 else {
-                    var relOp = (QueryGraphValueEntryRangeRelOp) rangeKey;
+                    var relOp = (QueryGraphValueEntryRangeRelOp)rangeKey;
                     var evaluator = relOp.Expression;
                     evaluators[count] = new ExternalEvaluatorHashRelOp(evaluator);
                 }

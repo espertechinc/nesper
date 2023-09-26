@@ -9,17 +9,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 #if NETCOREAPP3_0_OR_GREATER
-using System.Runtime.Loader;
-
 using com.espertech.esper.common.client.artifact;
-using com.espertech.esper.runtime.@internal.metrics.codahale_metrics.metrics.reporting;
 #endif
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;

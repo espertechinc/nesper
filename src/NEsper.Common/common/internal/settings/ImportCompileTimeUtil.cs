@@ -18,10 +18,10 @@ namespace com.espertech.esper.common.@internal.settings
         public static ValueAndFieldDesc ResolveIdentAsEnumConst(
             string constant,
             ImportServiceCompileTime importService,
-            ExtensionClass classpathExtension, 
+            ExtensionClass classpathExtension,
             bool isAnnotation)
         {
-            EnumValue enumValue = ResolveIdentAsEnum(constant, importService, classpathExtension, isAnnotation);
+            var enumValue = ResolveIdentAsEnum(constant, importService, classpathExtension, isAnnotation);
             if (enumValue == null) {
                 return null;
             }

@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public bool IsBetweenPart { get; }
 
-        public override ExprNode[] Expressions => new[] {Expression};
+        public override ExprNode[] Expressions => new[] { Expression };
 
         protected override Type ResultType => Expression.Forge.EvaluationType;
 

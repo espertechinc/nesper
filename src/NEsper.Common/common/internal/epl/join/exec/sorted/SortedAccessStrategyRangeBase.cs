@@ -37,9 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             this.includeStart = includeStart;
             this.end = end;
             this.includeEnd = includeEnd;
-            this._isNwOnTrigger = isNWOnTrigger;
+            _isNwOnTrigger = isNWOnTrigger;
 
-            this._lookupStream = lookupStream;
+            _lookupStream = lookupStream;
             if (lookupStream != -1) {
                 _events = new EventBean[lookupStream + 1];
             }

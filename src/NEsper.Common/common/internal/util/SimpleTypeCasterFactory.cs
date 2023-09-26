@@ -112,9 +112,9 @@ namespace com.espertech.esper.common.@internal.util
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "CastBigInteger", input)
         };
-        
+
         // -----
-        
+
         public static readonly SimpleTypeCaster NullableInt16TypeCaster = new ProxyTypeCaster {
             IsNumericCast = true,
             ProcCast = v => CastHelper.CastNullableInt16(v),
@@ -205,12 +205,12 @@ namespace com.espertech.esper.common.@internal.util
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(CastHelper), "CastNullableBigInteger", input)
         };
-        
+
         // -----
 
         public static readonly SimpleTypeCaster BooleanTypeCaster = new ProxyTypeCaster {
             IsNumericCast = false,
-            ProcCast = sourceObj => sourceObj == null ? (object) null : Convert.ToBoolean(sourceObj),
+            ProcCast = sourceObj => sourceObj == null ? (object)null : Convert.ToBoolean(sourceObj),
             ProcCodegenInput = input => CodegenExpressionBuilder
                 .StaticMethod(typeof(Convert), "ToBoolean", input)
         };
@@ -220,7 +220,7 @@ namespace com.espertech.esper.common.@internal.util
             ProcCast = value => value,
             ProcCodegenInput = input => input
         };
-        
+
         public static readonly SimpleTypeCaster StringTypeCaster = new ProxyTypeCaster {
             IsNumericCast = false,
             ProcCast = sourceObj => {
@@ -333,7 +333,7 @@ namespace com.espertech.esper.common.@internal.util
                         .StaticMethod(
                             typeof(CompatExtensions),
                             "UnwrapIntoArray",
-                            new [] { arrayElementType },
+                            new[] { arrayElementType },
                             input,
                             new CodegenExpressionConstant(true))
                 };
@@ -344,10 +344,10 @@ namespace com.espertech.esper.common.@internal.util
                     IsNumericCast = false,
                     ProcCast = v => CastHelper.CastEnum(targetType, v),
                     ProcCodegenInput = input => CodegenExpressionBuilder
-                        .StaticMethod(typeof(CastHelper), "CastEnum", new [] { targetType }, input)
+                        .StaticMethod(typeof(CastHelper), "CastEnum", new[] { targetType }, input)
                 };
             }
-            
+
             return new ProxyTypeCaster {
                 IsNumericCast = false,
                 ProcCast = sourceObj => {

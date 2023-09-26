@@ -79,8 +79,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         protected internal static EventType CreateEventType(
             StatViewAdditionalPropsForge additionalProps,
-            ViewForgeEnv viewForgeEnv,
-            int streamNum)
+            ViewForgeEnv viewForgeEnv)
         {
             var eventTypeMap = new LinkedHashMap<string, object>();
             eventTypeMap.Put(ViewFieldEnum.CORRELATION__CORRELATION.GetName(), typeof(double?));
@@ -88,7 +87,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 eventTypeMap,
                 additionalProps,
                 ViewFieldEnum.CORRELATION__CORRELATION);
-            return DerivedViewTypeUtil.NewType("correlview", eventTypeMap, viewForgeEnv, streamNum);
+            return DerivedViewTypeUtil.NewType("correlview", eventTypeMap, viewForgeEnv);
         }
     }
 } // end of namespace

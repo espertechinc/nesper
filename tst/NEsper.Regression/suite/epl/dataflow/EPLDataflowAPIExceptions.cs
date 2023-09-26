@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -33,9 +34,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             // test exception by graph source
             env.CompileDeploy(
-                "@Name('flow') create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}");
+                "@name('flow') create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}");
 
-            var op = new DefaultSupportSourceOp(new object[] {new EPRuntimeException("My-Exception-Is-Here")});
+            var op = new DefaultSupportSourceOp(new object[] { new EPRuntimeException("My-Exception-Is-Here") });
             var options = new EPDataFlowInstantiationOptions();
             options.WithOperatorProvider(new DefaultSupportGraphOpProvider(op));
             var handler = new MyExceptionHandler();
@@ -62,10 +63,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             // test exception by operator
             env.CompileDeploy(
-                "@Name('flow') create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}" +
+                "@name('flow') create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}" +
                 "MyExceptionOp(outstream) {}");
 
-            var opTwo = new DefaultSupportSourceOp(new object[] {new SupportBean("E1", 1)});
+            var opTwo = new DefaultSupportSourceOp(new object[] { new SupportBean("E1", 1) });
             var optionsTwo = new EPDataFlowInstantiationOptions();
             optionsTwo.WithOperatorProvider(new DefaultSupportGraphOpProvider(opTwo));
             var handlerTwo = new MyExceptionHandler();
@@ -82,6 +83,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             Assert.AreEqual(1, contextTwo.OperatorNumber);
             Assert.AreEqual("MyExceptionOp#1(outstream)", contextTwo.OperatorPrettyPrint);
             Assert.AreEqual("Operator-thrown-exception", contextTwo.Exception.Message);
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.DATAFLOW);
         }
 
         public class MyExceptionHandler : EPDataFlowExceptionHandler

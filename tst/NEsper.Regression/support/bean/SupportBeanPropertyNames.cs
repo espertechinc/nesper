@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public string FooBah => "";
 
-        public int[] Array => new int[0];
+        public int[] Array => System.Array.Empty<int>();
 
         public string GetA(string key)
         {

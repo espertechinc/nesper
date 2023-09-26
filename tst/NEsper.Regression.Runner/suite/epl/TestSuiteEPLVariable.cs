@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             common.AddVariable("my_variable_custom_typed", typeof(EPLVariablesUse.MyVariableCustomType), EPLVariablesUse.MyVariableCustomType.Of("abc"), true);
 
             configuration.Compiler.ViewResources.IterableUnbound = true;
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber =true;
         }
     }
 } // end of namespace

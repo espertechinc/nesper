@@ -53,10 +53,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             ExprEvaluatorContext exprEvaluatorContext)
         {
             services.Array[exprEvaluatorContext.AgentInstanceId]
-                .ApplyEnter(
-                    eventsPerStream,
-                    optionalGroupKeyPerRow,
-                    exprEvaluatorContext);
+                .ApplyEnter(eventsPerStream, optionalGroupKeyPerRow, exprEvaluatorContext);
         }
 
         public void ApplyLeave(
@@ -65,10 +62,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             ExprEvaluatorContext exprEvaluatorContext)
         {
             services.Array[exprEvaluatorContext.AgentInstanceId]
-                .ApplyLeave(
-                    eventsPerStream,
-                    optionalGroupKeyPerRow,
-                    exprEvaluatorContext);
+                .ApplyLeave(eventsPerStream, optionalGroupKeyPerRow, exprEvaluatorContext);
         }
 
         public void SetCurrentAccess(
@@ -97,12 +91,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return services.Array[agentInstanceId]
-                .GetValue(
-                    column,
-                    agentInstanceId,
-                    eventsPerStream,
-                    isNewData,
-                    exprEvaluatorContext);
+                .GetValue(column, agentInstanceId, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public ICollection<EventBean> GetCollectionOfEvents(
@@ -140,8 +129,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return services
-                .Array[context.AgentInstanceId]
+            return services.Array[context.AgentInstanceId]
                 .GetAggregationRow(agentInstanceId, eventsPerStream, isNewData, context);
         }
 
@@ -149,6 +137,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         {
             // not applicable
         }
+        
 
         public void Accept(AggregationServiceVisitor visitor)
         {
@@ -174,8 +163,6 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         {
         }
 
-        public bool IsGrouped {
-            get { throw new UnsupportedOperationException("Not applicable"); }
-        }
+        public bool IsGrouped => throw new UnsupportedOperationException("Not applicable");
     }
 } // end of namespace

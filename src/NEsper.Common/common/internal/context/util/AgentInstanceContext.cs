@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.context.mgr;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.dataflow.filtersvcadapter;
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.historical.database.connection;
 using com.espertech.esper.common.@internal.epl.historical.datacache;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -107,9 +109,11 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public ViewFactoryService ViewFactoryService => StatementContext.ViewFactoryService;
 
-        public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory => StatementContext.ResultSetProcessorHelperFactory;
+        public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory =>
+            StatementContext.ResultSetProcessorHelperFactory;
 
-        public NamedWindowManagementService NamedWindowManagementService => StatementContext.NamedWindowManagementService;
+        public NamedWindowManagementService NamedWindowManagementService =>
+            StatementContext.NamedWindowManagementService;
 
         public StatementResourceService StatementResourceService => StatementContext.StatementResourceService;
 
@@ -117,11 +121,13 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public VariableManagementService VariableManagementService => StatementContext.VariableManagementService;
 
-        public StatementContextFilterEvalEnv StatementContextFilterEvalEnv => StatementContext.StatementContextFilterEvalEnv;
+        public StatementContextFilterEvalEnv StatementContextFilterEvalEnv =>
+            StatementContext.StatementContextFilterEvalEnv;
 
         public TableManagementService TableManagementService => StatementContext.TableManagementService;
 
-        public EventTypeResolvingBeanFactory EventTypeResolvingBeanFactory => StatementContext.EventTypeResolvingBeanFactory;
+        public EventTypeResolvingBeanFactory EventTypeResolvingBeanFactory =>
+            StatementContext.EventTypeResolvingBeanFactory;
 
         public EventTypeAvroHandler EventTypeAvroHandler => StatementContext.EventTypeAvroHandler;
 
@@ -133,13 +139,15 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public DatabaseConfigServiceRuntime DatabaseConfigService => StatementContext.DatabaseConfigService;
 
-        public EPRuntimeEventProcessWrapped EPRuntimeEventProcessWrapped => StatementContext.EPRuntimeEventProcessWrapped;
+        public EPRuntimeEventProcessWrapped EPRuntimeEventProcessWrapped =>
+            StatementContext.EPRuntimeEventProcessWrapped;
 
         public EventServiceSendEventCommon EPRuntimeSendEvent => StatementContext.EPRuntimeSendEvent;
 
         public EPRenderEventService EPRuntimeRenderEvent => StatementContext.EPRuntimeRenderEvent;
 
-        public DataFlowFilterServiceAdapter DataFlowFilterServiceAdapter => StatementContext.DataFlowFilterServiceAdapter;
+        public DataFlowFilterServiceAdapter DataFlowFilterServiceAdapter =>
+            StatementContext.DataFlowFilterServiceAdapter;
 
         public object Runtime => StatementContext.Runtime;
 
@@ -172,11 +180,11 @@ namespace com.espertech.esper.common.@internal.context.util
                     return Collections.GetEmptyList<AgentInstanceMgmtCallback>();
                 }
 
-                if (_terminationCallbacks is ICollection<AgentInstanceMgmtCallback>) {
-                    return (ICollection<AgentInstanceMgmtCallback>) _terminationCallbacks;
+                if (_terminationCallbacks is ICollection<AgentInstanceMgmtCallback> callbacks) {
+                    return callbacks;
                 }
 
-                return Collections.SingletonList((AgentInstanceMgmtCallback) _terminationCallbacks);
+                return Collections.SingletonList((AgentInstanceMgmtCallback)_terminationCallbacks);
             }
         }
 
@@ -200,7 +208,8 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public string DeploymentId => StatementContext.DeploymentId;
 
-        public ExpressionResultCacheService ExpressionResultCacheService => StatementContext.ExpressionResultCacheServiceSharable;
+        public ExpressionResultCacheService ExpressionResultCacheService =>
+            StatementContext.ExpressionResultCacheServiceSharable;
 
         public TableExprEvaluatorContext TableExprEvaluatorContext => StatementContext.TableExprEvaluatorContext;
 
@@ -230,11 +239,11 @@ namespace com.espertech.esper.common.@internal.context.util
             if (_terminationCallbacks == null) {
                 _terminationCallbacks = callback;
             }
-            else if (_terminationCallbacks is ICollection<AgentInstanceMgmtCallback>) {
-                ((ICollection<AgentInstanceMgmtCallback>) _terminationCallbacks).Add(callback);
+            else if (_terminationCallbacks is ICollection<AgentInstanceMgmtCallback> callbacks) {
+                callbacks.Add(callback);
             }
             else {
-                var cb = (AgentInstanceMgmtCallback) _terminationCallbacks;
+                var cb = (AgentInstanceMgmtCallback)_terminationCallbacks;
                 var q = new HashSet<AgentInstanceMgmtCallback>();
                 q.Add(cb);
                 q.Add(callback);
@@ -246,12 +255,24 @@ namespace com.espertech.esper.common.@internal.context.util
         {
             if (_terminationCallbacks == null) {
             }
-            else if (_terminationCallbacks is ICollection<AgentInstanceMgmtCallback>) {
-                ((ICollection<AgentInstanceMgmtCallback>) _terminationCallbacks).Remove(callback);
+            else if (_terminationCallbacks is ICollection<AgentInstanceMgmtCallback> callbacks) {
+                callbacks.Remove(callback);
             }
             else if (_terminationCallbacks == callback) {
                 _terminationCallbacks = null;
             }
         }
+
+        public string ContextName => StatementContext.ContextName;
+
+        public string EPLWhenAvailable => StatementContext.EPLWhenAvailable;
+
+        public TimeZoneInfo TimeZone => StatementContext.TimeZone;
+
+        public TimeAbacus TimeAbacus => StatementContext.TimeAbacus;
+
+        public bool IsWritesToTables => StatementContext.IsWritesToTables;
+
+        public Configuration ConfigSnapshot => StatementContext.ConfigSnapshot;
     }
 } // end of namespace

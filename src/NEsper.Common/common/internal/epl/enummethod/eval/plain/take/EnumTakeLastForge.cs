@@ -29,13 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             this.scalar = scalar;
         }
 
-        public int StreamNumSize {
-            get => numStreams;
-        }
+        public int StreamNumSize => numStreams;
 
-        public virtual EnumEval EnumEvaluator {
-            get => new EnumTakeLastForgeEval(sizeEval.ExprEvaluator);
-        }
+        public virtual EnumEval EnumEvaluator => new EnumTakeLastForgeEval(sizeEval.ExprEvaluator);
 
         public virtual CodegenExpression Codegen(
             EnumForgeCodegenParams premade,

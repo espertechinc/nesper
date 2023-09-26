@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,20 +21,22 @@ using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.subselect;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.statement.helper;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.context.aifactory.update
 {
     public class StmtForgeMethodUpdate : StmtForgeMethod
     {
-        private readonly StatementBaseInfo _base;
+        private readonly StatementBaseInfo @base;
 
         public StmtForgeMethodUpdate(StatementBaseInfo @base)
         {
-            this._base = @base;
+            this.@base = @base;
         }
 
         public StmtForgeMethodResult Make(
@@ -42,28 +44,26 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             string classPostfix,
             StatementCompileTimeServices services)
         {
-            var statementSpec = _base.StatementSpec;
+            var statementSpec = @base.StatementSpec;
 
             // determine context
-            var contextName = _base.StatementSpec.Raw.OptionalContextName;
+            var contextName = @base.StatementSpec.Raw.OptionalContextName;
             if (contextName != null) {
                 throw new ExprValidationException("Update IStream is not supported in conjunction with a context");
             }
 
             var streamSpec = statementSpec.StreamSpecs[0];
             var updateSpec = statementSpec.Raw.UpdateDesc;
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
+            var fabricCharge = services.StateMgmtSettingsProvider.NewCharge();
             string triggereventTypeName;
             EventType streamEventType;
-            
-            List<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
 
-            if (streamSpec is FilterStreamSpecCompiled) {
-                var filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
+            if (streamSpec is FilterStreamSpecCompiled filterStreamSpec) {
                 triggereventTypeName = filterStreamSpec.FilterSpecCompiled.FilterForEventTypeName;
                 streamEventType = filterStreamSpec.FilterSpecCompiled.FilterForEventType;
             }
-            else if (streamSpec is NamedWindowConsumerStreamSpec) {
-                var namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+            else if (streamSpec is NamedWindowConsumerStreamSpec namedSpec) {
                 streamEventType = namedSpec.NamedWindow.EventType;
                 triggereventTypeName = streamEventType.Name;
             }
@@ -81,32 +81,46 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             }
 
             StreamTypeService typeService = new StreamTypeServiceImpl(
-                new[] {streamEventType},
-                new[] {streamName},
-                new[] {true},
+                new EventType[] { streamEventType },
+                new string[] { streamName },
+                new bool[] { true },
                 false,
                 false);
 
             // create subselect information
-            IList<FilterSpecCompiled> filterSpecCompileds = new List<FilterSpecCompiled>();
+            IList<FilterSpecTracked> filterSpecCompileds = new List<FilterSpecTracked>();
             IList<NamedWindowConsumerStreamSpec> namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
-            SubSelectActivationDesc subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
-                filterSpecCompileds, namedWindowConsumers, _base, services);
+            var subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
+                false,
+                filterSpecCompileds,
+                namedWindowConsumers,
+                @base,
+                services);
             additionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
-            IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation = subSelectActivationDesc.Subselects;
+            fabricCharge.Add(subSelectActivationDesc.FabricCharge);
+            var subselectActivation = subSelectActivationDesc.Subselects;
 
             // handle subselects
-            SubSelectHelperForgePlan subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
-                _base, subselectActivation, typeService.StreamNames, typeService.EventTypes, new String[]{triggereventTypeName}, services);
-            IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselectForges = subSelectForgePlan.Subselects;
+            var subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
+                @base,
+                subselectActivation,
+                typeService.StreamNames,
+                typeService.EventTypes,
+                new string[] { triggereventTypeName },
+                services);
+            var subselectForges = subSelectForgePlan.Subselects;
             additionalForgeables.AddAll(subSelectForgePlan.AdditionalForgeables);
+            fabricCharge.Add(subSelectForgePlan.FabricCharge);
 
             var validationContext =
-                new ExprValidationContextBuilder(typeService, _base.StatementRawInfo, services).Build();
+                new ExprValidationContextBuilder(typeService, @base.StatementRawInfo, services).Build();
 
             foreach (var assignment in updateSpec.Assignments) {
                 ExprNodeUtilityValidate.ValidateAssignment(
-                    false, ExprNodeOrigin.UPDATEASSIGN, assignment, validationContext);
+                    false,
+                    ExprNodeOrigin.UPDATEASSIGN,
+                    assignment,
+                    validationContext);
             }
 
             if (updateSpec.OptionalWhereClause != null) {
@@ -124,14 +138,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             var routerDesc = InternalEventRouterDescFactory.GetValidatePreprocessing(
                 streamEventType,
                 updateSpec,
-                _base.StatementRawInfo.Annotations);
+                @base.StatementRawInfo.Annotations);
 
             var statementFieldsClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
             var namespaceScope = new CodegenNamespaceScope(
                 @namespace,
                 statementFieldsClassName,
-                services.IsInstrumented);
+                services.IsInstrumented,
+                services.Configuration.Compiler.ByteCode);
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider),
@@ -143,17 +158,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                 forge);
 
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor(
-                new[] {streamEventType.UnderlyingType},
-                new[] {"*"},
+                new Type[] { streamEventType.UnderlyingType },
+                new string[] { "*" },
                 false,
                 null,
                 null);
-            
             var informationals = StatementInformationalsUtil.GetInformationals(
-                _base,
+                @base,
                 filterSpecCompileds,
-                Collections.GetEmptyList<ScheduleHandleCallbackProvider>(),
-                Collections.GetEmptyList<NamedWindowConsumerStreamSpec>(),
+                EmptyList<ScheduleHandleTracked>.Instance, 
+                EmptyList<NamedWindowConsumerStreamSpec>.Instance, 
                 false,
                 selectSubscriberDescriptor,
                 namespaceScope,
@@ -167,16 +181,21 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                 namespaceScope);
 
             IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
-            additionalForgeables.ForEach(_ => forgeables.Add(_.Make(namespaceScope, classPostfix)));
+            foreach (var additional in additionalForgeables) {
+                forgeables.Add(additional.Make(namespaceScope, classPostfix));
+            }
+
             forgeables.Add(aiFactoryForgeable);
             forgeables.Add(stmtProvider);
-            forgeables.Add(new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope, 0));
+            forgeables.Add(new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope));
             return new StmtForgeMethodResult(
                 forgeables,
                 filterSpecCompileds,
-                Collections.GetEmptyList<ScheduleHandleCallbackProvider>(),
+                EmptyList<ScheduleHandleTracked>.Instance, 
                 namedWindowConsumers,
-                Collections.GetEmptyList<FilterSpecParamExprNodeForge>());
+                EmptyList<FilterSpecParamExprNodeForge>.Instance, 
+                namespaceScope,
+                fabricCharge);
         }
     }
 } // end of namespace

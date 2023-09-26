@@ -16,11 +16,16 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     {
         internal static FilterSpecParamForge HandlePlugInSingleRow(ExprPlugInSingleRowNode constituent)
         {
-            if (!constituent.Forge.EvaluationType.IsBoolean()) {
+            var forgeEvaluationType = constituent.Forge.EvaluationType;
+            if (forgeEvaluationType == null) {
                 return null;
             }
 
-            if (!constituent.FilterLookupEligible) {
+            if (!forgeEvaluationType.IsTypeBoolean()) {
+                return null;
+            }
+
+            if (!constituent.IsFilterLookupEligible) {
                 return null;
             }
 

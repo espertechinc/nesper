@@ -53,15 +53,15 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
 
             hasNewData = false;
 
-            EventBean[][] oldDataPerStream = new EventBean[numStreams][];
-            EventBean[][] newDataPerStream = new EventBean[numStreams][];
+            var oldDataPerStream = new EventBean[numStreams][];
+            var newDataPerStream = new EventBean[numStreams][];
 
-            for (int i = 0; i < numStreams; i++) {
+            for (var i = 0; i < numStreams; i++) {
                 oldDataPerStream[i] = GetBufferData(oldStreamBuffer.Get(i));
                 newDataPerStream[i] = GetBufferData(newStreamBuffer.Get(i));
             }
 
-            InstrumentationCommon instrumentationCommon = agentInstanceContext.InstrumentationProvider;
+            var instrumentationCommon = agentInstanceContext.InstrumentationProvider;
             if (instrumentationCommon.Activated()) {
                 instrumentationCommon.QJoinDispatch(newDataPerStream, oldDataPerStream);
                 joinExecutionStrategy.Join(newDataPerStream, oldDataPerStream);

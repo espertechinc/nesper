@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.util
         private TypeResolverDefault()
         {
         }
-        
+
         public Type ResolveType(
             string typeName,
             bool resolve)

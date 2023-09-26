@@ -32,24 +32,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             Type resultType,
             TableMetaData tableMetadata)
         {
-            this._streamNum = streamNum;
-            this._resultType = resultType;
-            this._tableMetadata = tableMetadata;
+            _streamNum = streamNum;
+            _resultType = resultType;
+            _tableMetadata = tableMetadata;
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get => this;
-        }
+        public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType {
-            get => _resultType;
-        }
+        public Type EvaluationType => _resultType;
 
         public ExprNodeRenderable ExprForgeRenderable {
             get {
-                return new ProxyExprNodeRenderable((writer, parentPrecedence, flags) => {
-                    writer.Write(this.GetType().Name);
-                });
+                return new ProxyExprNodeRenderable(
+                    (
+                        writer,
+                        parentPrecedence,
+                        flags) => {
+                        writer.Write(GetType().Name);
+                    });
             }
         }
 
@@ -67,9 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, this.GetType());
-            CodegenMethod method = parent.MakeChild(
+            var eventToPublic =
+                TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, GetType());
+            var method = parent.MakeChild(
                 typeof(object[]),
                 typeof(ExprEvalUnderlyingEvaluatorTable),
                 codegenClassScope);
@@ -87,8 +87,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             return LocalMethod(method);
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
     }
 } // end of namespace

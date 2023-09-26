@@ -64,15 +64,13 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
                 return false;
             }
 
-            var that = (IndexCompileTimeKey) o;
+            var that = (IndexCompileTimeKey)o;
 
             if (IsNamedWindow != that.IsNamedWindow) {
                 return false;
             }
 
-            if (InfraModuleName != null
-                ? !InfraModuleName.Equals(that.InfraModuleName)
-                : that.InfraModuleName != null) {
+            if (!InfraModuleName?.Equals(that.InfraModuleName) ?? that.InfraModuleName != null) {
                 return false;
             }
 
@@ -88,9 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
                 return false;
             }
 
-            return IndexModuleName != null
-                ? IndexModuleName.Equals(that.IndexModuleName)
-                : that.IndexModuleName == null;
+            return IndexModuleName?.Equals(that.IndexModuleName) ?? that.IndexModuleName == null;
         }
 
         public override int GetHashCode()

@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             TableAndLockProviderGrouped provider,
             ExprTableEvalStrategyFactory factory)
         {
-            this._provider = provider;
-            this._factory = factory;
+            _provider = provider;
+            _factory = factory;
         }
 
         public abstract object Evaluate(
@@ -56,8 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context);
 
-        
-        protected TableInstanceGrouped LockTableRead(ExprEvaluatorContext context) {
+
+        protected TableInstanceGrouped LockTableRead(ExprEvaluatorContext context)
+        {
             var tableAndLockGrouped = _provider.Get();
             TableEvalLockUtil.ObtainLockUnless(tableAndLockGrouped.Lock, context);
             return tableAndLockGrouped.Grouped;
@@ -84,8 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             var groupKey = _factory.GroupKeyEval.Evaluate(eventsPerStream, isNewData, context);
             var tableAndLockGrouped = _provider.Get();
             TableEvalLockUtil.ObtainLockUnless(tableAndLockGrouped.Lock, context);
-            if (groupKey is object[]) {
-                groupKey = tableAndLockGrouped.Grouped.Table.PrimaryKeyObjectArrayTransform.From((object[]) groupKey);
+            if (groupKey is object[] key) {
+                groupKey = tableAndLockGrouped.Grouped.Table.PrimaryKeyObjectArrayTransform.From(key);
             }
 
             return tableAndLockGrouped.Grouped.GetRowForGroupKey(groupKey);

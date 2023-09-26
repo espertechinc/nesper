@@ -178,7 +178,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
             var groups = matcher.Groups;
             for (var i = 0; i < groups.Count; i++) {
-                string group = groups[i + 1].Value;
+                var group = groups[i + 1].Value;
                 if (group == null) {
                 }
                 else if (group.EndsWith("Y")) {
@@ -213,7 +213,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
             var groups = matcher.Groups;
             for (var i = 0; i < groups.Count; i++) {
-                string group = groups[i + 1].Value;
+                var group = groups[i + 1].Value;
                 if (group == null) {
                 }
                 else if (group.EndsWith("H")) {

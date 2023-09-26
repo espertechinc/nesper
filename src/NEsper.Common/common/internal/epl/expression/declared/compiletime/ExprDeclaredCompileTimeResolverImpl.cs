@@ -34,18 +34,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ModuleDependenciesCompileTime moduleDependencies,
             bool isFireAndForget)
         {
-            this._moduleName = moduleName;
-            this._moduleUses = moduleUses;
-            this._locals = locals;
-            this._path = path;
-            this._moduleDependencies = moduleDependencies;
-            this._isFireAndForget = isFireAndForget;
+            _moduleName = moduleName;
+            _moduleUses = moduleUses;
+            _locals = locals;
+            _path = path;
+            _moduleDependencies = moduleDependencies;
+            _isFireAndForget = isFireAndForget;
         }
 
         public ExpressionDeclItem Resolve(string name)
         {
             // try self-originated protected types first
-            ExpressionDeclItem localExpr = _locals.Expressions.Get(name);
+            var localExpr = _locals.Expressions.Get(name);
             if (localExpr != null) {
                 return localExpr;
             }
@@ -53,10 +53,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             try {
                 var expression = _path.GetAnyModuleExpectSingle(name, _moduleUses);
                 if (expression != null) {
-                    if (!_isFireAndForget && !NameAccessModifierExtensions.Visible(
-                        expression.First.Visibility,
-                        expression.First.ModuleName,
-                        _moduleName)) {
+                    if (!_isFireAndForget &&
+                        !NameAccessModifierExtensions.Visible(
+                            expression.First.Visibility,
+                            expression.First.ModuleName,
+                            _moduleName)) {
                         return null;
                     }
 

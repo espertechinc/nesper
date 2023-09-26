@@ -110,12 +110,12 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventBean eventBean,
             string propertyName)
         {
-            var objectArrayEventType = (ObjectArrayEventType) eventBean.EventType;
+            var objectArrayEventType = (ObjectArrayEventType)eventBean.EventType;
             if (!objectArrayEventType.PropertiesIndexes.TryGetValue(propertyName, out var index)) {
                 return null;
             }
 
-            var theEvent = (object[]) eventBean.Underlying;
+            var theEvent = (object[])eventBean.Underlying;
             return theEvent[index];
         }
 
@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventBean eventBean,
             string propertyName)
         {
-            var objectArrayEventType = (ObjectArrayEventType) eventBean.EventType;
+            var objectArrayEventType = (ObjectArrayEventType)eventBean.EventType;
             return objectArrayEventType.PropertiesIndexes.TryGetValue(propertyName, out var index);
         }
     }

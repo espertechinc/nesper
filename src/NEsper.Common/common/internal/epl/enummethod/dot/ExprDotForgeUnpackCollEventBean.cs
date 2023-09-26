@@ -29,9 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     {
         public ExprDotForgeUnpackCollEventBean(EventType type)
         {
-            TypeInfo = EPTypeHelper.CollectionOfSingleValue(
-                type.UnderlyingType,
-                typeof(EventBean));
+            TypeInfo = EPChainableTypeHelper.CollectionOfSingleValue(
+                type.UnderlyingType);
         }
 
         public object Evaluate(
@@ -42,7 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             if (target == null) {
                 return null;
-            } else if (target is FlexCollection flexCollection) {
+            }
+            else if (target is FlexCollection flexCollection) {
                 return new EventUnderlyingCollection(flexCollection);
             }
 
@@ -54,12 +54,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             Type innerType,
             CodegenMethodScope parent,
             ExprForgeCodegenSymbol symbols,
-            CodegenClassScope classScope) 
+            CodegenClassScope classScope)
         {
             var returnType = typeof(ICollection<EventBean>);
-            CodegenMethod methodNode = parent
+            var methodNode = parent
                 .MakeChild(returnType, typeof(ExprDotForgeUnpackCollEventBean), classScope)
-                .AddParam(typeof(FlexCollection), "target");
+                .AddParam<FlexCollection>("target");
 
             methodNode.Block
                 .IfRefNullReturnNull("target")
@@ -67,19 +67,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return LocalMethod(methodNode, inner);
         }
 
-        public EPType TypeInfo { get; }
+        public EPChainableType TypeInfo { get; }
 
         public void Visit(ExprDotEvalVisitor visitor)
         {
             visitor.VisitUnderlyingEventColl();
         }
 
-        public ExprDotEval DotEvaluator {
-            get => this;
-        }
+        public ExprDotEval DotEvaluator => this;
 
-        public ExprDotForge DotForge {
-            get => this;
-        }
+        public ExprDotForge DotForge => this;
     }
 } // end of namespace

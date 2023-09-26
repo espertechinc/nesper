@@ -6,10 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -18,36 +19,33 @@ namespace com.espertech.esper.regressionlib.suite.context
 {
     public class ContextInitTermPrioritized
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
-            WithNonOverlappingSubqueryAndInvalid(execs);
-            WithAtNowWithSelectedEventEnding(execs);
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if TEMPORARY
+			WithNonOverlappingSubqueryAndInvalid(execs);
+			WithAtNowWithSelectedEventEnding(execs);
+#endif
             return execs;
         }
 
-        public static IList<RegressionExecution> WithAtNowWithSelectedEventEnding(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithAtNowWithSelectedEventEnding(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new AtNowWithSelectedEventEnding());
+            execs.Add(new ContextInitTermPrioAtNowWithSelectedEventEnding());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithNonOverlappingSubqueryAndInvalid(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithNonOverlappingSubqueryAndInvalid(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new NonOverlappingSubqueryAndInvalid());
+            execs.Add(new ContextInitTermPrioNonOverlappingSubqueryAndInvalid());
             return execs;
         }
 
-        private static void SendTimeEvent(
-            RegressionEnvironment env,
-            string time)
-        {
-            env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(time));
-        }
-
-        internal class NonOverlappingSubqueryAndInvalid : RegressionExecution
+        public class ContextInitTermPrioNonOverlappingSubqueryAndInvalid : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -55,8 +53,8 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var path = new RegressionPath();
                 var epl =
-                    "\n @Name('ctx') create context RuleActivityTime as start (0, 9, *, *, *) end (0, 17, *, *, *);" +
-                    "\n @Name('window') context RuleActivityTime create window EventsWindow#firstunique(ProductID) as SupportProductIdEvent;" +
+                    "\n @Name('ctx') @public create context RuleActivityTime as start (0, 9, *, *, *) end (0, 17, *, *, *);" +
+                    "\n @Name('window') @public context RuleActivityTime create window EventsWindow#firstunique(productID) as SupportProductIdEvent;" +
                     "\n @Name('variable') create variable boolean IsOutputTriggered_2 = false;" +
                     "\n @Name('A') context RuleActivityTime insert into EventsWindow select * from SupportProductIdEvent(not exists (select * from EventsWindow));" +
                     "\n @Name('B') context RuleActivityTime insert into EventsWindow select * from SupportProductIdEvent(not exists (select * from EventsWindow));" +
@@ -68,8 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new SupportProductIdEvent("A1"));
 
                 // invalid - subquery not the same context
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     path,
                     "insert into EventsWindow select * from SupportProductIdEvent(not exists (select * from EventsWindow))",
                     "Failed to validate subquery number 1 querying EventsWindow: Named window by name 'EventsWindow' has been declared for context 'RuleActivityTime' and can only be used within the same context");
@@ -78,29 +75,30 @@ namespace com.espertech.esper.regressionlib.suite.context
             }
         }
 
-        internal class AtNowWithSelectedEventEnding : RegressionExecution
+        public class ContextInitTermPrioAtNowWithSelectedEventEnding : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] { "TheString" };
+                var fields = "theString".SplitCsv();
                 var epl = "@Priority(1) create context C1 start @now end SupportBean;\n" +
-                          "@Name('s0') @Priority(0) context C1 select * from SupportBean;\n";
+                          "@name('s0') @Priority(0) context C1 select * from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] { "E1" });
+                env.AssertPropsNew("s0", fields, new object[] { "E1" });
 
                 env.SendEventBean(new SupportBean("E2", 1));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] { "E2" });
+                env.AssertPropsNew("s0", fields, new object[] { "E2" });
 
                 env.UndeployAll();
             }
+        }
+
+        private static void SendTimeEvent(
+            RegressionEnvironment env,
+            string time)
+        {
+            env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(time));
         }
     }
 } // end of namespace

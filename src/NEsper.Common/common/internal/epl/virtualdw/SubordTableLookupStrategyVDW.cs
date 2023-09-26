@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             for (var i = 0; i < rangeKeys.Length; i++) {
                 var rangeKey = rangeKeys[i];
                 if (rangeKey.Type.IsRange()) {
-                    var range = (QueryGraphValueEntryRangeIn) rangeKey;
+                    var range = (QueryGraphValueEntryRangeIn)rangeKey;
                     var evaluatorStart = range.ExprStart;
                     var evaluatorEnd = range.ExprEnd;
                     evaluators[count] = new ExternalEvaluatorBtreeRange(
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                         rangeCoercionTypes[i]);
                 }
                 else {
-                    var relOp = (QueryGraphValueEntryRangeRelOp) rangeKey;
+                    var relOp = (QueryGraphValueEntryRangeRelOp)rangeKey;
                     var evaluator = relOp.Expression;
                     evaluators[count] = new ExternalEvaluatorHashRelOp(evaluator, rangeCoercionTypes[i]);
                 }

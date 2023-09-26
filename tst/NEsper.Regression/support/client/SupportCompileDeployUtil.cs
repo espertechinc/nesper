@@ -116,12 +116,7 @@ namespace com.espertech.esper.regressionlib.support.client
                     .Compile(
                         epl,
                         new CompilerArguments(configuration)
-                            .SetPath(new CompilerPath().AddAll(path.Compileds))
-                            .SetOptions(
-                                new CompilerOptions()
-                                    .SetAccessModifierContext(ctx => NameAccessModifier.PUBLIC)
-                                    .SetAccessModifierEventType(ctx => NameAccessModifier.PUBLIC)
-                            ));
+                            .SetPath(new CompilerPath().AddAll(path.Compileds)));
             }
             catch (Exception t) {
                 throw new EPException(t);

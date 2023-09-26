@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
             CodegenExpression beanFactory =
                 codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
 
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
                 typeof(SelectExprProcessorTypableMapEval),
                 codegenClassScope);
@@ -67,7 +67,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                         codegenClassScope))
                 .DeclareVarNoInit(typeof(IDictionary<string, object>), "map")
                 .IfRefNull("values")
-                .AssignRef("values", StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) }))
+                .AssignRef(
+                    "values",
+                    StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(object) }))
                 .BlockEnd()
                 .MethodReturn(ExprDotMethod(beanFactory, "AdapterForTypedMap", Ref("values"), mapType));
             return LocalMethod(methodNode);

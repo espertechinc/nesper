@@ -13,24 +13,13 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.core
 {
     public abstract class AggregatorAccessWFilterBase : AggregatorAccess
     {
         internal readonly ExprNode optionalFilter;
-
-        internal abstract void ApplyEnterFiltered(
-            CodegenMethod method,
-            ExprForgeCodegenSymbol symbols,
-            CodegenClassScope classScope,
-            CodegenNamedMethods namedMethods);
-
-        internal abstract void ApplyLeaveFiltered(
-            CodegenMethod method,
-            ExprForgeCodegenSymbol symbols,
-            CodegenClassScope classScope,
-            CodegenNamedMethods namedMethods);
 
         public AggregatorAccessWFilterBase(ExprNode optionalFilter)
         {
@@ -70,9 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         public abstract void WriteCodegen(
             CodegenExpressionRef row,
             int col,
-            CodegenExpressionRef @ref,
-            CodegenExpressionRef unitKey,
             CodegenExpressionRef output,
+            CodegenExpressionRef unitKey,
+            CodegenExpressionRef writer,
             CodegenMethod method,
             CodegenClassScope classScope);
 
@@ -83,5 +72,25 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             CodegenMethod method,
             CodegenExpressionRef unitKey,
             CodegenClassScope classScope);
+
+        public abstract void InitAccessForge(
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope);
+
+        public abstract void CollectFabricType(FabricTypeCollector collector);
+
+        internal abstract void ApplyEnterFiltered(
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods);
+
+        internal abstract void ApplyLeaveFiltered(
+            CodegenMethod method,
+            ExprForgeCodegenSymbol symbols,
+            CodegenClassScope classScope,
+            CodegenNamedMethods namedMethods);
     }
 } // end of namespace

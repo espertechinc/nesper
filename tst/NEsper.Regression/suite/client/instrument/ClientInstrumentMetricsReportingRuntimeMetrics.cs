@@ -10,9 +10,7 @@ using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.diagnostics;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.regressionlib.support.client;
 
 using NUnit.Framework;
 
@@ -25,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             var fields = Collections.Array("RuntimeURI", "Timestamp", "InputCount", "InputCountDelta", "ScheduleDepth");
             SendTimer(env, 1000);
 
-            var text = "@Name('s0') select * from " + typeof(RuntimeMetric).FullName;
+            var text = "@name('s0') select * from " + typeof(RuntimeMetric).FullName;
             env.CompileDeploy(text).AddListener("s0");
 
             env.SendEventBean(new SupportBean());
@@ -36,22 +34,14 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             env.CompileDeploy("select * from pattern[timer:interval(5 sec)]");
 
             SendTimer(env, 11000);
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(
-                theEvent,
-                fields,
-                new object[] {env.RuntimeURI, 11000L, 1L, 1L, 1L});
+            env.AssertPropsNew("s0", fields, new object[] { "default", 11000L, 1L, 1L, 1L });
 
             env.SendEventBean(new SupportBean());
             env.SendEventBean(new SupportBean());
 
             SendTimer(env, 20000);
             SendTimer(env, 21000);
-            theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(
-                theEvent,
-                fields,
-                new object[] {env.RuntimeURI, 21000L, 4L, 3L, 0L});
+            env.AssertPropsNew("s0", fields, new object[] { "default", 21000L, 4L, 3L, 0L });
 
             var cpuGoal = 10.0d; // milliseconds of execution time
 

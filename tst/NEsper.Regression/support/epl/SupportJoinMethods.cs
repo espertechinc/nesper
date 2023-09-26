@@ -16,7 +16,7 @@ namespace com.espertech.esper.regressionlib.support.epl
     public class SupportJoinMethods
     {
         private static readonly IDictionary<string, object>[] Empty = 
-            new IDictionary<string, object>[0];
+            Array.Empty<IDictionary<string, object>>();
         public static IDictionary<string, object>[] FetchVal(
             string prefix,
             int? number)
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             int? numRowsPerIndex)
         {
             if (number == null || number == 0) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             var rows = number.Value;

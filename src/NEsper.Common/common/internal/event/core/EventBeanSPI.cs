@@ -12,6 +12,6 @@ namespace com.espertech.esper.common.@internal.@event.core
 {
     public interface EventBeanSPI : EventBean
     {
-        object UnderlyingSpi { get; set; }
+        new object Underlying { get; set; }
     }
 } // end of namespace

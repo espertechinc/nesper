@@ -25,8 +25,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
         /// <summary>Returns a list of all variables assignment by the on-set</summary>
         /// <returns>list of assignments</returns>
-        public IList<OnTriggerSetAssignment> Assignments {
-            get { return assignments; }
-        }
+        public IList<OnTriggerSetAssignment> Assignments => assignments;
     }
 } // End of namespace

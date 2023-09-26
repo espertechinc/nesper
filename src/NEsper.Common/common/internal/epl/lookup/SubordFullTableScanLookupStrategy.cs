@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         /// <param name="eventIndex">table to use</param>
         public SubordFullTableScanLookupStrategy(UnindexedEventTable eventIndex)
         {
-            this._eventIndex = eventIndex;
+            _eventIndex = eventIndex;
         }
 
         public string ToQueryPlan()
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         private ISet<EventBean> LookupInternal()
         {
-            ISet<EventBean> result = _eventIndex.EventSet;
+            var result = _eventIndex.EventSet;
             if (result.IsEmpty()) {
                 return null;
             }

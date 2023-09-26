@@ -52,25 +52,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
 
             Type resultType;
             var isWildcard = positionalParams.Length == 0 ||
-                             positionalParams.Length > 0 && positionalParams[0] is ExprWildcard;
+                             (positionalParams.Length > 0 && positionalParams[0] is ExprWildcard);
             if (isWildcard) {
                 resultType = validationContext.StreamTypeService.EventTypes[0].UnderlyingType;
             }
             else {
-                resultType = positionalParams[0].Forge.EvaluationType;
+                var type = positionalParams[0].Forge.EvaluationType;
+                if (type == null) {
+                    throw new ExprValidationException("Null-type is not allowed");
+                }
+
+                resultType = type;
             }
 
-            var serde = validationContext.SerdeResolver.SerdeForAggregation(resultType, validationContext.StatementRawInfo);
+            var serde = validationContext.SerdeResolver.SerdeForAggregation(
+                resultType,
+                validationContext.StatementRawInfo);
             return new AggregationForgeFactoryFirstLastEver(this, resultType, serde);
         }
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
-            if (!(node is ExprFirstLastEverNode)) {
+            if (!(node is ExprFirstLastEverNode other)) {
                 return false;
             }
 
-            var other = (ExprFirstLastEverNode) node;
             return other.IsFirst == IsFirst;
         }
 

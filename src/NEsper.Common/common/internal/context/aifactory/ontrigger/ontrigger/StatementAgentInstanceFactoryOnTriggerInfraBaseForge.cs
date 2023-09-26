@@ -87,7 +87,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                     "NonSelectRSPFactoryProvider",
                     nonSelectRSPProviderClassName == null
                         ? ConstantNull()
-                        : NewInstanceInner(nonSelectRSPProviderClassName, symbols.GetAddInitSvc(method), Ref("statementFields")))
+                        : NewInstanceInner(
+                            nonSelectRSPProviderClassName,
+                            symbols.GetAddInitSvc(method),
+                            Ref("statementFields")))
                 .ExprDotMethod(symbols.GetAddInitSvc(method), "AddReadyCallback", saiff); // add ready-callback
 
             InlineInitializeOnTriggerSpecific(saiff, method, symbols, classScope);

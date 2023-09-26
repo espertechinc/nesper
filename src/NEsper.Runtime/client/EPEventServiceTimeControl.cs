@@ -78,7 +78,7 @@ namespace com.espertech.esper.runtime.client
         /// <summary>
         /// Returns true for external clocking, false for internal clocking.
         /// </summary>
-        /// <returns>clocking indicator</returns>
-        bool IsExternalClockingEnabled();
+        /// <value>clocking indicator</value>
+        bool IsExternalClockingEnabled { get; }
     }
 } // end of namespace

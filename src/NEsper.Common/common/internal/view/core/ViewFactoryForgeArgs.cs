@@ -22,8 +22,7 @@ namespace com.espertech.esper.common.@internal.view.core
     {
         public ViewFactoryForgeArgs(
             int streamNum,
-            bool isSubquery,
-            int subqueryNumber,
+            int? subqueryNumber,
             StreamSpecOptions options,
             string optionalCreateNamedWindowName,
             StatementRawInfo statementRawInfo,
@@ -32,7 +31,6 @@ namespace com.espertech.esper.common.@internal.view.core
             StatementRawInfo = statementRawInfo;
             StreamNum = streamNum;
             Options = options;
-            IsSubquery = isSubquery;
             SubqueryNumber = subqueryNumber;
             OptionalCreateNamedWindowName = optionalCreateNamedWindowName;
             CompileTimeServices = compileTimeServices;
@@ -42,9 +40,7 @@ namespace com.espertech.esper.common.@internal.view.core
 
         public StreamSpecOptions Options { get; }
 
-        public bool IsSubquery { get; }
-
-        public int SubqueryNumber { get; }
+        public int? SubqueryNumber { get; }
 
         public ImportServiceCompileTime ImportService => CompileTimeServices.ImportServiceCompileTime;
 

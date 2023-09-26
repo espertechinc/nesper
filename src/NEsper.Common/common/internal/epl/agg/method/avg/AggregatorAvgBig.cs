@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.serde.serdeset.builtin;
 using com.espertech.esper.common.@internal.type;
@@ -37,22 +38,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly AggregationForgeFactoryAvg _factory;
-        private readonly CodegenExpressionMember _sum;
-        private readonly CodegenExpressionMember _cnt;
+        private CodegenExpressionMember _sum;
+        private CodegenExpressionMember _cnt;
 
         public AggregatorAvgBig(
-            AggregationForgeFactoryAvg factory,
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
             Type optionalDistinctValueType,
             DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
-            ExprNode optionalFilter)
-            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
+            ExprNode optionalFilter,
+            AggregationForgeFactoryAvg factory)
+            : base(optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
             _factory = factory;
+        }
+
+        public override void InitForgeFiltered(
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
+        {
             _sum = membersColumnized.AddMember(col, typeof(BigInteger), "sum");
             _cnt = membersColumnized.AddMember(col, typeof(long), "cnt");
             rowCtor.Block.AssignRef(_sum, EnumValue(typeof(BigInteger), "Zero"));
@@ -166,6 +171,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
                     StaticMethod(typeof(DIOBigIntegerUtil), "ReadBigInt", input));
         }
 
+        protected override void AppendFormatWODistinct(FabricTypeCollector collector)
+        {
+            collector.Builtin(typeof(long));
+            collector.BigInteger();
+        }
+
+        
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>

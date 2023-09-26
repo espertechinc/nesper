@@ -45,18 +45,11 @@ namespace com.espertech.esper.regressionlib.support.util
             "\t</nested3>\n" +
             "</simpleEvent>";
 
-        public static XmlDocument SendDefaultEvent(
-            EPEventService runtime,
-            string value,
-            string eventTypeName)
+        public static XmlDocument MakeDefaultEvent(string value)
         {
             var xml = XML.Replace("VAL1", value);
-
             var simpleDoc = new XmlDocument();
             simpleDoc.LoadXml(xml);
-
-            runtime.SendEventXMLDOM(simpleDoc, eventTypeName);
-
             return simpleDoc;
         }
 

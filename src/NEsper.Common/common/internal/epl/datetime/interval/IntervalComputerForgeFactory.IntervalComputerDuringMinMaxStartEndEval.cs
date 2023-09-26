@@ -47,10 +47,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 bool newData,
                 ExprEvaluatorContext context)
             {
-                long minStart = minStartEval.Evaluate(rightStart, eventsPerStream, newData, context);
-                long maxStart = maxStartEval.Evaluate(rightStart, eventsPerStream, newData, context);
-                long minEnd = minEndEval.Evaluate(rightEnd, eventsPerStream, newData, context);
-                long maxEnd = maxEndEval.Evaluate(rightEnd, eventsPerStream, newData, context);
+                var minStart = minStartEval.Evaluate(rightStart, eventsPerStream, newData, context);
+                var maxStart = maxStartEval.Evaluate(rightStart, eventsPerStream, newData, context);
+                var minEnd = minEndEval.Evaluate(rightEnd, eventsPerStream, newData, context);
+                var maxEnd = maxEndEval.Evaluate(rightEnd, eventsPerStream, newData, context);
 
                 if (during) {
                     return IntervalComputerDuringAndIncludesMinMaxEval.ComputeIntervalDuring(

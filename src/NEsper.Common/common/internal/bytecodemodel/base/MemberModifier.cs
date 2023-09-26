@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
             return (modifier & MemberModifier.VIRTUAL) == MemberModifier.VIRTUAL;
         }
-        
+
         public static bool IsStatic(this MemberModifier modifier)
         {
             return (modifier & MemberModifier.STATIC) == MemberModifier.STATIC;

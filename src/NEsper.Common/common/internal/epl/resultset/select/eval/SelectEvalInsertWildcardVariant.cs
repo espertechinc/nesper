@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             var type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);

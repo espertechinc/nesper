@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -21,7 +22,9 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithManifestSimple(execs);
+#if REGRESSION_EXECUTIONS
+            With(ManifestSimple)(execs);
+#endif
             return execs;
         }
 
@@ -41,6 +44,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var manifest = compiled.Manifest;
                 Assert.AreEqual(COMPILER_VERSION, manifest.CompilerVersion);
                 Assert.IsNotNull(manifest.ModuleProviderClassName);
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
     }

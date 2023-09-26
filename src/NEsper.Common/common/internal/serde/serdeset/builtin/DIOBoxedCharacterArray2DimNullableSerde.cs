@@ -13,7 +13,8 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
     public class DIOBoxedCharacterArray2DimNullableSerde : DataInputOutputSerdeBase<char?[][]>
     {
-        public static readonly DIOBoxedCharacterArray2DimNullableSerde INSTANCE = new DIOBoxedCharacterArray2DimNullableSerde();
+        public static readonly DIOBoxedCharacterArray2DimNullableSerde INSTANCE =
+            new DIOBoxedCharacterArray2DimNullableSerde();
 
         private DIOBoxedCharacterArray2DimNullableSerde()
         {

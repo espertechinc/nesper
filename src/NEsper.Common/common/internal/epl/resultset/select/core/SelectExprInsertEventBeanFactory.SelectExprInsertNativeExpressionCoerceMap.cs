@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     exprSymbol,
                     codegenClassScope);
                 if (!TypeHelper.IsSubclassOrImplementsInterface(
-                    exprForge.EvaluationType,
-                    typeof(IDictionary<string, object>))) {
+                        exprForge.EvaluationType,
+                        typeof(IDictionary<string, object>))) {
                     expr = CodegenExpressionBuilder.Cast(typeof(IDictionary<string, object>), expr);
                 }
 

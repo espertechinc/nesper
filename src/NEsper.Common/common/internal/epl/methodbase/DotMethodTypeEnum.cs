@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
 
                 case DotMethodTypeEnum.AGGMETHOD:
                     return "aggregation";
-                
+
                 default:
                     throw new ArgumentException("invalid value", "value");
             }

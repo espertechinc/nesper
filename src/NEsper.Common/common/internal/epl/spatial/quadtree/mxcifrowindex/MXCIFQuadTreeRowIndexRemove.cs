@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                 return leaf;
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch) node;
+            var branch = (MXCIFQuadTreeNodeBranch)node;
             var quadrant = node.Bb.GetQuadrantApplies(x, y, width, height);
             switch (quadrant) {
                 case QuadrantAppliesEnum.NW:
@@ -89,17 +89,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                     break;
             }
 
-            if (!(branch.Nw is MXCIFQuadTreeNodeLeaf) ||
-                !(branch.Ne is MXCIFQuadTreeNodeLeaf) ||
-                !(branch.Sw is MXCIFQuadTreeNodeLeaf) ||
-                !(branch.Se is MXCIFQuadTreeNodeLeaf)) {
+            if (!(branch.Nw is MXCIFQuadTreeNodeLeaf nwLeaf) ||
+                !(branch.Ne is MXCIFQuadTreeNodeLeaf neLeaf) ||
+                !(branch.Sw is MXCIFQuadTreeNodeLeaf swLeaf) ||
+                !(branch.Se is MXCIFQuadTreeNodeLeaf seLeaf)) {
                 return branch;
             }
 
-            var nwLeaf = (MXCIFQuadTreeNodeLeaf) branch.Nw;
-            var neLeaf = (MXCIFQuadTreeNodeLeaf) branch.Ne;
-            var swLeaf = (MXCIFQuadTreeNodeLeaf) branch.Sw;
-            var seLeaf = (MXCIFQuadTreeNodeLeaf) branch.Se;
             var total = branch.Count + nwLeaf.Count + neLeaf.Count + swLeaf.Count + seLeaf.Count;
             if (total >= tree.LeafCapacity) {
                 return branch;
@@ -127,7 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             }
 
             if (!(data is ICollection<XYWHRectangleMultiType> collection)) {
-                var rectangle = (XYWHRectangleMultiType) data;
+                var rectangle = (XYWHRectangleMultiType)data;
                 if (rectangle.CoordinateEquals(x, y, width, height)) {
                     var removed = rectangle.Remove(value);
                     if (removed) {
@@ -169,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
                 return dataR.Count();
             }
 
-            var coll = (ICollection<XYWHRectangleMultiType>) data;
+            var coll = (ICollection<XYWHRectangleMultiType>)data;
             var total = 0;
             foreach (var r in coll) {
                 target.Add(r);

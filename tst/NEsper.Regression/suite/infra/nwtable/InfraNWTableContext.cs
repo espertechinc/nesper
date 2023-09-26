@@ -19,6 +19,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            Witht(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Witht(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraContext(true));
             execs.Add(new InfraContext(false));
             return execs;
@@ -30,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             int num,
             string epl)
         {
-            env.CompileDeploy("@Name('s" + num + "')" + epl, path).AddListener("s" + num);
+            env.CompileDeploy("@name('s" + num + "')" + epl, path).AddListener("s" + num);
         }
 
         private static void MakeSendSupportBean(
@@ -56,11 +63,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create context ContextOne start SupportBean_S0 end SupportBean_S1", path);
+                env.CompileDeploy("@public create context ContextOne start SupportBean_S0 end SupportBean_S1", path);
 
                 var eplCreate = namedWindow
-                    ? "context ContextOne create window MyInfra#keepall as (pkey0 string, pkey1 int, c0 long)"
-                    : "context ContextOne create table MyInfra as (pkey0 string primary key, pkey1 int primary key, c0 long)";
+                    ? "@public context ContextOne create window MyInfra#keepall as (pkey0 string, pkey1 int, c0 long)"
+                    : "@public context ContextOne create table MyInfra as (pkey0 string primary key, pkey1 int primary key, c0 long)";
                 env.CompileDeploy(eplCreate, path);
 
                 env.CompileDeploy(
@@ -111,45 +118,50 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.SendEventBean(new SupportBean_S1(0)); // end
 
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Listener("s1").GetAndResetLastNewData(),
-                    new[] {"pkey0", "pkey1", "c0"},
+                env.AssertPropsPerRowLastNewAnyOrder(
+                    "s1",
+                    new[] { "pkey0", "pkey1", "c0" },
                     new[] {
-                        new object[] {"E1", 10, 100L}, new object[] {"E2", 20, 200L}
+                        new object[] { "E1", 10, 100L }, new object[] { "E2", 20, 200L }
                     });
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s2").AssertOneGetNewAndReset(),
-                    new[] {"thecnt"},
+                env.AssertPropsNew(
+                    "s2",
+                    new[] { "thecnt" },
                     new object[] {
                         2L
                     });
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Listener("s3").GetAndResetLastNewData(),
-                    new[] {"pkey0", "thecnt"},
+                env.AssertPropsPerRowLastNewAnyOrder(
+                    "s3",
+                    new[] { "pkey0", "thecnt" },
                     new[] {
-                        new object[] {"E1", 2L}, new object[] {"E2", 2L}
+                        new object[] { "E1", 2L }, new object[] { "E2", 2L }
                     });
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Listener("s4").GetAndResetLastNewData(),
-                    new[] {"pkey0", "thecnt"},
+                env.AssertPropsPerRowLastNewAnyOrder(
+                    "s4",
+                    new[] { "pkey0", "thecnt" },
                     new[] {
-                        new object[] {"E1", 1L}, new object[] {"E2", 1L}
+                        new object[] { "E1", 1L }, new object[] { "E2", 1L }
                     });
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Listener("s5").GetAndResetLastNewData(),
-                    new[] {"pkey0", "pkey1", "thecnt"},
+                env.AssertPropsPerRowLastNewAnyOrder(
+                    "s5",
+                    new[] { "pkey0", "pkey1", "thecnt" },
                     new[] {
-                        new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}
+                        new object[] { "E1", 10, 1L }, new object[] { "E2", 20, 1L }
                     });
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Listener("s6").GetAndResetLastNewData(),
-                    new[] {"pkey0", "pkey1", "thecnt"},
+                env.AssertPropsPerRowLastNewAnyOrder(
+                    "s6",
+                    new[] { "pkey0", "pkey1", "thecnt" },
                     new[] {
-                        new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}, new object[] {"E1", null, 1L},
-                        new object[] {"E2", null, 1L}, new object[] {null, null, 2L}
+                        new object[] { "E1", 10, 1L }, new object[] { "E2", 20, 1L }, new object[] { "E1", null, 1L },
+                        new object[] { "E2", null, 1L }, new object[] { null, null, 2L }
                     });
 
                 env.UndeployAll();
+            }
+
+            public string Name()
+            {
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
         }
     }

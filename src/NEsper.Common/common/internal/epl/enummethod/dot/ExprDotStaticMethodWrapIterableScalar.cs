@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -25,22 +26,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     public class ExprDotStaticMethodWrapIterableScalar : ExprDotStaticMethodWrap
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        private readonly Type collectionType;
-        private readonly Type componentType;
+        
         private readonly string methodName;
+        private readonly Type componentType;
 
         public ExprDotStaticMethodWrapIterableScalar(
             string methodName,
-            Type componentType,
-            Type collectionType)
+            Type componentType)
         {
             this.methodName = methodName;
             this.componentType = componentType;
-            this.collectionType = collectionType;
         }
-
-        public EPType TypeInfo => EPTypeHelper.CollectionOfSingleValue(componentType, collectionType);
 
         public ICollection<EventBean> ConvertNonNull(object result)
         {
@@ -58,7 +54,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(CompatExtensions), "Unwrap", Cast(typeof(IEnumerable), result), ConstantFalse());
+            return StaticMethod(
+                typeof(CompatExtensions),
+                "Unwrap",
+                Cast(typeof(IEnumerable), result),
+                ConstantFalse());
         }
+
+        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfSingleValue(componentType);
     }
 } // end of namespace

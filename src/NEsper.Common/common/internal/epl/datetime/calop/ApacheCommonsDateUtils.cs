@@ -66,13 +66,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         public const int MODIFY_CEILING = 2;
 
         private static readonly DateTimeFieldEnum[][] Fields = {
-            new[] {DateTimeFieldEnum.MILLISEC},
-            new[] {DateTimeFieldEnum.SECOND},
-            new[] {DateTimeFieldEnum.MINUTE},
-            new[] {DateTimeFieldEnum.HOUR_OF_DAY, DateTimeFieldEnum.HOUR},
-            new[] {DateTimeFieldEnum.DATE, DateTimeFieldEnum.DAY_OF_MONTH, DateTimeFieldEnum.AM_PM},
-            new[] {DateTimeFieldEnum.MONTH, DateTimeFieldEnum.SEMI_MONTH},
-            new[] {DateTimeFieldEnum.YEAR}
+            new[] { DateTimeFieldEnum.MILLISEC },
+            new[] { DateTimeFieldEnum.SECOND },
+            new[] { DateTimeFieldEnum.MINUTE },
+            new[] { DateTimeFieldEnum.HOUR_OF_DAY, DateTimeFieldEnum.HOUR },
+            new[] { DateTimeFieldEnum.DATE, DateTimeFieldEnum.DAY_OF_MONTH, DateTimeFieldEnum.AM_PM },
+            new[] { DateTimeFieldEnum.MONTH, DateTimeFieldEnum.SEMI_MONTH },
+            new[] { DateTimeFieldEnum.YEAR }
         };
 
         public static DateTime Modify(
@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 for (var j = 0; j < Fields[i].Length; j++) {
                     if (Fields[i][j] == field) {
                         //This is our field... we stop looping
-                        if (modType == MODIFY_CEILING || modType == MODIFY_ROUND && roundUp) {
+                        if (modType == MODIFY_CEILING || (modType == MODIFY_ROUND && roundUp)) {
                             if (field == DateTimeFieldEnum.SEMI_MONTH) {
                                 //This is a special case that's hard to generalize
                                 //If the date is 1, we round up to 16, otherwise
@@ -284,7 +284,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 for (var j = 0; j < Fields[i].Length; j++) {
                     if (Fields[i][j] == field) {
                         //This is our field... we stop looping
-                        if (modType == MODIFY_CEILING || modType == MODIFY_ROUND && roundUp) {
+                        if (modType == MODIFY_CEILING || (modType == MODIFY_ROUND && roundUp)) {
                             if (field == DateTimeFieldEnum.SEMI_MONTH) {
                                 //This is a special case that's hard to generalize
                                 //If the date is 1, we round up to 16, otherwise

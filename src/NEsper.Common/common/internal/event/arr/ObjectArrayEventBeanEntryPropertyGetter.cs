@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             // Object within the map
-            var theEvent = (EventBean) value;
+            var theEvent = (EventBean)value;
             return eventBeanEntryGetter.Get(theEvent);
         }
 
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             // Object within the map
-            var theEvent = (EventBean) value;
+            var theEvent = (EventBean)value;
             return eventBeanEntryGetter.GetFragment(theEvent);
         }
 
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array")
+                .AddParam<object[]>("array")
                 .Block
                 .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
                 .IfRefNullReturnNull("value")
@@ -153,7 +153,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array")
+                .AddParam<object[]>("array")
                 .Block
                 .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
                 .IfRefNullReturnNull("value")

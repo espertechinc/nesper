@@ -11,26 +11,38 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOSkipSerde : DataInputOutputSerde {
+    public class DIOSkipSerde : DataInputOutputSerde
+    {
+        public static readonly DIOSkipSerde INSTANCE = new DIOSkipSerde();
 
-	    public static readonly DIOSkipSerde INSTANCE = new DIOSkipSerde();
+        private DIOSkipSerde()
+        {
+        }
 
-	    private DIOSkipSerde() {
-	    }
+        public void Write(
+            object @object,
+            DataOutput output,
+            byte[] pageFullKey,
+            EventBeanCollatedWriter writer)
+        {
+        }
 
-	    public void Write(object @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
-	    }
+        public object Read(
+            DataInput s,
+            byte[] resourceKey)
+        {
+            return null;
+        }
 
-	    public object Read(DataInput s, byte[] resourceKey) {
-	        return null;
-	    }
+        public void Write(
+            object @object,
+            DataOutput output)
+        {
+        }
 
-	    public void Write(object @object, DataOutput output) {
-
-	    }
-
-	    public object Read(DataInput input) {
-	        return null;
-	    }
-	}
+        public object Read(DataInput input)
+        {
+            return null;
+        }
+    }
 } // end of namespace

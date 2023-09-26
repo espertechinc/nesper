@@ -112,26 +112,19 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             return annotations;
         }
 
-        public static CodegenMethod MakeAnnotations(
+        public static CodegenExpression MakeAnnotations(
             Type arrayType,
             Attribute[] annotations,
             CodegenMethod parent,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(arrayType, typeof(AnnotationUtil), classScope);
-            method.Block.DeclareVar(
-                arrayType,
-                "annotations",
-                NewArrayByLength(arrayType.GetElementType(), Constant(annotations.Length)));
-            for (var i = 0; i < annotations.Length; i++) {
-                method.Block.AssignArrayElement(
-                    "annotations",
-                    Constant(i),
-                    MakeAnnotation(annotations[i], parent, classScope));
+            var componentType = arrayType.GetElementType();
+            var expressions = new CodegenExpression[annotations.Length];
+            for (int i = 0; i < annotations.Length; i++) {
+                expressions[i] = MakeAnnotation(annotations[i], parent, classScope);
             }
 
-            method.Block.MethodReturn(Ref("annotations"));
-            return method;
+            return NewArrayWithInit(componentType, expressions);
         }
 
         /// <summary>
@@ -737,9 +730,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     }
                     else if (property.PropertyType.IsArray && property.PropertyType.GetElementType().IsAttribute())
                     {
-                        valueExpression = LocalMethod(
-                            MakeAnnotations(
-                                property.PropertyType, (Attribute[]) value, methodNode, codegenClassScope));
+                        valueExpression = MakeAnnotations(property.PropertyType, (Attribute[]) value, methodNode, codegenClassScope);
                     }
                     else if (!property.PropertyType.IsAttribute())
                     {

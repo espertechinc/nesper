@@ -55,14 +55,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             bool unique,
             string indexName)
         {
-            if (node is PointRegionQuadTreeNodeLeaf<object>) {
-                var leaf = (PointRegionQuadTreeNodeLeaf<object>) node;
-                if (leaf.Count < tree.LeafCapacity || node.Level >= tree.MaxTreeHeight) {
+            if (node is PointRegionQuadTreeNodeLeaf<object> leaf) {
+                if (leaf.Count < tree.LeafCapacity || leaf.Level >= tree.MaxTreeHeight) {
                     // can be multiple as value can be a collection
                     var numAdded = AddToLeaf(leaf, x, y, value, unique, indexName);
                     leaf.IncCount(numAdded);
 
-                    if (leaf.Count <= tree.LeafCapacity || node.Level >= tree.MaxTreeHeight) {
+                    if (leaf.Count <= tree.LeafCapacity || leaf.Level >= tree.MaxTreeHeight) {
                         return leaf;
                     }
                 }
@@ -70,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                 node = Subdivide(leaf, tree, unique, indexName);
             }
 
-            var branch = (PointRegionQuadTreeNodeBranch) node;
+            var branch = (PointRegionQuadTreeNodeBranch)node;
             AddToBranch(branch, x, y, value, tree, unique, indexName);
             return node;
         }
@@ -121,12 +120,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             var branch = new PointRegionQuadTreeNodeBranch(leaf.Bb, leaf.Level, nw, ne, sw, se);
 
             var points = leaf.Points;
-            if (points is XYPointMultiType) {
-                var point = (XYPointMultiType) points;
-                SubdividePoint(point, branch, tree, unique, indexName);
+            if (points is XYPointMultiType type) {
+                SubdividePoint(type, branch, tree, unique, indexName);
             }
             else {
-                foreach (var point in (ICollection<XYPointMultiType>) points) {
+                foreach (var point in (ICollection<XYPointMultiType>)points) {
                     SubdividePoint(point, branch, tree, unique, indexName);
                 }
             }
@@ -174,49 +172,47 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             var currentValue = leaf.Points;
 
             // value can be multitype itself since we may subdivide-add and don't want to allocate a new object
-            if (value is XYPointMultiType) {
-                var point = (XYPointMultiType) value;
-                if (point.X != x && point.Y != y) {
+            if (value is XYPointMultiType type) {
+                if (type.X != x && type.Y != y) {
                     throw new IllegalStateException();
                 }
 
                 if (currentValue == null) {
-                    leaf.Points = point;
-                    return point.Count();
+                    leaf.Points = type;
+                    return type.Count();
                 }
 
-                if (currentValue is XYPointMultiType) {
-                    var other = (XYPointMultiType) currentValue;
-                    if (other.X == x && other.Y == y) {
+                if (currentValue is XYPointMultiType multiType) {
+                    if (multiType.X == x && multiType.Y == y) {
                         if (unique) {
-                            throw HandleUniqueViolation(indexName, other.X, other.Y);
+                            throw HandleUniqueViolation(indexName, multiType.X, multiType.Y);
                         }
 
-                        other.AddMultiType(point);
-                        return point.Count();
+                        multiType.AddMultiType(type);
+                        return type.Count();
                     }
 
                     var collectionX = new LinkedList<XYPointMultiType>();
-                    collectionX.AddLast(other);
-                    collectionX.AddLast(point);
+                    collectionX.AddLast(multiType);
+                    collectionX.AddLast(type);
                     leaf.Points = collectionX;
-                    return point.Count();
+                    return type.Count();
                 }
 
-                var xyPointMultiTypes = (ICollection<XYPointMultiType>) currentValue;
+                var xyPointMultiTypes = (ICollection<XYPointMultiType>)currentValue;
                 foreach (var other in xyPointMultiTypes) {
                     if (other.X == x && other.Y == y) {
                         if (unique) {
                             throw HandleUniqueViolation(indexName, other.X, other.Y);
                         }
 
-                        other.AddMultiType(point);
-                        return point.Count();
+                        other.AddMultiType(type);
+                        return type.Count();
                     }
                 }
 
-                xyPointMultiTypes.Add(point);
-                return point.Count();
+                xyPointMultiTypes.Add(type);
+                return type.Count();
             }
 
             if (currentValue == null) {
@@ -225,25 +221,24 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
                 return 1;
             }
 
-            if (currentValue is XYPointMultiType) {
-                var other = (XYPointMultiType) currentValue;
-                if (other.X == x && other.Y == y) {
+            if (currentValue is XYPointMultiType pointMultiType) {
+                if (pointMultiType.X == x && pointMultiType.Y == y) {
                     if (unique) {
-                        throw HandleUniqueViolation(indexName, other.X, other.Y);
+                        throw HandleUniqueViolation(indexName, pointMultiType.X, pointMultiType.Y);
                     }
 
-                    other.AddSingleValue(value);
+                    pointMultiType.AddSingleValue(value);
                     return 1;
                 }
 
                 var xyPointMultiTypes = new LinkedList<XYPointMultiType>();
-                xyPointMultiTypes.AddLast(other);
+                xyPointMultiTypes.AddLast(pointMultiType);
                 xyPointMultiTypes.AddLast(new XYPointMultiType(x, y, value));
                 leaf.Points = xyPointMultiTypes;
                 return 1;
             }
 
-            var collection = (ICollection<XYPointMultiType>) currentValue;
+            var collection = (ICollection<XYPointMultiType>)currentValue;
             foreach (var other in collection) {
                 if (other.X == x && other.Y == y) {
                     if (unique) {

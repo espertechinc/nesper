@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public EventBean Copy(EventBean theEvent)
         {
-            var array = ((ObjectArrayBackedEventBean) theEvent).Properties;
+            var array = ((ObjectArrayBackedEventBean)theEvent).Properties;
             var copy = new object[array.Length];
             Array.Copy(array, 0, copy, 0, copy.Length);
             return eventAdapterService.AdapterForTypedObjectArray(copy, objectArrayEventType);

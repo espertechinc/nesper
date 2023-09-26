@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public override EventBean Make(object[] properties)
         {
-            var und = (IDictionary<string, object>) MakeUnderlying(properties);
+            var und = (IDictionary<string, object>)MakeUnderlying(properties);
             return EventFactory.AdapterForTypedMap(und, EventType);
         }
     }

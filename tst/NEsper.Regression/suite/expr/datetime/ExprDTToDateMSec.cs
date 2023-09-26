@@ -25,9 +25,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
     {
         public static ICollection<RegressionExecution> Executions()
         {
-            List<RegressionExecution> execs = new List<RegressionExecution>();
+            var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithToDateTimeExChain(execs);
-            WithDTToDateTimeExMSecValue(execs);
+            With(DTToDateTimeExMSecValue)(execs);
+#endif
             return execs;
         }
 
@@ -50,7 +52,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                env.CompileDeploy("@Name('s0') select current_timestamp.toDateTimeEx().AddDays(1) as c from SupportBean");
+                env.CompileDeploy(
+                    "@name('s0') select current_timestamp.toDateTimeEx().AddDays(1) as c from SupportBean");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -84,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 };
 
                 var eplFragment =
-                    "@Name('s0') select " +
+                    "@name('s0') select " +
                     "current_timestamp.toDateTime() as val1a," +
                     "LongDate.toDateTime() as val1b," +
                     "DateTimeEx.toDateTime() as val1c," +
@@ -108,8 +111,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     " from SupportDateTime";
 
                 env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
+                env.AssertStmtTypes(
+                    "s0",
                     fields,
                     new[] {
                         typeof(DateTime?),
@@ -145,11 +148,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     SupportDateTime.GetArrayCoerced(startTime, "dtx".Repeat(5)),
                     SupportDateTime.GetArrayCoerced(startTime, "long".Repeat(5)));
 
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, expected);
+                env.AssertPropsNew("s0", fields, expected);
 
                 env.SendEventBean(SupportDateTime.Make(null));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
+                env.AssertPropsNew(
+                    "s0",
                     fields,
                     new[] {
                         SupportDateTime.GetValueCoerced(startTime, "date"), null, null, null, null,

@@ -28,13 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             QueryGraphValueEntryRange rangeProp)
         {
             if (rangeProp.Type.IsRange()) {
-                var rangeIn = (QueryGraphValueEntryRangeIn) rangeProp;
+                var rangeIn = (QueryGraphValueEntryRangeIn)rangeProp;
                 var start = rangeIn.ExprStart;
                 var includeStart = rangeProp.Type.IsIncludeStart();
-
                 var end = rangeIn.ExprEnd;
                 var includeEnd = rangeProp.Type.IsIncludeEnd();
-
                 if (!rangeProp.Type.IsRangeInverted()) {
                     _strategy = new CompositeAccessStrategyRangeNormal(
                         isNWOnTrigger,
@@ -58,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 }
             }
             else {
-                var relOp = (QueryGraphValueEntryRangeRelOp) rangeProp;
+                var relOp = (QueryGraphValueEntryRangeRelOp)rangeProp;
                 var key = relOp.Expression;
                 if (rangeProp.Type == QueryGraphRangeEnum.GREATER_OR_EQUAL) {
                     _strategy = new CompositeAccessStrategyGE(isNWOnTrigger, lookupStream, numStreams, key);
@@ -226,7 +224,6 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             CompositeIndexQueryResultPostProcessor postProcessor)
         {
             var map = sortedMapOne;
-
             if (postProcessor != null) {
                 foreach (var entry in map) {
                     postProcessor.Add(entry.Value, result);
@@ -239,9 +236,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
             }
         }
 
-        public CompositeIndexQuery SetNext(CompositeIndexQuery next)
+        public CompositeIndexQuery SetNext(CompositeIndexQuery value)
         {
-            this._next = next;
+            _next = value;
             return this;
         }
     }

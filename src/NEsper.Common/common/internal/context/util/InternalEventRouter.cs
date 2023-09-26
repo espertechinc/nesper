@@ -34,10 +34,12 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <param name="theEvent">to route</param>
         /// <param name="agentInstanceContext">agentInstanceContext</param>
         /// <param name="addToFront">indicator whether to add to front queue</param>
+        /// <param name="precedence">event precedence</param>
         void Route(
             EventBean theEvent,
             AgentInstanceContext agentInstanceContext,
-            bool addToFront);
+            bool addToFront,
+            int precedence);
 
         bool HasPreprocessing { get; }
 

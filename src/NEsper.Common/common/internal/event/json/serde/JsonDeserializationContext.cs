@@ -10,16 +10,16 @@ using System;
 
 namespace com.espertech.esper.common.@internal.@event.json.serde
 {
-	/// <summary>
-	/// This object provides context during deserialization.
-	/// </summary>
-	public interface JsonDeserializationContext
-	{
-		/// <summary>
-		/// Gets a deserializer for a given type.
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		IJsonDeserializer GetDeserializer(Type type);
-	}
+    /// <summary>
+    /// This object provides context during deserialization.
+    /// </summary>
+    public interface JsonDeserializationContext
+    {
+        /// <summary>
+        /// Gets a deserializer for a given type.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        IJsonDeserializer GetDeserializer(Type type);
+    }
 } // end of namespace

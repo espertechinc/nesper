@@ -22,8 +22,8 @@ namespace com.espertech.esper.common.@internal.type
                 object objOne,
                 object objTwo)
             {
-                var n1 = (int) objOne;
-                var n2 = (int) objTwo;
+                var n1 = (int)objOne;
+                var n2 = (int)objTwo;
                 return n1 & n2;
             }
         }

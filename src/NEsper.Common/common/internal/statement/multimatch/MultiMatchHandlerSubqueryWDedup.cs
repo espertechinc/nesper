@@ -18,9 +18,11 @@ namespace com.espertech.esper.common.@internal.statement.multimatch
     public class MultiMatchHandlerSubqueryWDedup : MultiMatchHandler
     {
         private readonly bool subselectPreeval;
-        private readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> dedupes = 
+
+        private readonly IThreadLocal<LinkedHashSet<FilterHandleCallback>> dedupes =
             new FastThreadLocal<LinkedHashSet<FilterHandleCallback>>(
                 () => new LinkedHashSet<FilterHandleCallback>());
+
         protected internal MultiMatchHandlerSubqueryWDedup(bool subselectPreeval)
         {
             this.subselectPreeval = subselectPreeval;

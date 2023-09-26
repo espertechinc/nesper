@@ -8,8 +8,8 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -39,17 +39,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             return execs;
         }
 
-        internal class EPLDatabaseInnerJoinLeftS0 : RegressionExecution
+        private class EPLDatabaseInnerJoinLeftS0 : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select * from SupportBean#lastevent sb" +
+                var stmtText = "@name('s0') select * from SupportBean#lastevent sb" +
                                " inner join " +
                                " SupportBeanTwo#lastevent sbt" +
-                               " on sb.TheString = sbt.StringTwo " +
+                               " on sb.theString = sbt.stringTwo " +
                                " inner join " +
-                               " sql:MyDBWithRetain ['select myint from mytesttable'] as S1 " +
-                               "  on S1.myint = sbt.IntPrimitiveTwo";
+                               " sql:MyDBWithRetain ['select myint from mytesttable'] as s1 " +
+                               "  on s1.myint = sbt.intPrimitiveTwo";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanTwo("T1", 2));
@@ -57,60 +57,60 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
                 env.SendEventBean(new SupportBeanTwo("T2", 30));
                 env.SendEventBean(new SupportBean("T2", -1));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.StringTwo","S1.myint" },
-                    new object[] {"T2", "T2", 30});
+                env.AssertPropsNew(
+                    "s0",
+                    "sb.theString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    new object[] { "T2", "T2", 30 });
 
                 env.SendEventBean(new SupportBean("T3", -1));
                 env.SendEventBean(new SupportBeanTwo("T3", 40));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.StringTwo","S1.myint" },
-                    new object[] {"T3", "T3", 40});
+                env.AssertPropsNew(
+                    "s0",
+                    "sb.theString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    new object[] { "T3", "T3", 40 });
 
                 env.UndeployAll();
             }
         }
 
-        internal class EPLDatabaseOuterJoinLeftS0 : RegressionExecution
+        private class EPLDatabaseOuterJoinLeftS0 : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@Name('s0') select * from SupportBean#lastevent sb" +
+                var stmtText = "@name('s0') select * from SupportBean#lastevent sb" +
                                " left outer join " +
                                " SupportBeanTwo#lastevent sbt" +
-                               " on sb.TheString = sbt.StringTwo " +
+                               " on sb.theString = sbt.stringTwo " +
                                " left outer join " +
-                               " sql:MyDBWithRetain ['select myint from mytesttable'] as S1 " +
-                               "  on S1.myint = sbt.IntPrimitiveTwo";
+                               " sql:MyDBWithRetain ['select myint from mytesttable'] as s1 " +
+                               "  on s1.myint = sbt.intPrimitiveTwo";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanTwo("T1", 2));
                 env.SendEventBean(new SupportBean("T1", 3));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.StringTwo","S1.myint" },
-                    new object[] {"T1", "T1", null});
+                env.AssertPropsNew(
+                    "s0",
+                    "sb.theString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    new object[] { "T1", "T1", null });
 
                 env.SendEventBean(new SupportBeanTwo("T2", 30));
                 env.SendEventBean(new SupportBean("T2", -2));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.StringTwo","S1.myint" },
-                    new object[] {"T2", "T2", 30});
+                env.AssertPropsNew(
+                    "s0",
+                    "sb.theString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    new object[] { "T2", "T2", 30 });
 
                 env.SendEventBean(new SupportBean("T3", -1));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.StringTwo","S1.myint" },
-                    new object[] {"T3", null, null});
+                env.AssertPropsNew(
+                    "s0",
+                    "sb.theString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    new object[] { "T3", null, null });
 
                 env.SendEventBean(new SupportBeanTwo("T3", 40));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "sb.TheString","sbt.StringTwo","S1.myint" },
-                    new object[] {"T3", "T3", 40});
+                env.AssertPropsNew(
+                    "s0",
+                    "sb.theString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    new object[] { "T3", "T3", 40 });
 
                 env.UndeployAll();
             }

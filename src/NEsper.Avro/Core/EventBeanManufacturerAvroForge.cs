@@ -74,13 +74,13 @@ namespace NEsper.Avro.Core
                     eventType, factory, makeUndLambda);
 
             //var makeUndMethod = CodegenMethod.MakeMethod(typeof(GenericRecord), GetType(), codegenClassScope)
-            //    .AddParam(typeof(object[]), "properties");
+            //    .AddParam<object[]>("properties");
             //manufacturer.AddMethod("MakeUnderlying", makeUndMethod);
             //MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
 
             //var makeMethod = CodegenMethod
             //    .MakeMethod(typeof(EventBean), GetType(), codegenClassScope)
-            //    .AddParam(typeof(object[]), "properties");
+            //    .AddParam<object[]>("properties");
             //manufacturer.AddMethod("Make", makeMethod);
             //makeMethod.Block
             //    .DeclareVar<GenericRecord>("und", LocalMethod(makeUndMethod, Ref("properties")))

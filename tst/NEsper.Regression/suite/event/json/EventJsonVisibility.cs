@@ -7,146 +7,184 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
-
 
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
-	public class EventJsonVisibility
-	{
-		public static IList<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new EventJsonVisibilityPublicSameModule());
-			execs.Add(new EventJsonVisibilityPublicTwoModulesBinaryPath());
-			execs.Add(new EventJsonVisibilityPublicTwoModulesRuntimePath());
-			execs.Add(new EventJsonVisibilityProtected());
-			return execs;
-		}
+    public class EventJsonVisibility
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithublicSameModule(execs);
+            WithublicTwoModulesBinaryPath(execs);
+            WithublicTwoModulesRuntimePath(execs);
+            Withrotected(execs);
+            return execs;
+        }
 
-		internal class EventJsonVisibilityProtected : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				string moduleA = "module A; @protected create json schema JsonSchema(fruit string, size string);\n";
-				string moduleB = "module B; @protected create json schema JsonSchema(carId string);\n";
+        public static IList<RegressionExecution> Withrotected(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventJsonVisibilityProtected());
+            return execs;
+        }
 
-				RegressionPath pathA = new RegressionPath();
-				env.CompileDeploy(moduleA, pathA);
-				RegressionPath pathB = new RegressionPath();
-				env.CompileDeploy(moduleB, pathB);
+        public static IList<RegressionExecution> WithublicTwoModulesRuntimePath(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventJsonVisibilityPublicTwoModulesRuntimePath());
+            return execs;
+        }
 
-				env.CompileDeploy(
-						"insert into JsonSchema select TheString as fruit, 'large' as size from SupportBean;\n" +
-						"@Name('a') select fruit, size from JsonSchema#keepall",
-						pathA)
-					.AddListener("a");
-				env.CompileDeploy(
-						"insert into JsonSchema select TheString as carId from SupportBean;\n" +
-						"@Name('b') select carId from JsonSchema#keepall",
-						pathB)
-					.AddListener("b");
+        public static IList<RegressionExecution> WithublicTwoModulesBinaryPath(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventJsonVisibilityPublicTwoModulesBinaryPath());
+            return execs;
+        }
 
-				env.SendEventBean(new SupportBean("E1", 0));
-				AssertFruit(env.Listener("a").AssertOneGetNewAndReset());
-				AssertCar(env.Listener("b").AssertOneGetNewAndReset());
+        public static IList<RegressionExecution> WithublicSameModule(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventJsonVisibilityPublicSameModule());
+            return execs;
+        }
 
-				env.Milestone(0);
+        private class EventJsonVisibilityProtected : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var moduleA = "module A.X; @protected create json schema JsonSchema(fruit string, size string);\n";
+                var moduleB = "module B; @protected create json schema JsonSchema(carId string);\n";
 
-				AssertFruit(env.Statement("a").First());
-				AssertCar(env.Statement("b").First());
+                var pathA = new RegressionPath();
+                env.CompileDeploy(moduleA, pathA);
+                var pathB = new RegressionPath();
+                env.CompileDeploy(moduleB, pathB);
 
-				env.UndeployAll();
-			}
+                env.CompileDeploy(
+                        "module A.X; insert into JsonSchema select theString as fruit, 'large' as size from SupportBean;\n" +
+                        "@name('a') select fruit, size from JsonSchema#keepall",
+                        pathA)
+                    .AddListener("a");
+                env.CompileDeploy(
+                        "module B; insert into JsonSchema select theString as carId from SupportBean;\n" +
+                        "@name('b') select carId from JsonSchema#keepall",
+                        pathB)
+                    .AddListener("b");
 
-			private void AssertCar(EventBean @event)
-			{
-				EPAssertionUtil.AssertProps(@event, "carId".SplitCsv(), new object[] {"E1"});
-			}
+                env.SendEventBean(new SupportBean("E1", 0));
+                env.AssertEventNew("a", this.AssertFruit);
+                env.AssertEventNew("b", this.AssertCar);
 
-			private void AssertFruit(EventBean @event)
-			{
-				EPAssertionUtil.AssertProps(@event, "fruit,size".SplitCsv(), new object[] {"E1", "large"});
-			}
-		}
+                env.Milestone(0);
 
-		internal class EventJsonVisibilityPublicSameModule : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				string epl = "@public @buseventtype create json schema SimpleJson(fruit string, size string, color string);\n" +
-				             "@Name('s0') select fruit, size, color from SimpleJson#keepall;\n";
-				env.CompileDeploy(epl).AddListener("s0");
+                env.AssertIterator("a", it => AssertFruit(it.Advance()));
+                env.AssertIterator("b", it => AssertCar(it.Advance()));
 
-				RunAssertionSimple(env);
+                env.UndeployAll();
+            }
 
-				env.UndeployAll();
-			}
-		}
+            private void AssertCar(EventBean @event)
+            {
+                EPAssertionUtil.AssertProps(@event, "carId".SplitCsv(), new object[] { "E1" });
+            }
 
-		internal class EventJsonVisibilityPublicTwoModulesBinaryPath : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				RegressionPath path = new RegressionPath();
-				env.CompileDeploy("@public @buseventtype create json schema SimpleJson(fruit string, size string, color string)", path);
-				env.CompileDeploy("@Name('s0') select fruit, size, color from SimpleJson#keepall", path).AddListener("s0");
+            private void AssertFruit(EventBean @event)
+            {
+                EPAssertionUtil.AssertProps(@event, "fruit,size".SplitCsv(), new object[] { "E1", "large" });
+            }
+        }
 
-				RunAssertionSimple(env);
+        private class EventJsonVisibilityPublicSameModule : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@public @buseventtype create json schema SimpleJson(fruit string, size string, color string);\n" +
+                    "@name('s0') select fruit, size, color from SimpleJson#keepall;\n";
+                env.CompileDeploy(epl).AddListener("s0");
 
-				env.UndeployAll();
-			}
-		}
+                RunAssertionSimple(env);
 
-		internal class EventJsonVisibilityPublicTwoModulesRuntimePath : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				env.CompileDeploy("@public @buseventtype create json schema SimpleJson(fruit string, size string, color string)");
-				string epl = "@Name('s0') select fruit, size, color from SimpleJson#keepall";
-				EPCompiled compiled = env.Compile(epl, new CompilerArguments(env.Runtime.RuntimePath));
-				env.Deploy(compiled).AddListener("s0");
+                env.UndeployAll();
+            }
+        }
 
-				RunAssertionSimple(env);
+        private class EventJsonVisibilityPublicTwoModulesBinaryPath : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@public @buseventtype create json schema SimpleJson(fruit string, size string, color string)",
+                    path);
+                env.CompileDeploy("@name('s0') select fruit, size, color from SimpleJson#keepall", path)
+                    .AddListener("s0");
 
-				env.UndeployAll();
-			}
-		}
+                RunAssertionSimple(env);
 
-		private static void RunAssertionSimple(RegressionEnvironment env)
-		{
-			string json = "{ \"fruit\": \"Apple\", \"size\": \"Large\", \"color\": \"Red\"}";
-			env.SendEventJson(json, "SimpleJson");
-			AssertFruitApple(env.Listener("s0").AssertOneGetNewAndReset());
+                env.UndeployAll();
+            }
+        }
 
-			EventSender eventSender = env.Runtime.EventService.GetEventSender("SimpleJson");
-			json = "{ \"fruit\": \"Peach\", \"size\": \"Small\", \"color\": \"Yellow\"}";
-			eventSender.SendEvent(json);
-			AssertFruitPeach(env.Listener("s0").AssertOneGetNewAndReset());
+        private class EventJsonVisibilityPublicTwoModulesRuntimePath : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy(
+                    "@public @buseventtype create json schema SimpleJson(fruit string, size string, color string)");
+                var epl = "@name('s0') select fruit, size, color from SimpleJson#keepall";
+                var compiled = env.CompileWRuntimePath(epl);
+                env.Deploy(compiled).AddListener("s0");
 
-			env.Milestone(0);
+                RunAssertionSimple(env);
 
-			IEnumerator<EventBean> it = env.Statement("s0").GetEnumerator();
-			AssertFruitApple(it.Advance());
-			AssertFruitPeach(it.Advance());
-		}
+                env.UndeployAll();
+            }
+        }
 
-		private static void AssertFruitPeach(EventBean @event)
-		{
-			EPAssertionUtil.AssertProps(@event, "fruit,size,color".SplitCsv(), new object[] {"Peach", "Small", "Yellow"});
-		}
+        private static void RunAssertionSimple(RegressionEnvironment env)
+        {
+            var json = "{ \"fruit\": \"Apple\", \"size\": \"Large\", \"color\": \"Red\"}";
+            env.SendEventJson(json, "SimpleJson");
+            env.AssertEventNew("s0", EventJsonVisibility.AssertFruitApple);
 
-		private static void AssertFruitApple(EventBean @event)
-		{
-			EPAssertionUtil.AssertProps(@event, "fruit,size,color".SplitCsv(), new object[] {"Apple", "Large", "Red"});
-		}
-	}
+            json = "{ \"fruit\": \"Peach\", \"size\": \"Small\", \"color\": \"Yellow\"}";
+            env.SendEventJson(json, "SimpleJson");
+            env.AssertEventNew("s0", EventJsonVisibility.AssertFruitPeach);
+
+            env.Milestone(0);
+
+            env.AssertIterator(
+                "s0",
+                it => {
+                    AssertFruitApple(it.Advance());
+                    AssertFruitPeach(it.Advance());
+                });
+        }
+
+        private static void AssertFruitPeach(EventBean @event)
+        {
+            EPAssertionUtil.AssertProps(
+                @event,
+                "fruit,size,color".SplitCsv(),
+                new object[] { "Peach", "Small", "Yellow" });
+        }
+
+        private static void AssertFruitApple(EventBean @event)
+        {
+            EPAssertionUtil.AssertProps(
+                @event,
+                "fruit,size,color".SplitCsv(),
+                new object[] { "Apple", "Large", "Red" });
+        }
+    }
 } // end of namespace

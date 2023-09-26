@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,11 +17,12 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
 {
     public class CoercionUtil
     {
-        private static readonly Type[] NULL_ARRAY = new Type[0];
+        private static readonly Type[] NULL_ARRAY = Type.EmptyTypes;
 
         public static CoercionDesc GetCoercionTypesRange(
             EventType[] typesPerStream,
@@ -43,11 +44,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 Type coercionType;
 
                 if (entry.Type.IsRange()) {
-                    var rangeIn = (QueryGraphValueEntryRangeInForge) entry;
+                    var rangeIn = (QueryGraphValueEntryRangeInForge)entry;
                     coercionType = GetCoercionTypeRangeIn(valuePropType, rangeIn.ExprStart, rangeIn.ExprEnd);
                 }
                 else {
-                    var relOp = (QueryGraphValueEntryRangeRelOpForge) entry;
+                    var relOp = (QueryGraphValueEntryRangeRelOpForge)entry;
                     coercionType = GetCoercionType(valuePropType, relOp.Expression.Forge.EvaluationType);
                 }
 
@@ -64,8 +65,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         }
 
         /// <summary>
-        ///     Returns null if no coercion is required, or an array of classes for use in coercing the
-        ///     lookup keys and index keys into a common type.
+        /// Returns null if no coercion is required, or an array of classes for use in coercing the
+        /// lookup keys and index keys into a common type.
         /// </summary>
         /// <param name="typesPerStream">is the event types for each stream</param>
         /// <param name="lookupStream">is the stream looked up from</param>
@@ -93,15 +94,16 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             for (var i = 0; i < keyProps.Count; i++) {
                 Type keyPropType;
                 if (keyProps[i] is QueryGraphValueEntryHashKeyedForgeExpr) {
-                    var hashExpr = (QueryGraphValueEntryHashKeyedForgeExpr) keyProps[i];
-                    keyPropType = hashExpr.KeyExpr.Forge.EvaluationType.GetBoxedType();
+                    var hashExpr = (QueryGraphValueEntryHashKeyedForgeExpr)keyProps[i];
+                    keyPropType = hashExpr.KeyExpr.Forge.EvaluationType;
                 }
                 else {
-                    var hashKeyProp = (QueryGraphValueEntryHashKeyedForgeProp) keyProps[i];
+                    var hashKeyProp = (QueryGraphValueEntryHashKeyedForgeProp)keyProps[i];
                     keyPropType = typesPerStream[lookupStream].GetPropertyType(hashKeyProp.KeyProperty).GetBoxedType();
                 }
 
-                var indexedPropType = typesPerStream[indexedStream].GetPropertyType(indexProps[i]).GetBoxedType();
+                var indexedPropType =
+                    typesPerStream[indexedStream].GetPropertyType(indexProps[i]).GetBoxedType();
                 var coercionType = indexedPropType;
                 if (keyPropType != indexedPropType) {
                     coercionType = keyPropType.GetCompareToCoercionType(indexedPropType);
@@ -112,24 +114,6 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             }
 
             return new CoercionDesc(mustCoerce, coercionTypes);
-        }
-
-        public static Type GetCoercionTypeRange(
-            EventType indexedType,
-            string indexedProp,
-            SubordPropRangeKeyForge rangeKey)
-        {
-            var desc = rangeKey.RangeInfo;
-            if (desc.Type.IsRange()) {
-                var rangeIn = (QueryGraphValueEntryRangeInForge) desc;
-                return GetCoercionTypeRangeIn(
-                    indexedType.GetPropertyType(indexedProp),
-                    rangeIn.ExprStart,
-                    rangeIn.ExprEnd);
-            }
-
-            var relOp = (QueryGraphValueEntryRangeRelOpForge) desc;
-            return GetCoercionType(indexedType.GetPropertyType(indexedProp), relOp.Expression.Forge.EvaluationType);
         }
 
         public static CoercionDesc GetCoercionTypesRange(
@@ -152,11 +136,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 Type coercionType;
 
                 if (rangeDesc.Type.IsRange()) {
-                    var rangeIn = (QueryGraphValueEntryRangeInForge) rangeDesc;
+                    var rangeIn = (QueryGraphValueEntryRangeInForge)rangeDesc;
                     coercionType = GetCoercionTypeRangeIn(valuePropType, rangeIn.ExprStart, rangeIn.ExprEnd);
                 }
                 else {
-                    var relOp = (QueryGraphValueEntryRangeRelOpForge) rangeDesc;
+                    var relOp = (QueryGraphValueEntryRangeRelOpForge)rangeDesc;
                     coercionType = GetCoercionType(valuePropType, relOp.Expression.Forge.EvaluationType);
                 }
 
@@ -178,7 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
             Type coercionType = null;
             var keyPropType = keyPropTypeExpr.GetBoxedType();
-            if (valuePropType != keyPropType) {
+            if (!valuePropType.Equals(keyPropType)) {
                 coercionType = valuePropType.GetCompareToCoercionType(keyPropType);
             }
 
@@ -224,15 +208,30 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             var startPropType = exprStart.Forge.EvaluationType.GetBoxedType();
             var endPropType = exprEnd.Forge.EvaluationType.GetBoxedType();
 
-            if (valuePropType != startPropType) {
+            if (!valuePropType.Equals(startPropType)) {
                 coercionType = valuePropType.GetCompareToCoercionType(startPropType);
             }
 
-            if (valuePropType != endPropType) {
+            if (!valuePropType.Equals(endPropType)) {
                 coercionType = coercionType.GetCompareToCoercionType(endPropType);
             }
 
+            if (coercionType == null) {
+                return null;
+            }
+
             return coercionType;
+        }
+
+        public static Type[] GetCoercionTypes(Type[] propTypes)
+        {
+            var classes = new Type[propTypes.Length];
+            for (var i = 0; i < propTypes.Length; i++) {
+                var type = propTypes[i];
+                classes[i] = type;
+            }
+
+            return classes;
         }
     }
 } // end of namespace

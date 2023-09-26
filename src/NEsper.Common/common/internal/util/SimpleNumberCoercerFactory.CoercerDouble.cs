@@ -44,9 +44,9 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return ((valueType != typeof(float)) &&
-                        (valueType != typeof(double)) &&
-                        (valueType != typeof(double?)))
+                return valueType != typeof(float) &&
+                       valueType != typeof(double) &&
+                       valueType != typeof(double?)
                     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedDouble")
                     : value;
             }
@@ -55,8 +55,8 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression value,
                 Type valueType)
             {
-                return ((valueType != typeof(float)) &&
-                        (valueType != typeof(double)))
+                return valueType != typeof(float) &&
+                       valueType != typeof(double)
                     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsDouble")
                     : value;
             }
@@ -67,11 +67,11 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                if (valueType.IsBigInteger() || valueType.IsDecimal()) {
+                if (valueType.IsTypeBigInteger() || valueType.IsTypeDecimal()) {
                     return CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedDouble");
                 }
 
-                return (valueType != typeof(double) || (valueType != typeof(double?)))
+                return valueType != typeof(double) || valueType != typeof(double?)
                     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedDouble")
                     : value;
             }

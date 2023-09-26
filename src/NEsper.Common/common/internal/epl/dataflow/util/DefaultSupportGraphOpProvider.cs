@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public DefaultSupportGraphOpProvider(object op)
         {
-            this.ops = new object[] {op};
+            ops = new object[] { op };
         }
 
         public DefaultSupportGraphOpProvider(params object[] ops)
@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public object Provide(EPDataFlowOperatorProviderContext context)
         {
-            foreach (object op in ops) {
+            foreach (var op in ops) {
                 if (context.OperatorName.Equals(op.GetType().Name)) {
                     return op;
                 }

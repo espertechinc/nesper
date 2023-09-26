@@ -14,20 +14,26 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.serializers.forge
 {
-	public class JsonSerializerForgeByMethod : JsonSerializerForge {
+    public class JsonSerializerForgeByMethod : JsonSerializerForge
+    {
+        private readonly string methodName;
 
-	    private readonly string methodName;
+        public JsonSerializerForgeByMethod(string methodName)
+        {
+            this.methodName = methodName;
+        }
 
-	    public JsonSerializerForgeByMethod(string methodName) {
-	        this.methodName = methodName;
-	    }
-
-	    public CodegenExpression CodegenSerialize(JsonSerializerForgeRefs refs, CodegenMethod method, CodegenClassScope classScope) {
-	        if (methodName.Equals("WriteJsonValue") || methodName.Equals("WriteJsonArray")) {
-	            return StaticMethod(typeof(JsonSerializerUtil), methodName, refs.Context, refs.Name, refs.Field);
-	        } else {
-	            return StaticMethod(typeof(JsonSerializerUtil), methodName, refs.Context, refs.Field);
-	        }
-	    }
-	}
+        public CodegenExpression CodegenSerialize(
+            JsonSerializerForgeRefs refs,
+            CodegenMethod method,
+            CodegenClassScope classScope)
+        {
+            if (methodName.Equals("WriteJsonValue") || methodName.Equals("WriteJsonArray")) {
+                return StaticMethod(typeof(JsonSerializerUtil), methodName, refs.Context, refs.Name, refs.Field);
+            }
+            else {
+                return StaticMethod(typeof(JsonSerializerUtil), methodName, refs.Context, refs.Field);
+            }
+        }
+    }
 } // end of namespace

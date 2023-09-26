@@ -8,10 +8,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.common.client.artifact;
-using com.espertech.esper.common.@internal.compile;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime

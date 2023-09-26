@@ -55,7 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             foreach (var calendarForge in calendarForges) {
                 // block.Expression
-                block.AssignRef(dtx, calendarForge.CodegenDateTimeEx(dtx, codegenMethodScope, exprSymbol, codegenClassScope));
+                block.AssignRef(
+                    dtx,
+                    calendarForge.CodegenDateTimeEx(dtx, codegenMethodScope, exprSymbol, codegenClassScope));
             }
         }
 

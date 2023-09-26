@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.fabric;
 
 namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 {
@@ -16,14 +17,18 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
     {
         public SubordinateQueryIndexSuggest(
             SubordinateQueryIndexDescForge forge,
-            IList<StmtClassForgeableFactory> multiKeyForgeables)
+            IList<StmtClassForgeableFactory> multiKeyForgeables,
+            FabricCharge fabricCharge)
         {
             Forge = forge;
             MultiKeyForgeables = multiKeyForgeables;
+            FabricCharge = fabricCharge;
         }
 
         public SubordinateQueryIndexDescForge Forge { get; }
 
         public IList<StmtClassForgeableFactory> MultiKeyForgeables { get; }
+
+        public FabricCharge FabricCharge { get; }
     }
 } // end of namespace

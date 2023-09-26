@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.index.hash;
@@ -30,22 +29,22 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             bool isNWOnTrigger,
             int numStreamsOuter)
         {
-            this.ExpressionTexts = expressionTexts;
-            this.Evaluator = evaluator;
-            this.IsNWOnTrigger = isNWOnTrigger;
-            this.NumStreamsOuter = numStreamsOuter;
+            ExpressionTexts = expressionTexts;
+            Evaluator = evaluator;
+            IsNWOnTrigger = isNWOnTrigger;
+            NumStreamsOuter = numStreamsOuter;
         }
 
         public SubordTableLookupStrategy MakeStrategy(
             EventTable[] eventTable,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             VirtualDWView vdw)
         {
             if (IsNWOnTrigger) {
-                return new SubordHashedTableLookupStrategyExprNW(this, (PropertyHashedEventTable) eventTable[0]);
+                return new SubordHashedTableLookupStrategyExprNW(this, (PropertyHashedEventTable)eventTable[0]);
             }
 
-            return new SubordHashedTableLookupStrategyExpr(this, (PropertyHashedEventTable) eventTable[0]);
+            return new SubordHashedTableLookupStrategyExpr(this, (PropertyHashedEventTable)eventTable[0]);
         }
 
         public LookupStrategyDesc LookupStrategyDesc => new LookupStrategyDesc(

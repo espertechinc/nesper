@@ -15,8 +15,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
     public class CodegenClassBaseList
     {
         public CodegenTypeReference BaseType { get; private set; }
-        
-        public ISet<CodegenTypeReference> Interfaces { get;  }
+
+        public ISet<CodegenTypeReference> Interfaces { get; }
 
         /// <summary>
         /// Constructs a new class base list.
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
             return this;
         }
-   
+
         public CodegenClassBaseList AssignBaseType(string baseTypeName)
         {
             if (!string.IsNullOrWhiteSpace(baseTypeName)) {
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public void AddReferenced(ISet<Type> classes)
         {
             BaseType?.AddReferenced(classes);
-            foreach(var @interface in Interfaces) {
+            foreach (var @interface in Interfaces) {
                 @interface.AddReferenced(classes);
             }
         }
@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public void Render(StringBuilder builder)
         {
             var delimiter = " : ";
-                
+
             if (BaseType != null) {
                 builder.Append(delimiter);
                 BaseType.Render(builder);

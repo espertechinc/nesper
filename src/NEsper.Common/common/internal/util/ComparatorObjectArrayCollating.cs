@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.util
                     }
                 }
                 else {
-                    var comparisonResult = CollectionUtil.CompareValuesCollated(
+                    var comparisonResult = CompareValuesCollated(
                         valueOne,
                         valueTwo,
                         isDescending,

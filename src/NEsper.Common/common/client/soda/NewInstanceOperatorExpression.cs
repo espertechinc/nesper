@@ -85,15 +85,12 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("new ");
-            
+
             if (IdentifierUtil.IsGenericOrNestedTypeName(className)) {
                 writer.Write('`');
                 writer.Write(className);
@@ -110,16 +107,22 @@ namespace com.espertech.esper.common.client.soda
             }
             else {
                 if (Children.Count == 1 && Children[0] is ArrayExpression) {
-                    for (int i = 0; i < numArrayDimensions; i++) {
+                    for (var i = 0; i < numArrayDimensions; i++) {
                         writer.Write("[]");
                     }
+
                     writer.Write(" ");
                     Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-                } else {
-                    foreach (Expression expression in Children) {
+                }
+                else {
+                    foreach (var expression in Children) {
                         writer.Write("[");
                         expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                         writer.Write("]");
+                    }
+
+                    if (numArrayDimensions > Children.Count) {
+                        writer.Write("[]");
                     }
                 }
             }

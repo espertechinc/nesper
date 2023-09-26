@@ -17,19 +17,17 @@ namespace com.espertech.esper.common.@internal.context.activator
         private HistoricalEventViewableFactory factory;
 
         public HistoricalEventViewableFactory Factory {
-            set { this.factory = value; }
+            set => factory = value;
         }
 
-        public EventType EventType {
-            get => factory.EventType;
-        }
+        public EventType EventType => factory.EventType;
 
         public ViewableActivationResult Activate(
             AgentInstanceContext agentInstanceContext,
             bool isSubselect,
             bool isRecoveringResilient)
         {
-            HistoricalEventViewable viewable = factory.Activate(agentInstanceContext);
+            var viewable = factory.Activate(agentInstanceContext);
             return new ViewableActivationResult(viewable, viewable, null, false, false, null, null, null);
         }
     }

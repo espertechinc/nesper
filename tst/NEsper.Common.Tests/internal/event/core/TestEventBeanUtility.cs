@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
@@ -119,7 +120,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             var setOne = MakeEventArray(new[] { "a1", "a2" });
             var setTwo = MakeEventArray(new[] { "b1", "b2", "b3" });
-            var total = EventBeanUtility.Append(setOne, setTwo);
+            var total = setOne.Concat(setTwo).ToArray();
 
             Assert.AreEqual(setOne[0], total[0]);
             Assert.AreEqual(setOne[1], total[1]);
@@ -129,7 +130,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
             setOne = MakeEventArray(new[] { "a1" });
             setTwo = MakeEventArray(new[] { "b1" });
-            total = EventBeanUtility.Append(setOne, setTwo);
+            total = setOne.Concat(setTwo).ToArray();
 
             Assert.AreEqual(setOne[0], total[0]);
             Assert.AreEqual(setTwo[0], total[1]);

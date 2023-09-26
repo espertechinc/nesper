@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
 
         public long DeltaForSecondsDouble(double seconds)
         {
-            return (long) Math.Round(1000000d * seconds);
+            return (long)Math.Round(1000000d * seconds);
         }
 
         public long DeltaForSecondsNumber(object timeInSeconds)
@@ -62,7 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             CodegenExpressionRef sec,
             CodegenClassScope codegenClassScope)
         {
-            return Cast<long>(StaticMethod(typeof(Math), "Round", Op(Constant(1000000d), "*", ExprDotName(sec, "Value"))));
+            return Cast<long>(
+                StaticMethod(typeof(Math), "Round", Op(Constant(1000000d), "*", ExprDotName(sec, "Value"))));
         }
 
         public CodegenExpression DateTimeSetCodegen(
@@ -72,8 +73,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope.MakeChild(typeof(long), typeof(TimeAbacusMicroseconds), codegenClassScope)
-                .AddParam(typeof(long), "fromTime")
-                .AddParam(typeof(DateTimeEx), "dtx")
+                .AddParam<long>("fromTime")
+                .AddParam<DateTimeEx>("dtx")
                 .Block
                 .DeclareVar<long>("millis", Op(Ref("fromTime"), "/", Constant(1000)))
                 .Expression(ExprDotMethod(Ref("dtx"), "SetUtcMillis", Ref("millis")))

@@ -8,9 +8,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
@@ -24,8 +26,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -56,7 +60,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             public void Run(RegressionEnvironment env)
             {
                 var resourceManager = env.Container.ResourceManager();
-                var schemaUriSimpleSchemaWithAll = resourceManager.ResolveResourceURL("regression/simpleSchemaWithAll.xsd");
+                var schemaUriSimpleSchemaWithAll =
+                    resourceManager.ResolveResourceURL("regression/simpleSchemaWithAll.xsd");
                 var epl = "@public @buseventtype " +
                           "@XMLSchema(RootElementName='event-page-visit', SchemaResource='" +
                           schemaUriSimpleSchemaWithAll +
@@ -72,11 +77,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         private static void RunAssertion(
             RegressionEnvironment env,
-            String eventTypeName,
+            string eventTypeName,
             RegressionPath path)
         {
             // url='page4'
-            var text = "@Name('s0') select a.url as sesja from pattern [ every a=" + eventTypeName + "(url='page1') ]";
+            var text = "@name('s0') select a.url as sesja from pattern [ every a=" + eventTypeName + "(url='page1') ]";
             env.CompileDeploy(text, path).AddListener("s0");
 
             SupportXML.SendXMLEvent(
@@ -86,10 +91,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 "<url>page1</url>" +
                 "</event-page-visit>",
                 eventTypeName);
-            var theEvent = env.Listener("s0").LastNewData[0];
-            Assert.AreEqual("page1", theEvent.Get("sesja"));
-            env.Listener("s0").Reset();
-
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var theEvent = listener.LastNewData[0];
+                    Assert.AreEqual("page1", theEvent.Get("sesja"));
+                    listener.Reset();
+                });
             SupportXML.SendXMLEvent(
                 env,
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -97,17 +105,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 "<url>page2</url>" +
                 "</event-page-visit>",
                 eventTypeName);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
-            var type = env.CompileDeploy("@Name('s1') select * from " + eventTypeName, path).Statement("s1").EventType;
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("sessionId", typeof(XmlNode), null, false, false, false, false, true),
-                    new EventPropertyDescriptor("customerId", typeof(XmlNode), null, false, false, false, false, true),
-                    new EventPropertyDescriptor("url", typeof(string), null, false, false, false, false, false),
-                    new EventPropertyDescriptor("method", typeof(XmlNode), null, false, false, false, false, true)
-                },
-                type.PropertyDescriptors);
+            env.CompileDeploy("@name('s1') select * from " + eventTypeName, path);
+            env.AssertStatement(
+                "s1",
+                statement => {
+                    var type = statement.EventType;
+                    SupportEventPropUtil.AssertPropsEquals(
+                        type.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("sessionId", typeof(XmlNode)).WithFragment(),
+                        new SupportEventPropDesc("customerId", typeof(XmlNode)).WithFragment(),
+                        new SupportEventPropDesc("url", typeof(string)),
+                        new SupportEventPropDesc("method", typeof(XmlNode)).WithFragment());
+                });
 
             env.UndeployAll();
         }

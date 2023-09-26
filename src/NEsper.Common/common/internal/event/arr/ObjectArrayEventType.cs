@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         }
 
         public IDictionary<string, int> PropertiesIndexes =>
-            ((EventTypeNestableGetterFactoryObjectArray) GetterFactory).PropertiesIndex;
+            ((EventTypeNestableGetterFactoryObjectArray)GetterFactory).PropertiesIndex;
 
         public override Type UnderlyingType => typeof(object[]);
 
@@ -88,17 +88,15 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            if (property is MappedProperty) {
-                var mapProp = (MappedProperty) property;
-                if (!PropertiesIndexes.TryGetValue(mapProp.PropertyNameAtomic, out var index)) {
+            if (property is MappedProperty mappedProperty) {
+                if (!PropertiesIndexes.TryGetValue(mappedProperty.PropertyNameAtomic, out var index)) {
                     return null;
                 }
 
-                return new ObjectArrayEventBeanPropertyWriterMapProp(index, mapProp.Key);
+                return new ObjectArrayEventBeanPropertyWriterMapProp(index, mappedProperty.Key);
             }
 
-            if (property is IndexedProperty) {
-                var indexedProp = (IndexedProperty) property;
+            if (property is IndexedProperty indexedProp) {
                 if (!PropertiesIndexes.TryGetValue(indexedProp.PropertyNameAtomic, out var index)) {
                     return null;
                 }
@@ -121,17 +119,15 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-            if (property is MappedProperty) {
+            if (property is MappedProperty mappedProperty) {
                 EventPropertyWriter writer = GetWriter(propertyName);
                 if (writer == null) {
                     return null;
                 }
 
-                var mapProp = (MappedProperty) property;
                 return new EventPropertyDescriptor(
-                    mapProp.PropertyNameAtomic,
+                    mappedProperty.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     false,
                     true,
                     false,
@@ -139,17 +135,15 @@ namespace com.espertech.esper.common.@internal.@event.arr
                     false);
             }
 
-            if (property is IndexedProperty) {
+            if (property is IndexedProperty indexedProp) {
                 EventPropertyWriter writer = GetWriter(propertyName);
                 if (writer == null) {
                     return null;
                 }
 
-                var indexedProp = (IndexedProperty) property;
                 return new EventPropertyDescriptor(
                     indexedProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     true,
                     false,
                     true,
@@ -179,7 +173,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                     indexes.Add(indexesPerProperty.Get(writerPair.First.PropertyName));
                 }
                 else {
-                    writers[i] = (ObjectArrayEventBeanPropertyWriter) GetWriter(properties[i]);
+                    writers[i] = (ObjectArrayEventBeanPropertyWriter)GetWriter(properties[i]);
                     if (writers[i] == null) {
                         return null;
                     }
@@ -228,7 +222,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             var index = 0;
             if (optionalSupertypes != null) {
                 foreach (var superType in optionalSupertypes) {
-                    var objectArraySuperType = (ObjectArrayEventType) superType;
+                    var objectArraySuperType = (ObjectArrayEventType)superType;
                     foreach (var propertyName in objectArraySuperType.PropertyNames) {
                         if (indexPerProperty.ContainsKey(propertyName)) {
                             continue;
@@ -253,9 +247,9 @@ namespace com.espertech.esper.common.@internal.@event.arr
             ObjectArrayEventType targetType)
         {
             var indexesTarget = targetType.PropertiesIndexes;
-            var indexesSource = ((ObjectArrayEventType) theEvent.EventType).PropertiesIndexes;
+            var indexesSource = ((ObjectArrayEventType)theEvent.EventType).PropertiesIndexes;
             var dataTarget = new object[indexesTarget.Count];
-            var dataSource = (object[]) theEvent.Underlying;
+            var dataSource = (object[])theEvent.Underlying;
             foreach (var sourceEntry in indexesSource) {
                 var propertyName = sourceEntry.Key;
                 if (!indexesTarget.TryGetValue(propertyName, out var targetIndex)) {
@@ -271,8 +265,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public bool IsDeepEqualsConsiderOrder(ObjectArrayEventType other)
         {
-            var factoryOther = (EventTypeNestableGetterFactoryObjectArray) other.GetterFactory;
-            var factoryMe = (EventTypeNestableGetterFactoryObjectArray) GetterFactory;
+            var factoryOther = (EventTypeNestableGetterFactoryObjectArray)other.GetterFactory;
+            var factoryMe = (EventTypeNestableGetterFactoryObjectArray)GetterFactory;
 
             if (factoryOther.PropertiesIndex.Count != factoryMe.PropertiesIndex.Count) {
                 return false;
@@ -286,14 +280,14 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
                 var propName = propMeEntry.Key;
                 var setOneType = NestableTypes.Get(propName);
+                var setOneTypeFound = NestableTypes.ContainsKey(propName);
                 var setTwoType = other.NestableTypes.Get(propName);
-                var setTwoTypeFound = other.NestableTypes.ContainsKey(propName);
 
                 var comparedMessage = BaseNestableEventUtil.ComparePropType(
                     propName,
                     setOneType,
+                    setOneTypeFound,
                     setTwoType,
-                    setTwoTypeFound,
                     other.Name);
                 if (comparedMessage != null) {
                     return false;

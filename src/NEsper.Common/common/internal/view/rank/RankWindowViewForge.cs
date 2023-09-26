@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
@@ -26,14 +28,12 @@ using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUt
 namespace com.espertech.esper.common.@internal.view.rank
 {
     /// <summary>
-    ///     Factory for rank window views.
+    /// Factory for rank window views.
     /// </summary>
     public class RankWindowViewForge : ViewFactoryForgeBase,
         DataWindowViewForge,
         DataWindowViewForgeWithPrevious
     {
-        private const string NAME = "Rank";
-
         private IList<ExprNode> viewParameters;
         private ExprNode[] criteriaExpressions;
         private ExprNode[] sortCriteriaExpressions;
@@ -42,8 +42,6 @@ namespace com.espertech.esper.common.@internal.view.rank
         private bool useCollatorSort;
         private MultiKeyClassRef multiKeyClassNames;
         private DataInputOutputSerdeForge[] sortSerdes;
-
-        public override string ViewName => NAME;
 
         public override void SetViewParameters(
             IList<ExprNode> parameters,
@@ -54,27 +52,24 @@ namespace com.espertech.esper.common.@internal.view.rank
             useCollatorSort = viewForgeEnv.Configuration.Compiler.Language.IsSortUsingCollator;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
             var message =
-                NAME +
-                " view requires a list of expressions providing unique keys, a numeric size parameter and a list of expressions providing sort keys";
+                $"{ViewName} view requires a list of expressions providing unique keys, a numeric size parameter and a list of expressions providing sort keys";
             if (viewParameters.Count < 3) {
                 throw new ViewParameterException(message);
             }
 
             // validate
             var validated = ViewForgeSupport.Validate(
-                NAME,
+                ViewName,
                 parentEventType,
                 viewParameters,
                 true,
-                viewForgeEnv,
-                streamNumber);
+                viewForgeEnv);
 
             // find size-parameter index
             var indexNumericSize = -1;
@@ -101,11 +96,11 @@ namespace com.espertech.esper.common.@internal.view.rank
 
             // validate non-constant for unique-keys and sort-keys
             for (var i = 0; i < indexNumericSize; i++) {
-                ViewForgeSupport.AssertReturnsNonConstant(NAME, validated[i], i);
+                ViewForgeSupport.AssertReturnsNonConstant(ViewName, validated[i], i);
             }
 
             for (var i = indexNumericSize + 1; i < validated.Length; i++) {
-                ViewForgeSupport.AssertReturnsNonConstant(NAME, validated[i], i);
+                ViewForgeSupport.AssertReturnsNonConstant(ViewName, validated[i], i);
             }
 
             // get sort size
@@ -123,7 +118,7 @@ namespace com.espertech.esper.common.@internal.view.rank
             var count = 0;
             for (var i = indexNumericSize + 1; i < validated.Length; i++) {
                 if (validated[i] is ExprOrderedExpr) {
-                    isDescendingValues[count] = ((ExprOrderedExpr) validated[i]).IsDescending;
+                    isDescendingValues[count] = ((ExprOrderedExpr)validated[i]).IsDescending;
                     sortCriteriaExpressions[count] = validated[i].ChildNodes[0];
                 }
                 else {
@@ -140,7 +135,7 @@ namespace com.espertech.esper.common.@internal.view.rank
 
         public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
         {
-            MultiKeyPlan desc = MultiKeyPlanner.PlanMultiKey(
+            var desc = MultiKeyPlanner.PlanMultiKey(
                 criteriaExpressions,
                 false,
                 viewForgeEnv.StatementRawInfo,
@@ -149,15 +144,9 @@ namespace com.espertech.esper.common.@internal.view.rank
             return desc.MultiKeyForgeables;
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(RankWindowViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(RankWindowViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "Rank";
-        }
+        internal override string FactoryMethod => "rank";
 
         internal override void Assign(
             CodegenMethod method,
@@ -184,13 +173,29 @@ namespace com.espertech.esper.common.@internal.view.rank
                     Constant(isDescendingValues))
                 .SetProperty(
                     factory,
-                    "IsUseCollatorSort",
+                    "UseCollatorSort",
                     Constant(useCollatorSort))
                 .SetProperty(
                     factory,
                     "SortSerdes",
                     DataInputOutputSerdeForgeExtensions.CodegenArray(sortSerdes, method, classScope, null));
             ViewMultiKeyHelper.Assign(criteriaExpressions, multiKeyClassNames, method, factory, symbols, classScope);
+        }
+
+        public override string ViewName => ViewEnum.RANK_WINDOW.GetName();
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_RANK;
+        }
+
+        public MultiKeyClassRef MultiKeyClassNames => multiKeyClassNames;
+
+        public DataInputOutputSerdeForge[] SortSerdes => sortSerdes;
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

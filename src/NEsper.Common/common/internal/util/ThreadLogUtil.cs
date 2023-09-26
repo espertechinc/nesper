@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.util
 
         private static string GetLockInfo(object lockObj)
         {
-            string lockid = $"Lock@{Marshal.GetIUnknownForObject(lockObj).ToInt64():X8}";
+            var lockid = $"Lock@{Marshal.GetIUnknownForObject(lockObj).ToInt64():X8}";
             return "lock " + lockid;
             //return "lock " + lockid + " held=" + lockObj.HoldCount + " isHeldMe=" + lockObj.IsHeldByCurrentThread() +
             //        " hasQueueThreads=" + lockObj.HasQueuedThreads();
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.util
 
         private static string GetLockInfo(IReaderWriterLock lockObj)
         {
-            string lockid = $"RWLock@{lockObj.GetHashCode():X}";
+            var lockid = $"RWLock@{lockObj.GetHashCode():X}";
             return lockid +
                    //" readLockCount=" + lockObj.ReadLockCount +
                    " isWriteLocked=" +
@@ -108,11 +108,11 @@ namespace com.espertech.esper.common.@internal.util
             string text,
             params object[] objects)
         {
-            StringBuilder buf = new StringBuilder();
+            var buf = new StringBuilder();
             buf.Append(text);
             buf.Append(' ');
-            foreach (object obj in objects) {
-                if ((obj is string) || (obj is ValueType)) {
+            foreach (var obj in objects) {
+                if (obj is string || obj is ValueType) {
                     buf.Append(obj.ToString());
                 }
                 else {

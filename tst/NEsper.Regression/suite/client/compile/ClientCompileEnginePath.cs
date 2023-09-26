@@ -10,9 +10,10 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
@@ -38,7 +39,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             return execs;
         }
 
-        public static IList<RegressionExecution> WithEnginePathPreconfiguredEventTypeFromPath(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithEnginePathPreconfiguredEventTypeFromPath(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileEnginePathPreconfiguredEventTypeFromPath());
@@ -66,9 +68,16 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 CreateStmt(env, "@public @buseventtype create schema Event(string_field string, double_field double)");
                 CreateStmt(env, "@public create window EventWindow#time(600L) as select * from Event");
                 CreateStmt(env, "insert into EventWindow select * from Event");
-                CreateStmt(env, "select sum(double_field) AS sum_double_field, string_field, window() from EventWindow");
+                CreateStmt(
+                    env,
+                    "select sum(double_field) AS sum_double_field, string_field, window() from EventWindow");
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS, RegressionFlag.INVALIDITY);
             }
         }
 
@@ -78,12 +87,17 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 CreateStmt(
                     env,
-                    "@Name('A') @public create table MyTableAggs(TheString string primary key, thecnt count(*), thewin window(*) @type(SupportBean))");
+                    "@name('A') @public create table MyTableAggs(theString String primary key, thecnt count(*), thewin window(*) @type(SupportBean))");
                 CreateStmt(
                     env,
-                    "@Name('B') into table MyTableAggs select count(*) as thecnt, window(*) as thewin from SupportBean#keepall() group by TheString");
+                    "@name('B') into table MyTableAggs select count(*) as thecnt, window(*) as thewin from SupportBean#keepall() group by theString");
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS, RegressionFlag.INVALIDITY);
             }
         }
 
@@ -91,13 +105,20 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                //CreateStmt(env, "@Name('Create') @public create table MyTable(id string primary key, theGroup int primary key)");
-                //CreateStmt(env, "@Name('Index') create unique index I1 on MyTable(id)");
+                CreateStmt(
+                    env,
+                    "@name('Create') @public create table MyTable(id String primary key, theGroup int primary key)");
+                CreateStmt(env, "@name('Index') create unique index I1 on MyTable(id)");
 
-                CreateStmt(env, "@Name('Create') @public create window MyWindow#keepall as SupportBean");
-                CreateStmt(env, "@Name('Index') create unique index I1 on MyWindow(TheString)");
+                CreateStmt(env, "@name('Create') @public create window MyWindow#keepall as SupportBean");
+                CreateStmt(env, "@name('Index') create unique index I1 on MyWindow(theString)");
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
 
@@ -105,31 +126,37 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var deployed = "create variable int myvariable = 10;\n" +
-                               "create schema MySchema();\n" +
-                               "create expression myExpr { 'abc' };\n" +
-                               "create window MyWindow#keepall as SupportBean_S0;\n" +
-                               "create table MyTable(y string);\n" +
-                               "create context MyContext start SupportBean_S0 end SupportBean_S1;\n" +
-                               "create expression myScript() [ return 2; ];\n" +
-                               "create inlined_class \"\"\" public class MyClass { public static string DoIt(string parameter) { return \"def\"; } }\"\"\";\n";
+                var deployed = "@public create variable int myvariable = 10;\n" +
+                               "@public create schema MySchema();\n" +
+                               "@public create expression myExpr { 'abc' };\n" +
+                               "@public create window MyWindow#keepall as SupportBean_S0;\n" +
+                               "@public create table MyTable(y string);\n" +
+                               "@public create context MyContext start SupportBean_S0 end SupportBean_S1;\n" +
+                               "@public create expression myScript() [ 2 ];\n" +
+                               "@public create inlined_class \"\"\" public class MyClass { public static String doIt(String parameter) { return \"def\"; } }\"\"\";\n";
                 env.CompileDeploy(deployed, new RegressionPath());
 
-                var epl = "@Name('s0') select myvariable as c0, myExpr() as c1, myScript() as c2, preconfigured_variable as c3," +
-                          "MyClass.DoIt(TheString) as c4 from SupportBean;\n" +
-                          "select * from MySchema;" +
-                          "on SupportBean_S1 delete from MyWindow;\n" +
-                          "on SupportBean_S1 delete from MyTable;\n" +
-                          "context MyContext select * from SupportBean;\n";
+                var epl =
+                    "@name('s0') select myvariable as c0, myExpr() as c1, myScript() as c2, preconfigured_variable as c3," +
+                    "MyClass.doIt(theString) as c4 from SupportBean;\n" +
+                    "select * from MySchema;" +
+                    "on SupportBean_S1 delete from MyWindow;\n" +
+                    "on SupportBean_S1 delete from MyTable;\n" +
+                    "context MyContext select * from SupportBean;\n";
                 CompileDeployWEnginePath(env, epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
+                env.AssertPropsNew(
+                    "s0",
                     "c0,c1,c2,c3,c4".SplitCsv(),
-                    new object[] {10, "abc", 2, 5, "def"});
+                    new object[] { 10, "abc", 2, 5, "def" });
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
 

@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
                 indexedStream,
                 indexedStreamIsVDW,
                 typesPerStream,
-                new[] {indexNum})
+                new[] { indexNum })
         {
         }
 

@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                         isNewData,
                         context) => {
                         throw new UnsupportedOperationException("Cannot evaluate at compile time");
-                    },
+                    }
                 };
             }
         }
@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             int streamNum,
             EventBean[] eventsPerStream)
         {
-            var oa = (ObjectArrayBackedEventBean) eventsPerStream[streamNum];
+            var oa = (ObjectArrayBackedEventBean)eventsPerStream[streamNum];
             return ExprTableEvalStrategyUtil.GetRow(oa);
         }
 
@@ -188,7 +188,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
             bool isNewData,
             ExprEvaluatorContext ctx)
         {
-            var oa = (ObjectArrayBackedEventBean) eventsPerStream[streamNum];
+            var oa = (ObjectArrayBackedEventBean)eventsPerStream[streamNum];
             var row = ExprTableEvalStrategyUtil.GetRow(oa);
             return row.GetValue(column, eventsPerStream, isNewData, ctx);
         }

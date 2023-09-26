@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "oa")
+                .AddParam<object[]>("oa")
                 .Block
                 .DeclareVar<object>(
                     "value",

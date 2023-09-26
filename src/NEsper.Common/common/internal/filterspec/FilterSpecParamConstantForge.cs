@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         /// <returns>constant value</returns>
         public object FilterConstant { get; }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -59,7 +59,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar<FilterOperator>("filterOperator", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
+                .DeclareVar<FilterOperator>(
+                    "filterOperator",
+                    EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             var getFilterValue = new CodegenExpressionLambda(method.Block)
                 .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
@@ -79,7 +81,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             getFilterValue.Block.BlockReturn(FilterValueSetParamImpl.CodegenNew(Constant(FilterConstant)));
 
             method.Block.MethodReturn(inner);
-            return method;
+            return LocalMethod(method);
         }
 
         public override string ToString()
@@ -101,9 +103,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (FilterSpecParamConstantForge) o;
+            var that = (FilterSpecParamConstantForge)o;
 
-            if (FilterConstant != null ? !FilterConstant.Equals(that.FilterConstant) : that.FilterConstant != null) {
+            if (!FilterConstant?.Equals(that.FilterConstant) ?? that.FilterConstant != null) {
                 return false;
             }
 
@@ -126,17 +128,17 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public static void ValueExprToString(
             StringBuilder @out,
-            Object constant)
+            object constant)
         {
             var constantType = constant?.GetType();
             var constantTypeName = constantType?.CleanName();
-            
+
             @out.Append("constant ");
             CodegenExpressionUtil.RenderConstant(@out, constant);
             @out.Append(" type ").Append(constantTypeName);
         }
 
-        public static String ValueExprToString(Object constant)
+        public static string ValueExprToString(object constant)
         {
             var builder = new StringBuilder();
             ValueExprToString(builder, constant);

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -24,9 +25,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtListenerCreateStmt : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
-            env.CompileDeploy("@Name('s0') select * from SupportBean");
+            env.CompileDeploy("@name('s0') select * from SupportBean");
             TryListener(env, 2, 100, env.Statement("s0"));
             env.UndeployAll();
         }

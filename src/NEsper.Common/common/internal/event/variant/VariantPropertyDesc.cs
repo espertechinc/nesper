@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
             EventPropertyGetterSPI getter,
             bool property)
         {
-            PropertyType = propertyType;
+            PropertyType = propertyType ?? throw new ArgumentNullException(nameof(propertyType));
             Getter = getter;
             IsProperty = property;
         }

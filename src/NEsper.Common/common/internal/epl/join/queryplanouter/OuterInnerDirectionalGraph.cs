@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             CheckArgs(outerStream, innerStream);
 
             // add set
-            ICollection<int> innerSet = _streamToInnerMap.Get(outerStream, null);
+            var innerSet = _streamToInnerMap.Get(outerStream, null);
             if (innerSet == null) {
                 innerSet = new HashSet<int>();
                 _streamToInnerMap[outerStream] = innerSet;
@@ -87,9 +87,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             CheckArgs(innerStream);
 
             ICollection<int> result = new HashSet<int>();
-            foreach (KeyValuePair<int, ICollection<int>> keyValuePair in _streamToInnerMap) {
-                int key = keyValuePair.Key;
-                ICollection<int> set = keyValuePair.Value;
+            foreach (var keyValuePair in _streamToInnerMap) {
+                var key = keyValuePair.Key;
+                var set = keyValuePair.Value;
 
                 if (set.Contains(innerStream)) {
                     result.Add(key);
@@ -116,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
         {
             CheckArgs(outerStream, innerStream);
 
-            ICollection<int> innerSet = _streamToInnerMap.Get(outerStream, null);
+            var innerSet = _streamToInnerMap.Get(outerStream, null);
             if (innerSet == null) {
                 return false;
             }
@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             int innerStream)
         {
             CheckArgs(outerStream, innerStream);
-            ICollection<int> outerStreams = GetOuter(innerStream);
+            var outerStreams = GetOuter(innerStream);
             if (outerStreams == null) {
                 return false;
             }
@@ -149,11 +149,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
         /// </returns>
         public virtual string Print()
         {
-            StringBuilder buffer = new StringBuilder();
-            string delimiter = "";
+            var buffer = new StringBuilder();
+            var delimiter = "";
 
-            foreach (KeyValuePair<int, ICollection<int>> kvPair in _streamToInnerMap) {
-                ICollection<int> set = kvPair.Value;
+            foreach (var kvPair in _streamToInnerMap) {
+                var set = kvPair.Value;
 
                 buffer.Append(delimiter);
                 buffer.Append(kvPair.Key);
@@ -166,9 +166,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             return buffer.ToString();
         }
 
-        public IDictionary<int, ICollection<int>> UnqualifiedNavigableStreams {
-            get { return _unqualifiedNavigableStreams; }
-        }
+        public IDictionary<int, ICollection<int>> UnqualifiedNavigableStreams => _unqualifiedNavigableStreams;
 
         public void AddUnqualifiedNavigable(
             int streamOne,
@@ -193,7 +191,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
 
         private void CheckArgs(int stream)
         {
-            if ((stream >= _numStreams) || (stream < 0)) {
+            if (stream >= _numStreams || stream < 0) {
                 throw new ArgumentException("Out of bounds parameter for stream num");
             }
         }
@@ -202,10 +200,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             int outerStream,
             int innerStream)
         {
-            if ((outerStream >= _numStreams) ||
-                (innerStream >= _numStreams) ||
-                (outerStream < 0) ||
-                (innerStream < 0)) {
+            if (outerStream >= _numStreams ||
+                innerStream >= _numStreams ||
+                outerStream < 0 ||
+                innerStream < 0) {
                 throw new ArgumentException("Out of bounds parameter for inner or outer stream num");
             }
 

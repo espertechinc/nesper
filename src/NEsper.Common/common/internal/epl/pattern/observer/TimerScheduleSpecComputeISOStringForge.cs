@@ -27,13 +27,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(TimerScheduleSpecComputeISOString),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block.MethodReturn(
                 NewInstance<TimerScheduleSpecComputeISOString>(
-                    ExprNodeUtilityCodegen.CodegenEvaluator(parameter.Forge, method, this.GetType(), classScope)));
+                    ExprNodeUtilityCodegen.CodegenEvaluator(parameter.Forge, method, GetType(), classScope)));
             return LocalMethod(method);
         }
 

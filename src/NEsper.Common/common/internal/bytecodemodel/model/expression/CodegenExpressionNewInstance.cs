@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             classes.AddToSet(_clazz);
             CodegenExpressionBuilder.MergeClassesExpressions(classes, _params);
         }
-        
+
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             CodegenExpressionBuilder.TraverseMultiple(_params, consumer);

@@ -71,6 +71,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.container;
+using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.deploymentlifesvc;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;
 using com.espertech.esper.runtime.@internal.kernel.stage;
@@ -93,9 +94,15 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             EPServicesContext services,
             AtomicBoolean serviceStatusProvider);
 
+        protected abstract PatternSubexpressionPoolRuntimeSvc MakePatternSubexpressionPoolSvc(
+            long maxSubexpressions,
+            bool maxSubexpressionPreventStart,
+            RuntimeExtensionServices runtimeExtensionServices);
+
         public EPServicesContext CreateServicesContext(
             EPRuntimeSPI epRuntime,
-            Configuration configs)
+            Configuration configs,
+            EPRuntimeOptions options)
         {
             var container = epRuntime.Container;
 
@@ -120,11 +127,23 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 configs.Common.Imports,
                 configs.Common.AnnotationImports,
                 artifactRepositoryDefault);
+            var typeResolverParent = new ParentTypeResolver(importServiceRuntime.TypeResolver);
 
-            var epServicesHA = InitHA(epRuntime.URI, configs, runtimeEnvContext, eventProcessingRWLock, runtimeSettingsService);
+            var epServicesHA = InitHA(
+                epRuntime.URI,
+                configs,
+                runtimeEnvContext,
+                eventProcessingRWLock,
+                runtimeSettingsService,
+                options,
+                typeResolverParent);
 
             var eventTypeAvroHandler = MakeEventTypeAvroHandler(
                 importServiceRuntime, configs.Common.EventMeta.AvroSettings, epServicesHA.RuntimeExtensionServices);
+            var eventTypeXMLXSDHandler = EventTypeXMLXSDHandlerFactory.Resolve(
+                importServiceRuntime,
+                configs.Common.EventMeta,
+                EventTypeXMLXSDHandler.HANDLER_IMPL);
             var resolvedBeanEventTypes = BeanEventTypeRepoUtil.ResolveBeanEventTypes(configs.Common.EventTypeNames, importServiceRuntime);
             var eventBeanTypedEventFactory = MakeEventBeanTypedEventFactory(eventTypeAvroHandler);
             var beanEventTypeStemService =
@@ -153,15 +172,20 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 configs.Common.EventTypesNestableObjectArrayEvents,
                 beanEventTypeFactoryPrivate, 
                 importServiceRuntime);
-            
-            var xmlFragmentEventTypeFactory = new XMLFragmentEventTypeFactory(beanEventTypeFactoryPrivate, null, eventTypeRepositoryPreconfigured);
+
+            var xmlFragmentEventTypeFactory = new XMLFragmentEventTypeFactory(
+                beanEventTypeFactoryPrivate,
+                null,
+                eventTypeRepositoryPreconfigured,
+                eventTypeXMLXSDHandler);
             
             EventTypeRepositoryXMLTypeUtil.BuildXMLTypes(
                 eventTypeRepositoryPreconfigured,
                 configs.Common.EventTypesXMLDOM,
                 beanEventTypeFactoryPrivate,
                 xmlFragmentEventTypeFactory,
-                container.ResourceManager());
+                importServiceRuntime,
+                eventTypeXMLXSDHandler);
                 //importServiceRuntime
             EventTypeRepositoryAvroTypeUtil.BuildAvroTypes(
                 eventTypeRepositoryPreconfigured, configs.Common.EventTypesAvro, eventTypeAvroHandler,
@@ -237,6 +261,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             StatementAgentInstanceLockFactory statementAgentInstanceLockFactory = new StatementAgentInstanceLockFactoryImpl(
                 configs.Runtime.Execution.IsFairlock,
                 configs.Runtime.Execution.IsDisableLocking,
+                configs.Runtime.Logging.IsEnableLockActivity,
                 container.RWLockManager());
 
             var eventTableIndexService = MakeEventTableIndexService(epServicesHA.RuntimeExtensionServices);
@@ -283,9 +308,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             PatternSubexpressionPoolRuntimeSvc patternSubexpressionPoolSvc;
             if (configs.Runtime.Patterns.MaxSubexpressions != null) {
-                patternSubexpressionPoolSvc = new PatternSubexpressionPoolRuntimeSvcImpl(
+                patternSubexpressionPoolSvc = MakePatternSubexpressionPoolSvc(
                     configs.Runtime.Patterns.MaxSubexpressions.Value,
-                    configs.Runtime.Patterns.IsMaxSubexpressionPreventStart);
+                    configs.Runtime.Patterns.IsMaxSubexpressionPreventStart,
+                    epServicesHA.RuntimeExtensionServices);
             }
             else {
                 patternSubexpressionPoolSvc = PatternSubexpressionPoolRuntimeSvcNoOp.INSTANCE;
@@ -318,7 +344,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             var eventSerdeFactory = MakeEventSerdeFactory(epServicesHA.RuntimeExtensionServices);
             var eventTypeSerdeRepository = MakeEventTypeSerdeRepository(eventTypeRepositoryPreconfigured, eventTypePathRegistry);
-            var classLoaderParent = new ParentTypeResolver(importServiceRuntime.TypeResolver);
 
             var stageRecoveryService = MakeStageRecoveryService(epServicesHA);
 
@@ -330,7 +355,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 beanEventTypeFactoryPrivate,
                 beanEventTypeStemService,
                 TypeResolverDefault.INSTANCE,
-                classLoaderParent,
+                typeResolverParent,
                 classProvidedPathRegistry,
                 configs,
                 contextManagementService,
@@ -362,6 +387,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 eventTypeRepositoryPreconfigured,
                 eventTypeResolvingBeanFactory,
                 eventTypeSerdeRepository,
+                eventTypeXMLXSDHandler,
                 exceptionHandlingService,
                 expressionResultCacheSharable,
                 filterBooleanExpressionFactory,
@@ -408,8 +434,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             string runtimeURI,
             Configuration configurationSnapshot,
             RuntimeEnvContext runtimeEnvContext,
-            IReaderWriterLock eventProcessingRwLock,
-            RuntimeSettingsService runtimeSettingsService);
+            IReaderWriterLock eventProcessingRWLock,
+            RuntimeSettingsService runtimeSettingsService,
+            EPRuntimeOptions options,
+            ParentTypeResolver typeResolverParent);
 
         protected abstract ViewableActivatorFactory InitViewableActivatorFactory();
 

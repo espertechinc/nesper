@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.context.activator
             bool isSubselect,
             bool isRecoveringResilient)
         {
-            var nw = (NamedWindowWDirectConsume) namedWindow;
+            var nw = (NamedWindowWDirectConsume)namedWindow;
             var consumerDesc = new NamedWindowConsumerDesc(
                 namedWindowConsumerId,
                 filterEvaluator,

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,68 +14,48 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotMethodForgeNoDuck : ExprDotForge
     {
-        public enum DuckType
+        public enum WrapType
         {
             WRAPARRAY,
             UNDERLYING,
             PLAIN
         }
 
-        private readonly DuckType type;
+        private readonly MethodInfo method;
+        private readonly Type methodTargetType;
+
+        private readonly WrapType wrapType;
 
         public ExprDotMethodForgeNoDuck(
             string optionalStatementName,
             MethodInfo method,
+            Type methodTargetType,
             ExprForge[] parameters,
-            DuckType type)
+            WrapType wrapType)
         {
             OptionalStatementName = optionalStatementName;
-            Method = method;
+            this.method = method;
+            this.methodTargetType = methodTargetType;
             Parameters = parameters;
-            this.type = type;
+            this.wrapType = wrapType;
         }
 
         public string OptionalStatementName { get; }
 
-        public MethodInfo Method { get; }
+        public MethodInfo Method => method;
 
         public ExprForge[] Parameters { get; }
 
-        public EPType TypeInfo {
-            get {
-                if (type == DuckType.WRAPARRAY) {
-                    return EPTypeHelper.CollectionOfSingleValue(
-                        Method.ReturnType.GetElementType(),
-                        Method.ReturnType);
-                }
-
-                return EPTypeHelper.FromMethod(Method);
-            }
-        }
-
         public void Visit(ExprDotEvalVisitor visitor)
         {
-            visitor.VisitMethod(Method.Name);
-        }
-
-        public ExprDotEval DotEvaluator {
-            get {
-                var evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(Parameters);
-                if (type == DuckType.WRAPARRAY) {
-                    return new ExprDotMethodForgeNoDuckEvalWrapArray(this, evaluators);
-                }
-
-                if (type == DuckType.PLAIN) {
-                    return new ExprDotMethodForgeNoDuckEvalPlain(this, evaluators);
-                }
-
-                return new ExprDotMethodForgeNoDuckEvalUnderlying(this, evaluators);
-            }
+            visitor.VisitMethod(method.Name);
         }
 
         public CodegenExpression Codegen(
@@ -85,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (type == DuckType.WRAPARRAY) {
+            if (wrapType == WrapType.WRAPARRAY) {
                 return ExprDotMethodForgeNoDuckEvalWrapArray.CodegenWrapArray(
                     this,
                     inner,
@@ -95,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     classScope);
             }
 
-            if (type == DuckType.PLAIN) {
+            if (wrapType == WrapType.PLAIN) {
                 return ExprDotMethodForgeNoDuckEvalPlain.CodegenPlain(
                     this,
                     inner,
@@ -112,6 +92,38 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 parent,
                 symbols,
                 classScope);
+        }
+
+        public EPChainableType TypeInfo {
+            get {
+                if (wrapType == WrapType.WRAPARRAY) {
+                    var returnType = method.ReturnType;
+                    var componentType = returnType.GetComponentType();
+                    return EPChainableTypeHelper.CollectionOfSingleValue(componentType);
+                }
+
+                return EPChainableTypeHelper.FromMethod(method);
+            }
+        }
+
+        public ExprDotEval DotEvaluator {
+            get {
+                var evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(Parameters);
+                if (wrapType == WrapType.WRAPARRAY) {
+                    return new ExprDotMethodForgeNoDuckEvalWrapArray(this, evaluators);
+                }
+
+                if (wrapType == WrapType.PLAIN) {
+                    return new ExprDotMethodForgeNoDuckEvalPlain(this, evaluators);
+                }
+
+                return new ExprDotMethodForgeNoDuckEvalUnderlying(this, evaluators);
+            }
+        }
+
+        public WrapType GetWrapType()
+        {
+            return wrapType;
         }
     }
 } // end of namespace

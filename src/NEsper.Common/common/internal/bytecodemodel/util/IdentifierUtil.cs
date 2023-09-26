@@ -35,13 +35,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
         public static string GetIdentifierMayStartNumericOrig(string str)
         {
             var sb = new StringBuilder();
-            for (int i = 0; i < str.Length; i++) {
+            for (var i = 0; i < str.Length; i++) {
                 var charAt = str[i];
                 if (IsIdentifierPart(charAt)) {
                     sb.Append(charAt);
                 }
                 else {
-                    sb.Append((int) charAt);
+                    sb.Append((int)charAt);
                 }
             }
 
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 
             return variableName;
         }
-        
+
         public static string CodeInclusionTypeName(this string typeName)
         {
             if (typeName != null) {
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
         {
             return CodeInclusionTypeName(type.FullName);
         }
-        
+
         public static string CodeInclusionTypeName<T>()
         {
             return CodeInclusionTypeName(typeof(T));
@@ -113,8 +113,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 
         public static bool IsGenericOrNestedTypeName(string typeName)
         {
-            return (typeName.IndexOf('<') != -1) ||
-                   (typeName.IndexOf('+') != -1);
+            return typeName.IndexOf('<') != -1 ||
+                   typeName.IndexOf('+') != -1;
         }
     }
 } // end of namespace

@@ -44,8 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var result = EvaluateInternal(eventsPerStream, isNewData, context);
-            return result;
+            return EvaluateInternal(eventsPerStream, isNewData, context);
         }
 
         private bool? EvaluateInternal(
@@ -96,7 +95,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             block
                 .DeclareVar(lhsType, "l", lhs.Forge.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope))
-                .DeclareVar(rhsType, "r", rhs.Forge.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
+                .DeclareVar(
+                    rhsType,
+                    "r",
+                    rhs.Forge.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
 
             if (!forge.ForgeRenderable.IsIs) {
                 if (lhsType.CanBeNull()) {
@@ -127,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 forge.CoercerRHS.CoerceCodegen(Ref("r"), rhsType));
 
             //var compare = StaticMethod(typeof(DebugExtensions), "DebugEquals", Ref("left"), Ref("right"));
-            
+
             var compare = StaticMethod(typeof(object), "Equals", Ref("left"), Ref("right"));
             if (!forge.ForgeRenderable.IsNotEquals) {
                 block.MethodReturn(compare);

@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
@@ -18,9 +17,9 @@ namespace com.espertech.esper.regressionlib.suite.view
 {
     public class ViewParameterizedByContext
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
             WithLengthWindow(execs);
             WithDocSample(execs);
             WithMoreWindows(execs);
@@ -48,70 +47,51 @@ namespace com.espertech.esper.regressionlib.suite.view
             return execs;
         }
 
-        private static void RunAssertionWindow(
-            RegressionEnvironment env,
-            string window,
-            AtomicLong milestone)
-        {
-            var epl =
-                "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
-                "context CtxInitToTerm select * from SupportBean#" +
-                window;
-            env.CompileDeploy(epl);
-            env.SendEventBean(new SupportContextInitEventWLength("P1", 2));
-
-            env.MilestoneInc(milestone);
-
-            env.SendEventBean(new SupportContextInitEventWLength("P2", 20));
-
-            env.UndeployAll();
-        }
-
-        internal class ViewParameterizedByContextMoreWindows : RegressionExecution
+        private class ViewParameterizedByContextMoreWindows : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                RunAssertionWindow(env, "length_batch(context.miewl.IntSize)", milestone);
-                RunAssertionWindow(env, "time(context.miewl.IntSize)", milestone);
-                RunAssertionWindow(env, "ext_timed(LongPrimitive, context.miewl.IntSize)", milestone);
-                RunAssertionWindow(env, "time_batch(context.miewl.IntSize)", milestone);
-                RunAssertionWindow(env, "ext_timed_batch(LongPrimitive, context.miewl.IntSize)", milestone);
-                RunAssertionWindow(env, "time_length_batch(context.miewl.IntSize, context.miewl.IntSize)", milestone);
-                RunAssertionWindow(env, "time_accum(context.miewl.IntSize)", milestone);
-                RunAssertionWindow(env, "firstlength(context.miewl.IntSize)", milestone);
-                RunAssertionWindow(env, "firsttime(context.miewl.IntSize)", milestone);
-                RunAssertionWindow(env, "sort(context.miewl.IntSize, IntPrimitive)", milestone);
-                RunAssertionWindow(env, "rank(TheString, context.miewl.IntSize, TheString)", milestone);
-                RunAssertionWindow(env, "time_order(LongPrimitive, context.miewl.IntSize)", milestone);
+                RunAssertionWindow(env, "length_batch(context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "time(context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "ext_timed(longPrimitive, context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "time_batch(context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "ext_timed_batch(longPrimitive, context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "time_length_batch(context.miewl.intSize, context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "time_accum(context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "firstlength(context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "firsttime(context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "sort(context.miewl.intSize, intPrimitive)", milestone);
+                RunAssertionWindow(env, "rank(theString, context.miewl.intSize, theString)", milestone);
+                RunAssertionWindow(env, "time_order(longPrimitive, context.miewl.intSize)", milestone);
             }
         }
 
-        internal class ViewParameterizedByContextLengthWindow : RegressionExecution
+        private class ViewParameterizedByContextLengthWindow : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var epl =
                     "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
-                    "@Name('s0') context CtxInitToTerm select context.miewl.Id as Id, count(*) as cnt from SupportBean(TheString=context.miewl.Id)#length(context.miewl.IntSize)";
+                    "@name('s0') context CtxInitToTerm select context.miewl.id as id, count(*) as cnt from SupportBean(theString=context.miewl.id)#length(context.miewl.intSize)";
                 env.CompileDeploy(epl).AddListener("s0");
-                var fields = new[] {"Id", "cnt"};
+                var fields = "id,cnt".SplitCsv();
 
                 SendInitEvent(env, "P1", 2);
                 SendInitEvent(env, "P2", 4);
                 SendInitEvent(env, "P3", 3);
                 SendValueEvent(env, "P2");
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
                     fields,
-                    new[] {new object[] {"P1", 0L}, new object[] {"P2", 1L}, new object[] {"P3", 0L}});
+                    new object[][] { new object[] { "P1", 0L }, new object[] { "P2", 1L }, new object[] { "P3", 0L } });
 
                 env.Milestone(0);
 
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
                     fields,
-                    new[] {new object[] {"P1", 0L}, new object[] {"P2", 1L}, new object[] {"P3", 0L}});
+                    new object[][] { new object[] { "P1", 0L }, new object[] { "P2", 1L }, new object[] { "P3", 0L } });
 
                 for (var i = 0; i < 10; i++) {
                     SendValueEvent(env, "P1");
@@ -119,24 +99,24 @@ namespace com.espertech.esper.regressionlib.suite.view
                     SendValueEvent(env, "P3");
                 }
 
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
                     fields,
-                    new[] {new object[] {"P1", 2L}, new object[] {"P2", 4L}, new object[] {"P3", 3L}});
+                    new object[][] { new object[] { "P1", 2L }, new object[] { "P2", 4L }, new object[] { "P3", 3L } });
 
                 env.Milestone(1);
 
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
                     fields,
-                    new[] {new object[] {"P1", 2L}, new object[] {"P2", 4L}, new object[] {"P3", 3L}});
+                    new object[][] { new object[] { "P1", 2L }, new object[] { "P2", 4L }, new object[] { "P3", 3L } });
                 SendValueEvent(env, "P1");
                 SendValueEvent(env, "P2");
                 SendValueEvent(env, "P3");
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
                     fields,
-                    new[] {new object[] {"P1", 2L}, new object[] {"P2", 4L}, new object[] {"P3", 3L}});
+                    new object[][] { new object[] { "P1", 2L }, new object[] { "P2", 4L }, new object[] { "P3", 3L } });
 
                 env.UndeployAll();
             }
@@ -157,13 +137,32 @@ namespace com.espertech.esper.regressionlib.suite.view
             }
         }
 
-        internal class ViewParameterizedByContextDocSample : RegressionExecution
+        private static void RunAssertionWindow(
+            RegressionEnvironment env,
+            string window,
+            AtomicLong milestone)
+        {
+            var epl =
+                "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
+                "context CtxInitToTerm select * from SupportBean#" +
+                window;
+            env.CompileDeploy(epl);
+            env.SendEventBean(new SupportContextInitEventWLength("P1", 2));
+
+            env.MilestoneInc(milestone);
+
+            env.SendEventBean(new SupportContextInitEventWLength("P2", 20));
+
+            env.UndeployAll();
+        }
+
+        private class ViewParameterizedByContextDocSample : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var epl =
                     "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
-                    "@Name('s0') context CtxInitToTerm select context.miewl.Id as id, count(*) as cnt from SupportBean(TheString=context.miewl.Id)#length(context.miewl.IntSize);\n";
+                    "@name('s0') context CtxInitToTerm select context.miewl.id as id, count(*) as cnt from SupportBean(theString=context.miewl.id)#length(context.miewl.intSize);\n";
                 env.CompileDeploy(epl).Milestone(0);
 
                 env.SendEventBean(new SupportContextInitEventWLength("P1", 2));
@@ -178,10 +177,10 @@ namespace com.espertech.esper.regressionlib.suite.view
                     env.SendEventBean(new SupportBean("P3", 0));
                 }
 
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Statement("s0").GetEnumerator(),
-                    new[] {"id", "cnt"},
-                    new[] {new object[] {"P1", 2L}, new object[] {"P2", 4L}, new object[] {"P3", 3L}});
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    "id,cnt".SplitCsv(),
+                    new object[][] { new object[] { "P1", 2L }, new object[] { "P2", 4L }, new object[] { "P3", 3L } });
 
                 env.UndeployAll();
             }

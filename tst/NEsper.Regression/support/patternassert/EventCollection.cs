@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
         {
             return GetEnumerator();
         }
-
+        
         public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
             return testEvents.GetEnumerator();

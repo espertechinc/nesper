@@ -37,10 +37,7 @@ namespace com.espertech.esper.common.client.soda
             AddChild(new PropertyValueExpression(propertyName));
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {

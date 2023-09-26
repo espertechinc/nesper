@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -34,20 +35,19 @@ namespace com.espertech.esper.regressionlib.support.context
                 Assert.IsNull(values);
             }
 
-            var stmt = env.Statement(stmtName);
-            if (stmt == null) {
-                Assert.Fail("Cannot find statement '" + stmtName + "'");
-            }
-
-            var num = -1;
-            foreach (var id in ids) {
-                num++;
-                var props = env.Runtime.ContextPartitionService.GetContextProperties(
-                    stmt.DeploymentId,
-                    contextName,
-                    id);
-                AssertProps(id, contextName, props, fieldsCSV, values == null ? null : values[num], true);
-            }
+            env.AssertStatement(
+                stmtName,
+                stmt => {
+                    var num = -1;
+                    foreach (var id in ids) {
+                        num++;
+                        var props = env.Runtime.ContextPartitionService.GetContextProperties(
+                            stmt.DeploymentId,
+                            contextName,
+                            id);
+                        AssertProps(id, contextName, props, fieldsCSV, values == null ? null : values[num], true);
+                    }
+                });
         }
 
         /// <summary>
@@ -65,32 +65,31 @@ namespace com.espertech.esper.regressionlib.support.context
             string[] fieldsCSVPerCtx,
             object[][][] values)
         {
-            var stmt = env.Statement(stmtName);
-            if (stmt == null) {
-                Assert.Fail("Cannot find statement '" + stmtName + "'");
-            }
+            env.AssertStatement(
+                stmtName,
+                stmt => {
+                    var line = -1;
+                    foreach (var id in ids) {
+                        line++;
+                        var props = env.Runtime.ContextPartitionService.GetContextProperties(
+                            stmt.DeploymentId,
+                            contextName,
+                            id);
+                        Assert.AreEqual(contextName, props.Get("name"));
+                        Assert.AreEqual(id, props.Get("id"));
 
-            var line = -1;
-            foreach (var id in ids) {
-                line++;
-                var props = env.Runtime.ContextPartitionService.GetContextProperties(
-                    stmt.DeploymentId,
-                    contextName,
-                    id);
-                Assert.AreEqual(contextName, props.Get("name"));
-                Assert.AreEqual(id, props.Get("id"));
-
-                Assert.AreEqual(nestedContextNames.Length, fieldsCSVPerCtx.Length);
-                for (var level = 0; level < nestedContextNames.Length; level++) {
-                    AssertProps(
-                        id,
-                        nestedContextNames[level],
-                        (IDictionary<string, object>) props.Get(nestedContextNames[level]),
-                        fieldsCSVPerCtx[level],
-                        values[line][level],
-                        false);
-                }
-            }
+                        Assert.AreEqual(nestedContextNames.Length, fieldsCSVPerCtx.Length);
+                        for (var level = 0; level < nestedContextNames.Length; level++) {
+                            AssertProps(
+                                id,
+                                nestedContextNames[level],
+                                (IDictionary<string, object>)props.Get(nestedContextNames[level]),
+                                fieldsCSVPerCtx[level],
+                                values[line][level],
+                                false);
+                        }
+                    }
+                });
         }
 
         private static void AssertProps(
@@ -101,7 +100,7 @@ namespace com.espertech.esper.regressionlib.support.context
             object[] values,
             bool assertId)
         {
-            var fields = fieldsCSV == null ? new string[0] : fieldsCSV.SplitCsv();
+            var fields = fieldsCSV == null ? Array.Empty<string>() : fieldsCSV.SplitCsv();
 
             if (values != null) {
                 Assert.AreEqual(values.Length, fields.Length);

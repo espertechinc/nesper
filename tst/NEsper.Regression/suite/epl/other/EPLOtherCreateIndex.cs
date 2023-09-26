@@ -8,12 +8,12 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
-using static com.espertech.esper.regressionlib.support.util.IndexBackingTableInfo;
+using static com.espertech.esper.regressionlib.support.util.IndexBackingTableInfo; // INDEX_CALLBACK_HOOK
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -22,8 +22,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithOneModule(execs);
-            WithThreeModule(execs);
+            With(ThreeModule)(execs);
+#endif
             return execs;
         }
 
@@ -41,57 +43,53 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             return execs;
         }
 
-        internal class EPLOtherCreateIndexPathOneModule : RegressionExecution
+        private class EPLOtherCreateIndexPathOneModule : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "create window MyWindow#keepall as (p0 string, p1 int);\n" +
-                          "create unique index MyIndex on MyWindow(p0);\n" +
+                var epl = "@public create window MyWindow#keepall as (p0 string, p1 int);\n" +
+                          "@public create unique index MyIndex on MyWindow(p0);\n" +
                           INDEX_CALLBACK_HOOK +
-                          "@Name('s0') on SupportBean_S0 as S0 select p0,p1 from MyWindow as win where win.p0 = S0.P00;\n";
+                          "@name('s0') on SupportBean_S0 as s0 select p0,p1 from MyWindow as win where win.p0 = s0.p00;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
-                SupportQueryPlanIndexHook.AssertOnExprTableAndReset(
-                    "MyIndex",
-                    "unique hash={p0(string)} btree={} advanced={}");
+                env.AssertThat(
+                    () => SupportQueryPlanIndexHook.AssertOnExprTableAndReset(
+                        "MyIndex",
+                        "unique hash={p0(string)} btree={} advanced={}"));
 
-                env.CompileExecuteFAF("insert into MyWindow select 'a' as p0, 1 as p1", path);
+                env.CompileExecuteFAFNoResult("insert into MyWindow select 'a' as p0, 1 as p1", path);
 
                 env.SendEventBean(new SupportBean_S0(1, "a"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"p0", "p1"},
-                    new object[] {"a", 1});
+                env.AssertPropsNew("s0", "p0,p1".SplitCsv(), new object[] { "a", 1 });
 
                 env.UndeployAll();
             }
         }
 
-        internal class EPLOtherCreateIndexPathThreeModule : RegressionExecution
+        private class EPLOtherCreateIndexPathThreeModule : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create window MyWindow#keepall as (p0 string, p1 int);", path);
+                env.CompileDeploy("@public create window MyWindow#keepall as (p0 string, p1 int);", path);
                 env.CompileDeploy("create unique index MyIndex on MyWindow(p0);", path);
                 env.CompileDeploy(
                     INDEX_CALLBACK_HOOK +
-                    "@Name('s0') on SupportBean_S0 as S0 select p0, p1 from MyWindow as win where win.p0 = S0.P00;",
+                    "@name('s0') on SupportBean_S0 as s0 select p0, p1 from MyWindow as win where win.p0 = s0.p00;",
                     path);
                 env.AddListener("s0");
 
-                SupportQueryPlanIndexHook.AssertOnExprTableAndReset(
-                    "MyIndex",
-                    "unique hash={p0(string)} btree={} advanced={}");
+                env.AssertThat(
+                    () => SupportQueryPlanIndexHook.AssertOnExprTableAndReset(
+                        "MyIndex",
+                        "unique hash={p0(string)} btree={} advanced={}"));
 
-                env.CompileExecuteFAF("insert into MyWindow select 'a' as p0, 1 as p1", path);
+                env.CompileExecuteFAFNoResult("insert into MyWindow select 'a' as p0, 1 as p1", path);
 
                 env.SendEventBean(new SupportBean_S0(1, "a"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"p0", "p1"},
-                    new object[] {"a", 1});
+                env.AssertPropsNew("s0", "p0,p1".SplitCsv(), new object[] { "a", 1 });
 
                 env.UndeployAll();
             }

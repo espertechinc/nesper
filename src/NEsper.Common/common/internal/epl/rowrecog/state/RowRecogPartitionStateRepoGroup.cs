@@ -49,9 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
 
         public bool IsPartitioned => true;
 
-        public IDictionary<object, RowRecogPartitionStateImpl> States {
-            get => _states;
-        }
+        public IDictionary<object, RowRecogPartitionStateImpl> States => _states;
 
         public int IncrementAndGetEventSequenceNum()
         {

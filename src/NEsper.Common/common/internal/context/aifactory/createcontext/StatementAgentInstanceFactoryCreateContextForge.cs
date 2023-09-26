@@ -35,9 +35,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateContext), GetType(), classScope);
             method.Block
-                .DeclareVar<StatementAgentInstanceFactoryCreateContext>(
-                    "saiff",
-                    NewInstance(typeof(StatementAgentInstanceFactoryCreateContext)))
+                .DeclareVarNewInstance<StatementAgentInstanceFactoryCreateContext>("saiff")
                 .SetProperty(Ref("saiff"), "ContextName", Constant(contextName))
                 .SetProperty(
                     Ref("saiff"),

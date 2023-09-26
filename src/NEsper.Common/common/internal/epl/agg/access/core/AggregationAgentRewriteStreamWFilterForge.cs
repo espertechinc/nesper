@@ -35,15 +35,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         {
             return NewInstance<AggregationAgentRewriteStreamWFilter>(
                 Constant(_streamNum),
-                ExprNodeUtilityCodegen.CodegenEvaluator(_filterEval, method, this.GetType(), classScope));
+                ExprNodeUtilityCodegen.CodegenEvaluator(_filterEval, method, GetType(), classScope));
         }
 
-        public ExprForge FilterEval {
-            get => _filterEval;
-        }
+        public ExprForge FilterEval => _filterEval;
 
-        public ExprForge OptionalFilter {
-            get => _filterEval;
-        }
+        public ExprForge OptionalFilter => _filterEval;
     }
 } // end of namespace

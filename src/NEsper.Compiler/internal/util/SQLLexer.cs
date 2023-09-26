@@ -37,7 +37,7 @@ namespace com.espertech.esper.compiler.@internal.util
         public static string LexSampleSQL(string querySQL)
         {
             querySQL = querySQL.RegexReplaceAll("\\s\\s+|\\n|\\r", " ");
-            var input = new CaseInsensitiveInputStream(querySQL);
+            var input = CaseChangingCharStreamFactory.Make(querySQL);
             var whereIndex = -1;
             var groupbyIndex = -1;
             var havingIndex = -1;

@@ -24,8 +24,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             this.resultEventType = resultEventType;
         }
 
-        public EventType ResultEventType {
-            get => resultEventType;
-        }
+        public EventType ResultEventType => resultEventType;
     }
 } // end of namespace

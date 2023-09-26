@@ -8,7 +8,7 @@
 
 namespace com.espertech.esper.common.@internal.@event.json.core
 {
-	public interface JsonBackedEventBean
-	{
-	}
+    public interface JsonBackedEventBean
+    {
+    }
 } // end of namespace

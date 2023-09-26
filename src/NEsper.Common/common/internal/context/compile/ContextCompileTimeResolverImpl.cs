@@ -44,13 +44,13 @@ namespace com.espertech.esper.common.@internal.context.compile
         public ContextMetaData GetContextInfo(string contextName)
         {
             // try self-originated protected types first
-            ContextMetaData localContext = locals.Contexts.Get(contextName);
+            var localContext = locals.Contexts.Get(contextName);
             if (localContext != null) {
                 return localContext;
             }
 
             try {
-                Pair<ContextMetaData, string> pair = path.GetAnyModuleExpectSingle(contextName, moduleUses);
+                var pair = path.GetAnyModuleExpectSingle(contextName, moduleUses);
                 if (pair != null) {
                     if (!isFireAndForget &&
                         !NameAccessModifierExtensions.Visible(

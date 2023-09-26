@@ -72,11 +72,10 @@ namespace com.espertech.esper.common.@internal.context.util
                 return true;
             }
 
-            if (!(otherObj is EPStatementAgentInstanceHandle)) {
+            if (!(otherObj is EPStatementAgentInstanceHandle other)) {
                 return false;
             }
 
-            var other = (EPStatementAgentInstanceHandle) otherObj;
             return other.StatementHandle.StatementId == StatementHandle.StatementId &&
                    other.AgentInstanceId == AgentInstanceId;
         }

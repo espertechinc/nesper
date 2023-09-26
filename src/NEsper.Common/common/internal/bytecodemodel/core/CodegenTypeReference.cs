@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
     public class CodegenTypeReference
     {
         private readonly Type _type;
-        private readonly String _typeName;
+        private readonly string _typeName;
 
         public Type Type => _type;
 
@@ -23,19 +23,20 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public CodegenTypeReference(Type type)
         {
-            this._type = type ?? throw new ArgumentNullException(nameof(type));
-            this._typeName = null;
+            _type = type ?? throw new ArgumentNullException(nameof(type));
+            _typeName = null;
         }
 
         public CodegenTypeReference(string typeName)
         {
-            this._typeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
-            this._type = null;
+            _typeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
+            _type = null;
         }
 
         public void AddReferenced(ISet<Type> classes)
         {
             if (_type != null) {
+                // TBR: clazz.traverseClasses(classes::add);
                 classes.Add(_type);
             }
         }
@@ -75,17 +76,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
-            return Equals((CodegenTypeReference) obj);
+            return Equals((CodegenTypeReference)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked {
-                return ((_type != null ? _type.GetHashCode() : 0) * 397) ^ (_typeName != null ? _typeName.GetHashCode() : 0);
+                return ((_type != null ? _type.GetHashCode() : 0) * 397) ^
+                       (_typeName != null ? _typeName.GetHashCode() : 0);
             }
         }
     }

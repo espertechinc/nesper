@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,8 +8,10 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
@@ -27,13 +29,16 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         private readonly ExprTimePeriod timePeriod;
         private readonly bool isStartConditionOnCreation;
         private int scheduleCallbackId = -1;
+        protected readonly StateMgmtSetting stateMgmtSetting;
 
         public OutputConditionTimeForge(
             ExprTimePeriod timePeriod,
-            bool isStartConditionOnCreation)
+            bool isStartConditionOnCreation,
+            StateMgmtSetting stateMgmtSetting)
         {
             this.timePeriod = timePeriod;
             this.isStartConditionOnCreation = isStartConditionOnCreation;
+            this.stateMgmtSetting = stateMgmtSetting;
         }
 
         public CodegenExpression Make(
@@ -45,11 +50,10 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                 throw new IllegalStateException("Unassigned callback id");
             }
 
-            CodegenMethod method = parent.MakeChild(typeof(OutputConditionFactory), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(OutputConditionFactory), GetType(), classScope);
             method.Block
-                .DeclareVar<TimePeriodCompute>(
-                    "delta",
-                    timePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope))
+                .DeclareVar<
+                    TimePeriodCompute>("delta", timePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope))
                 .MethodReturn(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.RESULTSETPROCESSORHELPERFACTORY)
@@ -58,17 +62,22 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                             Constant(timePeriod.HasVariable),
                             Ref("delta"),
                             Constant(isStartConditionOnCreation),
-                            Constant(scheduleCallbackId)));
+                            Constant(scheduleCallbackId),
+                            stateMgmtSetting.ToExpression()));
             return LocalMethod(method);
         }
 
-        public int ScheduleCallbackId {
-            set { this.scheduleCallbackId = value; }
+        public void CollectSchedules(
+            CallbackAttributionOutputRate callbackAttribution,
+            IList<ScheduleHandleTracked> scheduleHandleCallbackProviders)
+        {
+            scheduleHandleCallbackProviders.Add(new ScheduleHandleTracked(callbackAttribution, this));
         }
 
-        public void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
-        {
-            scheduleHandleCallbackProviders.Add(this);
+        public int ScheduleCallbackId {
+            get => scheduleCallbackId;
+
+            set => scheduleCallbackId = value;
         }
     }
 } // end of namespace

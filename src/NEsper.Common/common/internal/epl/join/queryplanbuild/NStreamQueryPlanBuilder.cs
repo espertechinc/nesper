@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             }
 
             var numStreams = queryGraph.NumStreams;
-            var additionalForgeables = new List<StmtClassForgeableFactory>();   
+            var additionalForgeables = new List<StmtClassForgeableFactory>();
             var indexSpecs = QueryPlanIndexBuilder.BuildIndexSpec(
                 queryGraph,
                 typesPerStream,
@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
                 planNodeSpecs[streamNo] = planDesc.Forge;
                 additionalForgeables.AddAll(planDesc.AdditionalForgeables);
-                
+
                 if (Log.IsDebugEnabled) {
                     Log.Debug(".build spec=" + planNodeSpecs[streamNo]);
                 }
@@ -227,10 +227,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 var plan = planNodeSpecs[i];
                 QueryPlanNodeForgeVisitor visitor = new ProxyQueryPlanNodeForgeVisitor {
                     ProcVisit = node => {
-                        if (node is HistoricalDataPlanNodeForge) {
-                            var historical = (HistoricalDataPlanNodeForge) node;
-                            JoinSetComposerPrototypeHistoricalDesc desc = historicalStreamIndexLists[historical.StreamNum].GetStrategy(
-                                historical.LookupStreamNum, raw, serdeResolver);
+                        if (node is HistoricalDataPlanNodeForge historical) {
+                            var desc = historicalStreamIndexLists[historical.StreamNum]
+                                .GetStrategy(
+                                    historical.LookupStreamNum,
+                                    raw,
+                                    serdeResolver);
                             historical.PollResultIndexingStrategy = desc.IndexingForge;
                             historical.HistoricalIndexLookupStrategy = desc.LookupForge;
                             additionalForgeables.AddAll(desc.AdditionalForgeables);
@@ -358,7 +360,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
             var pairIndexHashRewrite =
                 indexSpecs.GetIndexNum(hashIndexProps, rangeIndexProps);
-            var indexNum = pairIndexHashRewrite == null ? null : pairIndexHashRewrite.First;
+            var indexNum = pairIndexHashRewrite?.First;
 
             // handle index redirection towards unique index
             if (pairIndexHashRewrite != null && pairIndexHashRewrite.Second != null) {
@@ -372,7 +374,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
                 hashIndexProps = newHashIndexProps;
                 hashPropsKeys = newHashKeys;
-                rangeIndexProps = new string[0];
+                rangeIndexProps = Array.Empty<string>();
                 rangePropsKeys = Collections.GetEmptyList<QueryGraphValueEntryRangeForge>();
             }
 
@@ -407,8 +409,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     else {
                         single = singles.Key[0];
                         var pairIndex = indexSpecs.GetIndexNum(
-                            new[] {singles.Indexed[0]},
-                            new string[0]);
+                            new[] { singles.Indexed[0] },
+                            Array.Empty<string>());
                         indexNum = pairIndex.First;
                     }
 
@@ -440,10 +442,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     var indexNameArray = new TableLookupIndexReqKey[multi.Indexed.Length];
                     var foundAll = true;
                     for (var i = 0; i < multi.Indexed.Length; i++) {
-                        var identNode = (ExprIdentNode) multi.Indexed[i];
+                        var identNode = (ExprIdentNode)multi.Indexed[i];
                         var pairIndex = indexSpecs.GetIndexNum(
-                            new[] {identNode.ResolvedPropertyName},
-                            new string[0]);
+                            new[] { identNode.ResolvedPropertyName },
+                            Array.Empty<string>());
                         if (pairIndex == null) {
                             foundAll = false;
                         }
@@ -478,11 +480,16 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
                 if (indexNum == null) {
                     indexNum = new TableLookupIndexReqKey(
-                        indexSpecs.AddIndex(new string[0], new Type[0], typesPerStream[indexedStream]),
+                        indexSpecs.AddIndex(Array.Empty<string>(), Type.EmptyTypes, typesPerStream[indexedStream]),
                         null);
                 }
 
-                var forgeX = new FullTableScanLookupPlanForge(currentLookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, indexNum);
+                var forgeX = new FullTableScanLookupPlanForge(
+                    currentLookupStream,
+                    indexedStream,
+                    indexedStreamIsVDW,
+                    typesPerStream,
+                    indexNum);
                 return new TableLookupPlanDesc(forgeX, EmptyList<StmtClassForgeableFactory>.Instance);
             }
 
@@ -612,7 +619,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     coercionType = coercionTypesRange.CoercionTypes[0];
                 }
 
-                SortedTableLookupPlanForge forge = new SortedTableLookupPlanForge(
+                var forge = new SortedTableLookupPlanForge(
                     currentLookupStream,
                     indexedStream,
                     indexedStreamIsVDW,
@@ -626,13 +633,17 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 MultiKeyClassRef tableLookupMultiKey = null;
                 IList<StmtClassForgeableFactory> additionalForgeables = EmptyList<StmtClassForgeableFactory>.Instance;
                 if (indexNum.TableName != null) {
-                    MultiKeyPlan tableMultiKeyPlan = MultiKeyPlanner.PlanMultiKey(coercionTypesHash.CoercionTypes, true, raw, serdeResolver);
+                    var tableMultiKeyPlan = MultiKeyPlanner.PlanMultiKey(
+                        coercionTypesHash.CoercionTypes,
+                        true,
+                        raw,
+                        serdeResolver);
                     tableLookupMultiKey = tableMultiKeyPlan.ClassRef;
                     additionalForgeables = tableMultiKeyPlan.MultiKeyForgeables;
                 }
 
                 // composite range and index lookup
-                CompositeTableLookupPlanForge forge = new CompositeTableLookupPlanForge(
+                var forge = new CompositeTableLookupPlanForge(
                     currentLookupStream,
                     indexedStream,
                     indexedStreamIsVDW,

@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         {
             classes.AddToSet(_clazz);
         }
-        
+
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
         }

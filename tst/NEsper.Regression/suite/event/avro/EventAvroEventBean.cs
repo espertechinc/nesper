@@ -12,10 +12,7 @@ using Avro.Generic;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
-using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
-
-using NUnit.Framework;
 
 using static NEsper.Avro.Core.AvroConstant;
 using static NEsper.Avro.Extensions.TypeBuilder;
@@ -24,10 +21,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
 {
     public class EventAvroEventBean : RegressionExecution
     {
-        public static readonly RecordSchema INNER_SCHEMA = SchemaBuilder.Record(
-            "InnerSchema", Field("mymap", Map(StringType())));
+        public static readonly RecordSchema INNER_SCHEMA = SchemaBuilder.Record("InnerSchema", Map(StringType()));
+
         public static readonly RecordSchema RECORD_SCHEMA = SchemaBuilder.Record(
-            "OuterSchema", Field("i", INNER_SCHEMA));
+            "RecordSchema",
+            Field("i", INNER_SCHEMA));
 
         public void Run(RegressionEnvironment env)
         {
@@ -37,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
 
         private void RunAssertionNestedMap(RegressionEnvironment env)
         {
-            env.CompileDeploy("@Name('s0') select i.mymap('x') as c0 from MyNestedMap");
+            env.CompileDeploy("@name('s0') select i.mymap('x') as c0 from MyNestedMap");
             env.AddListener("s0");
 
             var inner = new GenericRecord(INNER_SCHEMA);
@@ -45,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             var record = new GenericRecord(RECORD_SCHEMA);
             record.Put("i", inner);
             env.SendEventAvro(record, "MyNestedMap");
-            Assert.AreEqual("y", env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+            env.AssertEqualsNew("s0", "c0", "y");
 
             env.UndeployAll();
         }
@@ -53,27 +51,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
         private void RunAssertionDynamicProp(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeployWBusPublicType("create avro schema MyEvent()", path);
+            env.CompileDeploy("@name('schema') @buseventtype @public create avro schema MyEvent()", path);
 
-            env.CompileDeploy("@Name('s0') select * from MyEvent", path).AddListener("s0");
-
-            var schema = ((AvroEventType) env.Statement("s0").EventType).SchemaAvro;
-            env.SendEventAvro(new GenericRecord(schema.AsRecordSchema()), "MyEvent");
-            var @event = env.Listener("s0").AssertOneGetNewAndReset();
-
-            Assert.AreEqual(null, @event.Get("a?.b"));
+            env.CompileDeploy("@name('s0') select * from MyEvent", path).AddListener("s0");
 
             var innerSchema = SchemaBuilder.Record(
-                "InnerSchema", Field("b", StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE))));
+                "InnerSchema",
+                Field("b", StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE))));
             var inner = new GenericRecord(innerSchema);
             inner.Put("b", "X");
-            var recordSchema = SchemaBuilder.Record(
-                "RecordSchema", Field("a", innerSchema));
+            var recordSchema = SchemaBuilder.Record("RecordSchema", Field("a", innerSchema));
+
+            env.SendEventAvro(new GenericRecord(recordSchema), "MyEvent");
+            env.AssertEqualsNew("s0", "a?.b", null);
+
             var record = new GenericRecord(recordSchema);
             record.Put("a", inner);
             env.SendEventAvro(record, "MyEvent");
-            @event = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("X", @event.Get("a?.b"));
+            env.AssertEqualsNew("s0", "a?.b", "X");
 
             env.UndeployAll();
         }

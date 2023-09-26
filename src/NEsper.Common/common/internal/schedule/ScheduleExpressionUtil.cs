@@ -28,14 +28,14 @@ namespace com.espertech.esper.common.@internal.schedule
             StatementCompileTimeServices services)
         {
             // Validate the expressions
-            ExprForge[] expressions = new ExprForge[scheduleSpecExpressionList.Count];
-            int count = 0;
-            ExprValidationContext validationContext =
+            var expressions = new ExprForge[scheduleSpecExpressionList.Count];
+            var count = 0;
+            var validationContext =
                 new ExprValidationContextBuilder(new StreamTypeServiceImpl(false), statementRawInfo, services)
                     .WithAllowBindingConsumption(allowBindingConsumption)
                     .Build();
-            foreach (ExprNode parameters in scheduleSpecExpressionList) {
-                ExprNode node = ExprNodeUtilityValidate.GetValidatedSubtree(origin, parameters, validationContext);
+            foreach (var parameters in scheduleSpecExpressionList) {
+                var node = ExprNodeUtilityValidate.GetValidatedSubtree(origin, parameters, validationContext);
                 expressions[count++] = node.Forge;
             }
 
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.schedule
             ExprEvaluatorContext context)
         {
             try {
-                object[] scheduleSpecParameterList = EvaluateExpressions(scheduleSpecEvaluators, context);
+                var scheduleSpecParameterList = EvaluateExpressions(scheduleSpecEvaluators, context);
                 return ScheduleSpecUtil.ComputeValues(scheduleSpecParameterList);
             }
             catch (ScheduleParameterException e) {

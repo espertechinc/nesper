@@ -44,11 +44,11 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return ((valueType != typeof(byte)) &&
-                        (valueType != typeof(byte?)))
+                return valueType != typeof(byte) &&
+                       valueType != typeof(byte?)
                     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedByte")
                     : value;
-                
+
 //                return CodegenCoerceMayNull(
 //                    typeof(byte),
 //                    typeof(byte?),
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression input,
                 Type inputType)
             {
-                return (inputType != typeof(byte))
+                return inputType != typeof(byte)
                     ? CodegenExpressionBuilder.ExprDotMethod(input, "AsByte")
                     : input;
 

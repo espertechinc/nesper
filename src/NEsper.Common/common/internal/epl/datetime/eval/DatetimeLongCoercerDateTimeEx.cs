@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
     {
         public long Coerce(object date)
         {
-            return ((DateTimeEx) date).UtcMillis;
+            return ((DateTimeEx)date).UtcMillis;
         }
 
         public CodegenExpression Codegen(

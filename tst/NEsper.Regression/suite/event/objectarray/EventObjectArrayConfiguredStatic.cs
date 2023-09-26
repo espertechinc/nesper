@@ -21,23 +21,30 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
     {
         public void Run(RegressionEnvironment env)
         {
-            var eventType = env.Runtime.EventTypeService.GetEventTypePreconfigured("MyOAType");
-            Assert.AreEqual(typeof(object[]), eventType.UnderlyingType);
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
-            Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("map"));
-            Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("bean"));
+            env.AssertThat(
+                () => {
+                    var eventType = env.Runtime.EventTypeService.GetEventTypePreconfigured("MyOAType");
+                    Assert.AreEqual(typeof(object[]), eventType.UnderlyingType);
+                    Assert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
+                    Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("map"));
+                    Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("bean"));
+                });
 
-            env.CompileDeploy("@Name('s0') select bean, TheString, map('key'), bean.TheString from MyOAType");
+            env.CompileDeploy("@name('s0') select bean, TheString, map('key'), bean.TheString from MyOAType");
             env.AddListener("s0");
 
-            Assert.AreEqual(typeof(object[]), env.Statement("s0").EventType.UnderlyingType);
+            env.AssertStatement(
+                "s0",
+                statement => Assert.AreEqual(typeof(object[]), statement.EventType.UnderlyingType));
 
             var bean = new SupportBean("E1", 1);
-            env.SendEventObjectArray(new object[] {bean, "abc", Collections.SingletonDataMap("key", "value")}, "MyOAType");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNew(),
-                new [] { "bean","TheString","map('key')","bean.TheString" },
-                new object[] {bean, "abc", "value", "E1"});
+            env.SendEventObjectArray(
+                new object[] { bean, "abc", Collections.SingletonDataMap("key", "value") },
+                "MyOAType");
+            env.AssertPropsNew(
+                "s0",
+                new[] { "bean", "TheString", "map('key')", "bean.TheString" },
+                new object[] { bean, "abc", "value", "E1" });
 
             env.UndeployAll();
         }

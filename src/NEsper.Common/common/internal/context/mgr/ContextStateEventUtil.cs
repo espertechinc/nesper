@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 return;
             }
 
-            T @event = supplier.Invoke();
+            var @event = supplier.Invoke();
             foreach (var listener in listeners) {
                 consumer.Invoke(listener, @event);
             }
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 return;
             }
 
-            T @event = supplier.Invoke();
+            var @event = supplier.Invoke();
             foreach (var listener in listeners) {
                 consumer.Invoke(listener, @event);
             }

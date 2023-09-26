@@ -27,23 +27,23 @@ namespace com.espertech.esper.common.client.util
 
         public void Add(CountMinSketchAgentContextAdd ctx)
         {
-            string text = (string) ctx.Value;
+            var text = (string)ctx.Value;
             if (text == null) {
                 return;
             }
 
-            byte[] bytes = ToBytesUTF16(text);
+            var bytes = ToBytesUTF16(text);
             ctx.State.Add(bytes, 1);
         }
 
         public long? Estimate(CountMinSketchAgentContextEstimate ctx)
         {
-            string text = (string) ctx.Value;
+            var text = (string)ctx.Value;
             if (text == null) {
                 return null;
             }
 
-            byte[] bytes = ToBytesUTF16(text);
+            var bytes = ToBytesUTF16(text);
             return ctx.State.Frequency(bytes);
         }
 

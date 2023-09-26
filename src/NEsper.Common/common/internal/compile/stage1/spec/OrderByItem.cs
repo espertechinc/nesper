@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class OrderByItem
     {
-        public static readonly OrderByItem[] EMPTY_ORDERBY_ARRAY = new OrderByItem[0];
+        public static readonly OrderByItem[] EMPTY_ORDERBY_ARRAY = Array.Empty<OrderByItem>();
 
         /// <summary>Ctor. </summary>
         /// <param name="exprNode">is the order-by expression node</param>

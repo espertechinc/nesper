@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 new EventBean[3]; // first:named window, second: trigger, third:before-update (optional)
 
             if (matchingEvents == null || matchingEvents.Length == 0) {
-                IList<InfraOnMergeMatch> unmatched = parent.OnMergeHelper.Unmatched;
+                var unmatched = parent.OnMergeHelper.Unmatched;
 
                 foreach (var triggerEvent in triggerEvents) {
                     eventsPerStream[1] = triggerEvent;
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 // handle update/
                 oldData = new OneEventCollection();
 
-                IList<InfraOnMergeMatch> matched = parent.OnMergeHelper.Matched;
+                var matched = parent.OnMergeHelper.Matched;
 
                 foreach (var triggerEvent in triggerEvents) {
                     eventsPerStream[1] = triggerEvent;
@@ -131,12 +131,12 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             AgentInstanceContext agentInstanceContext,
             ViewSupport viewable)
         {
-            if (!newData.IsEmpty() || oldData != null && !oldData.IsEmpty()) {
+            if (!newData.IsEmpty() || (oldData != null && !oldData.IsEmpty())) {
                 var metricHandle = rootView.AgentInstanceContext.StatementContext.EpStatementHandle.MetricsHandle;
                 if (metricHandle.IsEnabled && !newData.IsEmpty()) {
                     agentInstanceContext.MetricReportingService.AccountTime(
                         metricHandle,
-                        default(PerformanceMetrics),
+                        default,
                         newData.ToArray().Length);
                 }
 

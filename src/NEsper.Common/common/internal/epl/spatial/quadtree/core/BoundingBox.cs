@@ -65,10 +65,22 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
         {
             var otherMaxX = otherX + otherWidth;
             var otherMaxY = otherY + otherHeight;
-            if (maxX < otherX) return false; // a is left of b
-            if (minX > otherMaxX) return false; // a is right of b
-            if (maxY < otherY) return false; // a is above b
-            if (minY > otherMaxY) return false; // a is below b
+            if (maxX < otherX) {
+                return false; // a is left of b
+            }
+
+            if (minX > otherMaxX) {
+                return false; // a is right of b
+            }
+
+            if (maxY < otherY) {
+                return false; // a is above b
+            }
+
+            if (minY > otherMaxY) {
+                return false; // a is below b
+            }
+
             return true; // boxes overlap
         }
 
@@ -80,16 +92,29 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             double px,
             double py)
         {
-            if (px >= x + width) return false;
-            if (px < x) return false;
-            if (py >= y + height) return false;
-            if (py < y) return false;
+            if (px >= x + width) {
+                return false;
+            }
+
+            if (px < x) {
+                return false;
+            }
+
+            if (py >= y + height) {
+                return false;
+            }
+
+            if (py < y) {
+                return false;
+            }
+
             return true;
         }
 
         public override string ToString()
         {
-            return $"{'{'}MinX={_minX.RenderAny()}, MinY={_minY.RenderAny()}, MaxX={_maxX.RenderAny()}, MaxY={_maxY.RenderAny()}{'}'}";
+            return
+                $"{'{'}MinX={_minX.RenderAny()}, MinY={_minY.RenderAny()}, MaxX={_maxX.RenderAny()}, MaxY={_maxY.RenderAny()}{'}'}";
         }
 
         public QuadrantEnum GetQuadrant(
@@ -179,7 +204,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             var bbNE = new BoundingBox(_minX + w, _minY, _maxX, _minY + h);
             var bbSW = new BoundingBox(_minX, _minY + h, _minX + w, _maxY);
             var bbSE = new BoundingBox(_minX + w, _minY + h, _maxX, _maxY);
-            return new BoundingBox[] {bbNW, bbNE, bbSW, bbSE};
+            return new BoundingBox[] { bbNW, bbNE, bbSW, bbSE };
         }
 
         protected bool Equals(BoundingBox other)
@@ -192,10 +217,19 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((BoundingBox) obj);
+            if (ReferenceEquals(null, obj)) {
+                return false;
+            }
+
+            if (ReferenceEquals(this, obj)) {
+                return true;
+            }
+
+            if (obj.GetType() != GetType()) {
+                return false;
+            }
+
+            return Equals((BoundingBox)obj);
         }
 
         public override int GetHashCode()

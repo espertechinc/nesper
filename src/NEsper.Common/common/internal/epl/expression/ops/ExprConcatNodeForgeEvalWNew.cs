@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprConcatNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this._forge = forge;
-            this._evaluators = evaluators;
+            _forge = forge;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprConcatNodeForge form)
         {
             foreach (var child in evaluators) {
-                var result = (string) child.Evaluate(eventsPerStream, isNewData, context);
+                var result = (string)child.Evaluate(eventsPerStream, isNewData, context);
                 if (result == null) {
                     return null;
                 }
@@ -72,10 +72,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 codegenClassScope);
 
             var block = methodNode.Block
-                .DeclareVar<StringBuilder>("buf", NewInstance(typeof(StringBuilder)))
+                .DeclareVarNewInstance<StringBuilder>("buf")
                 .DeclareVarNoInit(typeof(string), "value");
             var chain = ExprDotMethodChain(Ref("buf"));
-            foreach (ExprNode expr in forge.ForgeRenderable.ChildNodes) {
+            foreach (var expr in forge.ForgeRenderable.ChildNodes) {
                 block.AssignRef(
                         "value",
                         expr.Forge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))

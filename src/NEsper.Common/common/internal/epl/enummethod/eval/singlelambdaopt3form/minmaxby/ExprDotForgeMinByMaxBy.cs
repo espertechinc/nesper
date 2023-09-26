@@ -17,61 +17,70 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmaxby
 {
-	public class ExprDotForgeMinByMaxBy : ExprDotForgeLambdaThreeForm
-	{
+    public class ExprDotForgeMinByMaxBy : ExprDotForgeLambdaThreeForm
+    {
+        protected override EPChainableType InitAndNoParamsReturnType(
+            EventType inputEventType,
+            Type collectionComponentType)
+        {
+            throw new IllegalStateException();
+        }
 
-		protected override EPType InitAndNoParamsReturnType(
-			EventType inputEventType,
-			Type collectionComponentType)
-		{
-			throw new IllegalStateException();
-		}
+        protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
+            EnumMethodEnum enumMethod,
+            EPChainableType type,
+            StatementCompileTimeServices services)
+        {
+            throw new IllegalStateException();
+        }
 
-		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
-			EnumMethodEnum enumMethod,
-			EPType type,
-			StatementCompileTimeServices services)
-		{
-			throw new IllegalStateException();
-		}
+        protected override ThreeFormInitFunction InitAndSingleParamReturnType(
+            EventType inputEventType,
+            Type collectionComponentType)
+        {
+            return lambda => {
+                ValidateNonNull(lambda.BodyForge.EvaluationType);
+                return inputEventType == null
+                    ? new EPChainableTypeClass(collectionComponentType)
+                    : EPChainableTypeHelper.SingleEvent(inputEventType);
+            };
+        }
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
-			EventType inputEventType,
-			Type collectionComponentType)
-		{
-			if (inputEventType == null) {
-				return lambda => EPTypeHelper.SingleValue(collectionComponentType);
-			}
+        protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                typeInfo,
+                services) => new EnumMinMaxByEvents(lambda, enumMethod == EnumMethodEnum.MAXBY);
+        }
 
-			return lambda => EPTypeHelper.SingleEvent(inputEventType);
-		}
+        protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                fieldType,
+                numParameters,
+                typeInfo,
+                services) => new EnumMinMaxByEventsPlus(
+                lambda,
+                fieldType,
+                numParameters,
+                enumMethod == EnumMethodEnum.MAXBY);
+        }
 
-		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				typeInfo,
-				services) => new EnumMinMaxByEvents(lambda, enumMethod == EnumMethodEnum.MAXBY);
-		}
-
-		protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				fieldType,
-				numParameters,
-				typeInfo,
-				services) => new EnumMinMaxByEventsPlus(lambda, fieldType, numParameters, enumMethod == EnumMethodEnum.MAXBY);
-		}
-
-		protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				eventType,
-				numParams,
-				typeInfo,
-				services) => new EnumMinMaxByScalar(lambda, eventType, numParams, enumMethod == EnumMethodEnum.MAXBY, typeInfo);
-		}
-	}
+        protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                eventType,
+                numParams,
+                typeInfo,
+                services) => new EnumMinMaxByScalar(
+                lambda,
+                eventType,
+                numParams,
+                enumMethod == EnumMethodEnum.MAXBY,
+                typeInfo);
+        }
+    }
 } // end of namespace

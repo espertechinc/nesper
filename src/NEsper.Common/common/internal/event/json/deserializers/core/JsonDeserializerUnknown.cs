@@ -21,11 +21,11 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
         public override object Deserialize(JsonElement element)
         {
             if (element.ValueKind != JsonValueKind.Undefined) {
-                throw new IllegalStateException($"expected {nameof(JsonValueKind.Undefined)}, but received {element.ValueKind}");
+                throw new IllegalStateException(
+                    $"expected {nameof(JsonValueKind.Undefined)}, but received {element.ValueKind}");
             }
 
             return null;
         }
-
     }
 } // end of namespace

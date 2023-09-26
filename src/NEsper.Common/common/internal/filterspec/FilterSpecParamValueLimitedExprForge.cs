@@ -23,66 +23,74 @@ using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprFor
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
-	public class FilterSpecParamValueLimitedExprForge : FilterSpecParamForge
-	{
-		private readonly ExprNode _value;
-		private readonly MatchedEventConvertorForge _convertor;
-		private readonly Coercer _numberCoercer;
+    public class FilterSpecParamValueLimitedExprForge : FilterSpecParamForge
+    {
+        private readonly ExprNode _value;
+        private readonly MatchedEventConvertorForge _convertor;
+        private readonly Coercer _numberCoercer;
 
-		public FilterSpecParamValueLimitedExprForge(
-			ExprFilterSpecLookupableForge lookupable,
-			FilterOperator filterOperator,
-			ExprNode value,
-			MatchedEventConvertorForge convertor,
-			Coercer numberCoercer)
-			: base(lookupable, filterOperator)
-		{
-			this._value = value;
-			this._convertor = convertor;
-			this._numberCoercer = numberCoercer;
-		}
+        public FilterSpecParamValueLimitedExprForge(
+            ExprFilterSpecLookupableForge lookupable,
+            FilterOperator filterOperator,
+            ExprNode value,
+            MatchedEventConvertorForge convertor,
+            Coercer numberCoercer)
+            : base(lookupable, filterOperator)
+        {
+            _value = value;
+            _convertor = convertor;
+            _numberCoercer = numberCoercer;
+        }
 
-		public override CodegenMethod MakeCodegen(
-			CodegenClassScope classScope,
-			CodegenMethodScope parent,
-			SAIFFInitializeSymbolWEventType symbols)
-		{
-			var method = parent
-				.MakeChild(typeof(FilterSpecParam), GetType(), classScope);
-			method.Block
-				.DeclareVar<ExprFilterSpecLookupable>(
-					"lookupable",
-					LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-				.DeclareVar<FilterOperator>("filterOperator", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
+        public override CodegenExpression MakeCodegen(
+            CodegenClassScope classScope,
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbolWEventType symbols)
+        {
+            var method = parent
+                .MakeChild(typeof(FilterSpecParam), GetType(), classScope);
+            method.Block
+                .DeclareVar<ExprFilterSpecLookupable>(
+                    "lookupable",
+                    LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
+                .DeclareVar<FilterOperator>(
+                    "filterOperator",
+                    EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
-			var getFilterValue = new CodegenExpressionLambda(method.Block)
-				.WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
-			var inner = NewInstance<ProxyFilterSpecParam>(
-				Ref("lookupable"),
-				Ref("filterOperator"),
-				getFilterValue);
+            var getFilterValue = new CodegenExpressionLambda(method.Block)
+                .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
+            var inner = NewInstance<ProxyFilterSpecParam>(
+                Ref("lookupable"),
+                Ref("filterOperator"),
+                getFilterValue);
 
-			var rhsExpression = CodegenLegoMethodExpression.CodegenExpression(_value.Forge, method, classScope);
-			var matchEventConvertor = _convertor.Make(method, classScope);
-			
-			CodegenExpression valueExpr = LocalMethod(rhsExpression, Ref("eps"), ConstantTrue(), REF_EXPREVALCONTEXT);
-			if (_numberCoercer != null) {
-				valueExpr = _numberCoercer.CoerceCodegenMayNullBoxed(valueExpr, _value.Forge.EvaluationType, method, classScope);
-			}
+            var rhsExpression = CodegenLegoMethodExpression.CodegenExpression(_value.Forge, method, classScope);
+            var matchEventConvertor = _convertor.Make(method, classScope);
 
-			getFilterValue.Block
-				.DeclareVar<EventBean[]>("eps", LocalMethod(matchEventConvertor, FilterSpecParam.REF_MATCHEDEVENTMAP))
-				.BlockReturn(FilterValueSetParamImpl.CodegenNew(valueExpr));
+            CodegenExpression valueExpr = LocalMethod(rhsExpression, Ref("eps"), ConstantTrue(), REF_EXPREVALCONTEXT);
+            if (_numberCoercer != null) {
+                valueExpr = _numberCoercer.CoerceCodegenMayNullBoxed(
+                    valueExpr,
+                    _value.Forge.EvaluationType,
+                    method,
+                    classScope);
+            }
 
-			method.Block.MethodReturn(inner);
-			return method;
-		}
+            getFilterValue.Block
+                .DeclareVar<EventBean[]>("eps", LocalMethod(matchEventConvertor, FilterSpecParam.REF_MATCHEDEVENTMAP))
+                .BlockReturn(FilterValueSetParamImpl.CodegenNew(valueExpr));
 
-		public override void ValueExprToString(
-			StringBuilder @out,
-			int i)
-		{
-			@out.Append("expression '").Append(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_value)).Append("'");
-		}
-	}
+            method.Block.MethodReturn(inner);
+            return LocalMethod(method);
+        }
+
+        public override void ValueExprToString(
+            StringBuilder @out,
+            int i)
+        {
+            @out.Append("expression '")
+                .Append(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_value))
+                .Append("'");
+        }
+    }
 } // end of namespace

@@ -17,56 +17,60 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.allofanyof
 {
-	public class ExprDotForgeAllOfAnyOf : ExprDotForgeLambdaThreeForm
-	{
-		protected override EPType InitAndNoParamsReturnType(
-			EventType inputEventType,
-			Type collectionComponentType)
-		{
-			throw new IllegalStateException();
-		}
+    public class ExprDotForgeAllOfAnyOf : ExprDotForgeLambdaThreeForm
+    {
+        protected override EPChainableType InitAndNoParamsReturnType(
+            EventType inputEventType,
+            Type collectionComponentType)
+        {
+            throw new IllegalStateException();
+        }
 
-		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
-			EnumMethodEnum enumMethod,
-			EPType type,
-			StatementCompileTimeServices services)
-		{
-			throw new IllegalStateException();
-		}
+        protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
+            EnumMethodEnum enumMethod,
+            EPChainableType type,
+            StatementCompileTimeServices services)
+        {
+            throw new IllegalStateException();
+        }
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
-			EventType inputEventType,
-			Type collectionComponentType)
-		{
-			return lambda => EPTypeHelper.SingleValue(typeof(bool?));
-		}
+        protected override ThreeFormInitFunction InitAndSingleParamReturnType(
+            EventType inputEventType,
+            Type collectionComponentType)
+        {
+            return lambda => EPChainableTypeHelper.SingleValue(typeof(bool?));
+        }
 
-		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				typeInfo,
-				services) => new EnumAllOfAnyOfEvent(lambda, enumMethod == EnumMethodEnum.ALLOF);
-		}
+        protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                typeInfo,
+                services) => new EnumAllOfAnyOfEvent(lambda, enumMethod == EnumMethodEnum.ALLOF);
+        }
 
-		protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				fieldType,
-				numParams,
-				typeInfo,
-				services) => new EnumAllOfAnyOfEventPlus(lambda, fieldType, numParams, enumMethod == EnumMethodEnum.ALLOF);
-		}
+        protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                fieldType,
+                numParams,
+                typeInfo,
+                services) => new EnumAllOfAnyOfEventPlus(
+                lambda,
+                fieldType,
+                numParams,
+                enumMethod == EnumMethodEnum.ALLOF);
+        }
 
-		protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				fieldType,
-				numParams,
-				typeInfo,
-				services) => new EnumAllOfAnyOfScalar(lambda, fieldType, numParams, enumMethod == EnumMethodEnum.ALLOF);
-		}
-	}
+        protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                fieldType,
+                numParams,
+                typeInfo,
+                services) => new EnumAllOfAnyOfScalar(lambda, fieldType, numParams, enumMethod == EnumMethodEnum.ALLOF);
+        }
+    }
 } // end of namespace

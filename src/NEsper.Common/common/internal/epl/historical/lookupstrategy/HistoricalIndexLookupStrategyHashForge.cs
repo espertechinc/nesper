@@ -49,12 +49,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
         {
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategyHash), GetType(), classScope);
             var evaluator = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
-                _evaluators, _coercionTypes, _multiKeyClassRef, method, classScope);
+                _evaluators,
+                _coercionTypes,
+                _multiKeyClassRef,
+                method,
+                classScope);
 
             method.Block
-                .DeclareVar<HistoricalIndexLookupStrategyHash>(
-                    "strat",
-                    NewInstance(typeof(HistoricalIndexLookupStrategyHash)))
+                .DeclareVarNewInstance<HistoricalIndexLookupStrategyHash>("strat")
                 .SetProperty(Ref("strat"), "LookupStream", Constant(_lookupStream))
                 .SetProperty(Ref("strat"), "Evaluator", evaluator)
                 .MethodReturn(Ref("strat"));

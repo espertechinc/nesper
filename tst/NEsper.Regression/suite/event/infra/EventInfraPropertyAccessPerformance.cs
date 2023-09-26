@@ -6,9 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -21,11 +23,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             var methodName = ".testPerfPropertyAccess";
 
-            var joinStatement = "@Name('s0') select * from " +
+            var joinStatement = "@name('s0') select * from " +
                                 "SupportBeanCombinedProps#length(1)" +
                                 " where Indexed[0].Mapped('a').Value = 'dummy'";
             env.CompileDeploy(joinStatement).AddListener("s0");

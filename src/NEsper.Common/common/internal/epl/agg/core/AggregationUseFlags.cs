@@ -28,20 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             this.isOnSelect = isOnSelect;
         }
 
-        public bool IsUnidirectional()
-        {
-            return isUnidirectional;
-        }
+        public bool IsUnidirectional => isUnidirectional;
 
-        public bool IsFireAndForget()
-        {
-            return isFireAndForget;
-        }
+        public bool IsFireAndForget => isFireAndForget;
 
-        public bool IsOnSelect()
-        {
-            return isOnSelect;
-        }
+        public bool IsOnSelect => isOnSelect;
 
         public CodegenExpression ToExpression()
         {

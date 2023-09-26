@@ -34,12 +34,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             this.filterExpressions = filterExpressions;
         }
 
-        public TableMetaData Table {
-            get => table;
-        }
+        public TableMetaData Table => table;
 
-        public IList<ExprNode> FilterExpressions {
-            get => filterExpressions;
-        }
+        public IList<ExprNode> FilterExpressions => filterExpressions;
     }
 } // end of namespace

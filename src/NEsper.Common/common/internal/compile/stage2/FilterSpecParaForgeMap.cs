@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public void RemoveNode(ExprNode node)
         {
-            FilterSpecPlanPathTripletForge param = exprNodes.Delete(node);
+            var param = exprNodes.Delete(node);
             if (param != null) {
                 specParams.Remove(param);
             }

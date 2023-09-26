@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     public interface ExprNodeDeployTimeConst
     {
         CodegenExpression CodegenGetDeployTimeConstValue(CodegenClassScope classScope);
-        
+
         void RenderForFilterPlan(StringBuilder stringBuilder);
     }
 } // end of namespace

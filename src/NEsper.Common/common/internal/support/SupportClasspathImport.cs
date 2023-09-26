@@ -12,7 +12,7 @@ using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.support
 {
-    public class SupportClasspathImport
+    public class SupportImport
     {
         public static ImportServiceCompileTime GetInstance(IContainer container)
         {

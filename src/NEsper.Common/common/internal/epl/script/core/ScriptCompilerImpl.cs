@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -43,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// Constructor.
         /// </summary>
         public ScriptCompilerImpl(
-            IContainer container, 
+            IContainer container,
             ConfigurationCommon configuration)
         {
             _container = container;
@@ -56,11 +55,11 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// </summary>
         private void InitializeScriptingEngines()
         {
-            var classLoader = _container.ClassLoaderProvider().GetTypeResolver();
+            var typeResolver = _container.TypeResolverProvider().TypeResolver;
             foreach (var engineTypeName in _configuration.Engines) {
-                var engineType = classLoader.ResolveType(engineTypeName, false);
+                var engineType = typeResolver.ResolveType(engineTypeName, false);
                 if (engineType != null) {
-                    AddScriptingEngine((ScriptingEngine) Activator.CreateInstance(engineType));
+                    AddScriptingEngine((ScriptingEngine)Activator.CreateInstance(engineType));
                 }
             }
         }
@@ -70,13 +69,11 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// </summary>
         /// <param name="scriptingEngine">The scripting engine.</param>
         /// <exception cref="ScriptingEngineException">duplicate language prefix \"{scriptingEngine.LanguagePrefix}\" detected</exception>
-
         public void AddScriptingEngine(
             ScriptingEngine scriptingEngine)
         {
             var scriptingEngineCurr = _scriptingEngines.Get(scriptingEngine.LanguagePrefix);
-            if (scriptingEngineCurr != null)
-            {
+            if (scriptingEngineCurr != null) {
                 if (Equals(scriptingEngineCurr, scriptingEngine)) {
                     return;
                 }

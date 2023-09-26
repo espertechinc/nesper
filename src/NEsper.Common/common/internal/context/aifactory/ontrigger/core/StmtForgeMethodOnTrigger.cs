@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,12 +8,14 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset;
 using com.espertech.esper.common.@internal.context.aifactory.ontrigger.onsplit;
@@ -21,14 +23,19 @@ using com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontrigger
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
+using com.espertech.esper.common.@internal.epl.join.querygraph;
+using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.util;
+using com.espertech.esper.common.@internal.@event.map;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat.collections;
+
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
 {
@@ -49,38 +56,50 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             // determine context
             var contextName = @base.StatementSpec.Raw.OptionalContextName;
 
-            IList<FilterSpecCompiled> filterSpecCompileds = new List<FilterSpecCompiled>();
-            IList<ScheduleHandleCallbackProvider> schedules = new List<ScheduleHandleCallbackProvider>();
-            IList<NamedWindowConsumerStreamSpec> namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
-            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
+            IList<FilterSpecTracked> filterSpecCompileds = new List<FilterSpecTracked>(2);
+            IList<ScheduleHandleTracked> schedules = new List<ScheduleHandleTracked>(2);
+            IList<NamedWindowConsumerStreamSpec> namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>(2);
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
+            var fabricCharge = services.StateMgmtSettingsProvider.NewCharge();
 
             // create subselect information
             var subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
-                filterSpecCompileds, namedWindowConsumers, @base, services);
-            IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation = subSelectActivationDesc.Subselects;
+                false,
+                filterSpecCompileds,
+                namedWindowConsumers,
+                @base,
+                services);
+            var subselectActivation = subSelectActivationDesc.Subselects;
             additionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
+            fabricCharge.Add(subSelectActivationDesc.FabricCharge);
 
             // obtain activator
             var streamSpec = @base.StatementSpec.StreamSpecs[0];
             StreamSelector? optionalStreamSelector = null;
             OnTriggerActivatorDesc activatorResult;
 
-            if (streamSpec is FilterStreamSpecCompiled) {
-                var filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
+            if (streamSpec is FilterStreamSpecCompiled filterStreamSpec) {
                 activatorResult = ActivatorFilter(filterStreamSpec, services);
-                filterSpecCompileds.Add(filterStreamSpec.FilterSpecCompiled);
+                filterSpecCompileds.Add(
+                    new FilterSpecTracked(new CallbackAttributionStream(0), filterStreamSpec.FilterSpecCompiled));
             }
-            else if (streamSpec is PatternStreamSpecCompiled) {
-                var patternStreamSpec = (PatternStreamSpecCompiled) streamSpec;
+            else if (streamSpec is PatternStreamSpecCompiled patternStreamSpec) {
                 var forges = patternStreamSpec.Root.CollectFactories();
                 foreach (var forge in forges) {
-                    forge.CollectSelfFilterAndSchedule(filterSpecCompileds, schedules);
+                    forge.CollectSelfFilterAndSchedule(
+                        factoryNodeId => new CallbackAttributionStreamPattern(0, factoryNodeId),
+                        filterSpecCompileds,
+                        schedules);
                 }
 
                 activatorResult = ActivatorPattern(patternStreamSpec, services);
+                services.StateMgmtSettingsProvider.Pattern(
+                    fabricCharge,
+                    new PatternAttributionKeyStream(0),
+                    patternStreamSpec,
+                    @base.StatementRawInfo);
             }
-            else if (streamSpec is NamedWindowConsumerStreamSpec) {
-                var namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+            else if (streamSpec is NamedWindowConsumerStreamSpec namedSpec) {
                 activatorResult = ActivatorNamedWindow(namedSpec, services);
                 namedWindowConsumers.Add(namedSpec);
             }
@@ -96,7 +115,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             var namespaceScope = new CodegenNamespaceScope(
                 @namespace,
                 statementFieldsClassName,
-                services.IsInstrumented);
+                services.IsInstrumented,
+                services.Configuration.Compiler.ByteCode);
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider),
                 classPostfix);
@@ -107,21 +127,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             var onTriggerDesc = @base.StatementSpec.Raw.OnTriggerDesc;
             OnTriggerPlan onTriggerPlan;
 
-            if (onTriggerDesc is OnTriggerWindowDesc) {
-                var desc = (OnTriggerWindowDesc) onTriggerDesc;
-
-                var namedWindow = services.NamedWindowCompileTimeResolver.Resolve(desc.WindowName);
+            if (onTriggerDesc is OnTriggerWindowDesc windowDesc) {
+                var namedWindow = services.NamedWindowCompileTimeResolver.Resolve(windowDesc.WindowName);
                 TableMetaData table = null;
                 if (namedWindow == null) {
-                    table = services.TableCompileTimeResolver.Resolve(desc.WindowName);
+                    table = services.TableCompileTimeResolver.Resolve(windowDesc.WindowName);
                     if (table == null) {
                         throw new ExprValidationException(
-                            "A named window or table '" + desc.WindowName + "' has not been declared");
+                            "A named window or table '" + windowDesc.WindowName + "' has not been declared");
                     }
                 }
 
                 var planDesc = new OnTriggerWindowPlan(
-                    desc,
+                    windowDesc,
                     contextName,
                     activatorResult,
                     optionalStreamSelector,
@@ -137,9 +155,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                     @base,
                     services);
             }
-            else if (onTriggerDesc is OnTriggerSetDesc) {
+            else if (onTriggerDesc is OnTriggerSetDesc setDesc) {
                 // variable assignments
-                var desc = (OnTriggerSetDesc) onTriggerDesc;
                 var plan = OnTriggerSetUtil.HandleSetVariable(
                     aiFactoryProviderClassName,
                     namespaceScope,
@@ -147,18 +164,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                     activatorResult,
                     streamSpec.OptionalStreamName,
                     subselectActivation,
-                    desc,
+                    setDesc,
                     @base,
                     services);
                 onTriggerPlan = new OnTriggerPlan(
                     plan.Forgeable,
                     plan.Forgeables,
                     plan.SelectSubscriberDescriptor,
-                    plan.AdditionalForgeables);
+                    plan.AdditionalForgeables,
+                    plan.FabricCharge);
             }
             else {
                 // split-stream use case
-                var desc = (OnTriggerSplitStreamDesc) onTriggerDesc;
+                var desc = (OnTriggerSplitStreamDesc)onTriggerDesc;
                 onTriggerPlan = OnSplitStreamUtil.HandleSplitStream(
                     aiFactoryProviderClassName,
                     namespaceScope,
@@ -172,12 +190,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             }
 
             additionalForgeables.AddAll(onTriggerPlan.AdditionalForgeables);
+            fabricCharge.Add(onTriggerPlan.FabricCharge);
 
             // build forge list
-            IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
-            foreach (StmtClassForgeableFactory additional in additionalForgeables) {
+            IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>(2);
+            foreach (var additional in additionalForgeables) {
                 forgeables.Add(additional.Make(namespaceScope, classPostfix));
             }
+
             forgeables.AddAll(onTriggerPlan.Forgeables);
             forgeables.Add(onTriggerPlan.Factory);
 
@@ -192,27 +212,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                 onTriggerPlan.SubscriberDescriptor,
                 namespaceScope,
                 services);
-
             forgeables.Add(
                 new StmtClassForgeableStmtProvider(
                     aiFactoryProviderClassName,
                     statementProviderClassName,
                     informationals,
                     namespaceScope));
-            forgeables.Add(
-                new StmtClassForgeableStmtFields(
-                    statementFieldsClassName,
-                    namespaceScope,
-                    2));
+            forgeables.Add(new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope));
 
             return new StmtForgeMethodResult(
                 forgeables,
                 filterSpecCompileds,
                 schedules,
                 namedWindowConsumers,
-                FilterSpecCompiled.MakeExprNodeList(
-                    filterSpecCompileds,
-                    EmptyList<FilterSpecParamExprNodeForge>.Instance));
+                FilterSpecCompiled.MakeExprNodeList(filterSpecCompileds, EmptyList<FilterSpecParamExprNodeForge>.Instance),
+                namespaceScope,
+                fabricCharge);
         }
 
         private OnTriggerActivatorDesc ActivatorNamedWindow(
@@ -264,8 +279,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             StatementCompileTimeServices services)
         {
             var triggerEventTypeName = patternStreamSpec.OptionalStreamName;
-            var patternType =
-                ViewableActivatorPatternForge.MakeRegisterPatternType(@base, 0, patternStreamSpec, services);
+            var patternType = ViewableActivatorPatternForge.MakeRegisterPatternType(
+                @base.ModuleName,
+                0,
+                null,
+                patternStreamSpec,
+                services);
             var patternContext = new PatternContext(0, patternStreamSpec.MatchedEventMapMeta, false, -1, false);
             var activator = new ViewableActivatorPatternForge(patternType, patternStreamSpec, patternContext, false);
             return new OnTriggerActivatorDesc(activator, triggerEventTypeName, patternType);

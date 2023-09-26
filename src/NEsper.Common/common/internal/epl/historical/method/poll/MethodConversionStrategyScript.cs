@@ -9,7 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -22,10 +22,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
         public override IList<EventBean> Convert(
             object invocationResult,
             MethodTargetStrategy origin,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (!(invocationResult is EventBean[])) {
-                string result = invocationResult == null
+                var result = invocationResult == null
                     ? "null"
                     : invocationResult.GetType().Name;
                 Log.Warn("Script expected return type EventBean[] does not match result " + result);

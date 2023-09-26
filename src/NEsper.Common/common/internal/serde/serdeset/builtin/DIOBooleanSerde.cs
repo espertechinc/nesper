@@ -11,10 +11,10 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	/// <summary>
-	///     Binding for non-null boolean values.
-	/// </summary>
-	public class DIOBooleanSerde : DataInputOutputSerdeBase<bool>
+    /// <summary>
+    ///     Binding for non-null boolean values.
+    /// </summary>
+    public class DIOBooleanSerde : DataInputOutputSerdeBase<bool>
     {
         public static readonly DIOBooleanSerde INSTANCE = new DIOBooleanSerde();
 

@@ -6,8 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.dataflow.util;
 using com.espertech.esper.common.client.scopetest;
@@ -19,126 +22,101 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+// singletonMap
+using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
     public class EPLDataflowOpSelect
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
-WithAllTypes(execs);
-WithDocSamples(execs);
-WithInvalid(execs);
-WithIterateFinalMarker(execs);
-WithOutputRateLimit(execs);
-WithTimeWindowTriggered(execs);
-WithFromClauseJoinOrder(execs);
-WithSelectPerformance(execs);
-WithOuterJoinMultirow(execs);
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithAllTypes(execs);
+            WithDocSamples(execs);
+            WithInvalid(execs);
+            WithIterateFinalMarker(execs);
+            WithOutputRateLimit(execs);
+            WithTimeWindowTriggered(execs);
+            WithFromClauseJoinOrder(execs);
+            WithSelectPerformance(execs);
+            WithOuterJoinMultirow(execs);
+            WithOpSelectWrapper(execs);
             return execs;
         }
-public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowOuterJoinMultirow());
-    return execs;
-}public static IList<RegressionExecution> WithSelectPerformance(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowSelectPerformance());
-    return execs;
-}public static IList<RegressionExecution> WithFromClauseJoinOrder(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowFromClauseJoinOrder());
-    return execs;
-}public static IList<RegressionExecution> WithTimeWindowTriggered(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowTimeWindowTriggered());
-    return execs;
-}public static IList<RegressionExecution> WithOutputRateLimit(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowOutputRateLimit());
-    return execs;
-}public static IList<RegressionExecution> WithIterateFinalMarker(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowIterateFinalMarker());
-    return execs;
-}public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowInvalid());
-    return execs;
-}public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowDocSamples());
-    return execs;
-}public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowAllTypes());
-    return execs;
-}
-        private static void RunAssertionAllTypes(
-            RegressionEnvironment env,
-            string typeName,
-            object[] events)
+
+        public static IList<RegressionExecution> WithOpSelectWrapper(IList<RegressionExecution> execs = null)
         {
-            var graph = "@Name('flow') create dataflow MySelect\n" +
-                        "DefaultSupportSourceOp -> instream<" + typeName + ">{}\n" +
-                        "select(instream as ME) -> outstream {select: (select MyString, sum(MyInt) as total from ME)}\n" +
-                        "DefaultSupportCaptureOp(outstream) {}";
-            env.CompileDeploy(graph);
-
-            var source = new DefaultSupportSourceOp(events);
-            var capture = new DefaultSupportCaptureOp(2, env.Container.LockManager());
-            var options = new EPDataFlowInstantiationOptions();
-            options.WithOperatorProvider(new DefaultSupportGraphOpProvider(source, capture));
-            var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MySelect", options);
-
-            instance.Run();
-
-            var result = capture.GetAndReset()[0].UnwrapIntoArray<object>();
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Container,
-                result,
-                new[] { "MyString","total" },
-                new[] {
-                    new object[] {"one", 1}, 
-                    new object[] {"two", 3}
-                });
-
-            instance.Cancel();
-
-            env.UndeployAll();
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowOpSelectWrapper(false));
+            execs.Add(new EPLDataflowOpSelectWrapper(true));
+            return execs;
         }
 
-        private static void TryInvalidCompileGraph(
-            RegressionEnvironment env,
-            string select,
-            bool iterate,
-            string message)
+        public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionExecution> execs = null)
         {
-            var graph = "@Name('flow') create dataflow MySelect\n" +
-                        "DefaultSupportSourceOp -> instream<SupportBean>{}\n" +
-                        "select(instream as ME) -> outstream {select: (" +
-                        select +
-                        "), iterate: " +
-                        iterate +
-                        "}\n" +
-                        "DefaultSupportCaptureOp(outstream) {}";
-            TryInvalidCompile(env, graph, message);
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowOuterJoinMultirow());
+            return execs;
         }
 
-        internal class EPLDataflowDocSamples : RegressionExecution
+        public static IList<RegressionExecution> WithSelectPerformance(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowSelectPerformance());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFromClauseJoinOrder(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowFromClauseJoinOrder());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTimeWindowTriggered(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowTimeWindowTriggered());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOutputRateLimit(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowOutputRateLimit());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithIterateFinalMarker(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowIterateFinalMarker());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowDocSamples());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowAllTypes());
+            return execs;
+        }
+
+        private class EPLDataflowDocSamples : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -146,18 +124,18 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                     return;
                 }
 
-                var epl = "@Name('flow') create dataflow MyDataFlow\n" +
+                var epl = "@name('flow') create dataflow MyDataFlow\n" +
                           "  create schema SampleSchema(tagId string, locX double),\t// sample type\t\t\t\n" +
                           "  BeaconSource -> instream<SampleSchema> {}  // sample stream\n" +
                           "  BeaconSource -> secondstream<SampleSchema> {}  // sample stream\n" +
                           "  \n" +
                           "  // Simple continuous count of events\n" +
-                          "  select(instream) -> outstream {\n" +
+                          "  Select(instream) -> outstream {\n" +
                           "    select: (select count(*) from instream)\n" +
                           "  }\n" +
                           "  \n" +
                           "  // Demonstrate use of alias\n" +
-                          "  select(instream as myalias) -> outstream {\n" +
+                          "  Select(instream as myalias) -> outstream {\n" +
                           "    select: (select count(*) from myalias)\n" +
                           "  }\n" +
                           "  \n" +
@@ -188,9 +166,14 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow");
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowInvalid : RegressionExecution
+        private class EPLDataflowInvalid : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -200,43 +183,48 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
 
                 TryInvalidCompileGraph(
                     env,
-                    "insert into ABC select TheString from ME",
+                    "insert into ABC select theString from ME",
                     false,
-                    "Failed to obtain operator 'select': Insert-into clause is not supported");
+                    "Failed to obtain operator 'Select': Insert-into clause is not supported");
 
                 TryInvalidCompileGraph(
                     env,
-                    "select irstream TheString from ME",
+                    "select irstream theString from ME",
                     false,
-                    "Failed to obtain operator 'select': Selecting remove-stream is not supported");
+                    "Failed to obtain operator 'Select': Selecting remove-stream is not supported");
 
                 TryInvalidCompileGraph(
                     env,
-                    "select TheString from pattern[SupportBean]",
+                    "select theString from pattern[SupportBean]",
                     false,
-                    "Failed to obtain operator 'select': From-clause must contain only streams and cannot contain patterns or other constructs");
+                    "Failed to obtain operator 'Select': From-clause must contain only streams and cannot contain patterns or other constructs");
 
                 TryInvalidCompileGraph(
                     env,
-                    "select TheString from DUMMY",
+                    "select theString from DUMMY",
                     false,
-                    "Failed to obtain operator 'select': Failed to find stream 'DUMMY' among input ports, input ports are [\"ME\"]");
+                    "Failed to obtain operator 'Select': Failed to find stream 'DUMMY' among input ports, input ports are [ME]");
 
                 TryInvalidCompileGraph(
                     env,
-                    "select TheString from ME output every 10 seconds",
+                    "select theString from ME output every 10 seconds",
                     true,
-                    "Failed to obtain operator 'select': Output rate limiting is not supported with 'iterate'");
+                    "Failed to obtain operator 'Select': Output rate limiting is not supported with 'iterate'");
 
                 TryInvalidCompileGraph(
                     env,
                     "select (select * from SupportBean#lastevent) from ME",
                     false,
-                    "Failed to obtain operator 'select': Subselects are not supported");
+                    "Failed to obtain operator 'Select': Subselects are not supported");
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW, RegressionFlag.INVALIDITY);
             }
         }
 
-        internal class EPLDataflowIterateFinalMarker : RegressionExecution
+        private class EPLDataflowIterateFinalMarker : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -244,17 +232,17 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                     return;
                 }
 
-                var graph = "@Name('flow') create dataflow MySelect\n" +
+                var graph = "@name('flow') create dataflow MySelect\n" +
                             "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
-                            "@Audit select(instream_s0 as ALIAS) -> outstream {\n" +
-                            "  select: (select TheString, sum(IntPrimitive) as sumInt from ALIAS group by TheString order by TheString asc),\n" +
+                            "@Audit Select(instream_s0 as ALIAS) -> outstream {\n" +
+                            "  select: (select theString, sum(intPrimitive) as sumInt from ALIAS group by theString order by theString asc),\n" +
                             "  iterate: true" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
                 env.AdvanceTime(0);
                 env.CompileDeploy(graph);
 
-                var capture = new DefaultSupportCaptureOp();
+                var capture = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
                 var operators = CollectionUtil.PopulateNameValueMap("DefaultSupportCaptureOp", capture);
 
                 var options =
@@ -272,22 +260,24 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                 Assert.AreEqual(0, capture.Current.Length);
 
                 emitter.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
+
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Container,
-                    capture.Current.UnwrapIntoArray<object>(),
-                    new [] { "TheString","sumInt" },
-                    new[] {
-                        new object[] {"E1", 6},
-                        new object[] {"E2", 5},
-                        new object[] {"E3", 4}
-                    });
+                    capture.Current,
+                    "theString,sumInt".SplitCsv(),
+                    new object[][] { new object[] { "E1", 6 }, new object[] { "E2", 5 }, new object[] { "E3", 4 } });
 
                 instance.Cancel();
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowOutputRateLimit : RegressionExecution
+        private class EPLDataflowOutputRateLimit : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -295,16 +285,16 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                     return;
                 }
 
-                var graph = "@Name('flow') create dataflow MySelect\n" +
+                var graph = "@name('flow') create dataflow MySelect\n" +
                             "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
-                            "select(instream_s0) -> outstream {\n" +
-                            "  select: (select sum(IntPrimitive) as sumInt from instream_s0 output snapshot every 1 minute)\n" +
+                            "Select(instream_s0) -> outstream {\n" +
+                            "  select: (select sum(intPrimitive) as sumInt from instream_s0 output snapshot every 1 minute)\n" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
                 env.AdvanceTime(0);
                 env.CompileDeploy(graph);
 
-                var capture = new DefaultSupportCaptureOp();
+                var capture = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
                 var operators = CollectionUtil.PopulateNameValueMap("DefaultSupportCaptureOp", capture);
 
                 var options =
@@ -323,9 +313,9 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                 env.AdvanceTime(60000 + 5000);
                 EPAssertionUtil.AssertProps(
                     env.Container,
-                    (object[]) capture.GetCurrentAndReset()[0],
-                    new [] { "sumInt" },
-                    new object[] {14});
+                    capture.GetCurrentAndReset()[0],
+                    "sumInt".SplitCsv(),
+                    new object[] { 14 });
 
                 emitter.Submit(new SupportBean("E4", 3));
                 emitter.Submit(new SupportBean("E5", 6));
@@ -334,9 +324,9 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                 env.AdvanceTime(120000 + 5000);
                 EPAssertionUtil.AssertProps(
                     env.Container,
-                    (object[]) capture.GetCurrentAndReset()[0],
-                    new [] { "sumInt" },
-                    new object[] {14 + 9});
+                    capture.GetCurrentAndReset()[0],
+                    "sumInt".SplitCsv(),
+                    new object[] { 14 + 9 });
 
                 instance.Cancel();
 
@@ -346,9 +336,14 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowTimeWindowTriggered : RegressionExecution
+        private class EPLDataflowTimeWindowTriggered : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -356,16 +351,16 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                     return;
                 }
 
-                var graph = "@Name('flow') create dataflow MySelect\n" +
+                var graph = "@name('flow') create dataflow MySelect\n" +
                             "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
-                            "select(instream_s0) -> outstream {\n" +
-                            "  select: (select sum(IntPrimitive) as sumInt from instream_s0#time(1 minute))\n" +
+                            "Select(instream_s0) -> outstream {\n" +
+                            "  select: (select sum(intPrimitive) as sumInt from instream_s0#time(1 minute))\n" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
                 env.AdvanceTime(0);
                 env.CompileDeploy(graph);
 
-                var capture = new DefaultSupportCaptureOp();
+                var capture = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
                 var operators = CollectionUtil.PopulateNameValueMap("DefaultSupportCaptureOp", capture);
 
                 var options =
@@ -378,31 +373,36 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                 captive.Emitters.Get("emitterS0").Submit(new SupportBean("E1", 2));
                 EPAssertionUtil.AssertProps(
                     env.Container,
-                    (object[]) capture.GetCurrentAndReset()[0],
-                    new [] { "sumInt" },
-                    new object[] {2});
+                    capture.GetCurrentAndReset()[0],
+                    "sumInt".SplitCsv(),
+                    new object[] { 2 });
 
                 env.AdvanceTime(10000);
                 captive.Emitters.Get("emitterS0").Submit(new SupportBean("E2", 5));
                 EPAssertionUtil.AssertProps(
                     env.Container,
-                    (object[]) capture.GetCurrentAndReset()[0],
-                    new [] { "sumInt" },
-                    new object[] {7});
+                    capture.GetCurrentAndReset()[0],
+                    "sumInt".SplitCsv(),
+                    new object[] { 7 });
 
                 env.AdvanceTime(65000);
                 EPAssertionUtil.AssertProps(
                     env.Container,
-                    (object[]) capture.GetCurrentAndReset()[0],
-                    new [] { "sumInt" },
-                    new object[] {5});
+                    capture.GetCurrentAndReset()[0],
+                    "sumInt".SplitCsv(),
+                    new object[] { 5 });
 
                 instance.Cancel();
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowOuterJoinMultirow : RegressionExecution
+        private class EPLDataflowOuterJoinMultirow : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -410,16 +410,16 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                     return;
                 }
 
-                var graph = "@Name('flow') create dataflow MySelect\n" +
+                var graph = "@name('flow') create dataflow MySelect\n" +
                             "Emitter -> instream_s0<SupportBean_S0>{name: 'emitterS0'}\n" +
                             "Emitter -> instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
-                            "select(instream_s0 as S0, instream_s1 as S1) -> outstream {\n" +
-                            "  select: (select P00, P10 from S0#keepall full outer join S1#keepall)\n" +
+                            "Select(instream_s0 as S0, instream_s1 as S1) -> outstream {\n" +
+                            "  select: (select p00, p10 from S0#keepall full outer join S1#keepall)\n" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
                 env.CompileDeploy(graph);
 
-                var capture = new DefaultSupportCaptureOp();
+                var capture = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
                 var operators = CollectionUtil.PopulateNameValueMap("DefaultSupportCaptureOp", capture);
 
                 var options =
@@ -432,16 +432,21 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                 captive.Emitters.Get("emitterS0").Submit(new SupportBean_S0(1, "S0_1"));
                 EPAssertionUtil.AssertProps(
                     env.Container,
-                    (object[]) capture.GetCurrentAndReset()[0],
-                    new [] { "P00","P11" },
-                    new object[] {"S0_1", null});
+                    capture.GetCurrentAndReset()[0],
+                    "p00,p11".SplitCsv(),
+                    new object[] { "S0_1", null });
 
                 instance.Cancel();
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowFromClauseJoinOrder : RegressionExecution
+        private class EPLDataflowFromClauseJoinOrder : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -449,28 +454,33 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                     return;
                 }
 
-                TryAssertionJoinOrder(env, "from S2#lastevent as S2, S1#lastevent as S1, S0#lastevent as S0");
-                TryAssertionJoinOrder(env, "from S0#lastevent as S0, S1#lastevent as S1, S2#lastevent as S2");
-                TryAssertionJoinOrder(env, "from S1#lastevent as S1, S2#lastevent as S2, S0#lastevent as S0");
+                TryAssertionJoinOrder(env, "from S2#lastevent as s2, S1#lastevent as s1, S0#lastevent as s0");
+                TryAssertionJoinOrder(env, "from S0#lastevent as s0, S1#lastevent as s1, S2#lastevent as s2");
+                TryAssertionJoinOrder(env, "from S1#lastevent as s1, S2#lastevent as s2, S0#lastevent as s0");
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
 
             private void TryAssertionJoinOrder(
                 RegressionEnvironment env,
                 string fromClause)
             {
-                var graph = "@Name('flow') create dataflow MySelect\n" +
+                var graph = "@name('flow') create dataflow MySelect\n" +
                             "Emitter -> instream_s0<SupportBean_S0>{name: 'emitterS0'}\n" +
                             "Emitter -> instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
                             "Emitter -> instream_s2<SupportBean_S2>{name: 'emitterS2'}\n" +
-                            "select(instream_s0 as S0, instream_s1 as S1, instream_s2 as S2) -> outstream {\n" +
-                            "  select: (select S0.Id as S0Id, S1.Id as S1Id, S2.Id as S2Id " +
+                            "Select(instream_s0 as S0, instream_s1 as S1, instream_s2 as S2) -> outstream {\n" +
+                            "  select: (select s0.id as s0id, s1.id as s1id, s2.id as s2id " +
                             fromClause +
                             ")\n" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
                 env.CompileDeploy(graph);
 
-                var capture = new DefaultSupportCaptureOp();
+                var capture = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
                 var operators = CollectionUtil.PopulateNameValueMap("DefaultSupportCaptureOp", capture);
 
                 var options =
@@ -487,9 +497,9 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                 Assert.AreEqual(1, capture.Current.Length);
                 EPAssertionUtil.AssertProps(
                     env.Container,
-                    (object[]) capture.GetCurrentAndReset()[0],
-                    new [] { "s0Id","s1Id","s2Id" },
-                    new object[] {1, 10, 100});
+                    capture.GetCurrentAndReset()[0],
+                    "s0id,s1id,s2id".SplitCsv(),
+                    new object[] { 1, 10, 100 });
 
                 instance.Cancel();
 
@@ -500,7 +510,7 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
             }
         }
 
-        internal class EPLDataflowAllTypes : RegressionExecution
+        private class EPLDataflowAllTypes : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -516,10 +526,131 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
                 RunAssertionAllTypes(env, "MyOAEvent", DefaultSupportGraphEventUtil.GetOAEvents());
                 RunAssertionAllTypes(env, "MyMapEvent", DefaultSupportGraphEventUtil.GetMapEvents());
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowSelectPerformance : RegressionExecution
+        private class EPLDataflowOpSelectWrapper : RegressionExecution
         {
+            private readonly bool wrapperWithAdditionalProps;
+
+            public EPLDataflowOpSelectWrapper(bool wrapperWithAdditionalProps)
+            {
+                this.wrapperWithAdditionalProps = wrapperWithAdditionalProps;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                if (env.IsHA) {
+                    return;
+                }
+
+                var epl = "@public @buseventtype create schema A(value int);\n" +
+                          (wrapperWithAdditionalProps
+                              ? "insert into B select 'a' as hello, * from A; \n"
+                              : "insert into B select * from A; \n") +
+                          "@name('flow') create dataflow OutputFlow\n" +
+                          "  EventBusSource -> TheEvents<B> {}\n" +
+                          "  Select(TheEvents) -> outstream {\n" +
+                          "    select: (select * from TheEvents)\n" +
+                          "  }\n" +
+                          "  DefaultSupportCaptureOp(outstream) {}\n";
+
+                env.CompileDeploy(epl);
+                var capture = new DefaultSupportCaptureOp<object>(1, env.Container.LockManager());
+                var options = new EPDataFlowInstantiationOptions();
+                options.WithOperatorProvider(new DefaultSupportGraphOpProvider(capture));
+                var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "OutputFlow", options);
+                instance.Start();
+
+                env.SendEventMap(Collections.SingletonDataMap("value", 10), "A");
+                object[] result;
+                try {
+                    result = capture.GetValue(1, TimeUnit.SECONDS);
+                }
+                catch (Exception e) {
+                    throw new EPRuntimeException("Timeout: " + e.Message, e);
+                }
+
+                if (wrapperWithAdditionalProps) {
+                    var underlying = (Pair<object, IDictionary<string, object>>)result[0];
+                    Assert.AreEqual("a", underlying.Second.Get("hello"));
+                    Assert.AreEqual(10, ((IDictionary<string, object>)underlying.First).Get("value"));
+                }
+                else {
+                    EPAssertionUtil.AssertPropsPerRow(
+                        env.Container,
+                        result,
+                        "value".SplitCsv(),
+                        new object[][] { new object[] { 10 } });
+                }
+
+                instance.Cancel();
+
+                env.UndeployAll();
+            }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "wrapperWithAdditionalProps=" +
+                       wrapperWithAdditionalProps +
+                       '}';
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
+        }
+
+        private static void RunAssertionAllTypes(
+            RegressionEnvironment env,
+            string typeName,
+            object[] events)
+        {
+            var graph = "@name('flow') create dataflow MySelect\n" +
+                        "DefaultSupportSourceOp -> instream<" +
+                        typeName +
+                        ">{}\n" +
+                        "Select(instream as ME) -> outstream {select: (select myString, sum(myInt) as total from ME)}\n" +
+                        "DefaultSupportCaptureOp(outstream) {}";
+            env.CompileDeploy(graph);
+
+            var source = new DefaultSupportSourceOp(events);
+            var capture = new DefaultSupportCaptureOp<object>(2, env.Container.LockManager());
+            var options = new EPDataFlowInstantiationOptions();
+            options.WithOperatorProvider(new DefaultSupportGraphOpProvider(source, capture));
+            var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MySelect", options);
+
+            instance.Run();
+
+            var result = capture.GetAndReset()[0].ToArray();
+            EPAssertionUtil.AssertPropsPerRow(
+                env.Container,
+                result,
+                "myString,total".SplitCsv(),
+                new object[][] {
+                    new object[] { "one", 1 },
+                    new object[] { "two", 3 }
+                });
+
+            instance.Cancel();
+
+            env.UndeployAll();
+        }
+
+        private class EPLDataflowSelectPerformance : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 if (env.IsHA) {
@@ -528,21 +659,38 @@ public static IList<RegressionExecution> WithOuterJoinMultirow(IList<RegressionE
 
                 env.CompileDeploy(
                     "create objectarray schema MyEventOA(p0 string, p1 long);\n" +
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "Emitter -> instream<MyEventOA> {name: 'E1'}" +
-                    "select(instream as ME) -> astream {select: (select p0, sum(p1) from ME)}");
+                    "Select(instream as ME) -> astream {select: (select p0, sum(p1) from ME)}");
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne");
                 var emitter = df.StartCaptive().Emitters.Get("E1");
                 var start = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1; i++) {
-                    emitter.Submit(new object[] {"E1", 1L});
+                    emitter.Submit(new object[] { "E1", 1L });
                 }
 
                 var end = PerformanceObserver.MilliTime;
-                //System.out.println("delta=" + (end - start) / 1000d);
+                //Console.WriteLine("delta=" + (end - start) / 1000d);
 
                 env.UndeployAll();
             }
+        }
+
+        private static void TryInvalidCompileGraph(
+            RegressionEnvironment env,
+            string select,
+            bool iterate,
+            string message)
+        {
+            var graph = "@name('flow') create dataflow MySelect\n" +
+                        "DefaultSupportSourceOp -> instream<SupportBean>{}\n" +
+                        "Select(instream as ME) -> outstream {select: (" +
+                        select +
+                        "), iterate: " +
+                        iterate +
+                        "}\n" +
+                        "DefaultSupportCaptureOp(outstream) {}";
+            env.TryInvalidCompile(graph, message);
         }
     }
 } // end of namespace

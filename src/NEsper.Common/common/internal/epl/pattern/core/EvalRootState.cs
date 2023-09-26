@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.util;
 
@@ -32,6 +34,6 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
     public static class EvalRootStateConstants
     {
-        public static EvalRootState[] EMPTY_ARRAY = new EvalRootState[0];
+        public static EvalRootState[] EMPTY_ARRAY = Array.Empty<EvalRootState>();
     }
 } // end of namespace

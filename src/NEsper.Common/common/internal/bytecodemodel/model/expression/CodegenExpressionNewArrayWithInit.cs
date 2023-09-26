@@ -37,12 +37,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             int level,
             CodegenIndent indent)
         {
-            int numDimensions = GetNumberOfDimensions(component);
-            Type outermostType = GetComponentTypeOutermost(component);
+            var numDimensions = GetNumberOfDimensions(component);
+            var outermostType = GetComponentTypeOutermost(component);
             builder.Append("new ");
             CodeGenerationHelper.AppendClassName(builder, outermostType);
             builder.Append("[]");
-            for (int i = 0; i < numDimensions; i++) {
+            for (var i = 0; i < numDimensions; i++) {
                 builder.Append("[]");
             }
 
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public void MergeClasses(ISet<Type> classes)
         {
             classes.AddToSet(component);
-            foreach (CodegenExpression expression in expressions) {
+            foreach (var expression in expressions) {
                 expression.MergeClasses(classes);
             }
         }

@@ -37,7 +37,7 @@ namespace com.espertech.esperio.file
 				throw new EPException(GetType().Name + " expected a single input port");
 			}
 
-			eventType = context.InputPorts.Get(0).TypeDesc.EventType;
+			eventType = context.InputPorts[0].TypeDesc.EventType;
 			if (eventType == null) {
 				throw new EPException("No event type defined for input port");
 			}

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -43,14 +42,14 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
     /// </summary>
     public abstract class FAFQueryMethodIUDBaseForge : FAFQueryMethodForge
     {
-        internal readonly FireAndForgetProcessorForge processor;
-        internal readonly ExprNode whereClause;
-        internal readonly QueryGraphForge queryGraph;
-        internal readonly Attribute[] annotations;
+        protected readonly FireAndForgetProcessorForge processor;
+        protected readonly ExprNode whereClause;
+        protected readonly QueryGraphForge queryGraph;
+        protected readonly Attribute[] annotations;
         protected bool hasTableAccess;
-        internal readonly IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccessForges;
-        private readonly IDictionary<ExprSubselectNode, SubSelectFactoryForge> _subselectForges;
-        private readonly IList<StmtClassForgeableFactory> _additionalForgeables = new List<StmtClassForgeableFactory>();
+        protected readonly IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccessForges;
+        private readonly IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselectForges;
+        private readonly IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
 
         protected abstract void InitExec(
             string aliasName,
@@ -72,9 +71,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            this.annotations = spec.Annotations;
-            this.hasTableAccess = spec.Raw.IntoTableSpec != null ||
-                                  (spec.TableAccessNodes != null && spec.TableAccessNodes.Count > 0);
+            annotations = spec.Annotations;
+            hasTableAccess = spec.Raw.IntoTableSpec != null ||
+                             (spec.TableAccessNodes != null && spec.TableAccessNodes.Count > 0);
             if (spec.Raw.InsertIntoDesc != null &&
                 services.TableCompileTimeResolver.Resolve(spec.Raw.InsertIntoDesc.EventTypeName) != null) {
                 hasTableAccess = true;
@@ -86,53 +85,65 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             }
 
             hasTableAccess |= StatementLifecycleSvcUtil.IsSubqueryWithTable(
-                spec.SubselectNodes, services.TableCompileTimeResolver);
+                spec.SubselectNodes,
+                services.TableCompileTimeResolver);
 
             // validate general FAF criteria
             FAFQueryMethodHelper.ValidateFAFQuery(spec);
 
             // obtain processor
-            StreamSpecCompiled streamSpec = spec.StreamSpecs[0];
-            processor = FireAndForgetProcessorForgeFactory.ValidateResolveProcessor(streamSpec);
+            var streamSpec = spec.StreamSpecs[0];
+            var @base = new StatementBaseInfo(compilable, spec, null, statementRawInfo, null);
+            processor = FireAndForgetProcessorForgeFactory.ValidateResolveProcessor(
+                streamSpec,
+                spec,
+                @base.StatementRawInfo,
+                services);
 
             // obtain name and type
-            string processorName = processor.NamedWindowOrTableName;
-            EventType eventType = processor.EventTypeRspInputEvents;
+            var processorName = processor.ProcessorName;
+            var eventType = processor.EventTypeRSPInputEvents;
 
             // determine alias
-            string aliasName = processorName;
+            var aliasName = processorName;
             if (streamSpec.OptionalStreamName != null) {
                 aliasName = streamSpec.OptionalStreamName;
             }
-            
+
             // activate subselect activations
-            var @base = new StatementBaseInfo(compilable, spec, null, statementRawInfo, null);
-            var subqueryNamedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
+            IList<NamedWindowConsumerStreamSpec> subqueryNamedWindowConsumers =
+                new List<NamedWindowConsumerStreamSpec>();
             var subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
-                EmptyList<FilterSpecCompiled>.Instance, subqueryNamedWindowConsumers, @base, services);
+                false,
+                EmptyList<FilterSpecTracked>.Instance, 
+                subqueryNamedWindowConsumers,
+                @base,
+                services);
             var subselectActivation = subSelectActivationDesc.Subselects;
-            _additionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
+            additionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
 
             // plan subselects
-            var namesPerStream = new[] {aliasName};
-            var typesPerStream = new[] { processor.EventTypePublic };
-            var eventTypeNames = new[] {typesPerStream[0].Name};
-            SubSelectHelperForgePlan subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
-                @base, subselectActivation, namesPerStream, typesPerStream, eventTypeNames, services);
-            _subselectForges = subSelectForgePlan.Subselects;
-            _additionalForgeables.AddAll(subSelectForgePlan.AdditionalForgeables);
+            var namesPerStream = new string[] { aliasName };
+            var typesPerStream = new EventType[] { processor.EventTypePublic };
+            var eventTypeNames = new string[] { typesPerStream[0].Name };
+            var subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
+                @base,
+                subselectActivation,
+                namesPerStream,
+                typesPerStream,
+                eventTypeNames,
+                services);
+            subselectForges = subSelectForgePlan.Subselects;
+            additionalForgeables.AddAll(subSelectForgePlan.AdditionalForgeables);
 
             // compile filter to optimize access to named window
-            StreamTypeServiceImpl typeService = new StreamTypeServiceImpl(
-                new[] {eventType},
-                new[] {aliasName},
-                new[] {true},
+            var typeService = new StreamTypeServiceImpl(
+                new EventType[] { eventType },
+                new string[] { aliasName },
+                new bool[] { true },
                 true,
                 false);
-            ExcludePlanHint excludePlanHint = ExcludePlanHint.GetHint(
-                typeService.StreamNames,
-                statementRawInfo,
-                services);
+            var excludePlanHint = ExcludePlanHint.GetHint(typeService.StreamNames, statementRawInfo, services);
             if (spec.Raw.WhereClause != null) {
                 queryGraph = new QueryGraphForge(1, excludePlanHint, false);
                 EPLValidationUtil.ValidateFilterWQueryGraphSafe(
@@ -166,10 +177,13 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             string classPostfix,
             CodegenNamespaceScope namespaceScope)
         {
-            var forgeables = _additionalForgeables
-                .Select(additional => additional.Make(namespaceScope, classPostfix))
-                .ToList();
-            forgeables.Add(new StmtClassForgeableQueryMethodProvider(queryMethodProviderClassName, namespaceScope, this));
+            IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
+            foreach (var additional in additionalForgeables) {
+                forgeables.Add(additional.Make(namespaceScope, classPostfix));
+            }
+
+            forgeables.Add(
+                new StmtClassForgeableQueryMethodProvider(queryMethodProviderClassName, namespaceScope, this));
             return forgeables;
         }
 
@@ -178,41 +192,33 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpressionRef queryMethod = Ref("qm");
+            var queryMethod = Ref("qm");
             method.Block
                 .DeclareVar(TypeOfMethod(), queryMethod.Ref, NewInstance(TypeOfMethod()))
-                .SetProperty(
+                .ExprDotMethod(
                     queryMethod,
-                    "Annotations",
+                    "setAnnotations",
                     annotations == null
                         ? ConstantNull()
-                        : LocalMethod(MakeAnnotations(typeof(Attribute[]), annotations, method, classScope)))
-                .SetProperty(
-                    queryMethod, "Processor", processor.Make(method, symbols, classScope))
-                .SetProperty(
+                        : MakeAnnotations(typeof(Attribute[]), annotations, method, classScope))
+                .ExprDotMethod(queryMethod, "setProcessor", processor.Make(method, symbols, classScope))
+                .ExprDotMethod(
                     queryMethod,
-                    "QueryGraph",
+                    "setQueryGraph",
                     queryGraph == null ? ConstantNull() : queryGraph.Make(method, symbols, classScope))
-                .SetProperty(
+                .ExprDotMethod(
                     queryMethod,
-                    "InternalEventRouteDest",
-                    ExprDotName(
-                        symbols.GetAddInitSvc(method), EPStatementInitServicesConstants.INTERNALEVENTROUTEDEST))
-                .SetProperty(
+                    "setInternalEventRouteDest",
+                    ExprDotName(symbols.GetAddInitSvc(method), EPStatementInitServicesConstants.INTERNALEVENTROUTEDEST))
+                .ExprDotMethod(
                     queryMethod,
-                    "TableAccesses",
-                    ExprTableEvalStrategyUtil.CodegenInitMap(
-                        tableAccessForges,
-                        this.GetType(),
-                        method,
-                        symbols,
-                        classScope))
-                .SetProperty(
-                    queryMethod, "HasTableAccess", Constant(hasTableAccess))
-                .SetProperty(
-                    queryMethod, "Subselects", SubSelectFactoryForge.CodegenInitMap(
-                        _subselectForges, GetType(), method, symbols, classScope));
-                
+                    "setTableAccesses",
+                    ExprTableEvalStrategyUtil.CodegenInitMap(tableAccessForges, GetType(), method, symbols, classScope))
+                .ExprDotMethod(queryMethod, "setHasTableAccess", Constant(hasTableAccess))
+                .ExprDotMethod(
+                    queryMethod,
+                    "setSubselects",
+                    SubSelectFactoryForge.CodegenInitMap(subselectForges, GetType(), method, symbols, classScope));
             MakeInlineSpecificSetter(queryMethod, method, symbols, classScope);
             method.Block.MethodReturn(queryMethod);
         }

@@ -19,69 +19,69 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base
 {
-	public abstract class ThreeFormEventPlain : EnumForgeBasePlain
-	{
-		public abstract Type ReturnType();
+    public abstract class ThreeFormEventPlain : EnumForgeBasePlain
+    {
+        public abstract Type ReturnTypeOfMethod();
 
-		public abstract CodegenExpression ReturnIfEmptyOptional();
+        public abstract CodegenExpression ReturnIfEmptyOptional();
 
-		public abstract void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope);
+        public abstract void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope);
 
-		public virtual bool HasForEachLoop()
-		{
-			return true;
-		}
+        public virtual bool HasForEachLoop()
+        {
+            return true;
+        }
 
-		public abstract void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope);
+        public abstract void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope);
 
-		public abstract void ReturnResult(CodegenBlock block);
+        public abstract void ReturnResult(CodegenBlock block);
 
-		public ThreeFormEventPlain(ExprDotEvalParamLambda lambda) : base(lambda)
-		{
-		}
+        public ThreeFormEventPlain(ExprDotEvalParamLambda lambda) : base(lambda)
+        {
+        }
 
-		public override CodegenExpression Codegen(
-			EnumForgeCodegenParams premade,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			var scope = new ExprForgeCodegenSymbol(false, null);
-			var returnType = ReturnType();
-			var methodNode = codegenMethodScope
-				.MakeChildWithScope(returnType, GetType(), scope, codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS);
-			var block = methodNode.Block;
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var returnType = ReturnTypeOfMethod();
+            var methodNode = codegenMethodScope
+                .MakeChildWithScope(returnType, GetType(), scope, codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS);
+            var block = methodNode.Block;
 
-			var returnEmpty = ReturnIfEmptyOptional();
-			if (returnEmpty != null) {
-				block.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
-					.BlockReturn(returnEmpty);
-			}
+            var returnEmpty = ReturnIfEmptyOptional();
+            if (returnEmpty != null) {
+                block.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
+                    .BlockReturn(returnEmpty);
+            }
 
-			InitBlock(block, methodNode, scope, codegenClassScope);
+            InitBlock(block, methodNode, scope, codegenClassScope);
 
-			if (HasForEachLoop()) {
-				var forEach = block
-					.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-					.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
-				ForEachBlock(forEach, methodNode, scope, codegenClassScope);
-			}
+            if (HasForEachLoop()) {
+                var forEach = block
+                    .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+                    .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
+                ForEachBlock(forEach, methodNode, scope, codegenClassScope);
+            }
 
-			ReturnResult(block);
-			return LocalMethod(
-				methodNode, 
-				premade.Eps,
-				premade.Enumcoll,
-				premade.IsNewData,
-				premade.ExprCtx);
-		}
-	}
+            ReturnResult(block);
+            return LocalMethod(
+                methodNode,
+                premade.Eps,
+                premade.Enumcoll,
+                premade.IsNewData,
+                premade.ExprCtx);
+        }
+    }
 } // end of namespace

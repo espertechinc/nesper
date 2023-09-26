@@ -28,19 +28,19 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void RunAssertionPlugInViewFlushed(RegressionEnvironment env)
         {
-            var text = "@Name('s0') select * from SupportMarketDataBean.mynamespace:flushedsimple(Price)";
+            var text = "@name('s0') select * from SupportMarketDataBean.mynamespace:flushedsimple(Price)";
             env.CompileDeploy(text).AddListener("s0");
 
             SendEvent(env, 1);
             SendEvent(env, 2);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.UndeployAll();
         }
 
         private void RunAssertionPlugInViewTrend(RegressionEnvironment env)
         {
-            var text = "@Name('s0') select irstream * from SupportMarketDataBean.mynamespace:trendspotter(Price)";
+            var text = "@name('s0') select irstream * from SupportMarketDataBean.mynamespace:trendspotter(Price)";
             env.CompileDeploy(text).AddListener("s0");
 
             SendEvent(env, 10);
@@ -81,12 +81,10 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
         private void RunAssertionInvalid(RegressionEnvironment env)
         {
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 "select * from SupportMarketDataBean.mynamespace:xxx()",
                 "Failed to validate data window declaration: View name 'mynamespace:xxx' is not a known view name");
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 "select * from SupportMarketDataBean.mynamespace:invalid()",
                 "Failed to validate data window declaration: Error instantiating view factory instance to " +
                 typeof(ViewFactoryForge).FullName +
@@ -105,11 +103,11 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             long? newTrendCount,
             long? oldTrendCount)
         {
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Listener("s0").AssertInvokedAndReset(),
-                "trendcount",
-                new object[] {newTrendCount},
-                new object[] {oldTrendCount});
+            env.AssertPropsIRPair(
+                "s0",
+                new[] { "trendcount" },
+                new object[] { newTrendCount },
+                new object[] { oldTrendCount });
         }
     }
 } // end of namespace

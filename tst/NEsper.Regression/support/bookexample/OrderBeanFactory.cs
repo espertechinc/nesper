@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.regressionlib.support.bookexample
 {
     public class OrderBeanFactory
@@ -19,7 +21,7 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                     new OrderItem("A002", "10021", 25, 7.50),
                     new OrderItem("A003", "10020", 30, 10)
                 });
-            return new OrderBean(order, GetBookDesc(), new GameDesc[0]);
+            return new OrderBean(order, GetBookDesc(), Array.Empty<GameDesc>());
         }
 
         public static OrderBean MakeEventTwo()
@@ -30,7 +32,7 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                     new OrderItem("B001", "10022", 5, 99.50)
                 });
 
-            return new OrderBean(order, GetBookDesc(), new GameDesc[0]);
+            return new OrderBean(order, GetBookDesc(), Array.Empty<GameDesc>());
         }
 
         public static OrderBean MakeEventThree()
@@ -62,7 +64,7 @@ namespace com.espertech.esper.regressionlib.support.bookexample
         {
             var order = new OrderWithItems(
                 "PO200904",
-                new OrderItem[0]);
+                Array.Empty<OrderItem>());
             return new OrderBean(
                 order,
                 new[] {
@@ -75,9 +77,9 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                             new Review(201, "great book")
                         }),
                     new BookDesc(
-                        "10032", "Red Planet", "Robert A Heinlein", 13.00d, new Review[0])
+                        "10032", "Red Planet", "Robert A Heinlein", 13.00d, Array.Empty<Review>())
                 },
-                new GameDesc[0]);
+                Array.Empty<GameDesc>());
         }
 
         private static BookDesc[] GetBookDesc()
@@ -105,7 +107,7 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                     "Stranger in a Strange Land",
                     "Robert A Heinlein",
                     27.00d,
-                    new Review[0])
+                    Array.Empty<Review>())
             };
         }
     }

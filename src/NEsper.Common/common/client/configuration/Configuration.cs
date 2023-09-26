@@ -15,6 +15,7 @@ using System.Xml;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.configuration.compiler;
 using com.espertech.esper.common.client.configuration.runtime;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
@@ -35,8 +36,7 @@ namespace com.espertech.esper.common.client.configuration
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [NonSerialized]
-        private IContainer _container;
+        [NonSerialized] private IContainer _container;
 
         /// <summary>
         /// Default name of the configuration file.
@@ -276,6 +276,14 @@ namespace com.espertech.esper.common.client.configuration
             Common = new ConfigurationCommon();
             Compiler = new ConfigurationCompiler();
             Runtime = new ConfigurationRuntime();
+        }
+
+        /// <summary>
+        /// For internal use only: returns statement settings provider
+        /// </summary>
+        public StateMgmtSettingsProvider InternalUseGetStmtMgmtProvider(StateMgmtSettingsProxy proxy)
+        {
+            return StateMgmtSettingsProviderDefault.INSTANCE;
         }
     }
 } // end of namespace

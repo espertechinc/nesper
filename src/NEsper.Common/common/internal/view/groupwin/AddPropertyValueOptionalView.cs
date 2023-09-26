@@ -145,13 +145,15 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         {
             var values = new Dictionary<string, object>();
             if (propertyValues is MultiKey props) {
-                for (int i = 0; i < propertyNames.Length; i++) {
+                for (var i = 0; i < propertyNames.Length; i++) {
                     values.Put(propertyNames[i], props.GetKey(i));
                 }
-            } else {
+            }
+            else {
                 if (propertyValues is MultiKeyArrayWrap multiKeyArrayWrap) {
                     propertyValues = multiKeyArrayWrap.Array;
                 }
+
                 values.Put(propertyNames[0], propertyValues);
             }
 
@@ -162,7 +164,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         {
             return GetType().Name + " propertyValue=" + propertyValues;
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }

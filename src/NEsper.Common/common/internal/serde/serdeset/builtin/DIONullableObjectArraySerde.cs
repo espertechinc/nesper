@@ -14,68 +14,68 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIONullableObjectArraySerde : DataInputOutputSerdeBase<object[]>
-	{
-		private readonly Type _componentType;
-		private readonly DataInputOutputSerde _componentBinding;
+    public class DIONullableObjectArraySerde : DataInputOutputSerdeBase<object[]>
+    {
+        private readonly Type _componentType;
+        private readonly DataInputOutputSerde _componentBinding;
 
-		public DIONullableObjectArraySerde(
-			Type componentType,
-			DataInputOutputSerde componentBinding)
-		{
-			_componentType = componentType;
-			_componentBinding = componentBinding;
-		}
+        public DIONullableObjectArraySerde(
+            Type componentType,
+            DataInputOutputSerde componentBinding)
+        {
+            _componentType = componentType;
+            _componentBinding = componentBinding;
+        }
 
-		public override void Write(
-			object[] @object,
-			DataOutput output,
-			byte[] unitKey,
-			EventBeanCollatedWriter writer)
-		{
-			WriteInternal(@object, output, unitKey, writer);
-		}
+        public override void Write(
+            object[] @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteInternal(@object, output, unitKey, writer);
+        }
 
-		public override object[] ReadValue(
-			DataInput input,
-			byte[] unitKey)
-		{
-			return ReadInternal(input, unitKey);
-		}
+        public override object[] ReadValue(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadInternal(input, unitKey);
+        }
 
-		private void WriteInternal(
-			object[] @object,
-			DataOutput output,
-			byte[] unitKey,
-			EventBeanCollatedWriter writer)
-		{
-			if (@object == null) {
-				output.WriteInt(-1);
-				return;
-			}
+        private void WriteInternal(
+            object[] @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            if (@object == null) {
+                output.WriteInt(-1);
+                return;
+            }
 
-			output.WriteInt(@object.Length);
-			foreach (object i in @object) {
-				_componentBinding.Write(i, output, unitKey, writer);
-			}
-		}
+            output.WriteInt(@object.Length);
+            foreach (var i in @object) {
+                _componentBinding.Write(i, output, unitKey, writer);
+            }
+        }
 
-		private object[] ReadInternal(
-			DataInput input,
-			byte[] unitKey)
-		{
-			int len = input.ReadInt();
-			if (len == -1) {
-				return null;
-			}
+        private object[] ReadInternal(
+            DataInput input,
+            byte[] unitKey)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
 
-			var array = Arrays.CreateInstanceChecked(_componentType, len);
-			for (int i = 0; i < len; i++) {
-				var value = _componentBinding.Read(input, unitKey);
-				array.SetValue(value, i);
-			}
+            var array = Arrays.CreateInstanceChecked(_componentType, len);
+            for (var i = 0; i < len; i++) {
+                var value = _componentBinding.Read(input, unitKey);
+                array.SetValue(value, i);
+            }
 
-			return (object[]) array;
-		}
-	}
+            return (object[])array;
+        }
+    }
 } // end of namespace

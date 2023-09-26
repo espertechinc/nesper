@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
         public IList<FilterSpecActivatable> FilterSpecActivatables { get; private set; }
 
         public bool HasAsName { get; private set; }
-        
+
         public MultiKeyFromObjectArray MultiKeyFromObjectArray { get; set; }
 
         public void Ready(

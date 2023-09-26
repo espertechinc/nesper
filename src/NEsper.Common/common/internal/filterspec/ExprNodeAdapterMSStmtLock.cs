@@ -46,7 +46,6 @@ namespace com.espertech.esper.common.@internal.filterspec
             //if (!obtained) {
             //    throw new FilterLockBackoffException();
             //}
-
         }
     }
 } // end of namespace

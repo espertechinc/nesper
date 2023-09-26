@@ -15,6 +15,8 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 
 using Castle.DynamicProxy;
 
+using com.espertech.esper.common.@internal.util;
+
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -52,10 +54,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             if (invocation.Method == TARGET_EVALUATECODEGEN) {
                 var args = invocation.Arguments;
                 var evaluationType = forge.EvaluationType;
-                var requiredType = (Type) args[args.Length - 4];
-                var parent = (CodegenMethodScope) args[args.Length - 3];
-                var symbols = (ExprForgeCodegenSymbol) args[args.Length - 2];
-                var codegenClassScope = (CodegenClassScope) args[args.Length - 1];
+                var requiredType = (Type)args[^4];
+                var parent = (CodegenMethodScope)args[^3];
+                var symbols = (ExprForgeCodegenSymbol)args[^2];
+                var codegenClassScope = (CodegenClassScope)args[^1];
 
                 if (evaluationType == null) {
                     invocation.ReturnValue = forge.EvaluateCodegen(requiredType, parent, symbols, codegenClassScope);
@@ -63,14 +65,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
 
                 var method = parent.MakeChild(evaluationType, typeof(ExprForgeProxy), codegenClassScope);
-                if (evaluationType == typeof(void)) {
+                if (evaluationType.IsTypeVoid()) {
                     method.Block
                         .Expression(forge.EvaluateCodegen(requiredType, method, symbols, codegenClassScope))
                         .DebugStack()
                         .Expression(
                             ExprDotMethodChain(symbols.GetAddExprEvalCtx(method))
                                 .Get("AuditProvider")
-                                .Add("Expression", Constant(expressionToString), Constant("(void)"), symbols.GetAddExprEvalCtx(method)))
+                                .Add(
+                                    "Expression",
+                                    Constant(expressionToString),
+                                    Constant("(void)"),
+                                    symbols.GetAddExprEvalCtx(method)))
                         .MethodEnd();
                 }
                 else {
@@ -83,7 +89,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         .Expression(
                             ExprDotMethodChain(symbols.GetAddExprEvalCtx(method))
                                 .Get("AuditProvider")
-                                .Add("Expression", Constant(expressionToString), Ref("result"), symbols.GetAddExprEvalCtx(method)))
+                                .Add(
+                                    "Expression",
+                                    Constant(expressionToString),
+                                    Ref("result"),
+                                    symbols.GetAddExprEvalCtx(method)))
                         .MethodReturn(Ref("result"));
                 }
 
@@ -99,7 +109,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForge forge)
         {
             return generator.CreateInterfaceProxyWithTarget<ExprForge>(
-                forge, new ExprForgeProxy(expressionToString, forge));
+                forge,
+                new ExprForgeProxy(expressionToString, forge));
         }
     }
 } // end of namespace

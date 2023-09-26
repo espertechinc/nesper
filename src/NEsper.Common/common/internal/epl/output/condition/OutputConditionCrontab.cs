@@ -97,12 +97,12 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             };
             var handle = new EPStatementHandleCallbackSchedule(context.EpStatementAgentInstanceHandle, callback);
             var schedulingService = context.StatementContext.SchedulingService;
-            var classpathImportService = context.StatementContext.ImportServiceRuntime;
-            long nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(
+            var importService = context.StatementContext.ImportServiceRuntime;
+            var nextScheduledTime = ScheduleComputeHelper.ComputeDeltaNextOccurance(
                 scheduleSpec,
                 schedulingService.Time,
-                classpathImportService.TimeZone,
-                classpathImportService.TimeAbacus);
+                importService.TimeZone,
+                importService.TimeAbacus);
             context.AuditProvider.ScheduleAdd(
                 nextScheduledTime,
                 context,

@@ -29,8 +29,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 {
     [TestFixture]
 	public class TestPropertyParserSideBySide  {
-		private static object keywordCacheLock = new object();
-	    private static ISet<string> keywordCache;
+		private static readonly object KEYWORD_CACHE_LOCK = new object();
+	    private static ISet<string> _keywordCache;
 
         [Test]
 	    public void TestParse() {
@@ -67,7 +67,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 	    }
 
 	    public static StartEventPropertyRuleContext Parse(string propertyName) {
-	        var input = new CaseInsensitiveInputStream(propertyName);
+	        var input = CaseChangingCharStreamFactory.Make(propertyName);
 	        var lex = ParseHelper.NewLexer(input);
 	        var tokens = new CommonTokenStream(lex);
 	        try {
@@ -106,7 +106,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		    // Check for keywords and escape each, parse again
 		    var escapedPropertyName = EscapeKeywords(tokens);
 
-		    var inputEscaped = new CaseInsensitiveInputStream(escapedPropertyName);
+		    var inputEscaped = CaseChangingCharStreamFactory.Make(escapedPropertyName);
 		    var lexEscaped = ParseHelper.NewLexer(inputEscaped);
 		    var tokensEscaped = new CommonTokenStream(lexEscaped);
 		    var gEscaped = ParseHelper.NewParser(tokensEscaped);
@@ -136,9 +136,9 @@ namespace com.espertech.esper.compiler.@internal.parse
 	    }
 
 	    private static string EscapeKeywords(CommonTokenStream tokens) {
-		    lock (keywordCacheLock) {
-			    if (keywordCache == null) {
-				    keywordCache = CreateKeywordCache(tokens);
+		    lock (KEYWORD_CACHE_LOCK) {
+			    if (_keywordCache == null) {
+				    _keywordCache = CreateKeywordCache(tokens);
 			    }
 		    }
 
@@ -149,7 +149,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 				    break;
 			    }
 
-			    var isKeyword = keywordCache.Contains(t.Text.ToLowerInvariant());
+			    var isKeyword = _keywordCache.Contains(t.Text.ToLowerInvariant());
 			    if (isKeyword) {
 				    writer.Write('`');
 				    writer.Write(t.Text);

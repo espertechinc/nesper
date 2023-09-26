@@ -10,6 +10,8 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
+using com.espertech.esper.common.@internal.fabric;
+using com.espertech.esper.common.@internal.schedule;
 
 namespace com.espertech.esper.common.@internal.epl.subselect
 {
@@ -17,14 +19,22 @@ namespace com.espertech.esper.common.@internal.epl.subselect
     {
         public SubSelectActivationDesc(
             IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselects,
-            IList<StmtClassForgeableFactory> additionalForgeables)
+            IList<StmtClassForgeableFactory> additionalForgeables,
+            IList<ScheduleHandleTracked> schedules,
+            FabricCharge fabricCharge)
         {
             Subselects = subselects;
             AdditionalForgeables = additionalForgeables;
+            Schedules = schedules;
+            FabricCharge = fabricCharge;
         }
 
         public IDictionary<ExprSubselectNode, SubSelectActivationPlan> Subselects { get; }
 
         public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
+
+        public IList<ScheduleHandleTracked> Schedules { get; }
+
+        public FabricCharge FabricCharge { get; }
     }
 } // end of namespace

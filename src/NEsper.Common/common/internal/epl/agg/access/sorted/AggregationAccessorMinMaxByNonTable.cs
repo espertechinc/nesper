@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public override void GetValueCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
-            var forge = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
+            var forge = (AggregatorAccessSorted)context.AccessStateForge.Aggregator;
             context.Method.Block.DeclareVar<EventBean>(
                     "@event",
                     max

@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             Type inputValueType)
             : base(distinct)
         {
-            this.HasFilter = hasFilter;
-            this.InputValueType = inputValueType;
+            HasFilter = hasFilter;
+            InputValueType = inputValueType;
         }
 
         protected abstract void CodegenInlineSetWFilterWInputType(
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             string intoExpression,
             AggregationForgeFactory factory)
         {
-            var that = (AggregationPortableValidationWFilterWInputType) intoTableAgg;
+            var that = (AggregationPortableValidationWFilterWInputType)intoTableAgg;
             AggregationValidationUtil.ValidateAggregationInputType(InputValueType, that.InputValueType);
             AggregationValidationUtil.ValidateAggregationFilter(HasFilter, that.HasFilter);
             ValidateIntoTableWFilterWInputType(tableExpression, intoTableAgg, intoExpression, factory);

@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(OutputConditionPolledFactory), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(OutputConditionPolledFactory), GetType(), classScope);
             method.Block
                 .DeclareVar<TimePeriodCompute>(
                     "delta",

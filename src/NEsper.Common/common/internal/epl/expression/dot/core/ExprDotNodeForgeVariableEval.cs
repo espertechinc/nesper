@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             var typeInformation = ConstantNull();
             if (classScope.IsInstrumented) {
                 typeInformation = classScope.AddOrGetDefaultFieldSharable(
-                    new EPTypeCodegenSharable(new ClassEPType(variableType), classScope));
+                    new EPChainableTypeCodegenSharable(new EPChainableTypeClass(variableType), classScope));
             }
 
             var block = methodNode.Block
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         typeInformation,
                         Ref("result"),
                         Constant(forge.ChainForge.Length)));
-            
+
             var chain = ExprDotNodeUtility.EvaluateChainCodegen(
                 methodNode,
                 exprSymbol,

@@ -27,12 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             this.optionalAggregationService = optionalAggregationService;
         }
 
-        public View View {
-            get => view;
-        }
+        public View View => view;
 
-        public AggregationService OptionalAggregationService {
-            get => optionalAggregationService;
-        }
+        public AggregationService OptionalAggregationService => optionalAggregationService;
     }
 } // end of namespace

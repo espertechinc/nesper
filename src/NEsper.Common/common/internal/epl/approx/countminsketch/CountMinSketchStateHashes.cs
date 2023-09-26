@@ -53,8 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 
         public static CountMinSketchStateHashes MakeState(CountMinSketchSpecHashes spec)
         {
-            var width = (int) Math.Ceiling(2 / spec.EpsOfTotalCount);
-            var depth = (int) Math.Ceiling(-Math.Log(1 - spec.Confidence) / Math.Log(2));
+            var width = (int)Math.Ceiling(2 / spec.EpsOfTotalCount);
+            var depth = (int)Math.Ceiling(-Math.Log(1 - spec.Confidence) / Math.Log(2));
             var table = new long[depth][]; // width
             var hash = new long[depth];
             var r = new Random(spec.Seed);
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 
         public long EstimateCount(byte[] item)
         {
-            long res = long.MaxValue;
+            var res = long.MaxValue;
             var buckets = GetHashBuckets(item, Depth, Width);
             for (var i = 0; i < Depth; ++i) {
                 res = Math.Min(res, Table[i][buckets[i]]);

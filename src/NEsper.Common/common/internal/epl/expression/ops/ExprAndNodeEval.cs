@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprAndNodeImpl parent,
             ExprEvaluator[] evaluators)
         {
-            this._parent = parent;
-            this._evaluators = evaluators;
+            _parent = parent;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 .DeclareVar<bool?>("result", ConstantTrue());
 
             var count = -1;
-            foreach (ExprNode child in parent.ChildNodes) {
+            foreach (var child in parent.ChildNodes) {
                 count++;
                 var childType = child.Forge.EvaluationType;
                 if (childType.CanNotBeNull()) {

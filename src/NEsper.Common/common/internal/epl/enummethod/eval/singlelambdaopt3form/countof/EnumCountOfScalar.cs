@@ -21,90 +21,90 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.countof
 {
-	public class EnumCountOfScalar : ThreeFormScalar
-	{
-		public EnumCountOfScalar(
-			ExprDotEvalParamLambda lambda,
-			ObjectArrayEventType resultEventType,
-			int numParameters)
-			: base(lambda, resultEventType, numParameters)
-		{
-		}
+    public class EnumCountOfScalar : ThreeFormScalar
+    {
+        public EnumCountOfScalar(
+            ExprDotEvalParamLambda lambda,
+            ObjectArrayEventType resultEventType,
+            int numParameters)
+            : base(lambda, resultEventType, numParameters)
+        {
+        }
 
-		public override EnumEval EnumEvaluator {
-			get {
-				ExprEvaluator inner = InnerExpression.ExprEvaluator;
+        public override EnumEval EnumEvaluator {
+            get {
+                var inner = InnerExpression.ExprEvaluator;
 
-				return new ProxyEnumEval(
-					(
-						eventsLambda,
-						enumcoll,
-						isNewData,
-						context) => {
-						if (enumcoll.IsEmpty()) {
-							return 0;
-						}
+                return new ProxyEnumEval(
+                    (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        if (enumcoll.IsEmpty()) {
+                            return 0;
+                        }
 
-						int rowcount = 0;
-						ObjectArrayEventBean evalEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
-						eventsLambda[StreamNumLambda] = evalEvent;
-						object[] props = evalEvent.Properties;
-						props[2] = enumcoll.Count;
+                        var rowcount = 0;
+                        var evalEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+                        eventsLambda[StreamNumLambda] = evalEvent;
+                        var props = evalEvent.Properties;
+                        props[2] = enumcoll.Count;
 
-						int count = -1;
-						foreach (object next in enumcoll) {
-							count++;
-							props[0] = next;
-							props[1] = count;
+                        var count = -1;
+                        foreach (var next in enumcoll) {
+                            count++;
+                            props[0] = next;
+                            props[1] = count;
 
-							object pass = inner.Evaluate(eventsLambda, isNewData, context);
-							if (pass == null || false.Equals(pass)) {
-								continue;
-							}
+                            var pass = inner.Evaluate(eventsLambda, isNewData, context);
+                            if (pass == null || false.Equals(pass)) {
+                                continue;
+                            }
 
-							rowcount++;
-						}
+                            rowcount++;
+                        }
 
-						return rowcount;
-					});
-			}
-		}
+                        return rowcount;
+                    });
+            }
+        }
 
-		public override Type ReturnType()
-		{
-			return typeof(int);
-		}
+        public override Type ReturnTypeOfMethod()
+        {
+            return typeof(int);
+        }
 
-		public override CodegenExpression ReturnIfEmptyOptional()
-		{
-			return Constant(0);
-		}
+        public override CodegenExpression ReturnIfEmptyOptional()
+        {
+            return Constant(0);
+        }
 
-		public override void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			block.DeclareVar<int>("rowcount", Constant(0));
-		}
+        public override void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            block.DeclareVar<int>("rowcount", Constant(0));
+        }
 
-		public override void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
-				block,
-				InnerExpression.EvaluationType,
-				InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
-			block.IncrementRef("rowcount");
-		}
+        public override void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
+                block,
+                InnerExpression.EvaluationType,
+                InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
+            block.IncrementRef("rowcount");
+        }
 
-		public override void ReturnResult(CodegenBlock block)
-		{
-			block.MethodReturn(Ref("rowcount"));
-		}
-	}
+        public override void ReturnResult(CodegenBlock block)
+        {
+            block.MethodReturn(Ref("rowcount"));
+        }
+    }
 } // end of namespace

@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.collection
@@ -33,17 +35,13 @@ namespace com.espertech.esper.common.@internal.collection
             throw new UnsupportedOperationException("Not applicable to this key");
         }
 
-        public int Length {
-            get { return 0; }
-        }
+        public int Length => 0;
 
-        public int Last {
-            get { throw new UnsupportedOperationException("Not applicable to this key"); }
-        }
+        public int Last => throw new UnsupportedOperationException("Not applicable to this key");
 
         public int[] AsIntArray()
         {
-            return new int[0];
+            return Array.Empty<int>();
         }
     }
 } // end of namespace

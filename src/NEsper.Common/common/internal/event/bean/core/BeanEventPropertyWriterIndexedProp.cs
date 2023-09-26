@@ -23,14 +23,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             int index)
             : base(clazz, writerMember)
         {
-            this._index = index;
+            _index = index;
         }
 
         public override void Write(
             object value,
             EventBean target)
         {
-            Invoke(new[] {_index, value}, target.Underlying);
+            Invoke(new[] { _index, value }, target.Underlying);
         }
     }
 } // end of namespace

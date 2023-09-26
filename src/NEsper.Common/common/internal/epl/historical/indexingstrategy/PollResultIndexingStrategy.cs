@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 
 namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
@@ -28,24 +29,24 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         /// <param name="pollResult">result of a poll operation</param>
         /// <param name="isActiveCache">true to indicate that caching is active and therefore index building makes sense asthe index structure is not a throw-away.
         /// </param>
-        /// <param name="agentInstanceContext">statement context</param>
+        /// <param name="exprEvaluatorContext"></param>
         /// <returns>indexed collection of poll results</returns>
         EventTable[] Index(
             IList<EventBean> pollResult,
             bool isActiveCache,
-            AgentInstanceContext agentInstanceContext);
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 
     public class ProxyPollResultIndexingStrategy : PollResultIndexingStrategy
     {
-        public Func<IList<EventBean>, bool, AgentInstanceContext, EventTable[]> ProcIndex;
+        public Func<IList<EventBean>, bool, ExprEvaluatorContext, EventTable[]> ProcIndex;
 
         public ProxyPollResultIndexingStrategy()
         {
         }
 
         public ProxyPollResultIndexingStrategy(
-            Func<IList<EventBean>, bool, AgentInstanceContext, EventTable[]> procIndex)
+            Func<IList<EventBean>, bool, ExprEvaluatorContext, EventTable[]> procIndex)
         {
             ProcIndex = procIndex;
         }
@@ -53,9 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         public EventTable[] Index(
             IList<EventBean> pollResult,
             bool isActiveCache,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            return ProcIndex?.Invoke(pollResult, isActiveCache, agentInstanceContext);
+            return ProcIndex?.Invoke(pollResult, isActiveCache, exprEvaluatorContext);
         }
     }
 } // end of namespace

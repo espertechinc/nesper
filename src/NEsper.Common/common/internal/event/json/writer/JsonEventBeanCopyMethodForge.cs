@@ -18,10 +18,10 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.writer
 {
-	/// <summary>
-	///     Copy method for Json-underlying events.
-	/// </summary>
-	public class JsonEventBeanCopyMethodForge : EventBeanCopyMethodForge
+    /// <summary>
+    ///     Copy method for Json-underlying events.
+    /// </summary>
+    public class JsonEventBeanCopyMethodForge : EventBeanCopyMethodForge
     {
         private readonly JsonEventType _eventType;
 
@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
             var factory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             return NewInstance(
                 typeof(JsonEventBeanCopyMethod),
-                Cast(typeof(JsonEventType), EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF)),
+                Cast(
+                    typeof(JsonEventType),
+                    EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF)),
                 factory);
         }
 

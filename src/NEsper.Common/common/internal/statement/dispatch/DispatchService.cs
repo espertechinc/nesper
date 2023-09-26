@@ -20,7 +20,8 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
     /// </summary>
     public class DispatchService
     {
-        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly IThreadLocal<ArrayDeque<Dispatchable>> dispatchStateThreadLocal =
             new SystemThreadLocal<ArrayDeque<Dispatchable>>(() => new ArrayDeque<Dispatchable>());
@@ -34,7 +35,7 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
 
         public void AddExternal(Dispatchable dispatchable)
         {
-            ArrayDeque<Dispatchable> dispatchQueue = dispatchStateThreadLocal.GetOrCreate();
+            var dispatchQueue = dispatchStateThreadLocal.GetOrCreate();
             AddToQueue(dispatchable, dispatchQueue);
         }
 
@@ -60,8 +61,9 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
                 }
             }
         }
-        
-        public void RemoveAll(UpdateDispatchView updateDispatchView) {
+
+        public void RemoveAll(UpdateDispatchView updateDispatchView)
+        {
             var dispatchables = dispatchStateThreadLocal.GetOrCreate();
             dispatchables.RemoveWhere(
                 dispatchable => dispatchable.View == updateDispatchView,

@@ -26,25 +26,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
             this.timePeriodForge = timePeriodForge;
         }
 
-        public TimePeriodCompute Evaluator {
-            get => new TimePeriodComputeNCGivenTPNonCalEval(
+        public TimePeriodCompute Evaluator =>
+            new TimePeriodComputeNCGivenTPNonCalEval(
                 timePeriodForge.Evaluators,
                 timePeriodForge.Adders,
                 timePeriodForge.TimeAbacus);
-        }
 
         public CodegenExpression MakeEvaluator(
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(TimePeriodComputeNCGivenTPNonCalEval),
-                this.GetType(),
+                GetType(),
                 classScope);
 
-            method.Block.DeclareVar<TimePeriodComputeNCGivenTPNonCalEval>(
-                "eval",
-                NewInstance(typeof(TimePeriodComputeNCGivenTPNonCalEval)));
+            method.Block.DeclareVarNewInstance<TimePeriodComputeNCGivenTPNonCalEval>("eval");
             method.Block.SetProperty(
                 Ref("eval"),
                 "Adders",
@@ -55,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
                 ExprNodeUtilityCodegen.CodegenEvaluators(
                     timePeriodForge.Forges,
                     method,
-                    this.GetType(),
+                    GetType(),
                     classScope));
             method.Block.SetProperty(
                 Ref("eval"),

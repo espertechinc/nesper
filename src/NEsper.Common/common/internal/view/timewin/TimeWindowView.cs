@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
                 agentInstanceContext.StatementContext.SchedulingService.Remove(handle, scheduleSlot);
             }
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }
@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
             // If there are child views, fireStatementStopped update method
             if (Child != null) {
                 if (expired != null && !expired.IsEmpty()) {
-                    EventBean[] oldEvents = expired.ToArray();
+                    var oldEvents = expired.ToArray();
                     ViewUpdatedCollection?.Update(null, oldEvents);
 
                     agentInstanceContext.InstrumentationProvider.QViewIndicate(timeWindowViewFactory, null, oldEvents);
@@ -182,7 +182,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
 
         private void ScheduleExpiryCallback()
         {
-            long scheduleTime = ComputeScheduleTime();
+            var scheduleTime = ComputeScheduleTime();
             if (scheduleTime == -1) {
                 return;
             }
@@ -198,7 +198,9 @@ namespace com.espertech.esper.common.@internal.view.timewin
 
             var oldestTimestamp = timeWindow.OldestTimestamp.Value; // Null check?
             var currentTimestamp = agentInstanceContext.StatementContext.SchedulingService.Time;
-            return timePeriodProvide.DeltaAdd(oldestTimestamp, null, true, agentInstanceContext) + oldestTimestamp - currentTimestamp;
+            return timePeriodProvide.DeltaAdd(oldestTimestamp, null, true, agentInstanceContext) +
+                   oldestTimestamp -
+                   currentTimestamp;
         }
 
         private void ScheduleCallback(long timeAfterCurrentTime)

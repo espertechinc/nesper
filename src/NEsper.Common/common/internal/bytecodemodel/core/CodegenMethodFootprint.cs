@@ -41,7 +41,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public void MergeClasses(ISet<Type> classes)
         {
-            classes.AddToSet(ReturnType);
+            if (ReturnType != null) {
+                classes.AddToSet(ReturnType);
+            }
+
             foreach (var param in Params) {
                 param.MergeClasses(classes);
             }

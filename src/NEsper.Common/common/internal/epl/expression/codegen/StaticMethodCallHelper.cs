@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,12 +9,13 @@
 using System;
 using System.Reflection;
 
+using Castle.MicroKernel.Registration;
+
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.dot.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -31,17 +32,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var parameterTypes = method.GetParameterTypes();
+            var parameters = method.GetParameters();
             var args = new StaticMethodCodegenArgDesc[forges.Length];
             for (var i = 0; i < forges.Length; i++) {
                 var child = forges[i];
-                var childType = child.EvaluationType.GetBoxedType();
+                var childType = child.EvaluationType;
                 var name = "r" + i;
                 if (childType == null) {
-                    args[i] = new StaticMethodCodegenArgDesc(
-                        name,
-                        parameterTypes[i],
-                        ConstantNull());
+                    var parameter = parameters[i];
+                    var parameterType = parameter.ParameterType;
+                    args[i] = new StaticMethodCodegenArgDesc(name, parameterType, ConstantNull());
                 }
                 else {
                     args[i] = new StaticMethodCodegenArgDesc(
@@ -73,12 +73,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         {
             var catchBlock = tryBlock.TryEnd()
                 .AddCatch(typeof(Exception), "ex")
-                .DeclareVar<object[]>("argArray", NewArrayByLength(typeof(object), Constant(args.Length)));
+                .DeclareVar(typeof(object[]), "argArray", NewArrayByLength(typeof(object), Constant(args.Length)));
             for (var i = 0; i < args.Length; i++) {
                 catchBlock.AssignArrayElement("argArray", Constant(i), Ref(args[i].BlockRefName));
             }
 
-            Type[] paramTypes = reflectionMethod.GetParameterTypes();
+            var paramTypes = reflectionMethod.GetParameterTypes();
             catchBlock.StaticMethod(
                 typeof(ExprDotNodeForgeStaticMethodEval),
                 METHOD_STATICMETHODEVALHANDLEINVOCATIONEXCEPTION,
@@ -97,37 +97,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             StaticMethodCodegenArgDesc[] args,
             CodegenClassScope codegenClassScope)
         {
-            var parameters = reflectionMethod.GetParameters();
             var expressions = new CodegenExpression[args.Length];
             for (var i = 0; i < expressions.Length; i++) {
-                // Check for downcast transformations between nullables and non-nullables
-                var parameter = parameters[i];
-                if (parameter.ParameterType == args[i].DeclareType) {
-                    expressions[i] = Ref(args[i].BlockRefName);
-                }
-                else if (parameter.ParameterType.CanNotBeNull() && args[i].DeclareType.IsNullable()) {
-                    expressions[i] = ExprDotName(Ref(args[i].BlockRefName), "Value");
-                }
-                else {
-                    expressions[i] = Ref(args[i].BlockRefName);
-                }
+                expressions[i] = Ref(args[i].BlockRefName);
             }
 
             if (optionalTargetObject == null) {
                 return StaticMethod(reflectionMethod.DeclaringType, reflectionMethod.Name, expressions);
             }
-
-            if (optionalTargetObject.Value != null && optionalTargetObject.Value.GetType().IsEnum) {
-                return ExprDotMethod(
-                    EnumValue(optionalTargetObject.Value.GetType(), optionalTargetObject.Value.ToString()),
-                    reflectionMethod.Name,
-                    expressions);
+            else {
+                if (optionalTargetObject.Value != null && optionalTargetObject.Value.GetType().IsEnum) {
+                    return ExprDotMethod(
+                        EnumValue(optionalTargetObject.Value.GetType(), optionalTargetObject.Value.ToString()),
+                        reflectionMethod.Name,
+                        expressions);
+                }
+                else {
+                    return ExprDotMethod(
+                        PublicConstValue(optionalTargetObject.Field.DeclaringType, optionalTargetObject.Field.Name),
+                        reflectionMethod.Name,
+                        expressions);
+                }
             }
-
-            return ExprDotMethod(
-                PublicConstValue(optionalTargetObject.Field.DeclaringType, optionalTargetObject.Field.Name),
-                reflectionMethod.Name,
-                expressions);
         }
     }
 } // end of namespace

@@ -236,9 +236,8 @@ options {
 				parserTokenParaphrases[GROUPING] = "'grouping'";
 				parserTokenParaphrases[GROUPING_ID] = "'grouping_id'";
 				parserTokenParaphrases[SETS] = "'sets'";
-
-				parserKeywordSet = new HashSet<string>(
-					parserTokenParaphrases.Values);
+				parserTokenParaphrases[EVENTPRECEDENCE] = "'event-precedence'";
+				parserKeywordSet = new HashSet<string>(parserTokenParaphrases.Values);
 			}
 		}
 
@@ -280,7 +279,7 @@ classDecl : CLASSDECL TRIPLEQUOTE stringconstant TRIPLEQUOTE;
 //----------------------------------------------------------------------------
 // Expression Declaration
 //----------------------------------------------------------------------------
-expressionDecl : EXPRESSIONDECL classIdentifier? (array=LBRACK RBRACK)? typeExpressionAnnotation? expressionDialect? name=IDENT (LPAREN columnList? RPAREN)? (alias=IDENT FOR)? expressionDef;
+expressionDecl : EXPRESSIONDECL classIdentifierWithDimensions? typeExpressionAnnotation? expressionDialect? name=IDENT (LPAREN columnList? RPAREN)? (alias=IDENT FOR)? expressionDef;
 
 expressionDialect : d=IDENT COLON;
 
@@ -375,7 +374,7 @@ mergeUnmatched : WHEN NOT_EXPR MATCHED (AND_EXPR expression)? mergeUnmatchedItem
 
 mergeUnmatchedItem : THEN mergeInsert;
 
-mergeInsert : INSERT (INTO classIdentifier)? (LPAREN columnList RPAREN)? SELECT selectionList (WHERE whereClause)?;
+mergeInsert : INSERT (INTO classIdentifier)? (LPAREN columnList RPAREN)? insertIntoEventPrecedence? SELECT selectionList (WHERE whereClause)?;
 
 onSelectExpr
 @init  { paraphrases.Push("on-select clause"); }
@@ -472,7 +471,9 @@ fafDelete : DELETE FROM classIdentifier (AS identOrTicked | identOrTicked)? (WHE
 
 fafUpdate : UPDATE updateDetails;
 
-fafInsert : INSERT insertIntoExpr VALUES LPAREN expressionList RPAREN;
+fafInsert : INSERT insertIntoExpr VALUES fafInsertRow (COMMA fafInsertRow)*;
+
+fafInsertRow : LPAREN expressionList RPAREN;
 
 createDataflow : CREATE DATAFLOW name=IDENT AS? gopList;
 
@@ -526,7 +527,7 @@ createContextChoice : START (ATCHAR i=IDENT | r1=createContextRangePoint) (END r
 createContextDistinct :	DISTINCT LPAREN expressionList? RPAREN;
 
 createContextRangePoint : createContextFilter
-                | patternInclusionExpression (ATCHAR i=IDENT)?
+                | patternInclusionExpression (ATCHAR i=IDENT)? (AS? keywordAllowedIdent)?
 				| crontabLimitParameterSetList
                 | AFTER timePeriod;
 
@@ -547,7 +548,7 @@ createSchemaQual : i=IDENT columnList;
 variantList : variantListElement (COMMA variantListElement)*;
 
 variantListElement : STAR
-                | classIdentifier;
+                | classIdentifierWithDimensions;
 
 
 intoTableExpr
@@ -558,7 +559,9 @@ intoTableExpr
 insertIntoExpr
 @init  { paraphrases.Push("insert-into clause"); }
 @after { paraphrases.Pop(); }
-		: (i=ISTREAM | r=RSTREAM | ir=IRSTREAM)? INTO classIdentifier (LPAREN columnList? RPAREN)?;
+		: (i=ISTREAM | r=RSTREAM | ir=IRSTREAM)? INTO classIdentifier (LPAREN columnList? RPAREN)? insertIntoEventPrecedence?;
+		
+insertIntoEventPrecedence : (EVENTPRECEDENCE LPAREN expression RPAREN);
 
 columnList : IDENT (COMMA IDENT)*;
 
@@ -828,9 +831,9 @@ unaryExpression : unaryMinus
 		| rowSubSelectExpression 
 		| existsSubSelectExpression
 		| NEWKW LCURLY newAssign (COMMA newAssign)* RCURLY
-		| NEWKW classIdentifier LPAREN (expression (COMMA expression)*)? RPAREN chainableElements
-		| NEWKW classIdentifier LBRACK expression RBRACK (LBRACK expression RBRACK)?
-		| NEWKW classIdentifier LBRACK RBRACK (LBRACK RBRACK)? arrayExpression
+		| NEWKW classIdentifierNoDimensions LPAREN (expression (COMMA expression)*)? RPAREN chainableElements
+		| NEWKW classIdentifierNoDimensions LBRACK expression RBRACK (LBRACK expression? RBRACK)?
+		| NEWKW classIdentifierNoDimensions LBRACK RBRACK (LBRACK RBRACK)? arrayExpression
 		| jsonobject
 		;
 
@@ -917,7 +920,7 @@ patternExpression
 
 followedByExpression : orExpression (followedByRepeat)*;
 
-followedByRepeat : (f=FOLLOWED_BY | (g=FOLLOWMAX_BEGIN expression FOLLOWMAX_END)) orExpression;
+followedByRepeat : (f=FOLLOWED_BY | (g=FOLLOWMAX_BEGIN expression RBRACK GT)) orExpression;
 
 orExpression : andExpression (o=OR_EXPR andExpression)*;
 
@@ -977,7 +980,11 @@ patternFilterExpression
 
 patternFilterAnnotation : ATCHAR i=IDENT (LPAREN number RPAREN)?;
 
-classIdentifierWithDimensions : classIdentifier dimensions*;
+classIdentifierNoDimensions : classIdentifier typeParameters?;
+
+classIdentifierWithDimensions : classIdentifier typeParameters? dimensions*;
+
+typeParameters : LT classIdentifierWithDimensions (COMMA classIdentifierWithDimensions)* GT;
 
 dimensions : LBRACK p=IDENT? RBRACK;
 
@@ -1324,10 +1331,10 @@ ROLLUP:'rollup';
 GROUPING:'grouping';
 GROUPING_ID:'grouping_id';
 SETS:'sets';
+EVENTPRECEDENCE:'event-precedence';
 
 // Operators
 FOLLOWMAX_BEGIN : '-[';
-FOLLOWMAX_END   : ']>';
 FOLLOWED_BY 	: '->';
 GOES 		: '=>';
 EQUALS 		: '=';

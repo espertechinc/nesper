@@ -47,9 +47,9 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 
         public void Execute(MetricExecutionContext context)
         {
-            long inputCount = context.FilterService.NumEventsEvaluated;
+            var inputCount = context.FilterService.NumEventsEvaluated;
             long schedDepth = context.SchedulingService.ScheduleHandleCount;
-            var deltaInputCount = lastMetric == null ? inputCount : inputCount - lastMetric.InputCount;
+            var deltaInputCount = inputCount - lastMetric?.InputCount ?? inputCount;
             var metric = new RuntimeMetric(
                 runtimeURI,
                 metricScheduleService.CurrentTime,

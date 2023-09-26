@@ -7,8 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client;
@@ -20,6 +22,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
     public class ResultSetQueryTypeRowPerEventPerformance : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             var statements = new EPStatement[100];
@@ -29,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var percent = 0.25 + i;
                 var id = i % 5;
 
-                var text = "@Name('s" +
+                var text = "@name('s" +
                            i +
                            "') select Symbol, min(Price) " +
                            "from SupportMarketDataBean(Id='${Id}')#time(${secondsWindowSpan})\n" +
@@ -66,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             var end = PerformanceObserver.MilliTime;
             var delta = end - start;
             Assert.That(delta, Is.LessThan(2000), "Delta=" + delta);
-            //System.out.println("total=" + count + " delta=" + delta + " per sec:" + 10000.0 / (delta / 1000.0));
+            //Console.WriteLine("total=" + count + " delta=" + delta + " per sec:" + 10000.0 / (delta / 1000.0));
 
             env.UndeployAll();
         }

@@ -30,8 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             int streamNum,
             Type returnType)
         {
-            this._streamNum = streamNum;
-            this._returnType = returnType;
+            _streamNum = streamNum;
+            _returnType = returnType;
         }
 
         public object Evaluate(
@@ -48,31 +48,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
+            var refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
             return FlexCast(_returnType, ExprDotUnderlying(ArrayAtIndex(refEPS, Constant(_streamNum))));
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get => this;
-        }
+        public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType {
-            get => _returnType;
-        }
+        public Type EvaluationType => _returnType;
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => this;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(this.GetType().Name);
+            writer.Write(GetType().Name);
         }
     }
 } // end of namespace

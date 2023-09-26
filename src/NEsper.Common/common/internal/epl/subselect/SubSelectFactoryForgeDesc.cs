@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.fabric;
 
 namespace com.espertech.esper.common.@internal.epl.subselect
 {
@@ -16,14 +17,18 @@ namespace com.espertech.esper.common.@internal.epl.subselect
     {
         public SubSelectFactoryForgeDesc(
             SubSelectFactoryForge subSelectFactoryForge,
-            IList<StmtClassForgeableFactory> additionalForgeables)
+            IList<StmtClassForgeableFactory> additionalForgeables,
+            FabricCharge fabricCharge)
         {
             SubSelectFactoryForge = subSelectFactoryForge;
             AdditionalForgeables = additionalForgeables;
+            FabricCharge = fabricCharge;
         }
 
         public SubSelectFactoryForge SubSelectFactoryForge { get; }
 
         public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
+
+        public FabricCharge FabricCharge { get; }
     }
 } // end of namespace

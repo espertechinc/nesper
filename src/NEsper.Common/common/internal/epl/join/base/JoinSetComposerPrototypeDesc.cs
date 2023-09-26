@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.fabric;
 
 namespace com.espertech.esper.common.@internal.epl.join.@base
 {
@@ -16,14 +17,18 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
     {
         public JoinSetComposerPrototypeDesc(
             JoinSetComposerPrototypeForge forge,
-            IList<StmtClassForgeableFactory> additionalForgeables)
+            IList<StmtClassForgeableFactory> additionalForgeables,
+            FabricCharge fabricCharge)
         {
             Forge = forge;
             AdditionalForgeables = additionalForgeables;
+            FabricCharge = fabricCharge;
         }
 
         public JoinSetComposerPrototypeForge Forge { get; }
 
         public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
+
+        public FabricCharge FabricCharge { get; }
     }
 } // end of namespace

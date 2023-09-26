@@ -26,9 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
         }
 
-        public DTLocalEvaluator DTEvaluator {
-            get => new DTLocalDtxOpsDtzEval(GetCalendarOps(calendarForges));
-        }
+        public DTLocalEvaluator DTEvaluator => new DTLocalDtxOpsDtzEval(GetCalendarOps(calendarForges));
 
         public CodegenExpression Codegen(
             CodegenExpression inner,

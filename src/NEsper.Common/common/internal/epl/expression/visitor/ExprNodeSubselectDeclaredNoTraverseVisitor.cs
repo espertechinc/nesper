@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             _declaration = declaration;
             _subselects = new List<ExprSubselectNode>(1);
         }
-        
+
         public bool IsWalkDeclExprParam => true;
 
         public void Reset()

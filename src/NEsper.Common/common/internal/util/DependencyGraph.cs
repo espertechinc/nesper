@@ -164,7 +164,7 @@ namespace com.espertech.esper.common.@internal.util
                 return dep;
             }
 
-            return new int[0];
+            return Array.Empty<int>();
         }
 
         /// <summary>

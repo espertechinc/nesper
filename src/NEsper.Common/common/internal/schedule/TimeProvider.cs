@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.schedule
         public Action<long> Set { get; set; }
 
         public long Time {
-            get { return Get(); }
-            set { Set(value); }
+            get => Get();
+            set => Set(value);
         }
     }
 } // End of namespace

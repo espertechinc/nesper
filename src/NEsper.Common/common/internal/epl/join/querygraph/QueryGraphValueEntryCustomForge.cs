@@ -32,15 +32,20 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             CodegenExpression map;
             if (operations.IsEmpty()) {
-                map = StaticMethod(typeof(Collections), "GetEmptyMap", new [] {
-                    typeof(QueryGraphValueEntryCustomKey),
-                    typeof(QueryGraphValueEntryCustomOperation)
-                });
+                map = StaticMethod(
+                    typeof(Collections),
+                    "GetEmptyMap",
+                    new[] {
+                        typeof(QueryGraphValueEntryCustomKey),
+                        typeof(QueryGraphValueEntryCustomOperation)
+                    });
             }
             else {
-                method.Block.DeclareVar<IDictionary<QueryGraphValueEntryCustomKey, QueryGraphValueEntryCustomOperation>>(
-                    "map",
-                    NewInstance(typeof(HashMap<QueryGraphValueEntryCustomKey, QueryGraphValueEntryCustomOperation>)));
+                method.Block
+                    .DeclareVar<IDictionary<QueryGraphValueEntryCustomKey, QueryGraphValueEntryCustomOperation>>(
+                        "map",
+                        NewInstance(
+                            typeof(HashMap<QueryGraphValueEntryCustomKey, QueryGraphValueEntryCustomOperation>)));
                 foreach (var entry in operations) {
                     method.Block.ExprDotMethod(
                         Ref("map"),
@@ -53,9 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             }
 
             method.Block
-                .DeclareVar<QueryGraphValueEntryCustom>(
-                    "custom",
-                    NewInstance(typeof(QueryGraphValueEntryCustom)))
+                .DeclareVarNewInstance<QueryGraphValueEntryCustom>("custom")
                 .SetProperty(Ref("custom"), "Operations", map)
                 .MethodReturn(Ref("custom"));
             return LocalMethod(method);

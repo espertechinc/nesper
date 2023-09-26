@@ -20,6 +20,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
     public class ExprEnumNestedPerformance : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             IList<SupportBean_ST0> list = new List<SupportBean_ST0>();
@@ -34,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             // the "Contained.min" inner lambda only depends on values within "contained" (a stream's value)
             // and not on the particular "x".
             var eplFragment =
-                "@Name('s0') select Contained.where(x => x.P00 = Contained.min(y -> y.P00)) as val from SupportBean_ST0_Container";
+                "@name('s0') select Contained.where(x => x.P00 = Contained.min(y -> y.P00)) as val from SupportBean_ST0_Container";
             env.CompileDeploy(eplFragment).AddListener("s0");
 
             var start = PerformanceObserver.MilliTime;
@@ -42,11 +47,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             var delta = PerformanceObserver.MilliTime - start;
             Assert.That(delta, Is.LessThan(100), "delta=" + delta);
 
-            var result = env.Listener("s0")
-                .AssertOneGetNewAndReset()
-                .Get("val")
-                .UnwrapIntoArray<SupportBean_ST0>();
-            EPAssertionUtil.AssertEqualsExactOrder(new object[] {minEvent}, result);
+            env.AssertEventNew(
+                "s0",
+                @event => {
+                    var result = @event.Get("val").UnwrapIntoArray<SupportBean_ST0>();
+                    EPAssertionUtil.AssertEqualsExactOrder(new object[] { minEvent }, result);
+                });
 
             env.UndeployAll();
         }

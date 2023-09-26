@@ -78,11 +78,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
 
         public bool CompareTo(PropertyEvaluatorForge otherEval)
         {
-            if (!(otherEval is PropertyEvaluatorSimpleForge)) {
+            if (!(otherEval is PropertyEvaluatorSimpleForge other)) {
                 return false;
             }
 
-            var other = (PropertyEvaluatorSimpleForge) otherEval;
             if (!other.ExpressionText.Equals(ExpressionText)) {
                 return false;
             }

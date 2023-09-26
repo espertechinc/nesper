@@ -96,12 +96,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 if (diff != null) {
                     diff = Math.Abs(diff.Value);
                 }
-                
+
                 var diffEnd = leftEnd - rightEnd;
                 if (diffEnd != null) {
                     diffEnd = Math.Abs(diffEnd.Value);
                 }
-                
+
                 return diff <= startThreshold &&
                        diffEnd <= endThreshold;
             }

@@ -24,12 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.index.compile
             this.queryPlanIndexItem = queryPlanIndexItem;
         }
 
-        public IndexMultiKey IndexMultiKey {
-            get => indexMultiKey;
-        }
+        public IndexMultiKey IndexMultiKey => indexMultiKey;
 
-        public QueryPlanIndexItem QueryPlanIndexItem {
-            get => queryPlanIndexItem;
-        }
+        public QueryPlanIndexItem QueryPlanIndexItem => queryPlanIndexItem;
     }
 } // end of namespace

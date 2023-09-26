@@ -18,6 +18,19 @@ namespace com.espertech.esper.common.@internal.view.core
     public class ProxyViewForgeVisitor : ViewForgeVisitor
     {
         public Action<ViewFactoryForge> ProcVisit;
-        public void Visit(ViewFactoryForge forge) => ProcVisit.Invoke(forge);
+
+        public ProxyViewForgeVisitor()
+        {
+        }
+
+        public ProxyViewForgeVisitor(Action<ViewFactoryForge> procVisit)
+        {
+            ProcVisit = procVisit;
+        }
+
+        public void Visit(ViewFactoryForge forge)
+        {
+            ProcVisit.Invoke(forge);
+        }
     }
 } // end of namespace

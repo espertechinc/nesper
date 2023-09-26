@@ -14,7 +14,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
-using com.espertech.esper.common.@internal.@event.json.serializers;
 using com.espertech.esper.common.@internal.@event.json.writer;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.util;
@@ -23,296 +22,319 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.json.core
 {
-	/// <summary>
-	/// Implementation of the EventType interface for handling native-type classes.
-	/// </summary>
-	public class JsonEventType : BaseNestableEventType
-	{
-		private readonly JsonEventTypeDetail _detail;
-		
-		// Type of the underlying json representation - usually an native object (class)
-		private Type _underlyingType;
-		// Indicates that the underlying type is transient and must be replaced.
-		private bool _underlyingTypeIsTransient;
-		// Type of the delegate
-		private Type _delegateType;
-		// Type of the deserializer
-		private Type _deserializerType;
-		// Type of the serializer
-		private Type _serializerType;
-		// Delegate instance
-		private IJsonDelegate _delegate;
-		// Deserializer instance
-		private IJsonDeserializer _deserializer;
-		// Serializer instance
-		private IJsonSerializer _serializer;
+    /// <summary>
+    /// Implementation of the EventType interface for handling native-type classes.
+    /// </summary>
+    public class JsonEventType : BaseNestableEventType
+    {
+        private readonly JsonEventTypeDetail _detail;
 
-		private EventPropertyDescriptor[] _writablePropertyDescriptors;
-		private IDictionary<string, Pair<EventPropertyDescriptor, JsonEventBeanPropertyWriter>> _propertyWriters;
-		
-		public JsonEventTypeDetail Detail => _detail;
+        // Type of the underlying json representation - usually an native object (class)
+        private Type _underlyingType;
 
-		public Type DeserializerType => _deserializerType;
+        // Indicates that the underlying type is transient and must be replaced.
+        private bool _underlyingTypeIsTransient;
 
-		public IJsonDeserializer Deserializer => _deserializer;
+        // Type of the delegate
+        private Type _delegateType;
 
-		public Type SerializerType => _serializerType;
+        // Type of the deserializer
+        private Type _deserializerType;
 
-		public IJsonSerializer Serializer => _serializer;
+        // Type of the serializer
+        private Type _serializerType;
 
-		public IJsonDelegate Delegate => _delegate;
-		
-		public JsonEventType(
-			EventTypeMetadata metadata,
-			IDictionary<string, object> propertyTypes,
-			EventType[] optionalSuperTypes,
-			ISet<EventType> optionalDeepSupertypes,
-			string startTimestampPropertyName,
-			string endTimestampPropertyName,
-			EventTypeNestableGetterFactory getterFactory,
-			BeanEventTypeFactory beanEventTypeFactory,
-			JsonEventTypeDetail detail,
-			Type underlyingStandInClass,
-			bool underlyingTypeIsTransient)
-			: base(
-				metadata,
-				propertyTypes,
-				optionalSuperTypes,
-				optionalDeepSupertypes,
-				startTimestampPropertyName,
-				endTimestampPropertyName,
-				getterFactory,
-				beanEventTypeFactory,
-				true)
-		{
-			_detail = detail;
-			_underlyingType = underlyingStandInClass;
-			_underlyingTypeIsTransient = underlyingTypeIsTransient;
-		}
+        // Delegate instance
+        private IJsonDelegate _delegate;
 
-		public override EventPropertyWriterSPI GetWriter(string propertyName)
-		{
-			return GetInternalWriter(propertyName);
-		}
-		
-		public JsonEventBeanPropertyWriter GetInternalWriter(string propertyName)
-		{
-			if (_writablePropertyDescriptors == null) {
-				InitializeWriters();
-			}
+        // Deserializer instance
+        private IJsonDeserializer _deserializer;
 
-			var pair = _propertyWriters.Get(propertyName);
-			if (pair != null) {
-				return pair.Second;
-			}
+        // Serializer instance
+        private IJsonSerializer _serializer;
 
-			var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-			switch (property) {
-				case MappedProperty mapProp: {
-					var field = _detail.FieldDescriptors.Get(mapProp.PropertyNameAtomic);
-					return field != null
-						? new JsonEventBeanPropertyWriterMapProp(_delegate, field, mapProp.Key)
-						: null;
-				}
+        private EventPropertyDescriptor[] _writablePropertyDescriptors;
+        private IDictionary<string, Pair<EventPropertyDescriptor, JsonEventBeanPropertyWriter>> _propertyWriters;
 
-				case IndexedProperty indexedProp: {
-					var field = _detail.FieldDescriptors.Get(indexedProp.PropertyNameAtomic);
-					return field != null 
-						? new JsonEventBeanPropertyWriterIndexedProp(_delegate, field, indexedProp.Index)
-						: null;
-				}
+        public JsonEventTypeDetail Detail => _detail;
 
-				default:
-					return null;
-			}
-		}
+        public Type DeserializerType => _deserializerType;
 
-		public override EventPropertyDescriptor[] WriteableProperties {
-			get {
-				if (_writablePropertyDescriptors == null) {
-					InitializeWriters();
-				}
+        public IJsonDeserializer Deserializer => _deserializer;
 
-				return _writablePropertyDescriptors;
-			}
-		}
+        public Type SerializerType => _serializerType;
 
-		public override EventPropertyDescriptor GetWritableProperty(string propertyName)
-		{
-			if (_writablePropertyDescriptors == null) {
-				InitializeWriters();
-			}
+        public IJsonSerializer Serializer => _serializer;
 
-			var pair = _propertyWriters.Get(propertyName);
-			if (pair != null) {
-				return pair.First;
-			}
+        public IJsonDelegate Delegate => _delegate;
 
-			var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
-			if (property is MappedProperty mapProp) {
-				EventPropertyWriter writer = GetWriter(propertyName);
-				return writer != null
-					? new EventPropertyDescriptor(mapProp.PropertyNameAtomic, typeof(object), null, false, true, false, true, false) 
-					: null;
-			}
+        public JsonEventType(
+            EventTypeMetadata metadata,
+            IDictionary<string, object> propertyTypes,
+            EventType[] optionalSuperTypes,
+            ISet<EventType> optionalDeepSupertypes,
+            string startTimestampPropertyName,
+            string endTimestampPropertyName,
+            EventTypeNestableGetterFactory getterFactory,
+            BeanEventTypeFactory beanEventTypeFactory,
+            JsonEventTypeDetail detail,
+            Type underlyingStandInClass,
+            bool underlyingTypeIsTransient)
+            : base(
+                metadata,
+                propertyTypes,
+                optionalSuperTypes,
+                optionalDeepSupertypes,
+                startTimestampPropertyName,
+                endTimestampPropertyName,
+                getterFactory,
+                beanEventTypeFactory,
+                true)
+        {
+            _detail = detail;
+            _underlyingType = underlyingStandInClass;
+            _underlyingTypeIsTransient = underlyingTypeIsTransient;
+        }
 
-			if (property is IndexedProperty indexedProp) {
-				EventPropertyWriter writer = GetWriter(propertyName);
-				return writer != null
-					? new EventPropertyDescriptor(indexedProp.PropertyNameAtomic, typeof(object), null, true, false, true, false, false)
-					: null;
-			}
+        public override EventPropertyWriterSPI GetWriter(string propertyName)
+        {
+            return GetInternalWriter(propertyName);
+        }
 
-			return null;
-		}
+        public JsonEventBeanPropertyWriter GetInternalWriter(string propertyName)
+        {
+            if (_writablePropertyDescriptors == null) {
+                InitializeWriters();
+            }
 
-		public override EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)
-		{
-			return new JsonEventBeanCopyMethodForge(this);
-		}
+            var pair = _propertyWriters.Get(propertyName);
+            if (pair != null) {
+                return pair.Second;
+            }
 
-		public override EventBeanWriter GetWriter(string[] properties)
-		{
-			if (_writablePropertyDescriptors == null) {
-				InitializeWriters();
-			}
+            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+            switch (property) {
+                case MappedProperty mapProp: {
+                    var field = _detail.FieldDescriptors.Get(mapProp.PropertyNameAtomic);
+                    return field != null
+                        ? new JsonEventBeanPropertyWriterMapProp(_delegate, field, mapProp.Key)
+                        : null;
+                }
 
-			var writers = new JsonEventBeanPropertyWriter[properties.Length];
-			for (var i = 0; i < properties.Length; i++) {
-				writers[i] = GetInternalWriter(properties[i]);
-				if (writers[i] == null) {
-					return null;
-				}
-			}
+                case IndexedProperty indexedProp: {
+                    var field = _detail.FieldDescriptors.Get(indexedProp.PropertyNameAtomic);
+                    return field != null
+                        ? new JsonEventBeanPropertyWriterIndexedProp(_delegate, field, indexedProp.Index)
+                        : null;
+                }
 
-			return new JsonEventBeanWriterPerProp(writers);
-		}
+                default:
+                    return null;
+            }
+        }
 
-		public bool UnderlyingTypeIsTransient => _underlyingTypeIsTransient;
+        public override EventPropertyDescriptor[] WriteableProperties {
+            get {
+                if (_writablePropertyDescriptors == null) {
+                    InitializeWriters();
+                }
 
-		public override Type UnderlyingType {
-			get {
-				if (_underlyingType == null) {
-					throw new EPException("Underlying type has not been set");
-				}
-				return _underlyingType;
-			}
-		}
-		
-		public void Initialize(TypeResolver typeResolver)
-		{
-			// resolve underlying type
-			try {
-				_underlyingType = typeResolver.ResolveType(_detail.UnderlyingClassName, true);
-				if (_underlyingType == null) {
-					throw new EPException($"Failed to find class: {_detail.UnderlyingClassName}");    
-				}
-			}
-			catch (TypeLoadException ex) {
-				throw new EPException($"Failed to load Json underlying class: {ex.Message}", ex);
-			}
-			
-			// resolve delegate
-	        try {
-	            _delegateType = typeResolver.ResolveType(_detail.DelegateClassName, true);
-	            if (_delegateType == null) {
-		            throw new EPException($"Failed to find class: {_detail.DelegateClassName}");    
-	            }
-	            _delegate = TypeHelper.Instantiate<IJsonDelegate>(_delegateType);
-	        }
-	        catch (TypeLoadException e) {
-	            throw new EPException($"Failed to find class: {e.Message}", e);
-	        }
+                return _writablePropertyDescriptors;
+            }
+        }
 
-			// resolve deserializer
-			try {
-				_deserializerType = typeResolver.ResolveType(_detail.DeserializerClassName, true);
-				if (_deserializerType == null) {
-					throw new EPException($"Failed to find class: {_detail.DeserializerClassName}");    
-				}
+        public override EventPropertyDescriptor GetWritableProperty(string propertyName)
+        {
+            if (_writablePropertyDescriptors == null) {
+                InitializeWriters();
+            }
 
-				_deserializer = TypeHelper.Instantiate<IJsonDeserializer>(_deserializerType);
-			}
-			catch (TypeLoadException e) {
-				throw new EPException($"Failed to find class: {e.Message}", e);
-			}
+            var pair = _propertyWriters.Get(propertyName);
+            if (pair != null) {
+                return pair.First;
+            }
 
-			// resolve serializer
-			try {
-				_serializerType = typeResolver.ResolveType(_detail.SerializerClassName, true);
-				if (_serializerType == null) {
-					throw new EPException($"Failed to find class: {_detail.SerializerClassName}");    
-				}
-				
-				_serializer = TypeHelper.Instantiate<IJsonSerializer>(_serializerType);
-			}
-			catch (TypeLoadException e) {
-				throw new EPException($"Failed to find class: {e.Message}", e);
-			}
+            var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
+            if (property is MappedProperty mapProp) {
+                EventPropertyWriter writer = GetWriter(propertyName);
+                return writer != null
+                    ? new EventPropertyDescriptor(
+                        mapProp.PropertyNameAtomic,
+                        typeof(object),
+                        false,
+                        true,
+                        false,
+                        true,
+                        false)
+                    : null;
+            }
 
-			//_serializationContext = TypeHelper.Instantiate<JsonSerializationContext>(deserializerFactoryType);
-		}
+            if (property is IndexedProperty indexedProp) {
+                EventPropertyWriter writer = GetWriter(propertyName);
+                return writer != null
+                    ? new EventPropertyDescriptor(
+                        indexedProp.PropertyNameAtomic,
+                        typeof(object),
+                        true,
+                        false,
+                        true,
+                        false,
+                        false)
+                    : null;
+            }
 
-		public object Parse(string json)
-		{
-			var jsonDocumentOptions = new JsonDocumentOptions();
-			var jsonDocument = JsonDocument.Parse(json, jsonDocumentOptions);
-			return _deserializer.Deserialize(jsonDocument.RootElement);
-		}
+            return null;
+        }
 
-		public bool IsDeepEqualsConsiderOrder(JsonEventType other)
-		{
-			if (other.NestableTypes.Count != NestableTypes.Count) {
-				return false;
-			}
+        public override EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)
+        {
+            return new JsonEventBeanCopyMethodForge(this);
+        }
 
-			foreach (var propMeEntry in NestableTypes) {
-				var fieldMe = _detail.FieldDescriptors.Get(propMeEntry.Key);
-				var fieldOther = other._detail.FieldDescriptors.Get(propMeEntry.Key);
-				if (fieldOther == null || fieldMe.FieldName != fieldOther.FieldName) {
-					return false;
-				}
+        public override EventBeanWriter GetWriter(string[] properties)
+        {
+            if (_writablePropertyDescriptors == null) {
+                InitializeWriters();
+            }
 
-				var propName = propMeEntry.Key;
-				var setOneType = this.NestableTypes.Get(propName);
-				var setTwoType = other.NestableTypes.Get(propName);
-				var setTwoTypeFound = other.NestableTypes.ContainsKey(propName);
+            var writers = new JsonEventBeanPropertyWriter[properties.Length];
+            for (var i = 0; i < properties.Length; i++) {
+                writers[i] = GetInternalWriter(properties[i]);
+                if (writers[i] == null) {
+                    return null;
+                }
+            }
 
-				var comparedMessage = BaseNestableEventUtil.ComparePropType(
-					propName,
-					setOneType,
-					setTwoType,
-					setTwoTypeFound,
-					other.Name);
+            return new JsonEventBeanWriterPerProp(writers);
+        }
 
-				if (comparedMessage != null) {
-					return false;
-				}
-			}
+        public bool UnderlyingTypeIsTransient => _underlyingTypeIsTransient;
 
-			return true;
-		}
+        public override Type UnderlyingType {
+            get {
+                if (_underlyingType == null) {
+                    throw new EPException("Underlying type has not been set");
+                }
 
-		private void InitializeWriters()
-		{
-			var writeableProps = new List<EventPropertyDescriptor>();
-			var writeablePropsMap = new Dictionary<string, Pair<EventPropertyDescriptor, JsonEventBeanPropertyWriter>>();
-			foreach (var prop in PropertyDescriptors) {
-				var field = _detail.FieldDescriptors.Get(prop.PropertyName);
-				if (field == null) {
-					continue;
-				}
+                return _underlyingType;
+            }
+        }
 
-				var eventPropertyWriter = new JsonEventBeanPropertyWriter(_delegate, field);
+        public void Initialize(TypeResolver typeResolver)
+        {
+            // resolve underlying type
+            try {
+                _underlyingType = typeResolver.ResolveType(_detail.UnderlyingClassName, true);
+                if (_underlyingType == null) {
+                    throw new EPException($"Failed to find class: {_detail.UnderlyingClassName}");
+                }
+            }
+            catch (TypeLoadException ex) {
+                throw new EPException($"Failed to load Json underlying class: {ex.Message}", ex);
+            }
 
-				writeableProps.Add(prop);
-				writeablePropsMap.Put(
-					prop.PropertyName,
-					new Pair<EventPropertyDescriptor, JsonEventBeanPropertyWriter>(prop, eventPropertyWriter));
-			}
+            // resolve delegate
+            try {
+                _delegateType = typeResolver.ResolveType(_detail.DelegateClassName, true);
+                if (_delegateType == null) {
+                    throw new EPException($"Failed to find class: {_detail.DelegateClassName}");
+                }
 
-			_propertyWriters = writeablePropsMap;
-			_writablePropertyDescriptors = writeableProps.ToArray();
-		}
-	}
+                _delegate = TypeHelper.Instantiate<IJsonDelegate>(_delegateType);
+            }
+            catch (TypeLoadException e) {
+                throw new EPException($"Failed to find class: {e.Message}", e);
+            }
+
+            // resolve deserializer
+            try {
+                _deserializerType = typeResolver.ResolveType(_detail.DeserializerClassName, true);
+                if (_deserializerType == null) {
+                    throw new EPException($"Failed to find class: {_detail.DeserializerClassName}");
+                }
+
+                _deserializer = TypeHelper.Instantiate<IJsonDeserializer>(_deserializerType);
+            }
+            catch (TypeLoadException e) {
+                throw new EPException($"Failed to find class: {e.Message}", e);
+            }
+
+            // resolve serializer
+            try {
+                _serializerType = typeResolver.ResolveType(_detail.SerializerClassName, true);
+                if (_serializerType == null) {
+                    throw new EPException($"Failed to find class: {_detail.SerializerClassName}");
+                }
+
+                _serializer = TypeHelper.Instantiate<IJsonSerializer>(_serializerType);
+            }
+            catch (TypeLoadException e) {
+                throw new EPException($"Failed to find class: {e.Message}", e);
+            }
+
+            //_serializationContext = TypeHelper.Instantiate<JsonSerializationContext>(deserializerFactoryType);
+        }
+
+        public object Parse(string json)
+        {
+            var jsonDocumentOptions = new JsonDocumentOptions();
+            var jsonDocument = JsonDocument.Parse(json, jsonDocumentOptions);
+            return _deserializer.Deserialize(jsonDocument.RootElement);
+        }
+
+        public bool IsDeepEqualsConsiderOrder(JsonEventType other)
+        {
+            if (other.NestableTypes.Count != NestableTypes.Count) {
+                return false;
+            }
+
+            foreach (var propMeEntry in NestableTypes) {
+                var fieldMe = _detail.FieldDescriptors.Get(propMeEntry.Key);
+                var fieldOther = other._detail.FieldDescriptors.Get(propMeEntry.Key);
+                if (fieldOther == null || fieldMe.FieldName != fieldOther.FieldName) {
+                    return false;
+                }
+
+                var propName = propMeEntry.Key;
+                var setOneTypeFound = NestableTypes.TryGetValue(propName, out var setOneType);
+                var setTwoTypeFound = other.NestableTypes.TryGetValue(propName, out var setTwoType);
+                
+                var comparedMessage = BaseNestableEventUtil.ComparePropType(
+                    propName,
+                    setOneType,
+                    setOneTypeFound,
+                    setTwoType,
+                    other.Name);
+
+                if (comparedMessage != null) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void InitializeWriters()
+        {
+            var writeableProps = new List<EventPropertyDescriptor>();
+            var writeablePropsMap =
+                new Dictionary<string, Pair<EventPropertyDescriptor, JsonEventBeanPropertyWriter>>();
+            foreach (var prop in PropertyDescriptors) {
+                var field = _detail.FieldDescriptors.Get(prop.PropertyName);
+                if (field == null) {
+                    continue;
+                }
+
+                var eventPropertyWriter = new JsonEventBeanPropertyWriter(_delegate, field);
+
+                writeableProps.Add(prop);
+                writeablePropsMap.Put(
+                    prop.PropertyName,
+                    new Pair<EventPropertyDescriptor, JsonEventBeanPropertyWriter>(prop, eventPropertyWriter));
+            }
+
+            _propertyWriters = writeablePropsMap;
+            _writablePropertyDescriptors = writeableProps.ToArray();
+        }
+    }
 } // end of namespace

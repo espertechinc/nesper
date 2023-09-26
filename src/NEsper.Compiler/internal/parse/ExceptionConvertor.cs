@@ -27,7 +27,7 @@ namespace com.espertech.esper.compiler.@internal.parse
     {
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        protected const string END_OF_INPUT_TEXT = "end-of-input";
+        internal const string END_OF_INPUT_TEXT = "end-of-input";
 
         /// <summary>
         /// Converts from a syntax error to a nice statement exception.

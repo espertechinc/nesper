@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.output.view;
@@ -32,7 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             AgentInstanceContext agentInstanceContext,
             OutputStrategyPostProcess postProcessor,
             bool isJoin,
-            EventType[] eventTypes)
+            EventType[] eventTypes,
+            StateMgmtSetting stateMgmtSettings)
             : base(
                 resultSetProcessor,
                 afterConditionTime,
@@ -40,8 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                 afterConditionSatisfied,
                 parent,
                 agentInstanceContext,
-                isJoin,
-                eventTypes)
+                eventTypes,
+                stateMgmtSettings)
         {
             this.postProcessor = postProcessor;
         }

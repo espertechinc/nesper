@@ -69,8 +69,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             IDictionary<string, object> map,
             EventType wrapperEventType)
         {
-            if (decoratedUnderlying is DecoratingEventBean) {
-                DecoratingEventBean wrapper = (DecoratingEventBean) decoratedUnderlying;
+            if (decoratedUnderlying is DecoratingEventBean wrapper) {
                 if (!wrapper.DecoratingProperties.IsEmpty()) {
                     if (map.IsEmpty()) {
                         map = new Dictionary<string, object>();

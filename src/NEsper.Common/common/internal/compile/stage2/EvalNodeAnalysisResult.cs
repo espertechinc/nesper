@@ -34,16 +34,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         /// Returns all nodes found.
         /// </summary>
         /// <returns>pattern nodes</returns>
-        public IList<EvalForgeNode> ActiveNodes {
-            get => activeNodes;
-        }
+        public IList<EvalForgeNode> ActiveNodes => activeNodes;
 
         public IList<EvalFilterForgeNode> FilterNodes {
             get {
                 IList<EvalFilterForgeNode> filterNodes = new List<EvalFilterForgeNode>();
-                foreach (EvalForgeNode node in activeNodes) {
-                    if (node is EvalFilterForgeNode) {
-                        filterNodes.Add((EvalFilterForgeNode) node);
+                foreach (var node in activeNodes) {
+                    if (node is EvalFilterForgeNode forgeNode) {
+                        filterNodes.Add(forgeNode);
                     }
                 }
 
@@ -54,9 +52,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         public IList<EvalMatchUntilForgeNode> RepeatNodes {
             get {
                 IList<EvalMatchUntilForgeNode> filterNodes = new List<EvalMatchUntilForgeNode>();
-                foreach (EvalForgeNode node in activeNodes) {
-                    if (node is EvalMatchUntilForgeNode) {
-                        filterNodes.Add((EvalMatchUntilForgeNode) node);
+                foreach (var node in activeNodes) {
+                    if (node is EvalMatchUntilForgeNode forgeNode) {
+                        filterNodes.Add(forgeNode);
                     }
                 }
 

@@ -825,7 +825,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             }
 
             [Test, RunInApplicationDomain]
-            public void Withy() => RegressionRunner.Run(_session, EPLSubselectWithinHaving.Withy());
+            public void WithGroupBy() => RegressionRunner.Run(_session, EPLSubselectWithinHaving.WithGroupBy());
         }
 
         /// <summary>

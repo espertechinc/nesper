@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             AggregationAccessorFirstWEval.GetValueCodegen(
                 this,
-                (AggregationStateLinearForge) context.AccessStateForge,
+                (AggregationStateLinearForge)context.AccessStateForge,
                 context);
         }
 
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             AggregationAccessorFirstWEval.GetEnumerableEventsCodegen(
                 this,
-                (AggregationStateLinearForge) context.AccessStateForge,
+                (AggregationStateLinearForge)context.AccessStateForge,
                 context);
         }
 
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             AggregationAccessorFirstWEval.GetEnumerableEventCodegen(
                 this,
-                (AggregationStateLinearForge) context.AccessStateForge,
+                (AggregationStateLinearForge)context.AccessStateForge,
                 context);
         }
 
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             AggregationAccessorFirstWEval.GetEnumerableScalarCodegen(
                 this,
-                (AggregationStateLinearForge) context.AccessStateForge,
+                (AggregationStateLinearForge)context.AccessStateForge,
                 context);
         }
     }

@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             EventTable[] eventTable,
             EventType[] eventTypes)
         {
-            var index = (UnindexedEventTable) eventTable[0];
+            var index = (UnindexedEventTable)eventTable[0];
             return new FullTableScanLookupStrategy(index);
         }
 

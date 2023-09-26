@@ -18,8 +18,8 @@ namespace com.espertech.esper.common.@internal.collection
         {
             foreach (var entry in window) {
                 var value = entry.Value;
-                if (value is EventBean) {
-                    yield return (EventBean) value;
+                if (value is EventBean bean) {
+                    yield return bean;
                 }
                 else if (value is IEnumerable<EventBean> enumerable) {
                     foreach (var subValue in enumerable) {
@@ -28,14 +28,14 @@ namespace com.espertech.esper.common.@internal.collection
                 }
             }
         }
-        
+
         public static IEnumerator<EventBean> For<T>(this IEnumerator<KeyValuePair<T, object>> enumerator)
         {
             while (enumerator.MoveNext()) {
                 var entry = enumerator.Current;
                 var value = entry.Value;
-                if (value is EventBean) {
-                    yield return (EventBean) value;
+                if (value is EventBean bean) {
+                    yield return bean;
                 }
                 else if (value is IEnumerable<EventBean> enumerable) {
                     foreach (var subValue in enumerable) {

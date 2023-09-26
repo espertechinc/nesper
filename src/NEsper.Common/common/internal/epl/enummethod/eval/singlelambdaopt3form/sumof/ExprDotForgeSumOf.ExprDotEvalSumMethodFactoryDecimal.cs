@@ -11,31 +11,41 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
     {
         private class ExprDotEvalSumMethodFactoryDecimal : ExprDotEvalSumMethodFactory
         {
-            internal static readonly ExprDotEvalSumMethodFactoryDecimal INSTANCE = new ExprDotEvalSumMethodFactoryDecimal();
+            internal static readonly ExprDotEvalSumMethodFactoryDecimal INSTANCE =
+                new ExprDotEvalSumMethodFactoryDecimal();
 
-            private ExprDotEvalSumMethodFactoryDecimal() {
+            private ExprDotEvalSumMethodFactoryDecimal()
+            {
             }
 
             public ExprDotEvalSumMethod SumAggregator => new ExprDotEvalSumMethodDecimal();
 
             public Type ValueType => typeof(decimal?);
 
-            public void CodegenDeclare(CodegenBlock block) {
+            public void CodegenDeclare(CodegenBlock block)
+            {
                 block.DeclareVar<decimal>("sum", Constant(0.0m));
                 block.DeclareVar<long>("cnt", Constant(0));
             }
 
-            public void CodegenEnterNumberTypedNonNull(CodegenBlock block, CodegenExpressionRef value) {
+            public void CodegenEnterNumberTypedNonNull(
+                CodegenBlock block,
+                CodegenExpressionRef value)
+            {
                 block.IncrementRef("cnt");
                 block.AssignCompound("sum", "+", ExprDotMethod(value, "AsDecimal"));
             }
 
-            public void CodegenEnterObjectTypedNonNull(CodegenBlock block, CodegenExpressionRef value) {
+            public void CodegenEnterObjectTypedNonNull(
+                CodegenBlock block,
+                CodegenExpressionRef value)
+            {
                 block.IncrementRef("cnt");
                 block.AssignCompound("sum", "+", ExprDotMethod(value, "AsDecimal"));
             }
 
-            public void CodegenReturn(CodegenBlock block) {
+            public void CodegenReturn(CodegenBlock block)
+            {
                 CodegenReturnSumOrNull(block);
             }
         }

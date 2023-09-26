@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 EventTypeUtility.ResolveTypeCodegen(innerWrapperType, EPStatementInitServicesConstants.REF));
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             return StaticMethod(
-                this.GetType(),
+                GetType(),
                 "WildcardNestedWrapper",
                 ArrayAtIndex(refEPS, Constant(0)),
                 innerType,
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             EventBeanTypedEventFactory factory,
             IDictionary<string, object> props)
         {
-            EventBean inner = factory.AdapterForTypedWrapper(
+            var inner = factory.AdapterForTypedWrapper(
                 @event,
                 EmptyDictionary<string, object>.Instance,
                 innerWrapperType);

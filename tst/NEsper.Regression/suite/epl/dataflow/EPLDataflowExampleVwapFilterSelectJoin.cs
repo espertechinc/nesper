@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
@@ -31,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 return;
             }
 
-            var epl = "@Name('flow')create dataflow VWAPSample\r\n" +
+            var epl = "@name('flow')create dataflow VWAPSample\r\n" +
                       "create objectarray schema TradeQuoteType as (type string, ticker string, Price double, Volume long, askPrice double, asksize long),\n" +
                       "MyObjectArrayGraphSource -> TradeQuoteStream<TradeQuoteType> {}\r\n" +
                       "filter(TradeQuoteStream) -> TradeStream {\r\n" +
@@ -69,8 +70,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
             var source = new MyObjectArrayGraphSource(
                 Arrays.AsList(
-                        new object[] {"trade", "GE", 100d, 1000L, null, null}, // vwap = 100, minPrice=100
-                        new object[] {"quote", "GE", null, null, 99.5d, 2000L} //
+                        new object[] { "trade", "GE", 100d, 1000L, null, null }, // vwap = 100, minPrice=100
+                        new object[] { "quote", "GE", null, null, 99.5d, 2000L } //
                     )
                     .GetEnumerator());
 
@@ -97,6 +98,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 new object[] { 2000 * Math.Exp(100 - 99.5) });
 
             env.UndeployAll();
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.DATAFLOW);
         }
 
         private string RemoveNewlines(string text)

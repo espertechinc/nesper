@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         public AggregationMultiFunctionAgentModeManaged SetInjectionStrategyAggregationAgentFactory(
             InjectionStrategy strategy)
         {
-            this._injectionStrategyAggregationAgentFactory = strategy;
+            _injectionStrategyAggregationAgentFactory = strategy;
             return this;
         }
     }

@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             IEnumerable<EventBean> contents,
             IReaderWriterLock statementLock)
         {
-            this._contents = contents;
-            this._statementLock = statementLock;
+            _contents = contents;
+            _statementLock = statementLock;
         }
 
         public ICollection<EventBean> Lookup(

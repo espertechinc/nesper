@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 propertiesSuperset.PutAll(propertyTypesMayPrimitive);
                 propertyTypesMayPrimitive = propertiesSuperset;
             }
-            
+
             IDictionary<string, object> verified = BaseNestableEventUtil.ResolvePropertyTypes(
                 propertyTypesMayPrimitive,
                 eventTypeNameResolver);

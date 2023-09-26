@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.schedule;
 
@@ -27,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             return PublicConstValue(typeof(OutputConditionTermFactory), "INSTANCE");
         }
 
-        public void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
+        public void CollectSchedules(
+            CallbackAttributionOutputRate callbackAttribution,
+            IList<ScheduleHandleTracked> scheduleHandleCallbackProviders)
         {
             // none here
         }

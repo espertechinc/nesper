@@ -36,14 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(MethodTargetStrategyStaticMethod),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
-                .DeclareVar<MethodTargetStrategyStaticMethod>(
-                    "target",
-                    NewInstance(typeof(MethodTargetStrategyStaticMethod)))
+                .DeclareVarNewInstance<MethodTargetStrategyStaticMethod>("target")
                 .SetProperty(Ref("target"), "Clazz", Constant(clazz))
                 .SetProperty(Ref("target"), "MethodName", Constant(reflectionMethod.Name))
                 .SetProperty(Ref("target"), "MethodParameters", Constant(reflectionMethod.GetParameterTypes()))

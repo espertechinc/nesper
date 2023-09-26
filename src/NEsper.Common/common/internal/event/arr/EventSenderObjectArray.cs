@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                     "Unexpected event object of type " + theEvent.GetType().CleanName() + ", expected Object[]");
             }
 
-            var arr = (object[]) theEvent;
+            var arr = (object[])theEvent;
             EventBean objectArrayEvent =
                 eventBeanTypedEventFactory.AdapterForTypedObjectArray(arr, objectArrayEventType);
 
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
                     "Unexpected event object of type " + theEvent.GetType().CleanName() + ", expected Object[]");
             }
 
-            var arr = (object[]) theEvent;
+            var arr = (object[])theEvent;
             EventBean objectArrayEvent =
                 eventBeanTypedEventFactory.AdapterForTypedObjectArray(arr, objectArrayEventType);
             runtimeEventSender.RouteEventBean(objectArrayEvent);

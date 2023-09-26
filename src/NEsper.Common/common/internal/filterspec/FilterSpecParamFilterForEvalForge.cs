@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         object GetFilterValue(
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext);
-        
+
         void ValueToString(StringBuilder @out);
     }
 } // end of namespace

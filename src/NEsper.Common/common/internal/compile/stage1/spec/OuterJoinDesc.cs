@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class OuterJoinDesc
     {
-        public static readonly OuterJoinDesc[] EMPTY_OUTERJOIN_ARRAY = new OuterJoinDesc[0];
+        public static readonly OuterJoinDesc[] EMPTY_OUTERJOIN_ARRAY = Array.Empty<OuterJoinDesc>();
 
         /// <summary>
         ///     Ctor.
@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             StatementCompileTimeServices compileTimeServices)
         {
             try {
-                ExprValidationContext validationContext =
+                var validationContext =
                     new ExprValidationContextBuilder(null, statementRawInfo, compileTimeServices).Build();
                 exprNode.Validate(validationContext);
             }

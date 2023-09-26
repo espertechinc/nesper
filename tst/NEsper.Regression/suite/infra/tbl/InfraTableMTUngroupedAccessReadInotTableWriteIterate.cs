@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
@@ -29,6 +30,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         /// <summary>
         ///     Proof that multiple threads iterating the same statement
         ///     can safely access a row that is currently changing.
@@ -49,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numSeconds)
         {
             var path = new RegressionPath();
-            var eplCreateVariable = "create table vartotal (S0 sum(int), S1 sum(double), S2 sum(long))";
+            var eplCreateVariable = "@public create table vartotal (S0 sum(int), S1 sum(double), S2 sum(long))";
             env.CompileDeploy(eplCreateVariable, path);
 
             var eplInto = "into table vartotal select " +
@@ -61,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(MakeSupportBean("E", 1, 1, 1));
 
             env.CompileDeploy(
-                "@Name('iterate') select vartotal.S0 as c0, vartotal.S1 as c1, vartotal.S2 as c2 from SupportBean_S0#lastevent",
+                "@name('iterate') select vartotal.S0 as c0, vartotal.S1 as c1, vartotal.S2 as c2 from SupportBean_S0#lastevent",
                 path);
             env.SendEventBean(new SupportBean_S0(0));
 
@@ -193,8 +199,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         using (var iterator = iterateStatement.GetSafeEnumerator()) {
                             var @event = iterator.Advance();
                             var c0 = @event.Get("c0").AsInt32();
-                            Assert.AreEqual((double) c0, @event.Get("c1"));
-                            Assert.AreEqual((long) c0, @event.Get("c2"));
+                            Assert.AreEqual((double)c0, @event.Get("c1"));
+                            Assert.AreEqual((long)c0, @event.Get("c2"));
                         }
 
                         numQueries++;

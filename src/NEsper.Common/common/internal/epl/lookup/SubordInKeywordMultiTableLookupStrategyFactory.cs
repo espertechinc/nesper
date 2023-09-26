@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.index.hash;
@@ -38,12 +37,12 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         public SubordTableLookupStrategy MakeStrategy(
             EventTable[] eventTable,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             VirtualDWView vdw)
         {
             var indexes = new PropertyHashedEventTable[eventTable.Length];
             for (var i = 0; i < eventTable.Length; i++) {
-                indexes[i] = (PropertyHashedEventTable) eventTable[i];
+                indexes[i] = (PropertyHashedEventTable)eventTable[i];
             }
 
             if (isNWOnTrigger) {
@@ -55,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
 
         public LookupStrategyDesc LookupStrategyDesc => new LookupStrategyDesc(
             LookupStrategyType.INKEYWORDMULTIIDX,
-            new[] {expression});
+            new[] { expression });
 
         public string ToQueryPlan()
         {

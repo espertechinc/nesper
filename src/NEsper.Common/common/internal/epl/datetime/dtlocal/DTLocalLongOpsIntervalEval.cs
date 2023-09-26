@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalLongOpsIntervalEval), codegenClassScope)
-                .AddParam(typeof(long), "target");
+                .AddParam<long>("target");
 
             var block = methodNode.Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))
@@ -118,8 +118,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalLongOpsIntervalEval), codegenClassScope)
-                .AddParam(typeof(long), "startLong")
-                .AddParam(typeof(long), "endLong");
+                .AddParam<long>("startLong")
+                .AddParam<long>("endLong");
 
             var block = methodNode.Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))

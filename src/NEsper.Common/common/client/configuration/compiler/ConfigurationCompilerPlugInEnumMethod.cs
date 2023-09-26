@@ -10,10 +10,10 @@ using System;
 
 namespace com.espertech.esper.common.client.configuration.compiler
 {
-	/// <summary>
-	///     Configuration information for plugging in a custom enum-method.
-	/// </summary>
-	[Serializable]
+    /// <summary>
+    ///     Configuration information for plugging in a custom enum-method.
+    /// </summary>
+    [Serializable]
     public class ConfigurationCompilerPlugInEnumMethod
     {
         private string _forgeClassName;
@@ -72,17 +72,18 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
-            return Equals((ConfigurationCompilerPlugInEnumMethod) obj);
+            return Equals((ConfigurationCompilerPlugInEnumMethod)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked {
-                return ((_forgeClassName != null ? _forgeClassName.GetHashCode() : 0) * 397) ^ (_name != null ? _name.GetHashCode() : 0);
+                return ((_forgeClassName != null ? _forgeClassName.GetHashCode() : 0) * 397) ^
+                       (_name != null ? _name.GetHashCode() : 0);
             }
         }
     }

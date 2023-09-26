@@ -86,10 +86,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.updatedispatch
 
         /// <summary>Returns true if the dispatch completed for this future. </summary>
         /// <returns>true for completed, false if not</returns>
-        public bool IsCompleted()
-        {
-            return _isCompleted;
-        }
+        public bool IsCompleted => _isCompleted;
 
         public void Cancelled()
         {

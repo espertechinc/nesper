@@ -67,8 +67,11 @@ namespace com.espertech.esper.common.@internal.view.lastevent
                 var currentLast = _lastEvent;
                 _lastEvent = newData[0];
                 if (child != null) {
-                    var oldDataToPostHere = currentLast == null ? null : new[] {currentLast};
-                    _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, oldDataToPostHere);
+                    var oldDataToPostHere = currentLast == null ? null : new[] { currentLast };
+                    _agentInstanceContext.InstrumentationProvider.QViewIndicate(
+                        _viewFactory,
+                        newData,
+                        oldDataToPostHere);
                     child.Update(newData, oldDataToPostHere);
                     _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
@@ -90,7 +93,7 @@ namespace com.espertech.esper.common.@internal.view.lastevent
                         }
                     }
 
-                    _lastEvent = newData[newData.Length - 1];
+                    _lastEvent = newData[^1];
                 }
 
                 if (oldData != null) {
@@ -110,7 +113,10 @@ namespace com.espertech.esper.common.@internal.view.lastevent
                 if (child != null) {
                     if (oldDataToPost != null && !oldDataToPost.IsEmpty()) {
                         var oldDataArray = oldDataToPost.ToArray();
-                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, oldDataArray);
+                        _agentInstanceContext.InstrumentationProvider.QViewIndicate(
+                            _viewFactory,
+                            newData,
+                            oldDataArray);
                         child.Update(newData, oldDataArray);
                         _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }

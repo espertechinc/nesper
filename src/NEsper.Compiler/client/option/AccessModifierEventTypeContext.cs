@@ -23,7 +23,7 @@ namespace com.espertech.esper.compiler.client.option
         public AccessModifierEventTypeContext(
             StatementRawInfo raw,
             string eventTypeName)
-            : base(() => raw.Compilable.ToEPL(), raw.StatementName, raw.ModuleName, raw.Annotations, raw.StatementNumber)
+            : base(raw)
         {
             EventTypeName = eventTypeName;
         }

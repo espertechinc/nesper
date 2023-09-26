@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(ContainedEventEvalGetter), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(ContainedEventEvalGetter), GetType(), classScope);
 
             var getFragment = new CodegenExpressionLambda(method.Block)
                 .WithParams(new CodegenNamedParam(typeof(EventBean), "@event"));
@@ -41,9 +41,10 @@ namespace com.espertech.esper.common.@internal.epl.contained
             //    method.Block,
             //    typeof(EventPropertyFragmentGetter));
             //var getFragment = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope)
-            //    .AddParam(typeof(EventBean), "@event");
+            //    .AddParam<EventBean>("@event");
             //anonymousClass.AddMethod("GetFragment", getFragment);
-            getFragment.Block.BlockReturn(getter.EventBeanFragmentCodegen(Ref("@event"), method /* getFragment */, classScope));
+            getFragment.Block.BlockReturn(
+                getter.EventBeanFragmentCodegen(Ref("@event"), method /* getFragment */, classScope));
 
             method.Block.MethodReturn(NewInstance<ContainedEventEvalGetter>(anonymousClass));
             return LocalMethod(method);

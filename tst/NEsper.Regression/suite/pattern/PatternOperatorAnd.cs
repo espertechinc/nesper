@@ -8,24 +8,25 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
 
-using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternOperatorAnd
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
             WithSimple(execs);
             WithWHarness(execs);
             WithWithEveryAndTerminationOptimization(execs);
@@ -40,7 +41,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             return execs;
         }
 
-        public static IList<RegressionExecution> WithWithEveryAndTerminationOptimization(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithWithEveryAndTerminationOptimization(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternOperatorAndWithEveryAndTerminationOptimization());
@@ -61,80 +63,70 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             return execs;
         }
 
-        private static void SendSupportBean(
-            RegressionEnvironment env,
-            string theString,
-            int intPrimitive)
-        {
-            env.SendEventBean(new SupportBean(theString, intPrimitive));
-        }
-
         public class PatternOperatorAndSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] {"c0", "c1"};
+                var fields = "c0,c1".SplitCsv();
 
                 var epl =
-                    "@Name('s0') select a.TheString as c0, b.TheString as c1 from pattern [a=SupportBean(IntPrimitive=0) and b=SupportBean(IntPrimitive=1)]";
+                    "@name('s0') select a.theString as c0, b.theString as c1 from pattern [a=SupportBean(intPrimitive=0) and b=SupportBean(intPrimitive=1)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
 
                 SendSupportBean(env, "EB", 1);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(1);
 
                 SendSupportBean(env, "EA", 0);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"EA", "EB"});
+                env.AssertPropsNew("s0", fields, new object[] { "EA", "EB" });
 
                 env.Milestone(2);
                 SendSupportBean(env, "EB", 1);
                 SendSupportBean(env, "EA", 0);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(3);
                 SendSupportBean(env, "EB", 1);
                 SendSupportBean(env, "EA", 0);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternOperatorAndNotDefaultTrue : RegressionExecution
+        private class PatternOperatorAndNotDefaultTrue : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // ESPER-402
                 var pattern =
-                    "@Name('s0') insert into NumberOfWaitingCalls(calls) " +
+                    "@name('s0') insert into NumberOfWaitingCalls(calls) " +
                     " select count(*)" +
                     " from pattern[every call=SupportBean_A ->" +
-                    " (not SupportBean_B(Id=call.Id) and" +
-                    " not SupportBean_C(Id=call.Id))]";
+                    " (not SupportBean_B(id=call.id) and" +
+                    " not SupportBean_C(id=call.id))]";
                 env.CompileDeploy(pattern).AddListener("s0");
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_B("B1"));
+
                 env.SendEventBean(new SupportBean_C("C1"));
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternOperatorAndWithEveryAndTerminationOptimization : RegressionExecution
+        private class PatternOperatorAndWithEveryAndTerminationOptimization : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // When all other sub-expressions to an AND are gone,
                 // then there is no need to retain events of the subexpression still active
 
-                var epl = "@Name('s0') select * from pattern [a=SupportBean_A and every b=SupportBean_B]";
+                var epl = "@name('s0') select * from pattern [a=SupportBean_A and every b=SupportBean_B]";
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -142,12 +134,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     env.SendEventBean(new SupportBean_B("B" + i));
                 }
 
+                env.Milestone(0);
+
                 env.AddListener("s0");
                 env.SendEventBean(new SupportBean_B("B_last"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"a.Id", "b.Id"},
-                    new object[] {"A1", "B_last"});
+                env.AssertPropsNew("s0", "a.id,b.id".SplitCsv(), new object[] { "A1", "B_last" });
 
                 env.UndeployAll();
             }
@@ -302,9 +293,17 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("B3", "b", events.GetEvent("B3"), "b", events.GetEvent("B3"));
                 testCaseList.AddTest(testCase);
 
-                var util = new PatternTestHarness(events, testCaseList, GetType());
+                var util = new PatternTestHarness(events, testCaseList);
                 util.RunTest(env);
             }
+        }
+
+        private static void SendSupportBean(
+            RegressionEnvironment env,
+            string theString,
+            int intPrimitive)
+        {
+            env.SendEventBean(new SupportBean(theString, intPrimitive));
         }
     }
 } // end of namespace

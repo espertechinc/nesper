@@ -8,20 +8,22 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.patternassert;
+using com.espertech.esper.runtime.client.scopetest;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertFalse
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternOperatorEvery
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
             WithEverySimple(execs);
             WithOp(execs);
             WithEveryWithAnd(execs);
@@ -73,52 +75,32 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             return execs;
         }
 
-        private static void SendSupportBean(
-            RegressionEnvironment env,
-            string theString,
-            int intPrimitive)
-        {
-            env.SendEventBean(new SupportBean(theString, intPrimitive));
-        }
-
         public class PatternEverySimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] {"c0"};
+                var fields = "c0".SplitCsv();
 
-                var epl = "@Name('s0') select a.TheString as c0 from pattern [every a=SupportBean]";
+                var epl = "@name('s0') select a.theString as c0 from pattern [every a=SupportBean]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendSupportBean(env, "E1", 0);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E1"});
+                env.AssertPropsNew("s0", fields, new object[] { "E1" });
 
                 env.Milestone(1);
 
                 SendSupportBean(env, "E2", 0);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E2"});
+                env.AssertPropsNew("s0", fields, new object[] { "E2" });
 
                 env.Milestone(2);
 
                 SendSupportBean(env, "E3", 0);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E3"});
+                env.AssertPropsNew("s0", fields, new object[] { "E3" });
 
                 env.Milestone(3);
 
                 SendSupportBean(env, "E4", 0);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E4"});
+                env.AssertPropsNew("s0", fields, new object[] { "E4" });
 
                 var listener = env.Listener("s0");
                 env.UndeployModuleContaining("s0");
@@ -133,35 +115,37 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
         }
 
         public class PatternEveryFollowedBy : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] {"c0", "c1", "c2"};
+                var fields = "c0,c1,c2".SplitCsv();
 
-                var epl = "@Name('s0') select a.TheString as c0, a.IntPrimitive as c1, b.IntPrimitive as c2 " +
-                          "from pattern [every a=SupportBean -> b=SupportBean(TheString=a.TheString)]";
+                var epl = "@name('s0') select a.theString as c0, a.intPrimitive as c1, b.intPrimitive as c2 " +
+                          "from pattern [every a=SupportBean -> b=SupportBean(theString=a.theString)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
 
                 SendSupportBean(env, "E1", 1);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(1);
 
                 SendSupportBean(env, "E2", 10);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(2);
 
                 SendSupportBean(env, "E1", 2);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E1", 1, 2});
+                env.AssertPropsNew("s0", fields, new object[] { "E1", 1, 2 });
 
                 env.Milestone(3);
 
@@ -173,24 +157,24 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] {"c0", "c1", "c2"};
+                var fields = "c0,c1,c2".SplitCsv();
 
                 env.AdvanceTime(0);
-                var epl = "@Name('s0') select a.TheString as c0, a.IntPrimitive as c1, b.IntPrimitive as c2 " +
-                          "from pattern [every a=SupportBean -> b=SupportBean(TheString=a.TheString) where timer:within(10 sec)]";
+                var epl = "@name('s0') select a.theString as c0, a.intPrimitive as c1, b.intPrimitive as c2 " +
+                          "from pattern [every a=SupportBean -> b=SupportBean(theString=a.theString) where timer:within(10 sec)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
 
                 env.AdvanceTime(5000);
                 SendSupportBean(env, "E1", 1);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(1);
 
                 env.AdvanceTime(8000);
                 SendSupportBean(env, "E2", 10);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(2);
 
@@ -198,13 +182,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.Milestone(3);
 
                 SendSupportBean(env, "E1", 2);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 SendSupportBean(env, "E2", 11);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E2", 10, 11});
+                env.AssertPropsNew("s0", fields, new object[] { "E2", 10, 11 });
 
                 env.UndeployAll();
             }
@@ -214,45 +195,39 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] {"c0", "c1"};
+                var fields = "c0,c1".SplitCsv();
 
                 var epl =
-                    "@Name('s0') select a.TheString as c0, b.TheString as c1 from pattern [every (a=SupportBean(IntPrimitive>0) and b=SupportBean(IntPrimitive<0))]";
+                    "@name('s0') select a.theString as c0, b.theString as c1 from pattern [every (a=SupportBean(intPrimitive>0) and b=SupportBean(intPrimitive<0))]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
 
                 SendSupportBean(env, "E1", 1);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(1);
 
                 SendSupportBean(env, "E2", 1);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
                 SendSupportBean(env, "E3", -1);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E1", "E3"});
+                env.AssertPropsNew("s0", fields, new object[] { "E1", "E3" });
 
                 env.Milestone(2);
 
                 SendSupportBean(env, "E4", -2);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(3);
 
                 SendSupportBean(env, "E5", 2);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E5", "E4"});
+                env.AssertPropsNew("s0", fields, new object[] { "E5", "E4" });
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternOp : RegressionExecution
+        private class PatternOp : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -304,17 +279,17 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 testCaseList.AddTest(testCase);
 
-                var util = new PatternTestHarness(events, testCaseList, GetType());
+                var util = new PatternTestHarness(events, testCaseList);
                 util.RunTest(env);
             }
         }
 
-        internal class PatternEveryAndNot : RegressionExecution
+        private class PatternEveryAndNot : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 0);
-                var expression = "@Name('s0') select 'No event within 6 seconds' as alert\n" +
+                var expression = "@name('s0') select 'No event within 6 seconds' as alert\n" +
                                  "from pattern [ every (timer:interval(6) and not SupportBean)]";
                 env.CompileDeploy(expression).AddListener("s0");
 
@@ -324,21 +299,28 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendTimer(env, 6000);
                 SendTimer(env, 7000);
                 SendTimer(env, 7999);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(0);
 
                 SendTimer(env, 8000);
-                Assert.AreEqual("No event within 6 seconds", env.Listener("s0").AssertOneGetNewAndReset().Get("alert"));
+                env.AssertEqualsNew("s0", "alert", "No event within 6 seconds");
 
                 SendTimer(env, 12000);
                 env.SendEventBean(new SupportBean());
+
+                env.Milestone(1);
+
                 SendTimer(env, 13000);
                 env.SendEventBean(new SupportBean());
 
                 SendTimer(env, 18999);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(2);
 
                 SendTimer(env, 19000);
-                Assert.AreEqual("No event within 6 seconds", env.Listener("s0").AssertOneGetNewAndReset().Get("alert"));
+                env.AssertEqualsNew("s0", "alert", "No event within 6 seconds");
 
                 env.UndeployAll();
             }
@@ -349,6 +331,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 env.AdvanceTime(timeInMSec);
             }
+        }
+
+        private static void SendSupportBean(
+            RegressionEnvironment env,
+            string theString,
+            int intPrimitive)
+        {
+            env.SendEventBean(new SupportBean(theString, intPrimitive));
         }
     }
 } // end of namespace

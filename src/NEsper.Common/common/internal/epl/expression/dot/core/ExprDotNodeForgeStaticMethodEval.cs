@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,14 +30,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     public class ExprDotNodeForgeStaticMethodEval : ExprEvaluator,
         EventPropertyGetter
     {
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public const string METHOD_STATICMETHODEVALHANDLEINVOCATIONEXCEPTION =
             "StaticMethodEvalHandleInvocationException";
 
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        private readonly ExprDotEval[] _chainEval;
-        private readonly ExprEvaluator[] _childEvals;
         private readonly ExprDotNodeForgeStaticMethod _forge;
+        private readonly ExprEvaluator[] _childEvals;
+        private readonly ExprDotEval[] _chainEval;
+
         public ExprDotNodeForgeStaticMethodEval(
             ExprDotNodeForgeStaticMethod forge,
             ExprEvaluator[] childEvals,
@@ -46,31 +47,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             _forge = forge;
             _childEvals = childEvals;
             _chainEval = chainEval;
-        }
-
-        public object Get(EventBean eventBean)
-        {
-            var args = new object[_childEvals.Length];
-            for (var i = 0; i < args.Length; i++) {
-                args[i] = _childEvals[i].Evaluate(new[] {eventBean}, true, null);
-            }
-
-            // The method is static so the object it is invoked on
-            // can be null
-            try {
-                return _forge.StaticMethod.Invoke(_forge.TargetObject?.Value, args);
-            }
-            catch (Exception e) when (e is TargetException || e is MemberAccessException) {
-                StaticMethodEvalHandleInvocationException(
-                    _forge.OptionalStatementName,
-                    _forge.StaticMethod,
-                    _forge.ClassOrPropertyName,
-                    args,
-                    e,
-                    _forge.IsRethrowExceptions);
-            }
-
-            return null;
         }
 
         public bool IsExistsProperty(EventBean eventBean)
@@ -82,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             return null;
         }
-
+        
         public object Evaluate(
             EventBean[] eventsPerStream,
             bool isNewData,
@@ -137,6 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     e,
                     _forge.IsRethrowExceptions);
             }
+
             return null;
         }
 
@@ -146,6 +123,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            if (forge.EvaluationType == null) {
+                return ConstantNull();
+            }
+
             CodegenExpression isCachedMember = null;
             CodegenExpression cachedResultMember = null;
             if (forge.IsConstantParameters) {
@@ -204,7 +185,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     var typeInformation = ConstantNull();
                     if (codegenClassScope.IsInstrumented) {
                         typeInformation = codegenClassScope.AddOrGetDefaultFieldSharable(
-                            new EPTypeCodegenSharable(new ClassEPType(forge.EvaluationType), codegenClassScope));
+                            new EPChainableTypeCodegenSharable(
+                                EPChainableTypeHelper.SingleValue(forge.EvaluationType),
+                                codegenClassScope));
                     }
 
                     tryBlock.Apply(
@@ -223,18 +206,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         .BlockReturn(Ref("result"));
                 }
                 else {
-                    EPType typeInfo;
+                    EPChainableType typeInfo;
                     if (forge.ResultWrapLambda != null) {
                         typeInfo = forge.ResultWrapLambda.TypeInfo;
                     }
                     else {
-                        typeInfo = new ClassEPType(typeof(object));
+                        typeInfo = new EPChainableTypeClass(typeof(object));
                     }
 
                     var typeInformation = ConstantNull();
                     if (codegenClassScope.IsInstrumented) {
                         typeInformation = codegenClassScope.AddOrGetDefaultFieldSharable(
-                            new EPTypeCodegenSharable(typeInfo, codegenClassScope));
+                            new EPChainableTypeCodegenSharable(typeInfo, codegenClassScope));
                     }
 
                     tryBlock.Apply(
@@ -285,12 +268,52 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             return LocalMethod(methodNode);
         }
 
+        public object Get(EventBean eventBean)
+        {
+            var args = new object[_childEvals.Length];
+            for (var i = 0; i < args.Length; i++) {
+                args[i] = _childEvals[i].Evaluate(new EventBean[] { eventBean }, true, null);
+            }
+
+            // The method is static so the object it is invoked on
+            // can be null
+            try {
+                return _forge.StaticMethod.Invoke(_forge.TargetObject?.Value, args);
+            }
+            catch (TargetInvocationException e) {
+                StaticMethodEvalHandleInvocationException(
+                    null,
+                    _forge.StaticMethod.Name,
+                    _forge.StaticMethod.GetParameterTypes(),
+                    _forge.ClassOrPropertyName,
+                    args,
+                    e,
+                    _forge.IsRethrowExceptions);
+            }
+            catch (TargetException e) {
+                StaticMethodEvalHandleInvocationException(
+                    null,
+                    _forge.StaticMethod.Name,
+                    _forge.StaticMethod.GetParameterTypes(),
+                    _forge.ClassOrPropertyName,
+                    args,
+                    e,
+                    _forge.IsRethrowExceptions);
+            }
+
+            return null;
+        }
+
         public static CodegenExpression CodegenGet(
             CodegenExpression beanExpression,
             ExprDotNodeForgeStaticMethod forge,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            if (forge.EvaluationType == null) {
+                return ConstantNull();
+            }
+
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
                     forge.EvaluationType,
@@ -369,29 +392,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         }
 
         /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="optionalStatementName">stmt name</param>
-        /// <param name="methodName">name of the method</param>
-        /// <param name="parameterTypes">parameters to method</param>
+        /// <param name="methodName">methodName</param>
+        /// <param name="parameterTypes">param types</param>
         /// <param name="classOrPropertyName">target name</param>
         /// <param name="args">args</param>
-        /// <param name="thrown">exception</param>
+        /// <param name="exception">exception</param>
         /// <param name="rethrow">indicator whether to rethrow</param>
-
         public static void StaticMethodEvalHandleInvocationException(
             string optionalStatementName,
             string methodName,
             Type[] parameterTypes,
-            String classOrPropertyName,
-            Object[] args,
-            Exception thrown,
+            string classOrPropertyName,
+            object[] args,
+            Exception exception,
             bool rethrow)
         {
-            var indication = thrown is TargetException
-                ? ((TargetException) thrown).InnerException
-                : thrown;
-
+            var indication = exception is TargetException
+                ? ((TargetException) exception).InnerException
+                : exception;
+            
             var message = TypeHelper.GetMessageInvocationTarget(
                 optionalStatementName,
                 methodName,

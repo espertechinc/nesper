@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                 return options.IsXmlOutput ? XmlStringOutput : JsonStringOutput;
             }
 
-            if (type.IsEnum || type.IsNullable() && Nullable.GetUnderlyingType(type).IsEnum) {
+            if (type.IsEnum || (type.IsNullable() && Nullable.GetUnderlyingType(type).IsEnum)) {
                 return options.IsXmlOutput ? BaseOutput : JsonEnumOutput;
             }
 

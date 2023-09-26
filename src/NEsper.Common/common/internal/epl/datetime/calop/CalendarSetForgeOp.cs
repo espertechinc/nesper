@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 return dateTimeOffset;
             }
 
-            return DateTimeFieldMath.SetFieldValue(dateTimeOffset, _field, value.Value);
+            return dateTimeOffset.SetFieldValue(_field, value.Value);
         }
 
         public DateTime Evaluate(
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 return dateTime;
             }
 
-            return DateTimeFieldMath.SetFieldValue(dateTime, _field, value.Value);
+            return dateTime.SetFieldValue(_field, value.Value);
         }
 
         public static CodegenExpression CodegenCalendar(

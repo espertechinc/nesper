@@ -31,12 +31,12 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            ExprValidationContext validationContext =
+            var validationContext =
                 new ExprValidationContextBuilder(new StreamTypeServiceImpl(false), statementRawInfo, services).Build();
             expressions = new ExprNode[list.Count];
-            int count = 0;
-            foreach (ExprNode parameters in list) {
-                ExprNode node = ExprNodeUtilityValidate.GetValidatedSubtree(
+            var count = 0;
+            foreach (var parameters in list) {
+                var node = ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.OUTPUTLIMIT,
                     parameters,
                     validationContext);
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             CodegenClassScope classScope)
         {
             return NewInstance<OutputConditionPolledCrontabFactory>(
-                ExprNodeUtilityCodegen.CodegenEvaluators(expressions, parent, this.GetType(), classScope));
+                ExprNodeUtilityCodegen.CodegenEvaluators(expressions, parent, GetType(), classScope));
         }
     }
 } // end of namespace

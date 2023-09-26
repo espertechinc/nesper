@@ -23,7 +23,8 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
         {
         }
 
-        protected DataInputOutputSerdeException(SerializationInfo info,
+        protected DataInputOutputSerdeException(
+            SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }

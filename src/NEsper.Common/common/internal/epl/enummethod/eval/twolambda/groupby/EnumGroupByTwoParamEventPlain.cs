@@ -21,91 +21,99 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.groupby
 {
-	public class EnumGroupByTwoParamEventPlain : TwoLambdaThreeFormEventPlain
-	{
-		public EnumGroupByTwoParamEventPlain(
-			ExprForge innerExpression,
-			int streamCountIncoming,
-			ExprForge secondExpression)
-			: base(innerExpression, streamCountIncoming, secondExpression)
-		{
-		}
+    public class EnumGroupByTwoParamEventPlain : TwoLambdaThreeFormEventPlain
+    {
+        public EnumGroupByTwoParamEventPlain(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            ExprForge secondExpression)
+            : base(innerExpression, streamCountIncoming, secondExpression)
+        {
+        }
 
-		public override EnumEval EnumEvaluator {
-			get {
-				var first = InnerExpression.ExprEvaluator;
-				var second = SecondExpression.ExprEvaluator;
-				return new ProxyEnumEval(
-					(
-						eventsLambda,
-						enumcoll,
-						isNewData,
-						context) => {
-						if (enumcoll.IsEmpty()) {
-							return EmptyDictionary<object, object>.Instance;
-						}
+        public override EnumEval EnumEvaluator {
+            get {
+                var first = InnerExpression.ExprEvaluator;
+                var second = SecondExpression.ExprEvaluator;
+                return new ProxyEnumEval(
+                    (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        if (enumcoll.IsEmpty()) {
+                            return EmptyDictionary<object, object>.Instance;
+                        }
 
-						IDictionary<object, object> result = new LinkedHashMap<object, object>();
+                        IDictionary<object, object> result = new LinkedHashMap<object, object>();
 
-						var beans = (ICollection<EventBean>) enumcoll;
-						foreach (var next in beans) {
-							eventsLambda[StreamNumLambda] = next;
+                        var beans = (ICollection<EventBean>)enumcoll;
+                        foreach (var next in beans) {
+                            eventsLambda[StreamNumLambda] = next;
 
-							var key = first.Evaluate(eventsLambda, isNewData, context);
-							var entry = second.Evaluate(eventsLambda, isNewData, context);
+                            var key = first.Evaluate(eventsLambda, isNewData, context);
+                            var entry = second.Evaluate(eventsLambda, isNewData, context);
 
-							var value = (ICollection<object>) result.Get(key);
-							if (value == null) {
-								value = new List<object>();
-								result.Put(key, value);
-							}
+                            var value = (ICollection<object>)result.Get(key);
+                            if (value == null) {
+                                value = new List<object>();
+                                result.Put(key, value);
+                            }
 
-							value.Add(entry);
-						}
+                            value.Add(entry);
+                        }
 
-						return result;
-					});
-			}
-		}
+                        return result;
+                    });
+            }
+        }
 
-		public override Type ReturnType()
-		{
-			return typeof(IDictionary<object, object>);
-		}
+        public override Type ReturnType()
+        {
+            return typeof(IDictionary<object, object>);
+        }
 
-		public override CodegenExpression ReturnIfEmptyOptional()
-		{
-			return EnumValue(typeof(EmptyDictionary<object, object>), "Instance");
-		}
+        public override CodegenExpression ReturnIfEmptyOptional()
+        {
+            return EnumValue(typeof(EmptyDictionary<object, object>), "Instance");
+        }
 
-		public override void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			block.DeclareVar<IDictionary<object, object>>("result", NewInstance(typeof(NullableDictionary<object, object>)));
-		}
+        public override void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            block.DeclareVar<IDictionary<object, object>>(
+                "result",
+                NewInstance(typeof(NullableDictionary<object, object>)));
+        }
 
-		public override void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			block.DeclareVar<object>("key", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.DeclareVar<object>("entry", SecondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.DeclareVar(typeof(ICollection<object>), "value", Cast(typeof(ICollection<object>), ExprDotMethod(Ref("result"), "Get", Ref("key"))))
-				.IfRefNull("value")
-				.AssignRef("value", NewInstance(typeof(List<object>)))
-				.Expression(ExprDotMethod(Ref("result"), "Put", Ref("key"), Ref("value")))
-				.BlockEnd()
-				.Expression(ExprDotMethod(Ref("value"), "Add", Ref("entry")));
-		}
+        public override void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            block.DeclareVar<object>(
+                    "key",
+                    InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                .DeclareVar<object>(
+                    "entry",
+                    SecondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                .DeclareVar<ICollection<object>>(
+                    "value",
+                    Cast(typeof(ICollection<object>), ExprDotMethod(Ref("result"), "Get", Ref("key"))))
+                .IfRefNull("value")
+                .AssignRef("value", NewInstance(typeof(List<object>)))
+                .Expression(ExprDotMethod(Ref("result"), "Put", Ref("key"), Ref("value")))
+                .BlockEnd()
+                .Expression(ExprDotMethod(Ref("value"), "Add", Ref("entry")));
+        }
 
-		public override void ReturnResult(CodegenBlock block)
-		{
-			block.MethodReturn(Ref("result"));
-		}
-	}
+        public override void ReturnResult(CodegenBlock block)
+        {
+            block.MethodReturn(Ref("result"));
+        }
+    }
 } // end of namespace

@@ -38,12 +38,13 @@ namespace com.espertech.esper.common.client.soda
         {
             _classProvidedExpression = new ClassProvidedExpression(classText);
         }
-        
+
         /// <summary>
         /// EPL output
         /// </summary>
         /// <param name="writer">writer to write to</param>
-        public void ToEPL(TextWriter writer) {
+        public void ToEPL(TextWriter writer)
+        {
             writer.Write("create ");
             _classProvidedExpression.ToEPL(writer);
         }

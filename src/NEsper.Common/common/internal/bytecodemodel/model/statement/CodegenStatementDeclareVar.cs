@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             builder
                 .Append(" ")
                 .Append(_var);
-            
+
             if (_optionalInitializer != null) {
                 builder.Append("=");
                 _optionalInitializer.Render(builder, isInnerClass, 1, new CodegenIndent(true));
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
             _optionalInitializer?.MergeClasses(classes);
         }
-        
+
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             if (_optionalInitializer != null) {

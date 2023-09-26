@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.util
         ///     Event representation is Avro (GenericRecord).
         /// </summary>
         AVRO,
-        
+
         /// <summary>
         /// Event representation is JSON with underlying generation.
         /// </summary>
@@ -65,10 +65,13 @@ namespace com.espertech.esper.common.client.util
             switch (underlyingType) {
                 case EventUnderlyingType.OBJECTARRAY:
                     return typeof(object[]);
+
                 case EventUnderlyingType.MAP:
                     return typeof(IDictionary<string, object>);
+
                 case EventUnderlyingType.AVRO:
                     return null;
+
                 case EventUnderlyingType.JSON:
                     return typeof(object);
             }

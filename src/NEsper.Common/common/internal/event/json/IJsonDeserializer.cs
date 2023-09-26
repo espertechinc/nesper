@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Text.Json;
 
@@ -36,7 +35,7 @@ namespace com.espertech.esper.common.@internal.@event.json
                 ? deserializer.Deserialize(propertyValue)
                 : null;
         }
-        
+
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>

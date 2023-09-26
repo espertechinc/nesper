@@ -6,12 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
 
 using NUnit.Framework;
+
+// assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 {
@@ -19,66 +20,45 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
     {
         public void Run(RegressionEnvironment env)
         {
-            var joinStatement = "@Name('s0') select Id, P00, TheString from " +
-                                "SupportBean#length(100) as S1, " +
-                                " method:SupportStaticMethodInvocations.FetchObjectLog(TheString, IntPrimitive)";
+            var joinStatement = "@name('s0') select id, p00, theString from " +
+                                "SupportBean#length(100) as s1, " +
+                                " method:SupportStaticMethodInvocations.fetchObjectLog(theString, intPrimitive)";
             env.CompileDeploy(joinStatement).AddListener("s0");
 
             // set sleep off
             SupportStaticMethodInvocations.GetInvocationSizeReset();
 
             // The LRU cache caches per same keys
-            string[] fields = {"Id", "P00", "TheString"};
+            var fields = new string[] { "id", "p00", "theString" };
             SendBeanEvent(env, "E1", 1);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {1, "|E1|", "E1"});
+            env.AssertPropsNew("s0", fields, new object[] { 1, "|E1|", "E1" });
 
             SendBeanEvent(env, "E2", 2);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {2, "|E2|", "E2"});
+            env.AssertPropsNew("s0", fields, new object[] { 2, "|E2|", "E2" });
 
             SendBeanEvent(env, "E3", 3);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {3, "|E3|", "E3"});
-            Assert.AreEqual(3, SupportStaticMethodInvocations.GetInvocationSizeReset());
+            env.AssertPropsNew("s0", fields, new object[] { 3, "|E3|", "E3" });
+            env.AssertThat(() => Assert.AreEqual(3, SupportStaticMethodInvocations.GetInvocationSizeReset()));
 
             // should be cached
             SendBeanEvent(env, "E3", 3);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {3, "|E3|", "E3"});
-            Assert.AreEqual(0, SupportStaticMethodInvocations.GetInvocationSizeReset());
+            env.AssertPropsNew("s0", fields, new object[] { 3, "|E3|", "E3" });
+            env.AssertThat(() => Assert.AreEqual(0, SupportStaticMethodInvocations.GetInvocationSizeReset()));
 
             // should not be cached
             SendBeanEvent(env, "E4", 4);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {4, "|E4|", "E4"});
-            Assert.AreEqual(1, SupportStaticMethodInvocations.GetInvocationSizeReset());
+            env.AssertPropsNew("s0", fields, new object[] { 4, "|E4|", "E4" });
+            env.AssertThat(() => Assert.AreEqual(1, SupportStaticMethodInvocations.GetInvocationSizeReset()));
 
             // should be cached
             SendBeanEvent(env, "E2", 2);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {2, "|E2|", "E2"});
-            Assert.AreEqual(0, SupportStaticMethodInvocations.GetInvocationSizeReset());
+            env.AssertPropsNew("s0", fields, new object[] { 2, "|E2|", "E2" });
+            env.AssertThat(() => Assert.AreEqual(0, SupportStaticMethodInvocations.GetInvocationSizeReset()));
 
             // should not be cached
             SendBeanEvent(env, "E1", 1);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {1, "|E1|", "E1"});
-            Assert.AreEqual(1, SupportStaticMethodInvocations.GetInvocationSizeReset());
+            env.AssertPropsNew("s0", fields, new object[] { 1, "|E1|", "E1" });
+            env.AssertThat(() => Assert.AreEqual(1, SupportStaticMethodInvocations.GetInvocationSizeReset()));
 
             env.UndeployAll();
         }

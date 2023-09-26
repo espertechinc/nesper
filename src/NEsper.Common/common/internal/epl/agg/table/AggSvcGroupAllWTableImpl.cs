@@ -47,10 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         {
             // acquire table-level write lock
             TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, exprEvaluatorContext);
-
             var @event = tableInstance.GetCreateRowIntoTable(exprEvaluatorContext);
             var row = ExprTableEvalStrategyUtil.GetRow(@event);
-
             for (var i = 0; i < methodPairs.Length; i++) {
                 var methodPair = methodPairs[i];
                 var columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
@@ -71,10 +69,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         {
             // acquire table-level write lock
             TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, exprEvaluatorContext);
-
             var @event = tableInstance.GetCreateRowIntoTable(exprEvaluatorContext);
             var row = ExprTableEvalStrategyUtil.GetRow(@event);
-
             for (var i = 0; i < methodPairs.Length; i++) {
                 var methodPair = methodPairs[i];
                 var columnResult = methodPair.Evaluator.Evaluate(eventsPerStream, false, exprEvaluatorContext);
@@ -105,7 +101,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         {
             // acquire table-level write lock
             TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, exprEvaluatorContext);
-
             var @event = tableInstance.EventUngrouped;
             if (@event == null) {
                 return null;
@@ -123,7 +118,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         {
             // acquire table-level write lock
             TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, context);
-
             var @event = tableInstance.EventUngrouped;
             if (@event == null) {
                 return null;
@@ -141,7 +135,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         {
             // acquire table-level write lock
             TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, context);
-
             var @event = tableInstance.EventUngrouped;
             if (@event == null) {
                 return null;
@@ -159,7 +152,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         {
             // acquire table-level write lock
             TableEvalLockUtil.ObtainLockUnless(tableInstance.TableLevelRWLock.WriteLock, context);
-
             var @event = tableInstance.EventUngrouped;
             if (@event == null) {
                 return null;
@@ -178,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
         {
             // not applicable
         }
-
+        
         public void Accept(AggregationServiceVisitor visitor)
         {
             // not applicable

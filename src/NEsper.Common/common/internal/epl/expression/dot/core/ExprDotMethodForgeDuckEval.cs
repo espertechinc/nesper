@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             cache = new Dictionary<Type, MethodInfo>();
         }
 
-        public EPType TypeInfo => forge.TypeInfo;
+        public EPChainableType TypeInfo => forge.TypeInfo;
 
         public object Evaluate(
             object target,

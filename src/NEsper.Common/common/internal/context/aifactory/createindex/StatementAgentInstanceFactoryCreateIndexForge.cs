@@ -55,11 +55,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(StatementAgentInstanceFactoryCreateIndex),
-                this.GetType(),
+                GetType(),
                 classScope);
-            CodegenExpressionRef saiff = Ref("saiff");
+            var saiff = Ref("saiff");
             method.Block
                 .DeclareVar<StatementAgentInstanceFactoryCreateIndex>(
                     saiff.Ref,

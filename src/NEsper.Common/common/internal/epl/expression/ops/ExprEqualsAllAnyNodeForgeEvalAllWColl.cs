@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.ops;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.magic;
@@ -139,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
 
                     if (!_forge.IsMustCoerce) {
-                        if (!isNot && !leftResult.Equals(rightResult) || isNot && leftResult.Equals(rightResult)) {
+                        if (!isNot && !leftResult.Equals(rightResult) || (isNot && leftResult.Equals(rightResult))) {
                             return false;
                         }
                     }
@@ -283,7 +284,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     block.IfRefNullReturnNull("leftCoerced");
                     block.DeclareVar(
                         forge.CoercionTypeBoxed,
-                        refname,
+                            refname,
                         forge.Coercer == null
                             ? refforge.EvaluateCodegen(
                                 forge.CoercionTypeBoxed,

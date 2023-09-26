@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         public CodegenExpression InitCtorScoped()
         {
             return ExprDotName(
-                    EPStatementInitServicesConstants.REF,
-                    EPStatementInitServicesConstants.RESULTSETPROCESSORHELPERFACTORY);
+                EPStatementInitServicesConstants.REF,
+                EPStatementInitServicesConstants.RESULTSETPROCESSORHELPERFACTORY);
         }
     }
 } // end of namespace

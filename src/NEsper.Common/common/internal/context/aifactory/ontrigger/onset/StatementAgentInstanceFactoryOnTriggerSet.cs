@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
             StatementContext statementContext,
             int agentInstanceId)
         {
-            return AgentInstanceUtil.NewLock(statementContext);
+            return AgentInstanceUtil.NewLock(statementContext, agentInstanceId);
         }
     }
 } // end of namespace

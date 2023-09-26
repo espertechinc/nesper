@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.util
             string str1,
             string str2)
         {
-            if ((str1 == null) || (str2 == null)) {
+            if (str1 == null || str2 == null) {
                 return int.MaxValue;
             }
 
@@ -40,21 +40,21 @@ namespace com.espertech.esper.common.@internal.util
 
             var distance = new int[str1.Length + 1, str2.Length + 1];
 
-            for (int i = 0; i <= str1.Length; i++) {
+            for (var i = 0; i <= str1.Length; i++) {
                 distance[i, 0] = i;
             }
 
-            for (int j = 0; j <= str2.Length; j++) {
+            for (var j = 0; j <= str2.Length; j++) {
                 distance[0, j] = j;
             }
 
-            for (int i = 1; i <= str1.Length; i++) {
-                for (int j = 1; j <= str2.Length; j++) {
+            for (var i = 1; i <= str1.Length; i++) {
+                for (var j = 1; j <= str2.Length; j++) {
                     distance[i, j] = Minimum(
                         distance[i - 1, j] + 1,
                         distance[i, j - 1] + 1,
                         distance[i - 1, j - 1] +
-                        ((str1[i - 1] == str2[j - 1])
+                        (str1[i - 1] == str2[j - 1]
                             ? 0
                             : 1));
                 }

@@ -6,11 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.schedule;
 
@@ -62,7 +64,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             CodegenClassScope classScope);
 
         void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters,
-            IList<ScheduleHandleCallbackProvider> schedules);
+            Func<short, CallbackAttribution> callbackAttribution,
+            IList<FilterSpecTracked> filters,
+            IList<ScheduleHandleTracked> schedules);
     }
 } // end of namespace

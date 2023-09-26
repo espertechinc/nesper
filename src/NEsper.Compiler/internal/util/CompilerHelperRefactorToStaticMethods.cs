@@ -20,7 +20,7 @@ namespace com.espertech.esper.compiler.@internal.util
 {
 	public class CompilerHelperRefactorToStaticMethods
 	{
-		public const int MAX_METHODS_PER_CLASS_MINIMUM = 1000;
+		public const int MAX_METHODS_PER_CLASS_MINIMUM = 100;
 
 		public static void RefactorMethods(
 			IList<CodegenClass> classes,

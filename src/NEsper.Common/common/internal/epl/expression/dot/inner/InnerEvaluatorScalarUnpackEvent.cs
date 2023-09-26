@@ -28,9 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object target = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
-            if (target is EventBean) {
-                return ((EventBean) target).Underlying;
+            var target = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            if (target is EventBean bean) {
+                return bean.Underlying;
             }
 
             return target;

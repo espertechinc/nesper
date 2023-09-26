@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,6 +14,7 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.regressionlib.support.bean
 {
+    [Serializable]
     public class SupportBean_ST0_Container
     {
         private static string[] _samples;

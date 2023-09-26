@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// <summary>
     /// Specification node for a query execution plan to be extended by specific execution specification nodes.
     /// </summary>
-    public abstract class QueryPlanNodeForge : CodegenMakeable
+    public abstract class QueryPlanNodeForge : CodegenMakeable<SAIFFInitializeSymbol>
     {
         public abstract void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes);
 
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             CodegenSymbolProvider symbols,
             CodegenClassScope classScope)
         {
-            return Make(parent, (SAIFFInitializeSymbol) symbols, classScope);
+            return Make(parent, (SAIFFInitializeSymbol)symbols, classScope);
         }
 
         public abstract CodegenExpression Make(
@@ -54,14 +54,14 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// <returns>readable text with plans</returns>
         public static string Print(QueryPlanNodeForge[] planNodeSpecs)
         {
-            StringBuilder buffer = new StringBuilder();
+            var buffer = new StringBuilder();
             buffer.Append("QueryPlanNode[]\n");
 
-            for (int i = 0; i < planNodeSpecs.Length; i++) {
+            for (var i = 0; i < planNodeSpecs.Length; i++) {
                 buffer.Append("  node spec " + i + " :\n");
 
-                StringWriter writer = new StringWriter();
-                IndentWriter indentWriter = new IndentWriter(writer, 4, 2);
+                var writer = new StringWriter();
+                var indentWriter = new IndentWriter(writer, 4, 2);
 
                 if (planNodeSpecs[i] != null) {
                     planNodeSpecs[i].Print(indentWriter);

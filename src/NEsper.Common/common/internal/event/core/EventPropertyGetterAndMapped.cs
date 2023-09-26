@@ -9,8 +9,8 @@
 namespace com.espertech.esper.common.@internal.@event.core
 {
     public interface EventPropertyGetterAndMapped
-        : EventPropertyGetterSPI
-        , EventPropertyGetterMappedSPI
+        : EventPropertyGetterSPI,
+            EventPropertyGetterMappedSPI
     {
     }
 } // end of namespace

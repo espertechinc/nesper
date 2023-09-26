@@ -20,16 +20,18 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
         private CompositeIndexLookup _next;
         private readonly MultiKeyFromObjectArray _multiKeyTransform;
 
-        public CompositeIndexLookupKeyed(object[] keys, MultiKeyFromObjectArray multiKeyTransform)
+        public CompositeIndexLookupKeyed(
+            object[] keys,
+            MultiKeyFromObjectArray multiKeyTransform)
         {
-            this._keys = keys;
-            this._multiKeyTransform = multiKeyTransform;
+            _keys = keys;
+            _multiKeyTransform = multiKeyTransform;
         }
 
         public MultiKeyFromObjectArray MultiKeyTransform => _multiKeyTransform;
 
         public CompositeIndexLookup Next {
-            set { this._next = value; }
+            set => _next = value;
         }
 
         public void Lookup(

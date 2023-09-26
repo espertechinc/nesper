@@ -173,7 +173,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array")
+                .AddParam<object[]>("array")
                 .Block
                 .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(_propertyIndex)))
                 .IfRefNullReturnNull("value")
@@ -185,7 +185,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array")
+                .AddParam<object[]>("array")
                 .Block
                 .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(_propertyIndex)))
                 .IfRefNullReturnFalse("value")
@@ -197,7 +197,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array")
+                .AddParam<object[]>("array")
                 .Block
                 .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(_propertyIndex)))
                 .IfRefNullReturnFalse("value")

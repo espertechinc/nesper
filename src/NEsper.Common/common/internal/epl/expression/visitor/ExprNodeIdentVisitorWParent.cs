@@ -33,13 +33,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             ExprNode exprNode,
             ExprNode parentExprNode)
         {
-            if (exprNode is ExprIdentNode) {
-                _identNodes.Add(new Pair<ExprNode, ExprIdentNode>(parentExprNode, (ExprIdentNode) exprNode));
+            if (exprNode is ExprIdentNode node) {
+                _identNodes.Add(new Pair<ExprNode, ExprIdentNode>(parentExprNode, node));
             }
         }
 
-        public IList<Pair<ExprNode, ExprIdentNode>> IdentNodes {
-            get { return _identNodes; }
-        }
+        public IList<Pair<ExprNode, ExprIdentNode>> IdentNodes => _identNodes;
     }
 }

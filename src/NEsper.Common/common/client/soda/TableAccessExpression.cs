@@ -47,23 +47,18 @@ namespace com.espertech.esper.common.client.soda
             _optionalColumn = optionalColumn;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(_tableName);
-            if (_keyExpressions != null && !_keyExpressions.IsEmpty())
-            {
+            if (_keyExpressions != null && !_keyExpressions.IsEmpty()) {
                 writer.Write("[");
                 ExpressionBase.ToPrecedenceFreeEPL(_keyExpressions, writer);
                 writer.Write("]");
             }
 
-            if (_optionalColumn != null)
-            {
+            if (_optionalColumn != null) {
                 writer.Write(".");
                 writer.Write(_optionalColumn);
             }

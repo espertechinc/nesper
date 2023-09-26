@@ -36,7 +36,6 @@ namespace com.espertech.esper.regressionlib.support.extend.view
 
         public void Attach(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             EventType = parentEventType;
@@ -48,7 +47,7 @@ namespace com.espertech.esper.regressionlib.support.extend.view
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
-            CodegenSymbolProvider symbols,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             return new SAIFFInitializeBuilder(
@@ -56,15 +55,15 @@ namespace com.espertech.esper.regressionlib.support.extend.view
                     GetType(),
                     "factory",
                     parent,
-                    (SAIFFInitializeSymbol) symbols,
+                    symbols,
                     classScope)
                 .Eventtype("eventType", EventType)
                 .Build();
         }
 
-        public void Accept(ViewForgeVisitor visitor)
+        public T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
         {
-            visitor.Visit(this);
+            return visitor.VisitExtension(this);
         }
     }
 } // end of namespace

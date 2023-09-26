@@ -8,15 +8,15 @@
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
-	public enum FilterSpecCompilerIndexPlannerHint
-	{
-		LKUPCOMPOSITE,
-		VALUECOMPOSITE,
-		BOOLCOMPOSITE,
-		CONDITIONS
-	}
+    public enum FilterSpecCompilerIndexPlannerHint
+    {
+        LKUPCOMPOSITE,
+        VALUECOMPOSITE,
+        BOOLCOMPOSITE,
+        CONDITIONS
+    }
 
-	public static class FilterSpecCompilerIndexPlannerHintExtensions
-	{
-	}
+    public static class FilterSpecCompilerIndexPlannerHintExtensions
+    {
+    }
 } // end of namespace

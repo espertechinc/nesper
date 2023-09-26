@@ -38,11 +38,11 @@ namespace com.espertech.esper.common.client.annotation
             typeof(NoLockAttribute),
             typeof(PriorityAttribute),
             typeof(TagAttribute),
-            
+
             typeof(JsonEventFieldAttribute),
             typeof(JsonSchemaAttribute),
             typeof(JsonSchemaFieldAttribute),
-            
+
             typeof(XmlSchemaAttribute),
             typeof(XMLSchemaFieldAttribute),
             typeof(XMLSchemaNamespacePrefixAttribute)
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.client.annotation
                 .Where(t => t.Namespace == myNamespace)
                 .Where(t => t.IsAbstract == false)
                 .Where(t => t.IsAttribute());
-            
+
             foreach (var clazz in myBuiltinAttributes) {
                 BUILTIN.Put(clazz.Name.ToLower(), clazz);
             }

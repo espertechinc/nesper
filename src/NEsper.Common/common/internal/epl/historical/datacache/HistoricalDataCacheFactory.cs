@@ -35,13 +35,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
                 return new HistoricalDataCacheNullImpl();
             }
 
-            if (cacheDesc is ConfigurationCommonCacheLRU) {
-                ConfigurationCommonCacheLRU lruCache = (ConfigurationCommonCacheLRU) cacheDesc;
+            if (cacheDesc is ConfigurationCommonCacheLRU lruCache) {
                 return new HistoricalDataCacheLRUImpl(lruCache.Size);
             }
 
-            if (cacheDesc is ConfigurationCommonCacheExpiryTime) {
-                ConfigurationCommonCacheExpiryTime expCache = (ConfigurationCommonCacheExpiryTime) cacheDesc;
+            if (cacheDesc is ConfigurationCommonCacheExpiryTime expCache) {
                 return MakeTimeCache(expCache, agentInstanceContext, streamNum, scheduleCallbackId);
             }
 

@@ -64,6 +64,14 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             return contextManager.GetContextPartitionIds(selector);
         }
 
+        public long GetContextPartitionCount(
+            string deploymentId,
+            string contextName)
+        {
+            var contextManager = CheckedGetContextManager(deploymentId, contextName);
+            return contextManager.ContextPartitionCount;
+        }
+
         public ContextPartitionIdentifier GetIdentifier(
             string deploymentId,
             string contextName,

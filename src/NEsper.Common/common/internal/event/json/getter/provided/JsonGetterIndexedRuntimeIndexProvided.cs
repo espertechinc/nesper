@@ -18,22 +18,36 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 {
-	/// <summary>
-	/// Property getter for Json underlying fields.
-	/// </summary>
-	public sealed class JsonGetterIndexedRuntimeIndexProvided : EventPropertyGetterIndexedSPI {
-	    private readonly FieldInfo field;
+    /// <summary>
+    /// Property getter for Json underlying fields.
+    /// </summary>
+    public sealed class JsonGetterIndexedRuntimeIndexProvided : EventPropertyGetterIndexedSPI
+    {
+        private readonly FieldInfo field;
 
-	    public JsonGetterIndexedRuntimeIndexProvided(FieldInfo field) {
-	        this.field = field;
-	    }
+        public JsonGetterIndexedRuntimeIndexProvided(FieldInfo field)
+        {
+            this.field = field;
+        }
 
-	    public CodegenExpression EventBeanGetIndexedCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope, CodegenExpression beanExpression, CodegenExpression key) {
-	        return StaticMethod(typeof(CollectionUtil), "ArrayValueAtIndex", ExprDotName(CastUnderlying(field.DeclaringType, beanExpression), field.Name), key);
-	    }
+        public CodegenExpression EventBeanGetIndexedCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope,
+            CodegenExpression beanExpression,
+            CodegenExpression key)
+        {
+            return StaticMethod(
+                typeof(CollectionUtil),
+                "ArrayValueAtIndex",
+                ExprDotName(CastUnderlying(field.DeclaringType, beanExpression), field.Name),
+                key);
+        }
 
-	    public object Get(EventBean eventBean, int index) {
-	        return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(eventBean.Underlying, field, index);
-	    }
-	}
+        public object Get(
+            EventBean eventBean,
+            int index)
+        {
+            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(eventBean.Underlying, field, index);
+        }
+    }
 } // end of namespace

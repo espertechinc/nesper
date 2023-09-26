@@ -53,9 +53,8 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter)
         {
             writer.Write("coalesce ");
-            string delimiter = "";
-            foreach (ContextDescriptorHashSegmentedItem item in Items)
-            {
+            var delimiter = "";
+            foreach (var item in Items) {
                 writer.Write(delimiter);
                 item.ToEPL(writer, formatter);
                 delimiter = ", ";
@@ -63,8 +62,7 @@ namespace com.espertech.esper.common.client.soda
 
             writer.Write(" granularity ");
             writer.Write(Convert.ToString(Granularity));
-            if (IsPreallocate)
-            {
+            if (IsPreallocate) {
                 writer.Write(" preallocate");
             }
         }

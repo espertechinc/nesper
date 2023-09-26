@@ -77,7 +77,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             if (_parent.IsDistinct && newOldEvents != null) {
                 newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.DistinctKeyGetter);
-                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.DistinctKeyGetter);
+                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(
+                    newOldEvents.Second,
+                    _parent.DistinctKeyGetter);
             }
 
             if (!isGenerateSynthetic && !isGenerateNatural) {
@@ -91,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             var forceOutput = false;
             if (newData == null &&
                 oldData == null &&
-                (newOldEvents == null || newOldEvents.First == null && newOldEvents.Second == null)) {
+                (newOldEvents == null || (newOldEvents.First == null && newOldEvents.Second == null))) {
                 forceOutput = true;
             }
 
@@ -116,9 +118,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 log.Debug(
                     ".process Received update, " +
                     "  newData.length==" +
-                    (newEvents == null ? 0 : newEvents.Count) +
+                    (newEvents?.Count ?? 0) +
                     "  oldData.length==" +
-                    (oldEvents == null ? 0 : oldEvents.Count));
+                    (oldEvents?.Count ?? 0));
             }
 
             var statementResultService = _agentInstanceContext.StatementResultService;
@@ -133,7 +135,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
 
             if (_parent.IsDistinct && newOldEvents != null) {
                 newOldEvents.First = EventBeanUtility.GetDistinctByProp(newOldEvents.First, _parent.DistinctKeyGetter);
-                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(newOldEvents.Second, _parent.DistinctKeyGetter);
+                newOldEvents.Second = EventBeanUtility.GetDistinctByProp(
+                    newOldEvents.Second,
+                    _parent.DistinctKeyGetter);
             }
 
             if (!isGenerateSynthetic && !isGenerateNatural) {

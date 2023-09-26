@@ -19,46 +19,50 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
-	public class ListenerOnlySelectExprProcessorForge : SelectExprProcessorForge
-	{
-		private readonly SelectExprProcessorForge syntheticProcessorForge;
+    public class ListenerOnlySelectExprProcessorForge : SelectExprProcessorForge
+    {
+        private readonly SelectExprProcessorForge syntheticProcessorForge;
 
-		public ListenerOnlySelectExprProcessorForge(SelectExprProcessorForge syntheticProcessorForge)
-		{
-			this.syntheticProcessorForge = syntheticProcessorForge;
-		}
+        public ListenerOnlySelectExprProcessorForge(SelectExprProcessorForge syntheticProcessorForge)
+        {
+            this.syntheticProcessorForge = syntheticProcessorForge;
+        }
 
-		public EventType ResultEventType => syntheticProcessorForge.ResultEventType;
+        public EventType ResultEventType => syntheticProcessorForge.ResultEventType;
 
-		public CodegenMethod ProcessCodegen(
-			CodegenExpression resultEventType,
-			CodegenExpression eventBeanFactory,
-			CodegenMethodScope codegenMethodScope,
-			SelectExprProcessorCodegenSymbol selectSymbol,
-			ExprForgeCodegenSymbol exprSymbol,
-			CodegenClassScope codegenClassScope)
-		{
-			var processMethod = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
+        public CodegenMethod ProcessCodegen(
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenMethodScope codegenMethodScope,
+            SelectExprProcessorCodegenSymbol selectSymbol,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            var processMethod = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
 
-			var isSythesize = selectSymbol.GetAddSynthesize(processMethod);
-			var syntheticMethod = syntheticProcessorForge.ProcessCodegen(
-				resultEventType,
-				eventBeanFactory,
-				processMethod,
-				selectSymbol,
-				exprSymbol,
-				codegenClassScope);
+            var isSythesize = selectSymbol.GetAddSynthesize(processMethod);
+            var syntheticMethod = syntheticProcessorForge.ProcessCodegen(
+                resultEventType,
+                eventBeanFactory,
+                processMethod,
+                selectSymbol,
+                exprSymbol,
+                codegenClassScope);
 
-			var stmtResultSvc = codegenClassScope.AddDefaultFieldUnshared(
-				true,
-				typeof(StatementResultService),
-				ExprDotName(EPStatementInitServicesConstants.REF, EPStatementInitServicesConstants.STATEMENTRESULTSERVICE));
-			processMethod.Block
-				.IfCondition(Or(isSythesize, ExprDotName(stmtResultSvc, "IsMakeSynthetic")))
-				.BlockReturn(LocalMethod(syntheticMethod))
-				.MethodReturn(ConstantNull());
+            var stmtResultSvc = codegenClassScope.AddDefaultFieldUnshared(
+                true,
+                typeof(StatementResultService),
+                ExprDotName(
+                    EPStatementInitServicesConstants.REF,
+                    EPStatementInitServicesConstants.STATEMENTRESULTSERVICE));
+            processMethod.Block
+                .IfCondition(Or(isSythesize, ExprDotName(stmtResultSvc, "IsMakeSynthetic")))
+                .BlockReturn(LocalMethod(syntheticMethod))
+                .MethodReturn(ConstantNull());
 
-			return processMethod;
-		}
-	}
+            return processMethod;
+        }
+
+        public SelectExprProcessorForge SyntheticProcessorForge => syntheticProcessorForge;
+    }
 } // end of namespace

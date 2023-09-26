@@ -11,49 +11,71 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOBoxedDecimalArray2DimNullableSerde : DataInputOutputSerdeBase<decimal?[][]> {
-	    public static readonly DIOBoxedDecimalArray2DimNullableSerde INSTANCE = new DIOBoxedDecimalArray2DimNullableSerde();
+    public class DIOBoxedDecimalArray2DimNullableSerde : DataInputOutputSerdeBase<decimal?[][]>
+    {
+        public static readonly DIOBoxedDecimalArray2DimNullableSerde INSTANCE =
+            new DIOBoxedDecimalArray2DimNullableSerde();
 
-	    private DIOBoxedDecimalArray2DimNullableSerde() {
-	    }
+        private DIOBoxedDecimalArray2DimNullableSerde()
+        {
+        }
 
-	    public void Write(decimal?[][] @object, DataOutput output) {
-	        WriteInternal(@object, output);
-	    }
+        public void Write(
+            decimal?[][] @object,
+            DataOutput output)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public decimal?[][] Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+        public decimal?[][] Read(DataInput input)
+        {
+            return ReadInternal(input);
+        }
 
-	    public override void Write(decimal?[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
-	        WriteInternal(@object, output);
-	    }
+        public override void Write(
+            decimal?[][] @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public override decimal?[][] ReadValue(DataInput input, byte[] unitKey) {
-	        return ReadInternal(input);
-	    }
+        public override decimal?[][] ReadValue(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadInternal(input);
+        }
 
-	    private void WriteInternal(decimal?[][] @object, DataOutput output) {
-	        if (@object == null) {
-	            output.WriteInt(-1);
-	            return;
-	        }
-	        output.WriteInt(@object.Length);
-	        foreach (decimal?[] i in @object) {
-	            DIOBoxedDecimalArrayNullableSerde.INSTANCE.Write(i, output);
-	        }
-	    }
+        private void WriteInternal(
+            decimal?[][] @object,
+            DataOutput output)
+        {
+            if (@object == null) {
+                output.WriteInt(-1);
+                return;
+            }
 
-	    private decimal?[][] ReadInternal(DataInput input) {
-	        int len = input.ReadInt();
-	        if (len == -1) {
-	            return null;
-	        }
-	        decimal?[][] array = new decimal?[len][];
-	        for (int i = 0; i < len; i++) {
-	            array[i] = DIOBoxedDecimalArrayNullableSerde.INSTANCE.Read(input);
-	        }
-	        return array;
-	    }
-	}
+            output.WriteInt(@object.Length);
+            foreach (var i in @object) {
+                DIOBoxedDecimalArrayNullableSerde.INSTANCE.Write(i, output);
+            }
+        }
+
+        private decimal?[][] ReadInternal(DataInput input)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
+
+            var array = new decimal?[len][];
+            for (var i = 0; i < len; i++) {
+                array[i] = DIOBoxedDecimalArrayNullableSerde.INSTANCE.Read(input);
+            }
+
+            return array;
+        }
+    }
 } // end of namespace

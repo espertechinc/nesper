@@ -33,9 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             ExprEvaluatorContext context)
         {
             if (index[0] is MultiIndexEventTable) {
-                var multiIndex = (MultiIndexEventTable) index[0];
+                var multiIndex = (MultiIndexEventTable)index[0];
                 var indexToUse = multiIndex.Tables[indexUsed];
-                return innerLookupStrategy.Lookup(lookupEvent, new[] {indexToUse}, context);
+                return innerLookupStrategy.Lookup(lookupEvent, new[] { indexToUse }, context);
             }
 
             return index[0].GetEnumerator();

@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             string name,
             IList<ExprNode> parameter)
         {
-            foreach (ExprNode node in parameter) {
+            foreach (var node in parameter) {
                 if (node is ExprNamedParameterNode) {
                     throw new ObserverParameterException(name + " does not allow named parameters");
                 }

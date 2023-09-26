@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,7 @@ using com.espertech.esper.common.@internal.epl.methodbase;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.take
 {
     public class ExprDotForgeTakeAndTakeLast : ExprDotForgeEnumMethodBase
     {
@@ -25,33 +25,35 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             DotMethodFP footprint,
             IList<ExprNode> parameters,
             EnumMethodEnum enumMethod,
-            String enumMethodUsedName,
+            string enumMethodUsedName,
             EventType inputEventType,
             Type collectionComponentType,
-            ExprValidationContext validationContext) 
+            ExprValidationContext validationContext)
         {
-            EPType type;
+            EPChainableType type;
             if (inputEventType != null) {
-                type = EPTypeHelper.CollectionOfEvents(inputEventType);
-            } else {
-                type = EPTypeHelper.CollectionOfSingleValue(collectionComponentType, null);
+                type = EPChainableTypeHelper.CollectionOfEvents(inputEventType);
             }
+            else {
+                type = EPChainableTypeHelper.CollectionOfSingleValue(collectionComponentType);
+            }
+
             return new EnumForgeDescFactoryTake(enumMethod, type, inputEventType == null);
         }
-        
+
         private class EnumForgeDescFactoryTake : EnumForgeDescFactory
         {
-            private readonly EnumMethodEnum _enumMethod;
-            private readonly EPType _type;
+            private readonly EnumMethodEnum enumMethod;
+            private readonly EPChainableType type;
             private readonly bool _isScalar;
 
             public EnumForgeDescFactoryTake(
-                EnumMethodEnum enumMethod,
-                EPType type,
+                EnumMethodEnum _enumMethod,
+                EPChainableType _type,
                 bool isScalar)
             {
-                _enumMethod = enumMethod;
-                _type = type;
+                enumMethod = _enumMethod;
+                type = _type;
                 _isScalar = isScalar;
             }
 
@@ -65,16 +67,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 int streamCountIncoming,
                 StatementCompileTimeServices services)
             {
-                ExprForge sizeEval = bodiesAndParameters[0].BodyForge;
+                var sizeEval = bodiesAndParameters[0].BodyForge;
                 EnumForge forge;
-                if (_enumMethod == EnumMethodEnum.TAKE) {
+                if (enumMethod == EnumMethodEnum.TAKE) {
                     forge = new EnumTakeForge(sizeEval, streamCountIncoming, _isScalar);
                 }
                 else {
                     forge = new EnumTakeLastForge(sizeEval, streamCountIncoming, _isScalar);
                 }
 
-                return new EnumForgeDesc(_type, forge);
+                return new EnumForgeDesc(type, forge);
             }
         }
     }

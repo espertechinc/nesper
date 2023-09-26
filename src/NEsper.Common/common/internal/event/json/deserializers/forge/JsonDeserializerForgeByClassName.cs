@@ -13,24 +13,24 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
 {
-	public class JsonDeserializerForgeByClassName : JsonDeserializerForge
-	{
-		private readonly string _clazzName;
+    public class JsonDeserializerForgeByClassName : JsonDeserializerForge
+    {
+        private readonly string _clazzName;
 
-		public JsonDeserializerForgeByClassName(string clazzName)
-		{
-			_clazzName = clazzName;
-		}
+        public JsonDeserializerForgeByClassName(string clazzName)
+        {
+            _clazzName = clazzName;
+        }
 
-		public CodegenExpression CodegenDeserialize(
-			CodegenMethod method,
-			CodegenClassScope classScope,
-			CodegenExpression elementExpr)
-		{
-			return ExprDotMethod(
-				NewInstanceInner(_clazzName),
-				"Deserialize",
-				elementExpr);
-		}
-	}
+        public CodegenExpression CodegenDeserialize(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenExpression elementExpr)
+        {
+            return ExprDotMethod(
+                NewInstanceInner(_clazzName),
+                "Deserialize",
+                elementExpr);
+        }
+    }
 } // end of namespace

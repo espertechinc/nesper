@@ -18,5 +18,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope);
+
+        T Accept<T>(ContextSpecConditionVisitor<T> visitor);
     }
 } // end of namespace

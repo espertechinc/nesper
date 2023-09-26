@@ -30,7 +30,9 @@ namespace com.espertech.esper.common.@internal.settings
         private readonly IList<Import> _annotationImports = new List<Import>();
         private readonly IList<Import> _imports = new List<Import>();
 
-        private protected readonly IDictionary<string, object> _transientConfiguration;
+        private readonly IDictionary<string, object> _transientConfiguration;
+
+        public IDictionary<string, object> TransientConfiguration => _transientConfiguration;
 
         protected ImportServiceBase(
             IContainer container,
@@ -111,7 +113,7 @@ namespace com.espertech.esper.common.@internal.settings
                 if (clazz != null) {
                     return clazz;
                 }
-                
+
                 return ResolveType(fullyQualClassName, false, ExtensionClassEmpty.INSTANCE);
             }
         }
@@ -145,7 +147,12 @@ namespace com.espertech.esper.common.@internal.settings
             }
             catch (MethodResolverNoSuchMethodException e) {
                 var method = MethodResolver.ResolveExtensionMethod(
-                    clazz, methodName, paramTypes, true, allowEventBeanType, allowEventBeanType);
+                    clazz,
+                    methodName,
+                    paramTypes,
+                    true,
+                    allowEventBeanType,
+                    allowEventBeanType);
                 if (method == null) {
                     throw Convert(clazz, methodName, paramTypes, e, false);
                 }
@@ -242,7 +249,7 @@ namespace com.espertech.esper.common.@internal.settings
                         return typeof(BusEventTypeAttribute);
                 }
             }
-            
+
             // attempt extension classes i.e. classes part of epl or otherwise not in classpath
             var clazzExtension = extension.FindClassByName(className);
             if (clazzExtension != null) {
@@ -432,7 +439,8 @@ namespace com.espertech.esper.common.@internal.settings
             }
 
             if (paramTypes.Length > 0) {
-                message += $"named '{methodName}' in class '{clazz.CleanName()}' with matching parameter number and expected parameter type(s) '{expected}'";
+                message +=
+                    $"named '{methodName}' in class '{clazz.CleanName()}' with matching parameter number and expected parameter type(s) '{expected}'";
             }
             else {
                 message += $"named '{methodName}' in class '{clazz.CleanName()}' taking no parameters";

@@ -35,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             throw new UnsupportedOperationException("Ungrouped tables do not allow explicit indexes");
         }
 
-        public override void RemoveExplicitIndex(string indexName)
+        public override void RemoveExplicitIndex(
+            string indexName,
+            string indexModuleName)
         {
             throw new UnsupportedOperationException("Ungrouped tables do not allow explicit indexes");
         }

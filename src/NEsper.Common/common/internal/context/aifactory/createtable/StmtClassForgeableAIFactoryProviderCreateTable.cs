@@ -43,9 +43,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            SAIFFInitializeSymbol saiffInitializeSymbol = new SAIFFInitializeSymbol();
-            CodegenMethod method = parent
-                .MakeChildWithScope(TypeOfFactory(), this.GetType(), saiffInitializeSymbol, classScope)
+            var saiffInitializeSymbol = new SAIFFInitializeSymbol();
+            var method = parent
+                .MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope)
                 .AddParam(
                     typeof(EPStatementInitServices),
                     REF_STMTINITSVC.Ref);

@@ -13,7 +13,6 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
@@ -23,186 +22,86 @@ using com.espertech.esper.regressionlib.framework;
 
 using NEsper.Avro.Extensions;
 
-using NUnit.Framework;
+using static com.espertech.esper.regressionlib.support.epl.SupportStaticMethodLib; // sleep
+using NUnit.Framework; // assertEquals
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-using static com.espertech.esper.regressionlib.support.epl.SupportStaticMethodLib;
+// assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
     public class EPLDataflowOpBeaconSource
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
-WithWithBeans(execs);
-WithVariable(execs);
-WithFields(execs);
-WithNoType(execs);
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithWithBeans(execs);
+            WithVariable(execs);
+            WithFields(execs);
+            WithNoType(execs);
             return execs;
         }
-public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowBeaconNoType());
-    return execs;
-}public static IList<RegressionExecution> WithFields(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowBeaconFields());
-    return execs;
-}public static IList<RegressionExecution> WithVariable(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowBeaconVariable());
-    return execs;
-}public static IList<RegressionExecution> WithWithBeans(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowBeaconWithBeans());
-    return execs;
-}
-        private static void RunAssertionFields(
-            RegressionEnvironment env,
-            EventRepresentationChoice representationEnum,
-            bool eventbean)
+
+        public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> execs = null)
         {
-            EPDataFlowInstantiationOptions options;
-
-            var path = new RegressionPath();
-            var streamType = eventbean ? "EventBean<MyEvent>" : "MyEvent";
-            
-            env.CompileDeploy(
-                representationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEvent>() +
-                "create schema MyEvent(p0 string, p1 long, p2 double)", path);
-            
-            env.CompileDeploy(
-                "@Name('flow') create dataflow MyDataFlowOne " +
-                "" +
-                "BeaconSource -> BeaconStream<" + streamType + "> " +
-                "{" +
-                "  iterations : 3," +
-                "  p0 : 'abc'," +
-                "  p1 : cast(Math.Round(Randomizer.Random() * 10) + 1, long)," +
-                "  p2 : 1d," +
-                "}" +
-                "DefaultSupportCaptureOp(BeaconStream) {}",
-                path);
-
-            var future = new DefaultSupportCaptureOp(3, env.Container.LockManager());
-            options = new EPDataFlowInstantiationOptions()
-                .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
-            var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
-            df.Start();
-            object[] output;
-            try {
-                output = future.GetValue(2, TimeUnit.SECONDS);
-            }
-            catch (Exception t) {
-                throw new EPException(t);
-            }
-
-            Assert.AreEqual(3, output.Length);
-            for (var i = 0; i < 3; i++) {
-                if (!eventbean) {
-                    if (representationEnum.IsObjectArrayEvent()) {
-                        var row = (object[]) output[i];
-                        Assert.AreEqual("abc", row[0]);
-                        var val = row[1].AsInt64();
-                        Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
-                        Assert.AreEqual(1d, row[2]);
-                    }
-                    else if (representationEnum.IsMapEvent()) {
-                        var row = (IDictionary<string, object>) output[i];
-                        Assert.AreEqual("abc", row.Get("p0"));
-                        var val = row.Get("p1").AsInt64();
-                        Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
-                        Assert.AreEqual(1d, row.Get("p2"));
-                    }
-                    else {
-                        var row = (GenericRecord) output[i];
-                        Assert.AreEqual("abc", row.Get("p0"));
-                        var val = row.Get("p1").AsInt64();
-                        Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
-                        Assert.AreEqual(1d, row.Get("p2"));
-                    }
-                }
-                else {
-                    var row = (EventBean) output[i];
-                    Assert.AreEqual("abc", row.Get("p0"));
-                }
-            }
-
-            env.UndeployAll();
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowBeaconNoType());
+            return execs;
         }
 
-        private static object RunAssertionBeans(
-            RegressionEnvironment env,
-            string typeName)
+        public static IList<RegressionExecution> WithFields(IList<RegressionExecution> execs = null)
         {
-            env.CompileDeploy(
-                "@Name('flow') create dataflow MyDataFlowOne " +
-                "" +
-                "BeaconSource -> BeaconStream<" +
-                typeName +
-                "> {" +
-                "  Myfield : 'abc', iterations : 1" +
-                "}" +
-                "DefaultSupportCaptureOp(BeaconStream) {}");
-
-            var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
-            var options = new EPDataFlowInstantiationOptions()
-                .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
-            var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
-            df.Start();
-            var output = new object[0];
-            try {
-                output = future.GetValue(2, TimeUnit.SECONDS);
-            }
-            catch (Exception t) {
-                throw new EPException(t);
-            }
-
-            Assert.AreEqual(1, output.Length);
-            env.UndeployAll();
-            return output[0];
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowBeaconFields());
+            return execs;
         }
 
-        public static string GenerateTagId()
+        public static IList<RegressionExecution> WithVariable(IList<RegressionExecution> execs = null)
         {
-            return "";
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowBeaconVariable());
+            return execs;
         }
 
-        internal class EPLDataflowBeaconWithBeans : RegressionExecution
+        public static IList<RegressionExecution> WithWithBeans(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowBeaconWithBeans());
+            return execs;
+        }
+
+        private class EPLDataflowBeaconWithBeans : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var resultLegacy = (MyLegacyEvent) RunAssertionBeans(env, "MyLegacyEvent");
+                var resultLegacy = (EPLDataflowOpBeaconSource.MyLegacyEvent)RunAssertionBeans(env, "MyLegacyEvent");
                 Assert.AreEqual("abc", resultLegacy.Myfield);
 
-#if NOT_APPLICABLE // Java can by-pass constructor-less objects (kind of)
-                var resultNoDefCtor = (MyEventNoDefaultCtor) RunAssertionBeans(env, "MyEventNoDefaultCtor");
+                var resultNoDefCtor = (MyEventNoDefaultCtor)RunAssertionBeans(env, "MyEventNoDefaultCtor");
                 Assert.AreEqual("abc", resultNoDefCtor.Myfield);
-#endif
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 
-        internal class EPLDataflowBeaconVariable : RegressionExecution
+        private class EPLDataflowBeaconVariable : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create Schema SomeEvent()", path);
-                env.CompileDeploy("create variable int var_iterations=3", path);
+                env.CompileDeploy("@public create Schema SomeEvent()", path);
+                env.CompileDeploy("@public create variable int var_iterations=3", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "BeaconSource -> BeaconStream<SomeEvent> {" +
                     "  iterations : var_iterations" +
                     "}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}",
                     path);
 
-                var future = new DefaultSupportCaptureOp(3, env.Container.LockManager());
+                var future = new DefaultSupportCaptureOp<object>(3, env.Container.LockManager());
                 var options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
@@ -212,25 +111,30 @@ public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> e
                     output = future.GetValue(2, TimeUnit.SECONDS);
                 }
                 catch (Exception t) {
-                    throw new EPException(t);
+                    throw new EPRuntimeException(t);
                 }
 
                 Assert.AreEqual(3, output.Length);
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowBeaconFields : RegressionExecution
+        private class EPLDataflowBeaconFields : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in new[] {EventRepresentationChoice.AVRO}) {
+                foreach (var rep in new EventRepresentationChoice[] { EventRepresentationChoice.AVRO }) {
                     RunAssertionFields(env, rep, true);
                     RunAssertionFields(env, rep, false);
                 }
 
                 // test doc samples
-                var epl = "@Name('flow') create dataflow MyDataFlow\n" +
+                var epl = "@name('flow') create dataflow MyDataFlow\n" +
                           "  create schema SampleSchema(tagId string, locX double, locY double)," +
                           "  " +
                           "  // BeaconSource that produces empty object-array events without delay or interval\n" +
@@ -246,47 +150,121 @@ public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> e
                           "    locY : 20 \n" +
                           "  }\n" +
                           "  \n" +
-                          "  // BeaconSource that produces 10 object-array events populating the Price property \n" +
+                          "  // BeaconSource that produces 10 object-array events populating the price property \n" +
                           "  // with a random value.\n" +
                           "  BeaconSource -> stream.three {\n" +
                           "    iterations : 1,\n" +
                           "    interval : 10, // every 10 seconds\n" +
                           "    initialDelay : 5, // start after 5 seconds\n" +
-                          "    price : Randomizer.Random() * 100,\n" +
+                          "    price : Math.random() * 100,\n" +
                           "  }";
                 env.CompileDeploy(epl);
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow");
                 env.UndeployAll();
 
                 // test options-provided beacon field
-                var eplMinimal = "@Name('flow') create dataflow MyGraph " +
+                var eplMinimal = "@name('flow') create dataflow MyGraph " +
                                  "BeaconSource -> outstream<SupportBean> {iterations:1} " +
                                  "EventBusSink(outstream) {}";
                 env.CompileDeploy(eplMinimal);
 
                 var options = new EPDataFlowInstantiationOptions();
-                options.AddParameterURI("BeaconSource/TheString", "E1");
+                options.AddParameterURI("BeaconSource/theString", "E1");
                 var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyGraph", options);
 
-                env.CompileDeploy("@Name('s0') select * from SupportBean").AddListener("s0");
+                env.CompileDeploy("@name('s0') select * from SupportBean").AddListener("s0");
                 instance.Run();
                 Sleep(200);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "TheString" },
-                    new object[] {"E1"});
+                env.AssertPropsNew("s0", "theString".SplitCsv(), new object[] { "E1" });
 
                 // invalid: no output stream
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "create dataflow DF1 BeaconSource {}",
                     "Failed to obtain operator 'BeaconSource': BeaconSource operator requires one output stream but produces 0 streams");
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
-        internal class EPLDataflowBeaconNoType : RegressionExecution
+        private static void RunAssertionFields(
+            RegressionEnvironment env,
+            EventRepresentationChoice representationEnum,
+            bool eventbean)
+        {
+            EPDataFlowInstantiationOptions options;
+
+            var path = new RegressionPath();
+            env.CompileDeploy(
+                representationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedMyEvent)) +
+                "@public create schema MyEvent(p0 string, p1 long, p2 double)",
+                path);
+            env.CompileDeploy(
+                "@name('flow') create dataflow MyDataFlowOne " +
+                "" +
+                "BeaconSource -> BeaconStream<" +
+                (eventbean ? "EventBean<MyEvent>" : "MyEvent") +
+                "> {" +
+                "  iterations : 3," +
+                "  p0 : 'abc'," +
+                "  p1 : Math.round(Math.random() * 10) + 1," +
+                "  p2 : 1d," +
+                "}" +
+                "DefaultSupportCaptureOp(BeaconStream) {}",
+                path);
+
+            var future = new DefaultSupportCaptureOp<object>(3, env.Container.LockManager());
+            options = new EPDataFlowInstantiationOptions()
+                .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
+            var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
+            df.Start();
+            object[] output;
+            try {
+                output = future.GetValue(2, TimeUnit.SECONDS);
+            }
+            catch (Exception t) {
+                throw new EPRuntimeException(t);
+            }
+
+            Assert.AreEqual(3, output.Length);
+            for (var i = 0; i < 3; i++) {
+                if (!eventbean) {
+                    if (representationEnum.IsObjectArrayEvent()) {
+                        var row = (object[])output[i];
+                        Assert.AreEqual("abc", row[0]);
+                        var val = (long)row[1];
+                        Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
+                        Assert.AreEqual(1d, row[2]);
+                    }
+                    else if (representationEnum.IsMapEvent()) {
+                        var row = (IDictionary<string, object>)output[i];
+                        Assert.AreEqual("abc", row.Get("p0"));
+                        var val = (long)row.Get("p1");
+                        Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
+                        Assert.AreEqual(1d, row.Get("p2"));
+                    }
+                    else {
+                        var row = (GenericRecord)output[i];
+                        Assert.AreEqual("abc", row.Get("p0"));
+                        var val = (long)row.Get("p1");
+                        Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
+                        Assert.AreEqual(1d, row.Get("p2"));
+                    }
+                }
+                else {
+                    var row = (EventBean)output[i];
+                    Assert.AreEqual("abc", row.Get("p0"));
+                }
+            }
+
+            env.UndeployAll();
+        }
+
+        private class EPLDataflowBeaconNoType : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -294,12 +272,12 @@ public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> e
                 object[] output;
 
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "BeaconSource -> BeaconStream {}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
 
                 var countExpected = 10;
-                var futureAtLeast = new DefaultSupportCaptureOp(countExpected, env.Container.LockManager());
+                var futureAtLeast = new DefaultSupportCaptureOp<object>(countExpected, env.Container.LockManager());
                 options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(futureAtLeast));
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
@@ -308,7 +286,7 @@ public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> e
                     output = futureAtLeast.GetValue(1, TimeUnit.SECONDS);
                 }
                 catch (Exception e) {
-                    throw new EPException(e);
+                    throw new EPRuntimeException(e);
                 }
 
                 Assert.IsTrue(countExpected <= output.Length);
@@ -317,13 +295,13 @@ public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> e
 
                 // BeaconSource with given number of iterations
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowTwo " +
+                    "@name('flow') create dataflow MyDataFlowTwo " +
                     "BeaconSource -> BeaconStream {" +
                     "  iterations: 5" +
                     "}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
 
-                var futureExactTwo = new DefaultSupportCaptureOp(5, env.Container.LockManager());
+                var futureExactTwo = new DefaultSupportCaptureOp<object>(5, env.Container.LockManager());
                 options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(futureExactTwo));
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowTwo", options).Start();
@@ -331,7 +309,7 @@ public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> e
                     output = futureExactTwo.GetValue(1, TimeUnit.SECONDS);
                 }
                 catch (Exception t) {
-                    throw new EPException(t);
+                    throw new EPRuntimeException(t);
                 }
 
                 Assert.AreEqual(5, output.Length);
@@ -339,14 +317,14 @@ public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> e
 
                 // BeaconSource with delay
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowThree " +
+                    "@name('flow') create dataflow MyDataFlowThree " +
                     "BeaconSource -> BeaconStream {" +
                     "  iterations: 2," +
                     "  initialDelay: 0.5" +
                     "}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
 
-                var futureExactThree = new DefaultSupportCaptureOp(2, env.Container.LockManager());
+                var futureExactThree = new DefaultSupportCaptureOp<object>(2, env.Container.LockManager());
                 options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(futureExactThree));
                 var start = PerformanceObserver.MilliTime;
@@ -355,22 +333,22 @@ public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> e
                     output = futureExactThree.GetValue(1, TimeUnit.SECONDS);
                 }
                 catch (Exception e) {
-                    throw new EPException(e);
+                    throw new EPRuntimeException(e);
                 }
 
                 var end = PerformanceObserver.MilliTime;
                 Assert.AreEqual(2, output.Length);
-                Assert.IsTrue(end - start > 490, "delta=" + (end - start));
+                Assert.That(end - start, Is.LessThan(490), "delta=" + (end - start));
                 env.UndeployAll();
 
                 // BeaconSource with period
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowFour " +
+                    "@name('flow') create dataflow MyDataFlowFour " +
                     "BeaconSource -> BeaconStream {" +
                     "  interval: 0.5" +
                     "}" +
                     "DefaultSupportCaptureOp(BeaconStream) {}");
-                var futureFour = new DefaultSupportCaptureOp(2, env.Container.LockManager());
+                var futureFour = new DefaultSupportCaptureOp<object>(2, env.Container.LockManager());
                 options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(futureFour));
                 var instance = env.Runtime.DataFlowService.Instantiate(
@@ -382,7 +360,7 @@ public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> e
                     output = futureFour.GetValue(2, TimeUnit.SECONDS);
                 }
                 catch (Exception t) {
-                    throw new EPException(t);
+                    throw new EPRuntimeException(t);
                 }
 
                 Assert.AreEqual(2, output.Length);
@@ -391,9 +369,9 @@ public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> e
 
                 // test Beacon with define typed
                 var path = new RegressionPath();
-                env.CompileDeploy("create objectarray schema MyTestOAType(p1 string)", path);
+                env.CompileDeploy("@public create objectarray schema MyTestOAType(p1 string)", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowFive " +
+                    "@name('flow') create dataflow MyDataFlowFive " +
                     "BeaconSource -> BeaconStream<MyTestOAType> {" +
                     "  interval: 0.5," +
                     "  p1 : 'abc'" +
@@ -402,25 +380,81 @@ public static IList<RegressionExecution> WithNoType(IList<RegressionExecution> e
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowFive");
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
+        }
+
+        private static object RunAssertionBeans(
+            RegressionEnvironment env,
+            string typeName)
+        {
+            env.CompileDeploy(
+                "@name('flow') create dataflow MyDataFlowOne " +
+                "" +
+                "BeaconSource -> BeaconStream<" +
+                typeName +
+                "> {" +
+                "  myfield : 'abc', iterations : 1" +
+                "}" +
+                "DefaultSupportCaptureOp(BeaconStream) {}");
+
+            var future = new DefaultSupportCaptureOp<object>(1, env.Container.LockManager());
+            var options = new EPDataFlowInstantiationOptions()
+                .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
+            var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
+            df.Start();
+            var output = Array.Empty<object>();
+            try {
+                output = future.GetValue(2, TimeUnit.SECONDS);
+            }
+            catch (Exception t) {
+                throw new EPRuntimeException(t);
+            }
+
+            Assert.AreEqual(1, output.Length);
+            env.UndeployAll();
+            return output[0];
+        }
+
+        public static string GenerateTagId()
+        {
+            return "";
         }
 
         public class MyEventNoDefaultCtor
         {
+            private string myfield;
+
             public MyEventNoDefaultCtor(
                 string someOtherfield,
                 int someOtherValue)
             {
             }
 
-            public string Myfield { get; set; }
+            public string Myfield {
+                get => myfield;
+                set => this.myfield = value;
+            }
         }
 
         [Serializable]
         public class MyLegacyEvent
         {
-            public string Myfield { get; set; }
+            private string myfield;
+
+            public MyLegacyEvent()
+            {
+            }
+
+            public string Myfield {
+                get => myfield;
+                set => this.myfield = value;
+            }
         }
-        
+
         [Serializable]
         public class MyLocalJsonProvidedMyEvent
         {

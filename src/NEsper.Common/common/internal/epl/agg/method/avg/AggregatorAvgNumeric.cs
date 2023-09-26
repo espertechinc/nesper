@@ -30,16 +30,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
 
         public AggregatorAvgNumeric(
             AggregationForgeFactoryAvg factory,
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
             Type optionalDistinctValueType,
             DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter,
             Type sumType)
-            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter, sumType)
+            : base(optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter, sumType)
         {
             _factoryMethodAvg = factory;
         }

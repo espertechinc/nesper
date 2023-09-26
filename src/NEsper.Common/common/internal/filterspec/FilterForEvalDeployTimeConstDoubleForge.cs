@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope)
-				.AddParam(GET_FILTER_VALUE_FP);
+                .AddParam(GET_FILTER_VALUE_FP);
             method.Block
                 .MethodReturn(
                     ExprDotMethod(
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (FilterForEvalDeployTimeConstDoubleForge) o;
+            var that = (FilterForEvalDeployTimeConstDoubleForge)o;
 
             return _deployTimeConst.Equals(that._deployTimeConst);
         }

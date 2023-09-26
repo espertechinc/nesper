@@ -181,7 +181,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                         "Expected 'preallocate' keyword after list of coalesce items, found '" + preallocateStr + "' instead");
                 }
 
-                if (!num.GetType().IsNumericNonFP() || num.GetType().GetBoxedType() == typeof(long?))
+                if (!num.GetType().IsTypeNumericNonFP() || num.GetType().GetBoxedType() == typeof(long?))
                 {
                     throw ASTWalkException.From("Granularity provided must be an int-type number, received " + num.GetType() + " instead");
                 }
@@ -257,7 +257,8 @@ namespace com.espertech.esper.compiler.@internal.parse
                     inclusive = true;
                 }
 
-                return new ContextSpecConditionPattern(evalNode, inclusive, immediate);
+                var streamName = ctx.keywordAllowedIdent()?.GetText();
+                return new ContextSpecConditionPattern(evalNode, inclusive, immediate, streamName);
             }
 
             if (ctx.createContextFilter() != null)

@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public int?[] Intarray { get; set; }
 
-        public IEnumerable<int?> Intiterable { get; set; }
+        public IList<int?> Intiterable { get; set; }
 
         public static string SampleCSV {
             set => sampleStaticCSV = value;
@@ -69,11 +69,10 @@ namespace com.espertech.esper.regressionlib.support.bean
                 bean.Intarray = new int?[bean.Intvals.Count];
                 var count = 0;
                 foreach (var val in bean.Intvals) {
-                    bean.Intarray[count++] = val == null ? int.MinValue : val;
+                    bean.Intarray[count++] = val ?? int.MinValue;
                 }
 
-                var iteratable = bean.Intvals;
-                bean.Intiterable = iteratable;
+                bean.Intiterable = bean.Intvals.ToList();
             }
 
             return bean;

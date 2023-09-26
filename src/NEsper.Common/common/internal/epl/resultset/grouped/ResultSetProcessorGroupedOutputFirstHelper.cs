@@ -6,7 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.output.polled;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 
@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
     {
         OutputConditionPolled GetOrAllocate(
             object mk,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             OutputConditionPolledFactory optionalOutputFirstConditionFactory);
 
         void Remove(object key);

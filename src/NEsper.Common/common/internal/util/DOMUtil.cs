@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.util
                 func.Invoke(b);
             }
         }
-        
+
         public static void ParseOptionalInteger(
             XmlElement element,
             string name,
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.util
                 func.Invoke(ParseInteger(name, str));
             }
         }
-        
+
         public static void ParseRequiredAttribute(
             XmlElement element,
             string name,
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.util
                 func.Invoke(str);
             }
         }
-        
+
         public static string GetRequiredAttribute(
             XmlNode node,
             string key)

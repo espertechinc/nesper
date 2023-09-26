@@ -38,14 +38,18 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             var method = parent.MakeChild(typeof(AggregationMethodLinearWindow), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(AggregationMethodLinearWindow), "strat", NewInstance(typeof(AggregationMethodLinearWindow)))
+                .DeclareVar<AggregationMethodLinearWindow>("strat", NewInstance(typeof(AggregationMethodLinearWindow)))
                 .SetProperty(Ref("strat"), "ComponentType", Constant(arrayType.GetElementType()))
                 .SetProperty(
                     Ref("strat"),
                     "OptionalEvaluator",
                     optionalEvaluator == null
                         ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenEvaluator(optionalEvaluator.Forge, method, GetType(), classScope))
+                        : ExprNodeUtilityCodegen.CodegenEvaluator(
+                            optionalEvaluator.Forge,
+                            method,
+                            GetType(),
+                            classScope))
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }

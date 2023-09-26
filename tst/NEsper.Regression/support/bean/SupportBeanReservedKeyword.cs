@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 namespace com.espertech.esper.regressionlib.support.bean
 {
     public class SupportBeanReservedKeyword
@@ -33,6 +35,7 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public Inner Timestamp { get; set; }
 
+        [Serializable]
         public class Inner
         {
             public int Hour { get; set; }

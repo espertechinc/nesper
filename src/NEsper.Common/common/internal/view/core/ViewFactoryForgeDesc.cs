@@ -9,6 +9,8 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.fabric;
+using com.espertech.esper.common.@internal.schedule;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
@@ -16,14 +18,22 @@ namespace com.espertech.esper.common.@internal.view.core
     {
         public ViewFactoryForgeDesc(
             IList<ViewFactoryForge> forges,
-            IList<StmtClassForgeableFactory> multikeyForges)
+            IList<StmtClassForgeableFactory> multikeyForges,
+            IList<ScheduleHandleTracked> schedules,
+            FabricCharge fabricCharge)
         {
             Forges = forges;
             MultikeyForges = multikeyForges;
+            Schedules = schedules;
+            FabricCharge = fabricCharge;
         }
 
         public IList<ViewFactoryForge> Forges { get; }
 
         public IList<StmtClassForgeableFactory> MultikeyForges { get; }
+
+        public IList<ScheduleHandleTracked> Schedules { get; }
+
+        public FabricCharge FabricCharge { get; }
     }
 } // end of namespace

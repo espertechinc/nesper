@@ -20,10 +20,8 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public class TypeWidenerObjectArrayToCollectionCoercer : TypeWidenerSPI
     {
-        public Type WidenResultType {
-            get => typeof(ICollection<object>);
-        }
-        
+        public Type WidenResultType => typeof(ICollection<object>);
+
         /// <summary>
         /// Widen input value.
         /// </summary>

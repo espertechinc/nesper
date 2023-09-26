@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -30,8 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     /// </summary>
     public class SubselectForgeRowUnfilteredSelectedGroupedNoHaving : SubselectForgeStrategyRowPlain
     {
-        public SubselectForgeRowUnfilteredSelectedGroupedNoHaving(ExprSubselectRowNode subselect)
-            : base(subselect)
+        public SubselectForgeRowUnfilteredSelectedGroupedNoHaving(ExprSubselectRowNode subselect) : base(subselect)
         {
         }
 
@@ -40,18 +39,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
-                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
-                typeof(AggregationResultFuture));
+            if (Subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
 
-            var method = parent.MakeChild(subselect.EvaluationType, this.GetType(), classScope);
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+                new CodegenFieldNameSubqueryAgg(Subselect.SubselectNumber),
+                typeof(AggregationResultFuture));
+            var method = parent.MakeChild(Subselect.EvaluationType, GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
 
             method.Block
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar<ICollection<object>>(
+                .DeclareVar(
+                    typeof(ICollection<object>),
                     "groupKeys",
-                    ExprDotMethod(aggService, "GetGroupKeys", evalCtx))
+                    ExprDotMethod(aggService, "getGroupKeys", evalCtx))
                 .IfCondition(Not(EqualsIdentity(ExprDotName(Ref("groupKeys"), "Count"), Constant(1))))
                 .BlockReturn(ConstantNull())
                 .ExprDotMethod(
@@ -69,16 +72,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         "GetNonemptyFirstEvent",
                         symbols.GetAddMatchingEvents(method)));
 
-            if (subselect.SelectClause.Length == 1) {
-                var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[0].Forge, method, classScope, true);
+            if (Subselect.selectClause.Length == 1) {
+                var eval = CodegenLegoMethodExpression.CodegenExpression(
+                    Subselect.selectClause[0].Forge,
+                    method,
+                    classScope);
                 method.Block.MethodReturn(
                     LocalMethod(eval, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)));
             }
             else {
                 var methodSelect = ExprNodeUtilityCodegen.CodegenMapSelect(
-                    subselect.SelectClause,
-                    subselect.SelectAsNames,
-                    this.GetType(),
+                    Subselect.selectClause,
+                    Subselect.selectAsNames,
+                    GetType(),
                     method,
                     classScope);
                 CodegenExpression select = LocalMethod(
@@ -97,35 +103,44 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
-                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+                new CodegenFieldNameSubqueryAgg(Subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
-            var method = parent.MakeChild(typeof(FlexCollection), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var eventBeanSvc =
                 classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var typeMember = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
-                EventTypeUtility.ResolveTypeCodegen(
-                    subselect.subselectMultirowType,
-                    EPStatementInitServicesConstants.REF));
+                EventTypeUtility.ResolveTypeCodegen(Subselect.SubselectMultirowType, EPStatementInitServicesConstants.REF));
 
             method.Block
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar<AggregationService>("aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar<ICollection<object>>("groupKeys", ExprDotMethod(aggService, "GetGroupKeys", evalCtx))
+                .DeclareVar<AggregationService>(
+                    "aggregationService",
+                    ExprDotMethod(aggService, "getContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar(typeof(ICollection<object>), "groupKeys", ExprDotMethod(aggService, "GetGroupKeys", evalCtx))
                 .IfCondition(ExprDotMethod(Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .DeclareVar<ICollection<EventBean>>("events", NewInstance<ArrayDeque<EventBean>>(ExprDotName(Ref("groupKeys"), "Count")))
+                .DeclareVar(typeof(ICollection<EventBean>), "events", NewInstance(typeof(ArrayDeque<EventBean>), ExprDotName(Ref("groupKeys"), "Count")))
                 .ForEach(typeof(object), "groupKey", Ref("groupKeys"))
                 .ExprDotMethod(aggService, "SetCurrentAccess", Ref("groupKey"), Ref("cpid"), ConstantNull())
-                .DeclareVar<IDictionary<string, object>>("row", LocalMethod(subselect.EvaluateRowCodegen(method, classScope), ConstantNull(), ConstantTrue(), symbols.GetAddExprEvalCtx(method)))
-                .DeclareVar<EventBean>("@event", ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", Ref("row"), typeMember))
-                .ExprDotMethod(Ref("events"), "Add", Ref("@event"))
+                .DeclareVar(
+                    typeof(ICollection<string, object>),
+                    "row",
+                    LocalMethod(
+                        Subselect.EvaluateRowCodegen(method, classScope),
+                        ConstantNull(),
+                        ConstantTrue(),
+                        symbols.GetAddExprEvalCtx(method)))
+                .DeclareVar<EventBean>(
+                    "event",
+                    ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", Ref("row"), typeMember))
+                .ExprDotMethod(Ref("events"), "Add", Ref("event"))
                 .BlockEnd()
-                .MethodReturn(FlexWrap(Ref("events")));
+                .MethodReturn(Ref("events"));
             return LocalMethod(method);
         }
 
@@ -144,5 +159,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         {
             return ConstantNull();
         }
+    }
+
+    public interface ICollection<T, T1>
+    {
     }
 } // end of namespace

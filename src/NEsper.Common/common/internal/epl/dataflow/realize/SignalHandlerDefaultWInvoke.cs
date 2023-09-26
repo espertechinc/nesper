@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         internal virtual void HandleSignalInternal(EPDataFlowSignal signal)
         {
             try {
-                method.Invoke(target, new object[] {signal});
+                method.Invoke(target, new object[] { signal });
             }
             catch (MemberAccessException e) {
                 log.Error("Failed to invoke signal handler: " + e.Message, e);

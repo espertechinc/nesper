@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
@@ -14,7 +15,9 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
@@ -24,26 +27,38 @@ using static com.espertech.esper.regressionlib.support.client.SupportCompileDepl
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
-    public class MultithreadStmtPatternFollowedBy
+    public class MultithreadStmtPatternFollowedBy : RegressionExecutionPreConfigured
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private EPRuntimeProvider _runtimeProvider = new EPRuntimeProvider();
         
-        public void Run(Configuration configuration)
+        private readonly Configuration _configuration;
+
+        public ISet<RegressionFlag> Flags()
         {
-            RunAssertionPatternFollowedBy(FilterServiceProfile.READMOSTLY, configuration);
-            RunAssertionPatternFollowedBy(FilterServiceProfile.READWRITE, configuration);
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
+        public MultithreadStmtPatternFollowedBy(Configuration configuration)
+        {
+            _configuration = configuration;
         }
 
-        public void RunReadMostly(Configuration configuration)
+        public void Run()
         {
-            RunAssertionPatternFollowedBy(FilterServiceProfile.READMOSTLY, configuration);
+            RunAssertionPatternFollowedBy(FilterServiceProfile.READMOSTLY, _configuration);
+            RunAssertionPatternFollowedBy(FilterServiceProfile.READWRITE, _configuration);
         }
 
-        public void RunReadWrite(Configuration configuration)
+        public void RunReadMostly()
         {
-            RunAssertionPatternFollowedBy(FilterServiceProfile.READWRITE, configuration);
+            RunAssertionPatternFollowedBy(FilterServiceProfile.READMOSTLY, _configuration);
+        }
+
+        public void RunReadWrite()
+        {
+            RunAssertionPatternFollowedBy(FilterServiceProfile.READWRITE, _configuration);
         }
 
         private void RunAssertionPatternFollowedBy(
@@ -91,12 +106,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 ThreadJoin(threadOne);
                 ThreadJoin(threadTwo);
 
-                var events = listener.GetNewDataListFlattened();
+                var events = listener.NewDataListFlattened;
                 /* Comment in to print events delivered.
                 for (int j = 0; j < events.length; j++) {
                     EventBean out = events[j];
                     /*
-                    System.out.println(" sa=" + getNull(out.get("sa.Id")) +
+                    Console.WriteLine(" sa=" + getNull(out.get("sa.Id")) +
                                        " sb=" + getNull(out.get("sb.Id")) +
                                        " sc=" + getNull(out.get("sc.Id")) +
                                        " sd=" + getNull(out.get("sd.Id")));

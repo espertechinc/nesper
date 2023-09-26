@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType => array? typeof(EventBean[]) : typeof(EventBean);
+        public Type EvaluationType => array ? typeof(EventBean[]) : typeof(EventBean);
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
@@ -71,13 +71,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamId)))
                 .IfRefNullReturnNull("@event")
-                .MethodReturn(Cast(returnType, getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)));
+                .MethodReturn(
+                    Cast(returnType, getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)));
             return LocalMethod(methodNode);
         }
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {

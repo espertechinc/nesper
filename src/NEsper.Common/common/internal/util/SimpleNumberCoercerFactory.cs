@@ -107,9 +107,11 @@ namespace com.espertech.esper.common.@internal.util
             if (type == primitive) {
                 return param;
             }
+
             if (type == boxed) {
                 return ExprDotName(param, "Value");
             }
+
             if (type.CanNotBeNull()) {
                 return Cast(primitive, param);
             }

@@ -15,36 +15,31 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 {
     public class FireAndForgetProcessorNamedWindow : FireAndForgetProcessor
     {
-        private NamedWindow namedWindow;
+        public NamedWindow NamedWindow { get; set; }
 
-        public NamedWindow NamedWindow {
-            get => namedWindow;
-            set => namedWindow = value;
-        }
+        public override EventType EventTypeResultSetProcessor => NamedWindow.RootView.EventType;
 
-        public override EventType EventTypeResultSetProcessor => namedWindow.RootView.EventType;
-
-        public override string ContextName => namedWindow.RootView.ContextName;
+        public override string ContextName => NamedWindow.RootView.ContextName;
 
         public override string ContextDeploymentId =>
-            namedWindow.StatementContext.ContextRuntimeDescriptor.ContextDeploymentId;
+            NamedWindow.StatementContext.ContextRuntimeDescriptor.ContextDeploymentId;
 
         public override FireAndForgetInstance ProcessorInstanceNoContext => GetProcessorInstance(null);
 
-        public string NamedWindowOrTableName => namedWindow.Name;
+        public string NamedWindowOrTableName => NamedWindow.Name;
 
-        public override EventType EventTypePublic => namedWindow.RootView.EventType;
+        public override EventType EventTypePublic => NamedWindow.RootView.EventType;
 
-        public override StatementContext StatementContext => namedWindow.StatementContext;
+        public override StatementContext StatementContext => NamedWindow.StatementContext;
 
         public FireAndForgetInstance GetProcessorInstance(AgentInstanceContext agentInstanceContext)
         {
             NamedWindowInstance instance;
             if (agentInstanceContext != null) {
-                instance = namedWindow.GetNamedWindowInstance(agentInstanceContext);
+                instance = NamedWindow.GetNamedWindowInstance(agentInstanceContext);
             }
             else {
-                instance = namedWindow.NamedWindowInstanceNoContext;
+                instance = NamedWindow.NamedWindowInstanceNoContext;
             }
 
             if (instance != null) {
@@ -56,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 
         public override FireAndForgetInstance GetProcessorInstanceContextById(int agentInstanceId)
         {
-            var instance = namedWindow.GetNamedWindowInstance(agentInstanceId);
+            var instance = NamedWindow.GetNamedWindowInstance(agentInstanceId);
             if (instance != null) {
                 return new FireAndForgetInstanceNamedWindow(instance);
             }

@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var sorted = (AggregationStateSorted) row.GetAccessState(aggColNum);
+            var sorted = (AggregationStateSorted)row.GetAccessState(aggColNum);
             return sorted.CollectionReadOnly();
         }
 

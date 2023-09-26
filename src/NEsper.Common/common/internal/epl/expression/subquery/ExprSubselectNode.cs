@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,7 +29,7 @@ using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.subquery.ExprSubselectEvalMatchSymbol;
-using static com.espertech.esper.common.@internal.epl.expression.subquery.ExprSubselectNode.SubselectEvaluationType;
+using static com.espertech.esper.common.@internal.epl.util.EPTypeCollectionConst;
 
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
@@ -49,7 +49,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             FULLY_AGGREGATED_WPROPS
         }
 
-        public static readonly ExprSubselectNode[] EMPTY_SUBSELECT_ARRAY = new ExprSubselectNode[0];
+        public static readonly ExprSubselectNode[] EMPTY_SUBSELECT_ARRAY = Array.Empty<ExprSubselectNode>();
+
+        internal ExprForge filterExpr;
+        internal ExprForge havingExpr;
+        internal EventType rawEventType;
+        internal string[] selectAsNames;
+        internal ExprNode[] selectClause;
 
         /// <summary>
         ///     Ctor.
@@ -64,16 +70,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public override ExprForge Forge => this;
 
+        public ExprNodeRenderable ForgeRenderable => this;
+        
         /// <summary>
         ///     Returns the compiled statement spec.
         /// </summary>
-        /// <returns>compiled statement</returns>
+        /// <value>compiled statement</value>
         public StatementSpecCompiled StatementSpecCompiled { get; private set; }
 
         /// <summary>
         ///     Returns the uncompiled statement spec.
         /// </summary>
-        /// <returns>statement spec uncompiled</returns>
+        /// <value>statement spec uncompiled</value>
         public StatementSpecRaw StatementSpecRaw { get; }
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
@@ -81,46 +89,64 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         /// <summary>
         ///     Returns the select clause or null if none.
         /// </summary>
-        /// <returns>clause</returns>
-        public ExprNode[] SelectClause { get; set; }
+        /// <value>clause</value>
+        public ExprNode[] SelectClause {
+            get => selectClause;
+            set => selectClause = value;
+        }
 
         /// <summary>
         ///     Returns the event type.
         /// </summary>
-        /// <returns>type</returns>
-        public EventType RawEventType { get; set; }
+        /// <value>type</value>
+        public EventType RawEventType {
+            get => rawEventType;
+            set => rawEventType = value;
+        }
 
         /// <summary>
         ///     Return stream types.
         /// </summary>
-        /// <returns>types</returns>
+        /// <value>types</value>
         public StreamTypeService FilterSubqueryStreamTypes { get; set; }
 
         public SubqueryAggregationType SubselectAggregationType { get; set; }
 
-        public int SubselectNumber { get; set; } = -1;
+        public int SubselectNumber { get; private set; } = -1;
 
-        public bool IsFilterStreamSubselect { get; set; }
+        public bool IsFilterStreamSubselect { set; get; }
+
+        public ExprValidationContext FilterStreamExprValidationContext { get; private set; }
 
         /// <summary>
         ///     Supplies the name of the select expression as-tag
         /// </summary>
         /// <value>is the as-name(s)</value>
-        public string[] SelectAsNames { get; set; }
+        public string[] SelectAsNames {
+            get => selectAsNames;
+            set => selectAsNames = value;
+        }
 
         /// <summary>
         ///     Sets the validated filter expression, or null if there is none.
         /// </summary>
         /// <value>is the filter</value>
-        public ExprForge FilterExpr { get; set; }
+        public ExprForge FilterExpr {
+            get => filterExpr;
+            set => filterExpr = value;
+        }
 
-        public ExprForge HavingExpr { get; set; }
-
-        public ExprValidationContext FilterStreamExprValidationContext { get; set; }
+        public ExprForge HavingExpr {
+            get => havingExpr;
+            set => havingExpr = value;
+        }
 
         public abstract bool IsAllowMultiColumnSelect { get; }
 
         public abstract Type ComponentTypeCollection { get; }
+
+        public virtual ExprNodeRenderable EnumForgeRenderable => ForgeRenderable;
+        public virtual ExprNodeRenderable ExprForgeRenderable => ForgeRenderable;
 
         public abstract EventType GetEventTypeCollection(
             StatementRawInfo statementRawInfo,
@@ -130,16 +156,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices compileTimeServices);
 
-        public ExprNodeRenderable EnumForgeRenderable => this;
-        public ExprNodeRenderable ExprForgeRenderable => this;
-
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
             CodegenMethodScope parent,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(
-                GETEVENTCOLL,
+                SubselectEvaluationType.GETEVENTCOLL,
                 this,
                 typeof(FlexCollection),
                 parent,
@@ -153,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(
-                GETSCALARCOLL,
+                SubselectEvaluationType.GETSCALARCOLL,
                 this,
                 typeof(FlexCollection),
                 parent,
@@ -167,7 +190,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(
-                GETEVENT,
+                SubselectEvaluationType.GETEVENT,
                 this,
                 typeof(EventBean),
                 parent,
@@ -191,12 +214,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return MakeEvaluate(PLAIN, this, EvaluationType, codegenMethodScope, exprSymbol, codegenClassScope);
+            return MakeEvaluate(
+                SubselectEvaluationType.PLAIN,
+                this,
+                EvaluationType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public abstract Type EvaluationType { get; }
 
         public IDictionary<string, object> RowProperties => TypableGetRowProperties();
+
+        public bool? IsMultirow => true; // subselect can always return multiple rows
 
         public ExprEvaluator ExprEvaluator => this;
 
@@ -216,15 +247,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 codegenClassScope).Build();
         }
 
-        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
-
         public CodegenExpression EvaluateTypableSingleCodegen(
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(
-                TYPABLESINGLE,
+                SubselectEvaluationType.TYPABLESINGLE,
                 this,
                 typeof(object[]),
                 codegenMethodScope,
@@ -238,7 +267,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenClassScope codegenClassScope)
         {
             return MakeEvaluate(
-                TYPABLEMULTI,
+                SubselectEvaluationType.TYPABLEMULTI,
                 this,
                 typeof(object[][]),
                 parent,
@@ -246,7 +275,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 codegenClassScope);
         }
 
-        public bool? IsMultirow => true; // subselect can always return multiple rows
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public abstract void ValidateSubquery(ExprValidationContext validationContext);
 
@@ -314,11 +343,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer,
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            if (SelectAsNames != null && SelectAsNames[0] != null) {
-                writer.Write(SelectAsNames[0]);
+            if (selectAsNames != null && selectAsNames[0] != null) {
+                writer.Write(selectAsNames[0]);
                 return;
             }
 
@@ -345,11 +375,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
         private static CodegenExpression MakeEvaluate(
             SubselectEvaluationType evaluationType,
             ExprSubselectNode subselectNode,
-            Type resultType,
+            Type resultTypeMayNull,
             CodegenMethodScope parent,
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (resultTypeMayNull == null) {
+                return ConstantNull();
+            }
+
+            var resultType = resultTypeMayNull;
             var method = parent.MakeChild(resultType, typeof(ExprSubselectNode), classScope);
 
             CodegenExpression eps = symbols.GetAddEPS(method);
@@ -357,40 +392,45 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             CodegenExpression evalCtx = symbols.GetAddExprEvalCtx(method);
 
             // get matching events
-            CodegenExpression future = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+            CodegenExpression future = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryResult(subselectNode.SubselectNumber),
                 typeof(SubordTableLookupStrategy));
-            var evalMatching = FlexWrap(ExprDotMethod(future, "Lookup", eps, evalCtx));
-            method.Block.DeclareVar<FlexCollection>(NAME_MATCHINGEVENTS, evalMatching);
+            var evalMatching = ExprDotMethod(future, "lookup", eps, evalCtx);
+            method.Block.DeclareVar(typeof(ICollection<EventBean>), NAME_MATCHINGEVENTS, evalMatching);
 
             // process matching events
             var evalMatchSymbol = new ExprSubselectEvalMatchSymbol();
             var processMethod = method
                 .MakeChildWithScope(resultType, typeof(ExprSubselectNode), evalMatchSymbol, classScope)
-                .AddParam(typeof(FlexCollection), NAME_MATCHINGEVENTS)
+                .AddParam(EPTYPE_COLLECTION_EVENTBEAN, NAME_MATCHINGEVENTS)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
-            CodegenExpression process;
-            if (evaluationType == PLAIN) {
-                process = subselectNode.EvalMatchesPlainCodegen(processMethod, evalMatchSymbol, classScope);
-            }
-            else if (evaluationType == GETEVENTCOLL) {
-                process = subselectNode.EvalMatchesGetCollEventsCodegen(processMethod, evalMatchSymbol, classScope);
-            }
-            else if (evaluationType == GETSCALARCOLL) {
-                process = subselectNode.EvalMatchesGetCollScalarCodegen(processMethod, evalMatchSymbol, classScope);
-            }
-            else if (evaluationType == GETEVENT) {
-                process = subselectNode.EvalMatchesGetEventBeanCodegen(processMethod, evalMatchSymbol, classScope);
-            }
-            else if (evaluationType == TYPABLESINGLE) {
-                process = subselectNode.EvalMatchesTypableSingleCodegen(processMethod, evalMatchSymbol, classScope);
-            }
-            else if (evaluationType == TYPABLEMULTI) {
-                process = subselectNode.EvalMatchesTypableMultiCodegen(processMethod, evalMatchSymbol, classScope);
-            }
-            else {
-                throw new IllegalStateException("Unrecognized evaluation type " + evaluationType);
-            }
+            var process = evaluationType switch {
+                SubselectEvaluationType.PLAIN => subselectNode.EvalMatchesPlainCodegen(
+                    processMethod,
+                    evalMatchSymbol,
+                    classScope),
+                SubselectEvaluationType.GETEVENTCOLL => subselectNode.EvalMatchesGetCollEventsCodegen(
+                    processMethod,
+                    evalMatchSymbol,
+                    classScope),
+                SubselectEvaluationType.GETSCALARCOLL => subselectNode.EvalMatchesGetCollScalarCodegen(
+                    processMethod,
+                    evalMatchSymbol,
+                    classScope),
+                SubselectEvaluationType.GETEVENT => subselectNode.EvalMatchesGetEventBeanCodegen(
+                    processMethod,
+                    evalMatchSymbol,
+                    classScope),
+                SubselectEvaluationType.TYPABLESINGLE => subselectNode.EvalMatchesTypableSingleCodegen(
+                    processMethod,
+                    evalMatchSymbol,
+                    classScope),
+                SubselectEvaluationType.TYPABLEMULTI => subselectNode.EvalMatchesTypableMultiCodegen(
+                    processMethod,
+                    evalMatchSymbol,
+                    classScope),
+                _ => throw new IllegalStateException("Unrecognized evaluation type " + evaluationType)
+            };
 
             evalMatchSymbol.DerivedSymbolsCodegen(processMethod, processMethod.Block, classScope);
             processMethod.Block.MethodReturn(process);
@@ -400,7 +440,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             return LocalMethod(method);
         }
 
-        internal enum SubselectEvaluationType
+        private enum SubselectEvaluationType
         {
             PLAIN,
             GETEVENTCOLL,

@@ -35,34 +35,27 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             bool distinct,
             ConfigurationCompilerPlugInAggregationMultiFunction configuration)
         {
-            this._functionName = functionName;
-            this._distinct = distinct;
-            this._configuration = configuration;
+            _functionName = functionName;
+            _distinct = distinct;
+            _configuration = configuration;
         }
 
         /// <summary>
         /// Returns a flag whether the "distinct" keyword was provided.
         /// </summary>
         /// <returns>distinct flag</returns>
-        public bool IsDistinct()
-        {
-            return _distinct;
-        }
+        public bool IsDistinct => _distinct;
 
         /// <summary>
         /// Returns the aggregation function name.
         /// </summary>
         /// <returns>function name</returns>
-        public string FunctionName {
-            get => _functionName;
-        }
+        public string FunctionName => _functionName;
 
         /// <summary>
         /// Returns the configuration provided when the aggregation multi-functions where registered.
         /// </summary>
         /// <returns>configuration</returns>
-        public ConfigurationCompilerPlugInAggregationMultiFunction Configuration {
-            get => _configuration;
-        }
+        public ConfigurationCompilerPlugInAggregationMultiFunction Configuration => _configuration;
     }
 } // end of namespace

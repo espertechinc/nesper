@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         /// <param name="propertyName">property name</param>
         public DOMAttributeAndElementGetter(string propertyName)
         {
-            this._propertyName = propertyName;
+            _propertyName = propertyName;
         }
 
         public object GetValueAsFragment(XmlNode node)
@@ -76,26 +76,24 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public object Get(EventBean obj)
         {
             // The underlying is expected to be a map
-            if (!(obj.Underlying is XmlNode)) {
+            if (!(obj.Underlying is XmlNode node)) {
                 throw new PropertyAccessException(
                     "Mismatched property getter to event bean type, " +
                     "the underlying data object is not of type XmlNode");
             }
 
-            var node = (XmlNode) obj.Underlying;
             return GetValueAsNode(node);
         }
 
         public bool IsExistsProperty(EventBean eventBean)
         {
             // The underlying is expected to be a map
-            if (!(eventBean.Underlying is XmlNode)) {
+            if (!(eventBean.Underlying is XmlNode node)) {
                 throw new PropertyAccessException(
                     "Mismatched property getter to event bean type, " +
                     "the underlying data object is not of type XmlNode");
             }
 
-            var node = (XmlNode) eventBean.Underlying;
             return GetNodePropertyExists(node, _propertyName);
         }
 

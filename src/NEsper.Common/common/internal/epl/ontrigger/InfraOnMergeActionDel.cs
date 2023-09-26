@@ -44,8 +44,6 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             changeHandlerRemoved?.Add(matchingEvent, eventsPerStream, false, agentInstanceContext);
         }
 
-        public override string Name {
-            get { return "delete"; }
-        }
+        public override string Name => "delete";
     }
 } // end of namespace

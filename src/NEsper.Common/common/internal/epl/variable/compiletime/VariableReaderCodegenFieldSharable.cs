@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.compiletime
                 return false;
             }
 
-            VariableReaderCodegenFieldSharable that = (VariableReaderCodegenFieldSharable) o;
+            var that = (VariableReaderCodegenFieldSharable)o;
 
             return metaWVisibility.VariableName.Equals(that.metaWVisibility.VariableName);
         }

@@ -62,10 +62,10 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 
             foreach (var triggerEvent in triggerEvents) {
                 eventsPerStream[1] = triggerEvent;
-                var matching = (IList<EventBean>) matchingEvents ?? EmptyList<EventBean>.Instance; 
+                var matching = (IList<EventBean>)matchingEvents ?? EmptyList<EventBean>.Instance;
                 tableUpdateStrategy.UpdateTable(
-                    matching, 
-                    tableInstance, 
+                    matching,
+                    tableInstance,
                     eventsPerStream,
                     agentInstanceContext);
             }

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.index.hash;
 
@@ -29,16 +29,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         public EventTable[] Index(
             IList<EventBean> pollResult,
             bool isActiveCache,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (!isActiveCache) {
-                return new EventTable[] {new UnindexedEventTableList(pollResult, StreamNum)};
+                return new EventTable[] { new UnindexedEventTableList(pollResult, StreamNum) };
             }
 
             var tables = new EventTable[ValueGetters.Length];
             for (var i = 0; i < ValueGetters.Length; i++) {
-                tables[i] = factories[i].MakeEventTables(agentInstanceContext, null)[0];
-                tables[i].Add(pollResult.ToArray(), agentInstanceContext);
+                tables[i] = factories[i].MakeEventTables(exprEvaluatorContext, null)[0];
+                tables[i].Add(pollResult.ToArray(), exprEvaluatorContext);
             }
 
             return tables;
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             for (var i = 0; i < PropertyNames.Length; i++) {
                 factories[i] = new PropertyHashedEventTableFactory(
                     StreamNum,
-                    new[] {PropertyNames[i]},
+                    new[] { PropertyNames[i] },
                     false,
                     null,
                     ValueGetters[i],

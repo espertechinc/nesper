@@ -6,23 +6,27 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionlib.support.patternassert;
 using com.espertech.esper.runtime.client;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternObserverTimerInterval
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
             WithOp(execs);
@@ -36,7 +40,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             return execs;
         }
 
-        public static IList<RegressionExecution> WithIntervalSpecExpressionWithPropertyArray(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithIntervalSpecExpressionWithPropertyArray(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternIntervalSpecExpressionWithPropertyArray());
@@ -57,7 +62,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             return execs;
         }
 
-        public static IList<RegressionExecution> WithIntervalSpecExpressionWithProperty(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithIntervalSpecExpressionWithProperty(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new PatternIntervalSpecExpressionWithProperty());
@@ -92,29 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             return execs;
         }
 
-        private static void SendTimer(
-            long timeInMSec,
-            RegressionEnvironment env)
-        {
-            env.AdvanceTime(timeInMSec);
-        }
-
-        private static void SendCurrentTimeWithMinus(
-            RegressionEnvironment env,
-            string time,
-            long minus)
-        {
-            env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(time) - minus);
-        }
-
-        private static void SendCurrentTime(
-            RegressionEnvironment env,
-            string time)
-        {
-            env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(time));
-        }
-
-        internal class PatternOp : RegressionExecution
+        private class PatternOp : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -129,9 +113,9 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 var text = "select * from pattern [timer:interval(1.999d)]";
                 var model = new EPStatementObjectModel();
-                model.SetSelect(SelectClause.CreateWildcard());
+                model.SelectClause = SelectClause.CreateWildcard();
                 PatternExpr pattern = Patterns.TimerInterval(1.999d);
-                model.SetFrom(FromClause.Create(PatternStream.Create(pattern)));
+                model.FromClause = FromClause.Create(PatternStream.Create(pattern));
                 model = env.CopyMayFail(model);
                 Assert.AreEqual(text, model.ToEPL());
                 testCase = new EventExpressionCase(model);
@@ -159,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("B2");
                 testCaseList.AddTest(testCase);
 
-                // Try with an all ... repeated timer every 3 seconds
+                // Try with an params all[] repeated timer every 3 seconds
                 testCase = new EventExpressionCase("every timer:interval(3.001 sec)");
                 testCase.Add("B2");
                 testCase.Add("F1");
@@ -229,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B(Id='B3') or timer:interval(8.500)");
+                testCase = new EventExpressionCase("b=SupportBean_B(id='B3') or timer:interval(8.500)");
                 testCase.Add("D2");
                 testCaseList.AddTest(testCase);
 
@@ -253,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase = new EventExpressionCase("timer:interval(9999999 msec) and b=SupportBean_B");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("timer:interval(1 msec) and b=SupportBean_B(Id='B2')");
+                testCase = new EventExpressionCase("timer:interval(1 msec) and b=SupportBean_B(id='B2')");
                 testCase.Add("B2", "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
@@ -265,21 +249,23 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 // Run all tests
-                var util = new PatternTestHarness(events, testCaseList, GetType());
+                var util = new PatternTestHarness(events, testCaseList);
                 util.RunTest(env);
             }
 
-            // As of release 1.6 this no longer updates listeners when the statement is started.
-            // The reason is that the dispatch view only gets attached after a pattern started, therefore
-            // ZeroDepthEventStream looses the event.
-            // There should be no use case requiring this
-            // <para />testCase = new EventExpressionCase("not timer:interval(5000 millisecond)");
-            // testCase.Add(EventCollection.ON_START_EVENT_ID);
-            // testCaseList.AddTest(testCase);
-            // </summary>
+            /// <summary>
+            /// As of release 1.6 this no longer updates listeners when the statement is started.
+            /// The reason is that the dispatch view only gets attached after a pattern started, therefore
+            /// ZeroDepthEventStream looses the event.
+            /// There should be no use case requiring this
+            /// <para />testCase = new EventExpressionCase("not timer:interval(5000 millisecond)");
+            /// testCase.add(EventCollection.ON_START_EVENT_ID);
+            /// testCaseList.addTest(testCase);
+            /// </summary>
+            /// <param name="runtime"></param>
         }
 
-        internal class PatternIntervalSpec : RegressionExecution
+        private class PatternIntervalSpec : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -287,20 +273,22 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendTimer(0, env);
 
                 // Set up a timer:within
-                env.CompileDeploy("@Name('s0') select * from pattern [timer:interval(1 minute 2 seconds)]");
+                env.CompileDeploy("@name('s0') select * from pattern [timer:interval(1 minute 2 seconds)]");
                 env.AddListener("s0");
 
                 SendTimer(62 * 1000 - 1, env);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(0);
 
                 SendTimer(62 * 1000, env);
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternIntervalSpecVariables : RegressionExecution
+        private class PatternIntervalSpecVariables : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -309,24 +297,26 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 var path = new RegressionPath();
-                env.CompileDeploy("create variable double M_isv=1", path);
-                env.CompileDeploy("create variable double S_isv=2", path);
+                env.CompileDeploy("@public create variable double M_isv=1", path);
+                env.CompileDeploy("@public create variable double S_isv=2", path);
                 env.CompileDeploy(
-                    "@Name('s0') select * from pattern [timer:interval(M_isv minute S_isv seconds)]",
+                    "@name('s0') select * from pattern [timer:interval(M_isv minute S_isv seconds)]",
                     path);
                 env.AddListener("s0");
 
                 SendTimer(62 * 1000 - 1, env);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(0);
 
                 SendTimer(62 * 1000, env);
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternIntervalSpecExpression : RegressionExecution
+        private class PatternIntervalSpecExpression : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -335,22 +325,24 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 var path = new RegressionPath();
-                env.CompileDeploy("create variable double MOne=1", path);
-                env.CompileDeploy("create variable double SOne=2", path);
-                env.CompileDeploy("@Name('s0') select * from pattern [timer:interval(MOne*60+SOne seconds)]", path);
+                env.CompileDeploy("@public create variable double MOne=1", path);
+                env.CompileDeploy("@public create variable double SOne=2", path);
+                env.CompileDeploy("@name('s0') select * from pattern [timer:interval(MOne*60+SOne seconds)]", path);
                 env.AddListener("s0");
 
                 SendTimer(62 * 1000 - 1, env);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(0);
 
                 SendTimer(62 * 1000, env);
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternIntervalSpecExpressionWithProperty : RegressionExecution
+        private class PatternIntervalSpecExpressionWithProperty : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -359,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 env.CompileDeploy(
-                    "@Name('s0') select a.TheString as Id from pattern [every a=SupportBean -> timer:interval(IntPrimitive seconds)]");
+                    "@name('s0') select a.theString as id from pattern [every a=SupportBean -> timer:interval(intPrimitive seconds)]");
                 env.AddListener("s0");
 
                 SendTimer(10000, env);
@@ -367,20 +359,26 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("E2", 2));
 
                 SendTimer(11999, env);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(0);
+
                 SendTimer(12000, env);
-                Assert.AreEqual("E2", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
+                env.AssertEqualsNew("s0", "id", "E2");
 
                 SendTimer(12999, env);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(1);
+
                 SendTimer(13000, env);
-                Assert.AreEqual("E1", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
+                env.AssertEqualsNew("s0", "id", "E1");
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternIntervalSpecExpressionWithPropertyArray : RegressionExecution
+        private class PatternIntervalSpecExpressionWithPropertyArray : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -389,7 +387,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 env.CompileDeploy(
-                    "@Name('s0') select a[0].TheString as a0Id, a[1].TheString as a1Id from pattern [ [2] a=SupportBean -> timer:interval(a[0].IntPrimitive+a[1].IntPrimitive seconds)]");
+                    "@name('s0') select a[0].theString as a0id, a[1].theString as a1id from pattern [ [2] a=SupportBean -> timer:interval(a[0].intPrimitive+a[1].intPrimitive seconds)]");
                 env.AddListener("s0");
 
                 SendTimer(10000, env);
@@ -397,18 +395,18 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportBean("E2", 2));
 
                 SendTimer(14999, env);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(0);
+
                 SendTimer(15000, env);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"a0Id", "a1Id"},
-                    new[] {"E1", "E2"});
+                env.AssertPropsNew("s0", "a0id,a1id".SplitCsv(), "E1,E2".SplitCsv());
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternIntervalSpecPreparedStmt : RegressionExecution
+        private class PatternIntervalSpecPreparedStmt : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -416,42 +414,65 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendTimer(0, env);
 
                 // Set up a timer:within
-                var compiled = env
-                    .Compile("@Name('s0') select * from pattern [timer:interval(?::int minute ?::int seconds)]");
+                var compiled = env.Compile(
+                    "@name('s0') select * from pattern [timer:interval(?::int minute ?::int seconds)]");
                 env.Deploy(
                     compiled,
                     new DeploymentOptions().WithStatementSubstitutionParameter(
-                        prepared => {
-                            prepared.SetObject(1, 1);
-                            prepared.SetObject(2, 2);
-                        }));
+                        new SupportPortableDeploySubstitutionParams().Add(1, 1).Add(2, 2).SetStatementParameters));
                 env.AddListener("s0");
 
                 SendTimer(62 * 1000 - 1, env);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(0);
 
                 SendTimer(62 * 1000, env);
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
             }
         }
 
-        internal class PatternMonthScoped : RegressionExecution
+        private class PatternMonthScoped : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
-                env.CompileDeploy("@Name('s0') select * from pattern [timer:interval(1 month)]").AddListener("s0");
+                env.CompileDeploy("@name('s0') select * from pattern [timer:interval(1 month)]").AddListener("s0");
 
                 SendCurrentTimeWithMinus(env, "2002-03-01T09:00:00.000", 1);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
+
+                env.Milestone(0);
 
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
             }
         }
+
+        private static void SendTimer(
+            long timeInMSec,
+            RegressionEnvironment env)
+        {
+            env.AdvanceTime(timeInMSec);
+        }
+
+        private static void SendCurrentTimeWithMinus(
+            RegressionEnvironment env,
+            string time,
+            long minus)
+        {
+            env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(time) - minus);
+        }
+
+        private static void SendCurrentTime(
+            RegressionEnvironment env,
+            string time)
+        {
+            env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(time));
+        }
     }
-}
+} // end of namespace

@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.script.compiletime
 
         public ScriptCollectorCompileTime(IDictionary<NameAndParamNum, ExpressionScriptProvided> moduleScripts)
         {
-            this._moduleScripts = moduleScripts;
+            _moduleScripts = moduleScripts;
         }
 
         public void RegisterScript(

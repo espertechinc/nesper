@@ -54,10 +54,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             var method = parent.MakeChild(typeof(void), GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(AggregationRow),
-                    "row",
-                    StaticMethod(typeof(ExprTableIdentNode), "TableColumnRow", Constant(identNode.StreamNum), symbols.GetAddEPS(method)))
+                .DeclareVar<AggregationRow>("row",
+                    StaticMethod(
+                        typeof(ExprTableIdentNode),
+                        "TableColumnRow",
+                        Constant(identNode.StreamNum),
+                        symbols.GetAddEPS(method)))
                 .IfRefNotNull("row")
                 .ExprDotMethod(Ref("row"), "Reset", Constant(column.Column));
             return LocalMethod(method);

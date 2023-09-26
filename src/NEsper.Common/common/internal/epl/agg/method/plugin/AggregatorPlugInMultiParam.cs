@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -24,27 +25,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
 {
     public class AggregatorPlugInMultiParam : AggregatorMethod
     {
+        protected CodegenExpressionMember plugin;
         private readonly AggregationFunctionModeMultiParam mode;
 
-        internal CodegenExpressionMember plugin;
+        public AggregatorPlugInMultiParam(AggregationFunctionModeMultiParam mode)
+        {
+            this.mode = mode;
+        }
 
-        public AggregatorPlugInMultiParam(
-            AggregationForgeFactoryPlugin factory,
+        public void InitForge(
             int col,
             CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
-            AggregationFunctionModeMultiParam mode)
+            CodegenClassScope classScope)
         {
-            this.mode = mode;
-            var injectionStrategy =
-                (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationFunctionFactory;
-            var factoryField = classScope.AddDefaultFieldUnshared<AggregationFunctionFactory>(
+            var injectionStrategy = (InjectionStrategyClassNewInstance)mode.InjectionStrategyAggregationFunctionFactory;
+            var factoryField = classScope.AddDefaultFieldUnshared(
                 true,
+                typeof(AggregationFunctionFactory),
                 injectionStrategy.GetInitializationExpression(classScope));
 
             plugin = membersColumnized.AddMember(col, typeof(AggregationFunction), "plugin");
-            rowCtor.Block.AssignRef(plugin, ExprDotMethod(factoryField, "NewAggregator", ConstantNull()));
+            rowCtor.Block.AssignRef(plugin, ExprDotMethod(factoryField, "newAggregator", ConstantNull()));
         }
 
         public void ApplyEvalEnterCodegen(
@@ -71,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "Enter", value);
+            method.Block.ExprDotMethod(plugin, "enter", value);
         }
 
         public void ApplyTableLeaveCodegen(
@@ -80,21 +82,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "Leave", value);
+            method.Block.ExprDotMethod(plugin, "leave", value);
         }
 
         public void ClearCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "Clear");
+            method.Block.ExprDotMethod(plugin, "clear");
         }
 
         public void GetValueCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(ExprDotName(plugin, "Value"));
+            method.Block.MethodReturn(ExprDotMethod(plugin, "getValue"));
         }
 
         public void WriteCodegen(
@@ -107,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.StaticMethod(mode.Serde, "Write", output, RowDotMember(row, plugin));
+                method.Block.StaticMethod(mode.Serde, "write", output, RowDotMember(row, plugin));
             }
         }
 
@@ -120,7 +122,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.AssignRef(RowDotMember(row, plugin), StaticMethod(mode.Serde, "Read", input));
+                method.Block.AssignRef(RowDotMember(row, plugin), StaticMethod(mode.Serde, "read", input));
+            }
+        }
+
+        public void CollectFabricType(FabricTypeCollector collector)
+        {
+            if (mode.HasHA) {
+                collector.PlugInAggregation(mode.Serde);
             }
         }
 
@@ -139,20 +148,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
                 expression = forges[0].EvaluateCodegen(typeof(object), method, symbols, classScope);
             }
             else {
-                method.Block.DeclareVar<object[]>(
-                    "parameters",
+                method.Block.DeclareVar(
+                    typeof(object[]),
+                    "params",
                     NewArrayByLength(typeof(object), Constant(forges.Length)));
                 for (var i = 0; i < forges.Length; i++) {
                     method.Block.AssignArrayElement(
-                        "parameters",
+                        "params",
                         Constant(i),
                         forges[i].EvaluateCodegen(typeof(object), method, symbols, classScope));
                 }
 
-                expression = Ref("parameters");
+                expression = Ref("params");
             }
 
-            method.Block.ExprDotMethod(plugin, enter ? "Enter" : "Leave", expression);
+            method.Block.ExprDotMethod(plugin, enter ? "enter" : "leave", expression);
         }
     }
 } // end of namespace

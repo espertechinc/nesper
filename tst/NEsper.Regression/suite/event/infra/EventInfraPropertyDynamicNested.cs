@@ -18,7 +18,6 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.@event;
 
-using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
@@ -32,25 +31,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
     public class EventInfraPropertyDynamicNested : RegressionExecution
     {
-        private static readonly string BEAN_TYPENAME = nameof(SupportBeanDynRoot);
-        public static readonly string XML_TYPENAME = nameof(EventInfraPropertyDynamicNested) + "XML";
-        public static readonly string MAP_TYPENAME = nameof(EventInfraPropertyDynamicNested) + "Map";
-        public static readonly string OA_TYPENAME = nameof(EventInfraPropertyDynamicNested) + "OA";
-        public static readonly string AVRO_TYPENAME = nameof(EventInfraPropertyDynamicNested) + "Avro";
-
-        private static readonly FunctionSendEvent FAVRO = (
-            env,
-            value,
-            typeName) => {
-            var schema = AvroSchemaUtil.ResolveAvroSchema(
-                env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName));
-            var itemSchema = schema.GetField("Item").Schema;
-            var itemDatum = new GenericRecord(itemSchema.AsRecordSchema());
-            itemDatum.Put("Id", value);
-            var datum = new GenericRecord(schema.AsRecordSchema());
-            datum.Put("Item", itemDatum);
-            env.SendEventAvro(datum, typeName);
-        };
+        private const string BEAN_TYPENAME = nameof(SupportBeanDynRoot);
+        public const string XML_TYPENAME = nameof(EventInfraPropertyDynamicNested) + "XML";
+        public const string MAP_TYPENAME = nameof(EventInfraPropertyDynamicNested) + "Map";
+        public const string OA_TYPENAME = nameof(EventInfraPropertyDynamicNested) + "OA";
+        public const string AVRO_TYPENAME = nameof(EventInfraPropertyDynamicNested) + "Avro";
+        public const string JSON_TYPENAME = nameof(EventInfraPropertyDynamicNested) + "Json";
+        public const string JSONPROVIDED_TYPENAME = nameof(EventInfraPropertyDynamicNested) + "JsonProvided";
 
         public void Run(RegressionEnvironment env)
         {
@@ -59,8 +46,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(
                 env,
                 EventRepresentationChoice.AVRO,
-                "@AvroSchemaField(Name='myId',Schema='[\"int\",{\"type\":\"string\",\"avro.string\":\"String\"},\"null\"]')");
+                "@AvroSchemaField(name='myid',schema='[\"int\",{\"type\":\"string\",\"avro.java.string\":\"String\"},\"null\"]')");
             RunAssertion(env, EventRepresentationChoice.DEFAULT, "");
+            RunAssertion(env, EventRepresentationChoice.JSON, "");
         }
 
         private void RunAssertion(
@@ -68,8 +56,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             EventRepresentationChoice outputEventRep,
             string additionalAnnotations)
         {
+            var path = new RegressionPath();
+
             // Bean
-            Pair<object, object>[] beanTests = {
+            var beanTests = new Pair<object, object>[] {
                 new Pair<object, object>(new SupportBeanDynRoot(new SupportBean_S0(101)), Exists(101)),
                 new Pair<object, object>(new SupportBeanDynRoot("abc"), NotExists()),
                 new Pair<object, object>(new SupportBeanDynRoot(new SupportBean_A("e1")), Exists("e1")),
@@ -84,17 +74,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 FBEAN,
                 null,
                 beanTests,
-                typeof(object));
+                typeof(object),
+                path);
 
             // Map
-            Pair<object, object>[] mapTests = {
+            var mapTests = new Pair<object, object>[] {
                 new Pair<object, object>(Collections.EmptyDataMap, NotExists()),
                 new Pair<object, object>(
-                    Collections.SingletonMap("Item", Collections.SingletonMap("Id", 101)),
+                    Collections.SingletonMap("item", Collections.SingletonMap("id", 101)),
                     Exists(101)),
-                new Pair<object, object>(
-                    Collections.SingletonMap("Item", Collections.EmptyDataMap),
-                    NotExists())
+                new Pair<object, object>(Collections.SingletonMap("item", Collections.EmptyDataMap), NotExists()),
             };
             RunAssertion(
                 env,
@@ -104,22 +93,32 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 FMAP,
                 null,
                 mapTests,
-                typeof(object));
+                typeof(object),
+                path);
 
             // Object array
-            Pair<object, object>[] oaTests = {
-                new Pair<object, object>(new object[] {null}, NotExists()),
-                new Pair<object, object>(new object[] {new SupportBean_S0(101)}, Exists(101)),
-                new Pair<object, object>(new object[] {"abc"}, NotExists())
+            var oaTests = new Pair<object, object>[] {
+                new Pair<object, object>(new object[] { null }, NotExists()),
+                new Pair<object, object>(new object[] { new SupportBean_S0(101) }, Exists(101)),
+                new Pair<object, object>(new object[] { "abc" }, NotExists()),
             };
-            RunAssertion(env, outputEventRep, additionalAnnotations, OA_TYPENAME, FOA, null, oaTests, typeof(object));
+            RunAssertion(
+                env,
+                outputEventRep,
+                additionalAnnotations,
+                OA_TYPENAME,
+                FOA,
+                null,
+                oaTests,
+                typeof(object),
+                path);
 
             // XML
-            Pair<object, object>[] xmlTests = {
-                new Pair<object, object>("<Item Id=\"101\"/>", Exists("101")),
-                new Pair<object, object>("<Item/>", NotExists())
+            var xmlTests = new Pair<object, object>[] {
+                new Pair<object, object>("<item id=\"101\"/>", Exists("101")),
+                new Pair<object, object>("<item/>", NotExists()),
             };
-            if (!outputEventRep.IsAvroEvent()) {
+            if (!outputEventRep.IsAvroOrJsonEvent()) {
                 RunAssertion(
                     env,
                     outputEventRep,
@@ -128,14 +127,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     FXML,
                     xmlToValue,
                     xmlTests,
-                    typeof(XmlNode));
+                    typeof(XmlNode),
+                    path);
             }
 
             // Avro
-            Pair<object, object>[] avroTests = {
+            var avroTests = new Pair<object, object>[] {
                 new Pair<object, object>(null, Exists(null)),
                 new Pair<object, object>(101, Exists(101)),
-                new Pair<object, object>("abc", Exists("abc"))
+                new Pair<object, object>("abc", Exists("abc")),
             };
             RunAssertion(
                 env,
@@ -145,7 +145,52 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 FAVRO,
                 null,
                 avroTests,
-                typeof(object));
+                typeof(object),
+                path);
+
+            // Json
+            var jsonTests = new Pair<object, object>[] {
+                new Pair<object, object>("{}", NotExists()),
+                new Pair<object, object>("{\"item\": { \"id\": 101} }", Exists(101)),
+                new Pair<object, object>("{\"item\": { \"id\": \"abc\"} }", Exists("abc")),
+            };
+            var schemasJson = "@JsonSchema(dynamic=true) create json schema Undefined();\n" +
+                              "@public @buseventtype @name('schema') create json schema " +
+                              JSON_TYPENAME +
+                              "(item Undefined)";
+            env.CompileDeploy(schemasJson, path);
+            RunAssertion(
+                env,
+                outputEventRep,
+                additionalAnnotations,
+                JSON_TYPENAME,
+                FJSON,
+                null,
+                jsonTests,
+                typeof(object),
+                path);
+
+            // Json-Provided (class is provided)
+            var schemasJsonProvided =
+                "@JsonSchema(className='" +
+                typeof(MyLocalJsonProvidedItem).FullName +
+                "') @public @buseventtype @name('schema') create json schema Item();\n" +
+                "@JsonSchema(className='" +
+                typeof(MyLocalJsonProvided).FullName +
+                "') @public @buseventtype @name('schema') create json schema " +
+                JSONPROVIDED_TYPENAME +
+                "(item Item)";
+            env.CompileDeploy(schemasJsonProvided, path);
+            RunAssertion(
+                env,
+                outputEventRep,
+                additionalAnnotations,
+                JSONPROVIDED_TYPENAME,
+                FJSON,
+                null,
+                jsonTests,
+                typeof(object),
+                path);
         }
 
         private void RunAssertion(
@@ -153,33 +198,89 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             EventRepresentationChoice eventRepresentationEnum,
             string additionalAnnotations,
             string typename,
-            FunctionSendEvent send,
+            SupportEventInfra.FunctionSendEvent send,
             Func<object, object> optionalValueConversion,
             Pair<object, object>[] tests,
-            Type expectedPropertyType)
+            Type expectedPropertyType,
+            RegressionPath path)
         {
-            var stmtText = "@Name('s0') " +
+            var stmtText = "@name('s0') " +
                            eventRepresentationEnum.GetAnnotationText() +
                            additionalAnnotations +
                            " select " +
-                           "Item.Id? as myId, " +
-                           "exists(Item.Id?) as exists_myId " +
+                           "item.id? as myid, " +
+                           "exists(item.id?) as exists_myid " +
                            "from " +
-                           typename;
-            env.CompileDeploy(stmtText).AddListener("s0");
+                           typename +
+                           ";\n" +
+                           "@name('s1') select * from " +
+                           typename +
+                           ";\n";
+            env.CompileDeploy(stmtText, path).AddListener("s0").AddListener("s1");
 
-            var eventType = env.Statement("s0").EventType;
-            Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType("myId"));
-            Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_myId").GetBoxedType());
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(eventType.UnderlyingType));
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    var eventType = statement.EventType;
+                    Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType("myid"));
+                    Assert.AreEqual(typeof(bool?), Boxing.GetBoxedType(eventType.GetPropertyType("exists_myid")));
+                    Assert.IsTrue(eventRepresentationEnum.MatchesClass(eventType.UnderlyingType));
+                });
 
             foreach (var pair in tests) {
                 send.Invoke(env, pair.First, typename);
-                var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                AssertValueMayConvert(@event, "myId", (ValueWithExistsFlag) pair.Second, optionalValueConversion);
+                var expected = (ValueWithExistsFlag)pair.Second;
+                env.AssertEventNew(
+                    "s0",
+                    @event => SupportEventInfra.AssertValueMayConvert(
+                        @event,
+                        "myid",
+                        expected,
+                        optionalValueConversion));
+
+                env.AssertEventNew(
+                    "s1",
+                    @out => {
+                        var getter = @out.EventType.GetGetter("item.id?");
+
+                        if (!typename.Equals(XML_TYPENAME)) {
+                            Assert.AreEqual(expected.Value, getter.Get(@out));
+                        }
+                        else {
+                            var item = (XmlNode)getter.Get(@out);
+                            Assert.AreEqual(expected.Value, item?.InnerText);
+                        }
+
+                        Assert.AreEqual(expected.IsExists, getter.IsExistsProperty(@out));
+                    });
             }
 
             env.UndeployAll();
+        }
+
+        private static readonly SupportEventInfra.FunctionSendEvent FAVRO = (
+            env,
+            value,
+            typeName) => {
+            var schema = env.RuntimeAvroSchemaPreconfigured(typeName).AsRecordSchema();
+            var itemSchema = schema.GetField("item").Schema.AsRecordSchema();
+            var itemDatum = new GenericRecord(itemSchema);
+            itemDatum.Put("id", value);
+            var datum = new GenericRecord(schema);
+            datum.Put("item", itemDatum);
+            env.SendEventAvro(datum, typeName);
+        };
+
+        [Serializable]
+        public class MyLocalJsonProvided
+        {
+            public MyLocalJsonProvidedItem item;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedItem
+        {
+            public object id;
         }
     }
 } // end of namespace

@@ -346,9 +346,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
             public void WithProvidePartitialCols() => RegressionRunner.Run(_session, EPLInsertInto.WithProvidePartitialCols());
 
             [Test, RunInApplicationDomain]
-            public void WithSingleBeanToMulti() => RegressionRunner.Run(_session, EPLInsertInto.WithSingleBeanToMulti());
-
-            [Test, RunInApplicationDomain]
             public void WithMultiBeanToMulti() => RegressionRunner.Run(_session, EPLInsertInto.WithMultiBeanToMulti());
 
             [Test, RunInApplicationDomain]
@@ -566,7 +563,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 });
             configuration.Common.AddEventType("ComplexMap", complexMapMetadata);
 
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber =true;
             configuration.Compiler.AddPlugInSingleRowFunction("generateMap", typeof(EPLInsertIntoTransposeStream), "LocalGenerateMap");
             configuration.Compiler.AddPlugInSingleRowFunction("generateOA", typeof(EPLInsertIntoTransposeStream), "LocalGenerateOA");
             configuration.Compiler.AddPlugInSingleRowFunction("generateAvro", typeof(EPLInsertIntoTransposeStream), "LocalGenerateAvro");

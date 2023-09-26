@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.@event.property
 
         public override string[] ToPropertyArray()
         {
-            return new[] {PropertyNameAtomic};
+            return new[] { PropertyNameAtomic };
         }
 
         public override EventPropertyGetterSPI GetGetter(
@@ -82,13 +82,6 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory)
         {
             return typeof(object);
-        }
-
-        public override GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType beanEventType,
-            BeanEventTypeFactory beanEventTypeFactory)
-        {
-            return GenericPropertyDesc.ObjectGeneric;
         }
 
         public override Type GetPropertyTypeMap(

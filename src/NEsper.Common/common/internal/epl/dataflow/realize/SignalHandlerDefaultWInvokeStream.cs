@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         internal override void HandleSignalInternal(EPDataFlowSignal signal)
         {
             try {
-                method.Invoke(target, new object[] {streamNum, signal});
+                method.Invoke(target, new object[] { streamNum, signal });
             }
             catch (MemberAccessException e) {
                 log.Error("Failed to invoke signal handler: " + e.Message, e);

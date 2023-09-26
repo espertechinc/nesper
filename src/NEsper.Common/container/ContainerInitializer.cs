@@ -10,14 +10,11 @@ using System;
 using System.Linq;
 
 #if NETCOREAPP3_0_OR_GREATER
-using System.Runtime.Loader;
 #endif
 
 using Castle.MicroKernel.Registration;
 
-using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.util;
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.db.drivers;
 using com.espertech.esper.common.@internal.util;

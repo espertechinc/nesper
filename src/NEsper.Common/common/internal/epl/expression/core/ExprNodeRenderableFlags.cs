@@ -14,7 +14,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         private bool _withStreamPrefix;
 
-        public ExprNodeRenderableFlags(bool withStreamPrefix) {
+        public ExprNodeRenderableFlags(bool withStreamPrefix)
+        {
             _withStreamPrefix = withStreamPrefix;
         }
 

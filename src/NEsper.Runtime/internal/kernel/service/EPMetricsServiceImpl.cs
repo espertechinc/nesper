@@ -9,6 +9,7 @@
 using System;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.metric;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
 {
@@ -79,6 +80,18 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             {
                 throw new ConfigurationException("Error enabling metric reporting: " + e.Message, e);
             }
+        }
+
+        public void EnumerateStatementGroups(Consumer<EPMetricsStatementGroup> consumer)
+        {
+            services.MetricReportingService.EnumerateMetrics(consumer);
+        }
+
+        public RuntimeMetric GetRuntimeMetric()
+        {
+            long inputCount = services.FilterService.NumEventsEvaluated;
+            long schedDepth = services.SchedulingService.ScheduleHandleCount;
+            return new RuntimeMetric(services.RuntimeURI, services.SchedulingService.Time, inputCount, 0, schedDepth);
         }
     }
 } // end of namespace

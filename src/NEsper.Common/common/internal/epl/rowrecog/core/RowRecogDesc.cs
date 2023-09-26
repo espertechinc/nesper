@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -33,11 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         public Type[] PartitionEvalTypes { get; set; }
 
         public DataInputOutputSerde PartitionEvalSerde { get; set; }
+
         public int[] MultimatchStreamNumToVariable { get; set; }
 
         public ExprEvaluator PartitionEvalMayNull { get; set; }
 
-        public LinkedHashMap<string, Pair<int, bool>> VariableStreams { get; set; }
+        public IDictionary<string, Pair<int, bool>> VariableStreams { get; set; }
 
         public bool HasInterval { get; set; }
 
@@ -78,5 +80,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         public AggregationServiceFactory[] AggregationServiceFactories { get; set; }
 
         public AggregationResultFutureAssignable[] AggregationResultFutureAssignables { get; set; }
+
+        public StateMgmtSetting PartitionMgmtStateMgmtSettings { get; set; }
+
+        public StateMgmtSetting ScheduleMgmtStateMgmtSettings { get; set; }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,34 +17,37 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
     /// <summary>
-    ///     This class represents a filter parameter containing a reference to another event's property
-    ///     in the event pattern result, for use to describe a filter parameter in a <seealso cref="FilterSpecActivatable" />
-    ///     filter specification.
+    /// This class represents a filter parameter containing a reference to another event's property
+    /// in the event pattern result, for use to describe a filter parameter in a <seealso cref = "FilterSpecActivatable"/> filter specification.
     /// </summary>
     public class FilterSpecParamEventPropForge : FilterSpecParamForge
     {
+        private readonly string _resultEventAsName;
+        private readonly string _resultEventProperty;
+        private readonly ExprIdentNodeEvaluator _exprIdentNodeEvaluator;
+        private readonly bool _isMustCoerce;
         [NonSerialized] private readonly Coercer _numberCoercer;
-        private readonly string _statementName;
+        private readonly Type _coercionType;
 
         /// <summary>
-        ///     Constructor.
+        /// Constructor.
         /// </summary>
-        /// <param name="lookupable">is the property or function to get a lookup value</param>
-        /// <param name="filterOperator">is the type of compare</param>
-        /// <param name="resultEventAsName">is the name of the result event from which to get a property value to compare</param>
-        /// <param name="resultEventProperty">is the name of the property to get from the named result event</param>
-        /// <param name="isMustCoerce">indicates on whether numeric coercion must be performed</param>
-        /// <param name="coercionType">indicates the numeric coercion type to use</param>
-        /// <param name="numberCoercer">interface to use to perform coercion</param>
-        /// <param name="statementName">statement name</param>
-        /// <param name="exprIdentNodeEvaluator">evaluator</param>
-        /// <throws>ArgumentException if an operator was supplied that does not take a single constant value</throws>
+        /// <param name = "lookupable">is the property or function to get a lookup value</param>
+        /// <param name = "filterOperator">is the type of compare</param>
+        /// <param name = "resultEventAsName">is the name of the result event from which to get a property value to compare</param>
+        /// <param name = "resultEventProperty">is the name of the property to get from the named result event</param>
+        /// <param name = "exprIdentNodeEvaluator">evaluator</param>
+        /// <param name = "isMustCoerce">indicates on whether numeric coercion must be performed</param>
+        /// <param name = "numberCoercer">interface to use to perform coercion</param>
+        /// <param name = "coercionType">indicates the numeric coercion type to use</param>
+        /// <throws>IllegalArgumentException if an operator was supplied that does not take a single constant value</throws>
         public FilterSpecParamEventPropForge(
             ExprFilterSpecLookupableForge lookupable,
             FilterOperator filterOperator,
@@ -53,52 +56,43 @@ namespace com.espertech.esper.common.@internal.filterspec
             ExprIdentNodeEvaluator exprIdentNodeEvaluator,
             bool isMustCoerce,
             Coercer numberCoercer,
-            Type coercionType,
-            string statementName)
-            : base(lookupable, filterOperator)
+            Type coercionType) : base(lookupable, filterOperator)
         {
-            ResultEventAsName = resultEventAsName;
-            ResultEventProperty = resultEventProperty;
-            ExprIdentNodeEvaluator = exprIdentNodeEvaluator;
-            IsMustCoerce = isMustCoerce;
-            _numberCoercer = numberCoercer;
-            CoercionType = coercionType;
-            _statementName = statementName;
-
+            this._resultEventAsName = resultEventAsName;
+            this._resultEventProperty = resultEventProperty;
+            this._exprIdentNodeEvaluator = exprIdentNodeEvaluator;
+            this._isMustCoerce = isMustCoerce;
+            this._numberCoercer = numberCoercer;
+            this._coercionType = coercionType;
             if (filterOperator.IsRangeOperator()) {
                 throw new ArgumentException(
-                    "Illegal filter operator " +
-                    filterOperator +
-                    " supplied to " +
-                    "event property filter parameter");
+                    "Illegal filter operator " + filterOperator + " supplied to " + "event property filter parameter");
             }
         }
 
         /// <summary>
-        ///     Returns true if numeric coercion is required, or false if not
+        /// Returns true if numeric coercion is required, or false if not
         /// </summary>
-        /// <returns>true to coerce at runtime</returns>
-        public bool IsMustCoerce { get; }
+        /// <value>true to coerce at runtime</value>
+        public bool IsMustCoerce => _isMustCoerce;
 
         /// <summary>
-        ///     Returns the numeric coercion type.
+        /// Returns the numeric coercion type.
         /// </summary>
-        /// <returns>type to coerce to</returns>
-        public Type CoercionType { get; }
+        /// <value>type to coerce to</value>
+        public Type CoercionType => _coercionType;
 
         /// <summary>
-        ///     Returns tag for result event.
+        /// Returns tag for result event.
         /// </summary>
-        /// <returns>tag</returns>
-        public string ResultEventAsName { get; }
+        /// <value>tag</value>
+        public string ResultEventAsName => _resultEventAsName;
 
         /// <summary>
-        ///     Returns the property of the result event.
+        /// Returns the property of the result event.
         /// </summary>
-        /// <returns>property name</returns>
-        public string ResultEventProperty { get; }
-
-        public ExprIdentNodeEvaluator ExprIdentNodeEvaluator { get; }
+        /// <value>property name</value>
+        public string ResultEventProperty => _resultEventProperty;
 
         public object GetFilterValue(
             MatchedEventMap matchedEvents,
@@ -113,9 +107,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             return base.ToString() +
                    " resultEventAsName=" +
-                   ResultEventAsName +
+                   _resultEventAsName +
                    " resultEventProperty=" +
-                   ResultEventProperty;
+                   _resultEventProperty;
         }
 
         public override bool Equals(object obj)
@@ -124,17 +118,16 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return true;
             }
 
-            if (!(obj is FilterSpecParamEventPropForge)) {
+            if (!(obj is FilterSpecParamEventPropForge other)) {
                 return false;
             }
 
-            var other = (FilterSpecParamEventPropForge) obj;
             if (!base.Equals(other)) {
                 return false;
             }
 
-            if (!ResultEventAsName.Equals(other.ResultEventAsName) ||
-                !ResultEventProperty.Equals(other.ResultEventProperty)) {
+            if (!_resultEventAsName.Equals(other._resultEventAsName) ||
+                !_resultEventProperty.Equals(other._resultEventProperty)) {
                 return false;
             }
 
@@ -144,53 +137,53 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override int GetHashCode()
         {
             var result = base.GetHashCode();
-            result = 31 * result + ResultEventProperty.GetHashCode();
+            result = 31 * result + _resultEventProperty.GetHashCode();
             return result;
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
         {
             var method = parent.MakeChild(typeof(FilterSpecParam), GetType(), classScope);
-            var get = ExprIdentNodeEvaluator.Getter.EventBeanGetCodegen(Ref("@event"), method, classScope);
-
+            var get = _exprIdentNodeEvaluator.Getter.EventBeanGetCodegen(Ref("@event"), method, classScope);
+            
             method.Block
-                .DeclareVar<ExprFilterSpecLookupable>(
-                    "lookupable",
+                .DeclareVar<ExprFilterSpecLookupable>("lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar<FilterOperator>("filterOperator", EnumValue(filterOperator));
-
+                .DeclareVar<FilterOperator>("filterOperator", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
+            
+            // CodegenExpressionNewAnonymousClass param = NewAnonymousClass(
+            //     method.Block,
+            //     typeof(FilterSpecParam),
+            //     Arrays.AsList(Ref("lookupable"), Ref("op")));
+            
             var getFilterValue = new CodegenExpressionLambda(method.Block)
                 .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
+            
+            // var getFilterValue = CodegenMethod
+            //     .MakeParentNode(typeof(FilterValueSetParam), GetType(), classScope)
+            //     .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
+
             var param = NewInstance<ProxyFilterSpecParam>(
                 Ref("lookupable"),
                 Ref("filterOperator"),
                 getFilterValue);
-
-            //var param = NewAnonymousClass(
-            //    method.Block,
-            //    typeof(FilterSpecParam),
-            //    Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("filterOperator")));
-            //var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
-            //    .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-            //param.AddMethod("GetFilterValue", getFilterValue);
-
+            
             getFilterValue.Block
-                .DeclareVar<EventBean>(
-                    "@event",
-                    ExprDotMethod(Ref("matchedEvents"), "GetMatchingEventByTag", Constant(ResultEventAsName)))
+                .DeclareVar<EventBean>("@event",
+                    ExprDotMethod(Ref("matchedEvents"), "GetMatchingEventByTag", Constant(_resultEventAsName)))
                 .DeclareVar<object>("value", ConstantNull())
                 .IfRefNotNull("@event")
                 .AssignRef("value", get)
                 .BlockEnd();
-
-            if (IsMustCoerce) {
+            
+            if (_isMustCoerce) {
                 getFilterValue.Block.AssignRef(
                     "value",
                     _numberCoercer.CoerceCodegenMayNullBoxed(
-                        Cast(typeof(object), Ref("value")),
+                        Ref("value"),
                         typeof(object),
                         method,
                         classScope));
@@ -199,15 +192,18 @@ namespace com.espertech.esper.common.@internal.filterspec
             getFilterValue.Block.BlockReturn(FilterValueSetParamImpl.CodegenNew(Ref("value")));
 
             method.Block.MethodReturn(param);
-            return method;
+            return LocalMethod(method);
         }
-        
-        
-        public override void ValueExprToString(StringBuilder @out, int i)
+
+        public override void ValueExprToString(
+            StringBuilder @out,
+            int i)
         {
             @out.Append("event property '")
-                .Append(ResultEventProperty)
+                .Append(_resultEventProperty)
                 .Append("'");
         }
+
+        public ExprIdentNodeEvaluator ExprIdentNodeEvaluator => _exprIdentNodeEvaluator;
     }
 } // end of namespace

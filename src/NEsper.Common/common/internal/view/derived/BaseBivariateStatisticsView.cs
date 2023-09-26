@@ -124,8 +124,8 @@ namespace com.espertech.esper.common.@internal.view.derived
                     var xnum = ExpressionXEval.Evaluate(eventsPerStream, true, agentInstanceContext);
                     var ynum = ExpressionYEval.Evaluate(eventsPerStream, true, agentInstanceContext);
                     if (xnum != null && ynum != null) {
-                        double x = xnum.AsDouble();
-                        double y = ynum.AsDouble();
+                        var x = xnum.AsDouble();
+                        var y = ynum.AsDouble();
                         _statisticsBean.AddPoint(x, y);
                     }
                 }
@@ -153,8 +153,8 @@ namespace com.espertech.esper.common.@internal.view.derived
                     var xnum = ExpressionXEval.Evaluate(eventsPerStream, true, agentInstanceContext);
                     var ynum = ExpressionYEval.Evaluate(eventsPerStream, true, agentInstanceContext);
                     if (xnum != null && ynum != null) {
-                        double x = xnum.AsDouble();
-                        double y = ynum.AsDouble();
+                        var x = xnum.AsDouble();
+                        var y = ynum.AsDouble();
                         _statisticsBean.RemovePoint(x, y);
                     }
                 }
@@ -168,13 +168,13 @@ namespace com.espertech.esper.common.@internal.view.derived
                     eventType,
                     additionalProps,
                     _lastValuesEventNew);
-                EventBean[] newEvents = {newDataMap};
+                EventBean[] newEvents = { newDataMap };
                 EventBean[] oldEvents;
                 if (lastNewEvent == null) {
-                    oldEvents = new[] {oldValues};
+                    oldEvents = new[] { oldValues };
                 }
                 else {
-                    oldEvents = new[] {lastNewEvent};
+                    oldEvents = new[] { lastNewEvent };
                 }
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newEvents, oldEvents);
@@ -189,7 +189,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            EventBean value = PopulateMap(
+            var value = PopulateMap(
                 _statisticsBean,
                 agentInstanceContext.EventBeanTypedEventFactory,
                 eventType,

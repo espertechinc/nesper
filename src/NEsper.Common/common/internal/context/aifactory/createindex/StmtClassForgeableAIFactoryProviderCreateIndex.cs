@@ -42,8 +42,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             CodegenClassScope classScope)
         {
             var saiffInitializeSymbol = new SAIFFInitializeSymbol();
-            var method = parent.MakeChildWithScope(TypeOfFactory(), this.GetType(), saiffInitializeSymbol, classScope)
-                .AddParam(typeof(EPStatementInitServices), REF_STMTINITSVC.Ref);
+            var method = parent.MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope)
+                .AddParam<EPStatementInitServices>(REF_STMTINITSVC.Ref);
             method.Block.MethodReturn(LocalMethod(_forge.InitializeCodegen(method, saiffInitializeSymbol, classScope)));
             return method;
         }

@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.util
             object firstValues,
             object secondValues)
         {
-            return comparator.Compare((object[]) firstValues, (object[]) secondValues);
+            return comparator.Compare((object[])firstValues, (object[])secondValues);
         }
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,9 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
 {
     public class AggregationPortableValidationCount : AggregationPortableValidationBase
     {
-        private Type countedValueType;
         private bool ever;
         private bool hasFilter;
+        private Type countedValueType;
         private bool ignoreNulls;
 
         public AggregationPortableValidationCount()
@@ -34,30 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             bool ever,
             bool hasFilter,
             Type countedValueType,
-            bool ignoreNulls)
-            : base(distinct)
-
+            bool ignoreNulls) : base(distinct)
         {
             this.ever = ever;
             this.hasFilter = hasFilter;
             this.countedValueType = countedValueType;
             this.ignoreNulls = ignoreNulls;
-        }
-
-        public bool IsEver {
-            set => ever = value;
-        }
-
-        public bool HasFilter {
-            set => hasFilter = value;
-        }
-
-        public Type CountedValueType {
-            set => countedValueType = value;
-        }
-
-        public bool IgnoreNulls {
-            set => ignoreNulls = value;
         }
 
         protected override void ValidateIntoTable(
@@ -66,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             string intoExpression,
             AggregationForgeFactory factory)
         {
-            var that = (AggregationPortableValidationCount) intoTableAgg;
+            var that = (AggregationPortableValidationCount)intoTableAgg;
             AggregationValidationUtil.ValidateAggregationFilter(hasFilter, that.hasFilter);
             if (IsDistinct) {
                 AggregationValidationUtil.ValidateAggregationInputType(countedValueType, that.countedValueType);
@@ -93,11 +75,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block
-                .SetProperty(@ref, "IsEver", Constant(ever))
-                .SetProperty(@ref, "HasFilter", Constant(hasFilter))
-                .SetProperty(@ref, "CountedValueType", Constant(countedValueType))
-                .SetProperty(@ref, "IgnoreNulls", Constant(ignoreNulls));
+            method.Block.ExprDotMethod(@ref, "setEver", Constant(ever))
+                .ExprDotMethod(@ref, "setHasFilter", Constant(hasFilter))
+                .ExprDotMethod(@ref, "setCountedValueType", Constant(countedValueType))
+                .ExprDotMethod(@ref, "setIgnoreNulls", Constant(ignoreNulls));
+        }
+
+        public bool Ever {
+            set => ever = value;
+        }
+
+        public bool HasFilter {
+            set => hasFilter = value;
+        }
+
+        public Type CountedValueType {
+            set => countedValueType = value;
+        }
+
+        public bool IgnoreNulls {
+            set => ignoreNulls = value;
         }
     }
 } // end of namespace

@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.client.util
         /// Returns the classloader.
         /// </summary>
         /// <returns>classloader</returns>
-        TypeResolver GetTypeResolver();
+        public TypeResolver TypeResolver { get; }
     }
 
     public class ClassLoaderProviderConstants

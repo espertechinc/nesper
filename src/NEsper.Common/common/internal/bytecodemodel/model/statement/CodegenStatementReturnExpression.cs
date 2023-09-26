@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             builder.Append("return ");
             _expression.Render(builder, isInnerClass, 4, new CodegenIndent(true));
         }
-        
+
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             consumer.Invoke(_expression);

@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             var result = expr.Evaluate(eventsPerStream, isNewData, context);
 
-            return (int?) result;
+            return (int?)result;
         }
 
         public static DateTimeFieldEnum GetEnum(
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 throw new ExprValidationException(message);
             }
 
-            var fieldname = (string) exprNode.Forge.ExprEvaluator.Evaluate(null, true, null);
+            var fieldname = (string)exprNode.Forge.ExprEvaluator.Evaluate(null, true, null);
             try {
                 return CalendarFieldEnumExtensions
                     .FromString(fieldname)
@@ -55,15 +55,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         }
 
         public static ReformatFormatForgeDesc ValidateGetFormatterType(
-            EPType inputType,
+            EPChainableType inputType,
             string methodName,
             ExprNode exprNode)
         {
-            if (!(inputType is ClassEPType)) {
-                throw new ExprValidationException(
-                    GetMessage(methodName) + " requires a datetime input value but received " + inputType);
-            }
-
             if (!exprNode.Forge.ForgeConstantType.IsConstant) {
                 throw new ExprValidationException(GetMessage(methodName) + " requires a constant-value format");
             }
@@ -86,11 +81,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             }
 
             // handle legacy date
-            var input = (ClassEPType) inputType;
-            if (input.Clazz.GetBoxedType() == typeof(long?) ||
-                TypeHelper.IsSubclassOrImplementsInterface(input.Clazz, typeof(DateTime)) ||
-                TypeHelper.IsSubclassOrImplementsInterface(input.Clazz, typeof(DateTimeOffset)) ||
-                TypeHelper.IsSubclassOrImplementsInterface(input.Clazz, typeof(DateTimeEx))) {
+            var input = ((EPChainableTypeClass)inputType).Clazz;
+            if (input.GetBoxedType() == typeof(long?) ||
+                TypeHelper.IsSubclassOrImplementsInterface(input, typeof(DateTime)) ||
+                TypeHelper.IsSubclassOrImplementsInterface(input, typeof(DateTimeOffset)) ||
+                TypeHelper.IsSubclassOrImplementsInterface(input, typeof(DateTimeEx))) {
                 if (TypeHelper.IsSubclassOrImplementsInterface(formatType, typeof(DateFormat))) {
                     return new ReformatFormatForgeDesc(typeof(DateFormat));
                 }
@@ -98,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
                 if (TypeHelper.IsSubclassOrImplementsInterface(formatType, typeof(string))) {
                     if (format != null) {
                         try {
-                            new SimpleDateFormat((string) format);
+                            new SimpleDateFormat((string)format);
                         }
                         catch (Exception ex) {
                             throw new ExprValidationException(
@@ -120,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             if (TypeHelper.IsSubclassOrImplementsInterface(formatType, typeof(string))) {
                 if (format != null) {
                     try {
-                        DateTimeFormat.For((string) format);
+                        DateTimeFormat.For((string)format);
                     }
                     catch (Exception ex) {
                         throw new ExprValidationException(

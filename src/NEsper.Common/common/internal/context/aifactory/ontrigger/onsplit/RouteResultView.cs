@@ -69,10 +69,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             }
 
             foreach (var bean in newData) {
-                bool isHandled = handler.Handle(bean, exprEvaluatorContext);
+                var isHandled = handler.Handle(bean, exprEvaluatorContext);
 
                 if (!isHandled) {
-                    Child.Update(new[] {bean}, null);
+                    Child.Update(new[] { bean }, null);
                 }
             }
         }

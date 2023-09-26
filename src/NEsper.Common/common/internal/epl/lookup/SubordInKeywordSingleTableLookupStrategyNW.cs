@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             SubordInKeywordSingleTableLookupStrategyFactory factory,
             PropertyHashedEventTable index)
         {
-            this._factory = factory;
-            this._index = index;
+            _factory = factory;
+            _index = index;
         }
 
         public ICollection<EventBean> Lookup(
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         {
             if (context.InstrumentationProvider.Activated()) {
                 context.InstrumentationProvider.QIndexSubordLookup(this, _index, null);
-                ISet<EventBean> result = InKeywordTableLookupUtil.SingleIndexLookup(
+                var result = InKeywordTableLookupUtil.SingleIndexLookup(
                     _factory.evaluators,
                     eventsPerStream,
                     context,

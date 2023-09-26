@@ -35,16 +35,14 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.hash
             _eventsPerStream = new EventBean[numStreams + 1];
         }
 
-        public PropertyHashedEventTable Index {
-            get => _index;
-        }
+        public PropertyHashedEventTable Index => _index;
 
         public ICollection<EventBean> Lookup(
             EventBean theEvent,
             Cursor cursor,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
+            var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             instrumentationCommon.QIndexJoinLookup(this, _index);
 
             _eventsPerStream[_factory.LookupStream] = theEvent;
@@ -63,8 +61,6 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.hash
                    ')';
         }
 
-        public LookupStrategyType LookupStrategyType {
-            get => LookupStrategyType.MULTIEXPR;
-        }
+        public LookupStrategyType LookupStrategyType => LookupStrategyType.MULTIEXPR;
     }
 } // end of namespace

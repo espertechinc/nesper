@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
         {
             CodegenExpression timeZoneField =
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
-            CodegenExpression dateTimeExpr = 
+            var dateTimeExpr =
                 StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField, inner);
 
             return ActionCodegen(dateTimeExpr);

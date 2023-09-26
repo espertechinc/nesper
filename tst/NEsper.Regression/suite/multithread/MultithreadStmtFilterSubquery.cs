@@ -6,11 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
@@ -26,6 +28,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             TryNamedWindowFilterSubquery(env);
@@ -35,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         private static void TryNamedWindowFilterSubquery(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create window MyWindow#keepall as SupportBean_S0", path);
+            env.CompileDeploy("@public create window MyWindow#keepall as SupportBean_S0", path);
             env.CompileDeploy("insert into MyWindow select * from SupportBean_S0", path);
 
             var epl =

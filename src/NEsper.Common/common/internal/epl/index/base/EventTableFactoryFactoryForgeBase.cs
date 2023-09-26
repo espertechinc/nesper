@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(EventTableFactoryFactory), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(EventTableFactoryFactory), GetType(), classScope);
             IList<CodegenExpression> @params = new List<CodegenExpression>();
             @params.Add(Constant(indexedStreamNum));
             @params.Add(Constant(subqueryNum));

@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
@@ -38,15 +39,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);
             Consumer<CodegenMethod> code = method => {
                 if (optionalMultiKey == null || optionalMultiKey.ClassNameMK == null) {
-                    var expression = partitionForges[0].Forge.EvaluateCodegen(typeof(object), method, exprSymbol, classScope);
+                    var expression = partitionForges[0]
+                        .Forge.EvaluateCodegen(typeof(object), method, exprSymbol, classScope);
                     exprSymbol.DerivedSymbolsCodegen(method, method.Block, classScope);
                     method.Block.MethodReturn(expression);
                     return;
                 }
-                
+
                 var expressions = new CodegenExpression[partitionForges.Length];
                 for (var i = 0; i < partitionForges.Length; i++) {
-                    expressions[i] = partitionForges[i].Forge
+                    expressions[i] = partitionForges[i]
+                        .Forge
                         .EvaluateCodegen(
                             typeof(object),
                             method,
@@ -85,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         {
             var namedMethods = rowCtorDesc.NamedMethods;
             var classScope = rowCtorDesc.ClassScope;
-            IList<CodegenTypedParam> rowMembers = rowCtorDesc.RowMembers;
+            var rowMembers = rowCtorDesc.RowMembers;
 
             if (hasRefcount) {
                 rowMembers.Add(new CodegenTypedParam(typeof(int), "refcount").WithFinal(false));
@@ -138,6 +141,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 hasLastUpdTime
                     ? new Consumer<CodegenMethod>(method => method.Block.MethodReturn(Ref("lastUpd")))
                     : new Consumer<CodegenMethod>(method => method.Block.MethodThrowUnsupported()));
+        }
+
+        public static void AppendIncidentals(
+            bool hasRefcount,
+            bool hasLastUpdTime,
+            FabricTypeCollector fabricTypeCollector)
+        {
+            if (hasRefcount) {
+                fabricTypeCollector.Builtin(typeof(int));
+            }
+
+            if (hasLastUpdTime) {
+                fabricTypeCollector.Builtin(typeof(long));
+            }
         }
     }
 } // end of namespace

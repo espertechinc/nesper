@@ -16,8 +16,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             EventBean[] events,
             object[] sortKeys)
         {
-            this.Events = events;
-            this.SortKeys = sortKeys;
+            Events = events;
+            SortKeys = sortKeys;
         }
 
         public EventBean[] Events { get; }

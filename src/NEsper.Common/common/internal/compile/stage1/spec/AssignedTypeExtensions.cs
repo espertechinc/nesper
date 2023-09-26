@@ -62,7 +62,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
                     case CreateSchemaClauseTypeDef.XML:
                         return AssignedType.XML;
-
                 }
             }
 

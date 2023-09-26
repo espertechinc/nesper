@@ -8,19 +8,30 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertEquals
+
+// assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
     public class InfraNWTableOnMergePerf
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withe(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraPerformance(true, EventRepresentationChoice.OBJECTARRAY));
             execs.Add(new InfraPerformance(true, EventRepresentationChoice.MAP));
             execs.Add(new InfraPerformance(true, EventRepresentationChoice.DEFAULT));
@@ -28,8 +39,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return execs;
         }
 
-        internal class InfraPerformance : RegressionExecution
+        private class InfraPerformance : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
             private readonly bool namedWindow;
             private readonly EventRepresentationChoice outputType;
 
@@ -46,14 +62,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
                     ? outputType.GetAnnotationText() +
-                      "@Name('create') create window MyWindow#keepall as (c1 string, c2 int)"
-                    : "@Name('create') create table MyWindow(c1 string primary key, c2 int)";
+                      "@name('create') @public create window MyWindow#keepall as (c1 string, c2 int)"
+                    : "@name('create') @public create table MyWindow(c1 string primary key, c2 int)";
                 env.CompileDeploy(eplCreate, path);
-                Assert.IsTrue(outputType.MatchesClass(env.Statement("create").EventType.UnderlyingType));
+                env.AssertStatement(
+                    "create",
+                    statement => Assert.IsTrue(outputType.MatchesClass(statement.EventType.UnderlyingType)));
 
                 // preload events
                 env.CompileDeploy(
-                    "@Name('insert') insert into MyWindow select TheString as c1, IntPrimitive as c2 from SupportBean",
+                    "@name('insert') insert into MyWindow select theString as c1, intPrimitive as c2 from SupportBean",
                     path);
                 var totalUpdated = 5000;
                 for (var i = 0; i < totalUpdated; i++) {
@@ -62,8 +80,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.UndeployModuleContaining("insert");
 
-                var epl = "@Name('s0') on SupportBean sb merge MyWindow nw where nw.c1 = sb.TheString " +
-                          "when matched then update set nw.c2=sb.IntPrimitive";
+                var epl = "@name('s0') on SupportBean sb merge MyWindow nw where nw.c1 = sb.theString " +
+                          "when matched then update set nw.c2=sb.intPrimitive";
                 env.CompileDeploy(epl, path);
 
                 // prime
@@ -80,18 +98,32 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var delta = endTime - startTime;
 
                 // verify
-                var events = env.Statement("create").GetEnumerator();
-                var count = 0;
-                while (events.MoveNext()) {
-                    var next = events.Current;
-                    Assert.AreEqual(1, next.Get("c2"));
-                    count++;
-                }
+                env.AssertIterator(
+                    "create",
+                    events => {
+                        var count = 0;
+                        for (; events.MoveNext();) {
+                            var next = events.Current;
+                            Assert.AreEqual(1, next.Get("c2"));
+                            count++;
+                        }
 
-                Assert.AreEqual(totalUpdated, count);
+                        Assert.AreEqual(totalUpdated, count);
+                    });
                 Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 
                 env.UndeployAll();
+            }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "namedWindow=" +
+                       namedWindow +
+                       ", outputType=" +
+                       outputType +
+                       '}';
             }
         }
     }

@@ -84,11 +84,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode other,
             bool ignoreStreamPrefix)
         {
-            if (!(other is ExprNamedParameterNode)) {
+            if (!(other is ExprNamedParameterNode otherNamed)) {
                 return false;
             }
 
-            var otherNamed = (ExprNamedParameterNode) other;
             return otherNamed.ParameterName.Equals(ParameterName);
         }
 

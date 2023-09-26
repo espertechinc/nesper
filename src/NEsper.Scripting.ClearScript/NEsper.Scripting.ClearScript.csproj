@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+        <TargetFrameworks>netcoreapp3.1;net6.0;net7.0</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -14,7 +14,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.ClearScript" Version="7.3.7" />
+        <PackageReference Include="Microsoft.ClearScript" Version="7.4.3" />
     </ItemGroup>
 
     <ItemGroup>

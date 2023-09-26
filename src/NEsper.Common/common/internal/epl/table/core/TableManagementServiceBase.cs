@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             string tableName)
         {
             var deployment = deployments.Get(deploymentId);
-            return deployment == null ? null : deployment.GetTable(tableName);
+            return deployment?.GetTable(tableName);
         }
 
         public void DestroyTable(

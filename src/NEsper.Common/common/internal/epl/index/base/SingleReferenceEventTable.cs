@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             EventTableOrganization organization,
             Atomic<ObjectArrayBackedEventBean> eventReference)
         {
-            this._organization = organization;
-            this._eventReference = eventReference;
+            _organization = organization;
+            _eventReference = eventReference;
         }
 
         public void AddRemove(
@@ -78,9 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             return EnumerationHelper.SingletonNullable(_eventReference.Get());
         }
 
-        public bool IsEmpty {
-            get => _eventReference.Get() == null;
-        }
+        public bool IsEmpty => _eventReference.Get() == null;
 
         public void Clear()
         {
@@ -96,21 +94,13 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             return "single-reference";
         }
 
-        public int? NumberOfEvents {
-            get => _eventReference.Get() == null ? 0 : 1;
-        }
+        public int? NumberOfEvents => _eventReference.Get() == null ? 0 : 1;
 
-        public int NumKeys {
-            get => 0;
-        }
+        public int NumKeys => 0;
 
-        public object Index {
-            get => null;
-        }
+        public object Index => null;
 
-        public EventTableOrganization Organization {
-            get => _organization;
-        }
+        public EventTableOrganization Organization => _organization;
 
         public ISet<EventBean> AllValues()
         {
@@ -122,8 +112,6 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
             return Collections.GetEmptySet<EventBean>();
         }
 
-        public Type ProviderClass {
-            get => typeof(SingleReferenceEventTable);
-        }
+        public Type ProviderClass => typeof(SingleReferenceEventTable);
     }
 } // end of namespace

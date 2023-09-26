@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             this.eventRate = eventRate;
             this.variableMetaData = variableMetaData;
 
-            if ((eventRate < 1) && (variableMetaData == null)) {
+            if (eventRate < 1 && variableMetaData == null) {
                 throw new ArgumentException(
                     "Limiting output by event count requires an event count of at least 1 or a variable name");
             }
@@ -45,22 +45,20 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             CodegenClassScope classScope)
         {
             // resolve variable at init-time via field
-            CodegenExpression variableExpression = ConstantNull();
+            var variableExpression = ConstantNull();
             if (variableMetaData != null) {
                 variableExpression = VariableDeployTimeResolver.MakeVariableField(
                     variableMetaData,
                     classScope,
-                    this.GetType());
+                    GetType());
             }
 
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(OutputConditionPolledCountFactory),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
-                .DeclareVar<OutputConditionPolledCountFactory>(
-                    "factory",
-                    NewInstance(typeof(OutputConditionPolledCountFactory)))
+                .DeclareVarNewInstance<OutputConditionPolledCountFactory>("factory")
                 .SetProperty(Ref("factory"), "EventRate", Constant(eventRate))
                 .SetProperty(Ref("factory"), "Variable", variableExpression)
                 .MethodReturn(Ref("factory"));

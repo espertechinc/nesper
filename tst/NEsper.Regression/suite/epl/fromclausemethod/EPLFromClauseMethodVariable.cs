@@ -11,11 +11,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
 namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 {
@@ -24,103 +22,125 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLFromClauseMethodConstantVariable());
-            execs.Add(new EPLFromClauseMethodNonConstantVariable(true));
-            execs.Add(new EPLFromClauseMethodNonConstantVariable(false));
-            execs.Add(new EPLFromClauseMethodContextVariable());
-            execs.Add(new EPLFromClauseMethodVariableMapAndOA());
+            WithConstantVariable(execs);
+            WithNonConstantVariable(execs);
+            WithContextVariable(execs);
+            WithVariableMapAndOA(execs);
+            WithVariableInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithVariableInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLFromClauseMethodVariableInvalid());
             return execs;
         }
 
-        private static void SendEventAssert(
-            RegressionEnvironment env,
-            string theString,
-            int intPrimitive,
-            string expected)
+        public static IList<RegressionExecution> WithVariableMapAndOA(IList<RegressionExecution> execs = null)
         {
-            var fields = new [] { "c0" };
-            env.SendEventBean(new SupportBean(theString, intPrimitive));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {expected});
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLFromClauseMethodVariableMapAndOA());
+            return execs;
         }
 
-        internal class EPLFromClauseMethodVariableInvalid : RegressionExecution
+        public static IList<RegressionExecution> WithContextVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLFromClauseMethodContextVariable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNonConstantVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLFromClauseMethodNonConstantVariable(true));
+            execs.Add(new EPLFromClauseMethodNonConstantVariable(false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithConstantVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLFromClauseMethodConstantVariable());
+            return execs;
+        }
+
+        private class EPLFromClauseMethodVariableInvalid : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 // invalid footprint
-                TryInvalidCompile(
-                    env,
-                    "select * from method:MyConstantServiceVariable.FetchABean() as h0",
-                    "Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find enumeration method, date-time method, instance method or property named 'FetchABean' in class '" +
+                env.TryInvalidCompile(
+                    "select * from method:MyConstantServiceVariable.fetchABean() as h0",
+                    "Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find enumeration method, date-time method, instance method or property named 'fetchABean' in class '" +
                     typeof(MyConstantServiceVariable).FullName +
-                    "' taking no parameters (nearest match found was 'FetchABean' taking type(s) 'System.Int32') [");
+                    "' taking no parameters (nearest match found was 'fetchABean' taking type(s) 'int') [");
 
                 // null variable value and metadata is instance method
-                TryInvalidCompile(
-                    env,
-                    "select field1, field2 from method:MyNullMap.GetMapData()",
+                env.TryInvalidCompile(
+                    "select field1, field2 from method:MyNullMap.getMapData()",
                     "Failed to access variable method invocation metadata: The variable value is null and the metadata method is an instance method");
 
                 // variable with context and metadata is instance method
                 var path = new RegressionPath();
-                env.CompileDeploy("create context BetweenStartAndEnd start SupportBean end SupportBean", path);
+                env.CompileDeploy("@Public create context BetweenStartAndEnd start SupportBean end SupportBean", path);
                 env.CompileDeploy(
-                    "context BetweenStartAndEnd create variable " + typeof(MyMethodHandlerMap).MaskTypeName() + " themap",
+                    "@Public context BetweenStartAndEnd create variable " +
+                    typeof(MyMethodHandlerMap).FullName +
+                    " themap",
                     path);
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     path,
-                    "context BetweenStartAndEnd select field1, field2 from method:themap.GetMapData()",
+                    "context BetweenStartAndEnd select field1, field2 from method:themap.getMapData()",
                     "Failed to access variable method invocation metadata: The variable value is null and the metadata method is an instance method");
 
                 env.UndeployAll();
             }
         }
 
-        internal class EPLFromClauseMethodVariableMapAndOA : RegressionExecution
+        private class EPLFromClauseMethodVariableMapAndOA : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                foreach (var epl in new[] {
-                    "@Name('s0') select field1, field2 from method:MyMethodHandlerMap.GetMapData()",
-                    "@Name('s0') select field1, field2 from method:MyMethodHandlerOA.GetOAData()"
-                }) {
+                foreach (var epl in new string[] {
+                             "@name('s0') select field1, field2 from method:MyMethodHandlerMap.getMapData()",
+                             "@name('s0') select field1, field2 from method:MyMethodHandlerOA.getOAData()"
+                         }) {
                     env.CompileDeploy(epl);
-                    EPAssertionUtil.AssertProps(
-                        env.GetEnumerator("s0").Advance(),
-                        new [] { "field1","field2" },
-                        new object[] {"a", "b"});
+                    env.AssertIterator(
+                        "s0",
+                        iterator => EPAssertionUtil.AssertProps(
+                            iterator.Advance(),
+                            "field1,field2".SplitCsv(),
+                            new object[] { "a", "b" }));
                     env.UndeployAll();
                 }
             }
         }
 
-        internal class EPLFromClauseMethodContextVariable : RegressionExecution
+        private class EPLFromClauseMethodContextVariable : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create context MyContext " +
+                    "@Public create context MyContext " +
                     "initiated by SupportBean_S0 as c_s0 " +
-                    "terminated by SupportBean_S1(Id=c_s0.Id)",
+                    "terminated by SupportBean_S1(id=c_s0.id)",
                     path);
                 env.CompileDeploy(
-                    "context MyContext " +
-                    "create variable MyNonConstantServiceVariable var = MyNonConstantServiceVariableFactory.Make()",
+                    "@Public context MyContext " +
+                    "create variable MyNonConstantServiceVariable var = MyNonConstantServiceVariableFactory.make()",
                     path);
                 env.CompileDeploy(
-                        "@Name('s0') context MyContext " +
-                        "select Id as c0 from SupportBean(IntPrimitive=context.c_s0.Id) as sb, " +
-                        "method:var.FetchABean(IntPrimitive) as h0",
+                        "@name('s0') context MyContext " +
+                        "select id as c0 from SupportBean(intPrimitive=context.c_s0.id) as sb, " +
+                        "method:var.fetchABean(intPrimitive) as h0",
                         path)
                     .AddListener("s0");
                 env.CompileDeploy(
-                    "context MyContext on SupportBean_S2(Id = context.c_s0.Id) set var.Postfix=P20",
+                    "context MyContext on SupportBean_S2(id = context.c_s0.id) set var.postfix=p20",
                     path);
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -141,28 +161,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 SendEventAssert(env, "E2", 2, "_2_b");
 
                 // invalid context
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     path,
-                    "select * from method:var.FetchABean(IntPrimitive) as h0",
+                    "select * from method:var.fetchABean(intPrimitive) as h0",
                     "Variable by name 'var' has been declared for context 'MyContext' and can only be used within the same context");
-                env.CompileDeploy("create context ABC start @now end after 1 minute", path);
-                TryInvalidCompile(
-                    env,
+                env.CompileDeploy("@Public create context ABC start @now end after 1 minute", path);
+                env.TryInvalidCompile(
                     path,
-                    "context ABC select * from method:var.FetchABean(IntPrimitive) as h0",
+                    "context ABC select * from method:var.fetchABean(intPrimitive) as h0",
                     "Variable by name 'var' has been declared for context 'MyContext' and can only be used within the same context");
 
                 env.UndeployAll();
             }
         }
 
-        internal class EPLFromClauseMethodConstantVariable : RegressionExecution
+        private class EPLFromClauseMethodConstantVariable : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select Id as c0 from SupportBean as sb, " +
-                          "method:MyConstantServiceVariable.FetchABean(IntPrimitive) as h0";
+                var epl = "@name('s0') select id as c0 from SupportBean as sb, " +
+                          "method:MyConstantServiceVariable.fetchABean(intPrimitive) as h0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEventAssert(env, "E1", 10, "_10_");
@@ -175,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             }
         }
 
-        internal class EPLFromClauseMethodNonConstantVariable : RegressionExecution
+        private class EPLFromClauseMethodNonConstantVariable : RegressionExecution
         {
             private readonly bool soda;
 
@@ -186,11 +204,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
             public void Run(RegressionEnvironment env)
             {
-                var modifyEPL = "on SupportBean_S0 set MyNonConstantServiceVariable.Postfix=P00";
+                var modifyEPL = "on SupportBean_S0 set MyNonConstantServiceVariable.postfix=p00";
                 env.CompileDeploy(soda, modifyEPL);
 
-                var epl = "@Name('s0') select Id as c0 from SupportBean as sb, " +
-                          "method:MyNonConstantServiceVariable.FetchABean(IntPrimitive) as h0";
+                var epl = "@name('s0') select id as c0 from SupportBean as sb, " +
+                          "method:MyNonConstantServiceVariable.fetchABean(intPrimitive) as h0";
                 env.CompileDeploy(soda, epl).AddListener("s0");
 
                 SendEventAssert(env, "E1", 10, "_10_postfix");
@@ -208,6 +226,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
                 env.UndeployAll();
             }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "soda=" +
+                       soda +
+                       '}';
+            }
+        }
+
+        private static void SendEventAssert(
+            RegressionEnvironment env,
+            string theString,
+            int intPrimitive,
+            string expected)
+        {
+            var fields = "c0".SplitCsv();
+            env.SendEventBean(new SupportBean(theString, intPrimitive));
+            env.AssertPropsNew("s0", fields, new object[] { expected });
         }
 
         [Serializable]
@@ -222,16 +260,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         [Serializable]
         public class MyNonConstantServiceVariable
         {
+            private string postfix;
+
             public MyNonConstantServiceVariable(string postfix)
             {
-                Postfix = postfix;
+                this.postfix = postfix;
             }
 
-            public string Postfix { get; set; }
+            public void SetPostfix(string postfix)
+            {
+                this.postfix = postfix;
+            }
+
+            public string GetPostfix()
+            {
+                return postfix;
+            }
 
             public SupportBean_A FetchABean(int intPrimitive)
             {
-                return new SupportBean_A("_" + intPrimitive + "_" + Postfix);
+                return new SupportBean_A("_" + intPrimitive + "_" + postfix);
             }
         }
 
@@ -298,17 +346,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 this.field2 = field2;
             }
 
-            public object[][] GetOAData()
-            {
-                return new[] {new object[] {field1, field2}};
-            }
-
             public static LinkedHashMap<string, object> GetOADataMetadata()
             {
                 var fields = new LinkedHashMap<string, object>();
                 fields.Put("field1", typeof(string));
                 fields.Put("field2", typeof(string));
                 return fields;
+            }
+
+            public object[][] GetOAData()
+            {
+                return new object[][] { new object[] { field1, field2 } };
             }
         }
     }

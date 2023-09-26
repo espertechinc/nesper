@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
             testCaseList.AddTest(testCase);
 
-            var util = new PatternTestHarness(events, testCaseList, GetType());
+            var util = new PatternTestHarness(events, testCaseList);
             util.RunTest(env);
         }
     }

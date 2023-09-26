@@ -28,16 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             this.argExpression = argExpression;
         }
 
-        public string BlockRefName {
-            get => blockRefName;
-        }
+        public string BlockRefName => blockRefName;
 
-        public Type DeclareType {
-            get => declareType;
-        }
+        public Type DeclareType => declareType;
 
-        public CodegenExpression ArgExpression {
-            get => argExpression;
-        }
+        public CodegenExpression ArgExpression => argExpression;
     }
 } // end of namespace

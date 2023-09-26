@@ -21,8 +21,6 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
 
         public TL Value { get; set; }
 
-        public override object OpaqueValue {
-            get => Value;
-        }
+        public override object OpaqueValue => Value;
     }
 } // end of namespace

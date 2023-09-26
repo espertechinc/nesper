@@ -47,13 +47,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
                 return;
             }
 
-            if (node is PointRegionQuadTreeNodeLeaf<object>) {
-                var leaf = (PointRegionQuadTreeNodeLeaf<object>) node;
+            if (node is PointRegionQuadTreeNodeLeaf<object> leaf) {
                 CollectLeaf(leaf, x, y, width, height, eventBean, target, collector, ctx);
                 return;
             }
 
-            var branch = (PointRegionQuadTreeNodeBranch) node;
+            var branch = (PointRegionQuadTreeNodeBranch)node;
             CollectRange(branch.Nw, x, y, width, height, eventBean, target, collector, ctx);
             CollectRange(branch.Ne, x, y, width, height, eventBean, target, collector, ctx);
             CollectRange(branch.Sw, x, y, width, height, eventBean, target, collector, ctx);
@@ -85,13 +84,13 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             }
             else if (points is XYPointWValue<object> pointWValueWithoutType) {
                 if (BoundingBox.ContainsPoint(
-                    x,
-                    y,
-                    width,
-                    height,
-                    pointWValueWithoutType.X,
-                    pointWValueWithoutType.Y)) {
-                    collector.CollectInto(eventBean, (TL) pointWValueWithoutType.Value, target, ctx);
+                        x,
+                        y,
+                        width,
+                        height,
+                        pointWValueWithoutType.X,
+                        pointWValueWithoutType.Y)) {
+                    collector.CollectInto(eventBean, (TL)pointWValueWithoutType.Value, target, ctx);
                 }
 
                 return;
@@ -106,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             else if (points is IEnumerable<XYPointWValue<object>> enumerableWithoutType) {
                 foreach (var point in enumerableWithoutType) {
                     if (BoundingBox.ContainsPoint(x, y, width, height, point.X, point.Y)) {
-                        collector.CollectInto(eventBean, (TL) point.Value, target, ctx);
+                        collector.CollectInto(eventBean, (TL)point.Value, target, ctx);
                     }
                 }
             }

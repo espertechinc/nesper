@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -26,20 +26,21 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
     public class ContextControllerKeyedUtil
     {
-        public static Object[] UnpackKey(Object key)
+        public static object[] UnpackKey(object key)
         {
             if (key is MultiKey multiKey) {
                 return multiKey.ToObjectArray();
             }
-            else if (key is MultiKeyArrayWrap multiKeyArrayWrap) {
-                return new object[] {multiKeyArrayWrap.Array};
+            else if (key is MultiKeyArrayWrap wrap) {
+                return new object[] { wrap.Array };
             }
 
-            return new object[] {key};
+            return new object[] { key };
         }
 
         public static ContextControllerKeyedSvc GetService(
@@ -53,7 +54,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             return new ContextControllerKeyedSvcLevelAny();
         }
 
-        public static Type[] ValidateContextDesc(
+        internal static Type[] ValidateContextDesc(
             string contextName,
             ContextSpecKeyed partitionSpec)
         {
@@ -91,7 +92,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                             continue;
                         }
 
-                        EventType compareFrom = partitionSpec.Items[j].FilterSpecCompiled.FilterForEventType;
+                        var compareFrom = partitionSpec.Items[j].FilterSpecCompiled.FilterForEventType;
                         if (compareFrom == compareTo) {
                             throw new ExprValidationException(
                                 "For context '" +
@@ -151,8 +152,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                     // compare property types
                     for (var i = 0; i < nextItem.PropertyNames.Count; i++) {
                         var property = nextItem.PropertyNames[i];
-                        var type = nextItem.FilterSpecCompiled.FilterForEventType.GetPropertyType(property)
-                            .GetBoxedType();
+                        var type = nextItem.FilterSpecCompiled.FilterForEventType.GetPropertyType(property).GetBoxedType();
                         var typeBoxed = type.GetBoxedType();
                         var left = TypeHelper.IsSubclassOrImplementsInterface(typeBoxed, typesBoxed[i]);
                         var right = TypeHelper.IsSubclassOrImplementsInterface(typesBoxed[i], typeBoxed);
@@ -187,7 +187,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
         public static FilterValueSetParam[][] GetAddendumFilters(
             object getterKey,
-            FilterSpecActivatable filtersSpec, 
+            FilterSpecActivatable filtersSpec,
             ContextControllerDetailKeyed keyedSpec,
             bool includePartition,
             ContextControllerStatementDesc optionalStatementDesc,
@@ -203,8 +203,10 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
             if (!isCreateWindow) {
                 if (filtersSpec.FilterForEventType.Metadata.TypeClass == EventTypeTypeClass.NAMED_WINDOW) {
-                    String declaredAsName = FindNamedWindowDeclaredAsName(statements, filtersSpec.FilterForEventType.Metadata.Name);
-                    foreach (ContextControllerDetailKeyedItem partitionItem in keyedSpec.Items) {
+                    var declaredAsName = FindNamedWindowDeclaredAsName(
+                        statements,
+                        filtersSpec.FilterForEventType.Metadata.Name);
+                    foreach (var partitionItem in keyedSpec.Items) {
                         if (partitionItem.FilterSpecActivatable.FilterForEventType.Name.Equals(declaredAsName)) {
                             foundPartition = partitionItem;
                             break;
@@ -225,9 +227,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 }
             }
             else {
-                var factory = (StatementAgentInstanceFactoryCreateNW) optionalStatementDesc.Lightweight.StatementContext
-                    .StatementAIFactoryProvider
-                    .Factory;
+                var factory =
+                    (StatementAgentInstanceFactoryCreateNW)optionalStatementDesc.Lightweight.StatementContext
+                        .StatementAIFactoryProvider.Factory;
                 var declaredAsName = factory.AsEventTypeName;
                 foreach (var partitionItem in keyedSpec.Items) {
                     if (partitionItem.FilterSpecActivatable.FilterForEventType.Name.Equals(declaredAsName)) {
@@ -247,7 +249,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 addendumFilters[0] = GetFilterMayEqualOrNull(lookupables[0], getterKey);
             }
             else {
-                var keyProvisioning = (MultiKey) getterKey;
+                var keyProvisioning = (MultiKey)getterKey;
                 for (var i = 0; i < lookupables.Length; i++) {
                     addendumFilters[i] = GetFilterMayEqualOrNull(lookupables[i], keyProvisioning.GetKey(i));
                 }
@@ -268,15 +270,16 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             return addendum;
         }
 
-        private static String FindNamedWindowDeclaredAsName(
+        private static string FindNamedWindowDeclaredAsName(
             IDictionary<int, ContextControllerStatementDesc> statements,
-            String name)
+            string name)
         {
             foreach (var stmtEntry in statements) {
-                StatementContext ctx = stmtEntry.Value.Lightweight.StatementContext;
+                var ctx = stmtEntry.Value.Lightweight.StatementContext;
                 if (ctx.StatementType == StatementType.CREATE_WINDOW) {
-                    StatementAgentInstanceFactoryCreateNW factory = (StatementAgentInstanceFactoryCreateNW) ctx.StatementAIFactoryProvider.Factory;
-                    if (factory.StatementEventType.Name == name) {
+                    var factory =
+                        (StatementAgentInstanceFactoryCreateNW)ctx.StatementAIFactoryProvider.Factory;
+                    if (factory.StatementEventType.Name.Equals(name)) {
                         return factory.AsEventTypeName;
                     }
                 }
@@ -312,6 +315,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             if (keyValue != null && keyValue.GetType().IsArray) {
                 keyValue = MultiKeyPlanner.ToMultiKey(keyValue);
             }
+
             return new FilterValueSetParamImpl(lookupable, FilterOperator.IS, keyValue);
         }
 

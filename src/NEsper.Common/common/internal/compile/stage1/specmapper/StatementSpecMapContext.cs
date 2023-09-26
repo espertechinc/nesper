@@ -23,6 +23,7 @@ using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 {
@@ -46,7 +47,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             VariableNames = new HashSet<string>();
             MapEnv = mapEnv;
             ContextCompileTimeDescriptor = contextCompileTimeDescriptor;
-            this.PlugInAggregations = plugInAggregations;
+            PlugInAggregations = plugInAggregations;
             Scripts = scriptExpressions;
         }
 
@@ -62,6 +63,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
         public VariableCompileTimeResolver VariableCompileTimeResolver => MapEnv.VariableCompileTimeResolver;
 
+        /// <summary>
+        ///     Returns the container;
+        /// </summary>
+        /// <value> the container</value>
+        public IContainer Container => MapEnv.Container;
+        
         /// <summary>
         ///     Returns the runtime import service.
         /// </summary>
@@ -94,7 +101,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
         public IList<ExpressionScriptProvided> Scripts { get; }
 
         public string ContextName => ContextCompileTimeDescriptor?.ContextName;
-        public ExprDeclaredCompileTimeResolver ExprDeclaredCompileTimeResolver => MapEnv.ExprDeclaredCompileTimeResolver;
+
+        public ExprDeclaredCompileTimeResolver ExprDeclaredCompileTimeResolver =>
+            MapEnv.ExprDeclaredCompileTimeResolver;
 
         public TableCompileTimeResolver TableCompileTimeResolver => MapEnv.TableCompileTimeResolver;
 
@@ -109,7 +118,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
         public StatementSpecMapEnv MapEnv { get; }
 
         public IList<ExprSubstitutionNode> SubstitutionNodes { get; } = new List<ExprSubstitutionNode>();
-        
+
         public bool IsAttachPatternText => MapEnv.Configuration.Compiler.ByteCode.IsAttachPatternEPL;
 
         public ClassProvidedExtension ClassProvidedExtension => MapEnv.ClassProvidedExtension;
@@ -122,7 +131,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
 
         public void AddExpressionDeclarations(ExpressionDeclDesc expressionDeclarations)
         {
-            foreach (ExpressionDeclItem item in expressionDeclarations.Expressions) {
+            foreach (var item in expressionDeclarations.Expressions) {
                 AddExpressionDeclaration(item);
             }
         }

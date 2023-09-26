@@ -1423,10 +1423,10 @@ namespace com.espertech.esper.regressionrun.suite.expr
             }
 
             [Test, RunInApplicationDomain]
-            public void WithCurrentTimestamp() => RunAssertionFilter(
+            public void WithCurrentTimestampWEquals() => RunAssertionFilter(
                 _session,
                 _indexPlanning,
-                ExprFilterOptimizableLookupableLimitedExpr.WithCurrentTimestamp());
+                ExprFilterOptimizableLookupableLimitedExpr.WithCurrentTimestampWEquals());
 
             [Test, RunInApplicationDomain]
             public void WithDisqualify() => RunAssertionFilter(

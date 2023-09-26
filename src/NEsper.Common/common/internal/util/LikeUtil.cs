@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.util
         private int _iFirstWildCard;
         private bool _isNull;
         private char? _escapeChar;
-        
+
         public bool EquivalentToFalsePredicate => _isNull;
 
         public bool EquivalentToEqualsPredicate => _iFirstWildCard == -1;
@@ -37,8 +37,8 @@ namespace com.espertech.esper.common.@internal.util
                     return false;
                 }
 
-                for (int i = 0; i < _wildCardType.Length; i++) {
-                    if (_wildCardType[i] != LikeUtil.PERCENT_CHAR) {
+                for (var i = 0; i < _wildCardType.Length; i++) {
+                    if (_wildCardType[i] != PERCENT_CHAR) {
                         return false;
                     }
                 }
@@ -47,19 +47,13 @@ namespace com.espertech.esper.common.@internal.util
             }
         }
 
-        public bool EquivalentToBetweenPredicate {
-            get {
-                return _iFirstWildCard > 0 &&
-                    _iFirstWildCard == _wildCardType.Length - 1 &&
-                    _cLike[_iFirstWildCard] == '%';
-            }
-        }
+        public bool EquivalentToBetweenPredicate =>
+            _iFirstWildCard > 0 &&
+            _iFirstWildCard == _wildCardType.Length - 1 &&
+            _cLike[_iFirstWildCard] == '%';
 
-        public bool EquivalentToBetweenPredicateAugmentedWithLike {
-            get {
-                return _iFirstWildCard > 0 && _cLike[_iFirstWildCard] == '%';
-            }
-        }
+        public bool EquivalentToBetweenPredicateAugmentedWithLike =>
+            _iFirstWildCard > 0 && _cLike[_iFirstWildCard] == '%';
 
         /// <summary> Ctor.</summary>
         /// <param name="pattern">is the SQL-like pattern to</param>
@@ -106,7 +100,7 @@ namespace com.espertech.esper.common.@internal.util
             for (; i < _iLen; i++) {
                 switch (_wildCardType[i]) {
                     case 0: // general character
-                        if ((j >= jLen) || (_cLike[i] != s[j++])) {
+                        if (j >= jLen || _cLike[i] != s[j++]) {
                             return false;
                         }
 
@@ -127,7 +121,7 @@ namespace com.espertech.esper.common.@internal.util
                         }
 
                         while (j < jLen) {
-                            if ((_cLike[i] == s[j]) && CompareAt(s, i, j, jLen)) {
+                            if (_cLike[i] == s[j] && CompareAt(s, i, j, jLen)) {
                                 return true;
                             }
 
@@ -156,15 +150,15 @@ namespace com.espertech.esper.common.@internal.util
             _iLen = 0;
             _iFirstWildCard = -1;
 
-            int l = pattern == null ? 0 : pattern.Length;
+            var l = pattern?.Length ?? 0;
 
             _cLike = new char[l];
             _wildCardType = new int[l];
 
             bool bEscaping = false, bPercent = false;
 
-            for (int i = 0; i < l; i++) {
-                char c = pattern[i];
+            for (var i = 0; i < l; i++) {
+                var c = pattern[i];
 
                 if (!bEscaping) {
                     if (_escapeChar != null && _escapeChar.Value == c) {
@@ -173,7 +167,7 @@ namespace com.espertech.esper.common.@internal.util
                         continue;
                     }
                     else if (c == '_') {
-                        _wildCardType[_iLen] = LikeUtil.UNDERSCORE_CHAR;
+                        _wildCardType[_iLen] = UNDERSCORE_CHAR;
 
                         if (_iFirstWildCard == -1) {
                             _iFirstWildCard = _iLen;
@@ -203,17 +197,15 @@ namespace com.espertech.esper.common.@internal.util
                 _cLike[_iLen++] = c;
             }
 
-            for (int i = 0; i < _iLen - 1; i++) {
-                if ((_wildCardType[i] == PERCENT_CHAR) &&
-                    (_wildCardType[i + 1] == UNDERSCORE_CHAR)) {
+            for (var i = 0; i < _iLen - 1; i++) {
+                if (_wildCardType[i] == PERCENT_CHAR &&
+                    _wildCardType[i + 1] == UNDERSCORE_CHAR) {
                     _wildCardType[i] = UNDERSCORE_CHAR;
                     _wildCardType[i + 1] = PERCENT_CHAR;
                 }
             }
         }
 
-        internal bool HasWildcards {
-            get { return _iFirstWildCard != -1; }
-        }
+        internal bool HasWildcards => _iFirstWildCard != -1;
     }
 }

@@ -91,17 +91,17 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
                 return false;
             }
 
-            var that = (IndexMultiKey) o;
+            var that = (IndexMultiKey)o;
 
             if (IsUnique != that.IsUnique) {
                 return false;
             }
 
-            if (!CompatExtensions.AreEqual(HashIndexedProps, that.HashIndexedProps)) {
+            if (!HashIndexedProps.AreEqual(that.HashIndexedProps)) {
                 return false;
             }
 
-            if (!CompatExtensions.AreEqual(RangeIndexedProps, that.RangeIndexedProps)) {
+            if (!RangeIndexedProps.AreEqual(that.RangeIndexedProps)) {
                 return false;
             }
 
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.join.lookup
 
         public override int GetHashCode()
         {
-            int result = CompatExtensions.Hash(HashIndexedProps);
+            var result = CompatExtensions.Hash(HashIndexedProps);
             result = 31 * result + CompatExtensions.Hash(RangeIndexedProps);
             return result;
         }

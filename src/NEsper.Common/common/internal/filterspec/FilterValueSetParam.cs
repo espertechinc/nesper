@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.IO;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -42,6 +43,6 @@ namespace com.espertech.esper.common.@internal.filterspec
 
     public class FilterValueSetParamConstants
     {
-        public static readonly FilterValueSetParam[][] EMPTY = new FilterValueSetParam[0][];
+        public static readonly FilterValueSetParam[][] EMPTY = Array.Empty<FilterValueSetParam[]>();
     }
 } // end of namespace

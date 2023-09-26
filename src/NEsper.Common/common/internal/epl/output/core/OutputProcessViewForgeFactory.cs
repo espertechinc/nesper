@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -21,8 +22,12 @@ using com.espertech.esper.common.@internal.epl.output.view;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.util;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
+using com.espertech.esper.common.@internal.statemgmtsettings;
+using com.espertech.esper.compat.collections;
+
 
 namespace com.espertech.esper.common.@internal.epl.output.core
 {
@@ -39,28 +44,30 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            InsertIntoDesc insertIntoDesc = statementSpec.Raw.InsertIntoDesc;
-            SelectClauseStreamSelectorEnum selectStreamSelector = statementSpec.Raw.SelectStreamSelectorEnum;
-            OutputLimitSpec outputLimitSpec = statementSpec.Raw.OutputLimitSpec;
-            int streamCount = statementSpec.StreamSpecs.Length;
-            bool isDistinct = statementSpec.Raw.SelectClauseSpec.IsDistinct;
-            bool isGrouped = statementSpec.GroupByExpressions != null &&
-                             statementSpec.GroupByExpressions.GroupByNodes.Length > 0;
-            List<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
+            var insertIntoDesc = statementSpec.Raw.InsertIntoDesc;
+            var selectStreamSelector = statementSpec.Raw.SelectStreamSelectorEnum;
+            var outputLimitSpec = statementSpec.Raw.OutputLimitSpec;
+            var streamCount = statementSpec.StreamSpecs.Length;
+            var isDistinct = statementSpec.Raw.SelectClauseSpec.IsDistinct;
+            var isGrouped = statementSpec.GroupByExpressions != null &&
+                            statementSpec.GroupByExpressions.GroupByNodes.Length > 0;
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(1);
+            var fabricCharge = services.StateMgmtSettingsProvider.NewCharge();
 
             // determine routing
-            bool isRouted = false;
-            bool routeToFront = false;
+            var isRouted = false;
+            var routeToFront = false;
             if (insertIntoDesc != null) {
                 isRouted = true;
                 routeToFront = services.NamedWindowCompileTimeResolver.Resolve(insertIntoDesc.EventTypeName) != null;
             }
 
             OutputStrategyPostProcessForge outputStrategyPostProcessForge = null;
-            if ((insertIntoDesc != null) || (selectStreamSelector == SelectClauseStreamSelectorEnum.RSTREAM_ONLY)) {
+            if (insertIntoDesc != null || selectStreamSelector == SelectClauseStreamSelectorEnum.RSTREAM_ONLY) {
                 SelectClauseStreamSelectorEnum? insertIntoStreamSelector = null;
                 TableMetaData table = null;
 
+                ExprNode eventPrecedence = null;
                 if (insertIntoDesc != null) {
                     insertIntoStreamSelector = insertIntoDesc.StreamSelector;
                     table = services.TableCompileTimeResolver.Resolve(statementSpec.Raw.InsertIntoDesc.EventTypeName);
@@ -72,30 +79,40 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                             statementSpec.Raw.OptionalContextName,
                             true);
                     }
+
+                    if (insertIntoDesc.EventPrecedence != null) {
+                        eventPrecedence = EPLValidationUtil.ValidateEventPrecedence(
+                            table != null,
+                            insertIntoDesc.EventPrecedence,
+                            resultEventType,
+                            statementRawInfo,
+                            services);
+                    }
                 }
 
-                bool audit = AuditEnum.INSERT.GetAudit(statementSpec.Annotations) != null;
+                var audit = AuditEnum.INSERT.GetAudit(statementSpec.Annotations) != null;
                 outputStrategyPostProcessForge = new OutputStrategyPostProcessForge(
                     isRouted,
                     insertIntoStreamSelector,
                     selectStreamSelector,
                     routeToFront,
                     table,
-                    audit);
+                    audit,
+                    eventPrecedence);
             }
 
-            MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKeyDistinct(
+            var multiKeyPlan = MultiKeyPlanner.PlanMultiKeyDistinct(
                 isDistinct,
                 resultEventType,
                 statementRawInfo,
                 SerdeCompileTimeResolverNonHA.INSTANCE);
-            MultiKeyClassRef distinctMultiKey = multiKeyPlan.ClassRef;
-            additionalForgeables.AddRange(multiKeyPlan.MultiKeyForgeables);
+            var distinctMultiKey = multiKeyPlan.ClassRef;
+            additionalForgeables.AddAll(multiKeyPlan.MultiKeyForgeables);
 
             OutputProcessViewFactoryForge outputProcessViewFactoryForge;
             if (outputLimitSpec == null) {
                 if (!isDistinct) {
-                    if (outputStrategyPostProcessForge == null || !outputStrategyPostProcessForge.HasTable) {
+                    if (outputStrategyPostProcessForge == null || !outputStrategyPostProcessForge.HasTable()) {
                         // without table we have a shortcut implementation
                         outputProcessViewFactoryForge =
                             new OutputProcessViewDirectSimpleForge(outputStrategyPostProcessForge);
@@ -126,44 +143,59 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             }
             else {
                 try {
-                    bool isWithHavingClause = statementSpec.Raw.HavingClause != null;
-                    bool isStartConditionOnCreation = HasOnlyTables(statementSpec.StreamSpecs);
-                    OutputConditionFactoryForge outputConditionFactoryForge =
-                        OutputConditionFactoryFactory.CreateCondition(
-                            outputLimitSpec,
-                            isGrouped,
-                            isWithHavingClause,
-                            isStartConditionOnCreation,
-                            statementRawInfo,
-                            services);
-                    bool hasOrderBy = statementSpec.Raw.OrderByList != null && statementSpec.Raw.OrderByList.Count > 0;
-                    bool hasAfter = outputLimitSpec.AfterNumberOfEvents != null ||
-                                    outputLimitSpec.AfterTimePeriodExpr != null;
+                    var isStartConditionOnCreation = HasOnlyTables(statementSpec.StreamSpecs);
+                    var ocForgeResult = OutputConditionFactoryFactory.CreateCondition(
+                        outputLimitSpec,
+                        isGrouped,
+                        isStartConditionOnCreation,
+                        statementRawInfo,
+                        services);
+                    var outputConditionFactoryForge = ocForgeResult.Forge;
+                    fabricCharge.Add(ocForgeResult.FabricCharge);
+                    var hasOrderBy = statementSpec.Raw.OrderByList != null && statementSpec.Raw.OrderByList.Count > 0;
+                    var hasAfter = outputLimitSpec.AfterNumberOfEvents != null ||
+                                   outputLimitSpec.AfterTimePeriodExpr != null;
 
                     // hint checking with order-by
-                    bool hasOptHint = ResultSetProcessorOutputConditionTypeExtensions
-                        .GetOutputLimitOpt(statementSpec.Annotations, services.Configuration, hasOrderBy);
+                    bool hasOptHint = ResultSetProcessorOutputConditionTypeExtensions.GetOutputLimitOpt(
+                        statementSpec.Annotations,
+                        services.Configuration,
+                        hasOrderBy);
                     ResultSetProcessorOutputConditionType conditionType =
-                        ResultSetProcessorOutputConditionTypeExtensions
-                            .GetConditionType(
-                                outputLimitSpec.DisplayLimit,
-                                resultSetProcessorType.IsAggregated(),
-                                hasOrderBy,
-                                hasOptHint,
-                                resultSetProcessorType.IsGrouped());
+                        ResultSetProcessorOutputConditionTypeExtensions.GetConditionType(
+                            outputLimitSpec.DisplayLimit,
+                            resultSetProcessorType.IsAggregated(),
+                            hasOrderBy,
+                            hasOptHint,
+                            resultSetProcessorType.IsGrouped());
 
                     // plan serdes
-                    foreach (EventType eventType in typesPerStream) {
-                        IList<StmtClassForgeableFactory> serdeForgeables = SerdeEventTypeUtility.Plan(
+                    foreach (var eventType in typesPerStream) {
+                        var serdeForgeables = SerdeEventTypeUtility.Plan(
                             eventType,
                             statementRawInfo,
                             services.SerdeEventTypeRegistry,
-                            services.SerdeResolver);
-                        additionalForgeables.AddRange(serdeForgeables);
+                            services.SerdeResolver,
+                            services.StateMgmtSettingsProvider);
+                        additionalForgeables.AddAll(serdeForgeables);
                     }
-                    
-                    bool terminable = outputLimitSpec.RateType == OutputLimitRateType.TERM ||
-                                      outputLimitSpec.IsAndAfterTerminate;
+
+                    var terminable = outputLimitSpec.RateType == OutputLimitRateType.TERM ||
+                                     outputLimitSpec.IsAndAfterTerminate;
+
+                    var changeSetStateDesc = services.StateMgmtSettingsProvider.ResultSet.OutputLimited(
+                        fabricCharge,
+                        statementRawInfo,
+                        typesPerStream,
+                        resultEventType);
+                    StateMgmtSetting outputFirstStateDesc = StateMgmtSettingDefault.INSTANCE;
+                    if (conditionType == ResultSetProcessorOutputConditionType.POLICY_FIRST) {
+                        outputFirstStateDesc = services.StateMgmtSettingsProvider.ResultSet.OutputFirst(
+                            fabricCharge,
+                            resultSetProcessorType,
+                            typesPerStream);
+                    }
+
                     outputProcessViewFactoryForge = new OutputProcessViewConditionForge(
                         outputStrategyPostProcessForge,
                         isDistinct,
@@ -178,14 +210,26 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                         resultSetProcessorType.IsUnaggregatedUngrouped(),
                         selectStreamSelector,
                         typesPerStream,
-                        resultEventType);
+                        resultEventType,
+                        changeSetStateDesc,
+                        outputFirstStateDesc);
                 }
                 catch (Exception ex) {
-                    throw new ExprValidationException("Failed to validate the output rate limiting clause: " + ex.Message, ex);
+                    throw new ExprValidationException(
+                        "Failed to validate the output rate limiting clause: " + ex.Message,
+                        ex);
                 }
             }
-            
-            return new OutputProcessViewFactoryForgeDesc(outputProcessViewFactoryForge, additionalForgeables);
+
+            if (outputLimitSpec != null &&
+                (outputLimitSpec.AfterTimePeriodExpr != null || outputLimitSpec.AfterNumberOfEvents != null)) {
+                services.StateMgmtSettingsProvider.ResultSet.OutputAfter(fabricCharge);
+            }
+
+            return new OutputProcessViewFactoryForgeDesc(
+                outputProcessViewFactoryForge,
+                additionalForgeables,
+                fabricCharge);
         }
 
         public static OutputProcessViewFactoryForge Make()
@@ -199,7 +243,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 return false;
             }
 
-            foreach (StreamSpecCompiled streamSpec in streamSpecs) {
+            foreach (var streamSpec in streamSpecs) {
                 if (!(streamSpec is TableQueryStreamSpec)) {
                     return false;
                 }

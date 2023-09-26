@@ -30,5 +30,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         {
             return PublicConstValue(typeof(ContextConditionDescriptorNever), "INSTANCE");
         }
+
+        public T Accept<T>(ContextSpecConditionVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
     }
 } // end of namespace

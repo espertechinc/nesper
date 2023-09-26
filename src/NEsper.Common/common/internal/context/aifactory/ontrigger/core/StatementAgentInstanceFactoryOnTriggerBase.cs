@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
 
         public EventType StatementEventType { get; private set; }
 
-        public void StatementCreate(StatementContext statementContext)
+        public void StatementCreate(StatementContext value)
         {
         }
 
@@ -106,6 +106,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                 subselectActivations = SubSelectHelperStart.StartSubselects(
                     subselects,
                     agentInstanceContext,
+                    agentInstanceContext,
                     stopCallbacks,
                     isRecoveringResilient);
 
@@ -124,7 +125,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
             // finally process startup events: handle any pattern-match-event that was produced during startup,
             // relevant for "timer:interval(0)" in conjunction with contexts
             Runnable postContextMergeRunnable = () => activationResult.OptPostContextMergeRunnable?.Invoke();
-            
+
             var stopCallback = AgentInstanceUtil.FinalizeSafeStopCallbacks(stopCallbacks);
             return new StatementAgentInstanceFactoryOnTriggerResult(
                 view,
@@ -149,7 +150,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
                     null,
                     null,
                     subqueries,
-                    tableAccesses == null ? 0 : tableAccesses.Count,
+                    tableAccesses?.Count ?? 0,
                     false);
             }
         }

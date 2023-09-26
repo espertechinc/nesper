@@ -25,11 +25,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
 
         public void Visit(ExprNode exprNode)
         {
-            if (!(exprNode is ExprStreamRefNode)) {
+            if (!(exprNode is ExprStreamRefNode node)) {
                 return;
             }
 
-            Referenced.Add((ExprStreamRefNode) exprNode);
+            Referenced.Add(node);
         }
     }
 }

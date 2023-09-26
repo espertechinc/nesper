@@ -16,108 +16,117 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.core
 {
-	public abstract class JsonGetterNestedBase : JsonEventPropertyGetter
-	{
-		public JsonEventPropertyGetter InnerGetter { get; }
-		public string UnderlyingClassName { get; }
+    public abstract class JsonGetterNestedBase : JsonEventPropertyGetter
+    {
+        public JsonEventPropertyGetter InnerGetter { get; }
+        public string UnderlyingClassName { get; }
 
-		public abstract string FieldName { get; }
-		public abstract Type FieldType { get; }
+        public abstract string FieldName { get; }
+        public abstract Type FieldType { get; }
 
-		public JsonGetterNestedBase(
-			JsonEventPropertyGetter innerGetter,
-			string underlyingClassName)
-		{
-			this.InnerGetter = innerGetter;
-			this.UnderlyingClassName = underlyingClassName;
-		}
+        public JsonGetterNestedBase(
+            JsonEventPropertyGetter innerGetter,
+            string underlyingClassName)
+        {
+            InnerGetter = innerGetter;
+            UnderlyingClassName = underlyingClassName;
+        }
 
-		public abstract object GetJsonProp(object @object);
-		public abstract bool GetJsonExists(object @object);
-		public abstract object GetJsonFragment(object @object);
+        public abstract object GetJsonProp(object @object);
+        public abstract bool GetJsonExists(object @object);
+        public abstract object GetJsonFragment(object @object);
 
-		public object Get(EventBean eventBean)
-		{
-			return GetJsonProp(eventBean.Underlying);
-		}
+        public object Get(EventBean eventBean)
+        {
+            return GetJsonProp(eventBean.Underlying);
+        }
 
-		public CodegenExpression EventBeanGetCodegen(
-			CodegenExpression beanExpression,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			return UnderlyingGetCodegen(CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
-		}
+        public CodegenExpression EventBeanGetCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return UnderlyingGetCodegen(
+                CastUnderlying(UnderlyingClassName, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
+        }
 
-		public CodegenExpression UnderlyingGetCodegen(
-			CodegenExpression underlyingExpression,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			CodegenMethod method = codegenMethodScope
-				.MakeChild(typeof(object), this.GetType(), codegenClassScope)
-				.AddParam(UnderlyingClassName, "und");
-			method.Block
-				.DeclareVar(FieldType, "inner", ExprDotName(Ref("und"), FieldName))
-				.IfRefNullReturnNull("inner")
-				.MethodReturn(InnerGetter.UnderlyingGetCodegen(Ref("inner"), method, codegenClassScope));
-			return LocalMethod(method, underlyingExpression);
-		}
+        public CodegenExpression UnderlyingGetCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var method = codegenMethodScope
+                .MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(UnderlyingClassName, "und");
+            method.Block
+                .DeclareVar(FieldType, "inner", ExprDotName(Ref("und"), FieldName))
+                .IfRefNullReturnNull("inner")
+                .MethodReturn(InnerGetter.UnderlyingGetCodegen(Ref("inner"), method, codegenClassScope));
+            return LocalMethod(method, underlyingExpression);
+        }
 
-		public CodegenExpression EventBeanExistsCodegen(
-			CodegenExpression beanExpression,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			return UnderlyingExistsCodegen(CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
-		}
+        public CodegenExpression EventBeanExistsCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return UnderlyingExistsCodegen(
+                CastUnderlying(UnderlyingClassName, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
+        }
 
-		public CodegenExpression UnderlyingExistsCodegen(
-			CodegenExpression underlyingExpression,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			CodegenMethod method = codegenMethodScope.MakeChild(typeof(bool), this.GetType(), codegenClassScope)
-				.AddParam(UnderlyingClassName, "und");
-			method.Block
-				.DeclareVar(FieldType, "inner", ExprDotName(Ref("und"), FieldName))
-				.IfRefNull("inner")
-				.BlockReturn(ConstantFalse())
-				.MethodReturn(InnerGetter.UnderlyingExistsCodegen(Ref("inner"), method, codegenClassScope));
-			return LocalMethod(method, underlyingExpression);
-		}
+        public CodegenExpression UnderlyingExistsCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var method = codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
+                .AddParam(UnderlyingClassName, "und");
+            method.Block
+                .DeclareVar(FieldType, "inner", ExprDotName(Ref("und"), FieldName))
+                .IfRefNull("inner")
+                .BlockReturn(ConstantFalse())
+                .MethodReturn(InnerGetter.UnderlyingExistsCodegen(Ref("inner"), method, codegenClassScope));
+            return LocalMethod(method, underlyingExpression);
+        }
 
-		public CodegenExpression EventBeanFragmentCodegen(
-			CodegenExpression beanExpression,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			return UnderlyingFragmentCodegen(CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
-		}
+        public CodegenExpression EventBeanFragmentCodegen(
+            CodegenExpression beanExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return UnderlyingFragmentCodegen(
+                CastUnderlying(UnderlyingClassName, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
+        }
 
-		public CodegenExpression UnderlyingFragmentCodegen(
-			CodegenExpression underlyingExpression,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			CodegenMethod method = codegenMethodScope.MakeChild(typeof(object), this.GetType(), codegenClassScope)
-				.AddParam(UnderlyingClassName, "und");
-			method.Block
-				.DeclareVar(FieldType, "inner", ExprDotName(Ref("und"), FieldName))
-				.IfRefNull("inner")
-				.BlockReturn(ConstantNull())
-				.MethodReturn(InnerGetter.UnderlyingFragmentCodegen(Ref("inner"), method, codegenClassScope));
-			return LocalMethod(method, underlyingExpression);
-		}
+        public CodegenExpression UnderlyingFragmentCodegen(
+            CodegenExpression underlyingExpression,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+                .AddParam(UnderlyingClassName, "und");
+            method.Block
+                .DeclareVar(FieldType, "inner", ExprDotName(Ref("und"), FieldName))
+                .IfRefNull("inner")
+                .BlockReturn(ConstantNull())
+                .MethodReturn(InnerGetter.UnderlyingFragmentCodegen(Ref("inner"), method, codegenClassScope));
+            return LocalMethod(method, underlyingExpression);
+        }
 
-		public bool IsExistsProperty(EventBean eventBean)
-		{
-			return GetJsonExists(eventBean.Underlying);
-		}
+        public bool IsExistsProperty(EventBean eventBean)
+        {
+            return GetJsonExists(eventBean.Underlying);
+        }
 
-		public object GetFragment(EventBean eventBean)
-		{
-			return GetJsonFragment(eventBean.Underlying);
-		}
-	}
+        public object GetFragment(EventBean eventBean)
+        {
+            return GetJsonFragment(eventBean.Underlying);
+        }
+    }
 } // end of namespace

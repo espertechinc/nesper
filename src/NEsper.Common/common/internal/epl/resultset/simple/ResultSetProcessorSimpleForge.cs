@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,12 +10,15 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
-using com.espertech.esper.common.@internal.epl.resultset.select.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -24,78 +27,69 @@ using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSe
 namespace com.espertech.esper.common.@internal.epl.resultset.simple
 {
     /// <summary>
-    ///     Result set processor prototype for the simplest case: no aggregation functions used in the select clause, and no
-    ///     group-by.
+    /// Result set processor prototype for the simplest case: no aggregation functions used in the select clause, and no group-by.
     /// </summary>
-    public class ResultSetProcessorSimpleForge : ResultSetProcessorFactoryForge
+    public class ResultSetProcessorSimpleForge : ResultSetProcessorFactoryForgeBase
     {
+        private readonly bool isSelectRStream;
+        private readonly ExprForge optionalHavingNode;
         private readonly OutputLimitSpec outputLimitSpec;
-        private readonly SelectExprProcessorForge selectExprProcessorForge;
+        private readonly ResultSetProcessorOutputConditionType outputConditionType;
+        private readonly bool isSorting;
+        private readonly EventType[] eventTypes;
+        private StateMgmtSetting outputAllHelperSettings;
+        private StateMgmtSetting outputLastHelperSettings;
 
         public ResultSetProcessorSimpleForge(
             EventType resultEventType,
-            SelectExprProcessorForge selectExprProcessorForge,
+            EventType[] typesPerStream,
             ExprForge optionalHavingNode,
             bool isSelectRStream,
             OutputLimitSpec outputLimitSpec,
-            ResultSetProcessorOutputConditionType? outputConditionType,
+            ResultSetProcessorOutputConditionType outputConditionType,
             bool isSorting,
-            EventType[] eventTypes)
+            EventType[] eventTypes) : base(resultEventType, typesPerStream)
         {
-            ResultEventType = resultEventType;
-            this.selectExprProcessorForge = selectExprProcessorForge;
-            OptionalHavingNode = optionalHavingNode;
-            IsSelectRStream = isSelectRStream;
+            this.optionalHavingNode = optionalHavingNode;
+            this.isSelectRStream = isSelectRStream;
             this.outputLimitSpec = outputLimitSpec;
-            OutputConditionType = outputConditionType;
-            IsSorting = isSorting;
-            EventTypes = eventTypes;
+            this.outputConditionType = outputConditionType;
+            this.isSorting = isSorting;
+            this.eventTypes = eventTypes;
         }
 
-        public EventType ResultEventType { get; }
+        public bool IsSelectRStream => isSelectRStream;
 
-        public bool IsSelectRStream { get; }
-
-        public ExprForge OptionalHavingNode { get; }
-
-        public bool IsOutputLast =>
-            outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST;
+        public bool IsOutputLast => outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.LAST;
 
         public bool IsOutputAll => outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.ALL;
 
-        public ResultSetProcessorOutputConditionType? OutputConditionType { get; }
+        public bool IsSorting => isSorting;
 
-        public int NumStreams => EventTypes.Length;
-
-        public EventType[] EventTypes { get; }
-
-        public bool IsSorting { get; }
-
-        public Type InterfaceClass => typeof(ResultSetProcessorSimple);
-
-        public void InstanceCodegen(
+        public override void InstanceCodegen(
             CodegenInstanceAux instance,
             CodegenClassScope classScope,
             CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
-            instance.Properties.AddProperty(
+            instance.Methods.AddMethod(
                 typeof(bool),
                 "HasHavingClause",
+                EmptyList<CodegenNamedParam>.Instance, 
                 typeof(ResultSetProcessorSimple),
                 classScope,
-                propertyNode => propertyNode.GetterBlock.BlockReturn(Constant(OptionalHavingNode != null)));
-            ResultSetProcessorUtil.EvaluateHavingClauseCodegen(OptionalHavingNode, classScope, instance);
+                methodNode => methodNode.Block.MethodReturn(Constant(optionalHavingNode != null)));
+            ResultSetProcessorUtil.EvaluateHavingClauseCodegen(optionalHavingNode, classScope, instance);
             instance.Methods.AddMethod(
                 typeof(ExprEvaluatorContext),
-                "GetAgentInstanceContext",
-                EmptyList<CodegenNamedParam>.Instance,
+                "GetExprEvaluatorContext",
+                EmptyList<CodegenNamedParam>.Instance, 
                 GetType(),
                 classScope,
-                node => node.Block.ReturnMethodOrBlock(MEMBER_AGENTINSTANCECONTEXT));
+                methodNode => methodNode.Block.MethodReturn(MEMBER_EXPREVALCONTEXT));
         }
 
-        public void ProcessViewResultCodegen(
+        public override void ProcessViewResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -103,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             ResultSetProcessorSimpleImpl.ProcessViewResultCodegen(this, classScope, method, instance);
         }
 
-        public void ProcessJoinResultCodegen(
+        public override void ProcessJoinResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -111,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             ResultSetProcessorSimpleImpl.ProcessJoinResultCodegen(this, classScope, method, instance);
         }
 
-        public void GetEnumeratorViewCodegen(
+        public override void GetEnumeratorViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -119,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             ResultSetProcessorSimpleImpl.GetEnumeratorViewCodegen(this, classScope, method, instance);
         }
 
-        public void GetEnumeratorJoinCodegen(
+        public override void GetEnumeratorJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -127,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             ResultSetProcessorSimpleImpl.GetEnumeratorJoinCodegen(this, classScope, method, instance);
         }
 
-        public void ProcessOutputLimitedViewCodegen(
+        public override void ProcessOutputLimitedViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -135,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             ResultSetProcessorSimpleImpl.ProcessOutputLimitedViewCodegen(this, method);
         }
 
-        public void ProcessOutputLimitedJoinCodegen(
+        public override void ProcessOutputLimitedJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -143,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             ResultSetProcessorSimpleImpl.ProcessOutputLimitedJoinCodegen(this, method);
         }
 
-        public void ApplyViewResultCodegen(
+        public override void ApplyViewResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -151,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             // no action
         }
 
-        public void ApplyJoinResultCodegen(
+        public override void ApplyJoinResultCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -159,7 +153,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             // no action
         }
 
-        public void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
+        public override void ContinueOutputLimitedLastAllNonBufferedViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -171,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 instance);
         }
 
-        public void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
+        public override void ContinueOutputLimitedLastAllNonBufferedJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -183,7 +177,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 instance);
         }
 
-        public void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
+        public override void ProcessOutputLimitedLastAllNonBufferedViewCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -195,7 +189,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 instance);
         }
 
-        public void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
+        public override void ProcessOutputLimitedLastAllNonBufferedJoinCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -207,7 +201,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 instance);
         }
 
-        public void AcceptHelperVisitorCodegen(
+        public override void AcceptHelperVisitorCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -215,7 +209,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             ResultSetProcessorSimpleImpl.AcceptHelperVisitorCodegen(method, instance);
         }
 
-        public void StopMethodCodegen(
+        public override void StopMethodCodegen(
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
@@ -223,13 +217,42 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             ResultSetProcessorSimpleImpl.StopMethodCodegen(method, instance);
         }
 
-        public void ClearMethodCodegen(
+        public override void ClearMethodCodegen(
             CodegenClassScope classScope,
             CodegenMethod method)
         {
             // no clearing aggregations
         }
 
-        public string InstrumentedQName => "ResultSetProcessSimple";
+        public void PlanStateSettings(
+            FabricCharge fabricCharge,
+            StatementRawInfo statementRawInfo,
+            StatementCompileTimeServices services)
+        {
+            if (IsOutputAll) {
+                outputAllHelperSettings =
+                    services.StateMgmtSettingsProvider.ResultSet.SimpleOutputAll(fabricCharge, statementRawInfo, this);
+            }
+            else if (IsOutputLast) {
+                outputLastHelperSettings =
+                    services.StateMgmtSettingsProvider.ResultSet.SimpleOutputLast(fabricCharge, statementRawInfo, this);
+            }
+        }
+
+        public ExprForge OptionalHavingNode => optionalHavingNode;
+
+        public ResultSetProcessorOutputConditionType OutputConditionType => outputConditionType;
+
+        public int NumStreams => eventTypes.Length;
+
+        public EventType[] EventTypes => eventTypes;
+
+        public override Type InterfaceClass => typeof(ResultSetProcessorSimple);
+
+        public override string InstrumentedQName => "ResultSetProcessSimple";
+
+        public StateMgmtSetting OutputAllHelperSettings => outputAllHelperSettings;
+
+        public StateMgmtSetting OutputLastHelperSettings => outputLastHelperSettings;
     }
 } // end of namespace

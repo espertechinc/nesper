@@ -15,13 +15,13 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 {
     public class JsonFieldResolverProvided
     {
-	    /// <summary>
-	    ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-	    /// </summary>
-	    /// <param name="declaringClass">class</param>
-	    /// <param name="fieldName">field name</param>
-	    /// <returns>field</returns>
-	    public static FieldInfo ResolveJsonField(
+        /// <summary>
+        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// </summary>
+        /// <param name="declaringClass">class</param>
+        /// <param name="fieldName">field name</param>
+        /// <returns>field</returns>
+        public static FieldInfo ResolveJsonField(
             Type declaringClass,
             string fieldName)
         {
@@ -29,7 +29,14 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
                 return declaringClass.GetField(fieldName);
             }
             catch (Exception ex) {
-                throw new EPException("Failed to resolve field '" + fieldName + "' of declaring class '" + declaringClass.Name + "': " + ex.Message, ex);
+                throw new EPException(
+                    "Failed to resolve field '" +
+                    fieldName +
+                    "' of declaring class '" +
+                    declaringClass.Name +
+                    "': " +
+                    ex.Message,
+                    ex);
             }
         }
     }

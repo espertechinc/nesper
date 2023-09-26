@@ -22,6 +22,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public abstract void MergeClasses(
             ISet<Type> classes);
+
         public abstract void TraverseExpressions(
             Consumer<CodegenExpression> consumer);
     }

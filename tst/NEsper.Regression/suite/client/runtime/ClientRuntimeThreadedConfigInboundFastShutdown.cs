@@ -6,9 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Threading;
 
 using com.espertech.esper.common.client.configuration;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
@@ -24,18 +26,23 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             configuration.Runtime.Threading.ThreadPoolInboundNumThreads = 2;
             configuration.Common.AddEventType(typeof(MyEvent));
             configuration.Compiler.AddPlugInSingleRowFunction("SleepaLittle", GetType().FullName, "SleepaLittle");
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber = true;
         }
 
         public void Run(RegressionEnvironment env)
         {
-            env.CompileDeploy("@Name('s0') select sleepaLittle(100) from MyEvent");
+            env.CompileDeploy("@name('s0') select sleepaLittle(100) from MyEvent");
             env.Statement("s0").Subscriber = new MySubscriber();
             for (var i = 0; i < 10000; i++) {
                 env.SendEventBean(new MyEvent());
             }
 
             env.UndeployAll();
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.OBSERVEROPS);
         }
 
         public static void SleepaLittle(int time)

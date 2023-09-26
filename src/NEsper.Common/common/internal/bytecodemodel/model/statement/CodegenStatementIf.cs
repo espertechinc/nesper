@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
-            foreach (CodegenStatementIfConditionBlock pair in _blocks) {
+            foreach (var pair in _blocks) {
                 pair.TraverseExpressions(consumer);
             }
 

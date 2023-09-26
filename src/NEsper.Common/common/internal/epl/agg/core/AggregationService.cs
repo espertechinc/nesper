@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         /// <param name="exprEvaluatorContext">context for expression evaluatiom</param>
         void ApplyEnter(
             EventBean[] eventsPerStream,
-            Object optionalGroupKeyPerRow,
+            object optionalGroupKeyPerRow,
             ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
@@ -40,18 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         /// <param name="exprEvaluatorContext">context for expression evaluatiom</param>
         void ApplyLeave(
             EventBean[] eventsPerStream,
-            Object optionalGroupKeyPerRow,
+            object optionalGroupKeyPerRow,
             ExprEvaluatorContext exprEvaluatorContext);
-
-#if INHERITED
-/// <summary>
-/// Set the current aggregation state row - for use when evaluation nodes are asked to evaluate.
-/// </summary>
-/// <param name="groupKey">single key identifying the row of aggregation states</param>
-/// <param name="agentInstanceId">context partition id</param>
-/// <param name="rollupLevel">The rollup level.</param>
-        void SetCurrentAccess(Object groupKey, int agentInstanceId, AggregationGroupByRollupLevel rollupLevel);
-#endif
 
         /// <summary>
         /// Clear current aggregation state.
@@ -64,9 +54,5 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         void Accept(AggregationServiceVisitor visitor);
         void AcceptGroupDetail(AggregationServiceVisitorWGroupDetail visitor);
         bool IsGrouped { get; }
-
-#if INHERITED
-        AggregationService GetContextPartitionAggregationService(int agentInstanceId);
-#endif
     }
 }

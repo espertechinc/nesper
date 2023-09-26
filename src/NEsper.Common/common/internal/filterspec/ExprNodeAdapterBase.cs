@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (ExprNodeAdapterBase) o;
+            var that = (ExprNodeAdapterBase)o;
             return evaluatorContext.StatementId == that.evaluatorContext.StatementId &&
                    evaluatorContext.AgentInstanceId == that.evaluatorContext.AgentInstanceId &&
                    factory.FilterBoolExprId == that.factory.FilterBoolExprId;

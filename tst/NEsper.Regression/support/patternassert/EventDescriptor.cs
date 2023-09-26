@@ -21,10 +21,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
             eventProperties = new Dictionary<string, object>();
         }
 
-        public IDictionary<string, object> GetEventProperties()
-        {
-            return eventProperties;
-        }
+        public IDictionary<string, object> EventProperties => eventProperties;
 
         public void Put(
             string propertyName,

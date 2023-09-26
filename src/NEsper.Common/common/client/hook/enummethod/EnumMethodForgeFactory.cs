@@ -8,26 +8,26 @@
 
 namespace com.espertech.esper.common.client.hook.enummethod
 {
-	/// <summary>
-	///     Enumeration method extension API for adding enum-methods.
-	/// </summary>
-	public interface EnumMethodForgeFactory
+    /// <summary>
+    ///     Enumeration method extension API for adding enum-methods.
+    /// </summary>
+    public interface EnumMethodForgeFactory
     {
-	    /// <summary>
-	    ///     Called by the compiler to receive the list of footprints.
-	    /// </summary>
-	    /// <param name="context">contextual information</param>
-	    /// <returns>footprints</returns>
-	    EnumMethodDescriptor Initialize(EnumMethodInitializeContext context);
+        /// <summary>
+        ///     Called by the compiler to receive the list of footprints.
+        /// </summary>
+        /// <param name="context">contextual information</param>
+        /// <returns>footprints</returns>
+        EnumMethodDescriptor Initialize(EnumMethodInitializeContext context);
 
-	    /// <summary>
-	    ///     Called by the compiler to allow validation of actual parameters beyond validation of the footprint information
-	    ///     that the compiler does automatically.
-	    ///     <para />
-	    ///     Can be used to pre-evaluate parameter expressions.
-	    /// </summary>
-	    /// <param name="context">contextual information</param>
-	    /// <returns>enumeration method descriptor</returns>
-	    EnumMethodMode Validate(EnumMethodValidateContext context);
+        /// <summary>
+        ///     Called by the compiler to allow validation of actual parameters beyond validation of the footprint information
+        ///     that the compiler does automatically.
+        ///     <para />
+        ///     Can be used to pre-evaluate parameter expressions.
+        /// </summary>
+        /// <param name="context">contextual information</param>
+        /// <returns>enumeration method descriptor</returns>
+        EnumMethodMode Validate(EnumMethodValidateContext context);
     }
 } // end of namespace

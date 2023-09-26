@@ -60,7 +60,10 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             method.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(symbols.GetAddEPS(method), Constant(0)))
                 .IfRefNullReturnNull("@event")
-                .MethodReturn(CodegenLegoCast.CastSafeFromObjectType(ArrayType, Getter.EventBeanGetCodegen(Ref("@event"), method, classScope)));
+                .MethodReturn(
+                    CodegenLegoCast.CastSafeFromObjectType(
+                        ArrayType,
+                        Getter.EventBeanGetCodegen(Ref("@event"), method, classScope)));
             return LocalMethod(method);
         }
     }

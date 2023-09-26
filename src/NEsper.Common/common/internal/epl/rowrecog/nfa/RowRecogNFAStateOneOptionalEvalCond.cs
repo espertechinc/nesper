@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
             EventBean[] eventsPerStream,
             AgentInstanceContext agentInstanceContext)
         {
-            var result = (bool?) Expression.Evaluate(eventsPerStream, true, agentInstanceContext);
+            var result = (bool?)Expression.Evaluate(eventsPerStream, true, agentInstanceContext);
             if (result != null) {
                 return result.Value;
             }

@@ -31,21 +31,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-WithBeanType(execs);
-WithMapType(execs);
+#if REGRESSION_EXECUTIONS
+            WithBeanType(execs);
+            With(MapType)(execs);
+#endif
             return execs;
         }
-public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowMapType());
-    return execs;
-}public static IList<RegressionExecution> WithBeanType(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowBeanType());
-    return execs;
-}
+
+        public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowMapType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBeanType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowBeanType());
+            return execs;
+        }
+
         private static IDictionary<string, object> MakeMap(
             string p0,
             int p1)
@@ -61,12 +67,12 @@ public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> 
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> outstream<SupportBean> {}" +
                     "MySupportBeanOutputOp(outstream) {}" +
                     "SupportGenericOutputOpWPort(outstream) {}");
 
-                var source = new DefaultSupportSourceOp(new object[] {new SupportBean("E1", 1)});
+                var source = new DefaultSupportSourceOp(new object[] { new SupportBean("E1", 1) });
                 var outputOne = new MySupportBeanOutputOp();
                 var outputTwo = new SupportGenericOutputOpWPort();
                 var options =
@@ -77,20 +83,25 @@ public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> 
 
                 SupportBean.Compare(
                     outputOne.GetAndReset().ToArray(),
-                    new [] { "TheString","IntPrimitive" },
+                    new[] { "TheString", "IntPrimitive" },
                     new[] {
-                        new object[] {"E1", 1}
+                        new object[] { "E1", 1 }
                     });
                 var received = outputTwo.GetAndReset();
                 SupportBean.Compare(
                     received.First.ToArray(),
-                    new [] { "TheString","IntPrimitive" },
+                    new[] { "TheString", "IntPrimitive" },
                     new[] {
-                        new object[] {"E1", 1}
+                        new object[] { "E1", 1 }
                     });
-                EPAssertionUtil.AssertEqualsExactOrder(new int?[] {0}, received.Second.ToArray());
+                EPAssertionUtil.AssertEqualsExactOrder(new int?[] { 0 }, received.Second.ToArray());
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 
@@ -99,15 +110,15 @@ public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> 
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create map schema MyMap (p0 String, p1 int)", path);
+                env.CompileDeploy("@public create map schema MyMap (p0 String, p1 int)", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> outstream<MyMap> {}" +
                     "MyMapOutputOp(outstream) {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
-                var source = new DefaultSupportSourceOp(new object[] {MakeMap("E1", 1)});
+                var source = new DefaultSupportSourceOp(new object[] { MakeMap("E1", 1) });
                 var outputOne = new MyMapOutputOp();
                 var outputTwo = new DefaultSupportCaptureOp(env.Container.LockManager());
                 var options =
@@ -118,20 +129,25 @@ public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> 
 
                 EPAssertionUtil.AssertPropsPerRow(
                     outputOne.GetAndReset().ToArray(),
-                    new[] {"P0", "P1"},
+                    new[] { "P0", "P1" },
                     new[] {
-                        new object[] {"E1", 1}
+                        new object[] { "E1", 1 }
                     });
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Container,
                     outputTwo.GetAndReset()[0].UnwrapIntoArray<object>(),
-                    new[] {"P0", "P1"},
+                    new[] { "P0", "P1" },
                     new[] {
-                        new object[] {"E1", 1}
+                        new object[] { "E1", 1 }
                     });
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 

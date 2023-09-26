@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.client.annotation
                     continue;
                 }
 
-                string auditAnnoValue = auditAnnotation.Value;
+                var auditAnnoValue = auditAnnotation.Value;
                 if (auditAnnoValue.Equals("*")) {
                     return auditAnnotation;
                 }

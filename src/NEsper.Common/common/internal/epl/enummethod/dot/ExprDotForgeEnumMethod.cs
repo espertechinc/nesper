@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             int? streamOfProviderIfApplicable,
             EnumMethodDesc lambda,
             string lambdaUsedName,
-            EPType currentInputType,
+            EPChainableType currentInputType,
             IList<ExprNode> parameters,
             ExprValidationContext validationContext);
     }

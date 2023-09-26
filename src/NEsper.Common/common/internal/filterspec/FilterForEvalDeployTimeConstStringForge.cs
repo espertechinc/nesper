@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope)
-				.AddParam(GET_FILTER_VALUE_FP);
+                .AddParam(GET_FILTER_VALUE_FP);
             method.Block
                 .MethodReturn(Cast(typeof(string), _deployTimeConst.CodegenGetDeployTimeConstValue(classScope)));
             return LocalMethod(method, GET_FILTER_VALUE_REFS);
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (FilterForEvalDeployTimeConstStringForge) o;
+            var that = (FilterForEvalDeployTimeConstStringForge)o;
 
             return _deployTimeConst.Equals(that._deployTimeConst);
         }

@@ -19,7 +19,8 @@ namespace com.espertech.esper.common.@internal.collection
         {
         }
 
-        protected PathException(SerializationInfo info,
+        protected PathException(
+            SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }

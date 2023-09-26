@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.module;
 
@@ -13,6 +15,8 @@ namespace com.espertech.esper.common.@internal.view.core
 {
     public interface ViewFactory
     {
+        public static ViewFactory[] EMPTY_ARRAY { get; } = Array.Empty<ViewFactory>();
+        
         EventType EventType { get; set; }
 
         string ViewName { get; }

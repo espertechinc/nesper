@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprEvaluatorContext exprEvaluatorContext)
             {
                 var format = dateFormatEval.Evaluate(eventsPerStream, newData, exprEvaluatorContext);
-                SimpleDateFormat dateFormat = StringToSimpleDateFormatSafe(format);
+                var dateFormat = StringToSimpleDateFormatSafe(format);
                 return StringToLongWStaticFormatComputer.StringToLongWStaticFormatParseSafe(dateFormat, input);
             }
 
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         typeof(long),
                         typeof(StringToLongWExprFormatComputerEval),
                         codegenClassScope)
-                    .AddParam(typeof(object), "input");
+                    .AddParam<object>("input");
                 CodegenExpression format;
                 if (formatForge.ForgeConstantType.IsConstant) {
                     format = FormatFieldExpr(typeof(DateFormat), formatForge, codegenClassScope);

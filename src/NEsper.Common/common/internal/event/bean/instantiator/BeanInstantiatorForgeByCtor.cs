@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.instantiator
         public static object InstantiateCtor(ConstructorInfo ctor)
         {
             try {
-                return ctor.Invoke(new object[0] { });
+                return ctor.Invoke(Array.Empty<object>());
             }
             catch (TargetException e) {
                 var message = "Unexpected exception encountered invoking constructor '" +

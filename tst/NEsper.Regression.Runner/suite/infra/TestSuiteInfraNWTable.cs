@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
                 "justCount",
                 typeof(InfraNWTableFAFIndexPerfWNoQueryPlanLog.InvocationCounter),
                 "JustCount");
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber =true;
         }
 
         [Test, RunInApplicationDomain]
@@ -185,7 +185,13 @@ namespace com.espertech.esper.regressionrun.suite.infra
             public void WithOnMergeInsertStream() => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithOnMergeInsertStream());
 
             [Test, RunInApplicationDomain]
-            public void WithInsertOtherStream() => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithInsertOtherStream());
+            [TestCase(EventRepresentationChoice.MAP)]
+            [TestCase(EventRepresentationChoice.AVRO)]
+            [TestCase(EventRepresentationChoice.JSON)]
+            [TestCase(EventRepresentationChoice.JSONCLASSPROVIDED)]
+            [TestCase(EventRepresentationChoice.OBJECTARRAY)]
+            public void WithInsertOtherStream(EventRepresentationChoice rep) =>
+                RegressionRunner.Run(_session, InfraNWTableOnMerge.WithInsertOtherStream(rep));
 
             [Test, RunInApplicationDomain]
             public void WithMultiactionDeleteUpdate() => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithMultiactionDeleteUpdate());
@@ -194,7 +200,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             public void WithUpdateOrderOfFields() => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithUpdateOrderOfFields());
 
             [Test, RunInApplicationDomain]
-            public void WithInfraSubqueryNotMatched() => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithInfraSubqueryNotMatched());
+            public void WithSubqueryNotMatched() => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithSubqueryNotMatched());
 
             [Test, RunInApplicationDomain]
             public void WithPatternMultimatch() => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithPatternMultimatch());
@@ -209,13 +215,20 @@ namespace com.espertech.esper.regressionrun.suite.infra
             public void WithFlow() => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithFlow());
 
             [Test, RunInApplicationDomain]
-            public void WithInnerTypeAndVariable() => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithInnerTypeAndVariable());
+            [TestCase(EventRepresentationChoice.MAP)]
+            [TestCase(EventRepresentationChoice.AVRO)]
+            [TestCase(EventRepresentationChoice.JSON)]
+            [TestCase(EventRepresentationChoice.JSONCLASSPROVIDED)]
+            [TestCase(EventRepresentationChoice.OBJECTARRAY)]
+            public void WithInnerTypeAndVariable(EventRepresentationChoice rep) => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithInnerTypeAndVariable(rep));
 
             [Test, RunInApplicationDomain]
             public void WithInvalid() => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithInvalid());
 
             [Test, RunInApplicationDomain]
-            public void WithInsertOnly() => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithInsertOnly());
+            [TestCase(true)]
+            [TestCase(false)]
+            public void WithInsertOnly(bool namedWindow) => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithInsertOnly(namedWindow));
 
             [Test, RunInApplicationDomain]
             public void WithDeleteThenUpdate() => RegressionRunner.Run(_session, InfraNWTableOnMerge.WithDeleteThenUpdate());
@@ -283,7 +296,12 @@ namespace com.espertech.esper.regressionrun.suite.infra
             public void WithJoinWhere() => RegressionRunner.Run(_session, InfraNWTableFAF.WithJoinWhere());
 
             [Test, RunInApplicationDomain]
-            public void With3StreamInnerJoin() => RegressionRunner.Run(_session, InfraNWTableFAF.With3StreamInnerJoin());
+            [TestCase(EventRepresentationChoice.MAP)]
+            [TestCase(EventRepresentationChoice.AVRO)]
+            [TestCase(EventRepresentationChoice.JSON)]
+            [TestCase(EventRepresentationChoice.JSONCLASSPROVIDED)]
+            [TestCase(EventRepresentationChoice.OBJECTARRAY)]
+            public void With3StreamInnerJoin(EventRepresentationChoice rep) => RegressionRunner.Run(_session, InfraNWTableFAF.With3StreamInnerJoin(rep));
 
             [Test, RunInApplicationDomain]
             public void WithExecuteFilter() => RegressionRunner.Run(_session, InfraNWTableFAF.WithExecuteFilter());
@@ -307,7 +325,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             public TestInfraNWTableOnUpdate() : base(Configure) { }
 
             [Test, RunInApplicationDomain]
-            public void WithOnUpdateSceneOne() => RegressionRunner.Run(_session, InfraNWTableOnUpdate.WithOnUpdateSceneOne());
+            public void WithOnUpdateSceneOne() => RegressionRunner.Run(_session, InfraNWTableOnUpdate.WithNWTableOnUpdateSceneOne());
 
             [Test, RunInApplicationDomain]
             public void WithUpdateOrderOfFields() => RegressionRunner.Run(_session, InfraNWTableOnUpdate.WithUpdateOrderOfFields());
@@ -391,7 +409,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             public TestInfraNWTableOnSelect() : base(Configure) { }
 
             [Test, RunInApplicationDomain]
-            public void WithSelectIndexSimple() => RegressionRunner.Run(_session, InfraNWTableOnSelect.WithSelectIndexSimple());
+            public void WithSelectIndexSimple() => RegressionRunner.Run(_session, InfraNWTableOnSelect.WithOnSelectIndexSimple());
 
             [Test, RunInApplicationDomain]
             public void WithOnSelectIndexChoice() => RegressionRunner.Run(_session, InfraNWTableOnSelect.WithOnSelectIndexChoice());

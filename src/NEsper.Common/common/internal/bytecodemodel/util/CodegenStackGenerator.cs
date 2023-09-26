@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             CodegenClassMethods classMethods,
             CodegenClassProperties classProperties)
         {
-            ISet<string> namesPassed = GetNamesPassed(methodNode);
+            var namesPassed = GetNamesPassed(methodNode);
             methodNode.DeepParameters = namesPassed;
 
             IList<CodegenNamedParam> paramset = new List<CodegenNamedParam>(

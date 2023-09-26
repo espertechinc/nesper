@@ -27,13 +27,13 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 queries.Add(new CompositeIndexQueryKeyed(isNWOnTrigger, -1, numOuterStreams, hashEval));
             }
 
-            foreach (QueryGraphValueEntryRange rangeProp in rangeEvals) {
+            foreach (var rangeProp in rangeEvals) {
                 queries.Add(new CompositeIndexQueryRange(isNWOnTrigger, -1, numOuterStreams, rangeProp));
             }
 
             // Hook up as chain for remove
             CompositeIndexQuery last = null;
-            foreach (CompositeIndexQuery action in queries) {
+            foreach (var action in queries) {
                 last?.SetNext(action);
 
                 last = action;
@@ -54,13 +54,13 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 queries.Add(new CompositeIndexQueryKeyed(false, lookupStream, -1, hashGetter));
             }
 
-            foreach (QueryGraphValueEntryRange rangeProp in rangeProps) {
+            foreach (var rangeProp in rangeProps) {
                 queries.Add(new CompositeIndexQueryRange(isNWOnTrigger, lookupStream, -1, rangeProp));
             }
 
             // Hook up as chain for remove
             CompositeIndexQuery last = null;
-            foreach (CompositeIndexQuery action in queries) {
+            foreach (var action in queries) {
                 last?.SetNext(action);
 
                 last = action;

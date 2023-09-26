@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         public string GetRowPerLevel(int level)
         {
-            string name = CLASSNAME_AGGREGATIONROW_LVL + "_" + level;
+            var name = CLASSNAME_AGGREGATIONROW_LVL + "_" + level;
             if (_optionalPostfix != null) {
                 name += _optionalPostfix;
             }
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         public string GetRowSerdePerLevel(int level)
         {
-            string name = CLASSNAME_AGGREGATIONROWSERDE_LVL + "_" + level;
+            var name = CLASSNAME_AGGREGATIONROWSERDE_LVL + "_" + level;
             if (_optionalPostfix != null) {
                 name += _optionalPostfix;
             }
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         public string GetRowFactoryPerLevel(int level)
         {
-            string name = CLASSNAME_AGGREGATIONROWFACTORY_LVL + "_" + level;
+            var name = CLASSNAME_AGGREGATIONROWFACTORY_LVL + "_" + level;
             if (_optionalPostfix != null) {
                 name += _optionalPostfix;
             }

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -35,23 +36,16 @@ namespace com.espertech.esper.common.@internal.view.lastevent
             ViewForgeSupport.ValidateNoParameters(ViewName, parameters);
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
-            this.eventType = parentEventType;
+            eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(ViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(LastEventViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "Lastevent";
-        }
+        internal override string FactoryMethod => "Lastevent";
 
         internal override void Assign(
             CodegenMethod method,
@@ -61,8 +55,16 @@ namespace com.espertech.esper.common.@internal.view.lastevent
         {
         }
 
-        public override string ViewName {
-            get => NAME;
+        public override string ViewName => NAME;
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_LASTEVENT;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

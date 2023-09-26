@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
@@ -30,24 +32,24 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             SendTimer(env, 1000);
 
             var statements = new EPStatement[5];
-            statements[0] = env.CompileDeploy("@Name('stmt_metrics') select * from " + typeof(StatementMetric).FullName)
+            statements[0] = env.CompileDeploy("@name('stmt_metrics') select * from " + typeof(StatementMetric).FullName)
                 .Statement("stmt_metrics");
             statements[0].AddListener(env.ListenerNew());
 
             statements[1] = env.CompileDeploy(
-                    "@Name('cpuStmtOne') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeMillis(LongPrimitive)")
+                    "@name('cpuStmtOne') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeMillis(LongPrimitive)")
                 .Statement("cpuStmtOne");
             statements[1].AddListener(env.ListenerNew());
             statements[2] = env.CompileDeploy(
-                    "@Name('cpuStmtTwo') select * from SupportBean(IntPrimitive=2)#keepall where MyMetricFunctions.TakeMillis(LongPrimitive)")
+                    "@name('cpuStmtTwo') select * from SupportBean(IntPrimitive=2)#keepall where MyMetricFunctions.TakeMillis(LongPrimitive)")
                 .Statement("cpuStmtTwo");
             statements[2].AddListener(env.ListenerNew());
             statements[3] = env.CompileDeploy(
-                    "@Name('wallStmtThree') select * from SupportBean(IntPrimitive=3)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)")
+                    "@name('wallStmtThree') select * from SupportBean(IntPrimitive=3)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)")
                 .Statement("wallStmtThree");
             statements[3].AddListener(env.ListenerNew());
             statements[4] = env.CompileDeploy(
-                    "@Name('wallStmtFour') select * from SupportBean(IntPrimitive=4)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)")
+                    "@name('wallStmtFour') select * from SupportBean(IntPrimitive=4)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)")
                 .Statement("wallStmtFour");
             statements[4].AddListener(env.ListenerNew());
 
@@ -55,6 +57,25 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             SendEvent(env, "E2", 2, USER_GOAL_TWO);
             SendEvent(env, "E3", 3, TOTAL_GOAL_ONE);
             SendEvent(env, "E4", 4, TOTAL_GOAL_TWO);
+
+            var result = new Dictionary<string, IDictionary<string, StatementMetric>>();
+            env.Runtime.MetricsService.EnumerateStatementGroups(
+                group => {
+                    var resultGroup = new Dictionary<string, StatementMetric>();
+                    result[group.Name] = resultGroup;
+                    group.IterateStatements(metric => { resultGroup[metric.Metric.StatementName] = metric.Metric; });
+                });
+            Assert.AreEqual(0, result.Get("group-default").Count);
+            Assert.AreEqual(0, result.Get("group-2").Count);
+            var group = result.Get("group-1");
+            EPAssertionUtil.AssertEqualsAnyOrder(
+                group.Keys,
+                new string[] { "cpuStmtTwo", "wallStmtFour", "cpuStmtOne", "wallStmtThree" });
+            var metric = group.Get("cpuStmtOne");
+            Assert.AreEqual(1, metric.NumInput);
+
+            var runtimeMetric = env.Runtime.MetricsService.GetRuntimeMetric();
+            Assert.AreEqual(4, runtimeMetric.InputCount);
 
             var listener = env.Listener("stmt_metrics");
             SendTimer(env, 10999);
@@ -82,11 +103,16 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             env.UndeployAll();
         }
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.OBSERVEROPS);
+        }
+
         private void TryAssertion(
             RegressionEnvironment env,
             long timestamp)
         {
-            var fields = new [] { "RuntimeURI","StatementName" };
+            var fields = new[] { "RuntimeURI", "StatementName" };
 
             var listener = env.Listener("stmt_metrics");
             Assert.AreEqual(4, listener.NewDataList.Count);
@@ -95,19 +121,19 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             EPAssertionUtil.AssertProps(
                 received[0],
                 fields,
-                new object[] {"default", "cpuStmtOne"});
+                new object[] { "default", "cpuStmtOne" });
             EPAssertionUtil.AssertProps(
                 received[1],
                 fields,
-                new object[] {"default", "cpuStmtTwo"});
+                new object[] { "default", "cpuStmtTwo" });
             EPAssertionUtil.AssertProps(
                 received[2],
                 fields,
-                new object[] {"default", "wallStmtThree"});
+                new object[] { "default", "wallStmtThree" });
             EPAssertionUtil.AssertProps(
                 received[3],
                 fields,
-                new object[] {"default", "wallStmtFour"});
+                new object[] { "default", "wallStmtFour" });
 
 #if !NETCORE
             var userOne = (TimeSpan) received[0].Get("PerformanceMetrics.UserTime");
@@ -145,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             int intPrimitive,
             TimeSpan timeSpan)
         {
-            var longPrimitive = (long) timeSpan.TotalMilliseconds;
+            var longPrimitive = (long)timeSpan.TotalMilliseconds;
             var bean = new SupportBean(id, intPrimitive);
             bean.LongPrimitive = longPrimitive;
             env.SendEventBean(bean);

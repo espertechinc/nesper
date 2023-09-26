@@ -36,9 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             var method = parent.MakeChild(typeof(QueryGraphValueEntryCustomKey), GetType(), classScope);
             method.Block
-                .DeclareVar<QueryGraphValueEntryCustomKey>(
-                    "key",
-                    NewInstance(typeof(QueryGraphValueEntryCustomKey)))
+                .DeclareVarNewInstance<QueryGraphValueEntryCustomKey>("key")
                 .SetProperty(Ref("key"), "OperationName", Constant(OperationName))
                 .SetProperty(
                     Ref("key"),
@@ -62,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 return false;
             }
 
-            var that = (QueryGraphValueEntryCustomKeyForge) o;
+            var that = (QueryGraphValueEntryCustomKeyForge)o;
 
             if (!OperationName.Equals(that.OperationName)) {
                 return false;

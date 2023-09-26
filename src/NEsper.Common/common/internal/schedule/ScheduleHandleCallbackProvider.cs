@@ -10,6 +10,6 @@ namespace com.espertech.esper.common.@internal.schedule
 {
     public interface ScheduleHandleCallbackProvider
     {
-        int ScheduleCallbackId { set; }
+        int ScheduleCallbackId { get; set; }
     }
 } // end of namespace

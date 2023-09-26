@@ -28,13 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
             this.childNodes = childNodes;
         }
 
-        public EvalAndFactoryNode FactoryNode {
-            get => factoryNode;
-        }
+        public EvalAndFactoryNode FactoryNode => factoryNode;
 
-        public EvalNode[] ChildNodes {
-            get => childNodes;
-        }
+        public EvalNode[] ChildNodes => childNodes;
 
         public override EvalStateNode NewState(Evaluator parentNode)
         {

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -32,13 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
             RelationalOpEnumComputer computer,
-            ExprForge havingEval)
-            : base(
-                subselect,
-                valueEval,
-                selectEval,
-                resultWhenNoMatchingEvents,
-                computer)
+            ExprForge havingEval) : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, computer)
         {
             this.havingEval = havingEval;
         }
@@ -48,7 +42,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
@@ -61,11 +59,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .DeclareVar<AggregationService>(
                     "aggregationService",
                     ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar<ICollection<object>>(
+                .DeclareVar(
+                    typeof(ICollection<object>),
                     "groupKeys",
                     ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
-                .DeclareVar<bool>("hasRows", ConstantFalse())
-                .DeclareVar<bool>("hasNonNullRow", ConstantFalse());
+                .DeclareVar(typeof(bool?), "hasRows", ConstantFalse())
+                .DeclareVar(typeof(bool?), "hasNonNullRow", ConstantFalse());
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
             {

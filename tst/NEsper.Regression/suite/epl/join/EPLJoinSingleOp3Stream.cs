@@ -23,9 +23,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             Withd(execs);
             WithdOM(execs);
-            WithdCompile(execs);
+            With(dCompile)(execs);
+#endif
             return execs;
         }
 
@@ -64,24 +66,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             // Test sending a C event
             SendEvent(env, eventsA[0]);
             SendEvent(env, eventsB[0]);
-            Assert.IsNull(env.Listener("s0").LastNewData);
+            env.AssertListenerNotInvoked("s0");
             SendEvent(env, eventsC[0]);
             AssertEventsReceived(env, eventsA[0], eventsB[0], eventsC[0]);
 
             // Test sending a B event
-            SendEvent(
-                env,
-                new object[] {eventsA[1], eventsB[2], eventsC[3]});
+            SendEvent(env, new object[] { eventsA[1], eventsB[2], eventsC[3] });
             SendEvent(env, eventsC[1]);
-            Assert.IsNull(env.Listener("s0").LastNewData);
+            env.AssertListenerNotInvoked("s0");
             SendEvent(env, eventsB[1]);
             AssertEventsReceived(env, eventsA[1], eventsB[1], eventsC[1]);
 
             // Test sending a C event
-            SendEvent(
-                env,
-                new object[] {eventsA[4], eventsA[5], eventsB[4], eventsB[3]});
-            Assert.IsNull(env.Listener("s0").LastNewData);
+            SendEvent(env, new object[] { eventsA[4], eventsA[5], eventsB[4], eventsB[3] });
+            env.AssertListenerNotInvoked("s0");
             SendEvent(env, eventsC[4]);
             AssertEventsReceived(env, eventsA[4], eventsB[4], eventsC[4]);
         }
@@ -92,12 +90,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             SupportBean_B eventB,
             SupportBean_C eventC)
         {
-            var updateListener = env.Listener("s0");
-            Assert.AreEqual(1, updateListener.LastNewData.Length);
-            Assert.AreSame(eventA, updateListener.LastNewData[0].Get("streamA"));
-            Assert.AreSame(eventB, updateListener.LastNewData[0].Get("streamB"));
-            Assert.AreSame(eventC, updateListener.LastNewData[0].Get("streamC"));
-            updateListener.Reset();
+            env.AssertListener(
+                "s0",
+                listener => {
+                    Assert.AreEqual(1, listener.LastNewData.Length);
+                    Assert.AreSame(eventA, listener.LastNewData[0].Get("streamA"));
+                    Assert.AreSame(eventB, listener.LastNewData[0].Get("streamB"));
+                    Assert.AreSame(eventC, listener.LastNewData[0].Get("streamC"));
+                    listener.Reset();
+                });
         }
 
         private static void SendEvent(
@@ -120,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_A#length(3) as streamA," +
                           "SupportBean_B#length(3) as streamB," +
                           "SupportBean_C#length(3) as streamC" +
@@ -177,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_A#length(3) as streamA, " +
                           "SupportBean_B#length(3) as streamB, " +
                           "SupportBean_C#length(3) as streamC " +

@@ -34,10 +34,7 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.NEGATED;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.NEGATED;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {

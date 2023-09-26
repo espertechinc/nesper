@@ -70,25 +70,27 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         ///     provider
         /// </param>
         /// <param name="runtimes">map of URI and runtime</param>
+        /// <param name="options">runtime options or null when not provided</param>
         /// <throws>ConfigurationException is thrown to indicate a configuraton error</throws>
         public EPRuntimeImpl(
             Configuration configuration,
             string runtimeURI,
-            IDictionary<string, EPRuntimeSPI> runtimes)
+            IDictionary<string, EPRuntimeSPI> runtimes,
+            EPRuntimeOptions options)
         {
             if (configuration == null) {
                 throw new ArgumentNullException(nameof(configuration), "Unexpected null value received for configuration");
             }
 
-            this.Container = configuration.Container;
-            this._runtimes = runtimes;
+            Container = configuration.Container;
+            _runtimes = runtimes;
             URI = runtimeURI ?? throw new ArgumentNullException(nameof(runtimeURI), "runtime URI should not be null at this stage");
 
             _serviceListeners = new CopyOnWriteArraySet<EPRuntimeStateListener>();
 
             _configLastProvided = TakeSnapshot(configuration);
 
-            DoInitialize(null);
+            DoInitialize(null, options, null);
         }
 
         /// <summary>
@@ -248,12 +250,25 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         public void Initialize()
         {
-            InitializeInternal(null);
+            InitializeInternal(null, null);
+        }
+
+        public void Initialize(Consumer<EPRuntimeSPIRunAfterDestroyCtx> runAfterDestroy)
+        {
+            InitializeInternal(null, runAfterDestroy);
         }
 
         public void Initialize(long? currentTime)
         {
-            InitializeInternal(currentTime);
+            InitializeInternal(currentTime, null);
+        }
+        
+        private void InitializeInternal(
+            long? currentTime,
+            Consumer<EPRuntimeSPIRunAfterDestroyCtx> runAfterDestroy)
+        {
+            DoInitialize(currentTime, null, runAfterDestroy);
+            PostInitialize();
         }
 
         public INamingContext Context {
@@ -437,17 +452,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             }
         }
 
-        private void InitializeInternal(long? currentTime)
-        {
-            DoInitialize(currentTime);
-            PostInitialize();
-        }
-
         /// <summary>
         ///     Performs the initialization.
         /// </summary>
         /// <param name="startTime">optional start time</param>
-        protected void DoInitialize(long? startTime)
+        protected void DoInitialize(long? startTime, EPRuntimeOptions options, Consumer<EPRuntimeSPIRunAfterDestroyCtx> runAfterDestroy)
         {
             Log.Info("Initializing runtime URI '" + URI + "' version " + RuntimeVersion.RUNTIME_VERSION);
 
@@ -481,6 +490,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 _runtimeEnvironment.Runtime.Initialize();
 
                 _runtimeEnvironment.Services.Destroy();
+                
+                if (runAfterDestroy != null) {
+                    runAfterDestroy.Invoke(new EPRuntimeSPIRunAfterDestroyCtx(URI));
+                }
             }
 
             ServiceStatusProvider = new AtomicBoolean(true);
@@ -519,7 +532,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             EPServicesContext services;
             try {
-                services = epServicesContextFactory.CreateServicesContext(this, _configLastProvided);
+                services = epServicesContextFactory.CreateServicesContext(this, _configLastProvided, options);
             }
             catch (EPException ex) {
                 throw new ConfigurationException("Failed runtime startup: " + ex.Message, ex);

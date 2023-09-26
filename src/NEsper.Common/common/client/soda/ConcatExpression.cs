@@ -57,16 +57,12 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.CONCAT;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.CONCAT;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            string delimiter = "";
-            foreach (Expression child in Children)
-            {
+            var delimiter = "";
+            foreach (var child in Children) {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence);
                 delimiter = "||";

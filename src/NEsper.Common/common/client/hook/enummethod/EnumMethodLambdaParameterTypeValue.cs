@@ -8,15 +8,15 @@
 
 namespace com.espertech.esper.common.client.hook.enummethod
 {
-	/// <summary>
-	///     A lambda parameter that assumes the value itself.
-	/// </summary>
-	public class EnumMethodLambdaParameterTypeValue : EnumMethodLambdaParameterType
+    /// <summary>
+    ///     A lambda parameter that assumes the value itself.
+    /// </summary>
+    public class EnumMethodLambdaParameterTypeValue : EnumMethodLambdaParameterType
     {
-	    /// <summary>
-	    ///     Instance.
-	    /// </summary>
-	    public static readonly EnumMethodLambdaParameterTypeValue INSTANCE = new EnumMethodLambdaParameterTypeValue();
+        /// <summary>
+        ///     Instance.
+        /// </summary>
+        public static readonly EnumMethodLambdaParameterTypeValue INSTANCE = new EnumMethodLambdaParameterTypeValue();
 
         private EnumMethodLambdaParameterTypeValue()
         {

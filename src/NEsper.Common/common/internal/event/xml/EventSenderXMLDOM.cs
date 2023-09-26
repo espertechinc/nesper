@@ -66,11 +66,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
             bool isRoute)
         {
             XmlNode namedNode;
-            if (node is XmlDocument) {
-                namedNode = ((XmlDocument) node).DocumentElement;
+            if (node is XmlDocument document) {
+                namedNode = document.DocumentElement;
             }
-            else if (node is XmlElement) {
-                namedNode = (XmlElement) node;
+            else if (node is XmlElement element) {
+                namedNode = element;
             }
             else {
                 throw new EPException(

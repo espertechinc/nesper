@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -25,23 +26,23 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
     public class AggregatorSumNumeric : AggregatorSumBase
     {
         public AggregatorSumNumeric(
-            AggregationForgeFactory factory,
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
             Type optionalDistinctValueType,
             DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter,
             Type sumType)
-            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter, sumType)
+            : base(
+                optionalDistinctValueType,
+                optionalDistinctSerde,
+                hasFilter,
+                optionalFilter,
+                sumType)
         {
-            if (!sumType.IsInt32() && 
-                !sumType.IsInt64() &&
-                !sumType.IsDecimal() &&
-                !sumType.IsDouble() &&
-                !sumType.IsSingle()) {
+            if (!sumType.IsTypeInt32() &&
+                !sumType.IsTypeInt64() &&
+                !sumType.IsTypeDecimal() &&
+                !sumType.IsTypeDouble() &&
+                !sumType.IsTypeSingle()) {
                 throw new ArgumentException("Invalid sum type " + sumType);
             }
         }
@@ -50,11 +51,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         {
             if (sumType == typeof(decimal?)) {
                 return Constant(0.0m);
-            } else if (sumType == typeof(double?)) {
+            }
+            else if (sumType == typeof(double?)) {
                 return Constant(0.0d);
-            } else if (sumType == typeof(float?)) {
+            }
+            else if (sumType == typeof(float?)) {
                 return Constant(0.0f);
-            } else if (sumType == typeof(long?)) {
+            }
+            else if (sumType == typeof(long?)) {
                 return Constant(0L);
             }
 
@@ -145,6 +149,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             else {
                 throw new IllegalStateException("Unrecognized sum type " + sumType);
             }
+        }
+        
+        protected override void AppendSumFormat(FabricTypeCollector collector)
+        {
+            collector.Builtin(sumType.GetPrimitiveType());
         }
 
         private void ApplyAgg(

@@ -35,18 +35,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             EventBean theEvent,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            InstrumentationCommon instrumentationCommon = agentInstanceContext.InstrumentationProvider;
+            var instrumentationCommon = agentInstanceContext.InstrumentationProvider;
             instrumentationCommon.QSplitStream(false, theEvent, items.Length);
 
-            int index = -1;
+            var index = -1;
 
-            for (int i = 0; i < items.Length; i++) {
-                OnSplitItemEval item = items[i];
+            for (var i = 0; i < items.Length; i++) {
+                var item = items[i];
                 eventsPerStream[0] = theEvent;
 
                 // handle no contained-event evaluation
                 if (item.PropertyEvaluator == null) {
-                    bool pass = CheckWhereClauseCurrentEvent(i, exprEvaluatorContext);
+                    var pass = CheckWhereClauseCurrentEvent(i, exprEvaluatorContext);
                     if (pass) {
                         index = i;
                         break;
@@ -54,15 +54,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                 }
                 else {
                     // need to get contained events first
-                    EventBean[] containeds =
+                    var containeds =
                         items[i].PropertyEvaluator.GetProperty(eventsPerStream[0], exprEvaluatorContext);
                     if (containeds == null || containeds.Length == 0) {
                         continue;
                     }
 
-                    foreach (EventBean contained in containeds) {
+                    foreach (var contained in containeds) {
                         eventsPerStream[0] = contained;
-                        bool pass = CheckWhereClauseCurrentEvent(i, exprEvaluatorContext);
+                        var pass = CheckWhereClauseCurrentEvent(i, exprEvaluatorContext);
                         if (pass) {
                             index = i;
                             break;
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                 MayRouteCurrentEvent(index, exprEvaluatorContext);
             }
 
-            bool handled = index != -1;
+            var handled = index != -1;
             instrumentationCommon.ASplitStream(false, handled);
             return handled;
         }

@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
         [SetUp]
         public void SetUp()
         {
-            ImportService engineImportService = SupportClasspathImport.GetInstance(container);
+            ImportService engineImportService = SupportImport.GetInstance(container);
 
             // driver-manager config 1
             var config = new ConfigurationCommonDBRef();

@@ -51,8 +51,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             var method = parent.MakeChild(typeof(bool?), typeof(ExprEventIdentityEqualsNodeEval), classScope);
             method.Block
-                .DeclareVar<EventBean>("left", ArrayAtIndex(symbols.GetAddEPS(method), Constant(forge.UndLeft.StreamId)))
-                .DeclareVar<EventBean>("right", ArrayAtIndex(symbols.GetAddEPS(method), Constant(forge.UndRight.StreamId)))
+                .DeclareVar<EventBean>(
+                    "left",
+                    ArrayAtIndex(symbols.GetAddEPS(method), Constant(forge.UndLeft.StreamId)))
+                .DeclareVar<EventBean>(
+                    "right",
+                    ArrayAtIndex(symbols.GetAddEPS(method), Constant(forge.UndRight.StreamId)))
                 .IfCondition(Or(EqualsNull(Ref("left")), EqualsNull(Ref("right"))))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(StaticMethod<object>("Equals", Ref("left"), Ref("right")));

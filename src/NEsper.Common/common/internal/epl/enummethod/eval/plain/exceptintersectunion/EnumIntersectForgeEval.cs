@@ -169,16 +169,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
                 if (enumcoll.IsEventBeanCollection) {
                     return FlexCollection.Of(
                         EnumIntersectForgeEvalSet(
-                            other.EventBeanCollection, 
+                            other.EventBeanCollection,
                             enumcoll.EventBeanCollection));
                 }
-            } else if (enumcoll.IsObjectCollection) {
+            }
+            else if (enumcoll.IsObjectCollection) {
                 return FlexCollection.Of(
                     EnumIntersectForgeEvalSet(
-                        other.ObjectCollection, 
+                        other.ObjectCollection,
                         enumcoll.ObjectCollection));
             }
-            
+
             throw new ArgumentException("mismatch in FlexCollection types");
         }
     }

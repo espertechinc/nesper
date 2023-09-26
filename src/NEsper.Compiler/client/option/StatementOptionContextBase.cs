@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.compat.function;
 
@@ -22,13 +23,21 @@ namespace com.espertech.esper.compiler.client.option
         ///     Ctor.
         /// </summary>
         /// <param name="base">statement info</param>
-        public StatementOptionContextBase(StatementBaseInfo @base)
+        public StatementOptionContextBase(StatementBaseInfo @base) : this(@base.StatementRawInfo)
         {
-            EplSupplier = () => @base.Compilable.ToEPL();
-            StatementName = @base.StatementName;
-            ModuleName = @base.ModuleName;
-            Annotations = @base.StatementRawInfo.Annotations;
-            StatementNumber = @base.StatementNumber;
+        }
+
+        /// <summary>
+        ///     Ctor.
+        /// </summary>
+        /// <param name="raw">raw statement info</param>
+        public StatementOptionContextBase(StatementRawInfo raw)
+        {
+            EplSupplier = () => raw.Compilable.ToEPL();
+            StatementName = raw.StatementName;
+            ModuleName = raw.ModuleName;
+            Annotations = raw.Annotations;
+            StatementNumber = raw.StatementNumber;
         }
 
         /// <summary>

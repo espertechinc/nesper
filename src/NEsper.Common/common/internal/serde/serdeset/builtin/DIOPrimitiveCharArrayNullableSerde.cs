@@ -11,58 +11,58 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOPrimitiveCharArrayNullableSerde : DataInputOutputSerdeBase<char[]>
-	{
-		public static readonly DIOPrimitiveCharArrayNullableSerde INSTANCE = new DIOPrimitiveCharArrayNullableSerde();
+    public class DIOPrimitiveCharArrayNullableSerde : DataInputOutputSerdeBase<char[]>
+    {
+        public static readonly DIOPrimitiveCharArrayNullableSerde INSTANCE = new DIOPrimitiveCharArrayNullableSerde();
 
-		private DIOPrimitiveCharArrayNullableSerde()
-		{
-		}
+        private DIOPrimitiveCharArrayNullableSerde()
+        {
+        }
 
-		public override void Write(
-			char[] @object,
-			DataOutput output,
-			byte[] unitKey,
-			EventBeanCollatedWriter writer)
-		{
-			WriteInternal(@object, output);
-		}
+        public override void Write(
+            char[] @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteInternal(@object, output);
+        }
 
-		public override char[] ReadValue(
-			DataInput input,
-			byte[] unitKey)
-		{
-			return ReadInternal(input);
-		}
+        public override char[] ReadValue(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadInternal(input);
+        }
 
-		private void WriteInternal(
-			char[] @object,
-			DataOutput output)
-		{
-			if (@object == null) {
-				output.WriteInt(-1);
-				return;
-			}
+        private void WriteInternal(
+            char[] @object,
+            DataOutput output)
+        {
+            if (@object == null) {
+                output.WriteInt(-1);
+                return;
+            }
 
-			output.WriteInt(@object.Length);
-			foreach (char i in @object) {
-				output.WriteChar(i);
-			}
-		}
+            output.WriteInt(@object.Length);
+            foreach (var i in @object) {
+                output.WriteChar(i);
+            }
+        }
 
-		private char[] ReadInternal(DataInput input)
-		{
-			int len = input.ReadInt();
-			if (len == -1) {
-				return null;
-			}
+        private char[] ReadInternal(DataInput input)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
 
-			char[] array = new char[len];
-			for (int i = 0; i < len; i++) {
-				array[i] = input.ReadChar();
-			}
+            var array = new char[len];
+            for (var i = 0; i < len; i++) {
+                array[i] = input.ReadChar();
+            }
 
-			return array;
-		}
-	}
+            return array;
+        }
+    }
 } // end of namespace

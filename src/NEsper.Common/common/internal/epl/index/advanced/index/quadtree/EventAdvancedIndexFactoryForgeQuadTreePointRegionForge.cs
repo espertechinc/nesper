@@ -35,8 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             return PublicConstValue(typeof(EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory), "INSTANCE");
         }
 
-        public override EventAdvancedIndexFactory RuntimeFactory {
-            get => EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory.INSTANCE;
-        }
+        public override EventAdvancedIndexFactory RuntimeFactory =>
+            EventAdvancedIndexFactoryForgeQuadTreePointRegionFactory.INSTANCE;
     }
 } // end of namespace

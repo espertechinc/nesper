@@ -56,16 +56,15 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public string TreeObjectName
-        {
+        public string TreeObjectName {
             get => treeObjectName;
             set => treeObjectName = value;
         }
 
-        public IList<PatternExpr> Children
-        {
+        public IList<PatternExpr> Children {
             get => new List<PatternExpr>();
-            set { /* this expression has no child expressions */ }
+            set { /* this expression has no child expressions */
+            }
         }
 
         public PatternExprPrecedenceEnum Precedence => PatternExprPrecedenceEnum.ATOM;
@@ -75,14 +74,12 @@ namespace com.espertech.esper.common.client.soda
             PatternExprPrecedenceEnum parentPrecedence,
             EPStatementFormatter formatter)
         {
-            if (Precedence.GetLevel() < parentPrecedence.GetLevel())
-            {
+            if (Precedence.GetLevel() < parentPrecedence.GetLevel()) {
                 writer.Write("(");
                 ToPrecedenceFreeEPL(writer);
                 writer.Write(")");
             }
-            else
-            {
+            else {
                 ToPrecedenceFreeEPL(writer);
             }
         }

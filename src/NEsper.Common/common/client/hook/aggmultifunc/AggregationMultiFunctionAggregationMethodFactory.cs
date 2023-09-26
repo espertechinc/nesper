@@ -8,16 +8,17 @@
 
 namespace com.espertech.esper.common.client.hook.aggmultifunc
 {
-	/// <summary>
-	/// Factory for aggregation multi-function aggregation method
-	/// </summary>
-	public interface AggregationMultiFunctionAggregationMethodFactory
-	{
-	    /// <summary>
-	    /// Returns a new table reader
-	    /// </summary>
-	    /// <param name="context">contextual information</param>
-	    /// <returns>table reader</returns>
-	    AggregationMultiFunctionAggregationMethod NewMethod(AggregationMultiFunctionAggregationMethodFactoryContext context);
-	}
+    /// <summary>
+    /// Factory for aggregation multi-function aggregation method
+    /// </summary>
+    public interface AggregationMultiFunctionAggregationMethodFactory
+    {
+        /// <summary>
+        /// Returns a new table reader
+        /// </summary>
+        /// <param name="context">contextual information</param>
+        /// <returns>table reader</returns>
+        AggregationMultiFunctionAggregationMethod NewMethod(
+            AggregationMultiFunctionAggregationMethodFactoryContext context);
+    }
 } // end of namespace

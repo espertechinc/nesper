@@ -34,5 +34,14 @@ namespace com.espertech.esper.common.client.fireandforget
         /// </summary>
         /// <value>event type</value>
         EventType EventType { get; }
+
+        /// <summary>
+        /// Releases resources.
+        /// <para>
+        ///      Required for use with fire-and-forget queries that use SQL queries i.e. "from SQL:db [query]".
+        ///      Optional for all other EPL queries.
+        /// </para>
+        /// </summary>
+        public void Close();
     }
 } // end of namespace

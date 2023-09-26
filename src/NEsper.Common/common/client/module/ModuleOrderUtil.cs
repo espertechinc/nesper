@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.client.module
             proposedModules.AddAll(modules);
 
             ISet<string> availableModuleNames = new HashSet<string>();
-            foreach (Module proposedModule in proposedModules) {
+            foreach (var proposedModule in proposedModules) {
                 if (proposedModule.Name != null) {
                     availableModuleNames.Add(proposedModule.Name);
                 }
@@ -51,27 +51,27 @@ namespace com.espertech.esper.common.client.module
             // Collect all deployed modules
             ISet<string> allDeployedModules = new HashSet<string>();
             allDeployedModules.AddAll(deployedModules);
-            foreach (Module proposedModule in proposedModules) {
+            foreach (var proposedModule in proposedModules) {
                 allDeployedModules.Add(proposedModule.Name);
             }
 
             // Collect uses-dependencies of proposed modules
             IDictionary<string, ISet<string>> usesPerModuleName = new Dictionary<string, ISet<string>>();
-            foreach (Module proposedModule in proposedModules) {
+            foreach (var proposedModule in proposedModules) {
                 // check uses-dependency is available
                 if (options.IsCheckUses) {
                     if (proposedModule.Uses != null) {
-                        foreach (string uses in proposedModule.Uses) {
+                        foreach (var uses in proposedModule.Uses) {
                             if (availableModuleNames.Contains(uses)) {
                                 continue;
                             }
 
-                            bool deployed = allDeployedModules.Contains(uses);
+                            var deployed = allDeployedModules.Contains(uses);
                             if (deployed) {
                                 continue;
                             }
 
-                            string message = "Module-dependency not found";
+                            var message = "Module-dependency not found";
                             if (proposedModule.Name != null) {
                                 message += " as declared by module '" + proposedModule.Name + "'";
                             }
@@ -82,11 +82,11 @@ namespace com.espertech.esper.common.client.module
                     }
                 }
 
-                if ((proposedModule.Name == null) || (proposedModule.Uses == null)) {
+                if (proposedModule.Name == null || proposedModule.Uses == null) {
                     continue;
                 }
 
-                ISet<string> usesSet = usesPerModuleName.Get(proposedModule.Name);
+                var usesSet = usesPerModuleName.Get(proposedModule.Name);
                 if (usesSet == null) {
                     usesSet = new HashSet<string>();
                     usesPerModuleName.Put(proposedModule.Name, usesSet);
@@ -95,12 +95,12 @@ namespace com.espertech.esper.common.client.module
                 usesSet.AddAll(proposedModule.Uses);
             }
 
-            IDictionary<string, SortedSet<int>> proposedModuleNames = new Dictionary<string, SortedSet<int>>()
+            var proposedModuleNames = new Dictionary<string, SortedSet<int>>()
                 .WithNullKeySupport();
 
-            int count = 0;
-            foreach (Module proposedModule in proposedModules) {
-                SortedSet<int> moduleNumbers = proposedModuleNames.Get(proposedModule.Name);
+            var count = 0;
+            foreach (var proposedModule in proposedModules) {
+                var moduleNumbers = proposedModuleNames.Get(proposedModule.Name);
                 if (moduleNumbers == null) {
                     moduleNumbers = new SortedSet<int>();
                     proposedModuleNames.Put(proposedModule.Name, moduleNumbers);
@@ -110,17 +110,17 @@ namespace com.espertech.esper.common.client.module
                 count++;
             }
 
-            DependencyGraph graph = new DependencyGraph(proposedModules.Count, false);
-            int fromModule = 0;
-            foreach (Module proposedModule in proposedModules) {
-                if ((proposedModule.Uses == null) || (proposedModule.Uses.IsEmpty())) {
+            var graph = new DependencyGraph(proposedModules.Count, false);
+            var fromModule = 0;
+            foreach (var proposedModule in proposedModules) {
+                if (proposedModule.Uses == null || proposedModule.Uses.IsEmpty()) {
                     fromModule++;
                     continue;
                 }
 
-                SortedSet<int> dependentModuleNumbers = new SortedSet<int>();
-                foreach (string use in proposedModule.Uses) {
-                    SortedSet<int> moduleNumbers = proposedModuleNames.Get(use);
+                var dependentModuleNumbers = new SortedSet<int>();
+                foreach (var use in proposedModule.Uses) {
+                    var moduleNumbers = proposedModuleNames.Get(use);
                     if (moduleNumbers == null) {
                         continue;
                     }
@@ -137,9 +137,9 @@ namespace com.espertech.esper.common.client.module
                 // Stack<int> 
                 var circular = graph.FirstCircularDependency;
                 if (circular != null) {
-                    string message = "";
-                    string delimiter = "";
-                    foreach (int i in circular) {
+                    var message = "";
+                    var delimiter = "";
+                    foreach (var i in circular) {
                         message += delimiter;
                         message += "module '" + proposedModules[i].Name + "'";
                         delimiter = " uses (depends on) ";
@@ -160,12 +160,12 @@ namespace com.espertech.esper.common.client.module
                             o1,
                             o2) => {
                             return -1 * o1.CompareTo(o2);
-                        },
+                        }
                     });
                 rootNodes.AddAll(graph.GetRootNodes(ignoreList));
 
                 if (rootNodes.IsEmpty()) { // circular dependency could cause this
-                    for (int i = 0; i < proposedModules.Count; i++) {
+                    for (var i = 0; i < proposedModules.Count; i++) {
                         if (!ignoreList.Contains(i)) {
                             rootNodes.Add(i);
                             break;
@@ -173,7 +173,7 @@ namespace com.espertech.esper.common.client.module
                     }
                 }
 
-                foreach (int root in rootNodes) {
+                foreach (var root in rootNodes) {
                     ignoreList.Add(root);
                     reverseDeployList.Add(proposedModules[root]);
                 }

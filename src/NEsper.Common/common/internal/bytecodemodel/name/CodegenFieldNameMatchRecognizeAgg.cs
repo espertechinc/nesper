@@ -16,19 +16,22 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
 
         public CodegenFieldNameMatchRecognizeAgg(int aggregationNumber)
         {
-            this._aggregationNumber = aggregationNumber;
+            _aggregationNumber = aggregationNumber;
         }
 
-        public string Name {
-            get => CodegenNamespaceScopeNames.AggregationMatchRecognize(_aggregationNumber);
-        }
+        public string Name => CodegenNamespaceScopeNames.AggregationMatchRecognize(_aggregationNumber);
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o) {
+                return true;
+            }
 
-            CodegenFieldNameMatchRecognizeAgg that = (CodegenFieldNameMatchRecognizeAgg) o;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
+
+            var that = (CodegenFieldNameMatchRecognizeAgg)o;
 
             return _aggregationNumber == that._aggregationNumber;
         }

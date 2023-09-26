@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             var eventToPublic =
                 TableDeployTimeResolver.MakeTableEventToPublicField(table, context.ClassScope, GetType());
-            var forge = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
+            var forge = (AggregatorAccessSorted)context.AccessStateForge.Aggregator;
             context.Method.Block.DeclareVar<EventBean>(
                     "@event",
                     max

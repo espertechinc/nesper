@@ -132,7 +132,7 @@ namespace NEsper.Avro.Getter
         {
             return codegenMethodScope
                 .MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record")
+                .AddParam<GenericRecord>("record")
                 .Block
                 .DeclareVar<IDictionary<string, object>>(
                     "values",
@@ -158,7 +158,7 @@ namespace NEsper.Avro.Getter
         {
             return codegenMethodScope
                 .MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record")
+                .AddParam<GenericRecord>("record")
                 .Block
                 .DeclareVar<IDictionary<string, object>>(
                     "values",

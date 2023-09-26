@@ -54,9 +54,9 @@ namespace com.espertech.esper.common.@internal.type
                 return false;
             }
 
-            MathContextCodegenField that = (MathContextCodegenField) o;
+            var that = (MathContextCodegenField)o;
 
-            return mathContext != null ? mathContext.Equals(that.mathContext) : that.mathContext == null;
+            return mathContext?.Equals(that.mathContext) ?? that.mathContext == null;
         }
 
         public override int GetHashCode()

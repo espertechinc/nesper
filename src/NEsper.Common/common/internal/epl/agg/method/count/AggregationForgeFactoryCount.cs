@@ -9,8 +9,6 @@
 using System;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
@@ -18,77 +16,70 @@ using com.espertech.esper.common.@internal.epl.expression.agg.method;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
+
 namespace com.espertech.esper.common.@internal.epl.agg.method.count
 {
-	public class AggregationForgeFactoryCount : AggregationForgeFactoryBase
-	{
-		private readonly ExprCountNode _parent;
-		private readonly bool _ignoreNulls;
-		private readonly Type _countedValueType;
-		private readonly DataInputOutputSerdeForge _distinctValueSerde;
-		private AggregatorCount _aggregator;
+    public class AggregationForgeFactoryCount : AggregationForgeFactoryBase
+    {
+        protected readonly ExprCountNode parent;
+        protected readonly bool ignoreNulls;
+        protected readonly Type countedValueType;
+        protected readonly DataInputOutputSerdeForge distinctValueSerde;
+        private readonly AggregatorCount aggregator;
 
-		public AggregationForgeFactoryCount(
-			ExprCountNode parent,
-			bool ignoreNulls,
-			Type countedValueType,
-			DataInputOutputSerdeForge distinctValueSerde)
-		{
-			this._parent = parent;
-			this._ignoreNulls = ignoreNulls;
-			this._countedValueType = countedValueType;
-			this._distinctValueSerde = distinctValueSerde;
-		}
+        public AggregationForgeFactoryCount(
+            ExprCountNode parent,
+            bool ignoreNulls,
+            Type countedValueType,
+            DataInputOutputSerdeForge distinctValueSerde)
+        {
+            this.parent = parent;
+            this.ignoreNulls = ignoreNulls;
+            this.countedValueType = countedValueType;
+            this.distinctValueSerde = distinctValueSerde;
+            var distinctType = !parent.IsDistinct ? null : countedValueType;
+            aggregator = new AggregatorCount(
+                distinctType,
+                distinctValueSerde,
+                parent.HasFilter,
+                parent.OptionalFilter,
+                false);
+        }
 
-		public override Type ResultType => typeof(long?);
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
+        {
+            return GetMethodAggregationEvaluatorCountByForge(parent.PositionalParams, join, typesPerStream);
+        }
 
-		public override void InitMethodForge(
-			int col,
-			CodegenCtor rowCtor,
-			CodegenMemberCol membersColumnized,
-			CodegenClassScope classScope)
-		{
-			Type distinctType = !_parent.IsDistinct ? null : _countedValueType;
-			_aggregator = new AggregatorCount(
-				this,
-				col,
-				rowCtor,
-				membersColumnized,
-				classScope,
-				distinctType,
-				_distinctValueSerde,
-				_parent.HasFilter,
-				_parent.OptionalFilter,
-				false);
-		}
+        private static ExprForge[] GetMethodAggregationEvaluatorCountByForge(
+            ExprNode[] childNodes,
+            bool join,
+            EventType[] typesPerStream)
+        {
+            if (childNodes[0] is ExprWildcard && childNodes.Length == 2) {
+                return ExprMethodAggUtil.GetDefaultForges(new ExprNode[] { childNodes[1] }, join, typesPerStream);
+            }
 
-		public override AggregatorMethod Aggregator => _aggregator;
+            if (childNodes[0] is ExprWildcard && childNodes.Length == 1) {
+                return ExprNodeUtilityQuery.EMPTY_FORGE_ARRAY;
+            }
 
-		public override ExprForge[] GetMethodAggregationForge(
-			bool join,
-			EventType[] typesPerStream)
-		{
-			return GetMethodAggregationEvaluatorCountByForge(_parent.PositionalParams, join, typesPerStream);
-		}
+            return ExprMethodAggUtil.GetDefaultForges(childNodes, join, typesPerStream);
+        }
 
-		private static ExprForge[] GetMethodAggregationEvaluatorCountByForge(
-			ExprNode[] childNodes,
-			bool join,
-			EventType[] typesPerStream)
-		{
-			if (childNodes[0] is ExprWildcard && childNodes.Length == 2) {
-				return ExprMethodAggUtil.GetDefaultForges(new ExprNode[] {childNodes[1]}, join, typesPerStream);
-			}
+        public override Type ResultType => typeof(long?);
 
-			if (childNodes[0] is ExprWildcard && childNodes.Length == 1) {
-				return ExprNodeUtilityQuery.EMPTY_FORGE_ARRAY;
-			}
+        public override AggregatorMethod Aggregator => aggregator;
 
-			return ExprMethodAggUtil.GetDefaultForges(childNodes, join, typesPerStream);
-		}
+        public override ExprAggregateNodeBase AggregationExpression => parent;
 
-		public override ExprAggregateNodeBase AggregationExpression => _parent;
-
-		public override AggregationPortableValidation AggregationPortableValidation => new AggregationPortableValidationCount(_parent.IsDistinct, false, _parent.IsDistinct, _countedValueType, _ignoreNulls);
-	}
+        public override AggregationPortableValidation AggregationPortableValidation => new AggregationPortableValidationCount(
+            parent.IsDistinct,
+            false,
+            parent.IsDistinct,
+            countedValueType,
+            ignoreNulls);
+    }
 } // end of namespace

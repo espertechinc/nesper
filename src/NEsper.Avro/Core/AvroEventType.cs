@@ -86,7 +86,7 @@ namespace NEsper.Avro.Core
         {
             var item = _propertyItems.Get(StringValue.UnescapeDot(propertyName));
             if (item != null) {
-                return item.SimplePropertyType;
+                return item.PropertyDescriptor.PropertyType;
             }
 
             var property = PropertyParser.ParseAndWalkLaxToSimple(propertyName);
@@ -270,7 +270,6 @@ namespace NEsper.Avro.Core
                 return new EventPropertyDescriptor(
                     mapProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     false,
                     true,
                     false,
@@ -287,7 +286,6 @@ namespace NEsper.Avro.Core
                 return new EventPropertyDescriptor(
                     indexedProp.PropertyNameAtomic,
                     typeof(object),
-                    null,
                     true,
                     false,
                     true,
@@ -429,13 +427,13 @@ namespace NEsper.Avro.Core
                 var descriptor = new EventPropertyDescriptor(
                     field.Name,
                     propertyType,
-                    componentType,
                     false,
                     false,
                     indexed,
                     mapped,
                     fragmentEventType != null);
-                var item = new PropertySetDescriptorItem(descriptor, propertyType, getter, fragmentEventType);
+
+                var item = new PropertySetDescriptorItem(descriptor, getter, fragmentEventType);
                 _propertyItems.Put(field.Name, item);
                 _propertyDescriptors[fieldNum] = descriptor;
 

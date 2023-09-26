@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 var coll = value.UnwrapEnumerable<object>();
                 constants.AddAll(coll);
             }
-            
+
             public void ValueToString(StringBuilder @out)
             {
                 @out.Append("collection");

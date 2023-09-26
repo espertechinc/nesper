@@ -162,7 +162,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			}
 
 			var returnType = expression.Forge.EvaluationType;
-			if (!returnType.IsBoolean()) {
+			if (!returnType.IsTypeBoolean()) {
 				throw new EPException(
 					"Invalid expression, expected a boolean return type for expression and received '" +
 					returnType.CleanName() +
@@ -199,7 +199,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				string description,
 				string hint,
 				int priority,
-				Boolean drop,
+				bool drop,
 				IDictionary<string, string> tag)
 			{
 				DeploymentId = deploymentId;

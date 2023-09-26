@@ -9,10 +9,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 using com.espertech.esper.common.client.annotation;
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.expr;
@@ -26,309 +24,365 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
-    public class RowRecogRepetition : RegressionExecution
+    public class RowRecogRepetition
     {
-        public void Run(RegressionEnvironment env)
+        public static ICollection<RegressionExecution> Executions()
         {
-            RunAssertionRepeat(env, false);
-            RunAssertionRepeat(env, true);
-            RunAssertionPrev(env);
-            RunAssertionInvalid(env);
-            RunAssertionDocSamples(env);
-            RunAssertionEquivalent(env);
+            var execs = new List<RegressionExecution>();
+            WithRepeats(execs);
+            WithPrev(execs);
+            WithInvalid(execs);
+            WithDocSamples(execs);
+            WithEquivalent(execs);
+            return execs;
         }
 
-        private void RunAssertionDocSamples(RegressionEnvironment env)
+        public static IList<RegressionExecution> WithEquivalent(IList<RegressionExecution> execs = null)
         {
-            RunDocSampleExactlyN(env);
-            RunDocSampleNOrMore_and_BetweenNandM(env, "A{2,} B");
-            RunDocSampleNOrMore_and_BetweenNandM(env, "A{2,3} B");
-            RunDocSampleUpToN(env);
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new RowRecogRepetitionEquivalent());
+            return execs;
         }
 
-        private void RunDocSampleUpToN(RegressionEnvironment env)
+        public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
         {
-            var fields = new [] { "a0_Id","a1_Id","b_Id" };
-            var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new RowRecogRepetitionDocSamples());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new RowRecogRepetitionInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrev(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new RowRecogRepetitionPrev());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithRepeats(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new RowRecogRepetitionRepeats(false));
+            execs.Add(new RowRecogRepetitionRepeats(true));
+            return execs;
+        }
+
+        private class RowRecogRepetitionDocSamples : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var milestone = new AtomicLong();
+                RunDocSampleExactlyN(env, milestone);
+                RunDocSampleNOrMore_and_BetweenNandM(env, "A{2,} B", milestone);
+                RunDocSampleNOrMore_and_BetweenNandM(env, "A{2,3} B", milestone);
+                RunDocSampleUpToN(env, milestone);
+            }
+        }
+
+        private static void RunDocSampleUpToN(
+            RegressionEnvironment env,
+            AtomicLong milestone)
+        {
+            var fields = "a0_id,a1_id,b_id".SplitCsv();
+            var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
-                      "  partition by Device\n" +
-                      "  measures A[0].Id as a0_Id, A[1].Id as a1_Id, B.Id as b_Id\n" +
+                      "  partition by device\n" +
+                      "  measures A[0].id as a0_id, A[1].id as a1_id, B.id as b_id\n" +
                       "  pattern (A{,2} B)\n" +
                       "  define \n" +
-                      "\tA as A.Temp >= 100,\n" +
-                      "\tB as B.Temp >= 102)";
+                      "\tA as A.temp >= 100,\n" +
+                      "\tB as B.temp >= 102)";
             env.CompileDeploy(epl).AddListener("s0");
 
-            env.SendEventObjectArray(new object[] {"E1", 1, 99d}, "TemperatureSensorEvent");
-            env.SendEventObjectArray(new object[] {"E2", 1, 100d}, "TemperatureSensorEvent");
-            env.SendEventObjectArray(new object[] {"E3", 1, 100d}, "TemperatureSensorEvent");
+            env.SendEventObjectArray(new object[] { "E1", 1, 99d }, "TemperatureSensorEvent");
+            env.SendEventObjectArray(new object[] { "E2", 1, 100d }, "TemperatureSensorEvent");
+            env.SendEventObjectArray(new object[] { "E3", 1, 100d }, "TemperatureSensorEvent");
 
-            env.Milestone(0);
+            env.MilestoneInc(milestone);
 
-            env.SendEventObjectArray(new object[] {"E4", 1, 101d}, "TemperatureSensorEvent");
-            env.SendEventObjectArray(new object[] {"E5", 1, 102d}, "TemperatureSensorEvent");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"E3", "E4", "E5"});
+            env.SendEventObjectArray(new object[] { "E4", 1, 101d }, "TemperatureSensorEvent");
+            env.SendEventObjectArray(new object[] { "E5", 1, 102d }, "TemperatureSensorEvent");
+            env.AssertPropsNew("s0", fields, new object[] { "E3", "E4", "E5" });
 
             env.UndeployAll();
         }
 
-        private void RunDocSampleNOrMore_and_BetweenNandM(
+        private static void RunDocSampleNOrMore_and_BetweenNandM(
             RegressionEnvironment env,
-            string pattern)
+            string pattern,
+            AtomicLong milestone)
         {
-            var fields = new [] { "a0_Id","a1_Id","a2_Id","b_Id" };
-            var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
+            var fields = "a0_id,a1_id,a2_id,b_id".SplitCsv();
+            var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
-                      "  partition by Device\n" +
-                      "  measures A[0].Id as a0_Id, A[1].Id as a1_Id, A[2].Id as a2_Id, B.Id as b_Id\n" +
+                      "  partition by device\n" +
+                      "  measures A[0].id as a0_id, A[1].id as a1_id, A[2].id as a2_id, B.id as b_id\n" +
                       "  pattern (" +
                       pattern +
                       ")\n" +
                       "  define \n" +
-                      "\tA as A.Temp >= 100,\n" +
-                      "\tB as B.Temp >= 102)";
+                      "\tA as A.temp >= 100,\n" +
+                      "\tB as B.temp >= 102)";
             env.CompileDeploy(epl).AddListener("s0");
 
-            env.SendEventObjectArray(new object[] {"E1", 1, 99d}, "TemperatureSensorEvent");
+            env.SendEventObjectArray(new object[] { "E1", 1, 99d }, "TemperatureSensorEvent");
 
-            env.Milestone(0);
+            env.MilestoneInc(milestone);
 
-            env.SendEventObjectArray(new object[] {"E2", 1, 100d}, "TemperatureSensorEvent");
-            env.SendEventObjectArray(new object[] {"E3", 1, 100d}, "TemperatureSensorEvent");
-            env.SendEventObjectArray(new object[] {"E4", 1, 101d}, "TemperatureSensorEvent");
-            env.SendEventObjectArray(new object[] {"E5", 1, 102d}, "TemperatureSensorEvent");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"E2", "E3", "E4", "E5"});
+            env.SendEventObjectArray(new object[] { "E2", 1, 100d }, "TemperatureSensorEvent");
+            env.SendEventObjectArray(new object[] { "E3", 1, 100d }, "TemperatureSensorEvent");
+            env.SendEventObjectArray(new object[] { "E4", 1, 101d }, "TemperatureSensorEvent");
+            env.SendEventObjectArray(new object[] { "E5", 1, 102d }, "TemperatureSensorEvent");
+            env.AssertPropsNew("s0", fields, new object[] { "E2", "E3", "E4", "E5" });
 
             env.UndeployAll();
         }
 
-        private void RunDocSampleExactlyN(RegressionEnvironment env)
+        private static void RunDocSampleExactlyN(
+            RegressionEnvironment env,
+            AtomicLong milestone)
         {
-            var fields = new [] { "a0_Id","a1_Id" };
-            var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
+            var fields = "a0_id,a1_id".SplitCsv();
+            var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
-                      "  partition by Device\n" +
-                      "  measures A[0].Id as a0_Id, A[1].Id as a1_Id\n" +
+                      "  partition by device\n" +
+                      "  measures A[0].id as a0_id, A[1].id as a1_id\n" +
                       "  pattern (A{2})\n" +
                       "  define \n" +
-                      "\tA as A.Temp >= 100)";
+                      "\tA as A.temp >= 100)";
             env.CompileDeploy(epl).AddListener("s0");
 
-            env.SendEventObjectArray(new object[] {"E1", 1, 99d}, "TemperatureSensorEvent");
-            env.SendEventObjectArray(new object[] {"E2", 1, 100d}, "TemperatureSensorEvent");
+            env.SendEventObjectArray(new object[] { "E1", 1, 99d }, "TemperatureSensorEvent");
+            env.SendEventObjectArray(new object[] { "E2", 1, 100d }, "TemperatureSensorEvent");
 
-            env.SendEventObjectArray(new object[] {"E3", 1, 100d}, "TemperatureSensorEvent");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"E2", "E3"});
+            env.SendEventObjectArray(new object[] { "E3", 1, 100d }, "TemperatureSensorEvent");
+            env.AssertPropsNew("s0", fields, new object[] { "E2", "E3" });
 
-            env.Milestone(0);
+            env.MilestoneInc(milestone);
 
-            env.SendEventObjectArray(new object[] {"E4", 1, 101d}, "TemperatureSensorEvent");
-            env.SendEventObjectArray(new object[] {"E5", 1, 102d}, "TemperatureSensorEvent");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"E4", "E5"});
+            env.SendEventObjectArray(new object[] { "E4", 1, 101d }, "TemperatureSensorEvent");
+            env.SendEventObjectArray(new object[] { "E5", 1, 102d }, "TemperatureSensorEvent");
+            env.AssertPropsNew("s0", fields, new object[] { "E4", "E5" });
 
             env.UndeployAll();
         }
 
-        private void RunAssertionInvalid(RegressionEnvironment env)
+        private class RowRecogRepetitionInvalid : RegressionExecution
         {
-            var template = "select * from SupportBean " +
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                var template = "select * from SupportBean " +
+                               "match_recognize (" +
+                               "  measures A as a" +
+                               "  pattern (REPLACE) " +
+                               ")";
+                env.CompileDeploy("create variable int myvariable = 0");
+
+                env.TryInvalidCompile(
+                    template.RegexReplaceAll("REPLACE", "A{}"),
+                    "Invalid match-recognize quantifier '{}', expecting an expression");
+                env.TryInvalidCompile(
+                    template.RegexReplaceAll("REPLACE", "A{null}"),
+                    "Pattern quantifier 'null' must return an integer-type value");
+                env.TryInvalidCompile(
+                    template.RegexReplaceAll("REPLACE", "A{myvariable}"),
+                    "Pattern quantifier 'myvariable' must return a constant value");
+                env.TryInvalidCompile(
+                    template.RegexReplaceAll("REPLACE", "A{prev(A)}"),
+                    "Invalid match-recognize pattern expression 'prev(A)': Aggregation, sub-select, previous or prior functions are not supported in this context");
+
+                var expected = "Invalid pattern quantifier value -1, expecting a minimum of 1";
+                env.TryInvalidCompile(template.RegexReplaceAll("REPLACE", "A{-1}"), expected);
+                env.TryInvalidCompile(template.RegexReplaceAll("REPLACE", "A{,-1}"), expected);
+                env.TryInvalidCompile(template.RegexReplaceAll("REPLACE", "A{-1,10}"), expected);
+                env.TryInvalidCompile(template.RegexReplaceAll("REPLACE", "A{-1,}"), expected);
+                env.TryInvalidCompile(
+                    template.RegexReplaceAll("REPLACE", "A{5,3}"),
+                    "Invalid pattern quantifier value 5, expecting a minimum of 1 and maximum of 3");
+
+                env.UndeployAll();
+            }
+        }
+
+        private class RowRecogRepetitionPrev : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var text = "@name('s0') select * from SupportBean " +
                            "match_recognize (" +
                            "  measures A as a" +
-                           "  pattern (REPLACE) " +
+                           "  pattern (A{3}) " +
+                           "  define " +
+                           "    A as A.intPrimitive > prev(A.intPrimitive)" +
                            ")";
-            env.CompileDeploy("create variable int myvariable = 0");
 
-            SupportMessageAssertUtil.TryInvalidCompile(
-                env,
-                template.Replace("REPLACE", "A{}"),
-                "Invalid match-recognize quantifier '{}', expecting an expression");
-            SupportMessageAssertUtil.TryInvalidCompile(
-                env,
-                template.Replace("REPLACE", "A{null}"),
-                "Pattern quantifier 'null' must return an integer-type value");
-            SupportMessageAssertUtil.TryInvalidCompile(
-                env,
-                template.Replace("REPLACE", "A{myvariable}"),
-                "Pattern quantifier 'myvariable' must return a constant value");
-            SupportMessageAssertUtil.TryInvalidCompile(
-                env,
-                template.Replace("REPLACE", "A{prev(A)}"),
-                "Invalid match-recognize pattern expression 'prev(A)': Aggregation, sub-select, previous or prior functions are not supported in this context");
+                env.CompileDeploy(text).AddListener("s0");
 
-            var expected = "Invalid pattern quantifier value -1, expecting a minimum of 1";
-            SupportMessageAssertUtil.TryInvalidCompile(env, template.Replace("REPLACE", "A{-1}"), expected);
-            SupportMessageAssertUtil.TryInvalidCompile(env, template.Replace("REPLACE", "A{,-1}"), expected);
-            SupportMessageAssertUtil.TryInvalidCompile(env, template.Replace("REPLACE", "A{-1,10}"), expected);
-            SupportMessageAssertUtil.TryInvalidCompile(env, template.Replace("REPLACE", "A{-1,}"), expected);
-            SupportMessageAssertUtil.TryInvalidCompile(
-                env,
-                template.Replace("REPLACE", "A{5,3}"),
-                "Invalid pattern quantifier value 5, expecting a minimum of 1 and maximum of 3");
+                SendEvent("A1", 1, env);
+                SendEvent("A2", 4, env);
+                SendEvent("A3", 2, env);
 
-            env.UndeployAll();
+                env.Milestone(0);
+
+                SendEvent("A4", 6, env);
+                SendEvent("A5", 5, env);
+                var b6 = SendEvent("A6", 6, env);
+                var b7 = SendEvent("A7", 7, env);
+                var b8 = SendEvent("A9", 8, env);
+                env.AssertPropsNew("s0", "a".SplitCsv(), new object[] { new object[] { b6, b7, b8 } });
+
+                env.UndeployAll();
+            }
         }
 
-        private void RunAssertionPrev(RegressionEnvironment env)
+        private class RowRecogRepetitionRepeats : RegressionExecution
         {
-            var text = "@Name('s0') select * from SupportBean " +
-                       "match_recognize (" +
-                       "  measures A as a" +
-                       "  pattern (A{3}) " +
-                       "  define " +
-                       "    A as A.IntPrimitive > prev(A.IntPrimitive)" +
-                       ")";
+            private readonly bool soda;
 
-            env.CompileDeploy(text).AddListener("s0");
+            public RowRecogRepetitionRepeats(bool soda)
+            {
+                this.soda = soda;
+            }
 
-            SendEvent("A1", 1, env);
-            SendEvent("A2", 4, env);
-            SendEvent("A3", 2, env);
+            public void Run(RegressionEnvironment env)
+            {
+                // Atom Assertions
+                //
+                //
 
-            env.Milestone(0);
+                // single-bound assertions
+                RunAssertionRepeatSingleBound(env, soda);
 
-            SendEvent("A4", 6, env);
-            SendEvent("A5", 5, env);
-            var b6 = SendEvent("A6", 6, env);
-            var b7 = SendEvent("A7", 7, env);
-            var b8 = SendEvent("A9", 8, env);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "a" },
-                new object[] {new object[] {b6, b7, b8}});
+                // defined-range assertions
+                RunAssertionsRepeatRange(env, soda);
 
-            env.UndeployAll();
+                // lower-bounds assertions
+                RunAssertionsUpTo(env, soda);
+
+                // upper-bounds assertions
+                RunAssertionsAtLeast(env, soda);
+
+                // Nested Assertions
+                //
+                //
+
+                // single-bound nested assertions
+                RunAssertionNestedRepeatSingle(env, soda);
+
+                // defined-range nested assertions
+                RunAssertionNestedRepeatRange(env, soda);
+
+                // lower-bounds nested assertions
+                RunAssertionsNestedUpTo(env, soda);
+
+                // upper-bounds nested assertions
+                RunAssertionsNestedAtLeast(env, soda);
+            }
+
+            public string Name()
+            {
+                return "RowRecogRepetitionRepeats{" +
+                       "soda=" +
+                       soda +
+                       '}';
+            }
         }
 
-        private void RunAssertionRepeat(
-            RegressionEnvironment env,
-            bool soda)
+        private class RowRecogRepetitionEquivalent : RegressionExecution
         {
-            // Atom Assertions
-            //
-            //
+            public void Run(RegressionEnvironment env)
+            {
+                //
+                // Single-bounds Repeat.
+                //
+                RunEquivalent(env, "A{1}", "A");
+                RunEquivalent(env, "A{2}", "A A");
+                RunEquivalent(env, "A{3}", "A A A");
+                RunEquivalent(env, "A{1} B{2}", "A B B");
+                RunEquivalent(env, "A{1} B{2} C{3}", "A B B C C C");
+                RunEquivalent(env, "(A{2})", "(A A)");
+                RunEquivalent(env, "A?{2}", "A? A?");
+                RunEquivalent(env, "A*{2}", "A* A*");
+                RunEquivalent(env, "A+{2}", "A+ A+");
+                RunEquivalent(env, "A??{2}", "A?? A??");
+                RunEquivalent(env, "A*?{2}", "A*? A*?");
+                RunEquivalent(env, "A+?{2}", "A+? A+?");
+                RunEquivalent(env, "(A B){1}", "(A B)");
+                RunEquivalent(env, "(A B){2}", "(A B) (A B)");
+                RunEquivalent(env, "(A B)?{2}", "(A B)? (A B)?");
+                RunEquivalent(env, "(A B)*{2}", "(A B)* (A B)*");
+                RunEquivalent(env, "(A B)+{2}", "(A B)+ (A B)+");
 
-            // single-bound assertions
-            RunAssertionRepeatSingleBound(env, soda);
+                RunEquivalent(env, "A B{2} C", "A B B C");
+                RunEquivalent(env, "A (B{2}) C", "A (B B) C");
+                RunEquivalent(env, "(A{2}) C", "(A A) C");
+                RunEquivalent(env, "A (B{2}|C{2})", "A (B B|C C)");
+                RunEquivalent(env, "A{2} B{2} C{2}", "A A B B C C");
+                RunEquivalent(env, "A{2} B C{2}", "A A B C C");
+                RunEquivalent(env, "A B{2} C{2}", "A B B C C");
 
-            // defined-range assertions
-            RunAssertionsRepeatRange(env, soda);
+                // range bounds
+                RunEquivalent(env, "A{1, 3}", "A A? A?");
+                RunEquivalent(env, "A{2, 4}", "A A A? A?");
+                RunEquivalent(env, "A?{1, 3}", "A? A? A?");
+                RunEquivalent(env, "A*{1, 3}", "A* A* A*");
+                RunEquivalent(env, "A+{1, 3}", "A+ A* A*");
+                RunEquivalent(env, "A??{1, 3}", "A?? A?? A??");
+                RunEquivalent(env, "A*?{1, 3}", "A*? A*? A*?");
+                RunEquivalent(env, "A+?{1, 3}", "A+? A*? A*?");
+                RunEquivalent(env, "(A B)?{1, 3}", "(A B)? (A B)? (A B)?");
+                RunEquivalent(env, "(A B)*{1, 3}", "(A B)* (A B)* (A B)*");
+                RunEquivalent(env, "(A B)+{1, 3}", "(A B)+ (A B)* (A B)*");
 
-            // lower-bounds assertions
-            RunAssertionsUpTo(env, soda);
+                // lower-only bounds
+                RunEquivalent(env, "A{2,}", "A A A*");
+                RunEquivalent(env, "A?{2,}", "A? A? A*");
+                RunEquivalent(env, "A*{2,}", "A* A* A*");
+                RunEquivalent(env, "A+{2,}", "A+ A+ A*");
+                RunEquivalent(env, "A??{2,}", "A?? A?? A*?");
+                RunEquivalent(env, "A*?{2,}", "A*? A*? A*?");
+                RunEquivalent(env, "A+?{2,}", "A+? A+? A*?");
+                RunEquivalent(env, "(A B)?{2,}", "(A B)? (A B)? (A B)*");
+                RunEquivalent(env, "(A B)*{2,}", "(A B)* (A B)* (A B)*");
+                RunEquivalent(env, "(A B)+{2,}", "(A B)+ (A B)+ (A B)*");
 
-            // upper-bounds assertions
-            RunAssertionsAtLeast(env, soda);
+                // upper-only bounds
+                RunEquivalent(env, "A{,2}", "A? A?");
+                RunEquivalent(env, "A?{,2}", "A? A?");
+                RunEquivalent(env, "A*{,2}", "A* A*");
+                RunEquivalent(env, "A+{,2}", "A* A*");
+                RunEquivalent(env, "A??{,2}", "A?? A??");
+                RunEquivalent(env, "A*?{,2}", "A*? A*?");
+                RunEquivalent(env, "A+?{,2}", "A*? A*?");
+                RunEquivalent(env, "(A B){,2}", "(A B)? (A B)?");
+                RunEquivalent(env, "(A B)?{,2}", "(A B)? (A B)?");
+                RunEquivalent(env, "(A B)*{,2}", "(A B)* (A B)*");
+                RunEquivalent(env, "(A B)+{,2}", "(A B)* (A B)*");
 
-            // Nested Assertions
-            //
-            //
-
-            // single-bound nested assertions
-            RunAssertionNestedRepeatSingle(env, soda);
-
-            // defined-range nested assertions
-            RunAssertionNestedRepeatRange(env, soda);
-
-            // lower-bounds nested assertions
-            RunAssertionsNestedUpTo(env, soda);
-
-            // upper-bounds nested assertions
-            RunAssertionsNestedAtLeast(env, soda);
+                //
+                // Nested Repeat.
+                //
+                RunEquivalent(env, "(A B){2}", "(A B) (A B)");
+                RunEquivalent(env, "(A){2}", "A A");
+                RunEquivalent(env, "(A B C){3}", "(A B C) (A B C) (A B C)");
+                RunEquivalent(env, "(A B){2} (C D){2}", "(A B) (A B) (C D) (C D)");
+                RunEquivalent(env, "((A B){2} C){2}", "((A B) (A B) C) ((A B) (A B) C)");
+                RunEquivalent(env, "((A|B){2} (C|D){2}){2}", "((A|B) (A|B) (C|D) (C|D)) ((A|B) (A|B) (C|D) (C|D))");
+            }
         }
 
-        private static void RunAssertionEquivalent(RegressionEnvironment env)
-        {
-            //
-            // Single-bounds Repeat.
-            //
-            RunEquivalent(env, "A{1}", "A");
-            RunEquivalent(env, "A{2}", "A A");
-            RunEquivalent(env, "A{3}", "A A A");
-            RunEquivalent(env, "A{1} B{2}", "A B B");
-            RunEquivalent(env, "A{1} B{2} C{3}", "A B B C C C");
-            RunEquivalent(env, "(A{2})", "(A A)");
-            RunEquivalent(env, "A?{2}", "A? A?");
-            RunEquivalent(env, "A*{2}", "A* A*");
-            RunEquivalent(env, "A+{2}", "A+ A+");
-            RunEquivalent(env, "A??{2}", "A?? A??");
-            RunEquivalent(env, "A*?{2}", "A*? A*?");
-            RunEquivalent(env, "A+?{2}", "A+? A+?");
-            RunEquivalent(env, "(A B){1}", "(A B)");
-            RunEquivalent(env, "(A B){2}", "(A B) (A B)");
-            RunEquivalent(env, "(A B)?{2}", "(A B)? (A B)?");
-            RunEquivalent(env, "(A B)*{2}", "(A B)* (A B)*");
-            RunEquivalent(env, "(A B)+{2}", "(A B)+ (A B)+");
-
-            RunEquivalent(env, "A B{2} C", "A B B C");
-            RunEquivalent(env, "A (B{2}) C", "A (B B) C");
-            RunEquivalent(env, "(A{2}) C", "(A A) C");
-            RunEquivalent(env, "A (B{2}|C{2})", "A (B B|C C)");
-            RunEquivalent(env, "A{2} B{2} C{2}", "A A B B C C");
-            RunEquivalent(env, "A{2} B C{2}", "A A B C C");
-            RunEquivalent(env, "A B{2} C{2}", "A B B C C");
-
-            // range bounds
-            RunEquivalent(env, "A{1, 3}", "A A? A?");
-            RunEquivalent(env, "A{2, 4}", "A A A? A?");
-            RunEquivalent(env, "A?{1, 3}", "A? A? A?");
-            RunEquivalent(env, "A*{1, 3}", "A* A* A*");
-            RunEquivalent(env, "A+{1, 3}", "A+ A* A*");
-            RunEquivalent(env, "A??{1, 3}", "A?? A?? A??");
-            RunEquivalent(env, "A*?{1, 3}", "A*? A*? A*?");
-            RunEquivalent(env, "A+?{1, 3}", "A+? A*? A*?");
-            RunEquivalent(env, "(A B)?{1, 3}", "(A B)? (A B)? (A B)?");
-            RunEquivalent(env, "(A B)*{1, 3}", "(A B)* (A B)* (A B)*");
-            RunEquivalent(env, "(A B)+{1, 3}", "(A B)+ (A B)* (A B)*");
-
-            // lower-only bounds
-            RunEquivalent(env, "A{2,}", "A A A*");
-            RunEquivalent(env, "A?{2,}", "A? A? A*");
-            RunEquivalent(env, "A*{2,}", "A* A* A*");
-            RunEquivalent(env, "A+{2,}", "A+ A+ A*");
-            RunEquivalent(env, "A??{2,}", "A?? A?? A*?");
-            RunEquivalent(env, "A*?{2,}", "A*? A*? A*?");
-            RunEquivalent(env, "A+?{2,}", "A+? A+? A*?");
-            RunEquivalent(env, "(A B)?{2,}", "(A B)? (A B)? (A B)*");
-            RunEquivalent(env, "(A B)*{2,}", "(A B)* (A B)* (A B)*");
-            RunEquivalent(env, "(A B)+{2,}", "(A B)+ (A B)+ (A B)*");
-
-            // upper-only bounds
-            RunEquivalent(env, "A{,2}", "A? A?");
-            RunEquivalent(env, "A?{,2}", "A? A?");
-            RunEquivalent(env, "A*{,2}", "A* A*");
-            RunEquivalent(env, "A+{,2}", "A* A*");
-            RunEquivalent(env, "A??{,2}", "A?? A??");
-            RunEquivalent(env, "A*?{,2}", "A*? A*?");
-            RunEquivalent(env, "A+?{,2}", "A*? A*?");
-            RunEquivalent(env, "(A B){,2}", "(A B)? (A B)?");
-            RunEquivalent(env, "(A B)?{,2}", "(A B)? (A B)?");
-            RunEquivalent(env, "(A B)*{,2}", "(A B)* (A B)*");
-            RunEquivalent(env, "(A B)+{,2}", "(A B)* (A B)*");
-
-            //
-            // Nested Repeat.
-            //
-            RunEquivalent(env, "(A B){2}", "(A B) (A B)");
-            RunEquivalent(env, "(A){2}", "A A");
-            RunEquivalent(env, "(A B C){3}", "(A B C) (A B C) (A B C)");
-            RunEquivalent(env, "(A B){2} (C D){2}", "(A B) (A B) (C D) (C D)");
-            RunEquivalent(env, "((A B){2} C){2}", "((A B) (A B) C) ((A B) (A B) C)");
-            RunEquivalent(env, "((A|B){2} (C|D){2}){2}", "((A|B) (A|B) (C|D) (C|D)) ((A|B) (A|B) (C|D) (C|D))");
-        }
-
-        private void RunAssertionNestedRepeatSingle(
+        private static void RunAssertionNestedRepeatSingle(
             RegressionEnvironment env,
             bool soda)
         {
@@ -339,7 +393,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             RunAThenTwiceBC(env, soda, "A (B C){2}");
         }
 
-        private void RunAssertionNestedRepeatRange(
+        private static void RunAssertionNestedRepeatRange(
             RegressionEnvironment env,
             bool soda)
         {
@@ -347,7 +401,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             RunOnceOrTwiceABThenC(env, soda, "(A B){1,2} C");
         }
 
-        private void RunAssertionsAtLeast(
+        private static void RunAssertionsAtLeast(
             RegressionEnvironment env,
             bool soda)
         {
@@ -356,7 +410,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             RunAtLeast2AThenB(env, soda, "A{2,4} B");
         }
 
-        private void RunAssertionsUpTo(
+        private static void RunAssertionsUpTo(
             RegressionEnvironment env,
             bool soda)
         {
@@ -364,7 +418,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             RunUpTo2AThenB(env, soda, "A{,2} B");
         }
 
-        private void RunAssertionsRepeatRange(
+        private static void RunAssertionsRepeatRange(
             RegressionEnvironment env,
             bool soda)
         {
@@ -372,7 +426,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             Run2To3AThenB(env, soda, "A{2,3} B");
         }
 
-        private void RunAssertionsNestedUpTo(
+        private static void RunAssertionsNestedUpTo(
             RegressionEnvironment env,
             bool soda)
         {
@@ -380,7 +434,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             RunUpTo2ABThenC(env, soda, "(A B){,2} C");
         }
 
-        private void RunAssertionsNestedAtLeast(
+        private static void RunAssertionsNestedAtLeast(
             RegressionEnvironment env,
             bool soda)
         {
@@ -388,7 +442,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             RunAtLeast2ABThenC(env, soda, "(A B){2,} C");
         }
 
-        private void RunAssertionRepeatSingleBound(
+        private static void RunAssertionRepeatSingleBound(
             RegressionEnvironment env,
             bool soda)
         {
@@ -413,7 +467,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             Run2AThen2B(env, soda, "A{2} B{2}");
         }
 
-        private void RunAtLeast2ABThenC(
+        private static void RunAtLeast2ABThenC(
             RegressionEnvironment env,
             bool soda,
             string pattern)
@@ -423,15 +477,15 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 soda,
                 pattern,
                 "a,b,c",
-                new[] {true, true, false},
-                new[] {
+                new bool[] { true, true, false },
+                new string[] {
                     "A1,B1,A2,B2,C1",
                     "A1,B1,A2,B2,A3,B3,C1"
                 },
-                new[] {"A1,B1,C1", "A1,B1,A2,C1", "B1,A1,B2,C1"});
+                new string[] { "A1,B1,C1", "A1,B1,A2,C1", "B1,A1,B2,C1" });
         }
 
-        private void RunOnceOrTwiceABThenC(
+        private static void RunOnceOrTwiceABThenC(
             RegressionEnvironment env,
             bool soda,
             string pattern)
@@ -441,15 +495,15 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 soda,
                 pattern,
                 "a,b,c",
-                new[] {true, true, false},
-                new[] {
+                new bool[] { true, true, false },
+                new string[] {
                     "A1,B1,C1",
                     "A1,B1,A2,B2,C1"
                 },
-                new[] {"C1", "A1,A2,C2", "B1,A1,C1"});
+                new string[] { "C1", "A1,A2,C2", "B1,A1,C1" });
         }
 
-        private void RunAtLeast2AThenB(
+        private static void RunAtLeast2AThenB(
             RegressionEnvironment env,
             bool soda,
             string pattern)
@@ -459,15 +513,15 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 soda,
                 pattern,
                 "a,b",
-                new[] {true, false},
-                new[] {
+                new bool[] { true, false },
+                new string[] {
                     "A1,A2,B1",
                     "A1,A2,A3,B1"
                 },
-                new[] {"A1,B1", "B1"});
+                new string[] { "A1,B1", "B1" });
         }
 
-        private void RunUpTo2AThenB(
+        private static void RunUpTo2AThenB(
             RegressionEnvironment env,
             bool soda,
             string pattern)
@@ -477,16 +531,16 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 soda,
                 pattern,
                 "a,b",
-                new[] {true, false},
-                new[] {
+                new bool[] { true, false },
+                new string[] {
                     "B1",
                     "A1,B1",
                     "A1,A2,B1"
                 },
-                new[] {"A1"});
+                new string[] { "A1" });
         }
 
-        private void Run2AThen2B(
+        private static void Run2AThen2B(
             RegressionEnvironment env,
             bool soda,
             string pattern)
@@ -496,14 +550,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 soda,
                 pattern,
                 "a,b",
-                new[] {true, true},
-                new[] {
-                    "A1,A2,B1,B2"
+                new bool[] { true, true },
+                new string[] {
+                    "A1,A2,B1,B2",
                 },
-                new[] {"A1,A2,B1", "B1,B2,A1,A2", "A1,B1,A2,B2"});
+                new string[] { "A1,A2,B1", "B1,B2,A1,A2", "A1,B1,A2,B2" });
         }
 
-        private void RunUpTo2ABThenC(
+        private static void RunUpTo2ABThenC(
             RegressionEnvironment env,
             bool soda,
             string pattern)
@@ -513,16 +567,16 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 soda,
                 pattern,
                 "a,b,c",
-                new[] {true, true, false},
-                new[] {
+                new bool[] { true, true, false },
+                new string[] {
                     "C1",
                     "A1,B1,C1",
-                    "A1,B1,A2,B2,C1"
+                    "A1,B1,A2,B2,C1",
                 },
-                new[] {"A1,B1,A2,B2", "A1,A2"});
+                new string[] { "A1,B1,A2,B2", "A1,A2" });
         }
 
-        private void Run2To3AThenB(
+        private static void Run2To3AThenB(
             RegressionEnvironment env,
             bool soda,
             string pattern)
@@ -532,15 +586,15 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 soda,
                 pattern,
                 "a,b",
-                new[] {true, false},
-                new[] {
+                new bool[] { true, false },
+                new string[] {
                     "A1,A2,A3,B1",
-                    "A1,A2,B1"
+                    "A1,A2,B1",
                 },
-                new[] {"A1,B1", "A1,A2", "B1"});
+                new string[] { "A1,B1", "A1,A2", "B1" });
         }
 
-        private void RunAThen2BOr2C(
+        private static void RunAThen2BOr2C(
             RegressionEnvironment env,
             bool soda,
             string pattern)
@@ -550,15 +604,15 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 soda,
                 pattern,
                 "a,b,c",
-                new[] {false, true, true},
-                new[] {
+                new bool[] { false, true, true },
+                new string[] {
                     "A1,C1,C2",
-                    "A2,B1,B2"
+                    "A2,B1,B2",
                 },
-                new[] {"B1,B2", "C1,C2", "A1,B1,C1", "A1,C1,B1"});
+                new string[] { "B1,B2", "C1,C2", "A1,B1,C1", "A1,C1,B1" });
         }
 
-        private void RunTwiceAB(
+        private static void RunTwiceAB(
             RegressionEnvironment env,
             bool soda,
             string pattern)
@@ -568,14 +622,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 soda,
                 pattern,
                 "a,b",
-                new[] {true, true},
-                new[] {
-                    "A1,B1,A2,B2"
+                new bool[] { true, true },
+                new string[] {
+                    "A1,B1,A2,B2",
                 },
-                new[] {"A1,A2,B1", "A1,A2,B1,B2", "A1,B1,B2,A2"});
+                new string[] { "A1,A2,B1", "A1,A2,B1,B2", "A1,B1,B2,A2" });
         }
 
-        private void RunAThenTwiceBC(
+        private static void RunAThenTwiceBC(
             RegressionEnvironment env,
             bool soda,
             string pattern)
@@ -585,14 +639,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 soda,
                 pattern,
                 "a,b,c",
-                new[] {false, true, true},
-                new[] {
-                    "A1,B1,C1,B2,C2"
+                new bool[] { false, true, true },
+                new string[] {
+                    "A1,B1,C1,B2,C2",
                 },
-                new[] {"A1,B1,C1,B2", "A1,B1,C1,C2", "A1,B1,B2,C1,C2"});
+                new string[] { "A1,B1,C1,B2", "A1,B1,C1,C2", "A1,B1,B2,C1,C2" });
         }
 
-        private void RunAThen2BThenC(
+        private static void RunAThen2BThenC(
             RegressionEnvironment env,
             bool soda,
             string pattern)
@@ -602,14 +656,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 soda,
                 pattern,
                 "a,b,c",
-                new[] {false, true, false},
-                new[] {
-                    "A1,B1,B2,C1"
+                new bool[] { false, true, false },
+                new string[] {
+                    "A1,B1,B2,C1",
                 },
-                new[] {"B1,B2,C1", "A1,B1,C1", "A1,B1,B2"});
+                new string[] { "B1,B2,C1", "A1,B1,C1", "A1,B1,B2" });
         }
 
-        private void RunExactly2A(
+        private static void RunExactly2A(
             RegressionEnvironment env,
             bool soda,
             string pattern)
@@ -619,15 +673,15 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 soda,
                 pattern,
                 "a",
-                new[] {true},
-                new[] {
+                new bool[] { true },
+                new string[] {
                     "A1,A2",
-                    "A3,A4"
+                    "A3,A4",
                 },
-                new[] {"A5"});
+                new string[] { "A5" });
         }
 
-        private void RunAssertion(
+        private static void RunAssertion(
             RegressionEnvironment env,
             bool soda,
             string pattern,
@@ -640,9 +694,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var measures = MakeMeasures(props);
             var defines = MakeDefines(props);
 
-            var text = "@Name('s0') select * from SupportBean " +
+            var text = "@name('s0') select * from SupportBean " +
                        "match_recognize (" +
-                       " partition by IntPrimitive" +
+                       " partition by intPrimitive" +
                        " measures " +
                        measures +
                        " pattern (" +
@@ -667,7 +721,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.UndeployAll();
         }
 
-        private void RunAssertionSequence(
+        private static void RunAssertionSequence(
             RegressionEnvironment env,
             bool match,
             string[] propertyNames,
@@ -678,9 +732,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             // send events
             var events = sequence.SplitCsv();
             IDictionary<string, IList<SupportBean>> sent = new Dictionary<string, IList<SupportBean>>();
-
             foreach (var anEvent in events) {
-                var type = new string(new[] {anEvent[0]});
+                var type = new string(new char[] { anEvent[0] });
                 var bean = SendEvent(anEvent, sequenceNum, env);
                 var propName = type.ToLowerInvariant();
                 if (!sent.ContainsKey(propName)) {
@@ -695,7 +748,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             for (var i = 0; i < propertyNames.Length; i++) {
                 var sentForType = sent.Get(propertyNames[i]);
                 if (arrayProp[i]) {
-                    expected[i] = sentForType == null ? null : sentForType.ToArray();
+                    expected[i] = sentForType?.ToArray();
                 }
                 else {
                     if (match) {
@@ -706,48 +759,47 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             }
 
             if (match) {
-                var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertProps(@event, propertyNames, expected);
+                env.AssertPropsNew("s0", propertyNames, expected);
             }
             else {
-                Assert.IsFalse(env.Listener("s0").IsInvoked, "Failed at " + sequence);
+                env.AssertListenerNotInvoked("s0");
             }
         }
 
-        private string MakeDefines(string[] props)
+        private static string MakeDefines(string[] props)
         {
             var delimiter = "";
-            var buf = new StringBuilder();
+            var buf = new StringWriter();
             foreach (var prop in props) {
-                buf.Append(delimiter);
+                buf.Write(delimiter);
                 delimiter = ", ";
-                buf.Append(prop.ToUpperInvariant());
-                buf.Append(" as ");
-                buf.Append(prop.ToUpperInvariant());
-                buf.Append(".TheString like \"");
-                buf.Append(prop.ToUpperInvariant());
-                buf.Append("%\"");
+                buf.Write(prop.ToUpperInvariant());
+                buf.Write(" as ");
+                buf.Write(prop.ToUpperInvariant());
+                buf.Write(".theString like \"");
+                buf.Write(prop.ToUpperInvariant());
+                buf.Write("%\"");
             }
 
             return buf.ToString();
         }
 
-        private string MakeMeasures(string[] props)
+        private static string MakeMeasures(string[] props)
         {
             var delimiter = "";
-            var buf = new StringBuilder();
+            var buf = new StringWriter();
             foreach (var prop in props) {
-                buf.Append(delimiter);
+                buf.Write(delimiter);
                 delimiter = ", ";
-                buf.Append(prop.ToUpperInvariant());
-                buf.Append(" as ");
-                buf.Append(prop);
+                buf.Write(prop.ToUpperInvariant());
+                buf.Write(" as ");
+                buf.Write(prop);
             }
 
             return buf.ToString();
         }
 
-        private SupportBean SendEvent(
+        private static SupportBean SendEvent(
             string theString,
             int intPrimitive,
             RegressionEnvironment env)
@@ -762,33 +814,41 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             string before,
             string after)
         {
-            var hook = "@Hook(HookType=" +
+            var hook = "@Hook(type=" +
                        typeof(HookType).FullName +
-                       ".INTERNAL_COMPILE,Hook='" +
+                       ".INTERNAL_COMPILE,hook='" +
                        SupportStatementCompileHook.ResetGetClassName() +
                        "')";
             var epl = hook +
-                      "@Name('s0') select * from SupportBean#keepall " +
+                      "@name('s0') select * from SupportBean#keepall " +
                       "match_recognize (" +
                       " measures A as a" +
                       " pattern (" +
                       before +
                       ")" +
                       " define" +
-                      " A as A.TheString like \"A%\"" +
+                      " A as A.theString like \"A%\"" +
                       ")";
 
             var model = env.EplToModel(epl);
             env.CompileDeploy(model);
             env.UndeployAll();
 
-            var spec = SupportStatementCompileHook.GetSpecs()[0];
-            RowRecogExprNode expanded = RowRecogPatternExpandUtil.Expand(
-                spec.Raw.MatchRecognizeSpec.Pattern, null);
+            env.AssertThat(
+                () => {
+                    var spec = SupportStatementCompileHook.GetSpecs()[0];
+                    RowRecogExprNode expanded = null;
+                    try {
+                        expanded = RowRecogPatternExpandUtil.Expand(spec.Raw.MatchRecognizeSpec.Pattern, null);
+                    }
+                    catch (ExprValidationException e) {
+                        Assert.Fail(e.Message);
+                    }
 
-            var writer = new StringWriter();
-            expanded.ToEPL(writer, RowRecogExprNodePrecedenceEnum.MINIMUM);
-            Assert.AreEqual(after, writer.ToString());
+                    var writer = new StringWriter();
+                    expanded.ToEPL(writer, RowRecogExprNodePrecedenceEnum.MINIMUM);
+                    Assert.AreEqual(after, writer.ToString());
+                });
         }
     }
 } // end of namespace

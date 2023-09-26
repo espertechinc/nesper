@@ -80,10 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public override ExprNodeRenderable ExprForgeRenderable => Parent;
 
-        public override bool IsLocalInlinedClass {
-            get => false;
-        }
-        
+        public override bool IsLocalInlinedClass => false;
+
         public override CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
             CodegenMethodScope codegenMethodScope,
@@ -126,7 +124,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             object received)
         {
             var receivedText = received == null ? "null" : received.GetType().CleanName();
-            return $"Statement '{statementName}' property {propertyName} parameter expression expected a value of {expectedType} but received {receivedText}";
+            return
+                $"Statement '{statementName}' property {propertyName} parameter expression expected a value of {expectedType} but received {receivedText}";
         }
     }
 } // end of namespace

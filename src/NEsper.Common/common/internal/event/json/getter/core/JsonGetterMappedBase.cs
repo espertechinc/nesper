@@ -24,14 +24,14 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             string key,
             string underlyingClassName)
         {
-            this.Key = key;
-            this.UnderlyingClassName = underlyingClassName;
+            Key = key;
+            UnderlyingClassName = underlyingClassName;
         }
 
         public abstract string FieldName { get; }
 
         public abstract object GetJsonProp(object @object);
-        
+
         public abstract bool GetJsonExists(object @object);
 
         public CodegenExpression EventBeanGetCodegen(
@@ -39,7 +39,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(UnderlyingClassName, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -47,7 +50,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(CollectionUtil), "MapValueForKey", ExprDotName(underlyingExpression, FieldName), Constant(Key));
+            return StaticMethod(
+                typeof(CollectionUtil),
+                "MapValueForKey",
+                ExprDotName(underlyingExpression, FieldName),
+                Constant(Key));
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -55,7 +62,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CastUnderlying(UnderlyingClassName, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -63,7 +73,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(CollectionUtil), "MapExistsForKey", ExprDotName(underlyingExpression, FieldName), Constant(Key));
+            return StaticMethod(
+                typeof(CollectionUtil),
+                "MapExistsForKey",
+                ExprDotName(underlyingExpression, FieldName),
+                Constant(Key));
         }
 
         public CodegenExpression EventBeanFragmentCodegen(

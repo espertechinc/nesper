@@ -68,8 +68,7 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write(StreamName);
             writer.Write(".*");
-            if (OptionalColumnName != null)
-            {
+            if (OptionalColumnName != null) {
                 writer.Write(" as ");
                 writer.Write(OptionalColumnName);
             }

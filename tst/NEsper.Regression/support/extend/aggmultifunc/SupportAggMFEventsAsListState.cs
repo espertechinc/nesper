@@ -17,7 +17,17 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
 {
     public class SupportAggMFEventsAsListState : AggregationMultiFunctionState
     {
-        public IList<SupportBean> Events { get; } = new List<SupportBean>();
+        public IList<SupportBean> Events { get; }
+
+        public SupportAggMFEventsAsListState()
+        {
+            Events = new List<SupportBean>();
+        }
+
+        public SupportAggMFEventsAsListState(IList<SupportBean> events)
+        {
+            Events = events;
+        }
 
         public void ApplyEnter(
             EventBean[] eventsPerStream,

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -32,23 +33,16 @@ namespace com.espertech.esper.common.@internal.view.keepall
             ViewForgeSupport.ValidateNoParameters(ViewName, parameters);
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(ViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(KeepAllViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "Keepall";
-        }
+        internal override string FactoryMethod => "Keepall";
 
         internal override void Assign(
             CodegenMethod method,
@@ -56,6 +50,16 @@ namespace com.espertech.esper.common.@internal.view.keepall
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_KEEPALL;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

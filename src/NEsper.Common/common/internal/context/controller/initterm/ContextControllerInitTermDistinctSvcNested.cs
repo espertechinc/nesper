@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             object key)
         {
-            ISet<object> keys = distinctContexts.Get(controllerPath);
+            var keys = distinctContexts.Get(controllerPath);
             if (keys == null) {
                 keys = new HashSet<object>();
                 distinctContexts.Put(controllerPath, keys);
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             object key)
         {
-            ISet<object> keys = distinctContexts.Get(controllerPath);
+            var keys = distinctContexts.Get(controllerPath);
 
             keys?.Remove(key);
         }

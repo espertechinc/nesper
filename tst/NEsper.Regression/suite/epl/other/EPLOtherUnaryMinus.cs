@@ -20,16 +20,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             env.CompileDeploy(
                     "create variable double v = 1.0;\n;" +
-                    "@Name('s0') select -IntPrimitive as c0, -v as c1 from SupportBean;\n")
+                    "@name('s0') select -IntPrimitive as c0, -v as c1 from SupportBean;\n")
                 .AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 10));
 
-            Assert.AreEqual(1d, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("s0"), "v"));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                new[] {"c0", "c1"},
-                new object[] {-10, -1d});
+            env.AssertThat(
+                () => Assert.AreEqual(1d, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("s0"), "v")));
+            env.AssertPropsNew(
+                "s0",
+                new[] { "c0", "c1" },
+                new object[] { -10, -1d });
 
             env.UndeployAll();
         }

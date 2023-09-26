@@ -23,9 +23,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary> Returns frequency.</summary>
         /// <returns> frequency divisor
         /// </returns>
-        public int Frequency {
-            get { return _frequency; }
-        }
+        public int Frequency => _frequency;
 
         /// <summary> Ctor.</summary>
         /// <param name="frequency">divisor specifying frequency
@@ -68,7 +66,7 @@ namespace com.espertech.esper.common.@internal.type
             int max)
         {
             ICollection<int> values = new HashSet<int>();
-            int start = min - min % _frequency;
+            var start = min - min % _frequency;
 
             do {
                 if (start >= min) {

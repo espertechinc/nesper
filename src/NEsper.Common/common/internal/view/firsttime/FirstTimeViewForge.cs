@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -25,23 +26,15 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.view.firsttime
 {
     /// <summary>
-    ///     Factory for <seealso cref="FirstTimeView" />.
+    /// Factory for <seealso cref = "FirstTimeView"/>.
     /// </summary>
     public class FirstTimeViewForge : ViewFactoryForgeBase,
         ScheduleHandleCallbackProvider,
         AsymetricDataWindowViewForge,
         DataWindowBatchingViewForge
     {
+        protected TimePeriodComputeForge timePeriodComputeForge;
         private int scheduleCallbackId = -1;
-        internal TimePeriodComputeForge timePeriodComputeForge;
-
-        public override string ViewName => "First-Time";
-
-        private string ViewParamMessage => ViewName + " view requires a single numeric or time period parameter";
-
-        public int ScheduleCallbackId {
-            set => scheduleCallbackId = value;
-        }
 
         public override void SetViewParameters(
             IList<ExprNode> parameters,
@@ -57,27 +50,18 @@ namespace com.espertech.esper.common.@internal.view.firsttime
                 parameters[0],
                 ViewParamMessage,
                 0,
-                viewForgeEnv,
-                streamNumber);
+                viewForgeEnv);
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(FirstTimeViewFactory);
-        }
-
-        internal override string FactoryMethod()
-        {
-            return "Firsttime";
-        }
+        internal override Type TypeOfFactory => typeof(FirstTimeViewFactory);
+        internal override string FactoryMethod => "firsttime";
 
         internal override void Assign(
             CodegenMethod method,
@@ -91,8 +75,28 @@ namespace com.espertech.esper.common.@internal.view.firsttime
 
             method.Block
                 .DeclareVar<TimePeriodCompute>("eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
-                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
-                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
+                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
+                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_FIRSTTIME;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
+
+        public override string ViewName => "First-Time";
+
+        public string ViewParamMessage => ViewName + " view requires a single numeric or time period parameter";
+
+        public int ScheduleCallbackId {
+            get => scheduleCallbackId;
+
+            set => scheduleCallbackId = value;
         }
     }
 } // end of namespace

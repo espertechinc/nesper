@@ -59,7 +59,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             return optionalStateKey;
         }
 
-        public override AggregationStateFactoryForge GetAggregationStateFactory(bool isMatchRecognize)
+        public override AggregationStateFactoryForge GetAggregationStateFactory(
+            bool isMatchRecognize,
+            bool isJoin)
         {
             return optionalStateFactory;
         }

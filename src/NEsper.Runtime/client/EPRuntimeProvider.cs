@@ -44,7 +44,7 @@ namespace com.espertech.esper.runtime.client
         /// <returns>default runtime</returns>
         public static EPRuntime GetDefaultRuntime()
         {
-            return DefaultProvider.GetRuntimeInstance(DEFAULT_RUNTIME_URI, new Configuration());
+            return DefaultProvider.GetRuntimeInstance(DEFAULT_RUNTIME_URI, new Configuration(), null);
         }
         
         /// <summary>
@@ -55,9 +55,23 @@ namespace com.espertech.esper.runtime.client
         /// <throws>ConfigurationException to indicate a configuration problem</throws>
         public static EPRuntime GetDefaultRuntime(Configuration configuration)
         {
-            return DefaultProvider.GetRuntimeInstance(DEFAULT_RUNTIME_URI, configuration);
+            return DefaultProvider.GetRuntimeInstance(DEFAULT_RUNTIME_URI, configuration, null);
         }
-        
+
+        /// <summary>
+        /// Returns the default runtime. The URI value for the runtime returned is "default".
+        /// </summary>4
+        /// <param name="configuration">is the configuration for the runtime</param>
+        /// <param name="options">runtime startup options</param>
+        /// <returns>default instance of the runtime.</returns>
+        /// <throws>ConfigurationException to indicate a configuration problem</throws>
+        public static EPRuntime GetDefaultRuntime(
+            Configuration configuration,
+            EPRuntimeOptions options)
+        {
+            return DefaultProvider.GetRuntimeInstance(DEFAULT_RUNTIME_URI, configuration, options);
+        }
+
         /// <summary>
         /// Backward compatible. Returns a runtime for a given runtime URI.
         /// <para>Use the URI of "default" or null to return the default runtime.</para>
@@ -81,7 +95,7 @@ namespace com.espertech.esper.runtime.client
             string uri,
             Configuration configuration)
         {
-            return DefaultProvider.GetRuntimeInstance(uri, configuration);
+            return DefaultProvider.GetRuntimeInstance(uri, configuration, null);
         }
 #endregion
 
@@ -91,7 +105,7 @@ namespace com.espertech.esper.runtime.client
         /// <returns>default runtime</returns>
         public EPRuntime GetDefaultRuntimeInstance()
         {
-            return GetRuntimeInstance(DEFAULT_RUNTIME_URI, new Configuration());
+            return GetRuntimeInstance(DEFAULT_RUNTIME_URI, new Configuration(), null);
         }
 
         /// <summary>
@@ -102,7 +116,7 @@ namespace com.espertech.esper.runtime.client
         /// <throws>ConfigurationException to indicate a configuration problem</throws>
         public EPRuntime GetDefaultRuntimeInstance(Configuration configuration)
         {
-            return GetRuntimeInstance(DEFAULT_RUNTIME_URI, configuration);
+            return GetRuntimeInstance(DEFAULT_RUNTIME_URI, configuration, null);
         }
 
         /// <summary>
@@ -113,17 +127,22 @@ namespace com.espertech.esper.runtime.client
         /// <returns>runtime for the given URI.</returns>
         public EPRuntime GetRuntimeInstance(string uri)
         {
-            return GetRuntimeInstance(uri, new Configuration());
+            return GetRuntimeInstance(uri, new Configuration(), null);
         }
+
         /// <summary>
         /// Returns a runtime for a given URI.
         /// Use the URI of "default" or null to return the default runtime.
         /// </summary>
         /// <param name="uri">the runtime URI. If null provided it assumes "default".</param>
         /// <param name="configuration">is the configuration for the runtime</param>
+        /// <param name="options">runtime startup options</param>
         /// <returns>Runtime for the given URI.</returns>
         /// <throws>ConfigurationException to indicate a configuration problem</throws>
-        public EPRuntime GetRuntimeInstance(string uri, Configuration configuration)
+        public EPRuntime GetRuntimeInstance(
+            string uri,
+            Configuration configuration,
+            EPRuntimeOptions options = null)
         {
             var runtimeURINonNull = uri ?? DEFAULT_RUNTIME_URI;
 
@@ -132,7 +151,7 @@ namespace com.espertech.esper.runtime.client
                 var runtimeSpi = _runtimes.Get(runtimeURINonNull);
                 if (runtimeSpi.IsDestroyed)
                 {
-                    runtimeSpi = GetRuntimeInternal(configuration, runtimeURINonNull);
+                    runtimeSpi = GetRuntimeInternal(configuration, runtimeURINonNull, options);
                     //runtimes.Put(runtimeURINonNull, runtimeSpi);
                 }
                 else
@@ -143,7 +162,7 @@ namespace com.espertech.esper.runtime.client
             }
 
             // New runtime
-            var runtime = GetRuntimeInternal(configuration, runtimeURINonNull);
+            var runtime = GetRuntimeInternal(configuration, runtimeURINonNull, options);
             //runtimes.Put(runtimeURINonNull, runtime);
             runtime.PostInitialize();
 
@@ -184,11 +203,16 @@ namespace com.espertech.esper.runtime.client
             return _runtimes.ContainsKey(uri);
         }
 
-        private EPRuntimeSPI GetRuntimeInternal(Configuration configuration, string runtimeURINonNull)
+        private EPRuntimeSPI GetRuntimeInternal(
+            Configuration configuration,
+            string runtimeURINonNull,
+            EPRuntimeOptions options)
         {
-            var runtime = new EPRuntimeImpl(configuration, runtimeURINonNull, _runtimes);
+            var runtime = new EPRuntimeImpl(configuration, runtimeURINonNull, _runtimes, options);
             // Add an event handler for destruction
-            runtime.Destroyed += (sender, args) => {
+            runtime.Destroyed += (
+                sender,
+                args) => {
                 _runtimes.Remove(runtimeURINonNull);
             };
             // Add to the runtimes

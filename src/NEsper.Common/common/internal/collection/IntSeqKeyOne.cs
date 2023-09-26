@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return false;
             }
 
-            var o = (IntSeqKeyTwo) other;
+            var o = (IntSeqKeyTwo)other;
             return One == o.One;
         }
 
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public int[] AsIntArray()
         {
-            return new[] {One};
+            return new[] { One };
         }
 
         public override bool Equals(object o)
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return false;
             }
 
-            var that = (IntSeqKeyOne) o;
+            var that = (IntSeqKeyOne)o;
 
             return One == that.One;
         }

@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
             set => _viewable = new ViewableDefaultImpl(value);
         }
 
-        public void StatementCreate(StatementContext statementContext)
+        public void StatementCreate(StatementContext value)
         {
         }
 
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
             StatementContext statementContext,
             int agentInstanceId)
         {
-            return AgentInstanceUtil.NewLock(statementContext);
+            return AgentInstanceUtil.NewLock(statementContext, agentInstanceId);
         }
     }
 } // end of namespace

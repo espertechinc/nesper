@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.statement.dispatch
         /// Execute dispatch.
         /// </summary>
         void Execute();
-        
+
         UpdateDispatchView View { get; }
 
         void Cancelled();

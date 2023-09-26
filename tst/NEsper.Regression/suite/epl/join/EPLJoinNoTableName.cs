@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     {
         public void Run(RegressionEnvironment env)
         {
-            var joinStatement = "@Name('s0') select * from " +
+            var joinStatement = "@name('s0') select * from " +
                                 "SupportMarketDataBean#length(3)," +
                                 "SupportBean#length(3)" +
                                 " where Symbol=TheString and Volume=LongBoxed";
@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             SendEvent(env, setOne[0]);
             SendEvent(env, setTwo[0]);
-            Assert.IsNotNull(env.Listener("s0").LastNewData);
+            env.AssertListener("s0", listener => Assert.IsNotNull(listener.LastNewData));
 
             env.UndeployAll();
         }

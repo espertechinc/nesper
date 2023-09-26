@@ -20,11 +20,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
     public class IntervalForgeOp : IntervalOp
     {
         private readonly ExprEvaluator evaluatorTimestamp;
-        private readonly IntervalForgeImpl.IIntervalOpEval intervalOpEval;
+        private readonly IntervalForgeImpl.IntervalOpEval intervalOpEval;
 
         public IntervalForgeOp(
             ExprEvaluator evaluatorTimestamp,
-            IntervalForgeImpl.IIntervalOpEval intervalOpEval)
+            IntervalForgeImpl.IntervalOpEval intervalOpEval)
         {
             this.evaluatorTimestamp = evaluatorTimestamp;
             this.intervalOpEval = intervalOpEval;
@@ -68,10 +68,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 block.IfRefNullReturnNull("parameter");
             }
 
-            CodegenExpression derefParameter = Unbox(Ref("parameter"), evaluationType);
+            var derefParameter = Unbox(Ref("parameter"), evaluationType);
 
             block.MethodReturn(
-                forge.IntervalOpForge.Codegen(
+                forge._intervalOpForge.Codegen(
                     Unbox<long?>(Ref("startTs")),
                     Unbox<long?>(Ref("endTs")),
                     derefParameter,

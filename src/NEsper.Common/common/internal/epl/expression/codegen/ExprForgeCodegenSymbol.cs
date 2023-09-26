@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,52 +21,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 {
     public class ExprForgeCodegenSymbol : CodegenSymbolProvider
     {
+        private readonly bool allowUnderlyingReferences;
         private readonly bool? newDataValue;
 
         private int currentParamNum;
+        private IDictionary<int, EventTypeWithOptionalFlag> underlyingStreamNums = EmptyDictionary<int, EventTypeWithOptionalFlag>.Instance;
         private CodegenExpressionRef optionalEPSRef;
-        private CodegenExpressionRef optionalExprEvalCtxRef;
         private CodegenExpressionRef optionalIsNewDataRef;
-
-        private IDictionary<int, EventTypeWithOptionalFlag> underlyingStreamNums =
-            Collections.GetEmptyMap<int, EventTypeWithOptionalFlag>();
+        private CodegenExpressionRef optionalExprEvalCtxRef;
 
         public ExprForgeCodegenSymbol(
             bool allowUnderlyingReferences,
             bool? newDataValue)
         {
-            IsAllowUnderlyingReferences = allowUnderlyingReferences;
+            this.allowUnderlyingReferences = allowUnderlyingReferences;
             this.newDataValue = newDataValue;
         }
 
-        public bool IsAllowUnderlyingReferences { get; }
-
-        public virtual void Provide(IDictionary<string, Type> symbols)
-        {
-            if (optionalEPSRef != null) {
-                symbols.Put(optionalEPSRef.Ref, typeof(EventBean[]));
-            }
-
-            if (optionalExprEvalCtxRef != null) {
-                symbols.Put(optionalExprEvalCtxRef.Ref, typeof(ExprEvaluatorContext));
-            }
-
-            if (optionalIsNewDataRef != null) {
-                symbols.Put(optionalIsNewDataRef.Ref, typeof(bool));
-            }
-
-            if (IsAllowUnderlyingReferences) {
-                foreach (var entry in underlyingStreamNums) {
-                    symbols.Put(entry.Value.Ref.Ref, entry.Value.EventType.UnderlyingType);
-                }
-            }
-        }
-
-        // --------------------------------------------------------------------------------
-        // Adding the following elements to scope is a fundamental wash because the
-        // scope for a lambda is the same as it's parent (assuming we're dealing with
-        // a lambda).
-        // --------------------------------------------------------------------------------
+        public bool IsAllowUnderlyingReferences => allowUnderlyingReferences;
 
         public CodegenExpressionRef GetAddEPS(CodegenMethodScope scope)
         {
@@ -102,8 +74,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             return optionalExprEvalCtxRef;
         }
 
-        // --------------------------------------------------------------------------------
-
         public CodegenExpressionRef GetAddRequiredUnderlying(
             CodegenMethodScope scope,
             int streamNum,
@@ -126,23 +96,43 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             scope.AddSymbol(assigned);
             return assigned;
         }
-        
+
+        public virtual void Provide(IDictionary<string, Type> symbols)
+        {
+            if (optionalEPSRef != null) {
+                symbols.Put(optionalEPSRef.Ref, typeof(EventBean[]));
+            }
+
+            if (optionalExprEvalCtxRef != null) {
+                symbols.Put(optionalExprEvalCtxRef.Ref, typeof(ExprEvaluatorContext));
+            }
+
+            if (optionalIsNewDataRef != null) {
+                symbols.Put(optionalIsNewDataRef.Ref, typeof(bool));
+            }
+
+            if (allowUnderlyingReferences) {
+                foreach (var entry in underlyingStreamNums) {
+                    symbols.Put(entry.Value.Ref.Ref, entry.Value.EventType.UnderlyingType);
+                }
+            }
+        }
+
         public void DerivedSymbolsCodegen(
             CodegenMethod parent,
             CodegenBlock processBlock,
             CodegenClassScope codegenClassScope)
         {
             foreach (var underlying in underlyingStreamNums) {
-                var underlyingValue = underlying.Value;
-                var underlyingType = underlyingValue.EventType.UnderlyingType;
+                var underlyingType = underlying.Value.EventType.UnderlyingType;
                 var name = underlying.Value.Ref.Ref;
                 var arrayAtIndex = ArrayAtIndex(Ref(ExprForgeCodegenNames.NAME_EPS), Constant(underlying.Key));
 
-                if (!underlyingValue.IsOptionalEvent) {
+                if (!underlying.Value.IsOptionalEvent) {
                     // Unwrapping Method - non-optional event
                     // ----------------------------------------
                     // {underlyingType} {name} = ({underlyingType}) eps[someConstantIndex];
-
+                    
                     processBlock.DeclareVar(
                         underlyingType,
                         name,
@@ -158,10 +148,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                     //     }
                     //     return ({underlyingType}) @event.Underlying;
                     // }
-
+                    
                     var methodNode = parent
                         .MakeChild(underlyingType, typeof(ExprForgeCodegenSymbol), codegenClassScope)
-                        .AddParam(typeof(EventBean[]), ExprForgeCodegenNames.NAME_EPS);
+                        .AddParam<EventBean[]>(ExprForgeCodegenNames.NAME_EPS);
                     methodNode.Block
                         .DeclareVar<EventBean>("@event", arrayAtIndex)
                         .IfRefNullReturnNull("@event")

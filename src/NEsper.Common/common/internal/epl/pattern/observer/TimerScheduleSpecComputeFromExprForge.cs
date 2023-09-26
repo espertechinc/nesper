@@ -35,20 +35,18 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(TimerScheduleSpecComputeFromExpr),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
-                .DeclareVar<TimerScheduleSpecComputeFromExpr>(
-                    "compute",
-                    NewInstance(typeof(TimerScheduleSpecComputeFromExpr)))
+                .DeclareVarNewInstance<TimerScheduleSpecComputeFromExpr>("compute")
                 .SetProperty(
                     Ref("compute"),
                     "Date",
                     dateNode == null
                         ? ConstantNull()
-                        : ExprNodeUtilityCodegen.CodegenEvaluator(dateNode.Forge, method, this.GetType(), classScope))
+                        : ExprNodeUtilityCodegen.CodegenEvaluator(dateNode.Forge, method, GetType(), classScope))
                 .SetProperty(
                     Ref("compute"),
                     "Repetitions",
@@ -57,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
                             repetitionsNode.Forge,
                             method,
-                            this.GetType(),
+                            GetType(),
                             classScope));
             if (periodNode != null) {
                 method.Block.SetProperty(
@@ -73,9 +71,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         public void VerifyComputeAllConst(ExprValidationContext validationContext)
         {
             TimerScheduleSpecComputeFromExpr.Compute(
-                dateNode == null ? null : dateNode.Forge.ExprEvaluator,
-                repetitionsNode == null ? null : repetitionsNode.Forge.ExprEvaluator,
-                periodNode == null ? null : periodNode.TimePeriodEval,
+                dateNode?.Forge.ExprEvaluator,
+                repetitionsNode?.Forge.ExprEvaluator,
+                periodNode?.TimePeriodEval,
                 null,
                 null,
                 null,

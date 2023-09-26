@@ -18,11 +18,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithLargeConstantPoolDueToMethods(execs);
+#if REGRESSION_EXECUTIONS
+            With(LargeConstantPoolDueToMethods)(execs);
+#endif
             return execs;
         }
 
-        public static IList<RegressionExecution> WithLargeConstantPoolDueToMethods(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithLargeConstantPoolDueToMethods(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileLargeConstantPoolDueToMethods());
@@ -38,7 +41,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var delimiter = "";
                 for (var i = 0; i < 1000; i++) {
                     buf.Append(delimiter);
-                    buf.Append("((((((((((((((((((((((((1+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1");
+                    buf.Append(
+                        "((((((((((((((((((((((((1+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1)+1");
                     buf.Append(" as z" + i);
                     delimiter = ",";
                 }

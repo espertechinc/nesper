@@ -21,9 +21,11 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecPlanComputeConditionalPath : FilterSpecPlanComputeConditional
     {
-        public static readonly FilterSpecPlanComputeConditionalPath INSTANCE = new FilterSpecPlanComputeConditionalPath();
+        public static readonly FilterSpecPlanComputeConditionalPath INSTANCE =
+            new FilterSpecPlanComputeConditionalPath();
 
-        protected override FilterValueSetParam[][] Compute(EventBean[] eventsPerStream,
+        protected override FilterValueSetParam[][] Compute(
+            EventBean[] eventsPerStream,
             FilterSpecPlan plan,
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
@@ -31,7 +33,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         {
             if (plan.FilterNegate != null) {
                 var controlResult = plan.FilterNegate.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && false.Equals(controlResult)) {
+                if (controlResult == null || false.Equals(controlResult)) {
                     return null;
                 }
             }
@@ -46,7 +48,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return ComputePathsWithNegate(eventsPerStream, plan, matchedEvents, exprEvaluatorContext, filterEvalEnv);
         }
 
-        private FilterValueSetParam[][] ComputePathsWithNegate(EventBean[] eventsPerStream,
+        private FilterValueSetParam[][] ComputePathsWithNegate(
+            EventBean[] eventsPerStream,
             FilterSpecPlan plan,
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
@@ -56,7 +59,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             IList<FilterValueSetParam[]> pathList = new List<FilterValueSetParam[]>(paths.Length);
             foreach (var path in paths) {
                 var controlResult = path.PathNegate?.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && false.Equals(controlResult)) {
+                if (controlResult == null || false.Equals(controlResult)) {
                     continue;
                 }
 

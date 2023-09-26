@@ -19,24 +19,24 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
     {
         public long Coerce(object value)
         {
-            if (value is long) {
-                return (long) value;
+            if (value is long l) {
+                return l;
             }
 
-            if (value is int) {
-                return (int) value;
+            if (value is int i) {
+                return i;
             }
 
-            if (value is DateTime) {
-                return ((DateTime) value).UtcMillis();
+            if (value is DateTime time) {
+                return time.UtcMillis();
             }
 
-            if (value is DateTimeOffset) {
-                return ((DateTimeOffset) value).UtcMillis();
+            if (value is DateTimeOffset offset) {
+                return offset.UtcMillis();
             }
 
-            if (value is DateTimeEx) {
-                return ((DateTimeEx) value).UtcMillis;
+            if (value is DateTimeEx ex) {
+                return ex.UtcMillis;
             }
 
             throw new ArgumentException("invalid value for datetime", "value");

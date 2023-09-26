@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             object value,
             EventBean target)
         {
-            var map = (MappedEventBean) target;
+            var map = (MappedEventBean)target;
             Write(value, map.Properties);
         }
 

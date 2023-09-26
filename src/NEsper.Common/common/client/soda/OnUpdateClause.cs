@@ -61,8 +61,7 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write(WindowName);
-            if (OptionalAsName != null)
-            {
+            if (OptionalAsName != null) {
                 writer.Write(" as ");
                 writer.Write(OptionalAsName);
             }

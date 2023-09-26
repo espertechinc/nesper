@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         /// <summary>
         ///     Ctor.
         /// </summary>
-        /// <param name="theEvent">first event to hold</param>
+        /// <param name = "theEvent">first event to hold</param>
         public RowRecogMultimatchState(EventBean theEvent)
         {
             Buffer = new EventBean[3];
@@ -39,12 +39,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         /// <summary>
         ///     Ctor.
         /// </summary>
-        /// <param name="state">to copy</param>
+        /// <param name = "state">to copy</param>
         public RowRecogMultimatchState(RowRecogMultimatchState state)
         {
             var copyArray = new EventBean[state.Buffer.Length];
             Array.Copy(state.Buffer, 0, copyArray, 0, state.Count);
-
             Count = state.Count;
             Buffer = copyArray;
         }
@@ -64,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         /// <summary>
         ///     Add an event.
         /// </summary>
-        /// <param name="theEvent">to add</param>
+        /// <param name = "theEvent">to add</param>
         public void Add(EventBean theEvent)
         {
             if (Count == Buffer.Length) {
@@ -79,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         /// <summary>
         ///     Determines if an event is in the collection.
         /// </summary>
-        /// <param name="theEvent">to check</param>
+        /// <param name = "theEvent">to check</param>
         /// <returns>indicator</returns>
         public bool ContainsEvent(EventBean theEvent)
         {
@@ -92,24 +91,21 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             return false;
         }
 
-        /// <summary>
-        ///     Returns the buffer sized to only the contained events, and shrinks the event array unless it is empty
-        /// </summary>
-        /// <returns>events</returns>
-        public EventBean[] GetShrinkEventArray()
-        {
-            if (Count == 0) {
-                return CollectionUtil.EVENTBEANARRAY_EMPTY;
-            }
+        public EventBean[] ShrinkEventArray {
+            get {
+                if (Count == 0) {
+                    return CollectionUtil.EVENTBEANARRAY_EMPTY;
+                }
 
-            if (Count == Buffer.Length) {
-                return Buffer;
-            }
+                if (Count == Buffer.Length) {
+                    return Buffer;
+                }
 
-            var array = new EventBean[Count];
-            Array.Copy(Buffer, 0, array, 0, Count);
-            Buffer = array; // we hold on to the result, avoiding future shrinking
-            return array;
+                var array = new EventBean[Count];
+                Array.Copy(Buffer, 0, array, 0, Count);
+                Buffer = array; // we hold on to the result, avoiding future shrinking
+                return array;
+            }
         }
     }
 } // end of namespace

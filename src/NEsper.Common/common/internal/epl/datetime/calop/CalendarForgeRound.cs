@@ -46,10 +46,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             switch (method) {
                 case DateTimeMethodEnum.ROUNDFLOOR:
                     return dateTimeEx.Truncate(field);
+
                 case DateTimeMethodEnum.ROUNDCEILING:
                     return dateTimeEx.Ceiling(field);
+
                 case DateTimeMethodEnum.ROUNDHALF:
                     return dateTimeEx.Round(field);
+
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -64,10 +67,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             switch (method) {
                 case DateTimeMethodEnum.ROUNDFLOOR:
                     return dateTimeOffset.Truncate(field);
+
                 case DateTimeMethodEnum.ROUNDCEILING:
                     return dateTimeOffset.Ceiling(field);
+
                 case DateTimeMethodEnum.ROUNDHALF:
                     return dateTimeOffset.Round(field);
+
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -82,10 +88,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             switch (method) {
                 case DateTimeMethodEnum.ROUNDFLOOR:
                     return dateTime.Truncate(field);
+
                 case DateTimeMethodEnum.ROUNDCEILING:
                     return dateTime.Ceiling(field);
+
                 case DateTimeMethodEnum.ROUNDHALF:
                     return dateTime.Round(field);
+
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -101,10 +110,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             switch (method) {
                 case DateTimeMethodEnum.ROUNDFLOOR:
                     return ExprDotMethod(dateTimeEx, "Truncate", dateTimeField);
+
                 case DateTimeMethodEnum.ROUNDCEILING:
                     return ExprDotMethod(dateTimeEx, "Ceiling", dateTimeField);
+
                 case DateTimeMethodEnum.ROUNDHALF:
                     return ExprDotMethod(dateTimeEx, "Round", dateTimeField);
+
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -120,10 +132,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             switch (method) {
                 case DateTimeMethodEnum.ROUNDFLOOR:
                     return StaticMethod(typeof(DateTimeOffsetHelper), "Truncate", dateTimeOffset, dateTimeField);
+
                 case DateTimeMethodEnum.ROUNDCEILING:
                     return StaticMethod(typeof(DateTimeOffsetHelper), "Ceiling", dateTimeOffset, dateTimeField);
+
                 case DateTimeMethodEnum.ROUNDHALF:
                     return StaticMethod(typeof(DateTimeOffsetHelper), "Round", dateTimeOffset, dateTimeField);
+
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -139,10 +154,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             switch (method) {
                 case DateTimeMethodEnum.ROUNDFLOOR:
                     return StaticMethod(typeof(DateTimeHelper), "Truncate", dateTime, dateTimeField);
+
                 case DateTimeMethodEnum.ROUNDCEILING:
                     return StaticMethod(typeof(DateTimeHelper), "Ceiling", dateTime, dateTimeField);
+
                 case DateTimeMethodEnum.ROUNDHALF:
                     return StaticMethod(typeof(DateTimeHelper), "Round", dateTime, dateTimeField);
+
                 default:
                     throw new UnsupportedOperationException();
             }

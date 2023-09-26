@@ -1,40 +1,39 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client;
+
 
 namespace com.espertech.esper.common.@internal.@event.core
 {
     /// <summary>
-    ///     Descriptor of a property item.
+    /// Descriptor of a property item.
     /// </summary>
     public class PropertySetDescriptorItem
     {
+        private EventPropertyDescriptor propertyDescriptor;
+        private EventPropertyGetterSPI propertyGetter;
+        private FragmentEventType fragmentEventType;
+
         public PropertySetDescriptorItem(
             EventPropertyDescriptor propertyDescriptor,
-            Type simplePropertyType,
             EventPropertyGetterSPI propertyGetter,
             FragmentEventType fragmentEventType)
         {
-            PropertyDescriptor = propertyDescriptor;
-            SimplePropertyType = simplePropertyType;
-            PropertyGetter = propertyGetter;
-            FragmentEventType = fragmentEventType;
+            this.propertyDescriptor = propertyDescriptor;
+            this.propertyGetter = propertyGetter;
+            this.fragmentEventType = fragmentEventType;
         }
 
-        public EventPropertyDescriptor PropertyDescriptor { get; }
+        public EventPropertyDescriptor PropertyDescriptor => propertyDescriptor;
 
-        public Type SimplePropertyType { get; }
+        public EventPropertyGetterSPI PropertyGetter => propertyGetter;
 
-        public EventPropertyGetterSPI PropertyGetter { get; }
-
-        public FragmentEventType FragmentEventType { get; }
+        public FragmentEventType FragmentEventType => fragmentEventType;
     }
-}
+} // end of namespace

@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprLikeNodeForgeConst forge,
             ExprEvaluator lhsEval)
         {
-            this._forge = forge;
-            this._lhsEval = lhsEval;
+            _forge = forge;
+            _lhsEval = lhsEval;
         }
 
         public object Evaluate(
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 value = value.ToString();
             }
 
-            return _forge.ForgeRenderable.IsNot ^ _forge.LikeUtil.CompareTo((string) value);
+            return _forge.ForgeRenderable.IsNot ^ _forge.LikeUtil.CompareTo((string)value);
         }
 
         public static CodegenMethod Codegen(

@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.client.util
                 return false;
             }
 
-            return Equals((TimePeriod) obj);
+            return Equals((TimePeriod)obj);
         }
 
         public override int GetHashCode()

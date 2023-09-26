@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             if (@event is VariantEvent variantEvent) {
-                return (variantEvent).UnderlyingEventBean.EventType.Name;
+                return variantEvent.UnderlyingEventBean.EventType.Name;
             }
 
             return @event.EventType.Name;

@@ -46,9 +46,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             // we are not currently running if either of the endpoints is not crontab-triggered
             if (spec.StartCondition is ContextConditionDescriptorCrontab &&
                 spec.EndCondition is ContextConditionDescriptorCrontab) {
-                ScheduleSpec[] schedulesStart = ((ContextControllerConditionCrontab) startCondition).Schedules;
+                var schedulesStart = ((ContextControllerConditionCrontab)startCondition).Schedules;
 
-                var endCron = (ContextConditionDescriptorCrontab) spec.EndCondition;
+                var endCron = (ContextConditionDescriptorCrontab)spec.EndCondition;
                 var schedulesEnd = new ScheduleSpec[endCron.EvaluatorsPerCrontab.Length];
                 for (var i = 0; i < schedulesEnd.Length; i++) {
                     schedulesEnd[i] = ScheduleExpressionUtil.CrontabScheduleBuild(
@@ -56,16 +56,15 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                         controller.Realization.AgentInstanceContextCreate);
                 }
 
-                var classpathImportService = controller.Realization.AgentInstanceContextCreate.ImportServiceRuntime;
+                var importService = controller.Realization.AgentInstanceContextCreate.ImportServiceRuntime;
                 var time = controller.Realization.AgentInstanceContextCreate.SchedulingService.Time;
-                var nextScheduledStartTime = ComputeScheduleMinimumNextOccurance(schedulesStart, time, classpathImportService);
-                var nextScheduledEndTime = ComputeScheduleMinimumNextOccurance(schedulesEnd, time, classpathImportService);
-                
+                var nextScheduledStartTime = ComputeScheduleMinimumNextOccurance(schedulesStart, time, importService);
+                var nextScheduledEndTime = ComputeScheduleMinimumNextOccurance(schedulesEnd, time, importService);
+
                 return nextScheduledStartTime >= nextScheduledEndTime;
             }
 
-            if (startCondition.Descriptor is ContextConditionDescriptorTimePeriod) {
-                var descriptor = (ContextConditionDescriptorTimePeriod) startCondition.Descriptor;
+            if (startCondition.Descriptor is ContextConditionDescriptorTimePeriod descriptor) {
                 var endTime = descriptor.GetExpectedEndTime(controller.Realization);
                 if (endTime != null && endTime <= 0) {
                     return true;
@@ -81,7 +80,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ContextControllerCondition endCondition,
             ContextControllerInitTerm controller)
         {
-            var startTime = controller.realization.AgentInstanceContextCreate.SchedulingService.Time;
+            var startTime = controller.Realization.AgentInstanceContextCreate.SchedulingService.Time;
             var expectedEndTime = endCondition.ExpectedEndTime;
             return new ContextControllerInitTermPartitionKey(
                 optionalTriggeringEvent,
@@ -113,34 +112,44 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
             return identifier;
         }
-        
-        public static long ComputeScheduleMinimumNextOccurance(ScheduleSpec[] schedules, long time, ImportServiceRuntime classpathImportService) {
-            var value = Int64.MaxValue;
+
+        public static long ComputeScheduleMinimumNextOccurance(
+            ScheduleSpec[] schedules,
+            long time,
+            ImportServiceRuntime importService)
+        {
+            var value = long.MaxValue;
             foreach (var spec in schedules) {
                 var computed = ScheduleComputeHelper.ComputeNextOccurance(
                     spec,
                     time,
-                    classpathImportService.TimeZone,
-                    classpathImportService.TimeAbacus);
+                    importService.TimeZone,
+                    importService.TimeAbacus);
                 if (computed < value) {
                     value = computed;
                 }
             }
+
             return value;
         }
 
-        public static long ComputeScheduleMinimumDelta(ScheduleSpec[] schedules, long time, ImportServiceRuntime classpathImportService) {
-            var value = Int64.MaxValue;
-            foreach (ScheduleSpec spec in schedules) {
-                long computed = ScheduleComputeHelper.ComputeDeltaNextOccurance(
+        public static long ComputeScheduleMinimumDelta(
+            ScheduleSpec[] schedules,
+            long time,
+            ImportServiceRuntime importService)
+        {
+            var value = long.MaxValue;
+            foreach (var spec in schedules) {
+                var computed = ScheduleComputeHelper.ComputeDeltaNextOccurance(
                     spec,
                     time,
-                    classpathImportService.TimeZone,
-                    classpathImportService.TimeAbacus);
+                    importService.TimeZone,
+                    importService.TimeAbacus);
                 if (computed < value) {
                     value = computed;
                 }
             }
+
             return value;
         }
     }

@@ -6,7 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -21,10 +24,15 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtDatabaseJoin : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                "@Name('s0') select * \n" +
+                "@name('s0') select * \n" +
                 "  from SupportBean#length(1000) as S0,\n" +
                 "      sql:MyDB ['select myvarchar from mytesttable where ${IntPrimitive} = mytesttable.myBigint'] as S1"
             );

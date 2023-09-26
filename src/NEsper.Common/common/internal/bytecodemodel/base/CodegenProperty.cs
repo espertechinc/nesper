@@ -16,7 +16,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.model.statement;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
@@ -83,8 +82,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public bool IsStatic => Modifiers.IsStatic();
 
         public CodegenPropertyWGraph AssignedProperty { get; set; }
-        
-        public String AssignedProviderClassName { get; set;  }
+
+        public string AssignedProviderClassName { get; set; }
 
         public CodegenProperty WithStatic(bool value = true)
         {
@@ -99,7 +98,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 .Disable(MemberModifier.OVERRIDE);
             return this;
         }
-        
+
         public CodegenProperty WithOverride()
         {
             Modifiers = Modifiers
@@ -107,7 +106,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 .Disable(MemberModifier.VIRTUAL);
             return this;
         }
-        
+
         public CodegenProperty MakeChild(
             Type returnType,
             Type generator,
@@ -229,7 +228,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         private string GetGeneratorDetail(Type generator)
         {
-#if DEBUG && STACKTRACE 
+#if DEBUG && STACKTRACE
             var stack = new StackTrace();
             string stackString = null;
             for (var i = 1; i < 10; i++) {
@@ -270,7 +269,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             var lineNumber = stackFrame.GetFileLineNumber();
             return className + "." + methodName + "():" + lineNumber;
         }
-        
+
         private CodegenProperty AddChild(CodegenProperty propertyNode)
         {
 #if false
@@ -329,7 +328,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         {
             throw new NotImplementedException();
         }
-        
+
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             throw new NotImplementedException();

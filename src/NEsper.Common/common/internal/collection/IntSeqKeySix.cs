@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return false;
             }
 
-            var o = (IntSeqKeyMany) other;
+            var o = (IntSeqKeyMany)other;
             var array = o.Array;
             return One == array[0] &&
                    Two == array[1] &&
@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public IntSeqKey AddToEnd(int num)
         {
-            return new IntSeqKeyMany(new[] {One, Two, Three, Four, Five, Six, num});
+            return new IntSeqKeyMany(new[] { One, Two, Three, Four, Five, Six, num });
         }
 
         public IntSeqKey RemoveFromEnd()
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public int[] AsIntArray()
         {
-            return new[] {One, Two, Three, Four, Five, Six};
+            return new[] { One, Two, Three, Four, Five, Six };
         }
 
         public static void Write(
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return false;
             }
 
-            return Equals((IntSeqKeySix) obj);
+            return Equals((IntSeqKeySix)obj);
         }
 
         public override int GetHashCode()

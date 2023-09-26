@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     continue;
                 }
 
-                if (!type.IsNumericNonFP()) {
+                if (!type.IsTypeNumericNonFP()) {
                     throw new ExprValidationException("Frequency operator requires an integer-type parameter");
                 }
             }
@@ -185,11 +185,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             if (value is FrequencyParameter || value is RangeParameter) {
-                parameters.Add((NumberSetParameter) value);
+                parameters.Add((NumberSetParameter)value);
                 return;
             }
 
-            int intValue = value.AsInt32();
+            var intValue = value.AsInt32();
             parameters.Add(new IntParameter(intValue));
         }
     }

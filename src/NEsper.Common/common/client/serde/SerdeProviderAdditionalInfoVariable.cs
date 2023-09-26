@@ -10,28 +10,28 @@ using com.espertech.esper.common.@internal.compile.stage2;
 
 namespace com.espertech.esper.common.client.serde
 {
-	/// <summary>
-	///     Information about the variable for which to obtain a serde.
-	/// </summary>
-	public class SerdeProviderAdditionalInfoVariable : SerdeProviderAdditionalInfo
+    /// <summary>
+    ///     Information about the variable for which to obtain a serde.
+    /// </summary>
+    public class SerdeProviderAdditionalInfoVariable : SerdeProviderAdditionalInfo
     {
-	    /// <summary>
-	    ///     Ctor.
-	    /// </summary>
-	    /// <param name="raw">statement information</param>
-	    /// <param name="variableName">variable name</param>
-	    public SerdeProviderAdditionalInfoVariable(
+        /// <summary>
+        ///     Ctor.
+        /// </summary>
+        /// <param name="raw">statement information</param>
+        /// <param name="variableName">variable name</param>
+        public SerdeProviderAdditionalInfoVariable(
             StatementRawInfo raw,
             string variableName) : base(raw)
         {
             VariableName = variableName;
         }
 
-	    /// <summary>
-	    ///     Returns the variable name
-	    /// </summary>
-	    /// <value>name</value>
-	    public string VariableName { get; }
+        /// <summary>
+        ///     Returns the variable name
+        /// </summary>
+        /// <value>name</value>
+        public string VariableName { get; }
 
         public override string ToString()
         {

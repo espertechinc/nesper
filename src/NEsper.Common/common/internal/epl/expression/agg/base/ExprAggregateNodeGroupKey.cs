@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -58,47 +58,48 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             ExprForgeCodegenSymbol symbol,
             CodegenClassScope classScope)
         {
-            CodegenExpression future = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+            if (returnType == null) {
+                return ConstantNull();
+            }
+
+            CodegenExpression future = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 aggregationResultFutureMemberName,
                 typeof(AggregationResultFuture));
-            CodegenMethod method = parent.MakeChild(returnType, this.GetType(), classScope);
-            
-            method.Block.DeclareVar<object>("key", ExprDotMethod(future, "GetGroupKey", ExprDotName(symbol.GetAddExprEvalCtx(method), "AgentInstanceId")));
+            var method = parent.MakeChild(returnType, GetType(), classScope);
             method.Block
-                .IfCondition(InstanceOf(Ref("key"), typeof(MultiKey)))
+                .DeclareVar<object>(
+                    "key",
+                    ExprDotMethod(
+                        future,
+                        "getGroupKey",
+                        ExprDotName(symbol.GetAddExprEvalCtx(method), "AgentInstanceId")));
+
+            method.Block.IfCondition(InstanceOf(Ref("key"), typeof(MultiKey)))
                 .DeclareVar<MultiKey>("mk", Cast(typeof(MultiKey), Ref("key")))
-                .BlockReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, ExprDotMethod(Ref("mk"), "GetKey", Constant(groupKeyIndex))));
+                .BlockReturn(
+                    CodegenLegoCast.CastSafeFromObjectType(
+                        returnType,
+                        ExprDotMethod(Ref("mk"), "getKey", Constant(groupKeyIndex))));
 
             method.Block.IfCondition(InstanceOf(Ref("key"), typeof(MultiKeyArrayWrap)))
                 .DeclareVar<MultiKeyArrayWrap>("mk", Cast(typeof(MultiKeyArrayWrap), Ref("key")))
                 .BlockReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, ExprDotName(Ref("mk"), "Array")));
 
             method.Block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, Ref("key")));
-            
             return LocalMethod(method);
         }
 
-        public Type EvaluationType {
-            get => returnType;
-        }
+        public Type EvaluationType => returnType;
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public override ExprForge Forge {
-            get => this;
-        }
+        public override ExprForge Forge => this;
 
-        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
+        public ExprNode ForgeRenderable => this;
 
-        public ExprNode ForgeRenderable {
-            get => this;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => ForgeRenderable;
 
-        public ExprEvaluator ExprEvaluator {
-            get => this;
-        }
+        public ExprEvaluator ExprEvaluator => this;
 
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,
@@ -106,18 +107,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
         {
         }
 
-        public override ExprPrecedenceEnum Precedence {
-            get => ExprPrecedenceEnum.UNARY;
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
         public string ToExpressionString(ExprPrecedenceEnum precedence)
         {
             return null;
         }
 
-        public bool IsConstantResult {
-            get => false;
-        }
+        public bool IsConstantResult => false;
 
         public override bool EqualsNode(
             ExprNode node,

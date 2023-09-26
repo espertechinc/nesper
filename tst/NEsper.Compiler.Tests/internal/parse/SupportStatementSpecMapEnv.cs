@@ -25,6 +25,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		public static StatementSpecMapEnv Make(ImportServiceCompileTime engineImportService)
 		{
 			return new StatementSpecMapEnv(
+				engineImportService.Container,
 				engineImportService,
 				VariableCompileTimeResolverEmpty.INSTANCE,
 				new Configuration(),
@@ -38,7 +39,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 		public static StatementSpecMapEnv Make(IContainer container)
 		{
-			return Make(SupportClasspathImport.GetInstance(container));
+			return Make(SupportImport.GetInstance(container));
 		}
 	}
 } // end of namespace

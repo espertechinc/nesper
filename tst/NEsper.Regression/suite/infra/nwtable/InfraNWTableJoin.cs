@@ -20,6 +20,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            Withe(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNWTableJoinSimple(true));
             execs.Add(new InfraNWTableJoinSimple(false));
             return execs;
@@ -36,15 +43,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"c0", "c1"};
+                string[] fields = { "c0", "c1" };
                 var path = new RegressionPath();
 
                 // create window
-                var stmtTextCreate = "create schema MyEvent(cId string);\n";
+                var stmtTextCreate = "@public @buseventtype create schema MyEvent(cId string);\n";
                 stmtTextCreate += namedWindow
-                    ? "create window MyInfra.win:keepall() as MyEvent"
-                    : "create table MyInfra(cId string primary key)";
-                env.CompileDeployWBusPublicType(stmtTextCreate, path);
+                    ? "@public create window MyInfra.win:keepall() as MyEvent"
+                    : "@public create table MyInfra(cId string primary key)";
+                env.CompileDeploy(stmtTextCreate, path);
 
                 // create insert into
                 var stmtTextInsert = "insert into MyInfra select * from MyEvent";
@@ -52,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create join
                 var stmtTextJoin =
-                    "@Name('s0') select ce.cId as c0, sb.IntPrimitive as c1 from MyInfra as ce, SupportBean#keepall() as sb" +
+                    "@name('s0') select ce.cId as c0, sb.IntPrimitive as c1 from MyInfra as ce, SupportBean#keepall() as sb" +
                     " where sb.TheString = ce.cId";
                 env.CompileDeploy(stmtTextJoin, path).AddListener("s0");
 
@@ -63,18 +70,24 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("C2", 1));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
+                env.AssertPropsNew(
+                    "s0",
                     fields,
-                    new object[] {"C2", 1});
+                    new object[] { "C2", 1 });
 
                 env.SendEventBean(new SupportBean("C1", 4));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
+                env.AssertPropsNew(
+                    "s0",
                     fields,
-                    new object[] {"C1", 4});
+                    new object[] { "C1", 4 });
 
                 env.UndeployAll();
+            }
+
+
+            public string Name()
+            {
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             private void SendMyEvent(

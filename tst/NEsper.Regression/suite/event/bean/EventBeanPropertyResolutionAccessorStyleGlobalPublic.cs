@@ -17,12 +17,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
     {
         public void Run(RegressionEnvironment env)
         {
-            env.CompileDeploy("@Name('s0') select fieldLegacyVal from SupportLegacyBean").AddListener("s0");
+            env.CompileDeploy("@name('s0') select fieldLegacyVal from SupportLegacyBean").AddListener("s0");
 
             var theEvent = new SupportLegacyBean("E1");
             theEvent.fieldLegacyVal = "val1";
             env.SendEventBean(theEvent);
-            Assert.AreEqual("val1", env.Listener("s0").AssertOneGetNewAndReset().Get("fieldLegacyVal"));
+            env.AssertEqualsNew("s0", "fieldLegacyVal", "val1");
 
             env.UndeployAll();
         }

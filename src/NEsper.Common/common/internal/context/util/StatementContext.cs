@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.client.util;
@@ -21,6 +22,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.dataflow.filtersvcadapter;
 using com.espertech.esper.common.@internal.epl.enummethod.cache;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.epl.historical.database.connection;
 using com.espertech.esper.common.@internal.epl.historical.datacache;
 using com.espertech.esper.common.@internal.epl.index.@base;
@@ -57,9 +59,9 @@ using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
-    public class StatementContext : ExprEvaluatorContext
-        , SubSelectStrategyFactoryContext
-        , EventTableFactoryFactoryContext
+    public class StatementContext : ExprEvaluatorContext,
+        SubSelectStrategyFactoryContext,
+        EventTableFactoryFactoryContext
     {
         private IList<StatementFinalizeCallback> finalizeCallbacks;
         private AgentInstanceScriptContext defaultAgentInstanceScriptContext;
@@ -139,29 +141,36 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public EPStatementHandle EpStatementHandle { get; }
 
-        public RuntimeExtensionServices RuntimeExtensionServices => StatementContextRuntimeServices.RuntimeExtensionServices;
+        public RuntimeExtensionServices RuntimeExtensionServices =>
+            StatementContextRuntimeServices.RuntimeExtensionServices;
 
-        public EventBeanTypedEventFactory EventBeanTypedEventFactory => StatementContextRuntimeServices.EventBeanTypedEventFactory;
+        public EventBeanTypedEventFactory EventBeanTypedEventFactory =>
+            StatementContextRuntimeServices.EventBeanTypedEventFactory;
 
         public EventBeanService EventBeanService => StatementContextRuntimeServices.EventBeanService;
 
         public string RuntimeURI => StatementContextRuntimeServices.RuntimeURI;
 
-        public ExpressionResultCacheService ExpressionResultCacheServiceSharable => StatementContextRuntimeServices.ExpressionResultCacheService;
+        public ExpressionResultCacheService ExpressionResultCacheServiceSharable =>
+            StatementContextRuntimeServices.ExpressionResultCacheService;
 
         public ImportServiceRuntime ImportServiceRuntime => StatementContextRuntimeServices.ImportServiceRuntime;
 
         public EventTableIndexService EventTableIndexService => StatementContextRuntimeServices.EventTableIndexService;
 
-        public EventTypeRepositoryImpl EventTypeRepositoryPreconfigured => StatementContextRuntimeServices.EventTypeRepositoryPreconfigured;
+        public EventTypeRepositoryImpl EventTypeRepositoryPreconfigured =>
+            StatementContextRuntimeServices.EventTypeRepositoryPreconfigured;
 
         public FilterService FilterService { get; set; }
 
-        public FilterBooleanExpressionFactory FilterBooleanExpressionFactory => StatementContextRuntimeServices.FilterBooleanExpressionFactory;
+        public FilterBooleanExpressionFactory FilterBooleanExpressionFactory =>
+            StatementContextRuntimeServices.FilterBooleanExpressionFactory;
 
-        public FilterSharedLookupableRepository FilterSharedLookupableRepository => StatementContextRuntimeServices.FilterSharedLookupableRepository;
+        public FilterSharedLookupableRepository FilterSharedLookupableRepository =>
+            StatementContextRuntimeServices.FilterSharedLookupableRepository;
 
-        public FilterSharedBoolExprRepository FilterSharedBoolExprRepository => StatementContextRuntimeServices.FilterSharedBoolExprRepository;
+        public FilterSharedBoolExprRepository FilterSharedBoolExprRepository =>
+            StatementContextRuntimeServices.FilterSharedBoolExprRepository;
 
         public IDictionary<int, FilterSpecActivatable> FilterSpecActivatables { get; }
 
@@ -169,14 +178,16 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public InternalEventRouteDest InternalEventRouteDest { get; set; }
 
-        public NamedWindowConsumerManagementService NamedWindowConsumerManagementService => 
+        public NamedWindowConsumerManagementService NamedWindowConsumerManagementService =>
             StatementContextRuntimeServices.NamedWindowConsumerManagementService;
 
-        public NamedWindowManagementService NamedWindowManagementService => StatementContextRuntimeServices.NamedWindowManagementService;
+        public NamedWindowManagementService NamedWindowManagementService =>
+            StatementContextRuntimeServices.NamedWindowManagementService;
 
         public int Priority => EpStatementHandle.Priority;
 
-        public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory => StatementContextRuntimeServices.ResultSetProcessorHelperFactory;
+        public ResultSetProcessorHelperFactory ResultSetProcessorHelperFactory =>
+            StatementContextRuntimeServices.ResultSetProcessorHelperFactory;
 
         public int StatementId { get; }
 
@@ -209,13 +220,15 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public UpdateDispatchView UpdateDispatchView { get; }
 
-        public ViewServicePreviousFactory ViewServicePreviousFactory => StatementContextRuntimeServices.ViewServicePreviousFactory;
+        public ViewServicePreviousFactory ViewServicePreviousFactory =>
+            StatementContextRuntimeServices.ViewServicePreviousFactory;
 
         public ViewFactoryService ViewFactoryService => StatementContextRuntimeServices.ViewFactoryService;
 
         public StatementResourceService StatementResourceService => StatementCPCacheService.StatementResourceService;
 
-        public PathRegistry<string, ContextMetaData> PathContextRegistry => StatementContextRuntimeServices.PathContextRegistry;
+        public PathRegistry<string, ContextMetaData> PathContextRegistry =>
+            StatementContextRuntimeServices.PathContextRegistry;
 
         public PatternSubexpressionPoolStmtSvc PatternSubexpressionPoolSvc { get; }
 
@@ -223,8 +236,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public TypeResolver TypeResolver => ImportServiceRuntime.TypeResolver;
 
-        public virtual object FilterReboolConstant
-        {
+        public virtual object FilterReboolConstant {
             get => null;
             set { }
         }
@@ -266,15 +278,18 @@ namespace com.espertech.esper.common.@internal.context.util
                 instrumentationProvider);
         }
 
-        public ContextManagementService ContextManagementService => StatementContextRuntimeServices.ContextManagementService;
+        public ContextManagementService ContextManagementService =>
+            StatementContextRuntimeServices.ContextManagementService;
 
-        public VariableManagementService VariableManagementService => StatementContextRuntimeServices.VariableManagementService;
+        public VariableManagementService VariableManagementService =>
+            StatementContextRuntimeServices.VariableManagementService;
 
         public StatementContextFilterEvalEnv StatementContextFilterEvalEnv { get; }
 
         public StatementDestroyCallback DestroyCallback { get; set; }
 
-        public TableExprEvaluatorContext TableExprEvaluatorContext => StatementContextRuntimeServices.TableExprEvaluatorContext;
+        public TableExprEvaluatorContext TableExprEvaluatorContext =>
+            StatementContextRuntimeServices.TableExprEvaluatorContext;
 
         public EventBean ContextProperties =>
             throw new IllegalStateException("Context properties not available at statement-level");
@@ -297,9 +312,11 @@ namespace com.espertech.esper.common.@internal.context.util
             }
         }
 
-        public EventTypeResolvingBeanFactory EventTypeResolvingBeanFactory => StatementContextRuntimeServices.EventTypeResolvingBeanFactory;
+        public EventTypeResolvingBeanFactory EventTypeResolvingBeanFactory =>
+            StatementContextRuntimeServices.EventTypeResolvingBeanFactory;
 
-        public PathRegistry<string, EventType> EventTypePathRegistry => StatementContextRuntimeServices.EventTypePathRegistry;
+        public PathRegistry<string, EventType> EventTypePathRegistry =>
+            StatementContextRuntimeServices.EventTypePathRegistry;
 
         public EventTypeAvroHandler EventTypeAvroHandler => StatementContextRuntimeServices.EventTypeAvroHandler;
 
@@ -307,19 +324,24 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public RowRecogStatePoolStmtSvc RowRecogStatePoolStmtSvc { get; }
 
-        public RowRecogStateRepoFactory RowRecogStateRepoFactory => StatementContextRuntimeServices.RowRecogStateRepoFactory;
+        public RowRecogStateRepoFactory RowRecogStateRepoFactory =>
+            StatementContextRuntimeServices.RowRecogStateRepoFactory;
 
-        public HistoricalDataCacheFactory HistoricalDataCacheFactory => StatementContextRuntimeServices.HistoricalDataCacheFactory;
+        public HistoricalDataCacheFactory HistoricalDataCacheFactory =>
+            StatementContextRuntimeServices.HistoricalDataCacheFactory;
 
-        public DatabaseConfigServiceRuntime DatabaseConfigService => StatementContextRuntimeServices.DatabaseConfigService;
+        public DatabaseConfigServiceRuntime DatabaseConfigService =>
+            StatementContextRuntimeServices.DatabaseConfigService;
 
-        public EPRuntimeEventProcessWrapped EPRuntimeEventProcessWrapped => StatementContextRuntimeServices.EPRuntimeEventProcessWrapped;
+        public EPRuntimeEventProcessWrapped EPRuntimeEventProcessWrapped =>
+            StatementContextRuntimeServices.EPRuntimeEventProcessWrapped;
 
         public EventServiceSendEventCommon EPRuntimeSendEvent => StatementContextRuntimeServices.EPRuntimeSendEvent;
 
         public EPRenderEventService EPRuntimeRenderEvent => StatementContextRuntimeServices.EPRuntimeRenderEvent;
 
-        public DataFlowFilterServiceAdapter DataFlowFilterServiceAdapter => StatementContextRuntimeServices.DataFlowFilterServiceAdapter;
+        public DataFlowFilterServiceAdapter DataFlowFilterServiceAdapter =>
+            StatementContextRuntimeServices.DataFlowFilterServiceAdapter;
 
         public MetricReportingService MetricReportingService => StatementContextRuntimeServices.MetricReportingService;
 
@@ -327,9 +349,7 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public InstrumentationCommon InstrumentationProvider => InstrumentationCommonDefault.INSTANCE;
 
-        public INamingContext RuntimeEnvContext {
-            get => StatementContextRuntimeServices.RuntimeEnvContext;
-        }
+        public INamingContext RuntimeEnvContext => StatementContextRuntimeServices.RuntimeEnvContext;
 
         public object UserObjectRuntime { get; }
 
@@ -338,5 +358,15 @@ namespace com.espertech.esper.common.@internal.context.util
         public string ModuleName { get; }
 
         public EventTableFactoryFactoryContext EventTableFactoryContext => this;
+
+        public string EPLWhenAvailable => (string)StatementInformationals.Properties.Get(StatementProperty.EPL);
+
+        public TimeZoneInfo TimeZone => ImportServiceRuntime.TimeZone;
+
+        public TimeAbacus TimeAbacus => ImportServiceRuntime.TimeAbacus;
+
+        public bool IsWritesToTables => StatementInformationals.IsWritesToTables;
+
+        public Configuration ConfigSnapshot => StatementContextRuntimeServices.ConfigSnapshot;
     }
 } // end of namespace

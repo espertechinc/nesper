@@ -23,9 +23,30 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraSubqueryTwoConsumerWindow());
-            execs.Add(new InfraSubqueryLateConsumerAggregation());
+            WithTwoConsumerWindow(execs);
+            WithLateConsumerAggregation(execs);
+            WithWithFilterInParens(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWithFilterInParens(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSubqueryWithFilterInParens());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLateConsumerAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSubqueryLateConsumerAggregation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTwoConsumerWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSubqueryTwoConsumerWindow());
             return execs;
         }
 
@@ -33,9 +54,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "create window MyWindow#keepall as SupportBean;\n" +
-                             "@Name('insert') insert into MyWindow select * from SupportBean;\n" +
-                             "@Name('s0') select exists (select * from MyWindow(TheString='E1')) as c0 from SupportBean_S0;\n";
+                var epl = "create window MyWindow#keepall as SupportBean;\n" +
+                          "@name('insert') insert into MyWindow select * from SupportBean;\n" +
+                          "@name('s0') select exists (select * from MyWindow(TheString='E1')) as c0 from SupportBean_S0;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssert(env, false);
@@ -54,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 bool expected)
             {
                 env.SendEventBean(new SupportBean_S0(0));
-                Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+                env.AssertEqualsNew("s0", "c0", expected);
             }
         }
 
@@ -70,11 +91,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportBean("E1", 1));
-                Assert.AreEqual(
-                    1L,
-                    env.Runtime.VariableService.GetVariableValue(
-                        env.DeploymentId("assign"),
-                        "myvar")); // if the subquery-consumer executes first, this will be null
+                env.AssertRuntime(
+                    runtime => Assert.AreEqual(
+                        1L,
+                        runtime.VariableService.GetVariableValue(
+                            env.DeploymentId("assign"),
+                            "myvar"))); // if the subquery-consumer executes first, this will be null
 
                 env.UndeployAll();
             }
@@ -85,17 +107,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create window MyWindow#keepall as SupportBean", path);
+                env.CompileDeploy("@public create window MyWindow#keepall as SupportBean", path);
                 env.CompileDeploy("insert into MyWindow select * from SupportBean", path);
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", 1));
 
-                env.CompileDeploy("@Name('s0') select * from MyWindow where (select count(*) from MyWindow) > 0", path)
+                env.CompileDeploy("@name('s0') select * from MyWindow where (select count(*) from MyWindow) > 0", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E3", 1));
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 env.UndeployAll();
             }

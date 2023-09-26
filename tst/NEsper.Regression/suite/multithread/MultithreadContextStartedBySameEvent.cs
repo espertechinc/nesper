@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -25,9 +27,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public bool EnableHATest => true;
-        public bool HAWithCOnly => false;
-
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Configure(Configuration configuration)
         {
             configuration.Runtime.Threading.IsInternalTimerEnabled = true;
@@ -37,10 +41,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            var eplStatement = "create context MyContext start PayloadEvent end after 0.5 seconds";
+            var eplStatement = "@public create context MyContext start PayloadEvent end after 0.5 seconds";
             env.CompileDeploy(eplStatement, path);
 
-            var aggStatement = "@Name('select') context MyContext " +
+            var aggStatement = "@name('select') context MyContext " +
                                "select count(*) as theCount " +
                                "from PayloadEvent " +
                                "output snapshot when terminated";

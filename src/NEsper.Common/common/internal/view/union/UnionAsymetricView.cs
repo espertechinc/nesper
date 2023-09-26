@@ -32,7 +32,8 @@ namespace com.espertech.esper.common.@internal.view.union
         LastPostObserver,
         AgentInstanceMgmtCallback,
         DataWindowView,
-        ViewDataVisitableContainer
+        ViewDataVisitableContainer,
+        RelatedView
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -249,7 +250,7 @@ namespace com.espertech.esper.common.@internal.view.union
 
             // indicate new and, possibly, old data
             if (Child != null && (newDataPosted != null || oldDataColl != null)) {
-                var oldDataToPost = oldDataColl != null ? oldDataColl.ToArray() : null;
+                var oldDataToPost = oldDataColl?.ToArray();
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newDataPosted, oldDataToPost);
                 Child.Update(newDataPosted, oldDataToPost);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
@@ -319,5 +320,7 @@ namespace com.espertech.esper.common.@internal.view.union
         public void Transfer(AgentInstanceTransferServices services)
         {
         }
+
+        public View[] RelatedViews => views;
     }
 } // end of namespace

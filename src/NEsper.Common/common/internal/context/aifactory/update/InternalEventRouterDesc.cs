@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
         public string[] Properties { get; set; }
 
         public ExprEvaluator[] Assignments { get; set; }
-        
+
         public InternalEventRouterWriter[] Writers { get; set; }
     }
 } // end of namespace

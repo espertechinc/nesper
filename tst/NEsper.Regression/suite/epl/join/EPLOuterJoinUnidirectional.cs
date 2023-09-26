@@ -8,13 +8,10 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-
-using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -67,54 +64,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             return execs;
         }
 
-        private static void SendAssert(
-            RegressionEnvironment env,
-            SupportBeanAtoFBase @event,
-            bool b)
-        {
-            env.SendEventBean(@event);
-            Assert.AreEqual(b, env.Listener("s0").GetAndClearIsInvoked());
-        }
-
-        private static void AssertReceived2Stream(
-            RegressionEnvironment env,
-            string a,
-            string b)
-        {
-            var fields = new[] {"aId", "bId"};
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {a, b});
-        }
-
-        private static void AssertReceived3Stream(
-            RegressionEnvironment env,
-            string a,
-            string b,
-            string c)
-        {
-            var fields = new[] {"a.Id", "b.Id", "c.Id"};
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {a, b, c});
-        }
-
-        private static void AssertReceived3StreamMixed(
-            RegressionEnvironment env,
-            string a,
-            string b,
-            string c,
-            string d)
-        {
-            var fields = new[] {"aId", "bId", "cId", "dId"};
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {a, b, c, d});
-        }
-
         public class EPLJoinOuterInvalid : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -122,30 +71,33 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // all: unidirectional and full-outer-join
 
                 // no-view-declared
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "select * from SupportBean_A unidirectional full outer join SupportBean_B#keepall unidirectional",
                     "The unidirectional keyword requires that no views are declared onto the stream (applies to stream 1)");
 
                 // not-all-unidirectional
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "select * from SupportBean_A unidirectional full outer join SupportBean_B unidirectional full outer join SupportBean_C#keepall",
                     "The unidirectional keyword must either apply to a single stream or all streams in a full outer join");
 
                 // no iterate
-                TryInvalidIterate(
+                SupportMessageAssertUtil.TryInvalidIterate(
                     env,
-                    "@Name('s0') select * from SupportBean_A unidirectional full outer join SupportBean_B unidirectional",
+                    "@name('s0') select * from SupportBean_A unidirectional full outer join SupportBean_B unidirectional",
                     "Iteration over a unidirectional join is not supported");
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
             }
         }
 
-        internal class EPLJoin2Stream : RegressionExecution
+        private class EPLJoin2Stream : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select a.Id as aId, b.Id as bId from SupportBean_A as a unidirectional " +
+                var epl = "@name('s0') select a.id as aid, b.id as bid from SupportBean_A as a unidirectional " +
                           "full outer join SupportBean_B as b unidirectional";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -165,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             }
         }
 
-        internal class EPLJoin3StreamAllUnidirectional : RegressionExecution
+        private class EPLJoin3StreamAllUnidirectional : RegressionExecution
         {
             private readonly bool soda;
 
@@ -176,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean_A as a unidirectional " +
+                var epl = "@name('s0') select * from SupportBean_A as a unidirectional " +
                           "full outer join SupportBean_B as b unidirectional " +
                           "full outer join SupportBean_C as c unidirectional";
 
@@ -202,15 +154,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 env.UndeployAll();
             }
+
+            public string Name()
+            {
+                return $"{this.GetType().Name}{{soda={soda}}}";
+            }
         }
 
-        internal class EPLJoin3StreamMixed : RegressionExecution
+        private class EPLJoin3StreamMixed : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create window MyCWindow#keepall as SupportBean_C;\n" +
+                var epl = "@public create window MyCWindow#keepall as SupportBean_C;\n" +
                           "insert into MyCWindow select * from SupportBean_C;\n" +
-                          "@Name('s0') select a.Id as aId, b.Id as bId, MyCWindow.Id as cId, SupportBean_D.Id as dId " +
+                          "@name('s0') select a.id as aid, b.id as bid, MyCWindow.id as cid, SupportBean_D.id as did " +
                           "from pattern[every a=SupportBean_A -> b=SupportBean_B] t1 unidirectional " +
                           "full outer join " +
                           "MyCWindow unidirectional " +
@@ -236,15 +193,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             }
         }
 
-        internal class EPLJoin4StreamWhereClause : RegressionExecution
+        private class EPLJoin4StreamWhereClause : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from SupportBean_A as a unidirectional " +
+                var epl = "@name('s0') select * from SupportBean_A as a unidirectional " +
                           "full outer join SupportBean_B as b unidirectional " +
                           "full outer join SupportBean_C as c unidirectional " +
                           "full outer join SupportBean_D as d unidirectional " +
-                          "where coalesce(a.Id,b.Id,c.Id,d.Id) in ('YES')";
+                          "where coalesce(a.id,b.id,c.id,d.id) in ('YES')";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendAssert(env, new SupportBean_A("A1"), false);
@@ -257,6 +214,45 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 env.UndeployAll();
             }
+        }
+
+        private static void SendAssert(
+            RegressionEnvironment env,
+            SupportBeanAtoFBase @event,
+            bool b)
+        {
+            env.SendEventBean(@event);
+            env.AssertListenerInvokedFlag("s0", b);
+        }
+
+        private static void AssertReceived2Stream(
+            RegressionEnvironment env,
+            string a,
+            string b)
+        {
+            var fields = "aid,bid".SplitCsv();
+            env.AssertPropsNew("s0", fields, new object[] { a, b });
+        }
+
+        private static void AssertReceived3Stream(
+            RegressionEnvironment env,
+            string a,
+            string b,
+            string c)
+        {
+            var fields = "a.id,b.id,c.id".SplitCsv();
+            env.AssertPropsNew("s0", fields, new object[] { a, b, c });
+        }
+
+        private static void AssertReceived3StreamMixed(
+            RegressionEnvironment env,
+            string a,
+            string b,
+            string c,
+            string d)
+        {
+            var fields = "aid,bid,cid,did".SplitCsv();
+            env.AssertPropsNew("s0", fields, new object[] { a, b, c, d });
         }
     }
 } // end of namespace

@@ -31,10 +31,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             EventType optionalInnerType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            this.Index = index;
-            this.UnderlyingClassName = underlyingClassName;
-            this.OptionalInnerType = optionalInnerType;
-            this.EventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            Index = index;
+            UnderlyingClassName = underlyingClassName;
+            OptionalInnerType = optionalInnerType;
+            EventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 
         public abstract CodegenExpression UnderlyingFragmentCodegen(
@@ -52,7 +52,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(UnderlyingClassName, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -73,7 +75,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(UnderlyingClassName, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -94,7 +98,9 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.core
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingFragmentCodegen(
-                CastUnderlying(UnderlyingClassName, beanExpression), codegenMethodScope, codegenClassScope);
+                CastUnderlying(UnderlyingClassName, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public bool IsExistsProperty(EventBean eventBean)

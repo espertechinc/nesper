@@ -21,89 +21,89 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.firstoflastof
 {
-	public class EnumLastOfScalar : ThreeFormScalar
-	{
-		private readonly EPType _resultType;
+    public class EnumLastOfScalar : ThreeFormScalar
+    {
+        private readonly EPChainableType _resultType;
 
-		public EnumLastOfScalar(
-			ExprDotEvalParamLambda lambda,
-			ObjectArrayEventType fieldEventType,
-			int numParameters,
-			EPType resultType) : base(lambda, fieldEventType, numParameters)
-		{
-			_resultType = resultType;
-		}
+        public EnumLastOfScalar(
+            ExprDotEvalParamLambda lambda,
+            ObjectArrayEventType fieldEventType,
+            int numParameters,
+            EPChainableType resultType) : base(lambda, fieldEventType, numParameters)
+        {
+            _resultType = resultType;
+        }
 
-		public override EnumEval EnumEvaluator {
-			get {
-				var inner = InnerExpression.ExprEvaluator;
-				return new ProxyEnumEval() {
-					ProcEvaluateEnumMethod = (
-						eventsLambda,
-						enumcoll,
-						isNewData,
-						context) => {
-						object result = null;
-						var evalEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
-						eventsLambda[StreamNumLambda] = evalEvent;
-						var props = evalEvent.Properties;
-						props[2] = enumcoll.Count;
+        public override EnumEval EnumEvaluator {
+            get {
+                var inner = InnerExpression.ExprEvaluator;
+                return new ProxyEnumEval() {
+                    ProcEvaluateEnumMethod = (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        object result = null;
+                        var evalEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+                        eventsLambda[StreamNumLambda] = evalEvent;
+                        var props = evalEvent.Properties;
+                        props[2] = enumcoll.Count;
 
-						var count = -1;
-						foreach (var next in enumcoll) {
-							count++;
-							props[0] = next;
-							props[1] = count;
+                        var count = -1;
+                        foreach (var next in enumcoll) {
+                            count++;
+                            props[0] = next;
+                            props[1] = count;
 
-							var pass = inner.Evaluate(eventsLambda, isNewData, context);
-							if (pass == null || false.Equals(pass)) {
-								continue;
-							}
+                            var pass = inner.Evaluate(eventsLambda, isNewData, context);
+                            if (pass == null || false.Equals(pass)) {
+                                continue;
+                            }
 
-							result = next;
-						}
+                            result = next;
+                        }
 
-						return result;
-					},
-				};
-			}
-		}
+                        return result;
+                    }
+                };
+            }
+        }
 
-		public override Type ReturnType()
-		{
-			return _resultType.GetCodegenReturnType().GetBoxedType();
-		}
+        public override Type ReturnTypeOfMethod()
+        {
+            return _resultType.GetCodegenReturnType().GetBoxedType();
+        }
 
-		public override CodegenExpression ReturnIfEmptyOptional()
-		{
-			return ConstantNull();
-		}
+        public override CodegenExpression ReturnIfEmptyOptional()
+        {
+            return ConstantNull();
+        }
 
-		public override void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			block.DeclareVar<object>("result", ConstantNull());
-		}
+        public override void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            block.DeclareVar<object>("result", ConstantNull());
+        }
 
-		public override void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
-				block,
-				InnerExpression.EvaluationType,
-				InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
-			block.AssignRef("result", Ref("next"));
-		}
+        public override void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
+                block,
+                InnerExpression.EvaluationType,
+                InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
+            block.AssignRef("result", Ref("next"));
+        }
 
-		public override void ReturnResult(CodegenBlock block)
-		{
-			block.MethodReturn(Cast(ReturnType(), Ref("result")));
-		}
-	}
+        public override void ReturnResult(CodegenBlock block)
+        {
+            block.MethodReturn(Cast(ReturnTypeOfMethod(), Ref("result")));
+        }
+    }
 } // end of namespace

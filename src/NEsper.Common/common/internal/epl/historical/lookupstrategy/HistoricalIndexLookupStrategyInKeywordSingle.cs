@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             ExprEvaluatorContext context)
         {
             if (index[0] is PropertyHashedEventTable) {
-                var idx = (PropertyHashedEventTable) index[0];
+                var idx = (PropertyHashedEventTable)index[0];
                 eventsPerStream[lookupStream] = lookupEvent;
 
                 var result = InKeywordTableLookupUtil.SingleIndexLookup(evaluators, eventsPerStream, context, idx);

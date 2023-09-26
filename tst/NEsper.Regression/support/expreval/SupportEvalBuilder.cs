@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.support.expreval
 				throw new ArgumentException("Names length and expressions length differ");
 			}
 
-			for (int i = 0; i < names.Length; i++) {
+			for (var i = 0; i < names.Length; i++) {
 				WithExpression(names[i], expressions[i]);
 			}
 
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.support.expreval
 
 		public SupportEvalAssertionBuilder WithAssertion(object underlying)
 		{
-			SupportEvalAssertionBuilder builder = new SupportEvalAssertionBuilder(this);
+			var builder = new SupportEvalAssertionBuilder(this);
 			Assertions.Add(new SupportEvalAssertionPair(underlying, builder));
 			return builder;
 		}
@@ -120,16 +120,16 @@ namespace com.espertech.esper.regressionlib.support.expreval
 
 		public bool IsExcludeEPLAssertion { get; set; }
 
-		public void Run(RegressionEnvironment environment)
+		public SupportEvalBuilderResult Run(RegressionEnvironment environment)
 		{
-			Run(environment, false);
+			return Run(environment, false);
 		}
 
-		public void Run(
+		public SupportEvalBuilderResult Run(
 			RegressionEnvironment environment,
 			bool soda)
 		{
-			SupportEvalRunner.Run(environment, soda, this);
+			return SupportEvalRunner.Run(environment, soda, this);
 		}
 	}
 } // end of namespace

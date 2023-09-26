@@ -13,6 +13,7 @@ using System.Reflection;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
@@ -32,11 +33,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create context CtxEachString partition by TheString from SupportBean", path);
-            env.CompileDeploy("@Name('select') context CtxEachString select * from SupportBean", path);
+            env.CompileDeploy("@public create context CtxEachString partition by TheString from SupportBean", path);
+            env.CompileDeploy("@name('select') context CtxEachString select * from SupportBean", path);
 
             TryPerformanceDispatch(env, 8, 100);
 

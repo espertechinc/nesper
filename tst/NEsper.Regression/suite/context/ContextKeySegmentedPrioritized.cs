@@ -18,22 +18,24 @@ namespace com.espertech.esper.regressionlib.suite.context
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create context SegmentedByMessage partition by TheString from SupportBean", path);
+            env.CompileDeploy(
+                "@public create context SegmentedByMessage partition by TheString from SupportBean",
+                path);
 
             env.CompileDeploy(
-                "@Name('s0') @Drop @Priority(1) context SegmentedByMessage select 'test1' from SupportBean",
+                "@name('s0') @Drop @Priority(1) context SegmentedByMessage select 'test1' from SupportBean",
                 path);
             env.AddListener("s0");
 
             env.CompileDeploy(
-                "@Name('s1') @Priority(0) context SegmentedByMessage select 'test2' from SupportBean",
+                "@name('s1') @Priority(0) context SegmentedByMessage select 'test2' from SupportBean",
                 path);
             env.AddListener("s1");
 
             env.SendEventBean(new SupportBean("test msg", 1));
 
-            Assert.IsTrue(env.Listener("s0").IsInvoked);
-            Assert.IsFalse(env.Listener("s1").IsInvoked);
+            env.AssertListenerInvoked("s0");
+            env.AssertListenerNotInvoked("s1");
 
             env.UndeployAll();
         }

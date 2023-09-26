@@ -32,37 +32,50 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-WithTypeEvent(execs);
-WithFlowGraphSource(execs);
-WithFlowGraphOperator(execs);
+#if REGRESSION_EXECUTIONS
+            WithTypeEvent(execs);
+            WithFlowGraphSource(execs);
+            With(FlowGraphOperator)(execs);
+#endif
             return execs;
         }
-public static IList<RegressionExecution> WithFlowGraphOperator(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowFlowGraphOperator());
-    return execs;
-}public static IList<RegressionExecution> WithFlowGraphSource(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowFlowGraphSource());
-    return execs;
-}public static IList<RegressionExecution> WithTypeEvent(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowTypeEvent());
-    return execs;
-}
+
+        public static IList<RegressionExecution> WithFlowGraphOperator(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowFlowGraphOperator());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFlowGraphSource(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowFlowGraphSource());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTypeEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowTypeEvent());
+            return execs;
+        }
+
         internal class EPLDataflowTypeEvent : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 env.Compile(
                     "create schema MySchema(key string, value int);\n" +
-                    "@Name('flow') create dataflow MyDataFlowOne MyCaptureOutputPortOp -> outstream<EventBean<MySchema>> {}");
+                    "@name('flow') create dataflow MyDataFlowOne MyCaptureOutputPortOp -> outstream<EventBean<MySchema>> {}");
                 Assert.AreEqual("MySchema", MyCaptureOutputPortOpForge.Port.OptionalDeclaredType.EventType.Name);
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 
@@ -73,19 +86,19 @@ public static IList<RegressionExecution> WithFlowGraphOperator(IList<RegressionE
                 SupportGraphSource.GetAndResetLifecycle();
 
                 var compiled = env.Compile(
-                    "@Name('flow') create dataflow MyDataFlow @Name('Goodie') @Audit SupportGraphSource -> outstream<SupportBean> {propOne:'abc'}");
+                    "@name('flow') create dataflow MyDataFlow @Name('Goodie') @Audit SupportGraphSource -> outstream<SupportBean> {propOne:'abc'}");
                 var events = SupportGraphSourceForge.GetAndResetLifecycle();
                 Assert.AreEqual(3, events.Count);
                 Assert.AreEqual("instantiated", events[0]);
                 Assert.AreEqual("SetPropOne=abc", events[1]);
-                var forgeCtx = (DataFlowOpForgeInitializeContext) events[2];
+                var forgeCtx = (DataFlowOpForgeInitializeContext)events[2];
                 Assert.AreEqual(0, forgeCtx.InputPorts.Count);
                 Assert.AreEqual(1, forgeCtx.OutputPorts.Count);
                 Assert.AreEqual("outstream", forgeCtx.OutputPorts[0].StreamName);
                 Assert.AreEqual("SupportBean", forgeCtx.OutputPorts[0].OptionalDeclaredType.EventType.Name);
                 Assert.AreEqual(2, forgeCtx.OperatorAnnotations.Length);
-                Assert.AreEqual("Goodie", ((NameAttribute) forgeCtx.OperatorAnnotations[0]).Value);
-                Assert.IsNotNull((AuditAttribute) forgeCtx.OperatorAnnotations[1]);
+                Assert.AreEqual("Goodie", ((NameAttribute)forgeCtx.OperatorAnnotations[0]).Value);
+                Assert.IsNotNull((AuditAttribute)forgeCtx.OperatorAnnotations[1]);
                 Assert.AreEqual("MyDataFlow", forgeCtx.DataflowName);
                 Assert.AreEqual(0, forgeCtx.OperatorNumber);
 
@@ -94,7 +107,7 @@ public static IList<RegressionExecution> WithFlowGraphOperator(IList<RegressionE
                 Assert.AreEqual(3, events.Count);
                 Assert.AreEqual("instantiated", events[0]);
                 Assert.AreEqual("SetPropOne=abc", events[1]);
-                var factoryCtx = (DataFlowOpFactoryInitializeContext) events[2];
+                var factoryCtx = (DataFlowOpFactoryInitializeContext)events[2];
                 Assert.AreEqual("MyDataFlow", factoryCtx.DataFlowName);
                 Assert.AreEqual(0, factoryCtx.OperatorNumber);
                 Assert.IsNotNull(factoryCtx.StatementContext);
@@ -106,7 +119,7 @@ public static IList<RegressionExecution> WithFlowGraphOperator(IList<RegressionE
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow", options);
                 events = SupportGraphSourceFactory.GetAndResetLifecycle();
                 Assert.AreEqual(1, events.Count);
-                var opCtx = (DataFlowOpInitializeContext) events[0];
+                var opCtx = (DataFlowOpInitializeContext)events[0];
                 Assert.AreEqual("MyDataFlow", opCtx.DataFlowName);
                 Assert.AreEqual("id1", opCtx.DataFlowInstanceId);
                 Assert.IsNotNull(opCtx.AgentInstanceContext);
@@ -131,6 +144,11 @@ public static IList<RegressionExecution> WithFlowGraphOperator(IList<RegressionE
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
         internal class EPLDataflowFlowGraphOperator : RegressionExecution
@@ -140,7 +158,7 @@ public static IList<RegressionExecution> WithFlowGraphOperator(IList<RegressionE
                 SupportGraphSource.GetAndResetLifecycle();
 
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlow MyLineFeedSource -> outstream {} SupportOperator(outstream) {propOne:'abc'}");
+                    "@name('flow') create dataflow MyDataFlow MyLineFeedSource -> outstream {} SupportOperator(outstream) {propOne:'abc'}");
                 Assert.AreEqual(0, SupportOperator.GetAndResetLifecycle().Count);
 
                 // instantiate
@@ -160,11 +178,16 @@ public static IList<RegressionExecution> WithFlowGraphOperator(IList<RegressionE
                 events = SupportOperator.GetAndResetLifecycle();
                 Assert.AreEqual(4, events.Count);
                 Assert.IsTrue(events[0] is DataFlowOpOpenContext); // called open (GraphSource only)
-                Assert.AreEqual("abc", ((object[]) events[1])[0]);
-                Assert.AreEqual("def", ((object[]) events[2])[0]);
+                Assert.AreEqual("abc", ((object[])events[1])[0]);
+                Assert.AreEqual("def", ((object[])events[2])[0]);
                 Assert.IsTrue(events[3] is DataFlowOpCloseContext); // called close (GraphSource only)
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 

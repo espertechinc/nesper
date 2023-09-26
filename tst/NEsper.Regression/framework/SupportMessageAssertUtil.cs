@@ -41,6 +41,7 @@ namespace com.espertech.esper.regressionlib.framework
             }
         }
 
+#if OBSOLETE
         public static void TryInvalidCompile(
             RegressionEnvironment env,
             string epl,
@@ -69,7 +70,8 @@ namespace com.espertech.esper.regressionlib.framework
                 AssertMessage(ex, message);
             }
         }
-
+#endif
+        
         public static void AssertMessageContains(
             Exception ex,
             string message)

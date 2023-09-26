@@ -40,10 +40,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         /// <summary>Returns the expression node representing the item in the select clause. </summary>
         /// <value>expression node for item</value>
-        public ExprNode SelectExpression {
-            get;
-            set;
-        }
+        public ExprNode SelectExpression { get; set; }
 
         /// <summary>Returns the name of the item in the select clause. </summary>
         /// <value>name of item</value>

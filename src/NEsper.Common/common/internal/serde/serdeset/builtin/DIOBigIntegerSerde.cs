@@ -13,48 +13,48 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	/// <summary>
-	/// Binding for nullable boolean values.
-	/// </summary>
-	public class DIOBigIntegerSerde : DataInputOutputSerdeBase<BigInteger>
-	{
-		public static readonly DIOBigIntegerSerde INSTANCE = new DIOBigIntegerSerde();
+    /// <summary>
+    /// Binding for nullable boolean values.
+    /// </summary>
+    public class DIOBigIntegerSerde : DataInputOutputSerdeBase<BigInteger>
+    {
+        public static readonly DIOBigIntegerSerde INSTANCE = new DIOBigIntegerSerde();
 
-		private DIOBigIntegerSerde()
-		{
-		}
-		
-		public override void Write(
-			BigInteger @object,
-			DataOutput output,
-			byte[] pageFullKey,
-			EventBeanCollatedWriter writer)
-		{
-			Write(@object, output);
-		}
+        private DIOBigIntegerSerde()
+        {
+        }
 
-		public void Write(
-			BigInteger bigInteger,
-			DataOutput stream)
-		{
-			DIOBigIntegerUtil.WriteBigInt(bigInteger, stream);
-		}
+        public override void Write(
+            BigInteger @object,
+            DataOutput output,
+            byte[] pageFullKey,
+            EventBeanCollatedWriter writer)
+        {
+            Write(@object, output);
+        }
 
-		public BigInteger Read(DataInput input)
-		{
-			return ReadInternal(input);
-		}
+        public void Write(
+            BigInteger bigInteger,
+            DataOutput stream)
+        {
+            DIOBigIntegerUtil.WriteBigInt(bigInteger, stream);
+        }
 
-		public override BigInteger ReadValue(
-			DataInput input,
-			byte[] resourceKey)
-		{
-			return ReadInternal(input);
-		}
+        public BigInteger Read(DataInput input)
+        {
+            return ReadInternal(input);
+        }
 
-		private BigInteger ReadInternal(DataInput input)
-		{
-			return DIOBigIntegerUtil.ReadBigInt(input);
-		}
-	}
+        public override BigInteger ReadValue(
+            DataInput input,
+            byte[] resourceKey)
+        {
+            return ReadInternal(input);
+        }
+
+        private BigInteger ReadInternal(DataInput input)
+        {
+            return DIOBigIntegerUtil.ReadBigInt(input);
+        }
+    }
 } // end of namespace

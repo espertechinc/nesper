@@ -11,6 +11,7 @@ using System.Reflection;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
@@ -29,13 +30,18 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@Name('ctx') create context HashByUserCtx as coalesce by consistent_hash_crc32(P00) from SupportBean_S0 granularity 10000000",
+                "@name('ctx') @public create context HashByUserCtx as coalesce by consistent_hash_crc32(P00) from SupportBean_S0 granularity 10000000",
                 path);
-            env.CompileDeploy("@Name('select') context HashByUserCtx select P01 from SupportBean_S0", path);
+            env.CompileDeploy("@name('select') context HashByUserCtx select P01 from SupportBean_S0", path);
 
             TrySendContextCountSimple(env, 4, 5);
 
@@ -72,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
             SupportCompileDeployUtil.AssertFutures(future);
 
-            var result = listener.GetNewDataListFlattened();
+            var result = listener.NewDataListFlattened;
             ISet<string> received = new HashSet<string>();
             foreach (var @event in result) {
                 var key = (string) @event.Get("P01");

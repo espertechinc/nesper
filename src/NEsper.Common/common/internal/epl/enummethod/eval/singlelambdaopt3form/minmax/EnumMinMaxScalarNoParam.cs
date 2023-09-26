@@ -19,97 +19,99 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmax
 {
-	public class EnumMinMaxScalarNoParam : EnumForgeBasePlain,
-		EnumForge,
-		EnumEval
-	{
-		private readonly bool _max;
-		private readonly EPType _resultType;
+    public class EnumMinMaxScalarNoParam : EnumForgeBasePlain,
+        EnumForge,
+        EnumEval
+    {
+        private readonly bool _max;
+        private readonly EPChainableType _resultType;
 
-		public EnumMinMaxScalarNoParam(
-			int streamCountIncoming,
-			bool max,
-			EPType resultType) : base(streamCountIncoming)
-		{
-			this._max = max;
-			this._resultType = resultType;
-		}
+        public EnumMinMaxScalarNoParam(
+            int streamCountIncoming,
+            bool max,
+            EPChainableType resultType) : base(streamCountIncoming)
+        {
+            _max = max;
+            _resultType = resultType;
+        }
 
-		public override EnumEval EnumEvaluator => this;
+        public override EnumEval EnumEvaluator => this;
 
-		public object EvaluateEnumMethod(
-			EventBean[] eventsLambda,
-			ICollection<object> enumcoll,
-			bool isNewData,
-			ExprEvaluatorContext context)
-		{
-			IComparable minKey = null;
+        public object EvaluateEnumMethod(
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            IComparable minKey = null;
 
-			foreach (object next in enumcoll) {
+            foreach (var next in enumcoll) {
+                var comparable = next;
+                if (comparable == null) {
+                    continue;
+                }
 
-				object comparable = next;
-				if (comparable == null) {
-					continue;
-				}
+                if (minKey == null) {
+                    minKey = (IComparable)comparable;
+                }
+                else {
+                    if (_max) {
+                        if (minKey.CompareTo(comparable) < 0) {
+                            minKey = (IComparable)comparable;
+                        }
+                    }
+                    else {
+                        if (minKey.CompareTo(comparable) > 0) {
+                            minKey = (IComparable)comparable;
+                        }
+                    }
+                }
+            }
 
-				if (minKey == null) {
-					minKey = (IComparable) comparable;
-				}
-				else {
-					if (_max) {
-						if (minKey.CompareTo(comparable) < 0) {
-							minKey = (IComparable) comparable;
-						}
-					}
-					else {
-						if (minKey.CompareTo(comparable) > 0) {
-							minKey = (IComparable) comparable;
-						}
-					}
-				}
-			}
+            return minKey;
+        }
 
-			return minKey;
-		}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var innerTypeBoxed = _resultType.GetCodegenReturnType().GetBoxedType();
+            var innerTypeCollection = typeof(ICollection<>).MakeGenericType(innerTypeBoxed);
 
-		public override CodegenExpression Codegen(
-			EnumForgeCodegenParams args,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			Type innerTypeBoxed = Boxing.GetBoxedType(EPTypeHelper.GetCodegenReturnType(_resultType));
+            var block = codegenMethodScope
+                .MakeChild(innerTypeBoxed, typeof(EnumMinMaxScalarNoParam), codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
+                .DeclareVar(innerTypeBoxed, "minKey", ConstantNull())
+                .DeclareVar(innerTypeCollection, "coll", EnumForgeCodegenNames.REF_ENUMCOLL);
 
-			CodegenBlock block = codegenMethodScope
-				.MakeChild(innerTypeBoxed, typeof(EnumMinMaxScalarNoParam), codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS)
-				.Block
-				.DeclareVar(innerTypeBoxed, "minKey", ConstantNull());
+            var forEach = block
+                .ForEach(innerTypeBoxed, "value", Ref("coll"))
+                .IfRefNull("value")
+                .BlockContinue();
 
-			CodegenBlock forEach = block
-				.ForEach(innerTypeBoxed, "value", EnumForgeCodegenNames.REF_ENUMCOLL)
-				.IfRefNull("value")
-				.BlockContinue();
+            var compareTo =
+                StaticMethod(
+                    typeof(SmartCompare),
+                    "Compare",
+                    Ref("minKey"),
+                    Ref("value"));
 
-			var compareTo =
-				StaticMethod(
-					typeof(SmartCompare),
-					"Compare",
-					Ref("minKey"),
-					Ref("value"));
-			
-			forEach
-				.IfCondition(EqualsNull(Ref("minKey")))
-				.AssignRef("minKey", FlexCast(innerTypeBoxed, Ref("value")))
-				.IfElse()
-				.IfCondition(Relational(compareTo, _max ? LT : GT, Constant(0)))
-				.AssignRef("minKey", FlexCast(innerTypeBoxed, Ref("value")));
+            forEach
+                .IfCondition(EqualsNull(Ref("minKey")))
+                .AssignRef("minKey", Ref("value"))
+                .IfElse()
+                .IfCondition(Relational(compareTo, _max ? LT : GT, Constant(0)))
+                .AssignRef("minKey", Ref("value"));
 
-			CodegenMethod method = block.MethodReturn(Ref("minKey"));
-			return LocalMethod(method, args.Expressions);
-		}
-	}
+            var method = block.MethodReturn(Ref("minKey"));
+            return LocalMethod(method, args.Expressions);
+        }
+    }
 } // end of namespace

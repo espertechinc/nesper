@@ -33,11 +33,10 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            IndexHint indexHint = IndexHint.GetIndexHint(statementRawInfo.Annotations);
+            var indexHint = IndexHint.GetIndexHint(statementRawInfo.Annotations);
             ExcludePlanHint excludePlanHint = null;
-            if (onTriggerDesc is OnTriggerWindowDesc) {
-                var onTriggerWindowDesc = (OnTriggerWindowDesc) onTriggerDesc;
-                string[] streamNames = {onTriggerWindowDesc.OptionalAsName, streamZeroAsName};
+            if (onTriggerDesc is OnTriggerWindowDesc onTriggerWindowDesc) {
+                string[] streamNames = { onTriggerWindowDesc.OptionalAsName, streamZeroAsName };
                 excludePlanHint = ExcludePlanHint.GetHint(streamNames, statementRawInfo, services);
             }
 

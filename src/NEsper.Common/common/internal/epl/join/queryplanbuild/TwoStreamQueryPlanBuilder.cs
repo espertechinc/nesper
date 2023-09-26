@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             var lookupPlans = new TableLookupPlanForge[2];
 
             // plan lookup from 1 to zero
-            TableLookupPlanDesc plan1to0 = NStreamQueryPlanBuilder.CreateLookupPlan(
+            var plan1to0 = NStreamQueryPlanBuilder.CreateLookupPlan(
                 queryGraph,
                 1,
                 0,
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             additionalForgeable.AddAll(plan1to0.AdditionalForgeables);
 
             // plan lookup from zero to 1
-            TableLookupPlanDesc plan0to1 = NStreamQueryPlanBuilder.CreateLookupPlan(
+            var plan0to1 = NStreamQueryPlanBuilder.CreateLookupPlan(
                 queryGraph,
                 0,
                 1,
@@ -84,13 +84,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             execNodeSpecs[1] = new TableLookupNodeForge(lookupPlans[1]);
 
             if (optionalOuterJoinType != null) {
-                if ((optionalOuterJoinType.Equals(OuterJoinType.LEFT)) ||
-                    (optionalOuterJoinType.Equals(OuterJoinType.FULL))) {
+                if (optionalOuterJoinType.Equals(OuterJoinType.LEFT) ||
+                    optionalOuterJoinType.Equals(OuterJoinType.FULL)) {
                     execNodeSpecs[0] = new TableOuterLookupNodeForge(lookupPlans[0]);
                 }
 
-                if ((optionalOuterJoinType.Equals(OuterJoinType.RIGHT)) ||
-                    (optionalOuterJoinType.Equals(OuterJoinType.FULL))) {
+                if (optionalOuterJoinType.Equals(OuterJoinType.RIGHT) ||
+                    optionalOuterJoinType.Equals(OuterJoinType.FULL)) {
                     execNodeSpecs[1] = new TableOuterLookupNodeForge(lookupPlans[1]);
                 }
             }

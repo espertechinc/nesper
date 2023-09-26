@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.client
         }
 
         protected EPRuntimeException(
-        SerializationInfo info,
+            SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }

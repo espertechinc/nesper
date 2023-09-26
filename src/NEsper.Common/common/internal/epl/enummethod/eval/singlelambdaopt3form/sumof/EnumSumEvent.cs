@@ -20,79 +20,82 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof
 {
-	public class EnumSumEvent : ThreeFormEventPlain
-	{
-		private readonly ExprDotEvalSumMethodFactory _sumMethodFactory;
+    public class EnumSumEvent : ThreeFormEventPlain
+    {
+        private readonly ExprDotEvalSumMethodFactory _sumMethodFactory;
 
-		public EnumSumEvent(
-			ExprDotEvalParamLambda lambda,
-			ExprDotEvalSumMethodFactory sumMethodFactory) : base(lambda)
-		{
-			this._sumMethodFactory = sumMethodFactory;
-		}
+        public EnumSumEvent(
+            ExprDotEvalParamLambda lambda,
+            ExprDotEvalSumMethodFactory sumMethodFactory) : base(lambda)
+        {
+            _sumMethodFactory = sumMethodFactory;
+        }
 
-		public override EnumEval EnumEvaluator {
-			get {
-				var inner = InnerExpression.ExprEvaluator;
-				return new ProxyEnumEval() {
-					ProcEvaluateEnumMethod = (
-						eventsLambda,
-						enumcoll,
-						isNewData,
-						context) => {
-						var method = _sumMethodFactory.SumAggregator;
+        public override EnumEval EnumEvaluator {
+            get {
+                var inner = InnerExpression.ExprEvaluator;
+                return new ProxyEnumEval() {
+                    ProcEvaluateEnumMethod = (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        var method = _sumMethodFactory.SumAggregator;
 
-						var beans = (ICollection<EventBean>) enumcoll;
-						foreach (var next in beans) {
-							eventsLambda[StreamNumLambda] = next;
+                        var beans = (ICollection<EventBean>)enumcoll;
+                        foreach (var next in beans) {
+                            eventsLambda[StreamNumLambda] = next;
 
-							var value = inner.Evaluate(eventsLambda, isNewData, context);
-							method.Enter(value);
-						}
+                            var value = inner.Evaluate(eventsLambda, isNewData, context);
+                            method.Enter(value);
+                        }
 
-						return method.Value;
-					},
-				};
-			}
-		}
+                        return method.Value;
+                    }
+                };
+            }
+        }
 
-		public override Type ReturnType()
-		{
-			return _sumMethodFactory.ValueType;
-		}
+        public override Type ReturnTypeOfMethod()
+        {
+            return _sumMethodFactory.ValueType;
+        }
 
-		public override CodegenExpression ReturnIfEmptyOptional()
-		{
-			return null;
-		}
+        public override CodegenExpression ReturnIfEmptyOptional()
+        {
+            return null;
+        }
 
-		public override void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			_sumMethodFactory.CodegenDeclare(block);
-		}
+        public override void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            _sumMethodFactory.CodegenDeclare(block);
+        }
 
-		public override void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			var innerType = InnerExpression.EvaluationType;
-			block.DeclareVar(innerType, "value", InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
-			if (!innerType.IsPrimitive) {
-				block.IfRefNull("value").BlockContinue();
-			}
+        public override void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            var innerType = InnerExpression.EvaluationType;
+            block.DeclareVar(
+                innerType,
+                "value",
+                InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope));
+            if (!innerType.IsPrimitive) {
+                block.IfRefNull("value").BlockContinue();
+            }
 
-			_sumMethodFactory.CodegenEnterNumberTypedNonNull(block, Ref("value"));
-		}
+            _sumMethodFactory.CodegenEnterNumberTypedNonNull(block, Ref("value"));
+        }
 
-		public override void ReturnResult(CodegenBlock block)
-		{
-			_sumMethodFactory.CodegenReturn(block);
-		}
-	}
+        public override void ReturnResult(CodegenBlock block)
+        {
+            _sumMethodFactory.CodegenReturn(block);
+        }
+    }
 } // end of namespace

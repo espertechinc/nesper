@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             using (var session = RegressionRunner.Session(Container)) {
                 session.Configuration.Common.AddEventType(typeof(SupportBean));
                 session.Configuration.Compiler.Expression.MathContext = MathContext.DECIMAL32;
-                session.Configuration.Compiler.ByteCode.AllowSubscriber = true;
+                session.Configuration.Compiler.ByteCode.IsAllowSubscriber =true;
                 RegressionRunner.Run(session, ExprCoreBigNumberSupportMathContext.Executions());
             }
         }

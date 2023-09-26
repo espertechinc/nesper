@@ -23,11 +23,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             AgentInstanceContext agentInstanceContext,
             bool isRecoveringResilient);
 
-        void StatementCreate(StatementContext statementContext);
+        void StatementCreate(StatementContext value);
 
         void StatementDestroy(StatementContext statementContext);
 
-        void StatementDestroyPreconditions(StatementContext statementContext);
+        void StatementDestroyPreconditions(StatementContext statementContext)
+        {
+        }
+        
         // default void StatementDestroyPreconditions(StatementContext statementContext) { }
 
         IReaderWriterLock ObtainAgentInstanceLock(

@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.view.previous
                     }
                 }
                 else {
-                    var theEvent = (EventBean) entry;
+                    var theEvent = (EventBean)entry;
                     _cache[_cacheFilledTo] = theEvent;
                     _cacheFilledTo++;
                 }
@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.view.previous
                     }
                 }
                 else {
-                    var theEvent = (EventBean) entry;
+                    var theEvent = (EventBean)entry;
                     _cache[_cacheFilledTo] = theEvent;
                     _cacheFilledTo++;
                 }

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
@@ -27,6 +29,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     public class InfraTableMTUngroupedAccessReadIntoTableWriteFilterUse : RegressionExecution
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         /// <summary>
         ///     For a given number of seconds:
@@ -49,15 +56,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numSeconds)
         {
             var path = new RegressionPath();
-            var eplCreateVariable = "create table vartotal (total sum(int))";
+            var eplCreateVariable = "@public create table vartotal (total sum(int))";
             env.CompileDeploy(eplCreateVariable, path);
 
             var eplInto = "into table vartotal select sum(IntPrimitive) as total from SupportBean";
             env.CompileDeploy(eplInto, path);
 
-            env.CompileDeploy("@Name('s0') select * from SupportBean_S0(1 = vartotal.total)", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from SupportBean_S0(1 = vartotal.total)", path).AddListener("s0");
 
-            env.CompileDeploy("@Name('s1') select * from SupportBean_S0(0 = vartotal.total)", path).AddListener("s1");
+            env.CompileDeploy("@name('s1') select * from SupportBean_S0(0 = vartotal.total)", path).AddListener("s1");
 
             var writeRunnable = new WriteRunnable(env);
             var readRunnable = new ReadRunnable(env, env.Listener("s0"), env.Listener("s1"));

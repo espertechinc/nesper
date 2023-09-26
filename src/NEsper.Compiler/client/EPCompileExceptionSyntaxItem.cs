@@ -25,9 +25,10 @@ namespace com.espertech.esper.compiler.client
         /// <param name="lineNumber">line number</param>
         public EPCompileExceptionSyntaxItem(
             string message,
+            Exception innerException,
             string expression,
             int lineNumber)
-            : base(message, expression, lineNumber)
+            : base(message, innerException, expression, lineNumber)
         {
         }
 

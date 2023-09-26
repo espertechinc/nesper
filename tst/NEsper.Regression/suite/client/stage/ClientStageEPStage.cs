@@ -22,111 +22,129 @@ using static com.espertech.esper.regressionlib.support.stage.SupportStageUtil;
 
 namespace com.espertech.esper.regressionlib.suite.client.stage
 {
-	public class ClientStageEPStage
-	{
-		public static IList<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ClientStageEPStageDestroy());
-			execs.Add(new ClientStageEPStageStageInvalid());
-			return execs;
-		}
+    public class ClientStageEPStage
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithDestroy(execs);
+            WithStageInvalid(execs);
+            return execs;
+        }
 
-		private class ClientStageEPStageStageInvalid : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				EPStage stageA = env.StageService.GetStage("ST");
+        public static IList<RegressionExecution> WithStageInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientStageEPStageStageInvalid());
+            return execs;
+        }
 
-				TryIllegalArgument(() => stageA.Stage(null));
-				TryOp(() => stageA.Stage(EmptyList<string>.Instance));
-				TryIllegalArgument(() => stageA.Stage(Arrays.AsList(new string[] {null})));
-				TryIllegalArgument(() => stageA.Stage(Arrays.AsList(new string[] {"a", null})));
+        public static IList<RegressionExecution> WithDestroy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientStageEPStageDestroy());
+            return execs;
+        }
 
-				TryIllegalArgument(() => stageA.Unstage(null));
-				TryOp(() => stageA.Unstage(EmptyList<string>.Instance));
-				TryIllegalArgument(() => stageA.Unstage(Arrays.AsList(new string[] {null})));
-				TryIllegalArgument(() => stageA.Unstage(Arrays.AsList(new string[] {"a", null})));
+        private class ClientStageEPStageStageInvalid : ClientStageRegressionExecution
+        {
+            public override void Run(RegressionEnvironment env)
+            {
+                var stageA = env.StageService.GetStage("ST");
 
-				TryDeploymentNotFound(() => stageA.Stage(Arrays.AsList(new string[] {"x"})), "Deployment 'x' was not found");
-				TryDeploymentNotFound(() => stageA.Unstage(Arrays.AsList(new string[] {"x"})), "Deployment 'x' was not found");
-			}
-		}
+                TryIllegalArgument(() => stageA.Stage(null));
+                TryOp(() => stageA.Stage(EmptyList<string>.Instance));
+                TryIllegalArgument(() => stageA.Stage(Arrays.AsList(new string[] { null })));
+                TryIllegalArgument(() => stageA.Stage(Arrays.AsList(new string[] { "a", null })));
 
-		private class ClientStageEPStageDestroy : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				EPStage stageA = env.StageService.GetStage("ST");
-				env.CompileDeploy("@Name('s0') select * from SupportBean");
-				string deploymentId = env.DeploymentId("s0");
+                TryIllegalArgument(() => stageA.Unstage(null));
+                TryOp(() => stageA.Unstage(EmptyList<string>.Instance));
+                TryIllegalArgument(() => stageA.Unstage(Arrays.AsList(new string[] { null })));
+                TryIllegalArgument(() => stageA.Unstage(Arrays.AsList(new string[] { "a", null })));
 
-				StageIt(env, "ST", deploymentId);
-				try {
-					stageA.Destroy();
-					Assert.Fail();
-				}
-				catch (EPException ex) {
-					Assert.AreEqual("Failed to destroy stage 'ST': The stage has existing deployments", ex.Message);
-				}
+                TryDeploymentNotFound(
+                    () => stageA.Stage(Arrays.AsList(new string[] { "x" })),
+                    "Deployment 'x' was not found");
+                TryDeploymentNotFound(
+                    () => stageA.Unstage(Arrays.AsList(new string[] { "x" })),
+                    "Deployment 'x' was not found");
+            }
+        }
 
-				UnstageIt(env, "ST", deploymentId);
+        private class ClientStageEPStageDestroy : ClientStageRegressionExecution
+        {
+            public override void Run(RegressionEnvironment env)
+            {
+                var stageA = env.StageService.GetStage("ST");
+                env.CompileDeploy("@name('s0') select * from SupportBean");
+                var deploymentId = env.DeploymentId("s0");
 
-				stageA.Destroy();
-				Assert.AreEqual("ST", stageA.URI);
+                StageIt(env, "ST", deploymentId);
+                try {
+                    stageA.Destroy();
+                    Assert.Fail();
+                }
+                catch (EPException ex) {
+                    Assert.AreEqual("Failed to destroy stage 'ST': The stage has existing deployments", ex.Message);
+                }
 
-				TryInvalidDestroyed(() => Noop(stageA.EventService));
-				TryInvalidDestroyed(() => Noop(stageA.DeploymentService));
+                UnstageIt(env, "ST", deploymentId);
 
-				TryInvalidDestroyed(
-					() => {
-						try {
-							stageA.Stage(Collections.SingletonList(deploymentId));
-						}
-						catch (EPStageException ex) {
-							throw new EPRuntimeException(ex);
-						}
-					});
+                stageA.Destroy();
+                Assert.AreEqual("ST", stageA.URI);
 
-				TryInvalidDestroyed(
-					() => {
-						try {
-							stageA.Unstage(Collections.SingletonList(deploymentId));
-						}
-						catch (EPStageException ex) {
-							throw new EPRuntimeException(ex);
-						}
-					});
+                TryInvalidDestroyed(() => Noop(stageA.EventService));
+                TryInvalidDestroyed(() => Noop(stageA.DeploymentService));
 
-				env.UndeployAll();
-			}
-		}
+                TryInvalidDestroyed(
+                    () => {
+                        try {
+                            stageA.Stage(Collections.SingletonList(deploymentId));
+                        }
+                        catch (EPStageException ex) {
+                            throw new EPRuntimeException(ex);
+                        }
+                    });
 
-		private static void Noop(object value)
-		{
-		}
+                TryInvalidDestroyed(
+                    () => {
+                        try {
+                            stageA.Unstage(Collections.SingletonList(deploymentId));
+                        }
+                        catch (EPStageException ex) {
+                            throw new EPRuntimeException(ex);
+                        }
+                    });
 
-		private static void TryInvalidDestroyed(Runnable r)
-		{
-			Assert.Throws<EPStageDestroyedException>(r.Invoke);
-		}
+                env.UndeployAll();
+            }
+        }
 
-		private static void TryIllegalArgument(Runnable r)
-		{
-			Assert.Throws<ArgumentException>(r.Invoke);
-		}
+        private static void Noop(object value)
+        {
+        }
 
-		private static void TryDeploymentNotFound(
-			Runnable r,
-			string expected)
-		{
-			var ex = Assert.Throws<EPStageException>(r.Invoke);
-			AssertMessage(ex.Message, expected);
-		}
+        private static void TryInvalidDestroyed(Runnable r)
+        {
+            Assert.Throws<EPStageDestroyedException>(r.Invoke);
+        }
 
-		private static void TryOp(Runnable r)
-		{
-			Assert.DoesNotThrow(r.Invoke);
-		}
-	}
+        private static void TryIllegalArgument(Runnable r)
+        {
+            Assert.Throws<ArgumentException>(r.Invoke);
+        }
+
+        private static void TryDeploymentNotFound(
+            Runnable r,
+            string expected)
+        {
+            var ex = Assert.Throws<EPStageException>(r.Invoke);
+            AssertMessage(ex.Message, expected);
+        }
+
+        private static void TryOp(Runnable r)
+        {
+            Assert.DoesNotThrow(r.Invoke);
+        }
+    }
 } // end of namespace

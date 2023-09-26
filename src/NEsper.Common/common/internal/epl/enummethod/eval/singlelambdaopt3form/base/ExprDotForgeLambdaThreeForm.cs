@@ -20,92 +20,104 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base
 {
-	public abstract class ExprDotForgeLambdaThreeForm : ExprDotForgeEnumMethodBase
-	{
-		protected abstract EPType InitAndNoParamsReturnType(
-			EventType inputEventType,
-			Type collectionComponentType);
+    public abstract class ExprDotForgeLambdaThreeForm : ExprDotForgeEnumMethodBase
+    {
+        protected abstract EPChainableType InitAndNoParamsReturnType(
+            EventType inputEventType,
+            Type collectionComponentType);
 
-		protected abstract ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
-			EnumMethodEnum enumMethod,
-			EPType type,
-			StatementCompileTimeServices services);
+        protected abstract ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
+            EnumMethodEnum enumMethod,
+            EPChainableType type,
+            StatementCompileTimeServices services);
 
-		protected abstract Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
-			EventType inputEventType,
-			Type collectionComponentType);
+        protected abstract ThreeFormInitFunction InitAndSingleParamReturnType(
+            EventType inputEventType,
+            Type collectionComponentType);
 
-		protected abstract ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod);
-		protected abstract ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod);
-		protected abstract ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod);
 
-		public override EnumForgeDescFactory GetForgeFactory(
-			DotMethodFP footprint,
-			IList<ExprNode> parameters,
-			EnumMethodEnum enumMethod,
-			string enumMethodUsedName,
-			EventType inputEventType,
-			Type collectionComponentType,
-			ExprValidationContext validationContext)
-		{
-			if (parameters.IsEmpty()) {
-				var typeX = InitAndNoParamsReturnType(inputEventType, collectionComponentType);
-				return new ThreeFormNoParamFactory(typeX, NoParamsForge(enumMethod, typeX, validationContext.StatementCompileTimeService));
-			}
+        protected abstract ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod);
+        protected abstract ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod);
+        protected abstract ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod);
 
-			var goesNode = (ExprLambdaGoesNode) parameters[0];
-			var goesToNames = goesNode.GoesToNames;
+        public override EnumForgeDescFactory GetForgeFactory(
+            DotMethodFP footprint,
+            IList<ExprNode> parameters,
+            EnumMethodEnum enumMethod,
+            string enumMethodUsedName,
+            EventType inputEventType,
+            Type collectionComponentType,
+            ExprValidationContext validationContext)
+        {
+            if (parameters.IsEmpty()) {
+                var typeX = InitAndNoParamsReturnType(inputEventType, collectionComponentType);
+                return new ThreeFormNoParamFactory(
+                    typeX,
+                    NoParamsForge(enumMethod, typeX, validationContext.StatementCompileTimeService));
+            }
 
-			if (inputEventType != null) {
-				var streamName = goesToNames[0];
-				if (goesToNames.Count == 1) {
-					return new ThreeFormEventPlainFactory(
-						InitAndSingleParamReturnType(inputEventType, collectionComponentType),
-						inputEventType,
-						streamName,
-						SingleParamEventPlain(enumMethod));
-				}
+            var goesNode = (ExprLambdaGoesNode)parameters[0];
+            var goesToNames = goesNode.GoesToNames;
 
-				IDictionary<string, object> fieldsX = new LinkedHashMap<string, object>();
-				fieldsX.Put(goesToNames[1], typeof(int?));
-				if (goesToNames.Count > 2) {
-					fieldsX.Put(goesToNames[2], typeof(int?));
-				}
+            if (inputEventType != null) {
+                var streamName = goesToNames[0];
+                if (goesToNames.Count == 1) {
+                    return new ThreeFormEventPlainFactory(
+                        InitAndSingleParamReturnType(inputEventType, collectionComponentType),
+                        inputEventType,
+                        streamName,
+                        SingleParamEventPlain(enumMethod));
+                }
 
-				var fieldType = ExprDotNodeUtility.MakeTransientOAType(
-					enumMethodUsedName,
-					fieldsX,
-					validationContext.StatementRawInfo,
-					validationContext.StatementCompileTimeService);
-				return new ThreeFormEventPlusFactory(
-					InitAndSingleParamReturnType(inputEventType, collectionComponentType),
-					inputEventType,
-					streamName,
-					fieldType,
-					goesToNames.Count,
-					SingleParamEventPlus(enumMethod));
-			}
+                IDictionary<string, object> fieldsX = new LinkedHashMap<string, object>();
+                fieldsX.Put(goesToNames[1], typeof(int?));
+                if (goesToNames.Count > 2) {
+                    fieldsX.Put(goesToNames[2], typeof(int?));
+                }
 
-			var fields = new LinkedHashMap<string, object>();
-			fields.Put(goesToNames[0], collectionComponentType);
-			if (goesToNames.Count > 1) {
-				fields.Put(goesToNames[1], typeof(int?));
-			}
+                var fieldType = ExprDotNodeUtility.MakeTransientOAType(
+                    enumMethodUsedName,
+                    fieldsX,
+                    validationContext.StatementRawInfo,
+                    validationContext.StatementCompileTimeService);
+                return new ThreeFormEventPlusFactory(
+                    InitAndSingleParamReturnType(inputEventType, collectionComponentType),
+                    inputEventType,
+                    streamName,
+                    fieldType,
+                    goesToNames.Count,
+                    SingleParamEventPlus(enumMethod));
+            }
 
-			if (goesToNames.Count > 2) {
-				fields.Put(goesToNames[2], typeof(int?));
-			}
+            var fields = new LinkedHashMap<string, object>();
+            fields.Put(goesToNames[0], collectionComponentType);
+            if (goesToNames.Count > 1) {
+                fields.Put(goesToNames[1], typeof(int?));
+            }
 
-			var type = ExprDotNodeUtility.MakeTransientOAType(
-				enumMethodUsedName,
-				fields,
-				validationContext.StatementRawInfo,
-				validationContext.StatementCompileTimeService);
-			return new ThreeFormScalarFactory(
-				InitAndSingleParamReturnType(inputEventType, collectionComponentType),
-				type,
-				goesToNames.Count,
-				SingleParamScalar(enumMethod));
-		}
-	}
+            if (goesToNames.Count > 2) {
+                fields.Put(goesToNames[2], typeof(int?));
+            }
+
+            var type = ExprDotNodeUtility.MakeTransientOAType(
+                enumMethodUsedName,
+                fields,
+                validationContext.StatementRawInfo,
+                validationContext.StatementCompileTimeService);
+            return new ThreeFormScalarFactory(
+                InitAndSingleParamReturnType(inputEventType, collectionComponentType),
+                type,
+                goesToNames.Count,
+                SingleParamScalar(enumMethod));
+        }
+
+        public Type ValidateNonNull(Type type)
+        {
+            if (type == null) {
+                throw new ExprValidationException("Null-type is not allowed");
+            }
+
+            return type;
+        }
+    }
 } // end of namespace

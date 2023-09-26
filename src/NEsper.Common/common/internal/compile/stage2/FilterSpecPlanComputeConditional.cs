@@ -21,11 +21,12 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)
         {
-            EventBean[] eventsPerStream = plan.Convertor.Invoke(matchedEvents);
+            var eventsPerStream = plan.Convertor.Invoke(matchedEvents);
             return Compute(eventsPerStream, plan, matchedEvents, exprEvaluatorContext, filterEvalEnv);
         }
 
-        protected abstract FilterValueSetParam[][] Compute(EventBean[] eventsPerStream,
+        protected abstract FilterValueSetParam[][] Compute(
+            EventBean[] eventsPerStream,
             FilterSpecPlan plan,
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,

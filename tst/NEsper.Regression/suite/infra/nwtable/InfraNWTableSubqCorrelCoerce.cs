@@ -9,8 +9,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
@@ -52,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             // named window tests
             execs = execs ?? new List<RegressionExecution>();
-            //execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, true, false, false)); // share
+            execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, true, false, false)); // share
             execs.Add(new InfraNWTableSubqCorrelCoerceSimple(true, true, false, true)); // share create index
             return execs;
         }
@@ -66,22 +67,127 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return execs;
         }
 
+        private class InfraNWTableSubqCorrelCoerceSimple : RegressionExecution
+        {
+            private readonly bool namedWindow;
+            private readonly bool enableIndexShareCreate;
+            private readonly bool disableIndexShareConsumer;
+            private readonly bool createExplicitIndex;
+
+            public InfraNWTableSubqCorrelCoerceSimple(
+                bool namedWindow,
+                bool enableIndexShareCreate,
+                bool disableIndexShareConsumer,
+                bool createExplicitIndex)
+            {
+                this.namedWindow = namedWindow;
+                this.enableIndexShareCreate = enableIndexShareCreate;
+                this.disableIndexShareConsumer = disableIndexShareConsumer;
+                this.createExplicitIndex = createExplicitIndex;
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                var c1 = env.Compile("@public @buseventtype create schema EventSchema(e0 string, e1 int, e2 string)");
+                var c2 = env.Compile(
+                    "@public @buseventtype create schema WindowSchema(col0 string, col1 long, col2 string)");
+                var path = new RegressionPath();
+                path.Add(c1);
+                path.Add(c2);
+                env.Deploy(c1);
+                env.Deploy(c2);
+
+                var createEpl = namedWindow
+                    ? "@public create window MyInfra#keepall as WindowSchema"
+                    : "@public create table MyInfra (col0 string primary key, col1 long, col2 string)";
+                if (enableIndexShareCreate) {
+                    createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
+                }
+
+                env.CompileDeploy(createEpl, path);
+                env.CompileDeploy("insert into MyInfra select * from WindowSchema", path);
+
+                if (createExplicitIndex) {
+                    env.CompileDeploy("@name('index') create index MyIndex on MyInfra (col2, col1)", path);
+                }
+
+                var fields = "e0,val".SplitCsv();
+                var consumeEpl =
+                    "@name('s0') select e0, (select col0 from MyInfra where col2 = es.e2 and col1 = es.e1) as val from EventSchema es";
+                if (disableIndexShareConsumer) {
+                    consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
+                }
+
+                env.CompileDeploy(consumeEpl, path).AddListener("s0");
+
+                SendWindow(env, "W1", 10L, "c31");
+                SendEvent(env, "E1", 10, "c31");
+                env.AssertPropsNew("s0", fields, new object[] { "E1", "W1" });
+
+                SendEvent(env, "E2", 11, "c32");
+                env.AssertPropsNew("s0", fields, new object[] { "E2", null });
+
+                SendWindow(env, "W2", 11L, "c32");
+                SendEvent(env, "E3", 11, "c32");
+                env.AssertPropsNew("s0", fields, new object[] { "E3", "W2" });
+
+                SendWindow(env, "W3", 11L, "c31");
+                SendWindow(env, "W4", 10L, "c32");
+
+                SendEvent(env, "E4", 11, "c31");
+                env.AssertPropsNew("s0", fields, new object[] { "E4", "W3" });
+
+                SendEvent(env, "E5", 10, "c31");
+                env.AssertPropsNew("s0", fields, new object[] { "E5", "W1" });
+
+                SendEvent(env, "E6", 10, "c32");
+                env.AssertPropsNew("s0", fields, new object[] { "E6", "W4" });
+
+                // test late start
+                env.UndeployModuleContaining("s0");
+                env.CompileDeploy(consumeEpl, path).AddListener("s0");
+
+                SendEvent(env, "E6", 10, "c32");
+                env.AssertPropsNew("s0", fields, new object[] { "E6", "W4" });
+
+                env.UndeployModuleContaining("s0");
+                if (createExplicitIndex) {
+                    env.UndeployModuleContaining("index");
+                }
+
+                env.UndeployAll();
+            }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "namedWindow=" +
+                       namedWindow +
+                       ", enableIndexShareCreate=" +
+                       enableIndexShareCreate +
+                       ", disableIndexShareConsumer=" +
+                       disableIndexShareConsumer +
+                       ", createExplicitIndex=" +
+                       createExplicitIndex +
+                       '}';
+            }
+        }
+
         private static void SendWindow(
             RegressionEnvironment env,
             string col0,
             long col1,
             string col2)
         {
-            var theEvent = new Dictionary<string, object>();
+            IDictionary<string, object> theEvent = new LinkedHashMap<string, object>();
             theEvent.Put("col0", col0);
             theEvent.Put("col1", col1);
             theEvent.Put("col2", col2);
-            if (EventRepresentationChoiceExtensions.GetEngineDefault(env.Configuration).IsObjectArrayEvent())
-            {
+            if (EventRepresentationChoiceExtensions.GetEngineDefault(env.Configuration).IsObjectArrayEvent()) {
                 env.SendEventObjectArray(theEvent.Values.ToArray(), "WindowSchema");
             }
-            else
-            {
+            else {
                 env.SendEventMap(theEvent, "WindowSchema");
             }
         }
@@ -92,133 +198,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             int e1,
             string e2)
         {
-            var theEvent = new Dictionary<string, object>();
+            IDictionary<string, object> theEvent = new LinkedHashMap<string, object>();
             theEvent.Put("e0", e0);
             theEvent.Put("e1", e1);
             theEvent.Put("e2", e2);
-            if (EventRepresentationChoiceExtensions.GetEngineDefault(env.Configuration).IsObjectArrayEvent())
-            {
+            if (EventRepresentationChoiceExtensions.GetEngineDefault(env.Configuration).IsObjectArrayEvent()) {
                 env.SendEventObjectArray(theEvent.Values.ToArray(), "EventSchema");
             }
-            else
-            {
+            else {
                 env.SendEventMap(theEvent, "EventSchema");
-            }
-        }
-
-        internal class InfraNWTableSubqCorrelCoerceSimple : RegressionExecution
-        {
-            private readonly bool _createExplicitIndex;
-            private readonly bool _disableIndexShareConsumer;
-            private readonly bool _enableIndexShareCreate;
-            private readonly bool _namedWindow;
-
-            public InfraNWTableSubqCorrelCoerceSimple(
-                bool namedWindow,
-                bool enableIndexShareCreate,
-                bool disableIndexShareConsumer,
-                bool createExplicitIndex)
-            {
-                _namedWindow = namedWindow;
-                _enableIndexShareCreate = enableIndexShareCreate;
-                _disableIndexShareConsumer = disableIndexShareConsumer;
-                _createExplicitIndex = createExplicitIndex;
-            }
-
-            public void Run(RegressionEnvironment env)
-            {
-                var c1 = env.CompileWBusPublicType("create schema EventSchema(e0 string, e1 int, e2 string)");
-                var c2 = env.CompileWBusPublicType("create schema WindowSchema(col0 string, col1 long, col2 string)");
-                var path = new RegressionPath();
-                path.Add(c1);
-                path.Add(c2);
-                env.Deploy(c1);
-                env.Deploy(c2);
-
-                var createEpl = _namedWindow
-                    ? "create window MyInfra#keepall as WindowSchema"
-                    : "create table MyInfra (col0 string primary key, col1 long, col2 string)";
-                if (_enableIndexShareCreate)
-                {
-                    createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
-                }
-
-                env.CompileDeploy(createEpl, path);
-                env.CompileDeploy("insert into MyInfra select * from WindowSchema", path);
-
-                if (_createExplicitIndex)
-                {
-                    env.CompileDeploy("@Name('index') create index MyIndex on MyInfra (col2, col1)", path);
-                }
-
-                var fields = new[] { "e0", "val" };
-                var consumeEpl =
-                    "@Name('s0') select e0, (select col0 from MyInfra where col2 = es.e2 and col1 = es.e1) as val from EventSchema es";
-                if (_disableIndexShareConsumer)
-                {
-                    consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
-                }
-
-                env.CompileDeploy(consumeEpl, path).AddListener("s0");
-
-                SendWindow(env, "W1", 10L, "c31");
-                SendEvent(env, "E1", 10, "c31");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] { "E1", "W1" });
-
-                SendEvent(env, "E2", 11, "c32");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] { "E2", null });
-
-                SendWindow(env, "W2", 11L, "c32");
-                SendEvent(env, "E3", 11, "c32");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] { "E3", "W2" });
-
-                SendWindow(env, "W3", 11L, "c31");
-                SendWindow(env, "W4", 10L, "c32");
-
-                SendEvent(env, "E4", 11, "c31");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] { "E4", "W3" });
-
-                SendEvent(env, "E5", 10, "c31");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] { "E5", "W1" });
-
-                SendEvent(env, "E6", 10, "c32");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] { "E6", "W4" });
-
-                // test late start
-                env.UndeployModuleContaining("s0");
-                env.CompileDeploy(consumeEpl, path).AddListener("s0");
-
-                SendEvent(env, "E6", 10, "c32");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] { "E6", "W4" });
-
-                env.UndeployModuleContaining("s0");
-                if (env.Statement("index") != null)
-                {
-                    env.UndeployModuleContaining("index");
-                }
-
-                env.UndeployAll();
             }
         }
     }

@@ -10,8 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.schedule;
@@ -41,15 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
             PatternExpressionUtil.ToPrecedenceFreeEPL(writer, "or", ChildNodes, Precedence);
         }
 
-        protected override Type TypeOfFactory()
-        {
-            return typeof(EvalOrFactoryNode);
-        }
+        protected override Type TypeOfFactory => typeof(EvalOrFactoryNode);
 
-        protected override string NameOfFactory()
-        {
-            return "Or";
-        }
+        protected override string NameOfFactory => "Or";
 
         protected override void InlineCodegen(
             CodegenMethod method,
@@ -71,9 +67,15 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters,
-            IList<ScheduleHandleCallbackProvider> schedules)
+            Func<short, CallbackAttribution> callbackAttribution,
+            IList<FilterSpecTracked> filters,
+            IList<ScheduleHandleTracked> schedules)
         {
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_OR;
         }
     }
 } // end of namespace

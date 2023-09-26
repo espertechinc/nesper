@@ -17,18 +17,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
     {
         public void Run(RegressionEnvironment env)
         {
-            var stmtText = "@Name('s0') select * from SupportBean#length(3)";
+            var stmtText = "@name('s0') select * from SupportBean#length(3)";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             var eventOld = SendEvent(env, "a");
             SendEvent(env, "b");
             SendEvent(env, "c");
-            env.Listener("s0").Reset();
+            env.ListenerReset("s0");
 
             var eventNew = SendEvent(env, "d");
-            Assert.IsTrue(env.Listener("s0").IsInvoked);
-            Assert.AreSame(eventNew, env.Listener("s0").LastNewData[0].Underlying); // receive 'a' as new data
-            Assert.AreSame(eventOld, env.Listener("s0").LastOldData[0].Underlying); // receive 'a' as new data
+            env.AssertListener(
+                "s0",
+                listener => {
+                    Assert.IsTrue(listener.IsInvoked);
+                    Assert.AreSame(eventNew, listener.LastNewData[0].Underlying); // receive 'a' as new data
+                    Assert.AreSame(eventOld, listener.LastOldData[0].Underlying); // receive 'a' as new data
+                });
 
             env.UndeployAll();
         }

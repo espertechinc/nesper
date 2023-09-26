@@ -12,27 +12,28 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // exprDotMethod
+using static
+    com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // exprDotMethod
 
 // newInstance
 
 namespace com.espertech.esper.common.@internal.@event.json.serializers.forge
 {
-	public class JsonSerializerForgeProvidedStringAdapter : JsonSerializerForge
-	{
-		private readonly Type adapterClass;
+    public class JsonSerializerForgeProvidedStringAdapter : JsonSerializerForge
+    {
+        private readonly Type adapterClass;
 
-		public JsonSerializerForgeProvidedStringAdapter(Type adapterClass)
-		{
-			this.adapterClass = adapterClass;
-		}
+        public JsonSerializerForgeProvidedStringAdapter(Type adapterClass)
+        {
+            this.adapterClass = adapterClass;
+        }
 
-		public CodegenExpression CodegenSerialize(
-			JsonSerializerForgeRefs refs,
-			CodegenMethod method,
-			CodegenClassScope classScope)
-		{
-			return ExprDotMethod(NewInstance(adapterClass), "Write", refs.Field, refs.Context);
-		}
-	}
+        public CodegenExpression CodegenSerialize(
+            JsonSerializerForgeRefs refs,
+            CodegenMethod method,
+            CodegenClassScope classScope)
+        {
+            return ExprDotMethod(NewInstance(adapterClass), "Write", refs.Field, refs.Context);
+        }
+    }
 } // end of namespace

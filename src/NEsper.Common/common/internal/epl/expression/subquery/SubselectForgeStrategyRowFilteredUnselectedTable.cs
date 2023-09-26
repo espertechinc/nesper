@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,9 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         public SubselectForgeStrategyRowFilteredUnselectedTable(
             ExprSubselectRowNode subselect,
-            TableMetaData table)
-            :
-            base(subselect)
+            TableMetaData table) : base(subselect)
         {
             this.table = table;
         }
@@ -36,38 +34,45 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpressionInstanceField eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, this.GetType());
-            CodegenMethod method = parent.MakeChild(subselect.EvaluationType, this.GetType(), classScope);
+            if (Subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
+            var eventToPublic =
+                TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, GetType());
+            var method = parent.MakeChild(Subselect.EvaluationType, GetType(), classScope);
 
             method.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
 
             method.Block.DeclareVar<EventBean>("filtered", ConstantNull());
-            CodegenBlock @foreach = method.Block.ForEach(
+            var foreachX = method.Block.ForEach(
                 typeof(EventBean),
-                "@event",
+                "event",
                 symbols.GetAddMatchingEvents(method));
             {
-                @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"));
-                CodegenMethod filter = CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, method, classScope, true);
+                foreachX.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("event"));
+                var filter = CodegenLegoMethodExpression.CodegenExpression(
+                    Subselect.filterExpr,
+                    method,
+                    classScope);
                 CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
-                    @foreach,
+                    foreachX,
                     typeof(bool?),
                     LocalMethod(
                         filter,
                         REF_EVENTS_SHIFTED,
                         symbols.GetAddIsNewData(method),
                         symbols.GetAddExprEvalCtx(method)));
-                @foreach.IfCondition(NotEqualsNull(Ref("filtered")))
+                foreachX.IfCondition(NotEqualsNull(Ref("filtered")))
                     .BlockReturn(ConstantNull())
-                    .AssignRef("filtered", Ref("@event"));
+                    .AssignRef("filtered", Ref("event"));
             }
 
             method.Block.IfRefNullReturnNull("filtered")
                 .MethodReturn(
                     ExprDotMethod(
                         eventToPublic,
-                        "ConvertToUnd",
+                        "convertToUnd",
                         Ref("filtered"),
                         symbols.GetAddEPS(method),
                         symbols.GetAddIsNewData(method),

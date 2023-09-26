@@ -43,15 +43,18 @@ namespace com.espertech.esper.common.client.configuration.compiler
             get => IsEnabledDeclaredExprValueCache;
             set => IsEnabledDeclaredExprValueCache = value;
         }
-        
+
         /// <summary>
         /// Controls the level of planning of filter indexes from filter expressions.
         /// </summary>
-        public enum FilterIndexPlanningEnum {
+        public enum FilterIndexPlanningEnum
+        {
             /// <summary>No planning for filter indexes</summary>
             NONE,
+
             /// <summary>Only basic planning for filter indexes</summary>
             BASIC,
+
             /// <summary>Advanced planning</summary>
             ADVANCED
         }

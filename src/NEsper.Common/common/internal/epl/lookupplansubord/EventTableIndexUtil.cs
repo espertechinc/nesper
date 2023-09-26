@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             EventAdvancedIndexProvisionCompileTime advancedIndexProvisionDesc = null;
 
             foreach (var columnDesc in columns) {
-                string indexType = columnDesc.IndexType.Trim();
+                var indexType = columnDesc.IndexType.Trim();
                 if (indexType.Equals(CreateIndexType.HASH.GetName(), StringComparison.InvariantCultureIgnoreCase) ||
                     indexType.Equals(CreateIndexType.BTREE.GetName(), StringComparison.InvariantCultureIgnoreCase)) {
                     ValidateBuiltin(columnDesc, eventType, hashProps, btreeProps, indexedColumns);
@@ -152,24 +152,23 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                     "Invalid multiple index expressions for index type '" + columnDesc.IndexType + "'");
             }
 
-            ExprNode expression = columnDesc.Expressions[0];
-            if (!(expression is ExprIdentNode)) {
+            var expression = columnDesc.Expressions[0];
+            if (!(expression is ExprIdentNode identNode)) {
                 throw new ExprValidationException(
                     "Invalid index expression '" +
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression) +
                     "'");
             }
 
-            var identNode = (ExprIdentNode) expression;
             if (identNode.FullUnresolvedName.Contains(".")) {
                 throw new ExprValidationException(
                     "Invalid index expression '" +
-                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression) +
+                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(identNode) +
                     "'");
             }
 
             var columnName = identNode.FullUnresolvedName;
-            Type type = Boxing.GetBoxedType(eventType.GetPropertyType(columnName));
+            var type = eventType.GetPropertyType(columnName).GetBoxedType();
             if (type == null) {
                 throw new ExprValidationException("Property named '" + columnName + "' not found");
             }
@@ -180,7 +179,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             var desc = new IndexedPropDesc(columnName, type);
-            string indexType = columnDesc.IndexType;
+            var indexType = columnDesc.IndexType;
             if (indexType.Equals(CreateIndexType.HASH.GetName(), StringComparison.InvariantCultureIgnoreCase)) {
                 hashProps.Add(desc);
             }
@@ -200,10 +199,10 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             // (IDictionary<IndexMultiKey, EventTableIndexRepositoryEntry>) 
-            IDictionary<IndexMultiKey, EventTableIndexMetadataEntry> indexCandidates = FindCandidates(
-                    tableIndexesRefCount,
-                    hashProps,
-                    btreeProps);
+            var indexCandidates = FindCandidates(
+                tableIndexesRefCount,
+                hashProps,
+                btreeProps);
 
             // if there are hints, follow these
             if (optionalIndexHintInstructions != null) {
@@ -300,7 +299,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             if (!indexes.IsEmpty()) {
-                Collections.SortInPlace(indexes, INDEX_COMPARATOR_INSTANCE);
+                indexes.SortInPlace(INDEX_COMPARATOR_INSTANCE);
                 return GetPair(indexCandidates, indexes[0]);
             }
 
@@ -308,7 +307,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             indexes.Clear();
             indexes.AddAll(indexCandidates.Keys);
             if (indexes.Count > 1) {
-                Collections.SortInPlace(indexes, INDEX_COMPARATOR_INSTANCE);
+                indexes.SortInPlace(INDEX_COMPARATOR_INSTANCE);
             }
 
             return GetPair(indexCandidates, indexes[0]);
@@ -320,8 +319,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             where T : EventTableIndexEntryBase
         {
             foreach (var instruction in instructions) {
-                if (instruction is IndexHintInstructionIndexName) {
-                    var indexName = ((IndexHintInstructionIndexName) instruction).IndexName;
+                if (instruction is IndexHintInstructionIndexName name) {
+                    var indexName = name.IndexName;
                     var found = FindExplicitIndexByName(indexCandidates, indexName);
                     if (found != null) {
                         return found;

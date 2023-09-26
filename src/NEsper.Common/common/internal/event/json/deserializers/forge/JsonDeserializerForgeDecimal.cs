@@ -9,26 +9,27 @@
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // staticMethod
+using static
+    com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // staticMethod
 
 // handleNumberException
 
 namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
 {
-	public class JsonDeserializerForgeDecimal : JsonDeserializerForge
-	{
-		public static readonly JsonDeserializerForgeDecimal INSTANCE = new JsonDeserializerForgeDecimal();
+    public class JsonDeserializerForgeDecimal : JsonDeserializerForge
+    {
+        public static readonly JsonDeserializerForgeDecimal INSTANCE = new JsonDeserializerForgeDecimal();
 
-		private JsonDeserializerForgeDecimal()
-		{
-		}
+        private JsonDeserializerForgeDecimal()
+        {
+        }
 
-		public CodegenExpression CodegenDeserialize(
-			CodegenMethod method,
-			CodegenClassScope classScope,
-			CodegenExpression elementExpr)
-		{
-			return StaticMethod(typeof(JsonElementExtensions), "GetBoxedDecimal", elementExpr);
-		}
-	}
+        public CodegenExpression CodegenDeserialize(
+            CodegenMethod method,
+            CodegenClassScope classScope,
+            CodegenExpression elementExpr)
+        {
+            return StaticMethod(typeof(JsonElementExtensions), "GetBoxedDecimal", elementExpr);
+        }
+    }
 } // end of namespace

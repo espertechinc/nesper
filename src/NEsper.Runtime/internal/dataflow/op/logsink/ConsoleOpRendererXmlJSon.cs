@@ -29,7 +29,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.logsink
             this.runtimeRenderEvent = runtimeRenderEvent;
         }
 
-        public void Render(EventBean theEvent, StringWriter writer)
+        public void Render(EventBean theEvent, TextWriter writer)
         {
             string result;
             if (format == LogSinkOutputFormat.json)

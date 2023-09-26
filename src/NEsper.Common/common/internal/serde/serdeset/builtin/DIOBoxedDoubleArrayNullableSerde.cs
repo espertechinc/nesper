@@ -11,70 +11,70 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOBoxedDoubleArrayNullableSerde : DataInputOutputSerdeBase<double?[]>
-	{
-		public static readonly DIOBoxedDoubleArrayNullableSerde INSTANCE = new DIOBoxedDoubleArrayNullableSerde();
+    public class DIOBoxedDoubleArrayNullableSerde : DataInputOutputSerdeBase<double?[]>
+    {
+        public static readonly DIOBoxedDoubleArrayNullableSerde INSTANCE = new DIOBoxedDoubleArrayNullableSerde();
 
-		private DIOBoxedDoubleArrayNullableSerde()
-		{
-		}
+        private DIOBoxedDoubleArrayNullableSerde()
+        {
+        }
 
-		public void Write(
-			double?[] @object,
-			DataOutput output)
-		{
-			WriteInternal(@object, output);
-		}
+        public void Write(
+            double?[] @object,
+            DataOutput output)
+        {
+            WriteInternal(@object, output);
+        }
 
-		public double?[] Read(DataInput input)
-		{
-			return ReadInternal(input);
-		}
+        public double?[] Read(DataInput input)
+        {
+            return ReadInternal(input);
+        }
 
-		public override void Write(
-			double?[] @object,
-			DataOutput output,
-			byte[] unitKey,
-			EventBeanCollatedWriter writer)
-		{
-			WriteInternal(@object, output);
-		}
+        public override void Write(
+            double?[] @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteInternal(@object, output);
+        }
 
-		public override double?[] ReadValue(
-			DataInput input,
-			byte[] unitKey)
-		{
-			return ReadInternal(input);
-		}
+        public override double?[] ReadValue(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadInternal(input);
+        }
 
-		private void WriteInternal(
-			double?[] @object,
-			DataOutput output)
-		{
-			if (@object == null) {
-				output.WriteInt(-1);
-				return;
-			}
+        private void WriteInternal(
+            double?[] @object,
+            DataOutput output)
+        {
+            if (@object == null) {
+                output.WriteInt(-1);
+                return;
+            }
 
-			output.WriteInt(@object.Length);
-			foreach (double? i in @object) {
-				DIONullableDoubleSerde.INSTANCE.Write(i, output);
-			}
-		}
+            output.WriteInt(@object.Length);
+            foreach (var i in @object) {
+                DIONullableDoubleSerde.INSTANCE.Write(i, output);
+            }
+        }
 
-		private double?[] ReadInternal(DataInput input)
-		{
-			int len = input.ReadInt();
-			if (len == -1) {
-				return null;
-			}
+        private double?[] ReadInternal(DataInput input)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
 
-			double?[] array = new double?[len];
-			for (int i = 0; i < len; i++) {
-				array[i] = DIONullableDoubleSerde.INSTANCE.Read(input);
-			}
+            var array = new double?[len];
+            for (var i = 0; i < len; i++) {
+                array[i] = DIONullableDoubleSerde.INSTANCE.Read(input);
+            }
 
-			return array;
-		}
-	}
+            return array;
+        }
+    }
 } // end of namespace

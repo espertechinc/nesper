@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<string, object>), "map")
-                .AddParam(typeof(int), "index")
+                .AddParam<int>("index")
                 .Block
                 .DeclareVar<object>("value", ExprDotMethod(Ref("map"), "Get", Constant(propertyName)))
                 .MethodReturn(
@@ -182,7 +182,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var factory =
+                codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),

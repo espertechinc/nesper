@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
 
         public EventType StatementEventType => ResultSetProcessorFactoryProvider.ResultEventType;
 
-        public void StatementCreate(StatementContext statementContext)
+        public void StatementCreate(StatementContext value)
         {
         }
 
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             StatementContext statementContext,
             int agentInstanceId)
         {
-            return AgentInstanceUtil.NewLock(statementContext);
+            return AgentInstanceUtil.NewLock(statementContext, agentInstanceId);
         }
 
         public void Ready(

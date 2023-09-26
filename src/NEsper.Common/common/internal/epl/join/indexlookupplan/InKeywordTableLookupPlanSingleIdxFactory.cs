@@ -37,12 +37,10 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             EventTable[] eventTable,
             EventType[] eventTypes)
         {
-            PropertyHashedEventTable index = (PropertyHashedEventTable) eventTable[0];
+            var index = (PropertyHashedEventTable)eventTable[0];
             return new InKeywordSingleTableLookupStrategyExpr(this, index);
         }
 
-        public ExprEvaluator[] Expressions {
-            get => expressions;
-        }
+        public ExprEvaluator[] Expressions => expressions;
     }
 } // end of namespace

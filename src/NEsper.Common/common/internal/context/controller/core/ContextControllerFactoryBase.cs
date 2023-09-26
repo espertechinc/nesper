@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.context.controller.core
             ContextControllerStatementDesc optionalStatementDesc,
             IDictionary<int, ContextControllerStatementDesc> statements,
             AgentInstanceContext agentInstanceContextStatement);
-        
+
         public abstract void PopulateContextProperties(
             IDictionary<string, object> props,
             object allPartitionKey);

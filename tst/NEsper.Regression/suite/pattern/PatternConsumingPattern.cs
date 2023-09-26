@@ -14,15 +14,11 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternConsumingPattern
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
             WithOrOp(execs);
@@ -108,20 +104,246 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             return execs;
         }
 
+        private class PatternInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.TryInvalidCompile(
+                    path,
+                    "select * from pattern @XX [SupportIdEventA]",
+                    "Unrecognized pattern-level annotation 'XX' [select * from pattern @XX [SupportIdEventA]]");
+
+                var expected =
+                    "Discard-partials and suppress-matches is not supported in a joins, context declaration and on-action ";
+                env.TryInvalidCompile(
+                    path,
+                    "select * from pattern " +
+                    GetText(TargetEnum.DISCARD_AND_SUPPRESS) +
+                    "[SupportIdEventA]#keepall, A#keepall",
+                    expected +
+                    "[select * from pattern @DiscardPartialsOnMatch @SuppressOverlappingMatches [SupportIdEventA]#keepall, A#keepall]");
+
+                env.CompileDeploy("@public create window AWindow#keepall as SupportIdEventA", path);
+                env.TryInvalidCompile(
+                    path,
+                    "on pattern " +
+                    GetText(TargetEnum.DISCARD_AND_SUPPRESS) +
+                    "[SupportIdEventA] select * from AWindow",
+                    expected +
+                    "[on pattern @DiscardPartialsOnMatch @SuppressOverlappingMatches [SupportIdEventA] select * from AWindow]");
+
+                env.UndeployAll();
+            }
+        }
+
+        private class PatternCombination : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                foreach (var testsoda in new bool[] { false, true }) {
+                    foreach (var target in EnumHelper.GetValues<TargetEnum>()) {
+                        TryAssertionTargetCurrentMatch(env, testsoda, target);
+                        TryAssertionTargetNextMatch(env, testsoda, target);
+                    }
+                }
+
+                // test order-by
+                var epl =
+                    "@name('s0') select * from pattern @DiscardPartialsOnMatch [every a=SupportIdEventA -> SupportIdEventB] order by a.id desc";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportIdEventA("A1", null, null));
+                env.SendEventBean(new SupportIdEventA("A2", null, null));
+                env.SendEventBean(new SupportIdEventB("B1", null));
+                env.AssertPropsPerRowNewOnly(
+                    "s0",
+                    "a.id".SplitCsv(),
+                    new object[][] { new object[] { "A2" }, new object[] { "A1" } });
+
+                env.UndeployAll();
+            }
+        }
+
+        private class PatternFollowedByOp : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var milestone = new AtomicLong();
+                RunFollowedByOp(env, milestone, "every a1=SupportIdEventA -> a2=SupportIdEventA", false);
+                RunFollowedByOp(env, milestone, "every a1=SupportIdEventA -> a2=SupportIdEventA", true);
+                RunFollowedByOp(env, milestone, "every a1=SupportIdEventA -[10]> a2=SupportIdEventA", false);
+                RunFollowedByOp(env, milestone, "every a1=SupportIdEventA -[10]> a2=SupportIdEventA", true);
+            }
+        }
+
+        private class PatternMatchUntilOp : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var milestone = new AtomicLong();
+                TryAssertionMatchUntilBoundOp(env, milestone, true);
+                TryAssertionMatchUntilBoundOp(env, milestone, false);
+                TryAssertionMatchUntilWChildMatcher(env, milestone, true);
+                TryAssertionMatchUntilWChildMatcher(env, milestone, false);
+                TryAssertionMatchUntilRangeOpWTime(env, milestone); // with time
+            }
+        }
+
+        private class PatternObserverOp : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "a.id,b.id".SplitCsv();
+                SendTime(env, 0);
+
+                var epl = "@name('s0') select * from pattern " +
+                          GetText(TargetEnum.DISCARD_ONLY) +
+                          " [" +
+                          "every a=SupportIdEventA -> b=SupportIdEventB -> timer:interval(a.mysec)]";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendAEvent(env, "A1", 5); // 5 seconds for this one
+
+                env.Milestone(0);
+
+                SendAEvent(env, "A2", 1); // 1 seconds for this one
+                SendBEvent(env, "B1");
+
+                env.Milestone(1);
+
+                SendTime(env, 1000);
+                env.AssertPropsNew("s0", fields, new object[] { "A2", "B1" });
+
+                env.Milestone(2);
+
+                SendTime(env, 5000);
+                env.AssertListenerNotInvoked("s0");
+
+                env.UndeployAll();
+            }
+        }
+
+        private class PatternAndOp : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var milestone = new AtomicLong();
+
+                RunAndWAndState(env, milestone, true);
+                RunAndWAndState(env, milestone, false);
+
+                RunAndWChild(env, milestone, true);
+                RunAndWChild(env, milestone, false);
+            }
+        }
+
+        private class PatternNotOpNotImpacted : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "a.id".SplitCsv();
+                SendTime(env, 0);
+
+                var epl = "@name('s0') select * from pattern " +
+                          GetText(TargetEnum.DISCARD_ONLY) +
+                          " [" +
+                          "every a=SupportIdEventA -> timer:interval(a.mysec) and not (SupportIdEventB -> SupportIdEventC)]";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendAEvent(env, "A1", 5); // 5 sec
+                SendAEvent(env, "A2", 1); // 1 sec
+                SendBEvent(env, "B1");
+                SendTime(env, 1000);
+                env.AssertPropsNew("s0", fields, new object[] { "A2" });
+
+                SendCEvent(env, "C1", null);
+                SendTime(env, 5000);
+                env.AssertListenerNotInvoked("s0");
+
+                env.UndeployAll();
+            }
+        }
+
+        private class PatternGuardOp : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var milestone = new AtomicLong();
+                RunGuardOpBeginState(env, milestone, true);
+                RunGuardOpBeginState(env, milestone, false);
+                RunGuardOpChildState(env, milestone, true);
+                RunGuardOpChildState(env, milestone, false);
+            }
+        }
+
+        private class PatternOrOp : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "a.id,b.id,c.id".SplitCsv();
+                SendTime(env, 0);
+
+                var epl = "@name('s0') select * from pattern " +
+                          GetText(TargetEnum.DISCARD_ONLY) +
+                          " [" +
+                          "every a=SupportIdEventA -> (b=SupportIdEventB -> c=SupportIdEventC(pc=a.pa)) or timer:interval(1000)]";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendAEvent(env, "A1", "x");
+                SendAEvent(env, "A2", "y");
+
+                env.Milestone(0);
+
+                SendBEvent(env, "B1");
+
+                env.Milestone(1);
+
+                SendCEvent(env, "C1", "y");
+                env.AssertPropsNew("s0", fields, new object[] { "A2", "B1", "C1" });
+
+                env.Milestone(2);
+
+                SendCEvent(env, "C1", "x");
+                env.AssertListenerNotInvoked("s0");
+
+                env.UndeployAll();
+            }
+        }
+
+        private class PatternEveryOp : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var milestone = new AtomicLong();
+
+                TryAssertionEveryBeginState(env, milestone, "");
+                TryAssertionEveryBeginState(env, milestone, "-distinct(id)");
+                TryAssertionEveryBeginState(env, milestone, "-distinct(id, 10 seconds)");
+
+                TryAssertionEveryChildState(env, milestone, "", true);
+                TryAssertionEveryChildState(env, milestone, "", false);
+                TryAssertionEveryChildState(env, milestone, "-distinct(id)", true);
+                TryAssertionEveryChildState(env, milestone, "-distinct(id)", false);
+                TryAssertionEveryChildState(env, milestone, "-distinct(id, 10 seconds)", true);
+                TryAssertionEveryChildState(env, milestone, "-distinct(id, 10 seconds)", false);
+            }
+        }
+
         private static void TryAssertionEveryChildState(
             RegressionEnvironment env,
             AtomicLong milestone,
             string everySuffix,
             bool matchDiscard)
         {
-            var fields = new[] {"a.Id", "b.Id", "c.Id"};
+            var fields = "a.id,b.id,c.id".SplitCsv();
 
-            var epl = "@Name('s0') select * from pattern " +
+            var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
                       " [" +
                       "every a=SupportIdEventA-> every" +
                       everySuffix +
-                      " (b=SupportIdEventB -> c=SupportIdEventC(Pc=a.Pa))]";
+                      " (b=SupportIdEventB -> c=SupportIdEventC(pc=a.pa))]";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendAEvent(env, "A1", "x");
@@ -134,22 +356,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.MilestoneInc(milestone);
 
             SendCEvent(env, "C1", "y");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"A2", "B1", "C1"});
+            env.AssertPropsNew("s0", fields, new object[] { "A2", "B1", "C1" });
 
             env.MilestoneInc(milestone);
 
             SendCEvent(env, "C2", "x");
             if (matchDiscard) {
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
             }
             else {
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A1", "B1", "C2"});
+                env.AssertPropsNew("s0", fields, new object[] { "A1", "B1", "C2" });
             }
 
             env.UndeployAll();
@@ -160,9 +376,9 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             string distinct)
         {
-            var fields = new[] {"a.Id", "b.Id"};
+            var fields = "a.id,b.id".SplitCsv();
 
-            var epl = "@Name('s0') select * from pattern " +
+            var epl = "@name('s0') select * from pattern " +
                       GetText(TargetEnum.DISCARD_ONLY) +
                       "[" +
                       "every a=SupportIdEventA-> every" +
@@ -175,30 +391,24 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.MilestoneInc(milestone);
 
             SendBEvent(env, "B1");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"A1", "B1"});
+            env.AssertPropsNew("s0", fields, new object[] { "A1", "B1" });
 
             env.MilestoneInc(milestone);
 
             SendBEvent(env, "B2");
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             SendAEvent(env, "A2");
 
             env.MilestoneInc(milestone);
 
             SendBEvent(env, "B3");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"A2", "B3"});
+            env.AssertPropsNew("s0", fields, new object[] { "A2", "B3" });
 
             env.MilestoneInc(milestone);
 
             SendBEvent(env, "B4");
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.UndeployAll();
         }
@@ -209,9 +419,9 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             string pattern,
             bool matchDiscard)
         {
-            var fields = new[] {"a1.Id", "a2.Id"};
+            var fields = "a1.id,a2.id".SplitCsv();
 
-            var epl = "@Name('s0') select * from pattern " +
+            var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
                       "[" +
                       pattern +
@@ -220,50 +430,35 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
             SendAEvent(env, "E1");
             SendAEvent(env, "E2");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"E1", "E2"});
+            env.AssertPropsNew("s0", fields, new object[] { "E1", "E2" });
 
             env.MilestoneInc(milestone);
 
             SendAEvent(env, "E3");
             if (matchDiscard) {
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
             }
             else {
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E2", "E3"});
+                env.AssertPropsNew("s0", fields, new object[] { "E2", "E3" });
             }
 
             env.MilestoneInc(milestone);
 
             SendAEvent(env, "E4");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"E3", "E4"});
+            env.AssertPropsNew("s0", fields, new object[] { "E3", "E4" });
 
             env.MilestoneInc(milestone);
 
             SendAEvent(env, "E5");
             if (matchDiscard) {
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
             }
             else {
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E4", "E5"});
+                env.AssertPropsNew("s0", fields, new object[] { "E4", "E5" });
             }
 
             SendAEvent(env, "E6");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"E5", "E6"});
+            env.AssertPropsNew("s0", fields, new object[] { "E5", "E6" });
 
             env.UndeployAll();
         }
@@ -273,30 +468,24 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             bool testSoda,
             TargetEnum target)
         {
-            var fields = new[] {"a.Id", "b.Id", "c.Id"};
-            var epl = "@Name('s0') select * from pattern " +
+            var fields = "a.id,b.id,c.id".SplitCsv();
+            var epl = "@name('s0') select * from pattern " +
                       GetText(target) +
-                      "[every a=SupportIdEventA -> b=SupportIdEventB -> c=SupportIdEventC(Pc=a.Pa)]";
+                      "[every a=SupportIdEventA -> b=SupportIdEventB -> c=SupportIdEventC(pc=a.pa)]";
             env.CompileDeploy(testSoda, epl).AddListener("s0");
 
             SendAEvent(env, "A1", "x");
             SendAEvent(env, "A2", "y");
             SendBEvent(env, "B1");
             SendCEvent(env, "C1", "y");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"A2", "B1", "C1"});
+            env.AssertPropsNew("s0", fields, new object[] { "A2", "B1", "C1" });
 
             SendCEvent(env, "C2", "x");
             if (target == TargetEnum.SUPPRESS_ONLY || target == TargetEnum.NONE) {
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A1", "B1", "C2"});
+                env.AssertPropsNew("s0", fields, new object[] { "A1", "B1", "C2" });
             }
             else {
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
             }
 
             env.UndeployAll();
@@ -307,12 +496,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = new[] {"a.Id", "b[0].Id", "b[1].Id"};
+            var fields = "a.id,b[0].id,b[1].id".SplitCsv();
 
-            var epl = "@Name('s0') select * from pattern " +
+            var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
                       "[" +
-                      "every a=SupportIdEventA-> [2] b=SupportIdEventB(Pb in (a.Pa, '-'))]";
+                      "every a=SupportIdEventA-> [2] b=SupportIdEventB(pb in (a.pa, '-'))]";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendAEvent(env, "A1", "x");
@@ -325,22 +514,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.MilestoneInc(milestone);
 
             SendBEvent(env, "B2", "y");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"A2", "B1", "B2"});
+            env.AssertPropsNew("s0", fields, new object[] { "A2", "B1", "B2" });
 
             env.MilestoneInc(milestone);
 
             SendBEvent(env, "B3", "x");
             if (matchDiscard) {
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
             }
             else {
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A1", "B1", "B3"});
+                env.AssertPropsNew("s0", fields, new object[] { "A1", "B1", "B3" });
             }
 
             env.UndeployAll();
@@ -351,12 +534,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = new[] {"a.Id", "b[0].Id", "c[0].Id"};
+            var fields = "a.id,b[0].id,c[0].id".SplitCsv();
 
-            var epl = "@Name('s0') select * from pattern " +
+            var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
                       " [" +
-                      "every a=SupportIdEventA-> [1] (b=SupportIdEventB -> c=SupportIdEventC(Pc=a.Pa))]";
+                      "every a=SupportIdEventA-> [1] (b=SupportIdEventB -> c=SupportIdEventC(pc=a.pa))]";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendAEvent(env, "A1", "x");
@@ -369,22 +552,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.MilestoneInc(milestone);
 
             SendCEvent(env, "C1", "y");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"A2", "B1", "C1"});
+            env.AssertPropsNew("s0", fields, new object[] { "A2", "B1", "C1" });
 
             env.MilestoneInc(milestone);
 
             SendCEvent(env, "C2", "x");
             if (matchDiscard) {
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
             }
             else {
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A1", "B1", "C2"});
+                env.AssertPropsNew("s0", fields, new object[] { "A1", "B1", "C2" });
             }
 
             env.UndeployAll();
@@ -394,10 +571,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = new[] {"a1.Id", "aarr[0].Id"};
+            var fields = "a1.id,aarr[0].id".SplitCsv();
             SendTime(env, 0);
 
-            var epl = "@Name('s0') select * from pattern " +
+            var epl = "@name('s0') select * from pattern " +
                       GetText(TargetEnum.DISCARD_ONLY) +
                       "[" +
                       "every a1=SupportIdEventA -> ([:100] aarr=SupportIdEventA until (timer:interval(10 sec) and not b=SupportIdEventB))]";
@@ -410,15 +587,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             SendTime(env, 1000);
             SendAEvent(env, "A2");
             SendTime(env, 10000);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"A1", "A2"});
+            env.AssertPropsNew("s0", fields, new object[] { "A1", "A2" });
 
             env.MilestoneInc(milestone);
 
             SendTime(env, 11000);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.UndeployAll();
         }
@@ -428,8 +602,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             bool testSoda,
             TargetEnum target)
         {
-            var fields = new[] {"a1.Id", "aarr[0].Id", "b.Id"};
-            var epl = "@Name('s0') select * from pattern " +
+            var fields = "a1.id,aarr[0].id,b.id".SplitCsv();
+            var epl = "@name('s0') select * from pattern " +
                       GetText(target) +
                       "[every a1=SupportIdEventA -> [:10] aarr=SupportIdEventA until b=SupportIdEventB]";
             env.CompileDeploy(testSoda, epl).AddListener("s0");
@@ -439,19 +613,15 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             SendBEvent(env, "B1");
 
             if (target == TargetEnum.SUPPRESS_ONLY || target == TargetEnum.DISCARD_AND_SUPPRESS) {
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A1", "A2", "B1"});
+                env.AssertPropsNew("s0", fields, new object[] { "A1", "A2", "B1" });
             }
             else {
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Listener("s0").GetAndResetLastNewData(),
-                    fields,
-                    new[] {
-                        new object[] {"A1", "A2", "B1"},
-                        new object[] {"A2", null, "B1"}
-                    });
+                env.AssertListener(
+                    "s0",
+                    listener => EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                        listener.GetAndResetLastNewData(),
+                        fields,
+                        new object[][] { new object[] { "A1", "A2", "B1" }, new object[] { "A2", null, "B1" } }));
             }
 
             env.UndeployAll();
@@ -462,12 +632,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = new[] {"a.Id", "b.Id", "c.Id"};
+            var fields = "a.id,b.id,c.id".SplitCsv();
 
-            var epl = "@Name('s0') select * from pattern " +
+            var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
                       " [" +
-                      "every a=SupportIdEventA-> b=SupportIdEventB and c=SupportIdEventC(Pc=a.Pa)]";
+                      "every a=SupportIdEventA-> b=SupportIdEventB and c=SupportIdEventC(pc=a.pa)]";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendAEvent(env, "A1", "x");
@@ -480,22 +650,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.MilestoneInc(milestone);
 
             SendCEvent(env, "C1", "y");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"A2", "B1", "C1"});
+            env.AssertPropsNew("s0", fields, new object[] { "A2", "B1", "C1" });
 
             env.MilestoneInc(milestone);
 
             SendCEvent(env, "C2", "x");
             if (matchDiscard) {
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
             }
             else {
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A1", "B1", "C2"});
+                env.AssertPropsNew("s0", fields, new object[] { "A1", "B1", "C2" });
             }
 
             env.UndeployAll();
@@ -506,12 +670,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = new[] {"a.Id", "b.Id", "c.Id"};
+            var fields = "a.id,b.id,c.id".SplitCsv();
 
-            var epl = "@Name('s0') select * from pattern " +
+            var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
                       " [" +
-                      "every a=SupportIdEventA-> SupportIdEventD and (b=SupportIdEventB -> c=SupportIdEventC(Pc=a.Pa))]";
+                      "every a=SupportIdEventA-> SupportIdEventD and (b=SupportIdEventB -> c=SupportIdEventC(pc=a.pa))]";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendAEvent(env, "A1", "x");
@@ -528,22 +692,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.MilestoneInc(milestone);
 
             SendCEvent(env, "C1", "y");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"A2", "B1", "C1"});
+            env.AssertPropsNew("s0", fields, new object[] { "A2", "B1", "C1" });
 
             env.MilestoneInc(milestone);
 
             SendCEvent(env, "C2", "x");
             if (matchDiscard) {
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
             }
             else {
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A1", "B1", "C2"});
+                env.AssertPropsNew("s0", fields, new object[] { "A1", "B1", "C2" });
             }
 
             env.UndeployAll();
@@ -554,12 +712,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = new[] {"a.Id", "b.Id", "c.Id"};
+            var fields = "a.id,b.id,c.id".SplitCsv();
 
-            var epl = "@Name('s0') select * from pattern " +
+            var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
                       "[" +
-                      "every a=SupportIdEventA-> b=SupportIdEventB -> c=SupportIdEventC(Pc=a.Pa) where timer:within(1)]";
+                      "every a=SupportIdEventA-> b=SupportIdEventB -> c=SupportIdEventC(pc=a.pa) where timer:within(1)]";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendAEvent(env, "A1", "x");
@@ -572,22 +730,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.MilestoneInc(milestone);
 
             SendCEvent(env, "C1", "y");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"A2", "B1", "C1"});
+            env.AssertPropsNew("s0", fields, new object[] { "A2", "B1", "C1" });
 
             env.MilestoneInc(milestone);
 
             SendCEvent(env, "C2", "x");
             if (matchDiscard) {
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
             }
             else {
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A1", "B1", "C2"});
+                env.AssertPropsNew("s0", fields, new object[] { "A1", "B1", "C2" });
             }
 
             env.UndeployAll();
@@ -598,12 +750,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = new[] {"a.Id", "b.Id", "c.Id"};
+            var fields = "a.id,b.id,c.id".SplitCsv();
 
-            var epl = "@Name('s0') select * from pattern " +
+            var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
                       " [" +
-                      "every a=SupportIdEventA-> (b=SupportIdEventB -> c=SupportIdEventC(Pc=a.Pa)) where timer:within(1)]";
+                      "every a=SupportIdEventA-> (b=SupportIdEventB -> c=SupportIdEventC(pc=a.pa)) where timer:within(1)]";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendAEvent(env, "A1", "x");
@@ -613,22 +765,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.MilestoneInc(milestone);
 
             SendCEvent(env, "C1", "y");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {"A2", "B1", "C1"});
+            env.AssertPropsNew("s0", fields, new object[] { "A2", "B1", "C1" });
 
             env.MilestoneInc(milestone);
 
             SendCEvent(env, "C2", "x");
             if (matchDiscard) {
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertListenerNotInvoked("s0");
             }
             else {
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A1", "B1", "C2"});
+                env.AssertPropsNew("s0", fields, new object[] { "A1", "B1", "C2" });
             }
 
             env.UndeployAll();
@@ -703,274 +849,23 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.SendEventBean(new SupportIdEventC(id, pc));
         }
 
-        internal static string GetText(TargetEnum targetEnum)
-        {
-            switch (targetEnum) {
-                case TargetEnum.DISCARD_ONLY:
-                    return "@DiscardPartialsOnMatch ";
-
-                case TargetEnum.DISCARD_AND_SUPPRESS:
-                    return "@DiscardPartialsOnMatch @SuppressOverlappingMatches ";
-
-                case TargetEnum.SUPPRESS_ONLY:
-                    return "@SuppressOverlappingMatches ";
-
-                case TargetEnum.NONE:
-                    return "";
-
-                default:
-                    throw new ArgumentException(nameof(targetEnum));
-            }
-        }
-
-        internal class PatternInvalid : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                TryInvalidCompile(
-                    env,
-                    path,
-                    "select * from pattern @XX [SupportIdEventA]",
-                    "Unrecognized pattern-level annotation 'XX' [select * from pattern @XX [SupportIdEventA]]");
-
-                var expected =
-                    "Discard-partials and suppress-matches is not supported in a joins, context declaration and on-action ";
-                TryInvalidCompile(
-                    env,
-                    path,
-                    "select * from pattern " +
-                    GetText(TargetEnum.DISCARD_AND_SUPPRESS) +
-                    "[SupportIdEventA]#keepall, A#keepall",
-                    expected +
-                    "[select * from pattern @DiscardPartialsOnMatch @SuppressOverlappingMatches [SupportIdEventA]#keepall, A#keepall]");
-
-                env.CompileDeploy("create window AWindow#keepall as SupportIdEventA", path);
-                TryInvalidCompile(
-                    env,
-                    path,
-                    "on pattern " +
-                    GetText(TargetEnum.DISCARD_AND_SUPPRESS) +
-                    "[SupportIdEventA] select * from AWindow",
-                    expected +
-                    "[on pattern @DiscardPartialsOnMatch @SuppressOverlappingMatches [SupportIdEventA] select * from AWindow]");
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class PatternCombination : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                foreach (var testsoda in new[] {false, true}) {
-                    foreach (var target in EnumHelper.GetValues<TargetEnum>()) {
-                        TryAssertionTargetCurrentMatch(env, testsoda, target);
-                        TryAssertionTargetNextMatch(env, testsoda, target);
-                    }
-                }
-
-                // test order-by
-                var epl =
-                    "@Name('s0') select * from pattern @DiscardPartialsOnMatch [every a=SupportIdEventA -> SupportIdEventB] order by a.Id desc";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                env.SendEventBean(new SupportIdEventA("A1", null, null));
-                env.SendEventBean(new SupportIdEventA("A2", null, null));
-                env.SendEventBean(new SupportIdEventB("B1", null));
-                var events = env.Listener("s0").GetAndResetLastNewData();
-                EPAssertionUtil.AssertPropsPerRow(
-                    events,
-                    new[] {"a.Id"},
-                    new[] {
-                        new object[] {"A2"},
-                        new object[] {"A1"}
-                    });
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class PatternFollowedByOp : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var milestone = new AtomicLong();
-                RunFollowedByOp(env, milestone, "every a1=SupportIdEventA -> a2=SupportIdEventA", false);
-                RunFollowedByOp(env, milestone, "every a1=SupportIdEventA -> a2=SupportIdEventA", true);
-                RunFollowedByOp(env, milestone, "every a1=SupportIdEventA -[10]> a2=SupportIdEventA", false);
-                RunFollowedByOp(env, milestone, "every a1=SupportIdEventA -[10]> a2=SupportIdEventA", true);
-            }
-        }
-
-        internal class PatternMatchUntilOp : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var milestone = new AtomicLong();
-                TryAssertionMatchUntilBoundOp(env, milestone, true);
-                TryAssertionMatchUntilBoundOp(env, milestone, false);
-                TryAssertionMatchUntilWChildMatcher(env, milestone, true);
-                TryAssertionMatchUntilWChildMatcher(env, milestone, false);
-                TryAssertionMatchUntilRangeOpWTime(env, milestone); // with time
-            }
-        }
-
-        internal class PatternObserverOp : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new[] {"a.Id", "b.Id"};
-                SendTime(env, 0);
-
-                var epl = "@Name('s0') select * from pattern " +
-                          GetText(TargetEnum.DISCARD_ONLY) +
-                          " [" +
-                          "every a=SupportIdEventA -> b=SupportIdEventB -> timer:interval(a.Mysec)]";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                SendAEvent(env, "A1", 5); // 5 seconds for this one
-
-                env.Milestone(0);
-
-                SendAEvent(env, "A2", 1); // 1 seconds for this one
-                SendBEvent(env, "B1");
-
-                env.Milestone(1);
-
-                SendTime(env, 1000);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A2", "B1"});
-
-                env.Milestone(2);
-
-                SendTime(env, 5000);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class PatternAndOp : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var milestone = new AtomicLong();
-
-                RunAndWAndState(env, milestone, true);
-                RunAndWAndState(env, milestone, false);
-
-                RunAndWChild(env, milestone, true);
-                RunAndWChild(env, milestone, false);
-            }
-        }
-
-        internal class PatternNotOpNotImpacted : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new[] {"a.Id"};
-                SendTime(env, 0);
-
-                var epl = "@Name('s0') select * from pattern " +
-                          GetText(TargetEnum.DISCARD_ONLY) +
-                          " [" +
-                          "every a=SupportIdEventA -> timer:interval(a.Mysec) and not (SupportIdEventB -> SupportIdEventC)]";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                SendAEvent(env, "A1", 5); // 5 sec
-                SendAEvent(env, "A2", 1); // 1 sec
-                SendBEvent(env, "B1");
-                SendTime(env, 1000);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A2"});
-
-                SendCEvent(env, "C1", null);
-                SendTime(env, 5000);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class PatternGuardOp : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var milestone = new AtomicLong();
-                RunGuardOpBeginState(env, milestone, true);
-                RunGuardOpBeginState(env, milestone, false);
-                RunGuardOpChildState(env, milestone, true);
-                RunGuardOpChildState(env, milestone, false);
-            }
-        }
-
-        internal class PatternOrOp : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new[] {"a.Id", "b.Id", "c.Id"};
-                SendTime(env, 0);
-
-                var epl = "@Name('s0') select * from pattern " +
-                          GetText(TargetEnum.DISCARD_ONLY) +
-                          " [" +
-                          "every a=SupportIdEventA -> (b=SupportIdEventB -> c=SupportIdEventC(Pc=a.Pa)) or timer:interval(1000)]";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                SendAEvent(env, "A1", "x");
-                SendAEvent(env, "A2", "y");
-
-                env.Milestone(0);
-
-                SendBEvent(env, "B1");
-
-                env.Milestone(1);
-
-                SendCEvent(env, "C1", "y");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A2", "B1", "C1"});
-
-                env.Milestone(2);
-
-                SendCEvent(env, "C1", "x");
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class PatternEveryOp : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var milestone = new AtomicLong();
-
-                TryAssertionEveryBeginState(env, milestone, "");
-                TryAssertionEveryBeginState(env, milestone, "-distinct(Id)");
-                TryAssertionEveryBeginState(env, milestone, "-distinct(Id, 10 seconds)");
-
-                TryAssertionEveryChildState(env, milestone, "", true);
-                TryAssertionEveryChildState(env, milestone, "", false);
-                TryAssertionEveryChildState(env, milestone, "-distinct(Id)", true);
-                TryAssertionEveryChildState(env, milestone, "-distinct(Id)", false);
-                TryAssertionEveryChildState(env, milestone, "-distinct(Id, 10 seconds)", true);
-                TryAssertionEveryChildState(env, milestone, "-distinct(Id, 10 seconds)", false);
-            }
-        }
-
         internal enum TargetEnum
         {
             DISCARD_ONLY,
             DISCARD_AND_SUPPRESS,
             SUPPRESS_ONLY,
             NONE
+        }
+
+        internal static string GetText(TargetEnum value)
+        {
+            return value switch {
+                TargetEnum.DISCARD_ONLY => ("@DiscardPartialsOnMatch "),
+                TargetEnum.DISCARD_AND_SUPPRESS => ("@DiscardPartialsOnMatch @SuppressOverlappingMatches "),
+                TargetEnum.SUPPRESS_ONLY => ("@SuppressOverlappingMatches "),
+                TargetEnum.NONE => (""),
+                _ => throw new ArgumentException(nameof(value))
+            };
         }
     }
 } // end of namespace

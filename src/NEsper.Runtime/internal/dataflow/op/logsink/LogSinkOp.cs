@@ -121,7 +121,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.logsink
         private void GetEventOut(
             int port,
             object theEvent,
-            StringWriter writer)
+            TextWriter writer)
         {
             if (theEvent is EventBean) {
                 renderer.Render((EventBean) theEvent, writer);
@@ -130,7 +130,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.logsink
 
             if (shellPerStream[port] != null) {
                 lock (this) {
-                    shellPerStream[port].UnderlyingSpi = theEvent;
+                    shellPerStream[port].Underlying = theEvent;
                     renderer.Render(shellPerStream[port], writer);
                 }
 

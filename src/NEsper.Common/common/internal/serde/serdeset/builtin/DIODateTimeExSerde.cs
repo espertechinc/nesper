@@ -12,49 +12,69 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIODateTimeExSerde : DataInputOutputSerdeBase<DateTimeEx> {
-	    public static readonly DIODateTimeExSerde INSTANCE = new DIODateTimeExSerde();
+    public class DIODateTimeExSerde : DataInputOutputSerdeBase<DateTimeEx>
+    {
+        public static readonly DIODateTimeExSerde INSTANCE = new DIODateTimeExSerde();
 
-	    private DIODateTimeExSerde() {
-	    }
+        private DIODateTimeExSerde()
+        {
+        }
 
-	    public void Write(DateTimeEx @object, DataOutput output) {
-	        WriteValue(@object, output);
-	    }
+        public void Write(
+            DateTimeEx @object,
+            DataOutput output)
+        {
+            WriteValue(@object, output);
+        }
 
-	    public DateTimeEx Read(DataInput input) {
-	        return ReadValue(input);
-	    }
+        public DateTimeEx Read(DataInput input)
+        {
+            return ReadValue(input);
+        }
 
-	    public override void Write(DateTimeEx @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
-	        WriteValue(@object, output);
-	    }
+        public override void Write(
+            DateTimeEx @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteValue(@object, output);
+        }
 
-	    public override DateTimeEx ReadValue(DataInput input, byte[] unitKey) {
-	        return ReadValue(input);
-	    }
+        public override DateTimeEx ReadValue(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadValue(input);
+        }
 
-	    public static void WriteValue(DateTimeEx value, DataOutput output) {
-	        if (value == null) {
-	            output.WriteBoolean(true);
-	            return;
-	        }
-	        output.WriteBoolean(false);
-	        output.WriteUTF(value.TimeZone.Id);
-	        output.WriteLong(value.UtcMillis);
-	    }
+        public static void WriteValue(
+            DateTimeEx value,
+            DataOutput output)
+        {
+            if (value == null) {
+                output.WriteBoolean(true);
+                return;
+            }
 
-	    public static DateTimeEx ReadValue(DataInput input) {
-	        bool isNull = input.ReadBoolean();
-	        if (isNull) {
-	            return null;
-	        }
-	        var timeZoneId = input.ReadUTF();
-	        var timeZone = TimeZoneHelper.GetTimeZoneInfo(timeZoneId);
-	        var millis = input.ReadLong();
-	        var value = DateTimeEx.GetInstance(timeZone, millis);
-	        
-	        return value;
-	    }
-	}
+            output.WriteBoolean(false);
+            output.WriteUTF(value.TimeZone.Id);
+            output.WriteLong(value.UtcMillis);
+        }
+
+        public static DateTimeEx ReadValue(DataInput input)
+        {
+            var isNull = input.ReadBoolean();
+            if (isNull) {
+                return null;
+            }
+
+            var timeZoneId = input.ReadUTF();
+            var timeZone = TimeZoneHelper.GetTimeZoneInfo(timeZoneId);
+            var millis = input.ReadLong();
+            var value = DateTimeEx.GetInstance(timeZone, millis);
+
+            return value;
+        }
+    }
 } // end of namespace

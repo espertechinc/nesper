@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprEvalSystemProperty(string systemPropertyName)
         {
-            this._systemPropertyName = systemPropertyName;
+            _systemPropertyName = systemPropertyName;
         }
 
         public override ExprForge Forge => this;
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 return false;
             }
 
-            var that = (ExprEvalSystemProperty) other;
+            var that = (ExprEvalSystemProperty)other;
 
             return _systemPropertyName.Equals(that._systemPropertyName);
         }

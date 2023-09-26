@@ -105,12 +105,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                 }
 
                 IEnumerator oneEnum = enumcoll.GetEnumerator();
-                IEnumerator twoEnum = otherArray.GetEnumerator();
+                var twoEnum = otherArray.GetEnumerator();
                 return CompareSequenceImpl<T>(oneEnum, twoEnum);
             }
 
             var otherObjType = otherObj.GetType();
-            if (otherObjType.IsGenericCollection() && typeof(T).IsAssignableFrom(otherObjType.GetCollectionItemType())) {
+            if (otherObjType.IsGenericCollection() &&
+                typeof(T).IsAssignableFrom(otherObjType.GetCollectionItemType())) {
                 var unwrapCollection = otherObj.Unwrap<T>();
                 if (enumcoll.Count != unwrapCollection.Count) {
                     return false;
@@ -127,11 +128,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             Log.Warn(
                 "Enumeration method 'sequenceEqual' expected a Collection-type return value from its parameter but received '" +
-                otherObj.GetType().CleanName() + "'");
+                otherObj.GetType().CleanName() +
+                "'");
             return false;
         }
 
-        private static bool CompareSequenceImpl<T>(IEnumerator oneEnum,
+        private static bool CompareSequenceImpl<T>(
+            IEnumerator oneEnum,
             IEnumerator twoEnum)
         {
             while (oneEnum.MoveNext() && twoEnum.MoveNext()) {

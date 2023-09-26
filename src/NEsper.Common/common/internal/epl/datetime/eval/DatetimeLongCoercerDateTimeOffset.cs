@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
     {
         public long Coerce(object date)
         {
-            return CoerceToMillis((DateTimeOffset) date);
+            return CoerceToMillis((DateTimeOffset)date);
         }
 
         public CodegenExpression Codegen(
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             //    .Add("toInstant")
             //    .Add("toEpochMilli");
         }
-        
+
         /// <summary>NOTE: Code-generation-invoked method, method name and parameter order matters</summary>
         /// <param name="dateTime">The date time.</param>
         /// <returns>millis</returns>
@@ -50,6 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             if (dateTime == null) {
                 throw new ArgumentNullException(nameof(dateTime));
             }
+
             return dateTime.Value.InMillis();
         }
     }

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public class NameAndParamNum
     {
-        private static readonly NameAndParamNum[] EMPTY_ARRAY = new NameAndParamNum[0];
+        private static readonly NameAndParamNum[] EMPTY_ARRAY = Array.Empty<NameAndParamNum>();
 
         public NameAndParamNum(
             string name,
@@ -39,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 return false;
             }
 
-            var that = (NameAndParamNum) o;
+            var that = (NameAndParamNum)o;
 
             if (ParamNum != that.ParamNum) {
                 return false;

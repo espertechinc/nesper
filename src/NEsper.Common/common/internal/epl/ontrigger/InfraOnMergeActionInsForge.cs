@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,24 +24,21 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         private readonly TableMetaData insertIntoTable;
         private readonly bool audit;
         private readonly bool route;
+        private readonly ExprNode eventPrecedence;
 
         public InfraOnMergeActionInsForge(
             ExprNode optionalFilter,
             SelectExprProcessorForge insertHelper,
             TableMetaData insertIntoTable,
             bool audit,
-            bool route)
-            : base(optionalFilter)
-
+            bool route,
+            ExprNode eventPrecedence) : base(optionalFilter)
         {
             this.insertHelper = insertHelper;
             this.insertIntoTable = insertIntoTable;
             this.audit = audit;
             this.route = route;
-        }
-
-        public TableMetaData InsertIntoTable {
-            get => insertIntoTable;
+            this.eventPrecedence = eventPrecedence;
         }
 
         public override CodegenExpression Make(
@@ -49,22 +46,36 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(InfraOnMergeActionIns), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(InfraOnMergeActionIns), GetType(), classScope);
             var anonymousSelect = SelectExprProcessorUtil.MakeAnonymous(
-                insertHelper,
-                method,
-                symbols.GetAddInitSvc(method),
-                classScope);
+                 insertHelper,
+                 method,
+                 symbols.GetAddInitSvc(method),
+                 classScope);
+            
+            var eventPrecedenceEval = ConstantNull();
+            if (eventPrecedence != null) {
+                eventPrecedenceEval = ExprNodeUtilityCodegen.CodegenEvaluator(
+                    eventPrecedence.Forge,
+                    method,
+                    GetType(),
+                    classScope);
+            }
+
             method.Block.MethodReturn(
-                NewInstance<InfraOnMergeActionIns>(
+                NewInstance(
+                    typeof(InfraOnMergeActionIns),
                     MakeFilter(method, classScope),
                     anonymousSelect,
                     insertIntoTable == null
                         ? ConstantNull()
                         : TableDeployTimeResolver.MakeResolveTable(insertIntoTable, symbols.GetAddInitSvc(method)),
                     Constant(audit),
-                    Constant(route)));
+                    Constant(route),
+                    eventPrecedenceEval));
             return LocalMethod(method);
         }
+
+        public TableMetaData InsertIntoTable => insertIntoTable;
     }
 } // end of namespace

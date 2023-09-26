@@ -10,7 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
+
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
@@ -20,17 +23,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             string clazz,
             string name,
             Type type,
-            Type optionalTypeParam,
             bool isFinal)
         {
             Clazz = clazz;
             Name = name;
             Type = type;
-            OptionalTypeParam = optionalTypeParam;
             IsFinal = isFinal;
         }
-
-        public Type OptionalTypeParam { get; }
 
         public string Clazz { get; }
 
@@ -39,6 +38,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public Type Type { get; }
 
         public bool IsFinal { get; }
+
+        public string AssignmentMemberName { get; set; }
+
+        public CodegenExpressionRef NameWithMember =>
+            AssignmentMemberName == null ? Ref(Name) : Ref(AssignmentMemberName + "." + Name);
 
         public override bool Equals(object o)
         {
@@ -50,7 +54,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 return false;
             }
 
-            var that = (CodegenField) o;
+            var that = (CodegenField)o;
 
             return Name.Equals(that.Name);
         }
@@ -63,14 +67,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public void MergeClasses(ISet<Type> classes)
         {
             classes.AddToSet(Type);
-            if (OptionalTypeParam != null) {
-                classes.AddToSet(OptionalTypeParam);
-            }
         }
 
         public void Render(StringBuilder builder)
         {
-            builder.Append(Clazz).Append('.').Append(Name);
+            builder.Append(Clazz).Append('.');
+            if (AssignmentMemberName != null) {
+                builder.Append(AssignmentMemberName).Append('.');
+            }
+
+            builder.Append(Name);
         }
     }
 } // end of namespace

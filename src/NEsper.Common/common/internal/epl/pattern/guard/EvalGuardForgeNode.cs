@@ -11,10 +11,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -37,7 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         /// </summary>
         /// <param name="attachPatternText">whether to attach EPL subexpression text</param>
         /// <param name="patternGuardSpec">factory for guard construction</param>
-        public EvalGuardForgeNode(bool attachPatternText, PatternGuardSpec patternGuardSpec) : base(attachPatternText)
+        public EvalGuardForgeNode(
+            bool attachPatternText,
+            PatternGuardSpec patternGuardSpec) : base(attachPatternText)
         {
             PatternGuardSpec = patternGuardSpec;
         }
@@ -68,15 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
                    ChildNodes.Count;
         }
 
-        protected override Type TypeOfFactory()
-        {
-            return typeof(EvalGuardFactoryNode);
-        }
+        protected override Type TypeOfFactory => typeof(EvalGuardFactoryNode);
 
-        protected override string NameOfFactory()
-        {
-            return "Guard";
-        }
+        protected override string NameOfFactory => "Guard";
 
         protected override void InlineCodegen(
             CodegenMethod method,
@@ -92,10 +90,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters,
-            IList<ScheduleHandleCallbackProvider> schedules)
+            Func<short, CallbackAttribution> callbackAttribution,
+            IList<FilterSpecTracked> filters,
+            IList<ScheduleHandleTracked> schedules)
         {
-            GuardForge.CollectSchedule(schedules);
+            GuardForge.CollectSchedule(FactoryNodeId, callbackAttribution, schedules);
         }
 
         public string ToPrecedenceFreeEPL()
@@ -122,6 +121,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             writer.Write("(");
             ExprNodeUtilityPrint.ToExpressionStringParameterList(PatternGuardSpec.ObjectParameters, writer);
             writer.Write(")");
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_GUARD;
         }
     }
 } // end of namespace

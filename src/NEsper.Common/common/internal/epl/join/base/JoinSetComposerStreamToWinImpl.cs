@@ -33,8 +33,11 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         private readonly bool[] selfJoinRepositoryResets;
         private readonly int streamNumber;
 
-        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> emptyResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
-        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> newResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> emptyResults =
+            new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+
+        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> newResults =
+            new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
 
         public JoinSetComposerStreamToWinImpl(
             bool allowInitIndex,
@@ -52,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             this.selfJoinRepositoryResets = selfJoinRepositoryResets;
             if (isPureSelfJoin) {
                 isResetSelfJoinRepositories = true;
-                CompatExtensions.Fill(selfJoinRepositoryResets, true);
+                selfJoinRepositoryResets.Fill(true);
             }
             else {
                 var flag = false;

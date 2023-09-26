@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
         public void Run()
         {
             var stmtText =
-                "@Name('s0') select * from pattern[every event1=SupportTradeEvent(UserId in ('100','101'),Amount>=1000)]";
+                "@name('s0') select * from pattern[every event1=SupportTradeEvent(UserId in ('100','101'),Amount>=1000)]";
             env.CompileDeploy(stmtText);
             env.Statement("s0").AddListener(listener);
 
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     Assert.AreSame(matches[i], received[i].Get("event1"));
                 }
 
-                // System.out.println("Found " + received.Length + " matches in loop #" + countLoops);
+                // Console.WriteLine("Found " + received.Length + " matches in loop #" + countLoops);
                 listener.Reset();
             }
         }

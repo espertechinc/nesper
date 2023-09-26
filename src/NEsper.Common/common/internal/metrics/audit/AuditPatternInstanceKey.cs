@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
                 return false;
             }
 
-            var that = (AuditPatternInstanceKey) o;
+            var that = (AuditPatternInstanceKey)o;
 
             if (statementId != that.statementId) {
                 return false;

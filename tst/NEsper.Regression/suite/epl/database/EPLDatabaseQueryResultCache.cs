@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
@@ -21,6 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
     public class EPLDatabaseQueryResultCache : RegressionExecution
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly long assertMaximumTime;
         private readonly int numEvents;
         private readonly bool useRandomKeyLookup;
@@ -56,6 +59,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             TryCache(env, assertMaximumTime, numEvents, useRandomKeyLookup);
         }
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+        }
+
         private static void TryCache(
             RegressionEnvironment env,
             long assertMaximumTime,
@@ -73,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             bool useRandomLookupKey)
         {
             var random = new Random();
-            var stmtText = "@Name('s0') select myint from " +
+            var stmtText = "@name('s0') select myint from " +
                            "SupportBean_S0 as S0," +
                            " sql:MyDB ['select myint from mytesttable where ${Id} = mytesttable.myBigint'] as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
@@ -92,8 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.SendEventBean(bean);
 
                 if (!useRandomLookupKey || id >= 1 && id <= 10) {
-                    var received = env.Listener("s0").AssertOneGetNewAndReset();
-                    Assert.AreEqual(id * 10, received.Get("myint"));
+                    env.AssertEqualsNew("s0", "myint", id * 10);
                 }
             }
 

@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             bool isFireAndForget,
             string statementName)
         {
-            ExprForge evaluator = optionalFilter == null ? null : optionalFilter.Forge;
+            var evaluator = optionalFilter?.Forge;
             if (streamNum == 0) {
                 if (optionalFilter == null) {
                     return AggregationAgentDefault.INSTANCE;

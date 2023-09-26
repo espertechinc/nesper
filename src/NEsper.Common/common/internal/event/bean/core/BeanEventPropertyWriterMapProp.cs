@@ -23,14 +23,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             string key)
             : base(clazz, writerMember)
         {
-            this._key = key;
+            _key = key;
         }
 
         public override void Write(
             object value,
             EventBean target)
         {
-            Invoke(new[] {_key, value}, target.Underlying);
+            Invoke(new[] { _key, value }, target.Underlying);
         }
     }
 } // end of namespace

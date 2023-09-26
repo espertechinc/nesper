@@ -21,6 +21,7 @@ namespace com.espertech.esper.common.@internal.collection
             if (input == null) {
                 return null;
             }
+
             if (input is object[] inputAsTypedArray) {
                 return inputAsTypedArray;
             }

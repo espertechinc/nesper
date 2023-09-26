@@ -28,6 +28,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+
         /// <summary>
         ///     Tests fire-and-forget lock cleanup:
         ///     create table MyTable(key int primary key, p0 int)   (5 props)
@@ -51,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numInserted)
         {
             var path = new RegressionPath();
-            var epl = "create table MyTable (key int primary key, p0 int);";
+            var epl = "@public create table MyTable (key int primary key, p0 int);";
             env.CompileDeploy(epl, path);
 
             IList<BaseRunnable> runnables = new List<BaseRunnable>();

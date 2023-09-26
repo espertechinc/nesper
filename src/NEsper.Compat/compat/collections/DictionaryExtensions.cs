@@ -331,6 +331,13 @@ namespace com.espertech.esper.compat.collections
             return rvalue;
         }
 
+        public static bool TryPush<K, V>(this IDictionary<K, V> dictionary, K key, V value)
+        {
+            var rvalue = dictionary.TryGetValue(key, out var discarded);
+            dictionary[key] = value;
+            return rvalue;
+        }
+        
         public static V PutIfAbsent<K, V>(this IDictionary<K, V> dictionary, K key, V value)
         {
             if (!dictionary.TryGetValue(key, out var temp)) {

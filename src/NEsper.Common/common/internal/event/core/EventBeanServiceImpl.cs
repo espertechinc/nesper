@@ -63,14 +63,14 @@ namespace com.espertech.esper.common.@internal.@event.core
             return typedEventFactory.AdapterForTypedAvro(avroGenericDataDotRecord, eventType);
         }
 
-        public EventBean AdapterForTypedMap(
+        public MappedEventBean AdapterForTypedMap(
             IDictionary<string, object> properties,
             EventType eventType)
         {
             return typedEventFactory.AdapterForTypedMap(properties, eventType);
         }
 
-        public EventBean AdapterForTypedObjectArray(
+        public ObjectArrayBackedEventBean AdapterForTypedObjectArray(
             object[] props,
             EventType eventType)
         {
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             var eventType = FindType(eventTypeName);
             return typedEventFactory.AdapterForTypedObject(theEvent, eventType);
         }
-
+        
         public EventBean AdapterForDOM(
             XmlNode node,
             string eventTypeName)
@@ -110,6 +110,21 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventType eventType)
         {
             return typedEventFactory.AdapterForTypedObject(bean, eventType);
+        }
+
+        public EventBean AdapterForTypedWrapper(
+            EventBean decoratedUnderlying,
+            IDictionary<string, object> map,
+            EventType wrapperEventType)
+        {
+            return typedEventFactory.AdapterForTypedWrapper(decoratedUnderlying, map, wrapperEventType);
+        }
+
+        public EventBean AdapterForTypedJson(
+            object underlying,
+            EventType eventType)
+        {
+            return typedEventFactory.AdapterForTypedJson(underlying, eventType);
         }
 
         private EventType FindType(string eventTypeName)

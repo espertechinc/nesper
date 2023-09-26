@@ -34,9 +34,22 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         public Action ProcANamedWindowDispatch { get; set; }
         public Action ProcANamedWindowCPSingle { get; set; }
         public Action ProcANamedWindowCPMulti { get; set; }
-        public Action<RowRecogPartitionState, IList<RowRecogNFAStateEntry>, IList<RowRecogNFAStateEntry>> ProcARegEx { get; set; }
-        public Action<IList<RowRecogNFAStateEntry>,IDictionary<string, Pair<int, bool>>,int[]> ProcARegExState { get; set; }
-        public Action<IList<RowRecogNFAStateEntry>,IDictionary<string, Pair<int, bool>>,int[]> ProcARegExStateStart { get; set; }
+
+        public Action<RowRecogPartitionState, IList<RowRecogNFAStateEntry>, IList<RowRecogNFAStateEntry>> ProcARegEx {
+            get;
+            set;
+        }
+
+        public Action<IList<RowRecogNFAStateEntry>, IDictionary<string, Pair<int, bool>>, int[]> ProcARegExState {
+            get;
+            set;
+        }
+
+        public Action<IList<RowRecogNFAStateEntry>, IDictionary<string, Pair<int, bool>>, int[]> ProcARegExStateStart {
+            get;
+            set;
+        }
+
         public Action<bool, object, RowRecogPartitionState> ProcARegExPartition { get; set; }
         public Action<long> ProcARegIntervalValue { get; set; }
         public Action<bool> ProcARegIntervalState { get; set; }
@@ -76,7 +89,12 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         public Action ProcAPatternMatchUntilEvalFalse { get; set; }
         public Action<bool> ProcAPatternGuardEvaluateTrue { get; set; }
         public Action ProcAPatternGuardQuit { get; set; }
-        public Action<ISet<object>,IDictionary<object, long>,object,bool> ProcAPatternEveryDistinctEvaluateTrue { get; set; }
+
+        public Action<ISet<object>, IDictionary<object, long>, object, bool> ProcAPatternEveryDistinctEvaluateTrue {
+            get;
+            set;
+        }
+
         public Action ProcAPatternEveryDistinctStart { get; set; }
         public Action ProcAPatternEveryDistinctQuit { get; set; }
         public Action ProcAPatternFollowedByEvalFalse { get; set; }
@@ -114,7 +132,10 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         public Action ProcAIndexRemove { get; set; }
         public Action ProcAJoinCompositionQueryStrategy { get; set; }
         public Action ProcAJoinExecProcess { get; set; }
-        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>, ISet<MultiKeyArrayOfKeys<EventBean>>> ProcAJoinCompositionWinToWin { get; set; }
+
+        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>, ISet<MultiKeyArrayOfKeys<EventBean>>>
+            ProcAJoinCompositionWinToWin { get; set; }
+
         public Action<bool> ProcAOutputProcessWCondition { get; set; }
         public Action ProcAOutputRateConditionUpdate { get; set; }
         public Action<bool> ProcAOutputRateConditionOutputNow { get; set; }
@@ -138,24 +159,42 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         public Action<object> ProcAUpdateIStreamApplyAssignmentItem { get; set; }
         public Action ProcAOutputRateConditionScheduledEval { get; set; }
         public Action ProcAHistoricalScheduledEval { get; set; }
-        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>, ISet<MultiKeyArrayOfKeys<EventBean>>> ProcAJoinExecFilter { get; set; }
-        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>, ISet<MultiKeyArrayOfKeys<EventBean>>> ProcAJoinCompositionHistorical { get; set; }
 
+        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>, ISet<MultiKeyArrayOfKeys<EventBean>>> ProcAJoinExecFilter {
+            get;
+            set;
+        }
+
+        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>, ISet<MultiKeyArrayOfKeys<EventBean>>>
+            ProcAJoinCompositionHistorical { get; set; }
+        public Action<EventBean[], EventBean[]> ProcQOutputProcessNonBuffered { get; set; }
+        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>, ISet<MultiKeyArrayOfKeys<EventBean>>> ProcQOutputProcessNonBufferedJoin { get; set; }
+        
         public Action<string> ProcQNamedWindowDispatch { get; set; }
-        public Action<string,int,EventBean[],EventBean[],EPStatementAgentInstanceHandle,long> ProcQNamedWindowCPSingle { get; set; }
-        public Action<string,IDictionary<NamedWindowConsumerView,NamedWindowDeltaData>,EPStatementAgentInstanceHandle,long> ProcQNamedWindowCPMulti { get; set; }
+
+        public Action<string, int, EventBean[], EventBean[], EPStatementAgentInstanceHandle, long>
+            ProcQNamedWindowCPSingle { get; set; }
+
+        public Action<string, IDictionary<NamedWindowConsumerView, NamedWindowDeltaData>, EPStatementAgentInstanceHandle
+            , long> ProcQNamedWindowCPMulti { get; set; }
+
         public Action<EventBean, RowRecogPartitionState> ProcQRegEx { get; set; }
-        public Action<RowRecogNFAStateEntry,IDictionary<string, Pair<int, bool>>,int[]> ProcQRegExState { get; set; }
-        public Action<RowRecogNFAState,IDictionary<string, Pair<int, bool>>,int[]> ProcQRegExStateStart { get; set; }
+        public Action<RowRecogNFAStateEntry, IDictionary<string, Pair<int, bool>>, int[]> ProcQRegExState { get; set; }
+        public Action<RowRecogNFAState, IDictionary<string, Pair<int, bool>>, int[]> ProcQRegExStateStart { get; set; }
         public Action<EventBean> ProcQRegExPartition { get; set; }
-        public Action ProcQRegIntervalValue { get ; set ; }
-        public Action<RowRecogNFAStateEntry,IDictionary<string,Pair<int, bool>>,int[],long> ProcQRegIntervalState { get; set; }
+        public Action ProcQRegIntervalValue { get; set; }
+
+        public Action<RowRecogNFAStateEntry, IDictionary<string, Pair<int, bool>>, int[], long> ProcQRegIntervalState {
+            get;
+            set;
+        }
+
         public Action<EventBean[]> ProcQRegOut { get; set; }
-        public Action<RowRecogNFAStateEntry,IDictionary<string, Pair<int, bool>>,int[]> ProcQRegMeasure { get; set; }
-        public Action ProcQRegExScheduledEval { get ; set ; }
+        public Action<RowRecogNFAStateEntry, IDictionary<string, Pair<int, bool>>, int[]> ProcQRegMeasure { get; set; }
+        public Action ProcQRegExScheduledEval { get; set; }
         public Action<string, EventBean[]> ProcQRegFilter { get; set; }
-        public Action<string,int,AgentInstanceContext,bool,int> ProcQFilterActivationStream { get; set; }
-        public Action<SubordTableLookupStrategy,EventTable,int[]> ProcQIndexSubordLookup { get; set; }
+        public Action<string, int, AgentInstanceContext, bool, int> ProcQFilterActivationStream { get; set; }
+        public Action<SubordTableLookupStrategy, EventTable, int[]> ProcQIndexSubordLookup { get; set; }
         public Action<ViewFactory, EventBean[], EventBean[]> ProcQViewProcessIRStream { get; set; }
         public Action<ViewFactory, EventBean[], EventBean[]> ProcQViewIndicate { get; set; }
         public Action<ViewFactory> ProcQViewScheduledEval { get; set; }
@@ -163,16 +202,16 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         public Action<EvalNotFactoryNode, MatchedEventMapMinimal> ProcQPatternNotEvaluateTrue { get; set; }
         public Action<EvalObserverFactoryNode> ProcQPatternObserverQuit { get; set; }
         public Action<EvalAndFactoryNode> ProcQPatternAndEvaluateFalse { get; set; }
-        public Action ProcQPatternRootEvalFalse { get ; set ; }
-        public Action ProcQPatternObserverScheduledEval { get ; set ; }
+        public Action ProcQPatternRootEvalFalse { get; set; }
+        public Action ProcQPatternObserverScheduledEval { get; set; }
         public Action<EvalObserverFactoryNode, MatchedEventMap> ProcQPatternObserverEvaluateTrue { get; set; }
-        public Action<EvalFollowedByFactoryNode,MatchedEventMap,int?> ProcQPatternFollowedByEvaluateTrue { get; set; }
+        public Action<EvalFollowedByFactoryNode, MatchedEventMap, int?> ProcQPatternFollowedByEvaluateTrue { get; set; }
         public Action<EvalGuardFactoryNode, MatchedEventMap> ProcQPatternGuardStart { get; set; }
         public Action<EvalAndFactoryNode, MatchedEventMap> ProcQPatternAndStart { get; set; }
         public Action<EvalFilterFactoryNode, MatchedEventMap> ProcQPatternFilterStart { get; set; }
         public Action<EvalNotFactoryNode, MatchedEventMap> ProcQPatternNotStart { get; set; }
         public Action<EvalAndFactoryNode, MatchedEventMap> ProcQPatternAndEvaluateTrue { get; set; }
-        public Action ProcQPatternGuardScheduledEval { get ; set ; }
+        public Action ProcQPatternGuardScheduledEval { get; set; }
         public Action<EvalGuardFactoryNode> ProcQPatternGuardGuardQuit { get; set; }
         public Action<EvalAndFactoryNode> ProcQPatternAndQuit { get; set; }
         public Action<EvalFilterFactoryNode, MatchedEventMap> ProcQPatternFilterQuit { get; set; }
@@ -180,7 +219,7 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         public Action<EvalNotFactoryNode> ProcQPatternNotEvalFalse { get; set; }
         public Action<MatchedEventMap> ProcQPatternRootEvaluateTrue { get; set; }
         public Action<EvalObserverFactoryNode, MatchedEventMap> ProcQPatternObserverStart { get; set; }
-        public Action<EvalMatchUntilFactoryNode,MatchedEventMap,bool> ProcQPatternMatchUntilEvaluateTrue { get; set; }
+        public Action<EvalMatchUntilFactoryNode, MatchedEventMap, bool> ProcQPatternMatchUntilEvaluateTrue { get; set; }
         public Action<EvalMatchUntilFactoryNode, MatchedEventMap> ProcQPatternMatchUntilStart { get; set; }
         public Action<EvalMatchUntilFactoryNode> ProcQPatternMatchUntilQuit { get; set; }
         public Action<EvalMatchUntilFactoryNode, bool> ProcQPatternMatchUntilEvalFalse { get; set; }
@@ -206,950 +245,1385 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         public Action<AgentInstanceContext> ProcQContextPartitionAllocate { get; set; }
         public Action<AgentInstanceContext> ProcQContextPartitionDestroy { get; set; }
         public Action<MatchedEventMap> ProcQPatternRootStart { get; set; }
-        public Action ProcQPatternRootQuit { get ; set ; }
-        public Action<OnTriggerType,EventBean[],EventBean[]> ProcQInfraOnAction { get; set; }
+        public Action ProcQPatternRootQuit { get; set; }
+        public Action<OnTriggerType, EventBean[], EventBean[]> ProcQInfraOnAction { get; set; }
         public Action<EventBean> ProcQTableUpdatedEvent { get; set; }
-        public Action<bool,EventBean,int> ProcQInfraMergeWhenThens { get; set; }
+        public Action<bool, EventBean, int> ProcQInfraMergeWhenThens { get; set; }
         public Action<bool, int> ProcQInfraMergeWhenThenItem { get; set; }
         public Action<int> ProcQInfraMergeWhenThenActions { get; set; }
         public Action<int, string> ProcQInfraMergeWhenThenActionItem { get; set; }
         public Action<string> ProcQInfraTriggeredLookup { get; set; }
         public Action<JoinExecTableLookupStrategy, EventTable> ProcQIndexJoinLookup { get; set; }
         public Action<EventBean[][], EventBean[][]> ProcQJoinDispatch { get; set; }
-        public Action ProcQJoinExecStrategy { get ; set ; }
-        public Action ProcQJoinCompositionStreamToWin { get ; set ; }
-        public Action<int,EventBean[],EventBean[]> ProcQJoinCompositionStepUpdIndex { get; set; }
-        public Action<EventTable,EventBean[],EventBean[]> ProcQIndexAddRemove { get; set; }
+        public Action ProcQJoinExecStrategy { get; set; }
+        public Action ProcQJoinCompositionStreamToWin { get; set; }
+        public Action<int, EventBean[], EventBean[]> ProcQJoinCompositionStepUpdIndex { get; set; }
+        public Action<EventTable, EventBean[], EventBean[]> ProcQIndexAddRemove { get; set; }
         public Action<EventTable, EventBean[]> ProcQIndexAdd { get; set; }
         public Action<EventTable, EventBean[]> ProcQIndexRemove { get; set; }
-        public Action<bool,int,EventBean[]> ProcQJoinCompositionQueryStrategy { get; set; }
+        public Action<bool, int, EventBean[]> ProcQJoinCompositionQueryStrategy { get; set; }
         public Action<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>> ProcQJoinExecProcess { get; set; }
-        public Action ProcQJoinCompositionWinToWin { get ; set ; }
+        public Action ProcQJoinCompositionWinToWin { get; set; }
         public Action<EventBean[], EventBean[]> ProcQOutputProcessWCondition { get; set; }
         public Action<int, int> ProcQOutputRateConditionUpdate { get; set; }
-        public Action ProcQOutputRateConditionOutputNow { get ; set ; }
-        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>, ISet<MultiKeyArrayOfKeys<EventBean>>> ProcQOutputProcessWConditionJoin { get; set; }
-        public Action<string,EventBean[],EventBean[]> ProcQWhereClauseFilter { get; set; }
-        public Action<int,EventBean,bool> ProcQWhereClauseFilterEval { get; set; }
+        public Action ProcQOutputRateConditionOutputNow { get; set; }
+
+        public Action<ISet<MultiKeyArrayOfKeys<EventBean>>, ISet<MultiKeyArrayOfKeys<EventBean>>>
+            ProcQOutputProcessWConditionJoin { get; set; }
+
+        public Action<string, EventBean[], EventBean[]> ProcQWhereClauseFilter { get; set; }
+        public Action<int, EventBean, bool> ProcQWhereClauseFilterEval { get; set; }
         public Action<EventBean[], EventBean[]> ProcQWhereClauseIR { get; set; }
-        public Action<bool,EventBean,int> ProcQSplitStream { get; set; }
+        public Action<bool, EventBean, int> ProcQSplitStream { get; set; }
         public Action<int> ProcQSplitStreamWhere { get; set; }
         public Action<int> ProcQSplitStreamRoute { get; set; }
-        public Action ProcQSubselectAggregation { get ; set ; }
+        public Action ProcQSubselectAggregation { get; set; }
         public Action<EventBean> ProcQTableAddEvent { get; set; }
         public Action<EventBean> ProcQaTableUpdatedEventWKeyBefore { get; set; }
         public Action<EventBean> ProcQaTableUpdatedEventWKeyAfter { get; set; }
         public Action<EventBean> ProcQTableDeleteEvent { get; set; }
-        public Action<bool,int,int,object> ProcQAggregationGroupedApplyEnterLeave { get; set; }
-        public Action<bool,int,object,string> ProcQAggNoAccessEnterLeave { get; set; }
-        public Action<bool,int,string> ProcQAggAccessEnterLeave { get; set; }
+        public Action<bool, int, int, object> ProcQAggregationGroupedApplyEnterLeave { get; set; }
+        public Action<bool, int, object, string> ProcQAggNoAccessEnterLeave { get; set; }
+        public Action<bool, int, string> ProcQAggAccessEnterLeave { get; set; }
         public Action<InternalEventRouterEntry[]> ProcQUpdateIStream { get; set; }
         public Action<int, InternalEventRouterEntry> ProcQUpdateIStreamApply { get; set; }
-        public Action ProcQUpdateIStreamApplyWhere { get ; set ; }
+        public Action ProcQUpdateIStreamApplyWhere { get; set; }
         public Action<InternalEventRouterEntry> ProcQUpdateIStreamApplyAssignments { get; set; }
         public Action<int> ProcQUpdateIStreamApplyAssignmentItem { get; set; }
-        public Action ProcQOutputRateConditionScheduledEval { get ; set ; }
-        public Action ProcQHistoricalScheduledEval { get ; set ; }
-        public Action ProcQJoinExecFilter { get ; set ; }
-        public Action ProcQJoinCompositionHistorical { get ; set ; }
+        public Action ProcQOutputRateConditionScheduledEval { get; set; }
+        public Action ProcQHistoricalScheduledEval { get; set; }
+        public Action ProcQJoinExecFilter { get; set; }
+        public Action ProcQJoinCompositionHistorical { get; set; }
+        public Action ProcAOutputProcessNonBuffered { get; set; }
+        public Action ProcAOutputProcessNonBufferedJoin { get; set; }
+
 
         public bool Activated()
         {
             return ProcActivated.Invoke();
         }
 
-         public void QNamedWindowDispatch (string runtimeURI) {
-                ProcQNamedWindowDispatch (runtimeURI);
-        }
-
-        public void ANamedWindowDispatch () {
-                ProcANamedWindowDispatch ();
-        }
-
-        public void QNamedWindowCPSingle (string runtimeURI, int numConsumers, EventBean[] newData, EventBean[] oldData, EPStatementAgentInstanceHandle handle, long time)
+        public void QNamedWindowDispatch(string runtimeURI)
         {
-                ProcQNamedWindowCPSingle (runtimeURI, numConsumers, newData, oldData, handle, time);
+            ProcQNamedWindowDispatch(runtimeURI);
         }
 
-        public void ANamedWindowCPSingle () {
-                ProcANamedWindowCPSingle ();
-        }
-
-        public void QNamedWindowCPMulti (string runtimeURI, IDictionary<NamedWindowConsumerView, NamedWindowDeltaData> deltaPerConsumer, EPStatementAgentInstanceHandle handle, long time) {
-                ProcQNamedWindowCPMulti (runtimeURI, deltaPerConsumer, handle, time);
-        }
-
-        public void ANamedWindowCPMulti () {
-                ProcANamedWindowCPMulti ();
-        }
-
-        public void QRegEx (EventBean newEvent, RowRecogPartitionState partitionState)
-
+        public void ANamedWindowDispatch()
         {
-                ProcQRegEx (newEvent, partitionState);
+            ProcANamedWindowDispatch();
         }
 
-        public void ARegEx (RowRecogPartitionState partitionState, IList<RowRecogNFAStateEntry> endStates, IList<RowRecogNFAStateEntry> terminationStates) {
-                ProcARegEx (partitionState, endStates, terminationStates);
-        }
-
-        public void QRegExState (RowRecogNFAStateEntry currentState, IDictionary<string, Pair<int, bool>> variableStreams, int[] multimatchStreamNumToVariable) {
-                ProcQRegExState (currentState, variableStreams, multimatchStreamNumToVariable);
-        }
-
-        public void ARegExState (IList<RowRecogNFAStateEntry> next, IDictionary<string, Pair<int, bool>> variableStreams, int[] multimatchStreamNumToVariable) {
-                ProcARegExState (next, variableStreams, multimatchStreamNumToVariable);
-        }
-
-        public void QRegExStateStart (RowRecogNFAState startState, IDictionary<string, Pair<int, bool>> variableStreams, int[] multimatchStreamNumToVariable) {
-                ProcQRegExStateStart (startState, variableStreams, multimatchStreamNumToVariable);
-        }
-
-        public void ARegExStateStart (IList<RowRecogNFAStateEntry> nextStates, IDictionary<string, Pair<int, bool>> variableStreams, int[] multimatchStreamNumToVariable)
+        public void QNamedWindowCPSingle(
+            string runtimeURI,
+            int numConsumers,
+            EventBean[] newData,
+            EventBean[] oldData,
+            EPStatementAgentInstanceHandle handle,
+            long time)
         {
-                ProcARegExStateStart (nextStates, variableStreams, multimatchStreamNumToVariable);
+            ProcQNamedWindowCPSingle(runtimeURI, numConsumers, newData, oldData, handle, time);
         }
 
-        public void QRegExPartition (EventBean theEvent) {
-                ProcQRegExPartition (theEvent);
+        public void ANamedWindowCPSingle()
+        {
+            ProcANamedWindowCPSingle();
         }
 
-        public void ARegExPartition (bool exists, object partitionKey, RowRecogPartitionState state) {
-                ProcARegExPartition (exists, partitionKey, state);
+        public void QNamedWindowCPMulti(
+            string runtimeURI,
+            IDictionary<NamedWindowConsumerView, NamedWindowDeltaData> deltaPerConsumer,
+            EPStatementAgentInstanceHandle handle,
+            long time)
+        {
+            ProcQNamedWindowCPMulti(runtimeURI, deltaPerConsumer, handle, time);
         }
 
-        public void QRegIntervalValue () {
-                ProcQRegIntervalValue ();
+        public void ANamedWindowCPMulti()
+        {
+            ProcANamedWindowCPMulti();
         }
 
-        public void ARegIntervalValue (long result) {
-                ProcARegIntervalValue (result);
-        }
-
-        public void QRegIntervalState (RowRecogNFAStateEntry endState, IDictionary<string, Pair<int, bool>> variableStreams, int[] multimatchStreamNumToVariable, long runtimeTime) {
-                ProcQRegIntervalState (endState, variableStreams, multimatchStreamNumToVariable, runtimeTime);
-        }
-
-        public void ARegIntervalState (bool scheduled) {
-                ProcARegIntervalState (scheduled);
-        }
-
-        public void QRegOut (EventBean[] outBeans) {
-                ProcQRegOut (outBeans);
-        }
-
-        public void ARegOut () {
-                ProcARegOut ();
-        }
-
-        public void QRegMeasure (RowRecogNFAStateEntry endState, IDictionary<string, Pair<int, bool>> variableStreams, int[] multimatchStreamNumToVariable) {
-                ProcQRegMeasure (endState, variableStreams, multimatchStreamNumToVariable);
-        }
-
-        public void ARegMeasure (EventBean outBean) {
-                ProcARegMeasure (outBean);
-        }
-
-        public void QRegExScheduledEval () {
-                ProcQRegExScheduledEval ();
-        }
-
-        public void ARegExScheduledEval () {
-                ProcARegExScheduledEval ();
-        }
-
-        public void QRegFilter (string text, EventBean[] eventsPerStream) {
-                ProcQRegFilter (text, eventsPerStream);
-        }
-
-        public void ARegFilter (bool? result) {
-                ProcARegFilter (result);
-        }
-
-        public void QFilterActivationStream (string eventTypeName, int streamNumber, AgentInstanceContext agentInstanceContext, bool subselect, int subselectNumber) {
-                ProcQFilterActivationStream (eventTypeName, streamNumber, agentInstanceContext, subselect, subselectNumber);
-        }
-
-        public void AFilterActivationStream (AgentInstanceContext agentInstanceContext, bool subselect, int subselectNumber) {
-                ProcAFilterActivationStream (agentInstanceContext, subselect, subselectNumber);
-        }
-
-        public void QIndexSubordLookup (SubordTableLookupStrategy subordTableLookupStrategy, EventTable optionalEventIndex, int[] keyStreamNums) {
-                ProcQIndexSubordLookup (subordTableLookupStrategy, optionalEventIndex, keyStreamNums);
-        }
-
-        public void AIndexSubordLookup (ICollection<EventBean> events, object keys)
+        public void QRegEx(
+            EventBean newEvent,
+            RowRecogPartitionState partitionState)
 
         {
-                ProcAIndexSubordLookup (events, keys);
+            ProcQRegEx(newEvent, partitionState);
         }
 
-        public void QViewProcessIRStream (ViewFactory viewFactory, EventBean[] newData, EventBean[] oldData) {
-                ProcQViewProcessIRStream (viewFactory, newData, oldData);
+        public void ARegEx(
+            RowRecogPartitionState partitionState,
+            IList<RowRecogNFAStateEntry> endStates,
+            IList<RowRecogNFAStateEntry> terminationStates)
+        {
+            ProcARegEx(partitionState, endStates, terminationStates);
         }
 
-        public void AViewProcessIRStream () {
-                ProcAViewProcessIRStream ();
+        public void QRegExState(
+            RowRecogNFAStateEntry currentState,
+            IDictionary<string, Pair<int, bool>> variableStreams,
+            int[] multimatchStreamNumToVariable)
+        {
+            ProcQRegExState(currentState, variableStreams, multimatchStreamNumToVariable);
         }
 
-        public void QViewIndicate (ViewFactory viewFactory, EventBean[] newData, EventBean[] oldData) {
-                ProcQViewIndicate (viewFactory, newData, oldData);
+        public void ARegExState(
+            IList<RowRecogNFAStateEntry> next,
+            IDictionary<string, Pair<int, bool>> variableStreams,
+            int[] multimatchStreamNumToVariable)
+        {
+            ProcARegExState(next, variableStreams, multimatchStreamNumToVariable);
         }
 
-        public void AViewIndicate () {
-                ProcAViewIndicate ();
+        public void QRegExStateStart(
+            RowRecogNFAState startState,
+            IDictionary<string, Pair<int, bool>> variableStreams,
+            int[] multimatchStreamNumToVariable)
+        {
+            ProcQRegExStateStart(startState, variableStreams, multimatchStreamNumToVariable);
         }
 
-        public void QViewScheduledEval (ViewFactory viewFactory) {
-                ProcQViewScheduledEval (viewFactory);
+        public void ARegExStateStart(
+            IList<RowRecogNFAStateEntry> nextStates,
+            IDictionary<string, Pair<int, bool>> variableStreams,
+            int[] multimatchStreamNumToVariable)
+        {
+            ProcARegExStateStart(nextStates, variableStreams, multimatchStreamNumToVariable);
         }
 
-        public void AViewScheduledEval () {
-                ProcAViewScheduledEval ();
+        public void QRegExPartition(EventBean theEvent)
+        {
+            ProcQRegExPartition(theEvent);
         }
 
-        public void QPatternFilterMatch (EvalFilterFactoryNode filterNode, EventBean theEvent) {
-                ProcQPatternFilterMatch (filterNode, theEvent);
+        public void ARegExPartition(
+            bool exists,
+            object partitionKey,
+            RowRecogPartitionState state)
+        {
+            ProcARegExPartition(exists, partitionKey, state);
         }
 
-        public void APatternFilterMatch (bool quitted) {
-                ProcAPatternFilterMatch (quitted);
+        public void QRegIntervalValue()
+        {
+            ProcQRegIntervalValue();
         }
 
-        public void QPatternNotEvaluateTrue (EvalNotFactoryNode evalNotNode, MatchedEventMapMinimal matchEvent) {
-                ProcQPatternNotEvaluateTrue (evalNotNode, matchEvent);
+        public void ARegIntervalValue(long result)
+        {
+            ProcARegIntervalValue(result);
         }
 
-        public void APatternNotEvaluateTrue (bool quitted) {
-                ProcAPatternNotEvaluateTrue (quitted);
+        public void QRegIntervalState(
+            RowRecogNFAStateEntry endState,
+            IDictionary<string, Pair<int, bool>> variableStreams,
+            int[] multimatchStreamNumToVariable,
+            long runtimeTime)
+        {
+            ProcQRegIntervalState(endState, variableStreams, multimatchStreamNumToVariable, runtimeTime);
         }
 
-        public void QPatternObserverQuit (EvalObserverFactoryNode evalObserverNode)
+        public void ARegIntervalState(bool scheduled)
+        {
+            ProcARegIntervalState(scheduled);
+        }
+
+        public void QRegOut(EventBean[] outBeans)
+        {
+            ProcQRegOut(outBeans);
+        }
+
+        public void ARegOut()
+        {
+            ProcARegOut();
+        }
+
+        public void QRegMeasure(
+            RowRecogNFAStateEntry endState,
+            IDictionary<string, Pair<int, bool>> variableStreams,
+            int[] multimatchStreamNumToVariable)
+        {
+            ProcQRegMeasure(endState, variableStreams, multimatchStreamNumToVariable);
+        }
+
+        public void ARegMeasure(EventBean outBean)
+        {
+            ProcARegMeasure(outBean);
+        }
+
+        public void QRegExScheduledEval()
+        {
+            ProcQRegExScheduledEval();
+        }
+
+        public void ARegExScheduledEval()
+        {
+            ProcARegExScheduledEval();
+        }
+
+        public void QRegFilter(
+            string text,
+            EventBean[] eventsPerStream)
+        {
+            ProcQRegFilter(text, eventsPerStream);
+        }
+
+        public void ARegFilter(bool? result)
+        {
+            ProcARegFilter(result);
+        }
+
+        public void QFilterActivationStream(
+            string eventTypeName,
+            int streamNumber,
+            AgentInstanceContext agentInstanceContext,
+            bool subselect,
+            int subselectNumber)
+        {
+            ProcQFilterActivationStream(eventTypeName, streamNumber, agentInstanceContext, subselect, subselectNumber);
+        }
+
+        public void AFilterActivationStream(
+            AgentInstanceContext agentInstanceContext,
+            bool subselect,
+            int subselectNumber)
+        {
+            ProcAFilterActivationStream(agentInstanceContext, subselect, subselectNumber);
+        }
+
+        public void QIndexSubordLookup(
+            SubordTableLookupStrategy subordTableLookupStrategy,
+            EventTable optionalEventIndex,
+            int[] keyStreamNums)
+        {
+            ProcQIndexSubordLookup(subordTableLookupStrategy, optionalEventIndex, keyStreamNums);
+        }
+
+        public void AIndexSubordLookup(
+            ICollection<EventBean> events,
+            object keys)
 
         {
-                ProcQPatternObserverQuit (evalObserverNode);
+            ProcAIndexSubordLookup(events, keys);
         }
 
-        public void APatternObserverQuit () {
-                ProcAPatternObserverQuit ();
+        public void QViewProcessIRStream(
+            ViewFactory viewFactory,
+            EventBean[] newData,
+            EventBean[] oldData)
+        {
+            ProcQViewProcessIRStream(viewFactory, newData, oldData);
         }
 
-        public void QPatternAndEvaluateFalse (EvalAndFactoryNode evalAndNode) {
-                ProcQPatternAndEvaluateFalse (evalAndNode);
+        public void AViewProcessIRStream()
+        {
+            ProcAViewProcessIRStream();
         }
 
-        public void APatternAndEvaluateFalse () {
-                ProcAPatternAndEvaluateFalse ();
+        public void QViewIndicate(
+            ViewFactory viewFactory,
+            EventBean[] newData,
+            EventBean[] oldData)
+        {
+            ProcQViewIndicate(viewFactory, newData, oldData);
         }
 
-        public void QPatternRootEvalFalse () {
-                ProcQPatternRootEvalFalse ();
+        public void AViewIndicate()
+        {
+            ProcAViewIndicate();
         }
 
-        public void APatternRootEvalFalse () {
-                ProcAPatternRootEvalFalse ();
+        public void QViewScheduledEval(ViewFactory viewFactory)
+        {
+            ProcQViewScheduledEval(viewFactory);
         }
 
-        public void QPatternObserverScheduledEval () {
-                ProcQPatternObserverScheduledEval ();
+        public void AViewScheduledEval()
+        {
+            ProcAViewScheduledEval();
         }
 
-        public void APatternObserverScheduledEval () {
-                ProcAPatternObserverScheduledEval ();
+        public void QPatternFilterMatch(
+            EvalFilterFactoryNode filterNode,
+            EventBean theEvent)
+        {
+            ProcQPatternFilterMatch(filterNode, theEvent);
         }
 
-        public void QPatternObserverEvaluateTrue (EvalObserverFactoryNode evalObserverNode, MatchedEventMap matchEvent) {
-                ProcQPatternObserverEvaluateTrue (evalObserverNode, matchEvent);
+        public void APatternFilterMatch(bool quitted)
+        {
+            ProcAPatternFilterMatch(quitted);
         }
 
-        public void APatternObserverEvaluateTrue () {
-                ProcAPatternObserverEvaluateTrue ();
+        public void QPatternNotEvaluateTrue(
+            EvalNotFactoryNode evalNotNode,
+            MatchedEventMapMinimal matchEvent)
+        {
+            ProcQPatternNotEvaluateTrue(evalNotNode, matchEvent);
         }
 
-        public void QPatternFollowedByEvaluateTrue (EvalFollowedByFactoryNode evalFollowedByNode, MatchedEventMap matchEvent, int? index) {
-                ProcQPatternFollowedByEvaluateTrue (evalFollowedByNode, matchEvent, index);
+        public void APatternNotEvaluateTrue(bool quitted)
+        {
+            ProcAPatternNotEvaluateTrue(quitted);
         }
 
-        public void APatternFollowedByEvaluateTrue (bool quitted) {
-                ProcAPatternFollowedByEvaluateTrue (quitted);
-        }
-
-        public void QPatternGuardStart (EvalGuardFactoryNode evalGuardNode, MatchedEventMap beginState) {
-                ProcQPatternGuardStart (evalGuardNode, beginState);
-        }
-
-        public void APatternGuardStart () {
-                ProcAPatternGuardStart ();
-        }
-
-        public void QPatternAndStart (EvalAndFactoryNode evalAndNode, MatchedEventMap beginState) {
-                ProcQPatternAndStart (evalAndNode, beginState);
-        }
-
-        public void APatternAndStart () {
-                ProcAPatternAndStart ();
-        }
-
-        public void QPatternFilterStart (EvalFilterFactoryNode evalFilterNode, MatchedEventMap beginState) {
-                ProcQPatternFilterStart (evalFilterNode, beginState);
-        }
-
-        public void APatternFilterStart () {
-                ProcAPatternFilterStart ();
-        }
-
-        public void QPatternNotStart (EvalNotFactoryNode evalNotNode, MatchedEventMap beginState) {
-                ProcQPatternNotStart (evalNotNode, beginState);
-        }
-
-        public void APatternNotStart () {
-                ProcAPatternNotStart ();
-        }
-
-        public void QPatternAndEvaluateTrue (EvalAndFactoryNode evalAndNode, MatchedEventMap passUp) {
-                ProcQPatternAndEvaluateTrue (evalAndNode, passUp);
-        }
-
-        public void APatternAndEvaluateTrue (bool quitted) {
-                ProcAPatternAndEvaluateTrue (quitted);
-        }
-
-        public void QPatternGuardScheduledEval () {
-                ProcQPatternGuardScheduledEval ();
-        }
-
-        public void APatternGuardScheduledEval () {
-                ProcAPatternGuardScheduledEval ();
-        }
-
-        public void QPatternGuardGuardQuit (EvalGuardFactoryNode evalGuardNode) {
-                ProcQPatternGuardGuardQuit (evalGuardNode);
-        }
-
-        public void APatternGuardGuardQuit () {
-                ProcAPatternGuardGuardQuit ();
-        }
-
-        public void QPatternAndQuit (EvalAndFactoryNode evalAndNode) {
-                ProcQPatternAndQuit (evalAndNode);
-        }
-
-        public void APatternAndQuit () {
-                ProcAPatternAndQuit ();
-        }
-
-        public void QPatternFilterQuit (EvalFilterFactoryNode evalFilterNode, MatchedEventMap beginState) {
-                ProcQPatternFilterQuit (evalFilterNode, beginState);
-        }
-
-        public void APatternFilterQuit () {
-                ProcAPatternFilterQuit ();
-        }
-
-        public void QPatternNotQuit (EvalNotFactoryNode evalNotNode) {
-                ProcQPatternNotQuit (evalNotNode);
-        }
-
-        public void APatternNotQuit () {
-                ProcAPatternNotQuit ();
-        }
-
-        public void QPatternNotEvalFalse (EvalNotFactoryNode evalNotNode) {
-                ProcQPatternNotEvalFalse (evalNotNode);
-        }
-
-        public void APatternNotEvalFalse () {
-                ProcAPatternNotEvalFalse ();
-        }
-
-        public void QPatternRootEvaluateTrue (MatchedEventMap matchEvent) {
-                ProcQPatternRootEvaluateTrue (matchEvent);
-        }
-
-        public void APatternRootEvaluateTrue (bool quitted) {
-                ProcAPatternRootEvaluateTrue (quitted);
-        }
-
-        public void QPatternObserverStart (EvalObserverFactoryNode evalObserverNode, MatchedEventMap beginState) {
-                ProcQPatternObserverStart (evalObserverNode, beginState);
-        }
-
-        public void APatternObserverStart () {
-                ProcAPatternObserverStart ();
-        }
-
-        public void QPatternMatchUntilEvaluateTrue (EvalMatchUntilFactoryNode evalMatchUntilNode, MatchedEventMap matchEvent, bool matchFromUntil) {
-                ProcQPatternMatchUntilEvaluateTrue (evalMatchUntilNode, matchEvent, matchFromUntil);
-        }
-
-        public void APatternMatchUntilEvaluateTrue (bool quitted) {
-                ProcAPatternMatchUntilEvaluateTrue (quitted);
-        }
-
-        public void QPatternMatchUntilStart (EvalMatchUntilFactoryNode evalMatchUntilNode, MatchedEventMap beginState) {
-                ProcQPatternMatchUntilStart (evalMatchUntilNode, beginState);
-        }
-
-        public void APatternMatchUntilStart () {
-                ProcAPatternMatchUntilStart ();
-        }
-
-        public void QPatternMatchUntilQuit (EvalMatchUntilFactoryNode evalMatchUntilNode)
+        public void QPatternObserverQuit(EvalObserverFactoryNode evalObserverNode)
 
         {
-                ProcQPatternMatchUntilQuit (evalMatchUntilNode);
+            ProcQPatternObserverQuit(evalObserverNode);
         }
 
-        public void APatternMatchUntilQuit () {
-                ProcAPatternMatchUntilQuit ();
+        public void APatternObserverQuit()
+        {
+            ProcAPatternObserverQuit();
         }
 
-        public void QPatternMatchUntilEvalFalse (EvalMatchUntilFactoryNode evalMatchUntilNode, bool matchFromUntil) {
-                ProcQPatternMatchUntilEvalFalse (evalMatchUntilNode, matchFromUntil);
+        public void QPatternAndEvaluateFalse(EvalAndFactoryNode evalAndNode)
+        {
+            ProcQPatternAndEvaluateFalse(evalAndNode);
         }
 
-        public void APatternMatchUntilEvalFalse () {
-                ProcAPatternMatchUntilEvalFalse ();
+        public void APatternAndEvaluateFalse()
+        {
+            ProcAPatternAndEvaluateFalse();
         }
 
-        public void QPatternGuardEvaluateTrue (EvalGuardFactoryNode evalGuardNode, MatchedEventMap matchEvent) {
-                ProcQPatternGuardEvaluateTrue (evalGuardNode, matchEvent);
+        public void QPatternRootEvalFalse()
+        {
+            ProcQPatternRootEvalFalse();
         }
 
-        public void APatternGuardEvaluateTrue (bool quitted) {
-                ProcAPatternGuardEvaluateTrue (quitted);
+        public void APatternRootEvalFalse()
+        {
+            ProcAPatternRootEvalFalse();
         }
 
-        public void QPatternGuardQuit (EvalGuardFactoryNode evalGuardNode) {
-                ProcQPatternGuardQuit (evalGuardNode);
+        public void QPatternObserverScheduledEval()
+        {
+            ProcQPatternObserverScheduledEval();
         }
 
-        public void APatternGuardQuit () {
-                ProcAPatternGuardQuit ();
+        public void APatternObserverScheduledEval()
+        {
+            ProcAPatternObserverScheduledEval();
         }
 
-        public void QPatternEveryDistinctEvaluateTrue (EvalEveryDistinctFactoryNode everyDistinctNode, MatchedEventMap matchEvent) {
-                ProcQPatternEveryDistinctEvaluateTrue (everyDistinctNode, matchEvent);
+        public void QPatternObserverEvaluateTrue(
+            EvalObserverFactoryNode evalObserverNode,
+            MatchedEventMap matchEvent)
+        {
+            ProcQPatternObserverEvaluateTrue(evalObserverNode, matchEvent);
         }
 
-        public void APatternEveryDistinctEvaluateTrue (ISet<object> keysFromNodeNoExpire, IDictionary<object,long> keysFromNodeExpire, object matchEventKey, bool haveSeenThis) {
-                ProcAPatternEveryDistinctEvaluateTrue (keysFromNodeNoExpire, keysFromNodeExpire, matchEventKey, haveSeenThis);
+        public void APatternObserverEvaluateTrue()
+        {
+            ProcAPatternObserverEvaluateTrue();
         }
 
-        public void QPatternEveryDistinctStart (EvalEveryDistinctFactoryNode everyNode, MatchedEventMap beginState) {
-                ProcQPatternEveryDistinctStart (everyNode, beginState);
+        public void QPatternFollowedByEvaluateTrue(
+            EvalFollowedByFactoryNode evalFollowedByNode,
+            MatchedEventMap matchEvent,
+            int? index)
+        {
+            ProcQPatternFollowedByEvaluateTrue(evalFollowedByNode, matchEvent, index);
         }
 
-        public void APatternEveryDistinctStart () {
-                ProcAPatternEveryDistinctStart ();
+        public void APatternFollowedByEvaluateTrue(bool quitted)
+        {
+            ProcAPatternFollowedByEvaluateTrue(quitted);
         }
 
-        public void QPatternEveryDistinctQuit (EvalEveryDistinctFactoryNode everyNode) {
-                ProcQPatternEveryDistinctQuit (everyNode);
+        public void QPatternGuardStart(
+            EvalGuardFactoryNode evalGuardNode,
+            MatchedEventMap beginState)
+        {
+            ProcQPatternGuardStart(evalGuardNode, beginState);
         }
 
-        public void APatternEveryDistinctQuit () {
-                ProcAPatternEveryDistinctQuit ();
+        public void APatternGuardStart()
+        {
+            ProcAPatternGuardStart();
         }
 
-        public void QPatternFollowedByEvalFalse (EvalFollowedByFactoryNode evalFollowedByNode) {
-                ProcQPatternFollowedByEvalFalse (evalFollowedByNode);
+        public void QPatternAndStart(
+            EvalAndFactoryNode evalAndNode,
+            MatchedEventMap beginState)
+        {
+            ProcQPatternAndStart(evalAndNode, beginState);
         }
 
-        public void APatternFollowedByEvalFalse () {
-                ProcAPatternFollowedByEvalFalse ();
+        public void APatternAndStart()
+        {
+            ProcAPatternAndStart();
         }
 
-        public void QPatternEveryDistinctEvalFalse (EvalEveryDistinctFactoryNode everyNode) {
-                ProcQPatternEveryDistinctEvalFalse (everyNode);
+        public void QPatternFilterStart(
+            EvalFilterFactoryNode evalFilterNode,
+            MatchedEventMap beginState)
+        {
+            ProcQPatternFilterStart(evalFilterNode, beginState);
         }
 
-        public void APatternEveryDistinctEvalFalse () {
-                ProcAPatternEveryDistinctEvalFalse ();
+        public void APatternFilterStart()
+        {
+            ProcAPatternFilterStart();
         }
 
-        public void QPatternEveryEvaluateTrue (EvalEveryFactoryNode evalEveryNode, MatchedEventMap matchEvent) {
-                ProcQPatternEveryEvaluateTrue (evalEveryNode, matchEvent);
+        public void QPatternNotStart(
+            EvalNotFactoryNode evalNotNode,
+            MatchedEventMap beginState)
+        {
+            ProcQPatternNotStart(evalNotNode, beginState);
         }
 
-        public void APatternEveryEvaluateTrue () {
-                ProcAPatternEveryEvaluateTrue ();
+        public void APatternNotStart()
+        {
+            ProcAPatternNotStart();
         }
 
-        public void QPatternEveryStart (EvalEveryFactoryNode evalEveryNode, MatchedEventMap beginState) {
-                ProcQPatternEveryStart (evalEveryNode, beginState);
+        public void QPatternAndEvaluateTrue(
+            EvalAndFactoryNode evalAndNode,
+            MatchedEventMap passUp)
+        {
+            ProcQPatternAndEvaluateTrue(evalAndNode, passUp);
         }
 
-        public void APatternEveryStart () {
-                ProcAPatternEveryStart ();
+        public void APatternAndEvaluateTrue(bool quitted)
+        {
+            ProcAPatternAndEvaluateTrue(quitted);
         }
 
-        public void QPatternEveryQuit (EvalEveryFactoryNode evalEveryNode) {
-                ProcQPatternEveryQuit (evalEveryNode);
+        public void QPatternGuardScheduledEval()
+        {
+            ProcQPatternGuardScheduledEval();
         }
 
-        public void APatternEveryQuit () {
-                ProcAPatternEveryQuit ();
+        public void APatternGuardScheduledEval()
+        {
+            ProcAPatternGuardScheduledEval();
         }
 
-        public void QPatternEveryEvalFalse (EvalEveryFactoryNode evalEveryNode) {
-                ProcQPatternEveryEvalFalse (evalEveryNode);
+        public void QPatternGuardGuardQuit(EvalGuardFactoryNode evalGuardNode)
+        {
+            ProcQPatternGuardGuardQuit(evalGuardNode);
         }
 
-        public void APatternEveryEvalFalse () {
-                ProcAPatternEveryEvalFalse ();
+        public void APatternGuardGuardQuit()
+        {
+            ProcAPatternGuardGuardQuit();
         }
 
-        public void QPatternOrEvaluateTrue (EvalOrFactoryNode evalOrNode, MatchedEventMap matchEvent) {
-                ProcQPatternOrEvaluateTrue (evalOrNode, matchEvent);
+        public void QPatternAndQuit(EvalAndFactoryNode evalAndNode)
+        {
+            ProcQPatternAndQuit(evalAndNode);
         }
 
-        public void APatternOrEvaluateTrue (bool quitted) {
-                ProcAPatternOrEvaluateTrue (quitted);
+        public void APatternAndQuit()
+        {
+            ProcAPatternAndQuit();
         }
 
-        public void QPatternOrStart (EvalOrFactoryNode evalOrNode, MatchedEventMap beginState) {
-                ProcQPatternOrStart (evalOrNode, beginState);
+        public void QPatternFilterQuit(
+            EvalFilterFactoryNode evalFilterNode,
+            MatchedEventMap beginState)
+        {
+            ProcQPatternFilterQuit(evalFilterNode, beginState);
         }
 
-        public void APatternOrStart () {
-                ProcAPatternOrStart ();
+        public void APatternFilterQuit()
+        {
+            ProcAPatternFilterQuit();
         }
 
-        public void QPatternOrQuit (EvalOrFactoryNode evalOrNode) {
-                ProcQPatternOrQuit (evalOrNode);
+        public void QPatternNotQuit(EvalNotFactoryNode evalNotNode)
+        {
+            ProcQPatternNotQuit(evalNotNode);
         }
 
-        public void APatternOrQuit () {
-                ProcAPatternOrQuit ();
+        public void APatternNotQuit()
+        {
+            ProcAPatternNotQuit();
         }
 
-        public void QPatternOrEvalFalse (EvalOrFactoryNode evalOrNode) {
-                ProcQPatternOrEvalFalse (evalOrNode);
+        public void QPatternNotEvalFalse(EvalNotFactoryNode evalNotNode)
+        {
+            ProcQPatternNotEvalFalse(evalNotNode);
         }
 
-        public void APatternOrEvalFalse () {
-                ProcAPatternOrEvalFalse ();
+        public void APatternNotEvalFalse()
+        {
+            ProcAPatternNotEvalFalse();
         }
 
-        public void QPatternFollowedByStart (EvalFollowedByFactoryNode evalFollowedByNode, MatchedEventMap beginState) {
-                ProcQPatternFollowedByStart (evalFollowedByNode, beginState);
+        public void QPatternRootEvaluateTrue(MatchedEventMap matchEvent)
+        {
+            ProcQPatternRootEvaluateTrue(matchEvent);
         }
 
-        public void APatternFollowedByStart () {
-                ProcAPatternFollowedByStart ();
+        public void APatternRootEvaluateTrue(bool quitted)
+        {
+            ProcAPatternRootEvaluateTrue(quitted);
         }
 
-        public void QPatternFollowedByQuit (EvalFollowedByFactoryNode evalFollowedByNode)
+        public void QPatternObserverStart(
+            EvalObserverFactoryNode evalObserverNode,
+            MatchedEventMap beginState)
+        {
+            ProcQPatternObserverStart(evalObserverNode, beginState);
+        }
+
+        public void APatternObserverStart()
+        {
+            ProcAPatternObserverStart();
+        }
+
+        public void QPatternMatchUntilEvaluateTrue(
+            EvalMatchUntilFactoryNode evalMatchUntilNode,
+            MatchedEventMap matchEvent,
+            bool matchFromUntil)
+        {
+            ProcQPatternMatchUntilEvaluateTrue(evalMatchUntilNode, matchEvent, matchFromUntil);
+        }
+
+        public void APatternMatchUntilEvaluateTrue(bool quitted)
+        {
+            ProcAPatternMatchUntilEvaluateTrue(quitted);
+        }
+
+        public void QPatternMatchUntilStart(
+            EvalMatchUntilFactoryNode evalMatchUntilNode,
+            MatchedEventMap beginState)
+        {
+            ProcQPatternMatchUntilStart(evalMatchUntilNode, beginState);
+        }
+
+        public void APatternMatchUntilStart()
+        {
+            ProcAPatternMatchUntilStart();
+        }
+
+        public void QPatternMatchUntilQuit(EvalMatchUntilFactoryNode evalMatchUntilNode)
 
         {
-                ProcQPatternFollowedByQuit (evalFollowedByNode);
+            ProcQPatternMatchUntilQuit(evalMatchUntilNode);
         }
 
-        public void APatternFollowedByQuit () {
-                ProcAPatternFollowedByQuit ();
+        public void APatternMatchUntilQuit()
+        {
+            ProcAPatternMatchUntilQuit();
         }
 
-        public void QPatternGuardEvalFalse (EvalGuardFactoryNode evalGuardNode) {
-                ProcQPatternGuardEvalFalse (evalGuardNode);
+        public void QPatternMatchUntilEvalFalse(
+            EvalMatchUntilFactoryNode evalMatchUntilNode,
+            bool matchFromUntil)
+        {
+            ProcQPatternMatchUntilEvalFalse(evalMatchUntilNode, matchFromUntil);
         }
 
-        public void APatternGuardEvalFalse () {
-                ProcAPatternGuardEvalFalse ();
+        public void APatternMatchUntilEvalFalse()
+        {
+            ProcAPatternMatchUntilEvalFalse();
         }
 
-        public void QContextScheduledEval (ContextRuntimeDescriptor contextDescriptor) {
-                ProcQContextScheduledEval (contextDescriptor);
+        public void QPatternGuardEvaluateTrue(
+            EvalGuardFactoryNode evalGuardNode,
+            MatchedEventMap matchEvent)
+        {
+            ProcQPatternGuardEvaluateTrue(evalGuardNode, matchEvent);
         }
 
-        public void AContextScheduledEval () {
-                ProcAContextScheduledEval ();
+        public void APatternGuardEvaluateTrue(bool quitted)
+        {
+            ProcAPatternGuardEvaluateTrue(quitted);
         }
 
-        public void QContextPartitionAllocate (AgentInstanceContext agentInstanceContext) {
-                ProcQContextPartitionAllocate (agentInstanceContext);
+        public void QPatternGuardQuit(EvalGuardFactoryNode evalGuardNode)
+        {
+            ProcQPatternGuardQuit(evalGuardNode);
         }
 
-        public void AContextPartitionAllocate () {
-                ProcAContextPartitionAllocate ();
+        public void APatternGuardQuit()
+        {
+            ProcAPatternGuardQuit();
         }
 
-        public void QContextPartitionDestroy (AgentInstanceContext agentInstanceContext)
+        public void QPatternEveryDistinctEvaluateTrue(
+            EvalEveryDistinctFactoryNode everyDistinctNode,
+            MatchedEventMap matchEvent)
+        {
+            ProcQPatternEveryDistinctEvaluateTrue(everyDistinctNode, matchEvent);
+        }
+
+        public void APatternEveryDistinctEvaluateTrue(
+            ISet<object> keysFromNodeNoExpire,
+            IDictionary<object, long> keysFromNodeExpire,
+            object matchEventKey,
+            bool haveSeenThis)
+        {
+            ProcAPatternEveryDistinctEvaluateTrue(
+                keysFromNodeNoExpire,
+                keysFromNodeExpire,
+                matchEventKey,
+                haveSeenThis);
+        }
+
+        public void QPatternEveryDistinctStart(
+            EvalEveryDistinctFactoryNode everyNode,
+            MatchedEventMap beginState)
+        {
+            ProcQPatternEveryDistinctStart(everyNode, beginState);
+        }
+
+        public void APatternEveryDistinctStart()
+        {
+            ProcAPatternEveryDistinctStart();
+        }
+
+        public void QPatternEveryDistinctQuit(EvalEveryDistinctFactoryNode everyNode)
+        {
+            ProcQPatternEveryDistinctQuit(everyNode);
+        }
+
+        public void APatternEveryDistinctQuit()
+        {
+            ProcAPatternEveryDistinctQuit();
+        }
+
+        public void QPatternFollowedByEvalFalse(EvalFollowedByFactoryNode evalFollowedByNode)
+        {
+            ProcQPatternFollowedByEvalFalse(evalFollowedByNode);
+        }
+
+        public void APatternFollowedByEvalFalse()
+        {
+            ProcAPatternFollowedByEvalFalse();
+        }
+
+        public void QPatternEveryDistinctEvalFalse(EvalEveryDistinctFactoryNode everyNode)
+        {
+            ProcQPatternEveryDistinctEvalFalse(everyNode);
+        }
+
+        public void APatternEveryDistinctEvalFalse()
+        {
+            ProcAPatternEveryDistinctEvalFalse();
+        }
+
+        public void QPatternEveryEvaluateTrue(
+            EvalEveryFactoryNode evalEveryNode,
+            MatchedEventMap matchEvent)
+        {
+            ProcQPatternEveryEvaluateTrue(evalEveryNode, matchEvent);
+        }
+
+        public void APatternEveryEvaluateTrue()
+        {
+            ProcAPatternEveryEvaluateTrue();
+        }
+
+        public void QPatternEveryStart(
+            EvalEveryFactoryNode evalEveryNode,
+            MatchedEventMap beginState)
+        {
+            ProcQPatternEveryStart(evalEveryNode, beginState);
+        }
+
+        public void APatternEveryStart()
+        {
+            ProcAPatternEveryStart();
+        }
+
+        public void QPatternEveryQuit(EvalEveryFactoryNode evalEveryNode)
+        {
+            ProcQPatternEveryQuit(evalEveryNode);
+        }
+
+        public void APatternEveryQuit()
+        {
+            ProcAPatternEveryQuit();
+        }
+
+        public void QPatternEveryEvalFalse(EvalEveryFactoryNode evalEveryNode)
+        {
+            ProcQPatternEveryEvalFalse(evalEveryNode);
+        }
+
+        public void APatternEveryEvalFalse()
+        {
+            ProcAPatternEveryEvalFalse();
+        }
+
+        public void QPatternOrEvaluateTrue(
+            EvalOrFactoryNode evalOrNode,
+            MatchedEventMap matchEvent)
+        {
+            ProcQPatternOrEvaluateTrue(evalOrNode, matchEvent);
+        }
+
+        public void APatternOrEvaluateTrue(bool quitted)
+        {
+            ProcAPatternOrEvaluateTrue(quitted);
+        }
+
+        public void QPatternOrStart(
+            EvalOrFactoryNode evalOrNode,
+            MatchedEventMap beginState)
+        {
+            ProcQPatternOrStart(evalOrNode, beginState);
+        }
+
+        public void APatternOrStart()
+        {
+            ProcAPatternOrStart();
+        }
+
+        public void QPatternOrQuit(EvalOrFactoryNode evalOrNode)
+        {
+            ProcQPatternOrQuit(evalOrNode);
+        }
+
+        public void APatternOrQuit()
+        {
+            ProcAPatternOrQuit();
+        }
+
+        public void QPatternOrEvalFalse(EvalOrFactoryNode evalOrNode)
+        {
+            ProcQPatternOrEvalFalse(evalOrNode);
+        }
+
+        public void APatternOrEvalFalse()
+        {
+            ProcAPatternOrEvalFalse();
+        }
+
+        public void QPatternFollowedByStart(
+            EvalFollowedByFactoryNode evalFollowedByNode,
+            MatchedEventMap beginState)
+        {
+            ProcQPatternFollowedByStart(evalFollowedByNode, beginState);
+        }
+
+        public void APatternFollowedByStart()
+        {
+            ProcAPatternFollowedByStart();
+        }
+
+        public void QPatternFollowedByQuit(EvalFollowedByFactoryNode evalFollowedByNode)
 
         {
-                ProcQContextPartitionDestroy (agentInstanceContext);
+            ProcQPatternFollowedByQuit(evalFollowedByNode);
         }
 
-        public void AContextPartitionDestroy () {
-                ProcAContextPartitionDestroy ();
+        public void APatternFollowedByQuit()
+        {
+            ProcAPatternFollowedByQuit();
         }
 
-        public void QPatternRootStart (MatchedEventMap root) {
-                ProcQPatternRootStart (root);
+        public void QPatternGuardEvalFalse(EvalGuardFactoryNode evalGuardNode)
+        {
+            ProcQPatternGuardEvalFalse(evalGuardNode);
         }
 
-        public void APatternRootStart () {
-                ProcAPatternRootStart ();
+        public void APatternGuardEvalFalse()
+        {
+            ProcAPatternGuardEvalFalse();
         }
 
-        public void QPatternRootQuit () {
-                ProcQPatternRootQuit ();
+        public void QContextScheduledEval(ContextRuntimeDescriptor contextDescriptor)
+        {
+            ProcQContextScheduledEval(contextDescriptor);
         }
 
-        public void APatternRootQuit () {
-                ProcAPatternRootQuit ();
+        public void AContextScheduledEval()
+        {
+            ProcAContextScheduledEval();
         }
 
-        public void QInfraOnAction (OnTriggerType triggerType, EventBean[] triggerEvents, EventBean[] matchingEvents) {
-                ProcQInfraOnAction (triggerType, triggerEvents, matchingEvents);
+        public void QContextPartitionAllocate(AgentInstanceContext agentInstanceContext)
+        {
+            ProcQContextPartitionAllocate(agentInstanceContext);
         }
 
-        public void AInfraOnAction () {
-                ProcAInfraOnAction ();
+        public void AContextPartitionAllocate()
+        {
+            ProcAContextPartitionAllocate();
         }
 
-        public void QTableUpdatedEvent (EventBean theEvent) {
-                ProcQTableUpdatedEvent (theEvent);
+        public void QContextPartitionDestroy(AgentInstanceContext agentInstanceContext)
+
+        {
+            ProcQContextPartitionDestroy(agentInstanceContext);
+        }
+
+        public void AContextPartitionDestroy()
+        {
+            ProcAContextPartitionDestroy();
+        }
+
+        public void QPatternRootStart(MatchedEventMap root)
+        {
+            ProcQPatternRootStart(root);
+        }
+
+        public void APatternRootStart()
+        {
+            ProcAPatternRootStart();
+        }
+
+        public void QPatternRootQuit()
+        {
+            ProcQPatternRootQuit();
+        }
+
+        public void APatternRootQuit()
+        {
+            ProcAPatternRootQuit();
+        }
+
+        public void QInfraOnAction(
+            OnTriggerType triggerType,
+            EventBean[] triggerEvents,
+            EventBean[] matchingEvents)
+        {
+            ProcQInfraOnAction(triggerType, triggerEvents, matchingEvents);
+        }
+
+        public void AInfraOnAction()
+        {
+            ProcAInfraOnAction();
+        }
+
+        public void QTableUpdatedEvent(EventBean theEvent)
+        {
+            ProcQTableUpdatedEvent(theEvent);
+        }
+
+        public void ATableUpdatedEvent()
+        {
+            ProcATableUpdatedEvent();
+        }
+
+        public void QInfraMergeWhenThens(
+            bool matched,
+            EventBean triggerEvent,
+            int numWhenThens)
+        {
+            ProcQInfraMergeWhenThens(matched, triggerEvent, numWhenThens);
         }
 
-        public void ATableUpdatedEvent () {
-                ProcATableUpdatedEvent ();
+        public void AInfraMergeWhenThens(bool matched)
+        {
+            ProcAInfraMergeWhenThens(matched);
         }
 
-        public void QInfraMergeWhenThens (bool matched, EventBean triggerEvent, int numWhenThens) {
-                ProcQInfraMergeWhenThens (matched, triggerEvent, numWhenThens);
+        public void QInfraMergeWhenThenItem(
+            bool matched,
+            int count)
+        {
+            ProcQInfraMergeWhenThenItem(matched, count);
         }
 
-        public void AInfraMergeWhenThens (bool matched) {
-                ProcAInfraMergeWhenThens (matched);
+        public void AInfraMergeWhenThenItem(
+            bool matched,
+            bool actionsApplied)
+        {
+            ProcAInfraMergeWhenThenItem(matched, actionsApplied);
         }
 
-        public void QInfraMergeWhenThenItem (bool matched, int count) {
-                ProcQInfraMergeWhenThenItem (matched, count);
+        public void QInfraMergeWhenThenActions(int numActions)
+        {
+            ProcQInfraMergeWhenThenActions(numActions);
         }
 
-        public void AInfraMergeWhenThenItem (bool matched, bool actionsApplied) {
-                ProcAInfraMergeWhenThenItem (matched, actionsApplied);
+        public void AInfraMergeWhenThenActions()
+        {
+            ProcAInfraMergeWhenThenActions();
         }
 
-        public void QInfraMergeWhenThenActions (int numActions) {
-                ProcQInfraMergeWhenThenActions (numActions);
+        public void QInfraMergeWhenThenActionItem(
+            int count,
+            string actionName)
+        {
+            ProcQInfraMergeWhenThenActionItem(count, actionName);
         }
 
-        public void AInfraMergeWhenThenActions () {
-                ProcAInfraMergeWhenThenActions ();
+        public void AInfraMergeWhenThenActionItem(bool applies)
+        {
+            ProcAInfraMergeWhenThenActionItem(applies);
         }
 
-        public void QInfraMergeWhenThenActionItem (int count, string actionName) {
-                ProcQInfraMergeWhenThenActionItem (count, actionName);
+        public void QInfraTriggeredLookup(string lookupStrategy)
+        {
+            ProcQInfraTriggeredLookup(lookupStrategy);
         }
 
-        public void AInfraMergeWhenThenActionItem (bool applies) {
-                ProcAInfraMergeWhenThenActionItem (applies);
+        public void AInfraTriggeredLookup(EventBean[] result)
+        {
+            ProcAInfraTriggeredLookup(result);
         }
 
-        public void QInfraTriggeredLookup (string lookupStrategy) {
-                ProcQInfraTriggeredLookup (lookupStrategy);
+        public void QIndexJoinLookup(
+            JoinExecTableLookupStrategy strategy,
+            EventTable index)
+        {
+            ProcQIndexJoinLookup(strategy, index);
         }
 
-        public void AInfraTriggeredLookup (EventBean[] result) {
-                ProcAInfraTriggeredLookup (result);
+        public void AIndexJoinLookup(
+            ICollection<EventBean> result,
+            object keys)
+        {
+            ProcAIndexJoinLookup(result, keys);
         }
 
-        public void QIndexJoinLookup (JoinExecTableLookupStrategy strategy, EventTable index) {
-                ProcQIndexJoinLookup (strategy, index);
+        public void QJoinDispatch(
+            EventBean[][] newDataPerStream,
+            EventBean[][] oldDataPerStream)
+        {
+            ProcQJoinDispatch(newDataPerStream, oldDataPerStream);
         }
 
-        public void AIndexJoinLookup (ICollection<EventBean> result, object keys) {
-                ProcAIndexJoinLookup (result, keys);
+        public void AJoinDispatch()
+        {
+            ProcAJoinDispatch();
         }
 
-        public void QJoinDispatch (EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream) {
-                ProcQJoinDispatch (newDataPerStream, oldDataPerStream);
+        public void QJoinExecStrategy()
+        {
+            ProcQJoinExecStrategy();
         }
 
-        public void AJoinDispatch () {
-                ProcAJoinDispatch ();
+        public void AJoinExecStrategy(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> joinSet)
+        {
+            ProcAJoinExecStrategy(joinSet);
         }
 
-        public void QJoinExecStrategy () {
-                ProcQJoinExecStrategy ();
+        public void QJoinCompositionStreamToWin()
+        {
+            ProcQJoinCompositionStreamToWin();
         }
 
-        public void AJoinExecStrategy (UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> joinSet) {
-                ProcAJoinExecStrategy (joinSet);
+        public void AJoinCompositionStreamToWin(ISet<MultiKeyArrayOfKeys<EventBean>> newResults)
+        {
+            ProcAJoinCompositionStreamToWin(newResults);
         }
 
-        public void QJoinCompositionStreamToWin () {
-                ProcQJoinCompositionStreamToWin ();
+        public void QJoinCompositionStepUpdIndex(
+            int stream,
+            EventBean[] added,
+            EventBean[] removed)
+        {
+            ProcQJoinCompositionStepUpdIndex(stream, added, removed);
         }
 
-        public void AJoinCompositionStreamToWin (ISet<MultiKeyArrayOfKeys<EventBean>> newResults) {
-                ProcAJoinCompositionStreamToWin (newResults);
+        public void AJoinCompositionStepUpdIndex()
+        {
+            ProcAJoinCompositionStepUpdIndex();
         }
 
-        public void QJoinCompositionStepUpdIndex (int stream, EventBean[] added, EventBean[] removed) {
-                ProcQJoinCompositionStepUpdIndex (stream, added, removed);
+        public void QIndexAddRemove(
+            EventTable eventTable,
+            EventBean[] newData,
+            EventBean[] oldData)
+        {
+            ProcQIndexAddRemove(eventTable, newData, oldData);
         }
 
-        public void AJoinCompositionStepUpdIndex () {
-                ProcAJoinCompositionStepUpdIndex ();
+        public void AIndexAddRemove()
+        {
+            ProcAIndexAddRemove();
         }
 
-        public void QIndexAddRemove (EventTable eventTable, EventBean[] newData, EventBean[] oldData) {
-                ProcQIndexAddRemove (eventTable, newData, oldData);
+        public void QIndexAdd(
+            EventTable eventTable,
+            EventBean[] addEvents)
+        {
+            ProcQIndexAdd(eventTable, addEvents);
         }
 
-        public void AIndexAddRemove () {
-                ProcAIndexAddRemove ();
+        public void AIndexAdd()
+        {
+            ProcAIndexAdd();
         }
 
-        public void QIndexAdd (EventTable eventTable, EventBean[] addEvents) {
-                ProcQIndexAdd (eventTable, addEvents);
+        public void QIndexRemove(
+            EventTable eventTable,
+            EventBean[] removeEvents)
+        {
+            ProcQIndexRemove(eventTable, removeEvents);
         }
 
-        public void AIndexAdd () {
-                ProcAIndexAdd ();
+        public void AIndexRemove()
+        {
+            ProcAIndexRemove();
         }
 
-        public void QIndexRemove (EventTable eventTable, EventBean[] removeEvents) {
-                ProcQIndexRemove (eventTable, removeEvents);
+        public void QJoinCompositionQueryStrategy(
+            bool insert,
+            int streamNum,
+            EventBean[] events)
+        {
+            ProcQJoinCompositionQueryStrategy(insert, streamNum, events);
         }
 
-        public void AIndexRemove () {
-                ProcAIndexRemove ();
+        public void AJoinCompositionQueryStrategy()
+        {
+            ProcAJoinCompositionQueryStrategy();
         }
 
-        public void QJoinCompositionQueryStrategy (bool insert, int streamNum, EventBean[] events) {
-                ProcQJoinCompositionQueryStrategy (insert, streamNum, events);
+        public void QJoinExecProcess(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> joinSet)
+        {
+            ProcQJoinExecProcess(joinSet);
         }
 
-        public void AJoinCompositionQueryStrategy () {
-                ProcAJoinCompositionQueryStrategy ();
+        public void AJoinExecProcess()
+        {
+            ProcAJoinExecProcess();
         }
 
-        public void QJoinExecProcess (UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>> joinSet) {
-                ProcQJoinExecProcess (joinSet);
+        public void QJoinCompositionWinToWin()
+        {
+            ProcQJoinCompositionWinToWin();
         }
 
-        public void AJoinExecProcess () {
-                ProcAJoinExecProcess ();
+        public void AJoinCompositionWinToWin(
+            ISet<MultiKeyArrayOfKeys<EventBean>> newResults,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldResults)
+        {
+            ProcAJoinCompositionWinToWin(newResults, oldResults);
         }
 
-        public void QJoinCompositionWinToWin () {
-                ProcQJoinCompositionWinToWin ();
+        public void QOutputProcessWCondition(
+            EventBean[] newData,
+            EventBean[] oldData)
+        {
+            ProcQOutputProcessWCondition(newData, oldData);
         }
 
-        public void AJoinCompositionWinToWin (ISet<MultiKeyArrayOfKeys<EventBean>> newResults, ISet<MultiKeyArrayOfKeys<EventBean>> oldResults) {
-                ProcAJoinCompositionWinToWin (newResults, oldResults);
+        public void AOutputProcessWCondition(bool buffered)
+        {
+            ProcAOutputProcessWCondition(buffered);
         }
 
-        public void QOutputProcessWCondition (EventBean[] newData, EventBean[] oldData) {
-                ProcQOutputProcessWCondition (newData, oldData);
+        public void QOutputRateConditionUpdate(
+            int newDataLength,
+            int oldDataLength)
+        {
+            ProcQOutputRateConditionUpdate(newDataLength, oldDataLength);
         }
 
-        public void AOutputProcessWCondition (bool buffered) {
-                ProcAOutputProcessWCondition (buffered);
+        public void AOutputRateConditionUpdate()
+        {
+            ProcAOutputRateConditionUpdate();
         }
 
-        public void QOutputRateConditionUpdate (int newDataLength, int oldDataLength) {
-                ProcQOutputRateConditionUpdate (newDataLength, oldDataLength);
+        public void QOutputRateConditionOutputNow()
+        {
+            ProcQOutputRateConditionOutputNow();
         }
 
-        public void AOutputRateConditionUpdate () {
-                ProcAOutputRateConditionUpdate ();
+        public void AOutputRateConditionOutputNow(bool generate)
+        {
+            ProcAOutputRateConditionOutputNow(generate);
         }
 
-        public void QOutputRateConditionOutputNow () {
-                ProcQOutputRateConditionOutputNow ();
+        public void QOutputProcessWConditionJoin(
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents)
+        {
+            ProcQOutputProcessWConditionJoin(newEvents, oldEvents);
         }
 
-        public void AOutputRateConditionOutputNow (bool generate) {
-                ProcAOutputRateConditionOutputNow (generate);
+        public void AOutputProcessWConditionJoin(bool buffered)
+        {
+            ProcAOutputProcessWConditionJoin(buffered);
         }
 
-        public void QOutputProcessWConditionJoin (ISet<MultiKeyArrayOfKeys<EventBean>> newEvents, ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents) {
-                ProcQOutputProcessWConditionJoin (newEvents, oldEvents);
+        public void QWhereClauseFilter(
+            string text,
+            EventBean[] newData,
+            EventBean[] oldData)
+        {
+            ProcQWhereClauseFilter(text, newData, oldData);
         }
 
-        public void AOutputProcessWConditionJoin (bool buffered) {
-                ProcAOutputProcessWConditionJoin (buffered);
+        public void AWhereClauseFilter(
+            EventBean[] filteredNewData,
+            EventBean[] filteredOldData)
+        {
+            ProcAWhereClauseFilter(filteredNewData, filteredOldData);
         }
 
-        public void QWhereClauseFilter (string text, EventBean[] newData, EventBean[] oldData) {
-                ProcQWhereClauseFilter (text, newData, oldData);
+        public void QWhereClauseFilterEval(
+            int num,
+            EventBean @event,
+            bool newData)
+        {
+            ProcQWhereClauseFilterEval(num, @event, newData);
         }
 
-        public void AWhereClauseFilter (EventBean[] filteredNewData, EventBean[] filteredOldData) {
-                ProcAWhereClauseFilter (filteredNewData, filteredOldData);
+        public void AWhereClauseFilterEval(bool? pass)
+        {
+            ProcAWhereClauseFilterEval(pass);
         }
 
-        public void QWhereClauseFilterEval (int num, EventBean @event, bool newData) {
-                ProcQWhereClauseFilterEval (num, @event, newData);
+        public void QWhereClauseIR(
+            EventBean[] filteredNewData,
+            EventBean[] filteredOldData)
+        {
+            ProcQWhereClauseIR(filteredNewData, filteredOldData);
         }
 
-        public void AWhereClauseFilterEval (bool? pass) {
-                ProcAWhereClauseFilterEval (pass);
+        public void AWhereClauseIR()
+        {
+            ProcAWhereClauseIR();
         }
 
-        public void QWhereClauseIR (EventBean[] filteredNewData, EventBean[] filteredOldData) {
-                ProcQWhereClauseIR (filteredNewData, filteredOldData);
+        public void QSplitStream(
+            bool all,
+            EventBean theEvent,
+            int numWhereClauses)
+        {
+            ProcQSplitStream(all, theEvent, numWhereClauses);
         }
 
-        public void AWhereClauseIR () {
-                ProcAWhereClauseIR ();
+        public void ASplitStream(
+            bool all,
+            bool handled)
+        {
+            ProcASplitStream(all, handled);
         }
 
-        public void QSplitStream (bool all, EventBean theEvent, int numWhereClauses) {
-                ProcQSplitStream (all, theEvent, numWhereClauses);
+        public void QSplitStreamWhere(int index)
+        {
+            ProcQSplitStreamWhere(index);
         }
 
-        public void ASplitStream (bool all, bool handled) {
-                ProcASplitStream (all, handled);
+        public void ASplitStreamWhere(bool? pass)
+        {
+            ProcASplitStreamWhere(pass);
         }
 
-        public void QSplitStreamWhere (int index) {
-                ProcQSplitStreamWhere (index);
+        public void QSplitStreamRoute(int index)
+        {
+            ProcQSplitStreamRoute(index);
         }
 
-        public void ASplitStreamWhere (bool? pass) {
-                ProcASplitStreamWhere (pass);
+        public void ASplitStreamRoute()
+        {
+            ProcASplitStreamRoute();
         }
 
-        public void QSplitStreamRoute (int index) {
-                ProcQSplitStreamRoute (index);
+        public void QSubselectAggregation()
+        {
+            ProcQSubselectAggregation();
         }
 
-        public void ASplitStreamRoute () {
-                ProcASplitStreamRoute ();
+        public void ASubselectAggregation()
+        {
+            ProcASubselectAggregation();
         }
 
-        public void QSubselectAggregation () {
-                ProcQSubselectAggregation ();
+        public void QTableAddEvent(EventBean theEvent)
+        {
+            ProcQTableAddEvent(theEvent);
         }
 
-        public void ASubselectAggregation () {
-                ProcASubselectAggregation ();
+        public void ATableAddEvent()
+        {
+            ProcATableAddEvent();
         }
 
-        public void QTableAddEvent (EventBean theEvent) {
-                ProcQTableAddEvent (theEvent);
+        public void QaTableUpdatedEventWKeyBefore(EventBean theEvent)
+        {
+            ProcQaTableUpdatedEventWKeyBefore(theEvent);
         }
 
-        public void ATableAddEvent () {
-                ProcATableAddEvent ();
+        public void QaTableUpdatedEventWKeyAfter(EventBean theEvent)
+        {
+            ProcQaTableUpdatedEventWKeyAfter(theEvent);
         }
 
-        public void QaTableUpdatedEventWKeyBefore (EventBean theEvent) {
-                ProcQaTableUpdatedEventWKeyBefore (theEvent);
+        public void QTableDeleteEvent(EventBean theEvent)
+        {
+            ProcQTableDeleteEvent(theEvent);
         }
 
-        public void QaTableUpdatedEventWKeyAfter (EventBean theEvent) {
-                ProcQaTableUpdatedEventWKeyAfter (theEvent);
+        public void ATableDeleteEvent()
+        {
+            ProcATableDeleteEvent();
         }
 
-        public void QTableDeleteEvent (EventBean theEvent) {
-                ProcQTableDeleteEvent (theEvent);
+        public void QAggregationGroupedApplyEnterLeave(
+            bool enter,
+            int numAggregators,
+            int numAccessStates,
+            object groupKey)
+        {
+            ProcQAggregationGroupedApplyEnterLeave(enter, numAggregators, numAccessStates, groupKey);
         }
 
-        public void ATableDeleteEvent () {
-                ProcATableDeleteEvent ();
+        public void AAggregationGroupedApplyEnterLeave(bool enter)
+        {
+            ProcAAggregationGroupedApplyEnterLeave(enter);
         }
 
-        public void QAggregationGroupedApplyEnterLeave (bool enter, int numAggregators, int numAccessStates, object groupKey) {
-                ProcQAggregationGroupedApplyEnterLeave (enter, numAggregators, numAccessStates, groupKey);
+        public void QAggNoAccessEnterLeave(
+            bool enter,
+            int index,
+            object currentValue,
+            string aggExpression)
+        {
+            ProcQAggNoAccessEnterLeave(enter, index, currentValue, aggExpression);
         }
 
-        public void AAggregationGroupedApplyEnterLeave (bool enter) {
-                ProcAAggregationGroupedApplyEnterLeave (enter);
+        public void AAggNoAccessEnterLeave(
+            bool enter,
+            int index,
+            object newValue)
+        {
+            ProcAAggNoAccessEnterLeave(enter, index, newValue);
         }
 
-        public void QAggNoAccessEnterLeave (bool enter, int index, object currentValue, string aggExpression) {
-                ProcQAggNoAccessEnterLeave (enter, index, currentValue, aggExpression);
+        public void QAggAccessEnterLeave(
+            bool enter,
+            int index,
+            string aggExpr)
+        {
+            ProcQAggAccessEnterLeave(enter, index, aggExpr);
         }
 
-        public void AAggNoAccessEnterLeave (bool enter, int index, object newValue) {
-                ProcAAggNoAccessEnterLeave (enter, index, newValue);
+        public void AAggAccessEnterLeave(
+            bool enter,
+            int index)
+        {
+            ProcAAggAccessEnterLeave(enter, index);
         }
 
-        public void QAggAccessEnterLeave (bool enter, int index, string aggExpr) {
-                ProcQAggAccessEnterLeave (enter, index, aggExpr);
+        public void QUpdateIStream(InternalEventRouterEntry[] entries)
+        {
+            ProcQUpdateIStream(entries);
         }
 
-        public void AAggAccessEnterLeave (bool enter, int index) {
-                ProcAAggAccessEnterLeave (enter, index);
+        public void AUpdateIStream(
+            EventBean finalEvent,
+            bool haveCloned)
+        {
+            ProcAUpdateIStream(finalEvent, haveCloned);
         }
 
-        public void QUpdateIStream (InternalEventRouterEntry[] entries) {
-                ProcQUpdateIStream (entries);
+        public void QUpdateIStreamApply(
+            int index,
+            InternalEventRouterEntry entry)
+        {
+            ProcQUpdateIStreamApply(index, entry);
         }
 
-        public void AUpdateIStream (EventBean finalEvent, bool haveCloned) {
-                ProcAUpdateIStream (finalEvent, haveCloned);
+        public void AUpdateIStreamApply(
+            EventBean updated,
+            bool applied)
+        {
+            ProcAUpdateIStreamApply(updated, applied);
         }
 
-        public void QUpdateIStreamApply (int index, InternalEventRouterEntry entry) {
-                ProcQUpdateIStreamApply (index, entry);
+        public void QUpdateIStreamApplyWhere()
+        {
+            ProcQUpdateIStreamApplyWhere();
         }
 
-        public void AUpdateIStreamApply (EventBean updated, bool applied) {
-                ProcAUpdateIStreamApply (updated, applied);
+        public void AUpdateIStreamApplyWhere(bool? result)
+        {
+            ProcAUpdateIStreamApplyWhere(result);
         }
 
-        public void QUpdateIStreamApplyWhere () {
-                ProcQUpdateIStreamApplyWhere ();
+        public void QUpdateIStreamApplyAssignments(InternalEventRouterEntry entry)
+        {
+            ProcQUpdateIStreamApplyAssignments(entry);
         }
 
-        public void AUpdateIStreamApplyWhere (bool? result) {
-                ProcAUpdateIStreamApplyWhere (result);
+        public void AUpdateIStreamApplyAssignments(object[] values)
+        {
+            ProcAUpdateIStreamApplyAssignments(values);
         }
 
-        public void QUpdateIStreamApplyAssignments (InternalEventRouterEntry entry) {
-                ProcQUpdateIStreamApplyAssignments (entry);
+        public void QUpdateIStreamApplyAssignmentItem(int index)
+        {
+            ProcQUpdateIStreamApplyAssignmentItem(index);
         }
 
-        public void AUpdateIStreamApplyAssignments (object[] values) {
-                ProcAUpdateIStreamApplyAssignments (values);
+        public void AUpdateIStreamApplyAssignmentItem(object value)
+        {
+            ProcAUpdateIStreamApplyAssignmentItem(value);
         }
 
-        public void QUpdateIStreamApplyAssignmentItem (int index) {
-                ProcQUpdateIStreamApplyAssignmentItem (index);
+        public void QOutputRateConditionScheduledEval()
+        {
+            ProcQOutputRateConditionScheduledEval();
         }
 
-        public void AUpdateIStreamApplyAssignmentItem (object value) {
-                ProcAUpdateIStreamApplyAssignmentItem (value);
+        public void AOutputRateConditionScheduledEval()
+        {
+            ProcAOutputRateConditionScheduledEval();
         }
 
-        public void QOutputRateConditionScheduledEval () {
-                ProcQOutputRateConditionScheduledEval ();
+        public void QHistoricalScheduledEval()
+        {
+            ProcQHistoricalScheduledEval();
         }
 
-        public void AOutputRateConditionScheduledEval () {
-                ProcAOutputRateConditionScheduledEval ();
+        public void AHistoricalScheduledEval()
+        {
+            ProcAHistoricalScheduledEval();
         }
 
-        public void QHistoricalScheduledEval () {
-                ProcQHistoricalScheduledEval ();
+        public void QJoinExecFilter()
+        {
+            ProcQJoinExecFilter();
         }
 
-        public void AHistoricalScheduledEval () {
-                ProcAHistoricalScheduledEval ();
+        public void AJoinExecFilter(
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents)
+        {
+            ProcAJoinExecFilter(newEvents, oldEvents);
         }
 
-        public void QJoinExecFilter () {
-                ProcQJoinExecFilter ();
+        public void QJoinCompositionHistorical()
+        {
+            ProcQJoinCompositionHistorical();
+        }
+
+        public void AJoinCompositionHistorical(
+            ISet<MultiKeyArrayOfKeys<EventBean>> newResults,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldResults)
+        {
+            ProcAJoinCompositionHistorical(newResults, oldResults);
+        }
+        
+        public void QOutputProcessNonBuffered(
+            EventBean[] newData,
+            EventBean[] oldData)
+        {
+            ProcQOutputProcessNonBuffered(newData, oldData);
         }
 
-        public void AJoinExecFilter (ISet<MultiKeyArrayOfKeys<EventBean>> newEvents, ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents) {
-                ProcAJoinExecFilter (newEvents, oldEvents);
+        public void AOutputProcessNonBuffered()
+        {
+            ProcAOutputProcessNonBuffered();
         }
 
-        public void QJoinCompositionHistorical () {
-                ProcQJoinCompositionHistorical ();
+        public void QOutputProcessNonBufferedJoin(
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents)
+        {
+            ProcQOutputProcessNonBufferedJoin(newEvents, oldEvents);
         }
 
-        public void AJoinCompositionHistorical (ISet<MultiKeyArrayOfKeys<EventBean>> newResults, ISet<MultiKeyArrayOfKeys<EventBean>> oldResults) {
-                ProcAJoinCompositionHistorical (newResults, oldResults);
+ 
+        public void AOutputProcessNonBufferedJoin()
+        {
+            ProcAOutputProcessNonBufferedJoin();
         }
     }
 }

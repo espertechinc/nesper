@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.view.previous
             lastNewData = newData;
 
             if (newData != null) {
-                for (int i = 0; i < newData.Length; i++) {
+                for (var i = 0; i < newData.Length; i++) {
                     indexPerEvent.Put(newData[i], i);
                 }
             }
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.view.previous
                 return theEvent;
             }
 
-            if (!indexPerEvent.TryGetValue(theEvent, out int indexIncoming)) {
+            if (!indexPerEvent.TryGetValue(theEvent, out var indexIncoming)) {
                 return null;
             }
 
@@ -70,8 +70,8 @@ namespace com.espertech.esper.common.@internal.view.previous
                 return null;
             }
 
-            int relativeIndex = indexIncoming - prevIndex;
-            if ((relativeIndex < lastNewData.Length) && (relativeIndex >= 0)) {
+            var relativeIndex = indexIncoming - prevIndex;
+            if (relativeIndex < lastNewData.Length && relativeIndex >= 0) {
                 return lastNewData[relativeIndex];
             }
 
@@ -91,13 +91,9 @@ namespace com.espertech.esper.common.@internal.view.previous
             return null;
         }
 
-        public IEnumerator<EventBean> WindowToEvent {
-            get => Arrays.ReverseEnumerate(lastNewData).GetEnumerator();
-        }
+        public IEnumerator<EventBean> WindowToEvent => Arrays.ReverseEnumerate(lastNewData).GetEnumerator();
 
-        public ICollection<EventBean> WindowToEventCollReadOnly {
-            get => Arrays.AsList(lastNewData);
-        }
+        public ICollection<EventBean> WindowToEventCollReadOnly => Arrays.AsList(lastNewData);
 
         public int WindowToEventCount {
             get {
@@ -129,8 +125,6 @@ namespace com.espertech.esper.common.@internal.view.previous
             // No action required
         }
 
-        public int NumEventsInsertBuf {
-            get => indexPerEvent.Count;
-        }
+        public int NumEventsInsertBuf => indexPerEvent.Count;
     }
 } // end of namespace

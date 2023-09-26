@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
                 return false;
             }
 
-            var that = (VariantPropertyGetterCacheCodegenField) o;
+            var that = (VariantPropertyGetterCacheCodegenField)o;
 
             return variantEventType.Equals(that.variantEventType);
         }

@@ -65,7 +65,7 @@ namespace com.espertech.esperio.file
 	        try {
 	            var buf = new StringBuilder();
 	            if (!(_eventShell.EventType is JsonEventType)) {
-		            _eventShell.UnderlyingSpi = @object;
+		            _eventShell.Underlying = @object;
 	            }
 	            else {
 		            var jsonEventType = (JsonEventType) _eventShell.EventType;

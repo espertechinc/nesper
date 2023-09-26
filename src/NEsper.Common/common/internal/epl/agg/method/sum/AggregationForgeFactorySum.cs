@@ -10,8 +10,6 @@ using System;
 using System.Numerics;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
@@ -23,130 +21,113 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.sum
 {
-	public class AggregationForgeFactorySum : AggregationForgeFactoryBase
-	{
-		private readonly ExprSumNode _parent;
-		private readonly Type _resultType;
-		private readonly Type _inputValueType;
-		private readonly DataInputOutputSerdeForge _distinctSerde;
-		private AggregatorMethod _aggregator;
+    public class AggregationForgeFactorySum : AggregationForgeFactoryBase
+    {
+        private readonly ExprSumNode _parent;
+        private readonly Type _resultType;
+        private readonly Type _inputValueType;
+        private readonly DataInputOutputSerdeForge _distinctSerde;
+        private readonly AggregatorMethod _aggregator;
 
-		public AggregationForgeFactorySum(
-			ExprSumNode parent,
-			Type inputValueType,
-			DataInputOutputSerdeForge distinctSerde)
-		{
-			_parent = parent;
-			_inputValueType = inputValueType;
-			_distinctSerde = distinctSerde;
-			_resultType = GetSumAggregatorType(inputValueType);
-		}
+        public AggregationForgeFactorySum(
+            ExprSumNode parent,
+            Type inputValueType,
+            DataInputOutputSerdeForge distinctSerde)
+        {
+            _parent = parent;
+            _inputValueType = inputValueType;
+            _distinctSerde = distinctSerde;
+            _resultType = GetSumAggregatorType(inputValueType);
+            
+            var distinctValueType = !parent.IsDistinct ? null : inputValueType;
+            if (_resultType == typeof(BigInteger)) {
+                _aggregator = new AggregatorSumBigInteger(
+                    distinctValueType,
+                    distinctSerde,
+                    parent.HasFilter,
+                    parent.OptionalFilter,
+                    _resultType);
+            }
+            else {
+                _aggregator = new AggregatorSumNumeric(
+                    distinctValueType,
+                    distinctSerde,
+                    parent.HasFilter,
+                    parent.OptionalFilter,
+                    _resultType);
+            }
+        }
 
-		public override Type ResultType => _resultType;
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
+        {
+            return ExprMethodAggUtil.GetDefaultForges(_parent.PositionalParams, join, typesPerStream);
+        }
 
-		public override ExprAggregateNodeBase AggregationExpression => _parent;
+        private Type GetSumAggregatorType(Type type)
+        {
+            if (type == typeof(BigInteger)) {
+                return typeof(BigInteger);
+            }
 
-		public override void InitMethodForge(
-			int col,
-			CodegenCtor rowCtor,
-			CodegenMemberCol membersColumnized,
-			CodegenClassScope classScope)
-		{
-			Type distinctValueType = !_parent.IsDistinct ? null : _inputValueType;
-			if (_resultType == typeof(BigInteger)) {
-				_aggregator = new AggregatorSumBigInteger(
-					this,
-					col,
-					rowCtor,
-					membersColumnized,
-					classScope,
-					distinctValueType,
-					_distinctSerde,
-					_parent.HasFilter,
-					_parent.OptionalFilter,
-					_resultType);
-			}
-			else {
-				_aggregator = new AggregatorSumNumeric(
-					this,
-					col,
-					rowCtor,
-					membersColumnized,
-					classScope,
-					distinctValueType,
-					_distinctSerde,
-					_parent.HasFilter,
-					_parent.OptionalFilter,
-					_resultType);
-			}
-		}
+            return GetMemberType(type).GetBoxedType();
+        }
 
-		public override AggregatorMethod Aggregator => _aggregator;
-
-		public override ExprForge[] GetMethodAggregationForge(
-			bool join,
-			EventType[] typesPerStream)
-		{
-			return ExprMethodAggUtil.GetDefaultForges(_parent.PositionalParams, join, typesPerStream);
-		}
-
-		public override AggregationPortableValidation AggregationPortableValidation => 
-			new AggregationPortableValidationSum(_parent.IsDistinct, _parent.HasFilter, _inputValueType);
-
-		private Type GetSumAggregatorType(Type type)
-		{
-			if (type.IsBigInteger()) {
-				return typeof(BigInteger);
-			}
-
-			return GetMemberType(type).GetBoxedType();
-		}
-
-		internal static Coercer GetCoercerNonBigInt(Type inputValueType)
-		{
-			Coercer coercer;
-			if (inputValueType.IsInt64()) {
+        public static Coercer GetCoercerNonBigInt(Type inputValueType)
+        {
+            Coercer coercer;
+			if (inputValueType.IsTypeInt64()) {
 				coercer = SimpleNumberCoercerFactory.CoercerLong.INSTANCE;
-			}
-			else if (inputValueType.IsInt32()) {
+            }
+			else if (inputValueType.IsTypeInt32()) {
 				coercer = SimpleNumberCoercerFactory.CoercerInt.INSTANCE;
-			}
-			else if (inputValueType.IsDecimal()) {
+            }
+			else if (inputValueType.IsTypeDecimal()) {
 				coercer = SimpleNumberCoercerFactory.CoercerDecimal.INSTANCE;
-			}
-			else if (inputValueType.IsDouble()) {
+            }
+			else if (inputValueType.IsTypeDouble()) {
 				coercer = SimpleNumberCoercerFactory.CoercerDouble.INSTANCE;
 			}
-			else if (inputValueType.IsSingle()) {
+			else if (inputValueType.IsTypeSingle()) {
 				coercer = SimpleNumberCoercerFactory.CoercerFloat.INSTANCE;
-			}
-			else {
+            }
+            else {
 				coercer = SimpleNumberCoercerFactory.CoercerInt.INSTANCE;
-			}
+            }
 
-			return coercer;
-		}
+            return coercer;
+        }
 
-		internal static Type GetMemberType(Type inputValueType)
-		{
-			if (inputValueType.IsInt64()) {
-				return typeof(long);
-			}
-			else if (inputValueType.IsInt32()) {
-				return typeof(int);
-			}
-			else if (inputValueType.IsDecimal()) {
-				return typeof(decimal);
-			}
-			else if (inputValueType.IsDouble()) {
-				return typeof(double);
-			}
-			else if (inputValueType.IsSingle()) {
-				return typeof(float);
-			}
-			else {
-				return typeof(int);
-			}
-		}
-	}
+        public static Type GetMemberType(Type inputValueType)
+        {
+            if (inputValueType.IsTypeInt64()) {
+                return typeof(long);
+            }
+            else if (inputValueType.IsTypeInt32()) {
+                return typeof(int);
+            }
+            else if (inputValueType.IsTypeDecimal()) {
+                return typeof(decimal);
+            }
+            else if (inputValueType.IsTypeDouble()) {
+                return typeof(double);
+            }
+            else if (inputValueType.IsTypeSingle()) {
+                return typeof(float);
+            }
+            else {
+                return typeof(int);
+            }
+        }
+
+        public override Type ResultType => _resultType;
+
+        public override ExprAggregateNodeBase AggregationExpression => _parent;
+
+        public override AggregatorMethod Aggregator => _aggregator;
+
+        public override AggregationPortableValidation AggregationPortableValidation =>
+            new AggregationPortableValidationSum(_parent.IsDistinct, _parent.HasFilter, _inputValueType);
+    }
 } // end of namespace

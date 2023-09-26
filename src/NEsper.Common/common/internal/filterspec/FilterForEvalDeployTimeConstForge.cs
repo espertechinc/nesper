@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenMethodScope parent)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope)
-				.AddParam(GET_FILTER_VALUE_FP);
+                .AddParam(GET_FILTER_VALUE_FP);
 
             var value = _deployTimeConst.CodegenGetDeployTimeConstValue(classScope);
             if (_numberCoercer != null) {
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (FilterForEvalDeployTimeConstForge) o;
+            var that = (FilterForEvalDeployTimeConstForge)o;
 
             return _deployTimeConst.Equals(that._deployTimeConst);
         }
@@ -85,8 +85,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             return _deployTimeConst.GetHashCode();
         }
-        
-        public void ValueToString(StringBuilder @out) {
+
+        public void ValueToString(StringBuilder @out)
+        {
             @out.Append("deploy-time constant ");
             _deployTimeConst.RenderForFilterPlan(@out);
         }

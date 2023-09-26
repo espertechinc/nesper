@@ -44,9 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             bool checkFor,
             bool resultIfCheckPasses)
         {
-            if (evaluationType != typeof(bool) && evaluationType != typeof(bool?)) {
-                throw new IllegalStateException("Invalid non-boolean expression");
-            }
+            CheckBoolEvalType(evaluationType);
 
             var unboxPass = Unbox(Ref(PASS_NAME), evaluationType);
 
@@ -178,11 +176,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             // if ((pass != null) && (pass == false))
             //   equivalent
             // if (false.Equals(pass))
-            
-            if (evaluationType != typeof(bool) && evaluationType != typeof(bool?)) {
-                throw new IllegalStateException("Invalid non-boolean expression");
-            }
 
+            CheckBoolEvalType(evaluationType);
             block.DeclareVar(evaluationType, PASS_NAME, expression);
 
 #if DEPRECATED
@@ -195,11 +190,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 condition = And(NotEqualsNull(Ref(PASS_NAME)), passCheck);
             }
 #else
-            CodegenExpression condition = ExprDotMethod(ConstantFalse(), "Equals", Ref(PASS_NAME));
+            var condition = ExprDotMethod(ConstantFalse(), "Equals", Ref(PASS_NAME));
 #endif
 
             block.CommentFullLine("CodegenDoIfNotNullAndNotPass");
-            
+
             if (doContinue) {
                 block.IfCondition(condition).BlockContinue();
             }
@@ -208,6 +203,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             }
             else {
                 block.IfCondition(condition).BlockReturn(returnValue);
+            }
+        }
+
+        private static void CheckBoolEvalType(Type evaluationType)
+        {
+            if (evaluationType == null) {
+                throw new IllegalStateException("Invalid non-boolean expression");
+            }
+
+            if (evaluationType != typeof(bool) && evaluationType != typeof(bool?)) {
+                throw new IllegalStateException("Invalid non-boolean expression");
             }
         }
 
@@ -223,9 +229,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             //   equivalent
             // if (!true.Equals(pass))
 
-            if (evaluationType != typeof(bool) && evaluationType != typeof(bool?)) {
-                throw new IllegalStateException("Invalid non-boolean expression");
-            }
+            CheckBoolEvalType(evaluationType);
 
             block.DeclareVar(evaluationType, PASS_NAME, expression);
 
@@ -239,11 +243,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                 condition = Or(EqualsNull(Ref(PASS_NAME)), passCheck);
             }
 #else
-            CodegenExpression condition = Not(ExprDotMethod(ConstantTrue(), "Equals", Ref(PASS_NAME)));
+            var condition = Not(ExprDotMethod(ConstantTrue(), "Equals", Ref(PASS_NAME)));
 #endif
 
             block.CommentFullLine("CodegenDoIfNullOrNotPass");
-            
+
             if (doContinue) {
                 block.IfCondition(condition).BlockContinue();
             }

@@ -234,10 +234,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionDefault();
         }
 
-        public static CodegenExpression MapOfConstant(IDictionary<string, object> constants) {
+        public static CodegenExpression MapOfConstant(IDictionary<string, object> constants)
+        {
             if (constants == null) {
                 return ConstantNull();
             }
+
             var expressions = new CodegenExpression[constants.Count * 2];
             var count = 0;
             foreach (var entry in constants) {
@@ -245,6 +247,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 expressions[count + 1] = Constant(entry.Value);
                 count += 2;
             }
+
             return StaticMethod(typeof(CollectionUtil), "BuildMap", expressions);
         }
 
@@ -252,26 +255,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             return new CodegenExpressionField(field);
         }
-
-#if DEPRECATED
-        public static CodegenExpressionNewAnonymousClass NewAnonymousClass(
-            CodegenBlock parentBlock,
-            Type interfaceOrSuperClass,
-            IList<CodegenExpression> ctorParams)
-        {
-            return new CodegenExpressionNewAnonymousClass(parentBlock, interfaceOrSuperClass, ctorParams);
-        }
-
-        public static CodegenExpressionNewAnonymousClass NewAnonymousClass(
-            CodegenBlock parentBlock,
-            Type interfaceOrSuperClass)
-        {
-            return new CodegenExpressionNewAnonymousClass(
-                parentBlock,
-                interfaceOrSuperClass,
-                Collections.GetEmptyList<CodegenExpression>());
-        }
-#endif
 
         public static CodegenExpression Noop()
         {
@@ -436,9 +419,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return new CodegenExpressionStaticMethod(clazz, method, @params);
         }
 
-        public static CodegenExpression FlexCast(Type expectedType, CodegenExpression expression)
+        public static CodegenExpression FlexCast(
+            Type expectedType,
+            CodegenExpression expression)
         {
-            return expectedType == typeof(FlexCollection) 
+            return expectedType == typeof(FlexCollection)
                 ? FlexWrap(expression)
                 : Cast(expectedType, expression);
         }
@@ -471,7 +456,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             return Unwrap(typeof(T), expression);
         }
-        
+
         public static CodegenExpression Unwrap(
             Type elementType,
             CodegenExpression expression)
@@ -479,17 +464,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return StaticMethod(
                 typeof(CompatExtensions),
                 "Unwrap",
-                new[] {elementType},
+                new[] { elementType },
                 expression,
                 ConstantTrue());
-        }
-
-        
-        public static CodegenExpression ClassMethod(
-            string method,
-            params CodegenExpression[] @params)
-        {
-            return new CodegenExpressionClassMethod(method, @params);
         }
 
         public static CodegenExpression Clazz(Type clazz)

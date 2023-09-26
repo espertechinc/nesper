@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public void SendEvent(object theEvent)
         {
-            if (!(theEvent is IDictionary<string, object>)) {
+            if (!(theEvent is IDictionary<string, object> map)) {
                 throw new EPException(
                     "Unexpected event object of type " +
                     theEvent.GetType().CleanName() +
@@ -58,7 +58,6 @@ namespace com.espertech.esper.common.@internal.@event.map
                     typeof(IDictionary<string, object>).CleanName());
             }
 
-            var map = (IDictionary<string, object>) theEvent;
             EventBean mapEvent = eventBeanTypedEventFactory.AdapterForTypedMap(map, mapEventType);
 
             if (threadingService.IsInboundThreading) {
@@ -71,7 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public void RouteEvent(object theEvent)
         {
-            if (!(theEvent is IDictionary<string, object>)) {
+            if (!(theEvent is IDictionary<string, object> map)) {
                 throw new EPException(
                     "Unexpected event object of type " +
                     theEvent.GetType().CleanName() +
@@ -79,7 +78,6 @@ namespace com.espertech.esper.common.@internal.@event.map
                     typeof(IDictionary<string, object>).CleanName());
             }
 
-            var map = (IDictionary<string, object>) theEvent;
             EventBean mapEvent = eventBeanTypedEventFactory.AdapterForTypedMap(map, mapEventType);
             runtimeEventSender.RouteEventBean(mapEvent);
         }

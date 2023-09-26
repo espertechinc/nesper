@@ -8,12 +8,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -22,27 +21,38 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
     public class ResultSetAggregateMinMax
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetAggregateMinMaxNoDataWindowSubquery());
-            execs.Add(new ResultSetAggregateMemoryMinHaving());
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithinMaxNoDataWindowSubquery(execs);
+            WithemoryMinHaving(execs);
+            WithinMaxNamedWindowWEver(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithinMaxNamedWindowWEver(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateMinMaxNamedWindowWEver(false));
             execs.Add(new ResultSetAggregateMinMaxNamedWindowWEver(true));
             return execs;
         }
 
-        private static void SendEvent(
-            RegressionEnvironment env,
-            double price)
+        public static IList<RegressionExecution> WithemoryMinHaving(IList<RegressionExecution> execs = null)
         {
-            var bean = new SupportMarketDataBean("DELL", price, -1L, null);
-            env.SendEventBean(bean);
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMemoryMinHaving());
+            return execs;
         }
 
-        internal class ResultSetAggregateMinMaxNamedWindowWEver : RegressionExecution
+        public static IList<RegressionExecution> WithinMaxNoDataWindowSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateMinMaxNoDataWindowSubquery());
+            return execs;
+        }
+
+        private class ResultSetAggregateMinMaxNamedWindowWEver : RegressionExecution
         {
             private readonly bool soda;
 
@@ -53,107 +63,101 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "lower","upper","lowerever","upperever" };
+                var fields = "lower,upper,lowerever,upperever".SplitCsv();
                 var path = new RegressionPath();
 
-                var epl = "create window NamedWindow5m#length(2) as select * from SupportBean;\n" +
+                var epl = "@public create window NamedWindow5m#length(2) as select * from SupportBean;\n" +
                           "insert into NamedWindow5m select * from SupportBean;\n";
                 env.CompileDeploy(epl, path);
 
-                epl = "@Name('s0') select " +
-                      "min(IntPrimitive) as lower, " +
-                      "max(IntPrimitive) as upper, " +
-                      "minever(IntPrimitive) as lowerever, " +
-                      "maxever(IntPrimitive) as upperever from NamedWindow5m";
+                epl = "@name('s0') select " +
+                      "min(intPrimitive) as lower, " +
+                      "max(intPrimitive) as upper, " +
+                      "minever(intPrimitive) as lowerever, " +
+                      "maxever(intPrimitive) as upperever from NamedWindow5m";
                 env.CompileDeploy(soda, epl, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean(null, 1));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {1, 1, 1, 1});
+                env.AssertPropsNew("s0", fields, new object[] { 1, 1, 1, 1 });
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean(null, 5));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {1, 5, 1, 5});
+                env.AssertPropsNew("s0", fields, new object[] { 1, 5, 1, 5 });
 
                 env.Milestone(1);
 
                 env.SendEventBean(new SupportBean(null, 3));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {3, 5, 1, 5});
+                env.AssertPropsNew("s0", fields, new object[] { 3, 5, 1, 5 });
 
                 env.SendEventBean(new SupportBean(null, 6));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {3, 6, 1, 6});
+                env.AssertPropsNew("s0", fields, new object[] { 3, 6, 1, 6 });
 
                 env.UndeployAll();
             }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "soda=" +
+                       soda +
+                       '}';
+            }
         }
 
-        internal class ResultSetAggregateMinMaxNoDataWindowSubquery : RegressionExecution
+        private class ResultSetAggregateMinMaxNoDataWindowSubquery : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "maxi","mini","max0","min0" };
-                var epl = "@Name('s0') select max(IntPrimitive) as maxi, min(IntPrimitive) as mini," +
-                          "(select max(Id) from SupportBean_S0#lastevent) as max0, (select min(Id) from SupportBean_S0#lastevent) as min0" +
+                var fields = "maxi,mini,max0,min0".SplitCsv();
+                var epl = "@name('s0') select max(intPrimitive) as maxi, min(intPrimitive) as mini," +
+                          "(select max(id) from SupportBean_S0#lastevent) as max0, (select min(id) from SupportBean_S0#lastevent) as min0" +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 3));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {3, 3, null, null});
+                env.AssertPropsNew("s0", fields, new object[] { 3, 3, null, null });
 
                 env.SendEventBean(new SupportBean("E2", 4));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {4, 3, null, null});
+                env.AssertPropsNew("s0", fields, new object[] { 4, 3, null, null });
+
+                env.Milestone(0);
 
                 env.SendEventBean(new SupportBean_S0(2));
                 env.SendEventBean(new SupportBean("E3", 4));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {4, 3, 2, 2});
+                env.AssertPropsNew("s0", fields, new object[] { 4, 3, 2, 2 });
+
+                env.Milestone(1);
 
                 env.SendEventBean(new SupportBean_S0(1));
                 env.SendEventBean(new SupportBean("E4", 5));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {5, 3, 1, 1});
+                env.AssertPropsNew("s0", fields, new object[] { 5, 3, 1, 1 });
 
                 env.UndeployAll();
                 /// <summary>
                 /// Comment out here for sending many more events.
-                /// env.SendEventBean(new SupportBean(null, i));
+                /// env.sendEventBean(new SupportBean(null, i));
                 /// if (i % 10000 == 0) {
-                /// System.out.println("Sent " + i + " events");
+                /// Console.WriteLine("Sent " + i + " events");
                 /// }
                 /// }
                 /// </summary>
             }
         }
 
-        internal class ResultSetAggregateMemoryMinHaving : RegressionExecution
+        private class ResultSetAggregateMemoryMinHaving : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED);
+            }
+
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@Name('s0') select Price, min(Price) as minPrice " +
+                var statementText = "@name('s0') select price, min(price) as minPrice " +
                                     "from SupportMarketDataBean#time(30)" +
-                                    "having Price >= min(Price) * (1.02)";
+                                    "having price >= min(price) * (1.02)";
 
                 env.CompileDeploy(statementText).AddListener("s0");
 
@@ -178,14 +182,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     var delta = startTime - endTime;
                     if (delta < 950) {
                         try {
-                            Thread.Sleep((int) (950 - delta));
+                            Thread.Sleep((int)(950 - delta));
                         }
-                        catch (ThreadInterruptedException) {
+                        catch (ThreadInterruptedException e) {
                             break;
                         }
                     }
 
-                    env.Listener("s0").Reset();
+                    env.ListenerReset("s0");
                     loopCount++;
                     if (loopCount > loopcount) {
                         break;
@@ -195,5 +199,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
             }
         }
+
+        private static void SendEvent(
+            RegressionEnvironment env,
+            double price)
+        {
+            var bean = new SupportMarketDataBean("DELL", price, -1L, null);
+            env.SendEventBean(bean);
+        }
+
+        private static readonly ILog log = LogManager.GetLogger(typeof(ResultSetAggregateMinMax));
     }
 } // end of namespace

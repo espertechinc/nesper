@@ -19,10 +19,10 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 {
-	/// <summary>
-	///     Property getter for Json underlying fields.
-	/// </summary>
-	public sealed class JsonGetterIndexedProvided : JsonGetterIndexedBase
+    /// <summary>
+    ///     Property getter for Json underlying fields.
+    /// </summary>
+    public sealed class JsonGetterIndexedProvided : JsonGetterIndexedBase
     {
         private readonly FieldInfo field;
 
@@ -48,7 +48,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
                 return ConstantNull();
             }
 
-            CodegenExpression factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            CodegenExpression factory =
+                codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             CodegenExpression eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),

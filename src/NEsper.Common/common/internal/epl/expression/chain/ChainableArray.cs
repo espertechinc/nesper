@@ -29,8 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
         public ChainableArray(
             bool distinct,
             bool optional,
-            IList<ExprNode> indexes)
-            : base(distinct, optional)
+            IList<ExprNode> indexes) : base(distinct, optional)
         {
             Indexes = indexes;
         }
@@ -54,21 +53,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
             AcceptParams(visitor, Indexes, parent);
         }
 
-        public override IList<ExprNode> GetParametersOrEmpty()
-        {
-            return EmptyList<ExprNode>.Instance;
-        }
-
         public override void ValidateExpressions(
             ExprNodeOrigin origin,
             ExprValidationContext validationContext)
         {
             ValidateExpressions(Indexes, origin, validationContext);
-        }
-
-        public override string GetRootNameOrEmptyString()
-        {
-            return "";
         }
 
         public override void AddParametersTo(ICollection<ExprNode> result)
@@ -86,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
                 return false;
             }
 
-            var that = (ChainableArray) o;
+            var that = (ChainableArray)o;
             return EqualsChainable(that) && ExprNodeUtilityCompare.DeepEquals(Indexes, that.Indexes);
         }
 
@@ -107,9 +96,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
                     supplier.Invoke());
             }
 
-            ExprNode node = indexes[0];
+            var node = indexes[0];
             var evaluationType = node.Forge.EvaluationType;
-            if (!evaluationType.IsInt32()) {
+            if (!evaluationType.IsTypeInt32()) {
                 throw new ExprValidationException(
                     "Incorrect index expression for array operation, expected an expression returning an integer value but the expression '" +
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(node) +
@@ -121,5 +110,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
 
             return node;
         }
+
+        public IList<ExprNode> ParametersOrEmpty => EmptyList<ExprNode>.Instance;
+
+        public string RootNameOrEmptyString => "";
     }
 } // end of namespace

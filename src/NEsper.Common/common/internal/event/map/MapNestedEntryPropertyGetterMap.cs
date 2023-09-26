@@ -45,10 +45,10 @@ namespace com.espertech.esper.common.@internal.@event.map
             }
 
             return null;
-
         }
 
-        public override bool HandleNestedValueExists(object value) {
+        public override bool HandleNestedValueExists(object value)
+        {
             if (value is IDictionary<string, object> mapValue) {
                 return mapGetter.IsMapExistsProperty(mapValue);
             }
@@ -56,44 +56,40 @@ namespace com.espertech.esper.common.@internal.@event.map
             if (value is MappedEventBean mappedEventBean) {
                 return mapGetter.IsMapExistsProperty(mappedEventBean.Properties);
             }
-            
+
             return false;
         }
-        
+
         private CodegenMethod HandleNestedValueCodegen(
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object), "value")
+                .AddParam<object>("value")
                 .Block
-
                 .IfInstanceOf("value", typeof(EventBean))
                 .DeclareVarWCast(typeof(EventBean), "bean", "value")
                 .BlockReturn(mapGetter.EventBeanGetCodegen(Ref("bean"), codegenMethodScope, codegenClassScope))
-
                 .IfInstanceOf("value", typeof(IDictionary<string, object>))
                 .DeclareVarWCast(typeof(IDictionary<string, object>), "map", "value")
                 .BlockReturn(mapGetter.UnderlyingGetCodegen(Ref("map"), codegenMethodScope, codegenClassScope))
-
                 .MethodReturn(ConstantNull());
         }
-        
-        private CodegenMethod HandleNestedValueExistsCodegen(CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
+
+        private CodegenMethod HandleNestedValueExistsCodegen(
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope
                 .MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(object), "value")
+                .AddParam<object>("value")
                 .Block
-
                 .IfInstanceOf("value", typeof(IDictionary<string, object>))
                 .DeclareVarWCast(typeof(IDictionary<string, object>), "map", "value")
                 .BlockReturn(mapGetter.UnderlyingExistsCodegen(Ref("map"), codegenMethodScope, codegenClassScope))
-
                 .IfInstanceOf("value", typeof(EventBean))
                 .DeclareVarWCast(typeof(EventBean), "bean", "value")
                 .BlockReturn(mapGetter.EventBeanExistsCodegen(Ref("bean"), codegenMethodScope, codegenClassScope))
-
                 .MethodReturn(ConstantFalse());
         }
 
@@ -101,7 +97,8 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             if (value is IDictionary<string, object> valueAsMap) {
                 var valueEventBean = eventBeanTypedEventFactory.AdapterForTypedMap(
-                    valueAsMap, fragmentType);
+                    valueAsMap,
+                    fragmentType);
                 return mapGetter.GetFragment(valueEventBean);
             }
 
@@ -118,9 +115,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object), "value")
+                .AddParam<object>("value")
                 .Block
-
                 .IfInstanceOf("value", typeof(IDictionary<string, object>))
                 .DeclareVarWCast(typeof(IDictionary<string, object>), "valueAsMap", "value")
                 .BlockReturn(
@@ -128,7 +124,6 @@ namespace com.espertech.esper.common.@internal.@event.map
                         Ref("valueAsMap"),
                         codegenMethodScope,
                         codegenClassScope))
-
                 .IfInstanceOf("value", typeof(EventBean))
                 .DeclareVarWCast(typeof(EventBean), "valueAsBean", "value")
                 .BlockReturn(
@@ -136,7 +131,6 @@ namespace com.espertech.esper.common.@internal.@event.map
                         Ref("valueAsBean"),
                         codegenMethodScope,
                         codegenClassScope))
-
                 .MethodReturn(ConstantNull());
         }
 
@@ -147,10 +141,10 @@ namespace com.espertech.esper.common.@internal.@event.map
         {
             return LocalMethod(HandleNestedValueCodegen(codegenMethodScope, codegenClassScope), name);
         }
-        
-        
+
+
         public override CodegenExpression HandleNestedValueExistsCodegen(
-            CodegenExpression name, 
+            CodegenExpression name,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {

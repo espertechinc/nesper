@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             DeclaredExpressions = new List<ExprDeclaredNode>(1);
         }
 
-                
+
         public bool IsWalkDeclExprParam => true;
 
         public IList<ExprDeclaredNode> DeclaredExpressions { get; }
@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
 
         public void Visit(ExprNode exprNode)
         {
-            if (exprNode is ExprDeclaredNode) {
-                DeclaredExpressions.Add((ExprDeclaredNode) exprNode);
+            if (exprNode is ExprDeclaredNode node) {
+                DeclaredExpressions.Add(node);
             }
         }
 

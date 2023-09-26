@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,8 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
@@ -21,49 +23,42 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.@event.property
 {
     /// <summary>
-    ///     Represents a mapped property or array property, ie. an 'value' property with read method getValue(int index)
-    ///     or a 'array' property via read method getArray() returning an array.
+    /// Represents a mapped property or array property, ie. an 'value' property with read method getValue(int index)
+    /// or a 'array' property via read method getArray() returning an array.
     /// </summary>
     public class MappedProperty : PropertyBase,
         PropertyWithKey
     {
-        public MappedProperty(string propertyName)
-            : base(propertyName)
+        private string _key;
+
+        public MappedProperty(string propertyName) : base(propertyName)
         {
         }
 
         /// <summary>
-        ///     Ctor.
+        /// Ctor.
         /// </summary>
-        /// <param name="propertyName">is the property name of the mapped property</param>
-        /// <param name="key">is the key value to access the mapped property</param>
+        /// <param name = "propertyName">is the property name of the mapped property</param>
+        /// <param name = "key">is the key value to access the mapped property</param>
         public MappedProperty(
             string propertyName,
             string key)
             : base(propertyName)
         {
-            Key = key;
+            _key = key;
         }
 
         public override bool IsDynamic => false;
-
-        public override EventPropertyGetterSPI GetterDOM => new DOMMapGetter(PropertyNameAtomic, Key, null);
-
-        /// <summary>
-        ///     Returns the key value for mapped access.
-        /// </summary>
-        /// <returns>key value</returns>
-        public string Key { get; }
-
+        
         public override string[] ToPropertyArray()
         {
-            return new[] {PropertyNameAtomic};
+            return new[] { PropertyNameAtomic };
         }
-
-        // EventPropertyGetterAndMapped
+        
         public override EventPropertyGetterSPI GetGetter(
             BeanEventType eventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -97,7 +92,7 @@ namespace com.espertech.esper.common.@internal.@event.property
 
             return null;
         }
-
+                
         private EventPropertyGetterSPI GetGetterFromDictionary(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
@@ -131,11 +126,10 @@ namespace com.espertech.esper.common.@internal.@event.property
 
             throw new IllegalStateException($"unable to determine property getter for requested member");
         }
-
-
+        
         public static void AssertGenericDictionary(Type t)
         {
-            if (!GenericExtensions.IsMapped(t)) {
+            if (!t.IsMapped()) {
                 throw new IllegalStateException("type is not a mapped value");
             }
         }
@@ -145,6 +139,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory)
         {
             var propertyDesc = eventType.GetMappedProperty(PropertyNameAtomic);
+
             if (propertyDesc == null) {
                 return null;
             }
@@ -178,48 +173,14 @@ namespace com.espertech.esper.common.@internal.@event.property
             throw new IllegalStateException($"invalid property descriptor: {propertyDesc}");
         }
 
-        public override GenericPropertyDesc GetPropertyTypeGeneric(
-            BeanEventType eventType,
-            BeanEventTypeFactory beanEventTypeFactory)
-        {
-            var propertyDesc = eventType.GetMappedProperty(PropertyNameAtomic);
-            if (propertyDesc == null) {
-                return null;
-            }
-
-            if (propertyDesc.IsMappedReadMethod) {
-                return new GenericPropertyDesc(propertyDesc.ReadMethod.ReturnType);
-            }
-
-            if (!propertyDesc.PropertyType.IsSimple()) {
-                return null;
-            }
-
-            var returnType = propertyDesc.ReturnType;
-            if (returnType.IsGenericStringDictionary()) {
-                if (propertyDesc.AccessorProp != null) {
-                    var genericType = TypeHelper.GetGenericPropertyTypeMap(propertyDesc.AccessorProp, false);
-                    return new GenericPropertyDesc(genericType);
-                }
-
-                if (propertyDesc.ReadMethod != null) {
-                    var genericType = TypeHelper.GetGenericReturnTypeMap(propertyDesc.ReadMethod, false);
-                    return new GenericPropertyDesc(genericType);
-                }
-
-                if (propertyDesc.AccessorField != null) {
-                    var genericType = TypeHelper.GetGenericFieldTypeMap(propertyDesc.AccessorField, false);
-                    return new GenericPropertyDesc(genericType);
-                }
-            }
-
-            return null;
-        }
-
         public override Type GetPropertyTypeMap(
             IDictionary<string, object> optionalMapPropTypes,
             BeanEventTypeFactory beanEventTypeFactory)
         {
+            if (optionalMapPropTypes == null) {
+                return null;
+            }
+
             var type = optionalMapPropTypes.Get(PropertyNameAtomic);
             if (type == null) {
                 return null;
@@ -232,19 +193,21 @@ namespace com.espertech.esper.common.@internal.@event.property
             return null; // Mapped properties are not allowed in non-dynamic form in a map
         }
 
-        // MapEventPropertyGetterAndMapped 
         public override MapEventPropertyGetter GetGetterMap(
             IDictionary<string, object> optionalMapPropTypes,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory)
         {
-            var type = optionalMapPropTypes.Get(PropertyNameAtomic);
-            if (type == null) {
+            if (optionalMapPropTypes == null) {
+                return null;
+            }
+
+            if (!optionalMapPropTypes.TryGetValue(PropertyNameAtomic, out var type)) {
                 return null;
             }
 
             if (type is Type asType && asType.IsGenericStringDictionary()) {
-                return new MapMappedPropertyGetter(PropertyNameAtomic, Key);
+                    return new MapMappedPropertyGetter(PropertyNameAtomic, Key);
             }
 
             if (type is IDictionary<string, object>) {
@@ -258,7 +221,7 @@ namespace com.espertech.esper.common.@internal.@event.property
         {
             writer.Write(PropertyNameAtomic);
             writer.Write("('");
-            writer.Write(Key);
+            writer.Write(_key);
             writer.Write("')");
         }
 
@@ -268,17 +231,18 @@ namespace com.espertech.esper.common.@internal.@event.property
             BaseXMLEventType eventType,
             string propertyExpression)
         {
-            foreach (SchemaElementComplex complex in complexProperty.ComplexElements) {
+            foreach (var complex in complexProperty.ComplexElements) {
                 if (!complex.Name.Equals(PropertyNameAtomic)) {
                     continue;
                 }
 
                 foreach (var attribute in complex.Attributes) {
                     if (!attribute.Name.Equals("id", StringComparison.InvariantCultureIgnoreCase)) {
+                        continue;
                     }
                 }
 
-                return new DOMMapGetter(PropertyNameAtomic, Key, null);
+                return new DOMMapGetter(PropertyNameAtomic, _key, null);
             }
 
             return null;
@@ -286,13 +250,14 @@ namespace com.espertech.esper.common.@internal.@event.property
 
         public override SchemaItem GetPropertyTypeSchema(SchemaElementComplex complexProperty)
         {
-            foreach (SchemaElementComplex complex in complexProperty.ComplexElements) {
+            foreach (var complex in complexProperty.ComplexElements) {
                 if (!complex.Name.Equals(PropertyNameAtomic)) {
                     continue;
                 }
 
                 foreach (var attribute in complex.Attributes) {
-                    if (!string.Equals(attribute.Name, "id", StringComparison.InvariantCultureIgnoreCase)) {
+                    if (!attribute.Name.Equals("id", StringComparison.InvariantCultureIgnoreCase)) {
+                        continue;
                     }
                 }
 
@@ -302,7 +267,6 @@ namespace com.espertech.esper.common.@internal.@event.property
             return null;
         }
 
-        // ObjectArrayEventPropertyGetterAndMapped
         public override ObjectArrayEventPropertyGetter GetGetterObjectArray(
             IDictionary<string, int> indexPerProperty,
             IDictionary<string, object> nestableTypes,
@@ -324,5 +288,9 @@ namespace com.espertech.esper.common.@internal.@event.property
 
             return null;
         }
+
+        public string Key => _key;
+
+        public override EventPropertyGetterSPI GetterDOM => new DOMMapGetter(PropertyNameAtomic, _key, null);
     }
 } // end of namespace

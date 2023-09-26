@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             bool isInnerClass);
 
         public abstract void MergeClasses(ISet<Type> classes);
-        
+
         public abstract void TraverseExpressions(Consumer<CodegenExpression> consumer);
     }
 } // end of namespace

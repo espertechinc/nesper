@@ -15,8 +15,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var hasTopControl = plan.FilterConfirm != null || plan.FilterNegate != null;
             var hasPathControl = false;
             var hasTripletControl = false;
-            
-            foreach (FilterSpecPlanPath path in plan.Paths) {
+
+            foreach (var path in plan.Paths) {
                 hasPathControl |= path.PathNegate != null;
                 hasTripletControl |= path.HasTripletControl;
             }

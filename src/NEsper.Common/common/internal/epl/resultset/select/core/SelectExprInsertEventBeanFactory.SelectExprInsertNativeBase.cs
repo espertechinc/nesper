@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
@@ -41,6 +42,27 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 SelectExprProcessorCodegenSymbol selectSymbol,
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope);
+
+            public static SelectExprInsertNativeBase MakeInsertNative(
+                EventType eventType,
+                EventBeanManufacturerForge eventManufacturer,
+                ExprForge[] exprForges,
+                TypeWidenerSPI[] wideners)
+            {
+                bool hasWidener = false;
+                foreach (var widener in wideners) {
+                    if (widener != null) {
+                        hasWidener = true;
+                        break;
+                    }
+                }
+
+                if (!hasWidener) {
+                    return new SelectExprInsertNativeNoWiden(eventType, eventManufacturer, exprForges);
+                }
+
+                return new SelectExprInsertNativeWidening(eventType, eventManufacturer, exprForges, wideners);
+            }
         }
     }
 }

@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
                 everyNode.FactoryNode.DistinctExpression,
                 everyNode.Context.AgentInstanceContext);
             var haveSeenThis = false;
-            IDictionary<object, long> keysFromNode = spawnedNodes.Get(fromNode);
+            var keysFromNode = spawnedNodes.Get(fromNode);
             if (keysFromNode != null) {
                 // Clean out old keys
 

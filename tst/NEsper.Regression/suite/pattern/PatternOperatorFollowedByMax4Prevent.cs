@@ -9,83 +9,106 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.hook.condition;
+using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
 
-using SupportBean = com.espertech.esper.common.@internal.support.SupportBean;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternOperatorFollowedByMax4Prevent : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.STATICHOOK);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             var context = SupportConditionHandlerFactory.FactoryContexts[0];
-            Assert.AreEqual("default", context.RuntimeURI);
-            var handler = SupportConditionHandlerFactory.LastHandler;
+            Assert.AreEqual(env.RuntimeURI, context.RuntimeURI);
 
-            RunAssertionFollowedWithMax(env, handler);
-            RunAssertionTwoStatementsAndStopDestroy(env, handler);
+            var milestone = new AtomicLong();
+            RunAssertionFollowedWithMax(env, milestone);
+            RunAssertionTwoStatementsAndStopDestroy(env, milestone);
         }
 
         private static void RunAssertionFollowedWithMax(
             RegressionEnvironment env,
-            SupportConditionHandlerFactory.SupportConditionHandler handler)
+            AtomicLong milestone)
         {
             var expressionOne =
-                "@Name('S1') select * from pattern [every a=SupportBean(TheString like 'A%') -[2]> b=SupportBean_A(Id=a.TheString)]";
+                "@name('S1') select * from pattern [every a=SupportBean(theString like 'A%') -[2]> b=SupportBean_A(id=a.theString)]";
             env.CompileDeploy(expressionOne).AddListener("S1");
 
             var expressionTwo =
-                "@Name('S2') select * from pattern [every a=SupportBean(TheString like 'B%') -> b=SupportBean_B(Id=a.TheString)]";
+                "@name('S2') select * from pattern [every a=SupportBean(theString like 'B%') -> b=SupportBean_B(id=a.theString)]";
             env.CompileDeploy(expressionTwo).AddListener("S2");
 
             env.SendEventBean(new SupportBean("A1", 0));
             env.SendEventBean(new SupportBean("A2", 0));
             env.SendEventBean(new SupportBean("B1", 0));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
+
+            env.MilestoneInc(milestone);
 
             env.SendEventBean(new SupportBean("A3", 0));
-            AssertContextStatement(env, env.Statement("S1"), handler.GetAndResetContexts(), 2);
+            AssertContextStatement(
+                env,
+                env.Statement("S1"),
+                SupportConditionHandlerFactory.LastHandler.GetAndResetContexts(),
+                2);
+
+            env.MilestoneInc(milestone);
 
             env.SendEventBean(new SupportBean("B2", 0));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
+
+            env.MilestoneInc(milestone);
 
             env.SendEventBean(new SupportBean("B3", 0));
             AssertContextEnginePool(
                 env,
                 env.Statement("S2"),
-                handler.GetAndResetContexts(),
+                SupportConditionHandlerFactory.LastHandler.GetAndResetContexts(),
                 4,
                 GetExpectedCountMap("S1", 2, "S2", 2));
 
+            env.MilestoneInc(milestone);
+
             env.SendEventBean(new SupportBean_A("A2"));
             env.SendEventBean(new SupportBean("B4", 0)); // now A1, B1, B2, B4
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
+
+            env.MilestoneInc(milestone);
 
             env.SendEventBean(new SupportBean("A3", 0));
             AssertContextEnginePool(
                 env,
                 env.Statement("S1"),
-                handler.GetAndResetContexts(),
+                SupportConditionHandlerFactory.LastHandler.GetAndResetContexts(),
                 4,
                 GetExpectedCountMap("S1", 1, "S2", 3));
 
             env.UndeployModuleContaining("S1");
 
+            env.MilestoneInc(milestone);
+
             env.SendEventBean(new SupportBean("B4", 0));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
 
             env.SendEventBean(new SupportBean("B5", 0));
             AssertContextEnginePool(
                 env,
                 env.Statement("S2"),
-                handler.GetAndResetContexts(),
+                SupportConditionHandlerFactory.LastHandler.GetAndResetContexts(),
                 4,
                 GetExpectedCountMap("S2", 4));
 
@@ -94,54 +117,61 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         private static void RunAssertionTwoStatementsAndStopDestroy(
             RegressionEnvironment env,
-            SupportConditionHandlerFactory.SupportConditionHandler handler)
+            AtomicLong milestone)
         {
             var expressionOne =
-                "@Name('S1') select * from pattern [every a=SupportBean(TheString like 'A%') -> b=SupportBean_A(Id=a.TheString)]";
+                "@name('S1') select * from pattern [every a=SupportBean(theString like 'A%') -> b=SupportBean_A(id=a.theString)]";
             env.CompileDeploy(expressionOne).AddListener("S1");
 
             var expressionTwo =
-                "@Name('S2') select * from pattern [every a=SupportBean(TheString like 'B%') -> b=SupportBean_B(Id=a.TheString)]";
+                "@name('S2') select * from pattern [every a=SupportBean(theString like 'B%') -> b=SupportBean_B(id=a.theString)]";
             env.CompileDeploy(expressionTwo).AddListener("S2");
 
             env.SendEventBean(new SupportBean("A1", 0));
             env.SendEventBean(new SupportBean("A2", 0));
+
+            env.MilestoneInc(milestone);
+
             env.SendEventBean(new SupportBean("A3", 0));
             env.SendEventBean(new SupportBean("B1", 0));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
+
+            env.MilestoneInc(milestone);
 
             env.SendEventBean(new SupportBean("B2", 0));
             AssertContextEnginePool(
                 env,
                 env.Statement("S2"),
-                handler.GetAndResetContexts(),
+                SupportConditionHandlerFactory.LastHandler.GetAndResetContexts(),
                 4,
                 GetExpectedCountMap("S1", 3, "S2", 1));
 
-            handler = SupportConditionHandlerFactory.LastHandler;
+            env.MilestoneInc(milestone);
 
             env.SendEventBean(new SupportBean("A4", 0));
             AssertContextEnginePool(
                 env,
                 env.Statement("S1"),
-                handler.GetAndResetContexts(),
+                SupportConditionHandlerFactory.LastHandler.GetAndResetContexts(),
                 4,
                 GetExpectedCountMap("S1", 3, "S2", 1));
+
+            env.MilestoneInc(milestone);
 
             env.UndeployModuleContaining("S1");
 
             env.SendEventBean(new SupportBean("B3", 0));
             env.SendEventBean(new SupportBean("B4", 0));
             env.SendEventBean(new SupportBean("B5", 0));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
 
-            handler = SupportConditionHandlerFactory.LastHandler;
+            env.MilestoneInc(milestone);
 
             env.SendEventBean(new SupportBean("B6", 0));
             AssertContextEnginePool(
                 env,
                 env.Statement("S2"),
-                handler.GetAndResetContexts(),
+                SupportConditionHandlerFactory.LastHandler.GetAndResetContexts(),
                 4,
                 GetExpectedCountMap("S2", 4));
 
@@ -149,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AssertContextEnginePool(
                 env,
                 env.Statement("S2"),
-                handler.GetAndResetContexts(),
+                SupportConditionHandlerFactory.LastHandler.GetAndResetContexts(),
                 4,
                 GetExpectedCountMap("S2", 4));
 
@@ -189,7 +219,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             Assert.AreEqual(env.RuntimeURI, context.RuntimeURI);
             Assert.AreEqual(stmt.DeploymentId, context.DeploymentId);
             Assert.AreEqual(stmt.Name, context.StatementName);
-            var condition = (ConditionPatternRuntimeSubexpressionMax) context.EngineCondition;
+            var condition = (ConditionPatternRuntimeSubexpressionMax)context.EngineCondition;
             Assert.AreEqual(max, condition.Max);
             Assert.AreEqual(counts.Count, condition.Counts.Count);
             foreach (var expected in counts) {
@@ -210,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             Assert.AreEqual(env.RuntimeURI, context.RuntimeURI);
             Assert.AreEqual(stmt.DeploymentId, context.DeploymentId);
             Assert.AreEqual(stmt.Name, context.StatementName);
-            var condition = (ConditionPatternSubexpressionMax) context.EngineCondition;
+            var condition = (ConditionPatternSubexpressionMax)context.EngineCondition;
             Assert.AreEqual(max, condition.Max);
             contexts.Clear();
         }

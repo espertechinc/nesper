@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.common.@internal.filterspec
@@ -13,6 +15,15 @@ namespace com.espertech.esper.common.@internal.filterspec
     [TestFixture]
     public class TestFilterOperator : AbstractCommonTest
     {
+        [Test]
+        public void TestFromText()
+        {
+            Assert.AreEqual(FilterOperator.EQUAL, FilterOperatorExtensions.FromText("="));
+            foreach (var op in EnumHelper.GetValues<FilterOperator>()) {
+                Assert.AreEqual(op, FilterOperatorExtensions.FromText(op.GetTextualOp()));
+            }
+        }
+
         [Test]
         public void TestRanges()
         {

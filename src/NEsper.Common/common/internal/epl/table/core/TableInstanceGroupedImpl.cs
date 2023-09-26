@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,6 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
@@ -29,10 +28,12 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         public TableInstanceGroupedImpl(
             Table table,
-            AgentInstanceContext agentInstanceContext)
-            : base(table, agentInstanceContext)
+            AgentInstanceContext agentInstanceContext) : base(table, agentInstanceContext)
         {
-            var eventTable = (PropertyHashedEventTableUnique) table.PrimaryIndexFactory.MakeEventTables(agentInstanceContext, null)[0];
+            var eventTable =
+                (PropertyHashedEventTableUnique)table.PrimaryIndexFactory.MakeEventTables(
+                    agentInstanceContext,
+                    null)[0];
             rows = eventTable.PropertyIndex.TransformLeft<object, EventBean, ObjectArrayBackedEventBean>();
             indexRepository.AddIndex(
                 table.MetaData.KeyIndexMultiKey,
@@ -41,6 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                     table.MetaData.TableModuleName,
                     eventTable));
         }
+
+        public long Count => rows.Count;
 
         public override ObjectArrayBackedEventBean GetRowForGroupKey(object groupKey)
         {
@@ -78,18 +81,22 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                 null);
         }
 
-        public override void RemoveExplicitIndex(string indexName)
+        public override void RemoveExplicitIndex(
+            string indexName,
+            string indexModuleName)
         {
-            indexRepository.RemoveExplicitIndex(indexName);
+            indexRepository.RemoveExplicitIndex(indexName, indexModuleName);
         }
 
-        public override EventTable GetIndex(string indexName)
+        public override EventTable GetIndex(
+            string indexName,
+            string moduleName)
         {
             if (indexName.Equals(table.MetaData.TableName)) {
                 return indexRepository.GetIndexByDesc(table.MetaData.KeyIndexMultiKey);
             }
 
-            return indexRepository.GetExplicitIndexByName(indexName);
+            return indexRepository.GetExplicitIndexByName(indexName, moduleName);
         }
 
         public override void ClearInstance()
@@ -125,20 +132,23 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                     return rows.Keys;
                 }
 
-                List<object> keys;
-
+                IList<object> keys = new List<object>(rows.Count);
                 if (keyTypes.Length == 1) {
                     var col = table.MetaData.KeyColNums[0];
-                    keys = rows.Values
-                        .Select(bean => bean.Properties[col])
-                        .ToList();
+                    foreach (var bean in rows.Values) {
+                        keys.Add(bean.Properties[col]);
+                    }
                 }
                 else {
                     var cols = table.MetaData.KeyColNums;
-                    keys = rows.Values
-                        .Select(bean => cols.Select(index => bean.Properties[index]).ToArray())
-                        .Cast<object>()
-                        .ToList();
+                    foreach (var bean in rows.Values) {
+                        var mk = new object[cols.Length];
+                        for (var i = 0; i < cols.Length; i++) {
+                            mk[i] = bean.Properties[cols[i]];
+                        }
+
+                        keys.Add(mk);
+                    }
                 }
 
                 return keys;
@@ -151,7 +161,6 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                 agentInstanceContext.InstrumentationProvider.QTableUpdatedEvent(updatedEvent);
                 agentInstanceContext.InstrumentationProvider.ATableUpdatedEvent();
             }
-
             // no action
         }
 

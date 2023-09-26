@@ -85,10 +85,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             }
 
             if (result.GetType().IsArray) {
-                return (EventBean[]) result;
+                return (EventBean[])result;
             }
 
-            return (ICollection<EventBean>) result;
+            return (ICollection<EventBean>)result;
         }
     }
 } // end of namespace

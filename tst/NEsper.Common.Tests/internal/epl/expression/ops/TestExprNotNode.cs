@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 // Expected
             }
 
-            // test failure, type mismatch
+            // test failure, Type mismatch
             notNode = new ExprNotNode();
             notNode.AddChildNode(new SupportExprNode(typeof(string)));
             try

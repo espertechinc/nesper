@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         public NestedIterationExecNode(int[] nestedStreams)
         {
             this.nestedStreams = nestedStreams;
-            this.childNodes = new List<ExecNode>();
+            childNodes = new List<ExecNode>();
         }
 
         /// <summary>
@@ -73,15 +73,15 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
             ExprEvaluatorContext exprEvaluatorContext)
         {
             IList<EventBean[]> nestedResult = new List<EventBean[]>();
-            ExecNode nestedExecNode = childNodes[nestingOrderIndex];
+            var nestedExecNode = childNodes[nestingOrderIndex];
             nestedExecNode.Process(lookupEvent, currentPath, nestedResult, exprEvaluatorContext);
-            bool isLastStream = nestingOrderIndex == nestingOrderLength - 1;
+            var isLastStream = nestingOrderIndex == nestingOrderLength - 1;
 
             // This is not the last nesting level so no result rows are added. Invoke next nesting level for
             // each event found.
             if (!isLastStream) {
-                foreach (EventBean[] row in nestedResult) {
-                    EventBean lookup = row[nestedStreams[nestingOrderIndex]];
+                foreach (var row in nestedResult) {
+                    var lookup = row[nestedStreams[nestingOrderIndex]];
                     RecursiveNestedJoin(lookup, nestingOrderIndex + 1, row, result, exprEvaluatorContext);
                 }
 
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
             }
 
             // Loop to add result rows
-            foreach (EventBean[] row in nestedResult) {
+            foreach (var row in nestedResult) {
                 result.Add(row);
             }
         }
@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
             writer.WriteLine("NestedIterationExecNode");
             writer.IncrIndent();
 
-            foreach (ExecNode child in childNodes) {
+            foreach (var child in childNodes) {
                 child.Print(writer);
             }
 

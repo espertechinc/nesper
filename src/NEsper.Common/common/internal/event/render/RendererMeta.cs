@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                     }
                 }
 
-                if (desc.IsMapped && !desc.IsRequiresMapKey && !desc.IsFragment) {
+                if (desc.IsMapped && !desc.IsRequiresMapkey && !desc.IsFragment) {
                     var getter = eventType.GetGetter(propertyName);
                     if (getter == null) {
                         Log.Warn(

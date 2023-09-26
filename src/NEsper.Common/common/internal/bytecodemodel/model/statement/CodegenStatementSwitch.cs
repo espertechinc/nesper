@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             _switchExpression = switchExpression;
             _options = options;
             _blocks = new CodegenBlock[options.Length];
-            for (int i = 0; i < options.Length; i++) {
+            for (var i = 0; i < options.Length; i++) {
                 _blocks[i] = new CodegenBlock(this);
             }
 
@@ -61,10 +61,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             _switchExpression.Render(builder, isInnerClass, level, indent);
             builder.Append(") {\n");
 
-            for (int i = 0; i < _options.Length; i++) {
+            for (var i = 0; i < _options.Length; i++) {
                 indent.Indent(builder, level + 1);
                 builder.Append("case ");
-                _options[i].Render(builder, isInnerClass, level, indent); 
+                _options[i].Render(builder, isInnerClass, level, indent);
                 builder.Append(": {\n");
 
                 _blocks[i].Render(builder, isInnerClass, level + 2, indent);

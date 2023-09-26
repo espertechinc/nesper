@@ -62,9 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             Func<ExprForge, CodegenExpression> toExpr = forge =>
                 ExprNodeUtilityCodegen.CodegenEvaluator(forge, methodNode, GetType(), classScope);
             methodNode.Block
-                .DeclareVar<SubordTableLookupStrategyFactoryQuadTree>(
-                    "sts",
-                    NewInstance(typeof(SubordTableLookupStrategyFactoryQuadTree)))
+                .DeclareVarNewInstance<SubordTableLookupStrategyFactoryQuadTree>("sts")
                 .SetProperty(Ref("sts"), "X", toExpr.Invoke(x))
                 .SetProperty(Ref("sts"), "Y", toExpr.Invoke(y))
                 .SetProperty(Ref("sts"), "Width", toExpr.Invoke(width))

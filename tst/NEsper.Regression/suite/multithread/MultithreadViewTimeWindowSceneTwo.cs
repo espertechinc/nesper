@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.regressionlib.framework;
@@ -39,6 +41,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private ResultUpdateListener[] listeners;
         private Thread[] threads;
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {
@@ -102,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var symbols = new string[numSymbols];
             listeners = new ResultUpdateListener[symbols.Length];
             for (var i = 0; i < symbols.Length; i++) {
-                var annotation = $"@Name('stmt_{i}')";
+                var annotation = $"@name('stmt_{i}')";
                 symbols[i] = "S" + i;
                 var epl = annotation +
                           "select Symbol, sum(Volume) as sumVol " + 

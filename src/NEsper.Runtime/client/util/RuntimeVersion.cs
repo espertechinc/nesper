@@ -19,7 +19,7 @@ namespace com.espertech.esper.runtime.client.util
         /// <summary>
         ///     Current runtime version.
         /// </summary>
-        public const string RUNTIME_VERSION = "8.5.8";
+        public const string RUNTIME_VERSION = "8.9.0";
 
         /// <summary>
         ///     Current runtime major version.
@@ -72,7 +72,7 @@ namespace com.espertech.esper.runtime.client.util
             }
         }
 
-        private static MajorMinorPatch ParseVersion(string version)
+        public static MajorMinorPatch ParseVersion(string version)
         {
             if (version == null || version.Trim().Length == 0) {
                 throw new FormatException("Null or empty semantic version");

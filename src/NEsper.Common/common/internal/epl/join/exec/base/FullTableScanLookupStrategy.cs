@@ -39,10 +39,10 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
             Cursor cursor,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
+            var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             instrumentationCommon.QIndexJoinLookup(this, eventIndex);
 
-            ISet<EventBean> result = eventIndex.EventSet;
+            var result = eventIndex.EventSet;
             if (result.IsEmpty()) {
                 instrumentationCommon.AIndexJoinLookup(null, null);
                 return null;
@@ -56,12 +56,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
         /// Returns the associated table.
         /// </summary>
         /// <returns>table for lookup.</returns>
-        public UnindexedEventTable EventIndex {
-            get => eventIndex;
-        }
+        public UnindexedEventTable EventIndex => eventIndex;
 
-        public LookupStrategyType LookupStrategyType {
-            get => LookupStrategyType.FULLTABLESCAN;
-        }
+        public LookupStrategyType LookupStrategyType => LookupStrategyType.FULLTABLESCAN;
     }
 } // end of namespace

@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 
         public View Child {
             get => child;
-            set => child = (UpdateDispatchView) value;
+            set => child = (UpdateDispatchView)value;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

@@ -9,278 +9,321 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
+using com.espertech.esper.regressionlib.support.json;
 
-using static com.espertech.esper.regressionlib.support.json.SupportJsonEventTypeUtil;
+//compareMaps
 
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
-	public class EventJsonUnderlying
-	{
-		public static IList<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new EventJsonUnderlyingMapDynamicZeroDeclared());
-			execs.Add(new EventJsonUnderlyingMapDynamicOneDeclared());
-			execs.Add(new EventJsonUnderlyingMapDynamicTwoDeclared());
-			execs.Add(new EventJsonUnderlyingMapNonDynamicZeroDeclared());
-			execs.Add(new EventJsonUnderlyingMapNonDynamicOneDeclared());
-			execs.Add(new EventJsonUnderlyingMapNonDynamicTwoDeclared());
-			return execs;
-		}
+    public class EventJsonUnderlying
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithDynamicZeroDeclared(execs);
+            WithDynamicOneDeclared(execs);
+            WithDynamicTwoDeclared(execs);
+            WithNonDynamicZeroDeclared(execs);
+            WithNonDynamicOneDeclared(execs);
+            WithNonDynamicTwoDeclared(execs);
+            return execs;
+        }
 
-		internal class EventJsonUnderlyingMapNonDynamicZeroDeclared : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				env.CompileDeploy(
-						"@public @buseventtype create json schema JsonEvent();\n" +
-						"@Name('s0') select *  from JsonEvent#keepall")
-					.AddListener("s0");
+        public static IList<RegressionExecution> WithNonDynamicTwoDeclared(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventJsonUnderlyingMapNonDynamicTwoDeclared());
+            return execs;
+        }
 
-				IDictionary<string, object> actualOne = SendJsonGetUnderlying(env, "{\"a\" : 1, \"b\": 2, \"c\": 3}\n");
-				CompareDictionaries(new LinkedHashMap<string, object>(), actualOne);
+        public static IList<RegressionExecution> WithNonDynamicOneDeclared(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventJsonUnderlyingMapNonDynamicOneDeclared());
+            return execs;
+        }
 
-				env.Milestone(0);
+        public static IList<RegressionExecution> WithNonDynamicZeroDeclared(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventJsonUnderlyingMapNonDynamicZeroDeclared());
+            return execs;
+        }
 
-				using (IEnumerator<EventBean> it = env.Statement("s0").GetEnumerator()) {
-					CompareMapWBean(new LinkedHashMap<string, object>(), it.Advance());
-				}
+        public static IList<RegressionExecution> WithDynamicTwoDeclared(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventJsonUnderlyingMapDynamicTwoDeclared());
+            return execs;
+        }
 
-				env.UndeployAll();
-			}
-		}
+        public static IList<RegressionExecution> WithDynamicOneDeclared(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventJsonUnderlyingMapDynamicOneDeclared());
+            return execs;
+        }
 
-		internal class EventJsonUnderlyingMapNonDynamicOneDeclared : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				env.CompileDeploy(
-						"@public @buseventtype create json schema JsonEvent(a int);\n" +
-						"@Name('s0') select *  from JsonEvent#keepall")
-					.AddListener("s0");
+        public static IList<RegressionExecution> WithDynamicZeroDeclared(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventJsonUnderlyingMapDynamicZeroDeclared());
+            return execs;
+        }
 
-				IDictionary<string, object> actualOne = SendJsonGetUnderlying(env, "{\"a\" : 1, \"b\": 2, \"c\": 3}\n");
-				IDictionary<string, object> expectedOne = new LinkedHashMap<string, object>();
-				expectedOne.Put("a", 1);
-				CompareDictionaries(expectedOne, actualOne);
+        private class EventJsonUnderlyingMapNonDynamicZeroDeclared : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy(
+                        "@public @buseventtype create json schema JsonEvent();\n" +
+                        "@name('s0') select *  from JsonEvent#keepall")
+                    .AddListener("s0");
 
-				IDictionary<string, object> actualTwo = SendJsonGetUnderlying(env, "{\"a\" : 10}\n");
-				IDictionary<string, object> expectedTwo = new LinkedHashMap<string, object>();
-				expectedTwo.Put("a", 10);
-				CompareDictionaries(expectedTwo, actualTwo);
+                env.SendEventJson("{\"a\" : 1, \"b\": 2, \"c\": 3}\n", "JsonEvent");
+                env.AssertEventNew("s0", @event => CompareMapWBean(new LinkedHashMap<string, object>(), @event));
 
-				IDictionary<string, object> actualThree = SendJsonGetUnderlying(env, "{}\n");
-				IDictionary<string, object> expectedThree = new LinkedHashMap<string, object>();
-				expectedThree.Put("a", null);
-				CompareDictionaries(expectedThree, actualThree);
+                env.Milestone(0);
 
-				env.Milestone(0);
+                env.AssertIterator(
+                    "s0",
+                    enumerator => CompareMapWBean(new LinkedHashMap<string, object>(), enumerator.Advance()));
 
-				using (IEnumerator<EventBean> it = env.Statement("s0").GetEnumerator()) {
-					CompareMapWBean(expectedOne, it.Advance());
-					CompareMapWBean(expectedTwo, it.Advance());
-					CompareMapWBean(expectedThree, it.Advance());
-				}
+                env.UndeployAll();
+            }
+        }
 
-				env.UndeployAll();
-			}
-		}
+        private class EventJsonUnderlyingMapNonDynamicOneDeclared : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy(
+                        "@public @buseventtype create json schema JsonEvent(a int);\n" +
+                        "@name('s0') select *  from JsonEvent#keepall")
+                    .AddListener("s0");
 
-		internal class EventJsonUnderlyingMapNonDynamicTwoDeclared : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				env.CompileDeploy(
-						"@public @buseventtype create json schema JsonEvent(a int, b int);\n" +
-						"@Name('s0') select *  from JsonEvent#keepall")
-					.AddListener("s0");
+                env.SendEventJson("{\"a\" : 1, \"b\": 2, \"c\": 3}\n", "JsonEvent");
+                IDictionary<string, object> expectedOne = new LinkedHashMap<string, object>();
+                expectedOne.Put("a", 1);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedOne, @event));
 
-				IDictionary<string, object> actualOne = SendJsonGetUnderlying(env, "{\"a\" : 1, \"b\": 2, \"c\": 3}\n");
-				IDictionary<string, object> expectedOne = new LinkedHashMap<string, object>();
-				expectedOne.Put("a", 1);
-				expectedOne.Put("b", 2);
-				CompareDictionaries(expectedOne, actualOne);
+                env.SendEventJson("{\"a\" : 10}\n", "JsonEvent");
+                IDictionary<string, object> expectedTwo = new LinkedHashMap<string, object>();
+                expectedTwo.Put("a", 10);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedTwo, @event));
 
-				IDictionary<string, object> actualTwo = SendJsonGetUnderlying(env, "{\"a\" : 10}\n");
-				IDictionary<string, object> expectedTwo = new LinkedHashMap<string, object>();
-				expectedTwo.Put("a", 10);
-				expectedTwo.Put("b", null);
-				CompareDictionaries(expectedTwo, actualTwo);
+                env.SendEventJson("{}\n", "JsonEvent");
+                IDictionary<string, object> expectedThree = new LinkedHashMap<string, object>();
+                expectedThree.Put("a", null);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedThree, @event));
 
-				IDictionary<string, object> actualThree = SendJsonGetUnderlying(env, "{}\n");
-				IDictionary<string, object> expectedThree = new LinkedHashMap<string, object>();
-				expectedThree.Put("a", null);
-				expectedThree.Put("b", null);
-				CompareDictionaries(expectedThree, actualThree);
+                env.Milestone(0);
 
-				env.Milestone(0);
+                env.AssertIterator(
+                    "s0",
+                    en => {
+                        CompareMapWBean(expectedOne, en.Advance());
+                        CompareMapWBean(expectedTwo, en.Advance());
+                        CompareMapWBean(expectedThree, en.Advance());
+                    });
 
-				using (IEnumerator<EventBean> it = env.Statement("s0").GetEnumerator()) {
-					CompareMapWBean(expectedOne, it.Advance());
-					CompareMapWBean(expectedTwo, it.Advance());
-					CompareMapWBean(expectedThree, it.Advance());
-				}
+                env.UndeployAll();
+            }
+        }
 
-				env.UndeployAll();
-			}
-		}
+        private class EventJsonUnderlyingMapNonDynamicTwoDeclared : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy(
+                        "@public @buseventtype create json schema JsonEvent(a int, b int);\n" +
+                        "@name('s0') select *  from JsonEvent#keepall")
+                    .AddListener("s0");
 
-		internal class EventJsonUnderlyingMapDynamicZeroDeclared : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				env.CompileDeploy(
-						"@JsonSchema(Dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
-						"@Name('s0') select *  from JsonEvent#keepall")
-					.AddListener("s0");
+                env.SendEventJson("{\"a\" : 1, \"b\": 2, \"c\": 3}\n", "JsonEvent");
+                IDictionary<string, object> expectedOne = new LinkedHashMap<string, object>();
+                expectedOne.Put("a", 1);
+                expectedOne.Put("b", 2);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedOne, @event));
 
-				IDictionary<string, object> actualOne = SendJsonGetUnderlying(env, "{\"a\" : 1, \"b\": 2, \"c\": 3}\n");
-				IDictionary<string, object> expectedOne = new LinkedHashMap<string, object>();
-				expectedOne.Put("a", 1);
-				expectedOne.Put("b", 2);
-				expectedOne.Put("c", 3);
-				CompareDictionaries(expectedOne, actualOne);
+                env.SendEventJson("{\"a\" : 10}\n", "JsonEvent");
+                IDictionary<string, object> expectedTwo = new LinkedHashMap<string, object>();
+                expectedTwo.Put("a", 10);
+                expectedTwo.Put("b", null);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedTwo, @event));
 
-				IDictionary<string, object> actualTwo = SendJsonGetUnderlying(env, "{\"a\" : 10}\n");
-				IDictionary<string, object> expectedTwo = new LinkedHashMap<string, object>();
-				expectedTwo.Put("a", 10);
-				CompareDictionaries(expectedTwo, actualTwo);
+                env.SendEventJson("{}\n", "JsonEvent");
+                IDictionary<string, object> expectedThree = new LinkedHashMap<string, object>();
+                expectedThree.Put("a", null);
+                expectedThree.Put("b", null);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedThree, @event));
 
-				IDictionary<string, object> actualThree = SendJsonGetUnderlying(env, "{\"a\" : null, \"c\": 101, \"d\": 102}\n");
-				IDictionary<string, object> expectedThree = new LinkedHashMap<string, object>();
-				expectedThree.Put("a", null);
-				expectedThree.Put("c", 101);
-				expectedThree.Put("d", 102);
-				CompareDictionaries(expectedThree, actualThree);
+                env.Milestone(0);
 
-				IDictionary<string, object> actualFour = SendJsonGetUnderlying(env, "{}\n");
-				CompareDictionaries(new LinkedHashMap<string, object>(), actualFour);
+                env.AssertIterator(
+                    "s0",
+                    it => {
+                        CompareMapWBean(expectedOne, it.Advance());
+                        CompareMapWBean(expectedTwo, it.Advance());
+                        CompareMapWBean(expectedThree, it.Advance());
+                    });
 
-				env.Milestone(0);
+                env.UndeployAll();
+            }
+        }
 
-				using (IEnumerator<EventBean> it = env.Statement("s0").GetEnumerator()) {
-					CompareMapWBean(expectedOne, it.Advance());
-					CompareMapWBean(expectedTwo, it.Advance());
-					CompareMapWBean(expectedThree, it.Advance());
-					CompareMapWBean(new LinkedHashMap<string, object>(), it.Advance());
-				}
+        private class EventJsonUnderlyingMapDynamicZeroDeclared : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy(
+                        "@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
+                        "@name('s0') select *  from JsonEvent#keepall")
+                    .AddListener("s0");
 
-				env.UndeployAll();
-			}
-		}
+                env.SendEventJson("{\"a\" : 1, \"b\": 2, \"c\": 3}\n", "JsonEvent");
+                IDictionary<string, object> expectedOne = new LinkedHashMap<string, object>();
+                expectedOne.Put("a", 1);
+                expectedOne.Put("b", 2);
+                expectedOne.Put("c", 3);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedOne, @event));
 
-		internal class EventJsonUnderlyingMapDynamicOneDeclared : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				env.CompileDeploy(
-						"@JsonSchema(Dynamic=true) @public @buseventtype create json schema JsonEvent(a int);\n" +
-						"@Name('s0') select *  from JsonEvent#keepall")
-					.AddListener("s0");
+                env.SendEventJson("{\"a\" : 10}\n", "JsonEvent");
+                IDictionary<string, object> expectedTwo = new LinkedHashMap<string, object>();
+                expectedTwo.Put("a", 10);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedTwo, @event));
 
-				IDictionary<string, object> actualOne = SendJsonGetUnderlying(env, "{\"a\" : 1, \"b\": 2, \"c\": 3}\n");
-				IDictionary<string, object> expectedOne = new LinkedHashMap<string, object>();
-				expectedOne.Put("a", 1);
-				expectedOne.Put("b", 2);
-				expectedOne.Put("c", 3);
-				CompareDictionaries(expectedOne, actualOne);
+                env.SendEventJson("{\"a\" : null, \"c\": 101, \"d\": 102}\n", "JsonEvent");
+                IDictionary<string, object> expectedThree = new LinkedHashMap<string, object>();
+                expectedThree.Put("a", null);
+                expectedThree.Put("c", 101);
+                expectedThree.Put("d", 102);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedThree, @event));
 
-				IDictionary<string, object> actualTwo = SendJsonGetUnderlying(env, "{\"a\" : 10}\n");
-				IDictionary<string, object> expectedTwo = new LinkedHashMap<string, object>();
-				expectedTwo.Put("a", 10);
-				CompareDictionaries(expectedTwo, actualTwo);
+                env.SendEventJson("{}\n", "JsonEvent");
+                env.AssertEventNew("s0", @event => CompareMapWBean(new LinkedHashMap<string, object>(), @event));
 
-				IDictionary<string, object> actualThree = SendJsonGetUnderlying(env, "{\"a\" : null, \"c\": 101, \"d\": 102}\n");
-				IDictionary<string, object> expectedThree = new LinkedHashMap<string, object>();
-				expectedThree.Put("a", null);
-				expectedThree.Put("c", 101);
-				expectedThree.Put("d", 102);
-				CompareDictionaries(expectedThree, actualThree);
+                env.Milestone(0);
 
-				IDictionary<string, object> actualFour = SendJsonGetUnderlying(env, "{}\n");
-				IDictionary<string, object> expectedFour = new LinkedHashMap<string, object>();
-				expectedFour.Put("a", null);
-				CompareDictionaries(expectedFour, actualFour);
+                env.AssertIterator(
+                    "s0",
+                    it => {
+                        CompareMapWBean(expectedOne, it.Advance());
+                        CompareMapWBean(expectedTwo, it.Advance());
+                        CompareMapWBean(expectedThree, it.Advance());
+                        CompareMapWBean(new LinkedHashMap<string, object>(), it.Advance());
+                    });
 
-				env.Milestone(0);
+                env.UndeployAll();
+            }
+        }
 
-				using (IEnumerator<EventBean> it = env.Statement("s0").GetEnumerator()) {
-					CompareMapWBean(expectedOne, it.Advance());
-					CompareMapWBean(expectedTwo, it.Advance());
-					CompareMapWBean(expectedThree, it.Advance());
-					CompareMapWBean(expectedFour, it.Advance());
-				}
+        private class EventJsonUnderlyingMapDynamicOneDeclared : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy(
+                        "@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent(a int);\n" +
+                        "@name('s0') select *  from JsonEvent#keepall")
+                    .AddListener("s0");
 
-				env.UndeployAll();
-			}
-		}
+                env.SendEventJson("{\"a\" : 1, \"b\": 2, \"c\": 3}\n", "JsonEvent");
+                IDictionary<string, object> expectedOne = new LinkedHashMap<string, object>();
+                expectedOne.Put("a", 1);
+                expectedOne.Put("b", 2);
+                expectedOne.Put("c", 3);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedOne, @event));
 
-		internal class EventJsonUnderlyingMapDynamicTwoDeclared : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				env.CompileDeploy(
-						"@JsonSchema(Dynamic=true) @public @buseventtype create json schema JsonEvent(a int, b int);\n" +
-						"@Name('s0') select *  from JsonEvent#keepall")
-					.AddListener("s0");
+                env.SendEventJson("{\"a\" : 10}\n", "JsonEvent");
+                IDictionary<string, object> expectedTwo = new LinkedHashMap<string, object>();
+                expectedTwo.Put("a", 10);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedTwo, @event));
 
-				IDictionary<string, object> actualOne = SendJsonGetUnderlying(env, "{\"a\" : 1, \"b\": 2, \"c\": 3}\n");
-				IDictionary<string, object> expectedOne = new LinkedHashMap<string, object>();
-				expectedOne.Put("a", 1);
-				expectedOne.Put("b", 2);
-				expectedOne.Put("c", 3);
-				CompareDictionaries(expectedOne, actualOne);
+                env.SendEventJson("{\"a\" : null, \"c\": 101, \"d\": 102}\n", "JsonEvent");
+                IDictionary<string, object> expectedThree = new LinkedHashMap<string, object>();
+                expectedThree.Put("a", null);
+                expectedThree.Put("c", 101);
+                expectedThree.Put("d", 102);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedThree, @event));
 
-				IDictionary<string, object> actualTwo = SendJsonGetUnderlying(env, "{\"a\" : 10}\n");
-				IDictionary<string, object> expectedTwo = new LinkedHashMap<string, object>();
-				expectedTwo.Put("a", 10);
-				expectedTwo.Put("b", null);
-				CompareDictionaries(expectedTwo, actualTwo);
+                env.SendEventJson("{}\n", "JsonEvent");
+                IDictionary<string, object> expectedFour = new LinkedHashMap<string, object>();
+                expectedFour.Put("a", null);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedFour, @event));
 
-				IDictionary<string, object> actualThree = SendJsonGetUnderlying(env, "{\"a\" : null, \"c\": 101, \"d\": 102}\n");
-				IDictionary<string, object> expectedThree = new LinkedHashMap<string, object>();
-				expectedThree.Put("a", null);
-				expectedThree.Put("b", null);
-				expectedThree.Put("c", 101);
-				expectedThree.Put("d", 102);
-				CompareDictionaries(expectedThree, actualThree);
+                env.Milestone(0);
 
-				IDictionary<string, object> actualFour = SendJsonGetUnderlying(env, "{}\n");
-				IDictionary<string, object> expectedFour = new LinkedHashMap<string, object>();
-				expectedFour.Put("a", null);
-				expectedFour.Put("b", null);
-				CompareDictionaries(expectedFour, actualFour);
+                env.AssertIterator(
+                    "s0",
+                    it => {
+                        CompareMapWBean(expectedOne, it.Advance());
+                        CompareMapWBean(expectedTwo, it.Advance());
+                        CompareMapWBean(expectedThree, it.Advance());
+                        CompareMapWBean(expectedFour, it.Advance());
+                    });
 
-				env.Milestone(0);
+                env.UndeployAll();
+            }
+        }
 
-				using (IEnumerator<EventBean> it = env.Statement("s0").GetEnumerator()) {
-					CompareMapWBean(expectedOne, it.Advance());
-					CompareMapWBean(expectedTwo, it.Advance());
-					CompareMapWBean(expectedThree, it.Advance());
-					CompareMapWBean(expectedFour, it.Advance());
-				}
+        private class EventJsonUnderlyingMapDynamicTwoDeclared : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy(
+                        "@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent(a int, b int);\n" +
+                        "@name('s0') select *  from JsonEvent#keepall")
+                    .AddListener("s0");
 
-				env.UndeployAll();
-			}
-		}
+                env.SendEventJson("{\"a\" : 1, \"b\": 2, \"c\": 3}\n", "JsonEvent");
+                IDictionary<string, object> expectedOne = new LinkedHashMap<string, object>();
+                expectedOne.Put("a", 1);
+                expectedOne.Put("b", 2);
+                expectedOne.Put("c", 3);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedOne, @event));
 
-		private static JsonEventObject SendJsonGetUnderlying(
-			RegressionEnvironment env,
-			string json)
-		{
-			env.SendEventJson(json, "JsonEvent");
-			EventBean eventBean = env.Listener("s0").AssertOneGetNewAndReset();
-			return (JsonEventObject) eventBean.Underlying;
-		}
+                env.SendEventJson("{\"a\" : 10}\n", "JsonEvent");
+                IDictionary<string, object> expectedTwo = new LinkedHashMap<string, object>();
+                expectedTwo.Put("a", 10);
+                expectedTwo.Put("b", null);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedTwo, @event));
 
-		private static void CompareMapWBean(
-			IDictionary<string, object> expected,
-			EventBean @event)
-		{
-			CompareDictionaries(expected, (IDictionary<string, object>) @event.Underlying);
-		}
-	}
+                env.SendEventJson("{\"a\" : null, \"c\": 101, \"d\": 102}\n", "JsonEvent");
+                IDictionary<string, object> expectedThree = new LinkedHashMap<string, object>();
+                expectedThree.Put("a", null);
+                expectedThree.Put("b", null);
+                expectedThree.Put("c", 101);
+                expectedThree.Put("d", 102);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedThree, @event));
+
+                env.SendEventJson("{}\n", "JsonEvent");
+                IDictionary<string, object> expectedFour = new LinkedHashMap<string, object>();
+                expectedFour.Put("a", null);
+                expectedFour.Put("b", null);
+                env.AssertEventNew("s0", @event => CompareMapWBean(expectedFour, @event));
+
+                env.Milestone(0);
+
+                env.AssertIterator(
+                    "s0",
+                    it => {
+                        CompareMapWBean(expectedOne, it.Advance());
+                        CompareMapWBean(expectedTwo, it.Advance());
+                        CompareMapWBean(expectedThree, it.Advance());
+                        CompareMapWBean(expectedFour, it.Advance());
+                    });
+
+                env.UndeployAll();
+            }
+        }
+
+        private static void CompareMapWBean(
+            IDictionary<string, object> expected,
+            EventBean @event)
+        {
+            SupportJsonEventTypeUtil.CompareDictionaries(expected, (IDictionary<string, object>)@event.Underlying);
+        }
+    }
 } // end of namespace

@@ -24,18 +24,18 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
             ExprEvaluatorContext exprEvaluatorContext,
             EventTable[] indexes)
         {
-            object key = evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-            bool first = true;
+            var key = evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+            var first = true;
             ISet<EventBean> result = null;
 
-            foreach (EventTable table in indexes) {
-                ISet<EventBean> found = ((PropertyHashedEventTable) table).Lookup(key);
+            foreach (var table in indexes) {
+                var found = ((PropertyHashedEventTable)table).Lookup(key);
                 if (found != null && !found.IsEmpty()) {
                     if (result == null) {
                         result = found;
                     }
                     else if (first) {
-                        LinkedHashSet<EventBean> copy = new LinkedHashSet<EventBean>();
+                        var copy = new LinkedHashSet<EventBean>();
                         copy.AddAll(result);
                         copy.AddAll(found);
                         result = copy;
@@ -56,18 +56,18 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.inkeyword
             ExprEvaluatorContext exprEvaluatorContext,
             PropertyHashedEventTable index)
         {
-            bool first = true;
+            var first = true;
             ISet<EventBean> result = null;
 
-            foreach (ExprEvaluator evaluator in evaluators) {
-                object key = evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                ISet<EventBean> found = index.Lookup(key);
+            foreach (var evaluator in evaluators) {
+                var key = evaluator.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                var found = index.Lookup(key);
                 if (found != null && !found.IsEmpty()) {
                     if (result == null) {
                         result = found;
                     }
                     else if (first) {
-                        LinkedHashSet<EventBean> copy = new LinkedHashSet<EventBean>();
+                        var copy = new LinkedHashSet<EventBean>();
                         copy.AddAll(result);
                         copy.AddAll(found);
                         result = copy;

@@ -34,7 +34,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// </summary>
         /// <param name="values">The values.</param>
         /// <param name="comparer"></param>
-        public SortedVector(IList<T> values, IComparer<T> comparer)
+        public SortedVector(
+            IList<T> values,
+            IComparer<T> comparer)
         {
             _values = new List<T>(values);
             _comparer = comparer;
@@ -61,7 +63,7 @@ namespace com.espertech.esper.common.@internal.collection
         {
             return false;
         }
-        
+
         /// <summary> Add a value to the collection.</summary>
         /// <param name="val">is the double-type value to add
         /// </param>
@@ -88,7 +90,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
 
             var valueAtIndex = _values[index];
-            if ((valueAtIndex != null) && (_comparer.Compare(valueAtIndex, val) != 0)) {
+            if (valueAtIndex != null && _comparer.Compare(valueAtIndex, val) != 0) {
                 throw new IllegalStateException("Value not found in collection");
             }
 
@@ -122,7 +124,7 @@ namespace com.espertech.esper.common.@internal.collection
         {
             return _comparer.Compare(value1, value2);
         }
-        
+
         /// <summary> Returns the index into which to insert to.</summary>
         /// <param name="val">to find insert index
         /// </param>

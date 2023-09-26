@@ -64,9 +64,9 @@ namespace com.espertech.esper.common.@internal.filterspec
             CodegenClassScope classScope,
             CodegenMethodScope parent)
         {
-            var getterSPI = ((EventTypeSPI) _eventType).GetGetterSPI(ResultEventProperty);
+            var getterSPI = ((EventTypeSPI)_eventType).GetGetterSPI(ResultEventProperty);
             var method = parent.MakeChild(typeof(object), GetType(), classScope)
-				.AddParam(GET_FILTER_VALUE_FP);
+                .AddParam(GET_FILTER_VALUE_FP);
             method.Block
                 .DeclareVar<EventBean[]>(
                     "events",
@@ -121,11 +121,10 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return true;
             }
 
-            if (!(obj is FilterForEvalEventPropIndexedForge)) {
+            if (!(obj is FilterForEvalEventPropIndexedForge other)) {
                 return false;
             }
 
-            var other = (FilterForEvalEventPropIndexedForge) obj;
             if (other.ResultEventAsName.Equals(ResultEventAsName) &&
                 other.ResultEventProperty.Equals(ResultEventProperty)) {
                 return true;
@@ -138,7 +137,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             return ResultEventProperty.GetHashCode();
         }
-        
+
         public void ValueToString(StringBuilder @out)
         {
             @out.Append("indexed eventy property '")

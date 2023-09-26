@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             var result = CreateForge(spec, PluggableObjectType.PATTERN_OBSERVER);
             ObserverForge forge;
             try {
-                forge = (ObserverForge) result;
+                forge = (ObserverForge)result;
 
                 if (Log.IsDebugEnabled) {
                     Log.Debug(".create Successfully instantiated observer");
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             var result = CreateForge(spec, PluggableObjectType.PATTERN_GUARD);
             GuardForge forge;
             try {
-                forge = (GuardForge) result;
+                forge = (GuardForge)result;
 
                 if (Log.IsDebugEnabled) {
                     Log.Debug(".create Successfully instantiated guard");

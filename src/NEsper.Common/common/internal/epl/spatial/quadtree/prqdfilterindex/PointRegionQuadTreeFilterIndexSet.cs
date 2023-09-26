@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
                 node = Subdivide(leaf, tree);
             }
 
-            var branch = (PointRegionQuadTreeNodeBranch) node;
+            var branch = (PointRegionQuadTreeNodeBranch)node;
             AddToBranch(branch, x, y, value, tree);
             return node;
         }
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
                 node = Subdivide(leaf, tree);
             }
 
-            var branch = (PointRegionQuadTreeNodeBranch) node;
+            var branch = (PointRegionQuadTreeNodeBranch)node;
             AddToBranch(branch, x, y, value, tree);
             return node;
         }
@@ -148,12 +148,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
                 se);
 
             var points = leaf.Points;
-            if (points is XYPointWValue<TL>) {
-                var point = (XYPointWValue<TL>) points;
-                SubdividePoint(point, branch, tree);
+            if (points is XYPointWValue<TL> value) {
+                SubdividePoint(value, branch, tree);
             }
             else {
-                foreach (var point in (ICollection<XYPointWValue<TL>>) points) {
+                foreach (var point in (ICollection<XYPointWValue<TL>>)points) {
                     SubdividePoint(point, branch, tree);
                 }
             }

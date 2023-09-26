@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public interface ExprDotForge
     {
-        EPType TypeInfo { get; }
+        EPChainableType TypeInfo { get; }
 
         ExprDotEval DotEvaluator { get; }
 

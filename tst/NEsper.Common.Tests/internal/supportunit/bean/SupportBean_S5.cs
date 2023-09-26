@@ -13,8 +13,6 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
     [Serializable]
     public class SupportBean_S5
     {
-        private static int idCounter;
-
         public SupportBean_S5(int id)
         {
             Id = id;
@@ -52,12 +50,10 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             string propOne,
             string[] propTwo)
         {
-            idCounter++;
-
             var events = new object[propTwo.Length];
             for (var i = 0; i < propTwo.Length; i++)
             {
-                events[i] = new SupportBean_S5(idCounter, propOne, propTwo[i]);
+                events[i] = new SupportBean_S5(-1, propOne, propTwo[i]);
             }
 
             return events;

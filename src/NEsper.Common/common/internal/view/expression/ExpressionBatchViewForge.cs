@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -44,25 +45,29 @@ namespace com.espertech.esper.common.@internal.view.expression
 
             if (parameters.Count > 1) {
                 var result = ViewForgeSupport.EvaluateAssertNoProperties(ViewName, parameters[1], 1);
-                includeTriggeringEvent = (bool) result;
+                includeTriggeringEvent = (bool)result;
             }
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(ExpressionBatchViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(ExpressionBatchViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "Exprbatch";
-        }
+        internal override string FactoryMethod => "Exprbatch";
 
-        internal override void MakeSetters(
+        protected override void MakeSetters(
             CodegenExpressionRef factory,
             CodegenBlock block)
         {
             block.SetProperty(factory, "IncludeTriggeringEvent", Constant(includeTriggeringEvent));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_EXPRESSIONBATCH;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

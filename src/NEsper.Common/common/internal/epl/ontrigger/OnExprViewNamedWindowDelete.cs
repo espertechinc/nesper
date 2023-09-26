@@ -24,6 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
     public class OnExprViewNamedWindowDelete : OnExprViewNameWindowBase
     {
         public bool IsSilentDelete { get; }
+
         public OnExprViewNamedWindowDelete(
             SubordWMatchExprLookupStrategy lookupStrategy,
             NamedWindowRootViewInstance rootView,
@@ -51,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 if (IsSilentDelete) {
                     rootView.ClearDeliveriesRemoveStream(matchingEvents);
                 }
-                
+
                 var statementResultService = agentInstanceContext.StatementResultService;
                 // The on-delete listeners receive the events deleted, but only if there is interest
                 if (statementResultService.IsMakeNatural || statementResultService.IsMakeSynthetic) {

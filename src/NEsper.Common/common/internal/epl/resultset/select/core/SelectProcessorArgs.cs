@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
         public ImportServiceCompileTime ImportService =>
             CompileTimeServices.ImportServiceCompileTime;
-        
+
         public ClassProvidedExtension ClassProvidedExtension =>
             CompileTimeServices.ClassProvidedExtension;
 
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
         public SerdeCompileTimeResolver SerdeResolver =>
             CompileTimeServices.SerdeResolver;
-        
+
         public string ModuleName => StatementRawInfo.ModuleName;
     }
 } // end of namespace

@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.metrics.audit;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
@@ -35,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
         {
             this.streamNames = streamNames;
             this.evaluators = evaluators;
-            this.queryPlanLogging = services.Configuration.Common.Logging.IsEnableQueryPlan;
+            queryPlanLogging = services.Configuration.Common.Logging.IsEnableQueryPlan;
         }
 
         public static ExcludePlanHint GetHint(
@@ -43,19 +44,19 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             StatementRawInfo rawInfo,
             StatementCompileTimeServices services)
         {
-            IList<string> hints = HintEnum.EXCLUDE_PLAN.GetHintAssignedValues(rawInfo.Annotations);
+            var hints = HintEnum.EXCLUDE_PLAN.GetHintAssignedValues(rawInfo.Annotations);
             if (hints == null) {
                 return null;
             }
 
             IList<ExprEvaluator> filters = new List<ExprEvaluator>();
-            foreach (string hint in hints) {
+            foreach (var hint in hints) {
                 if (string.IsNullOrWhiteSpace(hint)) {
                     continue;
                 }
 
-                ExprForge forge = ExcludePlanHintExprUtil.ToExpression(hint, rawInfo, services);
-                if (Boxing.GetBoxedType(forge.EvaluationType) != typeof(bool?)) {
+                var forge = ExcludePlanHintExprUtil.ToExpression(hint, rawInfo, services);
+                if (forge.EvaluationType.IsTypeBoolean()) {
                     throw new ExprValidationException(
                         "Expression provided for hint " + HintEnum.EXCLUDE_PLAN + " must return a boolean value");
                 }
@@ -72,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             ExcludePlanFilterOperatorType opType,
             params ExprNode[] exprNodes)
         {
-            EventBean @event = ExcludePlanHintExprUtil.ToEvent(
+            var @event = ExcludePlanHintExprUtil.ToEvent(
                 streamLookup,
                 streamIndexed,
                 streamNames[streamLookup],
@@ -83,9 +84,9 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
                 QUERY_PLAN_LOG.Info("Exclude-plan-hint combination " + EventBeanUtility.PrintEvent(@event));
             }
 
-            EventBean[] eventsPerStream = new EventBean[] {@event};
+            var eventsPerStream = new EventBean[] { @event };
 
-            foreach (ExprEvaluator evaluator in evaluators) {
+            foreach (var evaluator in evaluators) {
                 var pass = evaluator.Evaluate(eventsPerStream, true, null);
                 if (pass != null && true.Equals(pass)) {
                     if (queryPlanLogging && QUERY_PLAN_LOG.IsInfoEnabled) {

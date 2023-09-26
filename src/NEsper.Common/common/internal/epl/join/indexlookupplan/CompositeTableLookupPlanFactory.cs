@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             EventTable[] eventTables,
             EventType[] eventTypes)
         {
-            var index = (PropertyCompositeEventTable) eventTables[0];
+            var index = (PropertyCompositeEventTable)eventTables[0];
             return new CompositeTableLookupStrategy(
                 eventTypes[LookupStream],
                 LookupStream,

@@ -13,6 +13,7 @@ using System.Xml;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
@@ -26,8 +27,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -73,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         private static void RunAssertion(
             RegressionEnvironment env,
-            String eventTypeName,
+            string eventTypeName,
             RegressionPath path)
         {
             // Note that XPath Node results when transposed must be queried by XPath that is also absolute.
@@ -82,21 +85,29 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             // Therefore property transposal is disabled for Property-XPath expressions.
 
             // note class not a fragment
-            env.CompileDeploy("@Name('s0') insert into MyNestedStream select nested1 from " + eventTypeName + "#lastevent", path);
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("nested1", typeof(XmlNode), null, false, false, false, false, false)
-                },
-                env.Statement("s0").EventType.PropertyDescriptors);
-            SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").EventType);
+            env.CompileDeploy(
+                "@name('s0') insert into MyNestedStream select nested1 from " + eventTypeName + "#lastevent",
+                path);
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    SupportEventPropUtil.AssertPropsEquals(
+                        statement.EventType.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("nested1", typeof(XmlNode)));
+                    SupportEventTypeAssertionUtil.AssertConsistency(statement.EventType);
+                });
 
-            var type = env.Runtime.EventTypeService.GetEventTypePreconfigured(eventTypeName);
-            SupportEventTypeAssertionUtil.AssertConsistency(type);
-            Assert.IsNull(type.GetFragmentType("nested1"));
-            Assert.IsNull(type.GetFragmentType("nested1.Nested2"));
+            env.AssertThat(
+                () => {
+                    var type = env.Runtime.EventTypeService.GetEventTypePreconfigured(eventTypeName);
+                    SupportEventTypeAssertionUtil.AssertConsistency(type);
+                    Assert.IsNull(type.GetFragmentType("nested1"));
+                    Assert.IsNull(type.GetFragmentType("nested1.Nested2"));
+                });
 
-            SupportXML.SendDefaultEvent(env.EventService, "ABC", eventTypeName);
-            SupportEventTypeAssertionUtil.AssertConsistency(env.Statement("s0").First());
+            var doc = SupportXML.MakeDefaultEvent("ABC");
+            env.SendEventXMLDOM(doc, eventTypeName);
+            env.AssertIterator("s0", en => SupportEventTypeAssertionUtil.AssertConsistency(en.Advance()));
 
             env.UndeployAll();
         }

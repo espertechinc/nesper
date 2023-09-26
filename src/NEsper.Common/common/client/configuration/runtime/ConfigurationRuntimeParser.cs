@@ -1,31 +1,35 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
+using System.Xml.Xsl;
 
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.util.DOMUtil;
 
 namespace com.espertech.esper.common.client.configuration.runtime
 {
     /// <summary>
-    ///     Parser for the runtime section of configuration.
+    /// Parser for the runtime section of configuration.
     /// </summary>
     public class ConfigurationRuntimeParser
     {
         /// <summary>
-        ///     Configure the runtime section from a provided element
+        /// Configure the runtime section from a provided element
         /// </summary>
         /// <param name="runtime">runtime section</param>
         /// <param name="runtimeElement">element</param>
@@ -94,6 +98,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
             XmlElement parentElement)
         {
             ParseOptionalBoolean(parentElement, "prioritized", b => runtime.Execution.IsPrioritized = b);
+            ParseOptionalBoolean(parentElement, "precedence-enabled", b => runtime.Execution.IsPrecedenceEnabled = b);
             ParseOptionalBoolean(parentElement, "fairlock", b => runtime.Execution.IsFairlock = b);
             ParseOptionalBoolean(parentElement, "disable-locking", b => runtime.Execution.IsDisableLocking = b);
 
@@ -214,7 +219,8 @@ namespace com.espertech.esper.common.client.configuration.runtime
                     var name = GetRequiredAttribute(subElement, "name");
                     var interval = long.Parse(GetRequiredAttribute(subElement, "interval"));
 
-                    var metrics = new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
+                    var metrics =
+                        new ConfigurationRuntimeMetricsReporting.StmtGroupMetrics();
                     metrics.Interval = interval;
                     runtime.MetricsReporting.AddStmtGroup(name, metrics);
 
@@ -296,22 +302,20 @@ namespace com.espertech.esper.common.client.configuration.runtime
             while (nodeIterator.MoveNext()) {
                 var subElement = nodeIterator.Current;
                 switch (subElement.Name) {
-                    case "execution-path": {
-                        var valueText = GetRequiredAttribute(subElement, "enabled");
-                        var value = bool.Parse(valueText);
-                        runtime.Logging.IsEnableExecutionDebug = value;
+                    case "execution-path":
+                        ParseAttrEnabled(subElement, flag => runtime.Logging.IsEnableExecutionDebug = flag);
                         break;
-                    }
 
-                    case "timer-debug": {
-                        var valueText = GetRequiredAttribute(subElement, "enabled");
-                        var value = bool.Parse(valueText);
-                        runtime.Logging.IsEnableTimerDebug = value;
+                    case "timer-debug":
+                        ParseAttrEnabled(subElement, flag => runtime.Logging.IsEnableTimerDebug = flag);
                         break;
-                    }
 
                     case "audit":
                         runtime.Logging.AuditPattern = GetOptionalAttribute(subElement, "pattern");
+                        break;
+
+                    case "lock-activity":
+                        ParseAttrEnabled(subElement, flag => runtime.Logging.IsEnableLockActivity = flag);
                         break;
                 }
             }
@@ -457,7 +461,18 @@ namespace com.espertech.esper.common.client.configuration.runtime
                                 "', no child node found under initializer element, expecting an element node");
                         }
 
-                        configXML = nodeIter.Current.OuterXml;
+                        var output = new StringWriter();
+                        try {
+                            var myXslTrans = new XslTransform() ;
+                            myXslTrans.Load(nodeIter.Current.OuterXml);
+                        }
+                        catch (XsltCompileException e) {
+                            throw new ConfigurationException(
+                                "Error handling config-xml for plug-in loader '" + loaderName + "' :" + e.Message,
+                                e);
+                        }
+
+                        configXML = output.ToString();
                         break;
                     }
                 }
@@ -531,6 +546,15 @@ namespace com.espertech.esper.common.client.configuration.runtime
             }
 
             return list;
+        }
+
+        private static void ParseAttrEnabled(
+            XmlElement element,
+            Consumer<bool> consumer)
+        {
+            var valueText = GetRequiredAttribute(element, "enabled");
+            var value = bool.Parse(valueText);
+            consumer.Invoke(value);
         }
 
         private class ThreadPoolConfig

@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
                 return;
             }
 
-            var state = (CountMinSketchAggState) row.GetAccessState(column);
+            var state = (CountMinSketchAggState)row.GetAccessState(column);
             state.Add(value);
         }
 

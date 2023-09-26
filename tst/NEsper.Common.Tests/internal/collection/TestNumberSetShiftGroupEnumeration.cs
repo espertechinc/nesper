@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.collection
 
             // NumberSetShiftGroupEnumeration enumeration = new NumberSetShiftGroupEnumeration(set);
             // while(enumeration.hasMoreElements()) {
-            // System.out.println(Arrays.toString(enumeration.nextElement()));
+            // Console.WriteLine(Arrays.toString(enumeration.nextElement()));
             // }
 
             TryPermutation(set, expectedValues);

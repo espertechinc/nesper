@@ -171,7 +171,7 @@ namespace com.espertech.esperio.file
 				}
 
 				SimpleTypeParser parser;
-				if (propertyType.IsDateTime() && !propertyType.IsInt64()) {
+				if (propertyType.IsDateTime() && !propertyType.IsTypeInt64()) {
 					var dateTimeFormat = dateFormat != null
 						? DateTimeFormat.For(dateFormat)
 						: DateTimeFormat.ISO_DATE_TIME;

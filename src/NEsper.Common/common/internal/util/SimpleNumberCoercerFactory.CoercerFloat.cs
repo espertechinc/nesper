@@ -44,8 +44,8 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return ((valueType != typeof(float)) &&
-                        (valueType != typeof(float?)))
+                return valueType != typeof(float) &&
+                       valueType != typeof(float?)
                     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedFloat")
                     : value;
 
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression value,
                 Type valueType)
             {
-                return ((valueType != typeof(float)))
+                return valueType != typeof(float)
                     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsFloat")
                     : value;
 

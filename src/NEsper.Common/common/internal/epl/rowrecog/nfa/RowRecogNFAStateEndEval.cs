@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat;
@@ -17,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.nfa
     /// </summary>
     public class RowRecogNFAStateEndEval : RowRecogNFAStateBase
     {
-        private static readonly RowRecogNFAState[] EMPTY_ARRAY = new RowRecogNFAState[0];
+        private static readonly RowRecogNFAState[] EMPTY_ARRAY = Array.Empty<RowRecogNFAState>();
 
         public RowRecogNFAStateEndEval()
         {

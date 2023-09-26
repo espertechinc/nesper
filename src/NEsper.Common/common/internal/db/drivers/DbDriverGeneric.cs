@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
             StreamingContext context)
             : base(info, context)
         {
-            var container = (IContainer) context.Context;
+            var container = (IContainer)context.Context;
             if (container == null) {
                 throw new IllegalStateException("context is not set to container");
             }

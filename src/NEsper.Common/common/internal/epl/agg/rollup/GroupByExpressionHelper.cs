@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             foreach (var exprNode in groupByExpressionInfo.Expressions) {
                 var found = false;
                 for (var i = 0; i < distinctGroupByExpressions.Count; i++) {
-                    ExprNode other = distinctGroupByExpressions[i];
+                    var other = distinctGroupByExpressions[i];
                     // find same expression
                     if (ExprNodeUtilityCompare.DeepEquals(exprNode, other, false)) {
                         expressionToIndex.Put(exprNode, i);
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             }
 
             // no-rollup or grouping-sets means simply validate
-            ExprNode[] groupByExpressions = distinctGroupByExpressions.ToArray();
+            var groupByExpressions = distinctGroupByExpressions.ToArray();
             if (!hasRollup && !hasGroupingSet) {
                 return new GroupByClauseExpressions(groupByExpressions);
             }
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             var context = new GroupByRollupEvalContext(expressionToIndex);
             try {
                 for (var i = 0; i < nodes.Count; i++) {
-                    GroupByRollupNodeBase node = nodes[i];
+                    var node = nodes[i];
                     var combinations = node.Evaluate(context);
                     perNodeCombinations[i] = new object[combinations.Count];
                     for (var j = 0; j < combinations.Count; j++) {
@@ -118,9 +118,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             var indexList = new LinkedHashSet<MultiKeyArrayInt>();
             while (combinationEnumeration.MoveNext()) {
                 combination.Clear();
-                object[] combinationOA = combinationEnumeration.Current;
+                var combinationOA = combinationEnumeration.Current;
                 foreach (var indexes in combinationOA) {
-                    var indexarr = (int[]) indexes;
+                    var indexarr = (int[])indexes;
                     foreach (var anIndex in indexarr) {
                         combination.Add(anIndex);
                     }
@@ -149,13 +149,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             for (var i = 0; i < numberOfLevels; i++) {
                 selects[i] = new ExprNode[expressions.Count];
                 for (var j = 0; j < expressions.Count; j++) {
-                    SelectClauseElementRaw selectRaw = expressions[j];
-                    if (!(selectRaw is SelectClauseExprRawSpec)) {
+                    var selectRaw = expressions[j];
+                    if (!(selectRaw is SelectClauseExprRawSpec compiled)) {
                         throw new ExprValidationException(
                             "Group-by with rollup requires that the select-clause does not use wildcard");
                     }
 
-                    var compiled = (SelectClauseExprRawSpec) selectRaw;
                     selects[i][j] = CopyVisitExpression(compiled.SelectExpression, expressionCopier);
                 }
             }
@@ -176,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                 for (var i = 0; i < numberOfLevels; i++) {
                     optOrderByCopy[i] = new ExprNode[orderByList.Count];
                     for (var j = 0; j < orderByList.Count; j++) {
-                        OrderByItem element = orderByList[j];
+                        var element = orderByList[j];
                         optOrderByCopy[i][j] = CopyVisitExpression(element.ExprNode, expressionCopier);
                     }
                 }
@@ -197,34 +196,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
 
             foreach (var element in groupByExpressions) {
                 GroupByRollupNodeBase parent;
-                if (element is GroupByClauseElementExpr) {
-                    var expr = (GroupByClauseElementExpr) element;
+                if (element is GroupByClauseElementExpr expr) {
                     exprNodes.Add(expr.Expr);
                     parent = new GroupByRollupNodeSingleExpr(expr.Expr);
                 }
-                else if (element is GroupByClauseElementRollupOrCube) {
-                    var spec = (GroupByClauseElementRollupOrCube) element;
-                    parent = new GroupByRollupNodeRollupOrCube(spec.IsCube);
-                    GroupByAddRollup(spec, parent, exprNodes);
+                else if (element is GroupByClauseElementRollupOrCube cube) {
+                    parent = new GroupByRollupNodeRollupOrCube(cube.IsCube);
+                    GroupByAddRollup(cube, parent, exprNodes);
                 }
-                else if (element is GroupByClauseElementGroupingSet) {
-                    var spec = (GroupByClauseElementGroupingSet) element;
+                else if (element is GroupByClauseElementGroupingSet spec) {
                     parent = new GroupByRollupNodeGroupingSet();
                     foreach (var groupElement in spec.Elements) {
-                        if (groupElement is GroupByClauseElementExpr) {
-                            var single = (GroupByClauseElementExpr) groupElement;
+                        if (groupElement is GroupByClauseElementExpr single) {
                             exprNodes.Add(single.Expr);
                             parent.Add(new GroupByRollupNodeSingleExpr(single.Expr));
                         }
 
-                        if (groupElement is GroupByClauseElementCombinedExpr) {
-                            var combined = (GroupByClauseElementCombinedExpr) groupElement;
+                        if (groupElement is GroupByClauseElementCombinedExpr combined) {
                             exprNodes.AddAll(combined.Expressions);
                             parent.Add(new GroupByRollupNodeCombinedExpr(combined.Expressions));
                         }
 
-                        if (groupElement is GroupByClauseElementRollupOrCube) {
-                            var rollup = (GroupByClauseElementRollupOrCube) groupElement;
+                        if (groupElement is GroupByClauseElementRollupOrCube rollup) {
                             var node = new GroupByRollupNodeRollupOrCube(rollup.IsCube);
                             GroupByAddRollup(rollup, node, exprNodes);
                             parent.Add(node);
@@ -247,13 +240,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             IList<ExprNode> exprNodes)
         {
             foreach (var rolledUp in spec.RollupExpressions) {
-                if (rolledUp is GroupByClauseElementExpr) {
-                    var expr = (GroupByClauseElementExpr) rolledUp;
+                if (rolledUp is GroupByClauseElementExpr expr) {
                     exprNodes.Add(expr.Expr);
                     parent.Add(new GroupByRollupNodeSingleExpr(expr.Expr));
                 }
                 else {
-                    var combined = (GroupByClauseElementCombinedExpr) rolledUp;
+                    var combined = (GroupByClauseElementCombinedExpr)rolledUp;
                     exprNodes.AddAll(combined.Expressions);
                     parent.Add(new GroupByRollupNodeCombinedExpr(combined.Expressions));
                 }

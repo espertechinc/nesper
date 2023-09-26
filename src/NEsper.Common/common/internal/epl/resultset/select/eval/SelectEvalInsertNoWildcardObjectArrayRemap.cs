@@ -30,9 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             this.remapped = remapped;
         }
 
-        public EventType ResultEventType {
-            get => resultEventType;
-        }
+        public EventType ResultEventType => resultEventType;
 
         public CodegenMethod ProcessCodegen(
             CodegenExpression resultEventTypeExpr,

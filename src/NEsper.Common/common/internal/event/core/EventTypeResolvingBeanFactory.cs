@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         EventBean AdapterForAvro(
             object avroGenericDataDotRecord,
             string eventTypeName);
-        
+
         EventBean AdapterForJson(
             string json,
             string eventTypeName);

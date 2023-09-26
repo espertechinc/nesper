@@ -13,6 +13,7 @@ using System.IO;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat.collections;
@@ -33,27 +34,21 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             : base(attachPatternText)
         {
             AddChildNode(childNode);
-            bool audit = AuditEnum.PATTERN.GetAudit(annotations) != null ||
-                         AuditEnum.PATTERNINSTANCES.GetAudit(annotations) != null;
+            var audit = AuditEnum.PATTERN.GetAudit(annotations) != null ||
+                        AuditEnum.PATTERNINSTANCES.GetAudit(annotations) != null;
             AssignFactoryNodeIds(audit);
         }
 
-        protected override Type TypeOfFactory()
-        {
-            return typeof(EvalRootFactoryNode);
-        }
+        protected override Type TypeOfFactory => typeof(EvalRootFactoryNode);
 
-        protected override string NameOfFactory()
-        {
-            return "Root";
-        }
+        protected override string NameOfFactory => "Root";
 
         protected override void InlineCodegen(
             CodegenMethod method,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod childMake = ChildNodes[0].MakeCodegen(method, symbols, classScope);
+            var childMake = ChildNodes[0].MakeCodegen(method, symbols, classScope);
             method.Block
                 .SetProperty(Ref("node"), "ChildNode", LocalMethod(childMake));
         }
@@ -65,13 +60,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             }
         }
 
-        public override PatternExpressionPrecedenceEnum Precedence {
-            get => PatternExpressionPrecedenceEnum.MINIMUM;
-        }
+        public override PatternExpressionPrecedenceEnum Precedence => PatternExpressionPrecedenceEnum.MINIMUM;
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters,
-            IList<ScheduleHandleCallbackProvider> schedules)
+            Func<short, CallbackAttribution> callbackAttribution,
+            IList<FilterSpecTracked> filters,
+            IList<ScheduleHandleTracked> schedules)
         {
             // none here
         }
@@ -79,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         public IList<EvalForgeNode> CollectFactories()
         {
             IList<EvalForgeNode> factories = new List<EvalForgeNode>(8);
-            foreach (EvalForgeNode factoryNode in ChildNodes) {
+            foreach (var factoryNode in ChildNodes) {
                 CollectFactoriesRecursive(factoryNode, factories);
             }
 
@@ -91,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             IList<EvalForgeNode> factories)
         {
             factories.Add(factoryNode);
-            foreach (EvalForgeNode childNode in factoryNode.ChildNodes) {
+            foreach (var childNode in factoryNode.ChildNodes) {
                 CollectFactoriesRecursive(childNode, factories);
             }
         }
@@ -104,12 +98,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             FactoryNodeId = count;
             IsAudit = audit;
 
-            IList<EvalForgeNode> factories = CollectFactories();
-            foreach (EvalForgeNode factoryNode in factories) {
+            var factories = CollectFactories();
+            foreach (var factoryNode in factories) {
                 count++;
                 factoryNode.FactoryNodeId = count;
                 factoryNode.IsAudit = audit;
             }
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_ROOT;
         }
     }
 } // end of namespace

@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.util
     public class TypeResolverProviderDefault : TypeResolverProvider
     {
         public const string NAME = "ClassLoaderProvider";
-
         private readonly TypeResolver typeResolver;
 
         public TypeResolverProviderDefault(TypeResolver typeResolver)
@@ -24,17 +23,6 @@ namespace com.espertech.esper.common.client.util
             this.typeResolver = typeResolver;
         }
 
-#if FALSE
-        public ClassLoaderProviderDefault(IContainer container)
-        {
-            container.Register<ClassLoader, ClassLoaderDefault>(Lifespan.Singleton);
-            _classLoader = container.Resolve<ClassLoader>();
-        }
-#endif
-
-        public TypeResolver GetTypeResolver()
-        {
-            return typeResolver;
-        }
+        public TypeResolver TypeResolver => typeResolver;
     }
 } // end of namespace

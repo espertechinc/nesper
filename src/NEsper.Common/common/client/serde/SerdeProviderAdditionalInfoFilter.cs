@@ -10,16 +10,16 @@ using com.espertech.esper.common.@internal.compile.stage2;
 
 namespace com.espertech.esper.common.client.serde
 {
-	/// <summary>
-	///     Information that the serde applies to a filter.
-	/// </summary>
-	public class SerdeProviderAdditionalInfoFilter : SerdeProviderAdditionalInfo
+    /// <summary>
+    ///     Information that the serde applies to a filter.
+    /// </summary>
+    public class SerdeProviderAdditionalInfoFilter : SerdeProviderAdditionalInfo
     {
-	    /// <summary>
-	    ///     Ctor
-	    /// </summary>
-	    /// <param name="raw">statement information</param>
-	    public SerdeProviderAdditionalInfoFilter(StatementRawInfo raw) : base(raw)
+        /// <summary>
+        ///     Ctor
+        /// </summary>
+        /// <param name="raw">statement information</param>
+        public SerdeProviderAdditionalInfoFilter(StatementRawInfo raw) : base(raw)
         {
         }
     }

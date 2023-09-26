@@ -34,45 +34,25 @@ namespace com.espertech.esper.common.@internal.epl.subselect
         {
             this.subselectActivationResult = subselectActivationResult;
             this.lookupStrategy = lookupStrategy;
-            this.subselectAggregationPreprocessor = realization.SubselectAggregationPreprocessor;
-            this.aggregationService = realization.AggregationService;
-            this.priorStrategy = realization.PriorStrategy;
-            this.previousStrategy = realization.PreviousStrategy;
-            this.subselectView = realization.SubselectView;
-            this.indexes = realization.Indexes;
+            subselectAggregationPreprocessor = realization.SubselectAggregationPreprocessor;
+            aggregationService = realization.AggregationService;
+            priorStrategy = realization.PriorStrategy;
+            previousStrategy = realization.PreviousStrategy;
+            subselectView = realization.SubselectView;
+            indexes = realization.Indexes;
         }
 
-        public ViewableActivationResult SubselectActivationResult {
-            get => subselectActivationResult;
-        }
+        public ViewableActivationResult SubselectActivationResult => subselectActivationResult;
+        public SubordTableLookupStrategy LookupStrategy => lookupStrategy;
 
-        public SubordTableLookupStrategy LookupStrategy {
-            get => lookupStrategy;
-        }
+        public SubselectAggregationPreprocessorBase SubselectAggregationPreprocessor =>
+            subselectAggregationPreprocessor;
 
-        public SubselectAggregationPreprocessorBase SubselectAggregationPreprocessor {
-            get => subselectAggregationPreprocessor;
-        }
+        public AggregationService AggregationService => aggregationService;
+        public PriorEvalStrategy PriorStrategy => priorStrategy;
+        public PreviousGetterStrategy PreviousStrategy => previousStrategy;
+        public Viewable SubselectView => subselectView;
 
-        public AggregationService AggregationService {
-            get => aggregationService;
-        }
-
-        public PriorEvalStrategy PriorStrategy {
-            get => priorStrategy;
-        }
-
-        public PreviousGetterStrategy PreviousStrategy {
-            get => previousStrategy;
-        }
-
-        public Viewable SubselectView {
-            get => subselectView;
-        }
-
-        public EventTable[] GetIndexes()
-        {
-            return indexes;
-        }
+        public EventTable[] Indexes => indexes;
     }
 } // end of namespace

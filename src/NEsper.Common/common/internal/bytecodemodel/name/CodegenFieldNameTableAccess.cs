@@ -16,23 +16,24 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
 
         public CodegenFieldNameTableAccess(int tableAccessNumber)
         {
-            this._tableAccessNumber = tableAccessNumber;
+            _tableAccessNumber = tableAccessNumber;
         }
 
-        public string Name {
-            get => CodegenNamespaceScopeNames.TableAccessResultFuture(_tableAccessNumber);
-        }
+        public string Name => CodegenNamespaceScopeNames.TableAccessResultFuture(_tableAccessNumber);
 
-        public int TableAccessNumber {
-            get => _tableAccessNumber;
-        }
+        public int TableAccessNumber => _tableAccessNumber;
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o) {
+                return true;
+            }
 
-            CodegenFieldNameTableAccess that = (CodegenFieldNameTableAccess) o;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
+
+            var that = (CodegenFieldNameTableAccess)o;
 
             return _tableAccessNumber == that._tableAccessNumber;
         }

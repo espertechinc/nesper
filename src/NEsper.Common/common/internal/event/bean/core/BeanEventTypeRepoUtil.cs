@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
@@ -23,7 +24,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             IDictionary<string, Type> resolvedBeanEventTypes,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            var publicClassToTypeNames = Collections.GetEmptyMap<Type, IList<string>>();
+            IDictionary<Type, IList<string>> publicClassToTypeNames = EmptyDictionary<Type, IList<string>>.Instance;
             if (!resolvedBeanEventTypes.IsEmpty()) {
                 publicClassToTypeNames = new Dictionary<Type, IList<string>>();
                 foreach (var entry in resolvedBeanEventTypes) {
@@ -49,20 +50,20 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             ImportService importService)
         {
             if (typeToClassName.IsEmpty()) {
-                return Collections.GetEmptyMap<string, Type>();
+                return EmptyDictionary<string, Type>.Instance;
             }
 
             IDictionary<string, Type> resolved = new LinkedHashMap<string, Type>();
             foreach (var entry in typeToClassName) {
-                Type clazz;
+                Type type;
                 try {
-                    clazz = importService.ResolveClassForBeanEventType(entry.Value);
+                    type = importService.ResolveClassForBeanEventType(entry.Value);
                 }
                 catch (ImportException ex) {
                     throw new ConfigurationException("Class named '" + entry.Value + "' was not found", ex);
                 }
 
-                resolved.Put(entry.Key, clazz);
+                resolved.Put(entry.Key, type);
             }
 
             return resolved;

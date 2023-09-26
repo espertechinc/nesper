@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.schedule;
@@ -31,14 +32,20 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             this.postProcess = postProcess;
         }
 
-        public bool IsCodeGenerated => true;
+        public bool IsDirectAndSimple => postProcess == null;
+
+        public bool IsCodeGenerated => postProcess != null;
 
         public void ProvideCodegen(
             CodegenMethod method,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            throw new IllegalStateException("Provide is not required");
+            if (postProcess != null) {
+                throw new IllegalStateException("Provide is not required");
+            }
+
+            method.Block.MethodReturn(PublicConstValue(typeof(OutputProcessViewDirectSimpleFactory), "INSTANCE"));
         }
 
         public void UpdateCodegen(
@@ -47,44 +54,23 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         {
             method.Block.Apply(Instblock(classScope, "qOutputProcessNonBuffered", REF_NEWDATA, REF_OLDDATA));
 
-            GenerateRSPCall("ProcessViewResult", method, classScope);
+            GenerateRSPCall("processViewResult", method, classScope);
 
-            if (postProcess != null)
-            {
-                var newOldIsNull = And(
-                    EqualsNull(ExprDotName(Ref("newOldEvents"), "First")),
-                    EqualsNull(ExprDotName(Ref("newOldEvents"), "Second")));
-                method.Block
-                    .DeclareVar<bool>("forceOutput", Constant(false))
-                    .IfCondition(And(EqualsNull(REF_NEWDATA), EqualsNull(REF_OLDDATA)))
-                    .IfCondition(Or(EqualsNull(Ref("newOldEvents")), newOldIsNull))
-                    .AssignRef("forceOutput", ConstantTrue());
+            var newOldIsNull = And(
+                EqualsNull(ExprDotName(Ref("newOldEvents"), "First")),
+                EqualsNull(ExprDotName(Ref("newOldEvents"), "Second")));
+            method.Block
+                .DeclareVar(typeof(bool?), "forceOutput", Constant(false))
+                .IfCondition(And(EqualsNull(REF_NEWDATA), EqualsNull(REF_OLDDATA)))
+                .IfCondition(Or(EqualsNull(Ref("newOldEvents")), newOldIsNull))
+                .AssignRef("forceOutput", ConstantTrue());
 
-                method.Block
-                    .Expression(
-                        LocalMethod(
-                            postProcess.PostProcessCodegenMayNullMayForce(classScope, method), Ref("forceOutput"),
-                            Ref("newOldEvents")))
-                    .Apply(Instblock(classScope, "aOutputProcessNonBuffered"));
-                return;
-            }
-
-            var ifChild = method.Block.IfCondition(NotEqualsNull(MEMBER_CHILD));
-
-            var ifResultNotNull = ifChild.IfRefNotNull("newOldEvents");
-            var ifPairHasData = ifResultNotNull.IfCondition(
-                Or(
-                    NotEqualsNull(ExprDotName(Ref("newOldEvents"), "First")),
-                    NotEqualsNull(ExprDotName(Ref("newOldEvents"), "Second"))));
-            ifPairHasData.ExprDotMethod(MEMBER_CHILD, "NewResult", Ref("newOldEvents"))
-                .IfElseIf(And(EqualsNull(Ref("newData")), EqualsNull(Ref("oldData"))))
-                .ExprDotMethod(MEMBER_CHILD, "NewResult", Ref("newOldEvents"));
-
-            var ifResultNull = ifResultNotNull.IfElse();
-            ifResultNull.IfCondition(And(EqualsNull(Ref("newData")), EqualsNull(Ref("oldData"))))
-                .ExprDotMethod(MEMBER_CHILD, "NewResult", Ref("newOldEvents"))
-                .BlockEnd()
-                .BlockEnd()
+            method.Block
+                .Expression(
+                    LocalMethod(
+                        postProcess.PostProcessCodegenMayNullMayForce(classScope, method),
+                        Ref("forceOutput"),
+                        Ref("newOldEvents")))
                 .Apply(Instblock(classScope, "aOutputProcessNonBuffered"));
         }
 
@@ -94,31 +80,17 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         {
             method.Block.Apply(Instblock(classScope, "qOutputProcessNonBufferedJoin", REF_NEWDATA, REF_OLDDATA));
 
-            GenerateRSPCall("ProcessJoinResult", method, classScope);
+            GenerateRSPCall("processJoinResult", method, classScope);
 
             method.Block.IfRefNull("newOldEvents")
                 .Apply(Instblock(classScope, "aOutputProcessNonBufferedJoin"))
                 .BlockReturnNoValue();
 
-            if (postProcess != null)
-            {
-                method.Block.Expression(
-                    LocalMethod(
-                        postProcess.PostProcessCodegenMayNullMayForce(classScope, method), ConstantFalse(),
-                        Ref("newOldEvents")));
-            }
-            else
-            {
-                var ifPairHasData = method.Block
-                    .IfCondition(
-                        Or(
-                            NotEqualsNull(ExprDotName(Ref("newOldEvents"), "First")),
-                            NotEqualsNull(ExprDotName(Ref("newOldEvents"), "Second"))));
-                ifPairHasData
-                    .ExprDotMethod(MEMBER_CHILD, "NewResult", Ref("newOldEvents"))
-                    .IfElseIf(And(EqualsNull(Ref("newData")), EqualsNull(Ref("oldData"))))
-                    .ExprDotMethod(MEMBER_CHILD, "NewResult", Ref("newOldEvents"));
-            }
+            method.Block.Expression(
+                LocalMethod(
+                    postProcess.PostProcessCodegenMayNullMayForce(classScope, method),
+                    ConstantFalse(),
+                    Ref("newOldEvents")));
 
             method.Block.Apply(Instblock(classScope, "aOutputProcessNonBufferedJoin"));
         }
@@ -130,15 +102,15 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             method.Block.MethodReturn(
                 StaticMethod(
                     typeof(OutputStrategyUtil),
-                    "GetEnumerator",
+                    "getIterator",
                     Ref(NAME_JOINEXECSTRATEGY),
                     Ref(NAME_RESULTSETPROCESSOR),
                     Ref(NAME_PARENTVIEW),
                     Constant(false),
-                    Constant(null)));
+                    ConstantNull()));
         }
 
-        public void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
+        public void CollectSchedules(IList<ScheduleHandleTracked> scheduleHandleCallbackProviders)
         {
         }
 
@@ -148,12 +120,14 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             CodegenClassScope classScope)
         {
             method.Block
-                .DeclareVar<bool>(
+                .DeclareVar(
+                    typeof(bool?),
                     "isGenerateSynthetic",
-                    ExprDotName(Member("o." + NAME_STATEMENTRESULTSVC), "IsMakeSynthetic"))
-                .DeclareVar<bool>(
+                    ExprDotMethod(Member("o." + NAME_STATEMENTRESULTSVC), "isMakeSynthetic"))
+                .DeclareVar(
+                    typeof(bool?),
                     "isGenerateNatural",
-                    ExprDotName(Member("o." + NAME_STATEMENTRESULTSVC), "IsMakeNatural"))
+                    ExprDotMethod(Member("o." + NAME_STATEMENTRESULTSVC), "isMakeNatural"))
                 .DeclareVar<UniformPair<EventBean[]>>(
                     "newOldEvents",
                     ExprDotMethod(

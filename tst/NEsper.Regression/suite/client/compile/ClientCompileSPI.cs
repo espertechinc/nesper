@@ -13,7 +13,6 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compiler.client;
 using com.espertech.esper.compiler.@internal.util;
 using com.espertech.esper.regressionlib.framework;
 
@@ -26,7 +25,9 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithSPIExpression(execs);
+#if REGRESSION_EXECUTIONS
+            With(SPIExpression)(execs);
+#endif
             return execs;
         }
 
@@ -57,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var compiler = (EPCompilerSPI) env.Compiler;
+                var compiler = (EPCompilerSPI)env.Compiler;
 
                 var expressionCompiler = compiler.ExpressionCompiler(new Configuration());
 
@@ -66,13 +67,18 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 var arrays = typeof(Arrays).FullName;
 
-                var list = (ICollection<object>) CompileEvaluate($"{arrays}.AsList({{\"a\"}})", expressionCompiler);
-                EPAssertionUtil.AssertEqualsExactOrder(list.ToArray(), new object[] {"a"});
+                var list = (ICollection<object>)CompileEvaluate($"{arrays}.AsList({{\"a\"}})", expressionCompiler);
+                EPAssertionUtil.AssertEqualsExactOrder(list.ToArray(), new object[] { "a" });
 
                 CompileEvaluate($"{arrays}.AsList({{'a', 'b'}}).firstOf()", "a", expressionCompiler);
 
-                var timePeriod = (ExprTimePeriod) expressionCompiler.CompileValidate("5 seconds");
+                var timePeriod = (ExprTimePeriod)expressionCompiler.CompileValidate("5 seconds");
                 Assert.AreEqual(5d, timePeriod.EvaluateAsSeconds(null, true, null), 0.0001);
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
     }

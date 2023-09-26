@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <param name="likeString">pattern to match</param>
         public StringPatternSetLike(string likeString)
         {
-            this._likeString = likeString;
+            _likeString = likeString;
             _likeUtil = new LikeUtil(likeString, '\\', false);
         }
 
@@ -57,16 +57,16 @@ namespace com.espertech.esper.common.@internal.type
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
-            return Equals((StringPatternSetLike) obj);
+            return Equals((StringPatternSetLike)obj);
         }
 
         public override int GetHashCode()
         {
-            return (_likeString != null ? _likeString.GetHashCode() : 0);
+            return _likeString != null ? _likeString.GetHashCode() : 0;
         }
     }
 } // end of namespace

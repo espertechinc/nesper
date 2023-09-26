@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.common.@internal.@event.json
 {
     public interface IJsonDelegate
@@ -16,28 +14,28 @@ namespace com.espertech.esper.common.@internal.@event.json
         /// Allocates the underlying value.
         /// </summary>
         public object Allocate();
-        
+
         /// <summary>
         /// Attempts to get a value from the underlying.
         /// </summary>
-        /// <param name="name">name of the property</param>
+        /// <param name="index"></param>
         /// <param name="underlying">input underlying value</param>
         /// <param name="value">output property value</param>
         public bool TryGetProperty(
-            string name,
+            int index,
             object underlying,
             out object value);
-            
+
         /// <summary>
         /// Attempts to set a value into the target underlying.
         /// </summary>
-        /// <param name="name">name of the property</param>
-        /// <param name="underlying">target underlying value</param>
+        /// <param name="index">the property index number</param>
         /// <param name="value">input property value</param>
+        /// <param name="underlying">target underlying value</param>
         public bool TrySetProperty(
-            string name,
-            object underlying,
-            object value);
+            int index,
+            object value,
+            object underlying);
 
         /// <summary>
         /// Attempts to copy the underlying value.  

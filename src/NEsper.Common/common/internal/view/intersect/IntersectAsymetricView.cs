@@ -54,6 +54,8 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
         public IntersectViewFactory ViewFactory { get; }
 
+        public View[] RelatedViews => views;
+
         public void Stop(AgentInstanceStopServices services)
         {
             foreach (var view in views) {
@@ -272,7 +274,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
         {
             IntersectDefaultView.VisitViewContained(viewDataVisitor, ViewFactory, views);
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }

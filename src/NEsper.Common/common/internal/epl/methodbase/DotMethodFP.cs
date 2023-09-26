@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
                 buf.Write(" expressions");
             }
             else {
-                foreach (DotMethodFPProvidedParam param in provided.Parameters) {
+                foreach (var param in provided.Parameters) {
                     buf.Write(delimiter);
 
                     if (param.LambdaParamNum == 0) {

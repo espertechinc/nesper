@@ -12,14 +12,10 @@ namespace com.espertech.esper.common.@internal.util
     {
         private bool value;
 
-        public bool IsValue()
-        {
-            return value;
-        }
+        public bool IsValue => value;
 
-        public void SetValue(bool value)
-        {
-            this.value = value;
+        public bool Value {
+            set => this.value = value;
         }
     }
 } // end of namespace

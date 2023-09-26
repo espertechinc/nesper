@@ -25,13 +25,14 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// <param name="aggregationMethodName">name of aggregation method</param>
         /// <param name="parameters">parameter expressions</param>
         /// <param name="validationContext">validation context</param>
-        public AggregationMultiFunctionAggregationMethodContext(string aggregationMethodName,
+        public AggregationMultiFunctionAggregationMethodContext(
+            string aggregationMethodName,
             ExprNode[] parameters,
             ExprValidationContext validationContext)
         {
-            this._aggregationMethodName = aggregationMethodName;
-            this._parameters = parameters;
-            this._validationContext = validationContext;
+            _aggregationMethodName = aggregationMethodName;
+            _parameters = parameters;
+            _validationContext = validationContext;
         }
 
         /// <summary>

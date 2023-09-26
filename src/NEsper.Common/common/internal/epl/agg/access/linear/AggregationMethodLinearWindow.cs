@@ -39,24 +39,28 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var linear = (IList<EventBean>) row.GetCollectionOfEvents(aggColNum, eventsPerStream, isNewData, exprEvaluatorContext);
+            var linear = (IList<EventBean>)row.GetCollectionOfEvents(
+                aggColNum,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
             if (linear == null) {
                 return null;
             }
 
-            Array array = Arrays.CreateInstanceChecked(componentType, linear.Count);
-            IEnumerator<EventBean> it = linear.GetEnumerator();
+            var array = Arrays.CreateInstanceChecked(componentType, linear.Count);
+            var it = linear.GetEnumerator();
             var count = 0;
             if (optionalEvaluator == null) {
                 while (it.MoveNext()) {
-                    EventBean bean = it.Current;
+                    var bean = it.Current;
                     array.SetValue(bean.Underlying, count++);
                 }
             }
             else {
                 var events = new EventBean[1];
                 while (it.MoveNext()) {
-                    EventBean bean = it.Current;
+                    var bean = it.Current;
                     events[0] = bean;
                     array.SetValue(optionalEvaluator.Evaluate(events, isNewData, exprEvaluatorContext), count++);
                 }
@@ -82,13 +86,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var linear = (IList<EventBean>) row.GetCollectionOfEvents(aggColNum, eventsPerStream, isNewData, exprEvaluatorContext);
+            var linear = (IList<EventBean>)row.GetCollectionOfEvents(
+                aggColNum,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
             if (linear == null || linear.IsEmpty()) {
                 return null;
             }
 
             IList<object> values = new List<object>(linear.Count);
-            IEnumerator<EventBean> it = linear.GetEnumerator();
+            var it = linear.GetEnumerator();
             var eventsPerStreamBuf = new EventBean[1];
             for (; it.MoveNext();) {
                 var bean = it.Current;
@@ -109,6 +117,5 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             return null;
         }
-
     }
 } // end of namespace

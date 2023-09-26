@@ -35,16 +35,16 @@ namespace com.espertech.esper.common.@internal.type
                 Coercer convOne,
                 Coercer convTwo)
             {
-                this._convOne = convOne;
-                this._convTwo = convTwo;
+                _convOne = convOne;
+                _convTwo = convTwo;
             }
 
             public object Compute(
                 object d1,
                 object d2)
             {
-                decimal s1 = _convOne.CoerceBoxed(d1).AsDecimal();
-                decimal s2 = _convTwo.CoerceBoxed(d2).AsDecimal();
+                var s1 = _convOne.CoerceBoxed(d1).AsDecimal();
+                var s2 = _convTwo.CoerceBoxed(d2).AsDecimal();
                 return s1 + s2;
             }
 

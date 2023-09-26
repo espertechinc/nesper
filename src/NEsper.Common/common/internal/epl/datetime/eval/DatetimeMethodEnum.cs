@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
         PLUGIN
     }
 
-    #if DEPRECATED
+#if DEPRECATED
     public static class DatetimeMethodEnumHelper
     {
         private static IEnumerable<DateTimeMethodEnum> GetValues()
@@ -350,5 +350,5 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             }
         }
     }
-    #endif
+#endif
 } // end of namespace

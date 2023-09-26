@@ -21,10 +21,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             var path = new RegressionPath();
 
-            string[] fields = {"TheString"};
-            env.CompileDeploy("@Name('c1') create window W1#length(2) as select * from SupportBean", path);
-            env.CompileDeploy("@Name('c2') create window W2#length(2) as select * from SupportBean", path);
-            env.CompileDeploy("@Name('c3') create window W3#length(2) as select * from SupportBean", path);
+            string[] fields = { "TheString" };
+            env.CompileDeploy("@name('c1') @public create window W1#length(2) as select * from SupportBean", path);
+            env.CompileDeploy("@name('c2') @public create window W2#length(2) as select * from SupportBean", path);
+            env.CompileDeploy("@name('c3') @public create window W3#length(2) as select * from SupportBean", path);
 
             env.CompileDeploy("insert into W1 select * from SupportBean", path);
             env.CompileDeploy("insert rstream into W2 select rstream * from W1", path);
@@ -32,35 +32,35 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             env.SendEventBean(new SupportBean("E1", 1));
             env.SendEventBean(new SupportBean("E2", 1));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("c1"),
+            env.AssertPropsPerRowIteratorAnyOrder(
+                "c1",
                 fields,
-                new[] {new object[] {"E1"}, new object[] {"E2"}});
+                new[] { new object[] { "E1" }, new object[] { "E2" } });
 
             env.SendEventBean(new SupportBean("E3", 1));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("c1"),
+            env.AssertPropsPerRowIteratorAnyOrder(
+                "c1",
                 fields,
-                new[] {new object[] {"E2"}, new object[] {"E3"}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("c2"),
+                new[] { new object[] { "E2" }, new object[] { "E3" } });
+            env.AssertPropsPerRowIteratorAnyOrder(
+                "c2",
                 fields,
-                new[] {new object[] {"E1"}});
+                new[] { new object[] { "E1" } });
 
             env.SendEventBean(new SupportBean("E4", 1));
             env.SendEventBean(new SupportBean("E5", 1));
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("c1"),
+            env.AssertPropsPerRowIteratorAnyOrder(
+                "c1",
                 fields,
-                new[] {new object[] {"E4"}, new object[] {"E5"}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("c2"),
+                new[] { new object[] { "E4" }, new object[] { "E5" } });
+            env.AssertPropsPerRowIteratorAnyOrder(
+                "c2",
                 fields,
-                new[] {new object[] {"E2"}, new object[] {"E3"}});
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("c3"),
+                new[] { new object[] { "E2" }, new object[] { "E3" } });
+            env.AssertPropsPerRowIteratorAnyOrder(
+                "c3",
                 fields,
-                new[] {new object[] {"E1"}});
+                new[] { new object[] { "E1" } });
 
             env.UndeployAll();
         }

@@ -32,6 +32,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     public class MultithreadDeployAtomic : RegressionExecution
     {
         private const int NUM_STMTS = 100;
+        
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {

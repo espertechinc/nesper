@@ -6,60 +6,80 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 {
-	public class DIOMultiKeyArrayFloatSerde : DataInputOutputSerdeBase<MultiKeyArrayFloat>
-	{
-		public static readonly DIOMultiKeyArrayFloatSerde INSTANCE = new DIOMultiKeyArrayFloatSerde();
+    public class DIOMultiKeyArrayFloatSerde : DIOMultiKeyArraySerde<MultiKeyArrayFloat>
+    {
+        public static readonly DIOMultiKeyArrayFloatSerde INSTANCE = new DIOMultiKeyArrayFloatSerde();
 
-		public override void Write(
-			MultiKeyArrayFloat mk,
-			DataOutput output,
-			byte[] unitKey,
-			EventBeanCollatedWriter writer)
-		{
-			WriteInternal(mk.Keys, output);
-		}
+        public Type ComponentType => typeof(float);
 
-		public override MultiKeyArrayFloat ReadValue(
-			DataInput input,
-			byte[] unitKey)
-		{
-			return new MultiKeyArrayFloat(ReadInternal(input));
-		}
+        public void Write(
+            object @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            Write((MultiKeyArrayFloat)@object, output, unitKey, writer);
+        }
 
-		private void WriteInternal(
-			float[] @object,
-			DataOutput output)
-		{
-			if (@object == null) {
-				output.WriteInt(-1);
-				return;
-			}
+        public object Read(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadValue(input, unitKey);
+        }
 
-			output.WriteInt(@object.Length);
-			foreach (float i in @object) {
-				output.WriteFloat(i);
-			}
-		}
+        public void Write(
+            MultiKeyArrayFloat mk,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteInternal(mk.Keys, output);
+        }
 
-		private float[] ReadInternal(DataInput input)
-		{
-			int len = input.ReadInt();
-			if (len == -1) {
-				return null;
-			}
+        public MultiKeyArrayFloat ReadValue(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return new MultiKeyArrayFloat(ReadInternal(input));
+        }
 
-			float[] array = new float[len];
-			for (int i = 0; i < len; i++) {
-				array[i] = input.ReadFloat();
-			}
+        private void WriteInternal(
+            float[] @object,
+            DataOutput output)
+        {
+            if (@object == null) {
+                output.WriteInt(-1);
+                return;
+            }
 
-			return array;
-		}
-	}
+            output.WriteInt(@object.Length);
+            foreach (var i in @object) {
+                output.WriteFloat(i);
+            }
+        }
+
+        private float[] ReadInternal(DataInput input)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
+
+            var array = new float[len];
+            for (var i = 0; i < len; i++) {
+                array[i] = input.ReadFloat();
+            }
+
+            return array;
+        }
+    }
 } // end of namespace

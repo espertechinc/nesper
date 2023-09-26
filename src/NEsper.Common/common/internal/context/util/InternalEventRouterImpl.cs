@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.context.util
     /// <summary>
     /// Routing implementation that allows to pre-process events.
     /// </summary>
-    public class InternalEventRouterImpl : InternalEventRouter
+    public partial class InternalEventRouterImpl : InternalEventRouter
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -40,14 +40,14 @@ namespace com.espertech.esper.common.@internal.context.util
         public InternalEventRouterImpl(EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            this.preprocessors = new ConcurrentDictionary<EventType, NullableObject<InternalEventRouterPreprocessor>>();
-            this.descriptors = new LinkedHashMap<InternalEventRouterDesc, IRDescEntry>();
+            preprocessors = new ConcurrentDictionary<EventType, NullableObject<InternalEventRouterPreprocessor>>();
+            descriptors = new LinkedHashMap<InternalEventRouterDesc, IRDescEntry>();
         }
 
         /// <summary>
         /// Return true to indicate that there is pre-processing to take place.
         /// </summary>
-        /// <returns>preprocessing indicator</returns>
+        /// <value>preprocessing indicator</value>
         public bool HasPreprocessing => hasPreprocessing;
 
         /// <summary>
@@ -66,20 +66,23 @@ namespace com.espertech.esper.common.@internal.context.util
         }
 
         public InsertIntoListener InsertIntoListener {
-            set => this.insertIntoListener = value;
+            get => insertIntoListener;
+            set => insertIntoListener = value;
         }
 
         public void Route(
             EventBean theEvent,
             AgentInstanceContext agentInstanceContext,
-            bool addToFront)
+            bool addToFront,
+            int precedence)
         {
             Route(
                 theEvent,
                 agentInstanceContext.StatementContext.EpStatementHandle,
                 agentInstanceContext.InternalEventRouteDest,
                 agentInstanceContext,
-                addToFront);
+                addToFront,
+                precedence);
         }
 
         public void Route(
@@ -87,17 +90,18 @@ namespace com.espertech.esper.common.@internal.context.util
             EPStatementHandle statementHandle,
             InternalEventRouteDest routeDest,
             ExprEvaluatorContext exprEvaluatorContext,
-            bool addToFront)
+            bool addToFront,
+            int precedence)
         {
             if (!hasPreprocessing) {
                 if (insertIntoListener != null) {
                     var route = insertIntoListener.Inserted(theEvent, statementHandle);
                     if (route) {
-                        routeDest.Route(theEvent, statementHandle, addToFront);
+                        routeDest.Route(theEvent, statementHandle, addToFront, precedence);
                     }
                 }
                 else {
-                    routeDest.Route(theEvent, statementHandle, addToFront);
+                    routeDest.Route(theEvent, statementHandle, addToFront, precedence);
                 }
 
                 return;
@@ -111,11 +115,11 @@ namespace com.espertech.esper.common.@internal.context.util
                 if (insertIntoListener != null) {
                     var route = insertIntoListener.Inserted(theEvent, statementHandle);
                     if (route) {
-                        routeDest.Route(preprocessed, statementHandle, addToFront);
+                        routeDest.Route(preprocessed, statementHandle, addToFront, precedence);
                     }
                 }
                 else {
-                    routeDest.Route(preprocessed, statementHandle, addToFront);
+                    routeDest.Route(preprocessed, statementHandle, addToFront, precedence);
                 }
             }
         }
@@ -202,16 +206,16 @@ namespace com.espertech.esper.common.@internal.context.util
 
         private NullableObject<InternalEventRouterPreprocessor> Initialize(EventType eventType)
         {
-            var eventTypeSPI = (EventTypeSPI) eventType;
+            var eventTypeSPI = (EventTypeSPI)eventType;
             var desc = new List<InternalEventRouterEntry>();
 
             // determine which ones to process for this types, and what priority and drop
             var eventPropertiesWritten = new HashSet<string>();
             foreach (var entry in descriptors) {
-                var applicable = Equals(entry.Value.EventType, eventType);
+                var applicable = entry.Value.EventType == eventType;
                 if (!applicable) {
                     if (eventType.DeepSuperTypes != null) {
-                        foreach (var testType in eventType.DeepSuperTypes) {
+                        foreach(var testType in eventType.DeepSuperTypes) {
                             if (Equals(testType, entry.Value.EventType)) {
                                 applicable = true;
                                 break;
@@ -229,7 +233,7 @@ namespace com.espertech.esper.common.@internal.context.util
                 var annotations = entry.Value.Annotations;
                 for (var i = 0; i < annotations.Length; i++) {
                     if (annotations[i] is PriorityAttribute) {
-                        priority = ((PriorityAttribute) annotations[i]).Value;
+                        priority = ((PriorityAttribute)annotations[i]).Value;
                     }
 
                     if (annotations[i] is DropAttribute) {
@@ -279,47 +283,6 @@ namespace com.espertech.esper.common.@internal.context.util
                     statementContext,
                     entry.Value.HasSubselect);
             }
-        }
-
-        private class IRDescEntry
-        {
-            private readonly InternalEventRouterDesc internalEventRouterDesc;
-            private readonly InternalRoutePreprocessView outputView;
-            private readonly StatementContext statementContext;
-            private readonly bool hasSubselect;
-            private readonly ExprEvaluator optionalWhereClauseEvaluator;
-
-            internal IRDescEntry(
-                InternalEventRouterDesc internalEventRouterDesc,
-                InternalRoutePreprocessView outputView,
-                StatementContext statementContext,
-                bool hasSubselect,
-                ExprEvaluator optionalWhereClauseEvaluator)
-            {
-                this.internalEventRouterDesc = internalEventRouterDesc;
-                this.outputView = outputView;
-                this.statementContext = statementContext;
-                this.hasSubselect = hasSubselect;
-                this.optionalWhereClauseEvaluator = optionalWhereClauseEvaluator;
-            }
-
-            public ExprEvaluator OptionalWhereClauseEvaluator => optionalWhereClauseEvaluator;
-
-            public InternalEventRouterDesc InternalEventRouterDesc => internalEventRouterDesc;
-
-            public EventType EventType => internalEventRouterDesc.EventType;
-
-            public Attribute[] Annotations => internalEventRouterDesc.Annotations;
-
-            public TypeWidener[] Wideners => internalEventRouterDesc.Wideners;
-
-            public InternalRoutePreprocessView OutputView => outputView;
-
-            public StatementContext StatementContext => statementContext;
-
-            public bool HasSubselect => hasSubselect;
-
-            public InternalEventRouterWriter[] Writers => internalEventRouterDesc.Writers;
         }
     }
 } // end of namespace

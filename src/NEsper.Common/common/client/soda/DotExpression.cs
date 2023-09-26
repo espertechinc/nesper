@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.client.soda
         {
             chain.Add(item);
         }
-        
+
         /// <summary>
         /// Add a method to the chain of methods after the dot.
         /// </summary>
@@ -72,7 +72,8 @@ namespace com.espertech.esper.common.client.soda
         {
             if (parameters.IsEmpty() && isProperty) {
                 chain.Add(new DotExpressionItemName(name));
-            } else {
+            }
+            else {
                 chain.Add(new DotExpressionItemCall(name, parameters));
             }
         }
@@ -81,20 +82,13 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the method chain of all methods after the dot.
         /// </summary>
         /// <returns>method name ane list of parameters</returns>
-        public IList<DotExpressionItem> Chain
-        {
-            get => chain;
-        }
+        public IList<DotExpressionItem> Chain => chain;
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.MINIMUM;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.MINIMUM;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (!Children.IsEmpty())
-            {
+            if (!Children.IsEmpty()) {
                 Children[0].ToEPL(writer, Precedence);
             }
 

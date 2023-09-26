@@ -11,7 +11,6 @@ using System.IO;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
@@ -51,33 +50,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// Returns the indicator for minimum or maximum.
         /// </summary>
         /// <returns>min/max indicator</returns>
-        public MinMaxTypeEnum MinMaxTypeEnum {
-            get => minMaxTypeEnum;
-        }
+        public MinMaxTypeEnum MinMaxTypeEnum => minMaxTypeEnum;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (this.ChildNodes.Length < 2) {
+            if (ChildNodes.Length < 2) {
                 throw new ExprValidationException("MinMax node must have at least 2 parameters");
             }
 
-            foreach (ExprNode child in ChildNodes) {
-                Type childType = child.Forge.EvaluationType;
-                if (!TypeHelper.IsNumeric(childType)) {
-                    throw new ExprValidationException(
-                        "Implicit conversion from datatype '" +
-                        childType.CleanName() +
-                        "' to numeric is not allowed");
-                }
+            foreach (var child in ChildNodes) {
+                ExprNodeUtilityValidate.ValidateReturnsNumeric(child.Forge);
             }
 
             // Determine result type, set up compute function
-            Type childTypeOne = ChildNodes[0].Forge.EvaluationType;
-            Type childTypeTwo = ChildNodes[1].Forge.EvaluationType;
-            Type resultType = TypeHelper.GetArithmaticCoercionType(childTypeOne, childTypeTwo);
+            var childTypeOne = ChildNodes[0].Forge.EvaluationType;
+            var childTypeTwo = ChildNodes[1].Forge.EvaluationType;
+            var resultType = childTypeOne.GetArithmaticCoercionType(childTypeTwo);
 
-            for (int i = 2; i < this.ChildNodes.Length; i++) {
-                resultType = TypeHelper.GetArithmaticCoercionType(resultType, ChildNodes[i].Forge.EvaluationType);
+            for (var i = 2; i < ChildNodes.Length; i++) {
+                resultType = resultType.GetArithmaticCoercionType(ChildNodes[i].Forge.EvaluationType);
             }
 
             forge = new ExprMinMaxRowNodeForge(this, resultType);
@@ -85,9 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return null;
         }
 
-        public bool IsConstantResult {
-            get => false;
-        }
+        public bool IsConstantResult => false;
 
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,
@@ -96,33 +85,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             writer.Write(minMaxTypeEnum.GetExpressionText());
             writer.Write('(');
 
-            this.ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
+            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             writer.Write(',');
-            this.ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
+            ChildNodes[1].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
 
-            for (int i = 2; i < this.ChildNodes.Length; i++) {
+            for (var i = 2; i < ChildNodes.Length; i++) {
                 writer.Write(',');
-                this.ChildNodes[i].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
+                ChildNodes[i].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             }
 
             writer.Write(')');
         }
 
-        public override ExprPrecedenceEnum Precedence {
-            get => ExprPrecedenceEnum.UNARY;
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
         public override bool EqualsNode(
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprMinMaxRowNode)) {
+            if (!(node is ExprMinMaxRowNode other)) {
                 return false;
             }
 
-            ExprMinMaxRowNode other = (ExprMinMaxRowNode) node;
-
-            if (other.minMaxTypeEnum != this.minMaxTypeEnum) {
+            if (other.minMaxTypeEnum != minMaxTypeEnum) {
                 return false;
             }
 

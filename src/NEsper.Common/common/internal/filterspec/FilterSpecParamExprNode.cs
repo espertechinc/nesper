@@ -92,6 +92,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         public GetFilterValueFunc ProcGetFilterValue { get; set; }
+
         public override FilterValueSetParam GetFilterValue(
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,

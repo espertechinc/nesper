@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.type
                 object objOne,
                 object objTwo)
             {
-                object s1 = (object) objOne;
-                object s2 = (object) objTwo;
+                var s1 = objOne;
+                var s2 = objTwo;
                 return s1.AsInt64() >= s2.AsInt64();
             }
 
@@ -36,8 +36,10 @@ namespace com.espertech.esper.common.@internal.type
                 Type rhsType)
             {
                 return RelationalOpEnumExtensions.CodegenLong(
-                    lhs, lhsType,
-                    rhs, rhsType,
+                    lhs,
+                    lhsType,
+                    rhs,
+                    rhsType,
                     RelationalOpEnum.GE);
             }
         }

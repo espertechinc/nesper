@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
         ScheduleHandleCallback
     {
         private const string NAME_AUDITPROVIDER_SCHEDULE = "historical data-cache";
-        
+
         private readonly AgentInstanceContext _agentInstanceContext;
         private readonly IDictionary<object, Item> _cache;
         private readonly long _scheduleSlot;
@@ -52,8 +52,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
         {
             MaxAgeSec = maxAgeSec;
             PurgeIntervalSec = purgeIntervalSec;
-            this._agentInstanceContext = agentInstanceContext;
-            this._scheduleSlot = scheduleSlot;
+            _agentInstanceContext = agentInstanceContext;
+            _scheduleSlot = scheduleSlot;
 
             if (cacheReferenceType == CacheReferenceType.HARD) {
                 _cache = new Dictionary<object, Item>()

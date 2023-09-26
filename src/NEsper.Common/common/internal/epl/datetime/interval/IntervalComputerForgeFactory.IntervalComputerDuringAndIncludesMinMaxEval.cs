@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 bool newData,
                 ExprEvaluatorContext context)
             {
-                long min = minEval.Evaluate(leftStart, eventsPerStream, newData, context);
-                long max = maxEval.Evaluate(rightEnd, eventsPerStream, newData, context);
+                var min = minEval.Evaluate(leftStart, eventsPerStream, newData, context);
+                var max = maxEval.Evaluate(rightEnd, eventsPerStream, newData, context);
                 if (during) {
                     return ComputeIntervalDuring(leftStart, leftEnd, rightStart, rightEnd, min, max, min, max);
                 }

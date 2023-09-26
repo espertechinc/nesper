@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,9 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.@event.arr;
@@ -21,11 +18,9 @@ using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
-    public class SelectEvalStreamWUndRecastObjectArrayFactory
+    public partial class SelectEvalStreamWUndRecastObjectArrayFactory
     {
         public static SelectExprProcessorForge Make(
             EventType[] eventTypes,
@@ -36,8 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ImportServiceCompileTime importService,
             string statementName)
         {
-            var oaResultType = (ObjectArrayEventType) targetType;
-            var oaStreamType = (ObjectArrayEventType) eventTypes[streamNumber];
+            var oaResultType = (ObjectArrayEventType)targetType;
+            var oaStreamType = (ObjectArrayEventType)eventTypes[streamNumber];
 
             // (A) fully assignment-compatible: same number, name and type of fields, no additional expressions: Straight repackage
             if (oaResultType.IsDeepEqualsConsiderOrder(oaStreamType) && selectExprForgeContext.ExprForges.Length == 0) {
@@ -53,17 +48,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             foreach (var writeable in writables) {
                 var propertyName = writeable.PropertyName;
 
-                var hasIndexSource = oaStreamType.PropertiesIndexes.TryGetValue(propertyName, out var indexSource);
-                var hasIndexTarget = oaResultType.PropertiesIndexes.TryGetValue(propertyName, out var indexTarget);
-                if (hasIndexSource) {
-                    var setOneType = oaStreamType.Types.Get(propertyName);
-                    var setTwoType = oaResultType.Types.Get(propertyName);
-                    var setTwoTypeFound = oaResultType.Types.ContainsKey(propertyName);
+                if (oaStreamType.PropertiesIndexes.TryGetValue(propertyName, out var indexSource)) {
+                    var indexTarget = oaResultType.PropertiesIndexes[propertyName];
+                    var setOneType = oaResultType.Types.Get(propertyName);
+                    var setOneTypeFound = oaResultType.Types.ContainsKey(propertyName);
+                    var setTwoType = oaStreamType.Types.Get(propertyName);
                     var message = BaseNestableEventUtil.ComparePropType(
                         propertyName,
                         setOneType,
+                        setOneTypeFound,
                         setTwoType,
-                        setTwoTypeFound,
                         oaResultType.Name);
                     if (message != null) {
                         throw new ExprValidationException(message.Message, message);
@@ -136,144 +130,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             }
 
             return null;
-        }
-
-        internal class OAInsertProcessorSimpleRepackage : SelectExprProcessorForge
-        {
-            private readonly SelectExprForgeContext selectExprForgeContext;
-            private readonly int underlyingStreamNumber;
-
-            internal OAInsertProcessorSimpleRepackage(
-                SelectExprForgeContext selectExprForgeContext,
-                int underlyingStreamNumber,
-                EventType resultType)
-            {
-                this.selectExprForgeContext = selectExprForgeContext;
-                this.underlyingStreamNumber = underlyingStreamNumber;
-                ResultEventType = resultType;
-            }
-
-            public EventType ResultEventType { get; }
-
-            public CodegenMethod ProcessCodegen(
-                CodegenExpression resultEventType,
-                CodegenExpression eventBeanFactory,
-                CodegenMethodScope codegenMethodScope,
-                SelectExprProcessorCodegenSymbol selectSymbol,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope)
-            {
-                var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
-                var value = ExprDotName(
-                    Cast(typeof(ObjectArrayBackedEventBean), ArrayAtIndex(refEPS, Constant(underlyingStreamNumber))),
-                    "Properties");
-                methodNode.Block.MethodReturn(
-                    ExprDotMethod(eventBeanFactory, "AdapterForTypedObjectArray", value, resultEventType));
-                return methodNode;
-            }
-        }
-
-        internal class OAInsertProcessorAllocate : SelectExprProcessorForge
-        {
-            private readonly Item[] items;
-            private readonly EventBeanManufacturerForge manufacturer;
-            private readonly int underlyingStreamNumber;
-
-            internal OAInsertProcessorAllocate(
-                int underlyingStreamNumber,
-                Item[] items,
-                EventBeanManufacturerForge manufacturer,
-                EventType resultType)
-            {
-                this.underlyingStreamNumber = underlyingStreamNumber;
-                this.items = items;
-                this.manufacturer = manufacturer;
-                ResultEventType = resultType;
-            }
-
-            public EventType ResultEventType { get; }
-
-            public CodegenMethod ProcessCodegen(
-                CodegenExpression resultEventType,
-                CodegenExpression eventBeanFactory,
-                CodegenMethodScope codegenMethodScope,
-                SelectExprProcessorCodegenSymbol selectSymbol,
-                ExprForgeCodegenSymbol exprSymbol,
-                CodegenClassScope codegenClassScope)
-            {
-                var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                var manufacturerField = codegenClassScope.AddDefaultFieldUnshared(
-                    true,
-                    typeof(EventBeanManufacturer),
-                    manufacturer.Make(methodNode.Block, codegenMethodScope, codegenClassScope));
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
-                var block = methodNode.Block
-                    .DeclareVar<ObjectArrayBackedEventBean>(
-                        "theEvent",
-                        Cast(
-                            typeof(ObjectArrayBackedEventBean),
-                            ArrayAtIndex(refEPS, Constant(underlyingStreamNumber))))
-                    .DeclareVar<object[]>("props", NewArrayByLength(typeof(object), Constant(items.Length)));
-                foreach (var item in items) {
-                    if (item.OptionalFromIndex != -1) {
-                        block.AssignArrayElement(
-                            "props",
-                            Constant(item.ToIndex),
-                            ArrayAtIndex(
-                                ExprDotName(Ref("theEvent"), "Properties"),
-                                Constant(item.OptionalFromIndex)));
-                    }
-                    else {
-                        CodegenExpression value;
-                        if (item.OptionalWidener != null) {
-                            value = item.Forge.EvaluateCodegen(
-                                item.Forge.EvaluationType,
-                                methodNode,
-                                exprSymbol,
-                                codegenClassScope);
-                            value = item.OptionalWidener.WidenCodegen(value, methodNode, codegenClassScope);
-                        }
-                        else {
-                            value = item.Forge.EvaluateCodegen(
-                                typeof(object),
-                                methodNode,
-                                exprSymbol,
-                                codegenClassScope);
-                        }
-
-                        block.AssignArrayElement("props", Constant(item.ToIndex), value);
-                    }
-                }
-
-                block.MethodReturn(ExprDotMethod(manufacturerField, "Make", Ref("props")));
-                return methodNode;
-            }
-        }
-
-        internal class Item
-        {
-            internal Item(
-                int toIndex,
-                int optionalFromIndex,
-                ExprForge forge,
-                TypeWidenerSPI optionalWidener)
-            {
-                ToIndex = toIndex;
-                OptionalFromIndex = optionalFromIndex;
-                Forge = forge;
-                OptionalWidener = optionalWidener;
-            }
-
-            public int ToIndex { get; }
-
-            public int OptionalFromIndex { get; }
-
-            public ExprForge Forge { get; }
-
-            public TypeWidenerSPI OptionalWidener { get; }
-
-            public ExprEvaluator EvaluatorAssigned { get; set; }
         }
     }
 } // end of namespace

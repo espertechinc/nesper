@@ -69,10 +69,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             IDictionary<string, object> props,
             VariantEventType variantEventType)
         {
-            DecoratingEventBean wrapper = (DecoratingEventBean) eventsPerStream[0];
+            var wrapper = (DecoratingEventBean)eventsPerStream[0];
             if (wrapper != null) {
-                IDictionary<string, object> map = wrapper.DecoratingProperties;
-                if ((numEvaluators == 0) && (!map.IsEmpty())) {
+                var map = wrapper.DecoratingProperties;
+                if (numEvaluators == 0 && !map.IsEmpty()) {
                     // no action
                 }
                 else {
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 }
             }
 
-            EventBean theEvent = eventsPerStream[0];
+            var theEvent = eventsPerStream[0];
             return variantEventType.GetValueAddEventBean(theEvent);
         }
     }

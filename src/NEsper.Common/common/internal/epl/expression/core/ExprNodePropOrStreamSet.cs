@@ -24,19 +24,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public void Add(ExprNodePropOrStreamDesc desc)
         {
-            if (desc is ExprNodePropOrStreamPropDesc) {
+            if (desc is ExprNodePropOrStreamPropDesc propDesc) {
                 AllocateProperties();
-                _properties.Add((ExprNodePropOrStreamPropDesc) desc);
+                _properties.Add(propDesc);
             }
-            else if (desc is ExprNodePropOrStreamExprDesc) {
+            else if (desc is ExprNodePropOrStreamExprDesc exprDesc) {
                 AllocateExpressions();
-                _expressions.Add((ExprNodePropOrStreamExprDesc) desc);
+                _expressions.Add(exprDesc);
             }
         }
 
         public void AddAll(IList<ExprNodePropOrStreamDesc> propertiesNode)
         {
-            foreach (ExprNodePropOrStreamDesc desc in propertiesNode) {
+            foreach (var desc in propertiesNode) {
                 Add(desc);
             }
         }
@@ -72,8 +72,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public string NotContainsAll(ExprNodePropOrStreamSet other)
         {
             if (other._properties != null) {
-                foreach (ExprNodePropOrStreamPropDesc otherProp in other._properties) {
-                    bool found = FindItem(otherProp);
+                foreach (var otherProp in other._properties) {
+                    var found = FindItem(otherProp);
                     if (!found) {
                         return otherProp.Textual;
                     }
@@ -81,8 +81,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             if (other._expressions != null) {
-                foreach (ExprNodePropOrStreamExprDesc otherExpr in other._expressions) {
-                    bool found = FindItem(otherExpr);
+                foreach (var otherExpr in other._expressions) {
+                    var found = FindItem(otherExpr);
                     if (!found) {
                         return otherExpr.Textual;
                     }
@@ -102,14 +102,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
         }
 
-        public ExprNodePropOrStreamExprDesc FirstExpression {
-            get { return _expressions != null ? _expressions.FirstOrDefault() : null; }
-        }
+        public ExprNodePropOrStreamExprDesc FirstExpression =>
+            _expressions?.FirstOrDefault();
 
         public ExprNodePropOrStreamDesc FirstWithStreamNumNotZero {
             get {
                 if (_properties != null) {
-                    foreach (ExprNodePropOrStreamPropDesc prop in _properties) {
+                    foreach (var prop in _properties) {
                         if (prop.StreamNum != 0) {
                             return prop;
                         }
@@ -117,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
 
                 if (_expressions != null) {
-                    foreach (ExprNodePropOrStreamExprDesc expr in _expressions) {
+                    foreach (var expr in _expressions) {
                         if (expr.StreamNum != 0) {
                             return expr;
                         }
@@ -152,8 +151,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return false;
             }
 
-            var exprItem = (ExprNodePropOrStreamExprDesc) item;
-            foreach (ExprNodePropOrStreamExprDesc expression in _expressions) {
+            var exprItem = (ExprNodePropOrStreamExprDesc)item;
+            foreach (var expression in _expressions) {
                 if (expression.StreamNum != exprItem.StreamNum) {
                     continue;
                 }

@@ -57,15 +57,13 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     GetType(),
                     symbolsWithType,
                     classScope)
-                .AddParam(typeof(EventType), "eventType")
-                .AddParam(typeof(EPStatementInitServices), SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
+                .AddParam<EventType>("eventType")
+                .AddParam<EPStatementInitServices>(SAIFFInitializeSymbol.REF_STMTINITSVC.Ref);
             var methodLookupable = Lookupable.MakeCodegen(methodLookupableMake, symbolsWithType, classScope);
             methodLookupableMake.Block.MethodReturn(LocalMethod(methodLookupable));
 
             method.Block
-                .DeclareVar<ContextControllerDetailHashItem>(
-                    "item",
-                    NewInstance(typeof(ContextControllerDetailHashItem)))
+                .DeclareVarNewInstance<ContextControllerDetailHashItem>("item")
                 .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(methodLookupableMake, Ref("eventType"), symbols.GetAddInitSvc(method)))

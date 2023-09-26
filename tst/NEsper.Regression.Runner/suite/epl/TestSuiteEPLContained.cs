@@ -152,7 +152,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddEventType("MediaOrder", config);
             configuration.Common.AddEventType("Cancel", config);
 
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber =true;
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "invalidSentence",
                 typeof(EPLContainedEventSplitExpr),

@@ -19,9 +19,9 @@ namespace com.espertech.esper.common.@internal.type
                 object objOne,
                 object objTwo)
             {
-                var n1 = (short) objOne;
-                var n2 = (short) objTwo;
-                return (short) (n1 ^ n2);
+                var n1 = (short)objOne;
+                var n2 = (short)objTwo;
+                return (short)(n1 ^ n2);
             }
         }
     }

@@ -50,11 +50,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             }
 
             var @event = getterFragment.GetFragment(theEvent);
-            if (!(@event is EventBean)) {
+            if (!(@event is EventBean bean)) {
                 return null;
             }
 
-            return getterTimestamp.Get((EventBean) @event);
+            return getterTimestamp.Get(bean);
         }
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
@@ -95,7 +95,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {

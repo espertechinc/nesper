@@ -22,9 +22,8 @@ namespace com.espertech.esper.common.client.soda
     {
         public override void WriteEPL(TextWriter writer)
         {
-            string delimiter = "";
-            foreach (MatchRecognizeRegEx node in Children)
-            {
+            var delimiter = "";
+            foreach (var node in Children) {
                 writer.Write(delimiter);
                 node.WriteEPL(writer);
                 delimiter = " ";

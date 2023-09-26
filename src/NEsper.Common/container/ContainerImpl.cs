@@ -227,7 +227,7 @@ namespace com.espertech.esper.container
                 var method = componentRegistration.GetType().GetMethod("LifestyleBoundTo", new Type[] { });
                 var genericMethod = method.MakeGenericMethod(typeBound.BoundType);
                 return (ComponentRegistration<T>)genericMethod.Invoke(
-                    componentRegistration, new object[0]);
+                    componentRegistration, Array.Empty<object>());
             }
             else
             {

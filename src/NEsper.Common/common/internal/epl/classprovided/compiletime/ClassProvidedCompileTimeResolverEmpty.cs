@@ -54,7 +54,15 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
         {
         }
 
+        public void AddTo(ClassProvidedClassesAdd additionalClasses)
+        {
+        }
+
         public void RemoveFrom(ICollection<IArtifact> artifacts)
+        {
+        }
+
+        public void RemoveFrom(ClassProvidedClassRemove clazzes)
         {
         }
     }

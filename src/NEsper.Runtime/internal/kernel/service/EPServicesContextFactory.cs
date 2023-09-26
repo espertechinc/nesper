@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.compat;
+using com.espertech.esper.runtime.client;
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
 {
@@ -24,7 +25,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         /// <returns>services context</returns>
         EPServicesContext CreateServicesContext(
             EPRuntimeSPI epRuntime,
-            Configuration configurationSnapshot);
+            Configuration configurationSnapshot,
+            EPRuntimeOptions options);
 
         EPEventServiceImpl CreateEPRuntime(
             EPServicesContext services,

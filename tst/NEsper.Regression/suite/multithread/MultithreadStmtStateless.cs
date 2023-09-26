@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.wordexample;
@@ -27,6 +29,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             TrySend(env, 4, 1000);
@@ -37,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numThreads,
             int numRepeats)
         {
-            env.CompileDeploy("@Name('s0') select * from SentenceEvent[Words]");
+            env.CompileDeploy("@name('s0') select * from SentenceEvent[Words]");
             AssertStatelessStmt(env, "s0", true);
 
             var runnables = new StatelessRunnable[numThreads];

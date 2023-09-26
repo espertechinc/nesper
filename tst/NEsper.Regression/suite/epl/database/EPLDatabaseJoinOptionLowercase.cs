@@ -19,20 +19,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             var sql = "select myint from mytesttable where ${IntPrimitive} = myint'" +
                       "metadatasql 'select myint from mytesttable'";
-            var stmtText = "@Name('s0') select myint from " +
+            var stmtText = "@name('s0') select myint from " +
                            " sql:MyDBLowerCase ['" +
                            sql +
                            "] as S0," +
                            "SupportBean#length(100) as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("myint"));
+            env.AssertStatement(
+                "s0",
+                statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("myint")));
 
             SendSupportBeanEvent(env, 10);
-            Assert.AreEqual("10", env.Listener("s0").AssertOneGetNewAndReset().Get("myint"));
+            env.AssertEqualsNew("s0", "myint", "10");
 
             SendSupportBeanEvent(env, 80);
-            Assert.AreEqual("80", env.Listener("s0").AssertOneGetNewAndReset().Get("myint"));
+            env.AssertEqualsNew("s0", "myint", "80");
 
             env.UndeployAll();
         }

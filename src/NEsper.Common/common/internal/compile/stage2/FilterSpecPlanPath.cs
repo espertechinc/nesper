@@ -6,43 +6,48 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
-	public class FilterSpecPlanPath {
-	    public static readonly FilterSpecPlanPath[] EMPTY_ARRAY = new FilterSpecPlanPath[0];
+    public class FilterSpecPlanPath
+    {
+        public static readonly FilterSpecPlanPath[] EMPTY_ARRAY = Array.Empty<FilterSpecPlanPath>();
 
-	    private FilterSpecPlanPathTriplet[] triplets;
-	    private ExprEvaluator pathNegate;
+        private FilterSpecPlanPathTriplet[] triplets;
+        private ExprEvaluator pathNegate;
 
-	    public FilterSpecPlanPathTriplet[] Triplets {
-		    get => triplets;
-		    set => triplets = value;
-	    }
+        public FilterSpecPlanPathTriplet[] Triplets {
+            get => triplets;
+            set => triplets = value;
+        }
 
-	    public ExprEvaluator PathNegate {
-		    get => pathNegate;
-		    set => pathNegate = value;
-	    }
+        public ExprEvaluator PathNegate {
+            get => pathNegate;
+            set => pathNegate = value;
+        }
 
-	    public FilterSpecPlanPath() {
-	    }
+        public FilterSpecPlanPath()
+        {
+        }
 
-	    public FilterSpecPlanPath(FilterSpecPlanPathTriplet[] triplets) {
-	        this.triplets = triplets;
-	    }
+        public FilterSpecPlanPath(FilterSpecPlanPathTriplet[] triplets)
+        {
+            this.triplets = triplets;
+        }
 
-	    public bool HasTripletControl {
-		    get {
-			    foreach (FilterSpecPlanPathTriplet triplet in triplets) {
-				    if (triplet.TripletConfirm != null) {
-					    return true;
-				    }
-			    }
+        public bool HasTripletControl {
+            get {
+                foreach (var triplet in triplets) {
+                    if (triplet.TripletConfirm != null) {
+                        return true;
+                    }
+                }
 
-			    return false;
-		    }
-	    }
-	}
+                return false;
+            }
+        }
+    }
 } // end of namespace

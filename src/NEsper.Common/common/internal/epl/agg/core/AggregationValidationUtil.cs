@@ -22,10 +22,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             Type requiredParam,
             Type providedParam)
         {
-            Type boxedRequired = requiredParam.GetBoxedType();
-            Type boxedProvided = providedParam.GetBoxedType();
-            if (boxedRequired != boxedProvided &&
-                !TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired)) {
+            bool matches;
+
+            if (requiredParam == null) {
+                matches = providedParam == null;
+            }
+            else if (providedParam == null) {
+                matches = false;
+            }
+            else {
+                var boxedRequired = requiredParam.GetBoxedType();
+                var boxedProvided = providedParam.GetBoxedType();
+                matches = boxedRequired != boxedProvided &&
+                          !TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired);
+            }
+
+            if (!matches) {
                 throw new ExprValidationException(
                     "The required parameter type is " +
                     requiredParam.CleanName() +

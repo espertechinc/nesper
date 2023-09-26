@@ -33,28 +33,28 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
         {
             switch (@enum) {
                 case CalendarFieldEnum.MILLISEC:
-                    return new[] {"msec", "millisecond", "milliseconds"};
+                    return new[] { "msec", "millisecond", "milliseconds" };
 
                 case CalendarFieldEnum.SECOND:
-                    return new[] {"sec", "second", "seconds"};
+                    return new[] { "sec", "second", "seconds" };
 
                 case CalendarFieldEnum.MINUTE:
-                    return new[] {"min", "minute", "minutes"};
+                    return new[] { "min", "minute", "minutes" };
 
                 case CalendarFieldEnum.HOUR:
-                    return new[] {"hour", "hours"};
+                    return new[] { "hour", "hours" };
 
                 case CalendarFieldEnum.DAY:
-                    return new[] {"day", "days"};
+                    return new[] { "day", "days" };
 
                 case CalendarFieldEnum.MONTH:
-                    return new[] {"month", "months"};
+                    return new[] { "month", "months" };
 
                 case CalendarFieldEnum.WEEK:
-                    return new[] {"week", "weeks"};
+                    return new[] { "week", "weeks" };
 
                 case CalendarFieldEnum.YEAR:
-                    return new[] {"year", "years"};
+                    return new[] { "year", "years" };
             }
 
             throw new ArgumentException("invalid value", "enum");
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
                 var values = Enum.GetValues(typeof(CalendarFieldEnum));
                 foreach (CalendarFieldEnum value in values) {
-                    foreach (string name in GetNames(value)) {
+                    foreach (var name in GetNames(value)) {
                         builder.Append(delimiter);
                         builder.Append(name);
                         delimiter = ",";
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
         public static CalendarFieldEnum FromString(string field)
         {
-            string compareTo = field.Trim().ToLower();
+            var compareTo = field.Trim().ToLower();
 
             var values = Enum.GetValues(typeof(CalendarFieldEnum));
             foreach (CalendarFieldEnum value in values) {

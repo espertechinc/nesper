@@ -16,7 +16,6 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
-using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
@@ -24,67 +23,87 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.arrayOf
 {
-	public class EnumArrayOfEvent : ThreeFormEventPlain {
+    public class EnumArrayOfEvent : ThreeFormEventPlain
+    {
+        private readonly Type _arrayComponentType;
 
-	    private readonly Type _arrayComponentType;
+        public EnumArrayOfEvent(
+            ExprDotEvalParamLambda lambda,
+            Type arrayComponentType) : base(lambda)
+        {
+            _arrayComponentType = arrayComponentType;
+        }
 
-	    public EnumArrayOfEvent(ExprDotEvalParamLambda lambda, Type arrayComponentType) : base(lambda)
-	    {
-	        this._arrayComponentType = arrayComponentType;
-	    }
+        public override EnumEval EnumEvaluator {
+            get {
+                var inner = InnerExpression.ExprEvaluator;
 
-	    public override EnumEval EnumEvaluator {
-		    get {
-			    ExprEvaluator inner = InnerExpression.ExprEvaluator;
+                return new ProxyEnumEval(
+                    (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        var array = Arrays.CreateInstanceChecked(_arrayComponentType, enumcoll.Count);
+                        if (enumcoll.IsEmpty()) {
+                            return array;
+                        }
 
-			    return new ProxyEnumEval(
-				    (
-					    eventsLambda,
-					    enumcoll,
-					    isNewData,
-					    context) => {
-					    var array = Arrays.CreateInstanceChecked(_arrayComponentType, enumcoll.Count);
-					    if (enumcoll.IsEmpty()) {
-						    return array;
-					    }
+                        var beans = (ICollection<EventBean>)enumcoll;
+                        var count = -1;
 
-					    var beans = (ICollection<EventBean>) enumcoll;
-					    var count = -1;
+                        foreach (var next in beans) {
+                            count++;
+                            eventsLambda[StreamNumLambda] = next;
+                            var item = inner.Evaluate(eventsLambda, isNewData, context);
+                            array.SetValue(item, count);
+                        }
 
-					    foreach (EventBean next in beans) {
-						    count++;
-						    eventsLambda[StreamNumLambda] = next;
-						    var item = inner.Evaluate(eventsLambda, isNewData, context);
-						    array.SetValue(item, count);
-					    }
+                        return array;
+                    });
+            }
+        }
 
-					    return array;
-				    });
-		    }
-	    }
+        public override Type ReturnTypeOfMethod()
+        {
+            return TypeHelper.GetArrayType(_arrayComponentType);
+        }
 
-	    public override Type ReturnType() {
-	        return TypeHelper.GetArrayType(_arrayComponentType);
-	    }
+        public override CodegenExpression ReturnIfEmptyOptional()
+        {
+            return NewArrayByLength(_arrayComponentType, Constant(0));
+        }
 
-	    public override CodegenExpression ReturnIfEmptyOptional() {
-	        return NewArrayByLength(_arrayComponentType, Constant(0));
-	    }
+        public override void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            var arrayType = ReturnTypeOfMethod();
+            block.DeclareVar(
+                    arrayType,
+                    "result",
+                    NewArrayByLength(_arrayComponentType, ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")))
+                .DeclareVar<int>("count", Constant(0));
+        }
 
-	    public override void InitBlock(CodegenBlock block, CodegenMethod methodNode, ExprForgeCodegenSymbol scope, CodegenClassScope codegenClassScope) {
-	        Type arrayType = TypeHelper.GetArrayType(_arrayComponentType);
-	        block.DeclareVar(arrayType, "result", NewArrayByLength(_arrayComponentType, ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")))
-	            .DeclareVar<int>("count", Constant(0));
-	    }
+        public override void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            block.DeclareVar<object>(
+                    "item",
+                    InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                .AssignArrayElement(Ref("result"), Ref("count"), Cast(_arrayComponentType, Ref("item")))
+                .IncrementRef("count");
+        }
 
-	    public override void ForEachBlock(CodegenBlock block, CodegenMethod methodNode, ExprForgeCodegenSymbol scope, CodegenClassScope codegenClassScope) {
-	        block.DeclareVar<object>("item", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-	            .AssignArrayElement(Ref("result"), Ref("count"), Cast(_arrayComponentType, Ref("item")))
-	            .IncrementRef("count");
-	    }
-
-	    public override void ReturnResult(CodegenBlock block) {
-	        block.MethodReturn(Ref("result"));
-	    }
-	}
+        public override void ReturnResult(CodegenBlock block)
+        {
+            block.MethodReturn(Ref("result"));
+        }
+    }
 } // end of namespace

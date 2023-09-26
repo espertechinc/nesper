@@ -17,37 +17,44 @@ using static com.espertech.esper.regressionlib.support.stage.SupportStageUtil;
 
 namespace com.espertech.esper.regressionlib.suite.client.stage
 {
-	public class ClientStageMgmt
-	{
-		public static IList<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ClientStageMgmtInvalidStageDestroyWhileNotEmpty());
-			return execs;
-		}
+    public class ClientStageMgmt
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withy(execs);
+            return execs;
+        }
 
-		private class ClientStageMgmtInvalidStageDestroyWhileNotEmpty : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				env.CompileDeploy("@Name('s0') select * from SupportBean");
-				string deploymentId = env.DeploymentId("s0");
-				env.StageService.GetStage("ST");
-				StageIt(env, "ST", deploymentId);
+        public static IList<RegressionExecution> Withy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientStageMgmtInvalidStageDestroyWhileNotEmpty());
+            return execs;
+        }
 
-				try {
-					env.StageService.GetExistingStage("ST").Destroy();
-					Assert.Fail();
-				}
-				catch (EPException ex) {
-					Assert.AreEqual(ex.Message, "Failed to destroy stage 'ST': The stage has existing deployments");
-				}
+        private class ClientStageMgmtInvalidStageDestroyWhileNotEmpty : ClientStageRegressionExecution
+        {
+            public override void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy("@name('s0') select * from SupportBean");
+                var deploymentId = env.DeploymentId("s0");
+                env.StageService.GetStage("ST");
+                StageIt(env, "ST", deploymentId);
 
-				UnstageIt(env, "ST", deploymentId);
+                try {
+                    env.StageService.GetExistingStage("ST").Destroy();
+                    Assert.Fail();
+                }
+                catch (EPException ex) {
+                    Assert.AreEqual(ex.Message, "Failed to destroy stage 'ST': The stage has existing deployments");
+                }
 
-				env.StageService.GetExistingStage("ST").Destroy();
-				env.UndeployAll();
-			}
-		}
-	}
+                UnstageIt(env, "ST", deploymentId);
+
+                env.StageService.GetExistingStage("ST").Destroy();
+                env.UndeployAll();
+            }
+        }
+    }
 } // end of namespace

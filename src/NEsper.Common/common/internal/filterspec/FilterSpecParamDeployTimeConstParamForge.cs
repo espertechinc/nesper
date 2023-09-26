@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             _numberCoercer = numberCoercer;
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -76,10 +76,13 @@ namespace com.espertech.esper.common.@internal.filterspec
             getFilterValue.Block.BlockReturn(FilterValueSetParamImpl.CodegenNew(value));
 
             method.Block.MethodReturn(param);
-            return method;
+            return LocalMethod(method);
         }
-        
-        public override void ValueExprToString(StringBuilder @out, int i) {
+
+        public override void ValueExprToString(
+            StringBuilder @out,
+            int i)
+        {
             @out.Append("deploy-time constant ");
             _deployTimeConstant.RenderForFilterPlan(@out);
         }

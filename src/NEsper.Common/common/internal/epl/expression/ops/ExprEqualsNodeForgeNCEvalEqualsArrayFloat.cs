@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var left = (float[]) Lhs.Evaluate(eventsPerStream, isNewData, context);
-            var right = (float[]) Rhs.Evaluate(eventsPerStream, isNewData, context);
+            var left = (float[])Lhs.Evaluate(eventsPerStream, isNewData, context);
+            var right = (float[])Rhs.Evaluate(eventsPerStream, isNewData, context);
 
             if (left == null || right == null) { // null comparison
                 return null;

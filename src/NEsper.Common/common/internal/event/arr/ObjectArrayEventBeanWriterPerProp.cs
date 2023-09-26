@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             object[] values,
             EventBean theEvent)
         {
-            var arrayEvent = (ObjectArrayBackedEventBean) theEvent;
+            var arrayEvent = (ObjectArrayBackedEventBean)theEvent;
             var arr = arrayEvent.Properties;
 
             for (var i = 0; i < writers.Length; i++) {

@@ -77,12 +77,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             ExprNode node,
             string name)
         {
-            if (node is ExprIdentNode) {
-                if (node.ChildNodes.Length > 0) {
+            if (node is ExprIdentNode identNode) {
+                if (identNode.ChildNodes.Length > 0) {
                     throw new IllegalStateException("Ident node has unexpected child nodes");
                 }
 
-                var identNode = (ExprIdentNode) node;
                 return identNode.UnresolvedPropertyName.Equals(name) && identNode.StreamOrPropertyName == null;
             }
 

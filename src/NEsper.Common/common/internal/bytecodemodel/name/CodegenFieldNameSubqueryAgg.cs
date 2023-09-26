@@ -16,23 +16,24 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
 
         public CodegenFieldNameSubqueryAgg(int subqueryNumber)
         {
-            this._subqueryNumber = subqueryNumber;
+            _subqueryNumber = subqueryNumber;
         }
 
-        public string Name {
-            get => CodegenNamespaceScopeNames.AggregationSubquery(_subqueryNumber);
-        }
+        public string Name => CodegenNamespaceScopeNames.AggregationSubquery(_subqueryNumber);
 
-        public int SubqueryNumber {
-            get => _subqueryNumber;
-        }
+        public int SubqueryNumber => _subqueryNumber;
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o) {
+                return true;
+            }
 
-            CodegenFieldNameSubqueryAgg that = (CodegenFieldNameSubqueryAgg) o;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
+
+            var that = (CodegenFieldNameSubqueryAgg)o;
 
             return _subqueryNumber == that._subqueryNumber;
         }

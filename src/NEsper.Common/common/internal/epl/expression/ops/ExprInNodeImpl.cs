@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,46 +16,32 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     /// <summary>
     /// Represents the in-clause (set check) function in an expression tree.
     /// </summary>
-    [Serializable]
     public class ExprInNodeImpl : ExprNodeBase,
         ExprInNode
     {
         private readonly bool _isNotIn;
-
         [NonSerialized] private ExprInNodeForge _forge;
 
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="isNotIn">is true for "not in" and false for "in"</param>
+        /// <param name = "isNotIn">is true for "not in" and false for "in"</param>
         public ExprInNodeImpl(bool isNotIn)
         {
             this._isNotIn = isNotIn;
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get {
-                CheckValidated(_forge);
-                return _forge.ExprEvaluator;
-            }
-        }
-
-        public override ExprForge Forge {
-            get => _forge;
-        }
-
         /// <summary>
         /// Returns true for not-in, false for regular in
         /// </summary>
-        /// <returns>false for "val in (a,b,c)" or true for "val not in (a,b,c)"</returns>
-        public bool IsNotIn {
-            get => _isNotIn;
-        }
+        /// <value>false for "val in (a,b,c)" or true for "val not in (a,b,c)"</value>
+        public bool IsNotIn => _isNotIn;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
@@ -70,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             // Must be the same boxed type returned by expressions under this
-            Type typeOne = Boxing.GetBoxedType(ChildNodes[0].Forge.EvaluationType);
+            var typeOne = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
 
             // collections, array or map not supported
             if ((typeOne.IsArray) ||
@@ -82,9 +68,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             IList<Type> comparedTypes = new List<Type>();
             comparedTypes.Add(typeOne);
-            bool hasCollectionOrArray = false;
-            for (int i = 0; i < ChildNodes.Length - 1; i++) {
-                Type propType = ChildNodes[i + 1].Forge.EvaluationType;
+            var hasCollectionOrArray = false;
+            for (var i = 0; i < ChildNodes.Length - 1; i++) {
+                var propType = ChildNodes[i + 1].Forge.EvaluationType;
                 if (propType == null) {
                     continue;
                 }
@@ -115,44 +101,47 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 throw new ExprValidationException("Implicit conversion not allowed: " + ex.Message);
             }
 
+            if (coercionType == null) {
+                throw new ExprValidationException("Implicit conversion from null-type is not allowed");
+            }
+
+            var coercionClass = coercionType;
             // Check if we need to coerce
-            bool mustCoerce = false;
+            var mustCoerce = false;
             Coercer coercer = null;
-            if (TypeHelper.IsNumeric(coercionType)) {
-                foreach (Type compareType in comparedTypes) {
-                    if (coercionType != Boxing.GetBoxedType(compareType)) {
+            if (coercionType.IsTypeNumeric()) {
+                foreach (var compareType in comparedTypes) {
+                    if (coercionType != compareType.GetBoxedType()) {
                         mustCoerce = true;
                     }
                 }
 
                 if (mustCoerce) {
-                    coercer = SimpleNumberCoercerFactory.GetCoercer(null, Boxing.GetBoxedType(coercionType));
+                    coercer = SimpleNumberCoercerFactory.GetCoercer(null, coercionType.GetBoxedType());
                 }
             }
 
             _forge = new ExprInNodeForge(this, mustCoerce, coercer, coercionType, hasCollectionOrArray);
         }
 
-        public bool IsConstantResult {
-            get => false;
-        }
+        public bool IsConstantResult => false;
 
         public override bool EqualsNode(
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprInNodeImpl)) {
+            if (!(node is ExprInNodeImpl other)) {
                 return false;
             }
 
-            ExprInNodeImpl other = (ExprInNodeImpl) node;
             return other._isNotIn == _isNotIn;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer,
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            string delimiter = "";
+            var delimiter = "";
             ChildNodes[0].ToEPL(writer, Precedence, flags);
             if (_isNotIn) {
                 writer.Write(" not in (");
@@ -161,7 +150,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 writer.Write(" in (");
             }
 
-            for (int ii = 1 ; ii < ChildNodes.Length; ii++) {
+            for (var ii = 1 ; ii < ChildNodes.Length; ii++) {
                 var inSetValueExpr = ChildNodes[ii];
                 writer.Write(delimiter);
                 inSetValueExpr.ToEPL(writer, Precedence, flags);
@@ -171,8 +160,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             writer.Write(')');
         }
 
-        public override ExprPrecedenceEnum Precedence {
-            get => ExprPrecedenceEnum.RELATIONAL_BETWEEN_IN;
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.RELATIONAL_BETWEEN_IN;
+
+        public ExprEvaluator ExprEvaluator {
+            get {
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
+            }
         }
+
+        public override ExprForge Forge => _forge;
     }
 } // end of namespace

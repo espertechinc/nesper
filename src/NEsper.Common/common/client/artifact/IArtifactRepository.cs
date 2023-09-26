@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.compat;
 
@@ -22,8 +21,8 @@ namespace com.espertech.esper.common.client.artifact
 
         IEnumerable<ICompileArtifact> CompileArtifacts { get; }
 
-        IEnumerable<IRuntimeArtifact> RuntimeArtifacts { get; } 
-        
+        IEnumerable<IRuntimeArtifact> RuntimeArtifacts { get; }
+
         /// <summary>
         /// Registers a byte image with the repository and returns a unique id for that artifact.
         /// </summary>
@@ -43,7 +42,7 @@ namespace com.espertech.esper.common.client.artifact
         /// <param name="source"></param>
         /// <returns></returns>
         ICompileArtifact Deploy(ICompileArtifact source);
-        
+
         /// <summary>
         /// Returns an enumeration of all metadata references.
         /// </summary>

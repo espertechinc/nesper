@@ -16,23 +16,24 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
 
         public CodegenFieldNamePrevious(int streamNumber)
         {
-            this._streamNumber = streamNumber;
+            _streamNumber = streamNumber;
         }
 
-        public string Name {
-            get => CodegenNamespaceScopeNames.Previous(_streamNumber);
-        }
+        public string Name => CodegenNamespaceScopeNames.Previous(_streamNumber);
 
-        public int StreamNumber {
-            get => _streamNumber;
-        }
+        public int StreamNumber => _streamNumber;
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o) {
+                return true;
+            }
 
-            CodegenFieldNamePrevious previous = (CodegenFieldNamePrevious) o;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
+
+            var previous = (CodegenFieldNamePrevious)o;
 
             return _streamNumber == previous._streamNumber;
         }

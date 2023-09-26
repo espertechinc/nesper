@@ -8,6 +8,8 @@
 
 using System;
 
+using com.espertech.esper.compat;
+
 namespace com.espertech.esper.common.@internal.filterspec
 {
     /// <summary>
@@ -86,7 +88,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         /// <summary> Advanced-index</summary>
         ADVANCED_INDEX,
-        
+
         /// <summary>Reusable boolean expression filter operator.</summary>
         REBOOL,
 
@@ -99,6 +101,17 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// </summary>
     public static class FilterOperatorExtensions
     {
+        public static FilterOperator FromText(string text)
+        {
+            foreach (var value in EnumHelper.GetValues<FilterOperator>()) {
+                if (value.GetTextualOp() == text) {
+                    return value;
+                }
+            }
+
+            throw new ArgumentException("Failed to find filter operator '" + text + "'");
+        }
+
         /// <summary> Returns true for all range operators, false if not a range operator.</summary>
         /// <returns>
         ///     true for ranges, false for anyting else

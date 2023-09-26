@@ -37,20 +37,36 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o) {
+                return true;
+            }
 
-            AggregationStateKeyWStream that = (AggregationStateKeyWStream) o;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
 
-            if (streamNum != that.streamNum) return false;
-            if (stateType != that.stateType) return false;
-            if (!ExprNodeUtilityCompare.DeepEquals(criteraExprNodes, that.criteraExprNodes, false)) return false;
+            var that = (AggregationStateKeyWStream)o;
+
+            if (streamNum != that.streamNum) {
+                return false;
+            }
+
+            if (stateType != that.stateType) {
+                return false;
+            }
+
+            if (!ExprNodeUtilityCompare.DeepEquals(criteraExprNodes, that.criteraExprNodes, false)) {
+                return false;
+            }
+
             if (eventType != null) {
                 if (that.eventType == null) {
                     return false;
                 }
 
-                if (!EventTypeUtility.IsTypeOrSubTypeOf(that.eventType, eventType)) return false;
+                if (!EventTypeUtility.IsTypeOrSubTypeOf(that.eventType, eventType)) {
+                    return false;
+                }
             }
 
             if (filterExprNode == null) {
@@ -63,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
 
         public override int GetHashCode()
         {
-            int result = streamNum;
+            var result = streamNum;
             result = 31 * result + stateType.GetHashCode();
             return result;
         }

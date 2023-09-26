@@ -44,7 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 ? ConstantNull()
                 : ExprNodeUtilityCodegen.CodegenEvaluator(optionalEvaluator.Forge, method, GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(AggregationMethodLinearFirstLast), "strat", NewInstance(typeof(AggregationMethodLinearFirstLast)))
+                .DeclareVar<AggregationMethodLinearFirstLast>("strat",
+                    NewInstance(typeof(AggregationMethodLinearFirstLast)))
                 .SetProperty(Ref("strat"), "AccessType", Constant(accessType))
                 .SetProperty(Ref("strat"), "OptionalEvaluator", optionalEvaluatorExpr)
                 .MethodReturn(Ref("strat"));

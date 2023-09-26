@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
         {
             var indexes = new PropertyHashedEventTable[eventTable.Length];
             for (var i = 0; i < eventTable.Length; i++) {
-                indexes[i] = (PropertyHashedEventTable) eventTable[i];
+                indexes[i] = (PropertyHashedEventTable)eventTable[i];
             }
 
             return new InKeywordMultiTableLookupStrategyExpr(this, indexes);

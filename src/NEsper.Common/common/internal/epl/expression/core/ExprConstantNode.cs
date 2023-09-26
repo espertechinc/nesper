@@ -15,6 +15,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     /// </summary>
     public interface ExprConstantNode : ExprNode
     {
+        bool ConstantAvailable { get; }
+
         Type ConstantType { get; }
 
         object ConstantValue { get; }

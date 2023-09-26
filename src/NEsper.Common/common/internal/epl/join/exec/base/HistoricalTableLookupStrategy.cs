@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
             var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             instrumentationCommon.QIndexJoinLookup(this, null);
 
-            int currStream = cursor.Stream;
+            var currStream = cursor.Stream;
 
             // fill the current stream and the deep cursor events
             lookupEventsPerStream[0][currStream] = theEvent;

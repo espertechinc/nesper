@@ -33,10 +33,14 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         public Func<QueryGraph, Attribute[], ICollection<EventBean>> ProcSnapshot;
 
         public IEnumerator<EventBean> GetEnumerator()
-            => ProcGetEnumerator.Invoke();
+        {
+            return ProcGetEnumerator.Invoke();
+        }
 
         public void Stopped(NamedWindowConsumerView namedWindowConsumerView)
-            => ProcStopped.Invoke(namedWindowConsumerView);
+        {
+            ProcStopped.Invoke(namedWindowConsumerView);
+        }
 
         public bool IsParentBatchWindow
             => ProcIsParentBatchWindow.Invoke();
@@ -44,7 +48,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         public ICollection<EventBean> Snapshot(
             QueryGraph queryGraph,
             Attribute[] annotations)
-            => ProcSnapshot(queryGraph, annotations);
+        {
+            return ProcSnapshot(queryGraph, annotations);
+        }
 
         IEnumerator IEnumerable.GetEnumerator()
         {

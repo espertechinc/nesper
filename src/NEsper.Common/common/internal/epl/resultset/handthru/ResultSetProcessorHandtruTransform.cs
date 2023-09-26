@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
         {
             newData[0] = theEvent;
             var pair = resultSetProcessor.ProcessViewResult(newData, null, true);
-            return pair == null ? null : pair.First == null ? null : pair.First[0];
+            return pair?.First?[0];
         }
     }
 } // end of namespace

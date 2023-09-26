@@ -37,7 +37,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
 
             var childType = ValidateNumericChildAllowFilter(HasFilter);
-            var distinctSerde = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(childType, validationContext.StatementRawInfo) : null;
+            var distinctSerde = isDistinct
+                ? validationContext.SerdeResolver.SerdeForAggregationDistinct(
+                    childType,
+                    validationContext.StatementRawInfo)
+                : null;
             return new AggregationForgeFactoryStddev(this, childType, distinctSerde);
         }
 

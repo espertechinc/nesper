@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -33,7 +32,7 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
             object value,
             object und)
         {
-            if (Delegate.TryGetProperty(Field.PropertyName, und, out var propertyValue)) {
+            if (Delegate.TryGetProperty(Field.PropertyNumber, und, out var propertyValue)) {
                 JsonWriteArrayProp(value, propertyValue, _index);
             }
         }

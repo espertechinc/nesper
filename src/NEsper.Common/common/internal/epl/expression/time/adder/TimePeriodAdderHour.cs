@@ -33,9 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
             dtx.AddHours(value);
         }
 
-        public bool IsMicroseconds {
-            get => false;
-        }
+        public bool IsMicroseconds => false;
 
         public CodegenExpression ComputeCodegen(CodegenExpression doubleValue)
         {

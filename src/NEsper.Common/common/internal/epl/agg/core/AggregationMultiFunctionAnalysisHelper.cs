@@ -12,7 +12,6 @@ using System.Linq;
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
@@ -22,10 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         // handle accessor aggregation (direct data window by-group access to properties)
         public static AggregationMultiFunctionAnalysisResult AnalyzeAccessAggregations(
             IList<AggregationServiceAggExpressionDesc> aggregations,
-            ImportServiceCompileTime importService,
-            bool isFireAndForget,
-            string statementName,
-            ExprNode[] groupByNodes)
+            ExprNode[] groupByNodes,
+            bool join)
         {
             var currentSlot = 0;
             Deque<AggregationMFIdentifier> accessProviderSlots = new ArrayDeque<AggregationMFIdentifier>();
@@ -38,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     continue;
                 }
 
-                AggregationMultiFunctionStateKey providerKey = aggregateNode.Factory.GetAggregationStateKey(false);
+                var providerKey = aggregateNode.Factory.GetAggregationStateKey(false);
                 var existing = FindExisting(
                     accessProviderSlots,
                     providerKey,
@@ -50,20 +47,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     accessProviderSlots.Add(
                         new AggregationMFIdentifier(providerKey, aggregateNode.OptionalLocalGroupBy, currentSlot));
                     slot = currentSlot++;
-                    AggregationStateFactoryForge
-                        providerForge = aggregateNode.Factory.GetAggregationStateFactory(false);
+                    var
+                        providerForge = aggregateNode.Factory.GetAggregationStateFactory(false, join);
                     stateFactoryForges.Add(providerForge);
                 }
                 else {
                     slot = existing.Slot;
                 }
 
-                AggregationAccessorForge accessorForge = aggregateNode.Factory.AccessorForge;
+                var accessorForge = aggregateNode.Factory.AccessorForge;
                 accessorPairsForges.Add(new AggregationAccessorSlotPairForge(slot, accessorForge));
             }
 
-            AggregationAccessorSlotPairForge[] forges = accessorPairsForges.ToArray();
-            AggregationStateFactoryForge[] accessForges = stateFactoryForges.ToArray();
+            var forges = accessorPairsForges.ToArray();
+            var accessForges = stateFactoryForges.ToArray();
             return new AggregationMultiFunctionAnalysisResult(forges, accessForges);
         }
 

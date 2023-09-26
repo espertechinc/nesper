@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public object GetObjectArray(object[] array)
         {
             // If the map does not contain the key, this is allowed and represented as null
-            var wrapper = (EventBean[]) array[propertyIndex];
+            var wrapper = (EventBean[])array[propertyIndex];
             return BaseNestableEventUtil.GetArrayPropertyValue(wrapper, index, nestedGetter);
         }
 
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public object GetFragment(EventBean obj)
         {
-            var wrapper = (EventBean[]) BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj)[propertyIndex];
+            var wrapper = (EventBean[])BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(obj)[propertyIndex];
             return BaseNestableEventUtil.GetArrayPropertyFragment(wrapper, index, nestedGetter);
         }
 
@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array")
+                .AddParam<object[]>("array")
                 .Block
                 .DeclareVar<EventBean[]>(
                     "wrapper",
@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array")
+                .AddParam<object[]>("array")
                 .Block
                 .DeclareVar<EventBean[]>(
                     "wrapper",

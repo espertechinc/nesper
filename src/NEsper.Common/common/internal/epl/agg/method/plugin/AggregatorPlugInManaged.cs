@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -25,29 +26,33 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
 {
     public class AggregatorPlugInManaged : AggregatorMethodWDistinctWFilterWValueBase
     {
+        private CodegenExpressionMember plugin;
         private readonly AggregationFunctionModeManaged mode;
 
-        internal CodegenExpressionMember plugin;
-
         public AggregatorPlugInManaged(
-            AggregationForgeFactoryPlugin factory,
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
             Type optionalDistinctValueType,
             DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter,
-            AggregationFunctionModeManaged mode)
-            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
+            AggregationFunctionModeManaged mode) : base(
+            optionalDistinctValueType,
+            optionalDistinctSerde,
+            hasFilter,
+            optionalFilter)
         {
             this.mode = mode;
+        }
 
-            var injectionStrategy =
-                (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationFunctionFactory;
-            var factoryField = classScope.AddDefaultFieldUnshared<AggregationFunctionFactory>(
+        public override void InitForgeFiltered(
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
+        {
+            var injectionStrategy = (InjectionStrategyClassNewInstance)mode.InjectionStrategyAggregationFunctionFactory;
+            var factoryField = classScope.AddDefaultFieldUnshared(
                 true,
+                typeof(AggregationFunctionFactory),
                 injectionStrategy.GetInitializationExpression(classScope));
 
             plugin = membersColumnized.AddMember(col, typeof(AggregationFunction), "plugin");
@@ -62,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "Enter", value);
+            method.Block.ExprDotMethod(plugin, "enter", value);
         }
 
         protected override void ApplyEvalLeaveNonNull(
@@ -73,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             ExprForge[] forges,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "Leave", value);
+            method.Block.ExprDotMethod(plugin, "leave", value);
         }
 
         protected override void ApplyTableEnterNonNull(
@@ -82,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "Enter", value);
+            method.Block.ExprDotMethod(plugin, "enter", value);
         }
 
         protected override void ApplyTableLeaveNonNull(
@@ -91,14 +96,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "Leave", value);
+            method.Block.ExprDotMethod(plugin, "leave", value);
         }
 
         protected override void ClearWODistinct(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "Clear");
+            method.Block.ExprDotMethod(plugin, "clear");
         }
 
         protected override void WriteWODistinct(
@@ -111,7 +116,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.StaticMethod(mode.Serde, "Write", output, RowDotMember(row, plugin));
+                method.Block.StaticMethod(mode.Serde, "write", output, RowDotMember(row, plugin));
             }
         }
 
@@ -124,7 +129,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.AssignRef(RowDotMember(row, plugin), StaticMethod(mode.Serde, "Read", input));
+                method.Block.AssignRef(RowDotMember(row, plugin), StaticMethod(mode.Serde, "read", input));
+            }
+        }
+
+        protected override void AppendFormatWODistinct(FabricTypeCollector collector)
+        {
+            if (mode.HasHA) {
+                collector.PlugInAggregation(mode.Serde);
             }
         }
 
@@ -132,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(ExprDotName(plugin, "Value"));
+            method.Block.MethodReturn(ExprDotMethod(plugin, "getValue"));
         }
     }
 } // end of namespace

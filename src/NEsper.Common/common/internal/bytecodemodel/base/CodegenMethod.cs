@@ -8,14 +8,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
@@ -28,7 +26,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
     public class CodegenMethod : CodegenMethodScope
     {
-        protected CodegenMethod(
+        internal CodegenMethod(
             Type returnType,
             string returnTypeName,
             Type generator,
@@ -80,14 +78,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public IList<CodegenNamedParam> LocalParams { get; private set; } =
             Collections.GetEmptyList<CodegenNamedParam>();
 
-        public IList<Type> Thrown { get; private set; } =
-            Collections.GetEmptyList<Type>();
-
         public ISet<string> DeepParameters { get; set; }
 
         public CodegenMethodWGraph AssignedMethod { get; set; }
-        
-        public String AssignedProviderClassName { get; set;  }
+
+        public string AssignedProviderClassName { get; set; }
 
         public CodegenMethod WithStatic(bool value)
         {
@@ -102,7 +97,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 .Disable(MemberModifier.OVERRIDE);
             return this;
         }
-        
+
         public CodegenMethod WithOverride()
         {
             Modifiers = Modifiers
@@ -114,7 +109,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public SyntaxTokenList GetModifiers()
         {
             var modifiers = TokenList();
-            
+
             if (IsStatic) {
                 modifiers.Add(Token(SyntaxKind.StaticKeyword));
             }
@@ -282,16 +277,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public virtual void MergeClasses(ISet<Type> classes)
         {
             Block.MergeClasses(classes);
-            classes.AddToSet(ReturnType);
-            foreach (var ex in Thrown) {
-                classes.AddToSet(ex);
+            if (ReturnType != null) {
+                classes.AddToSet(ReturnType);
             }
 
             foreach (var param in LocalParams) {
                 param.MergeClasses(classes);
             }
         }
-        
+
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             Block.TraverseExpressions(consumer);
@@ -300,7 +294,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public CodegenMethod AddParam<T>(
             string name)
         {
-            return AddParam(typeof(T), name);
+            return AddParam<T>(name);
         }
 
         public CodegenMethod AddParam(
@@ -347,16 +341,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
-        public CodegenMethod AddThrown(Type throwableClass)
-        {
-            if (Thrown.IsEmpty()) {
-                Thrown = new List<Type>();
-            }
-
-            Thrown.Add(throwableClass);
-            return this;
-        }
-
         private string GetGeneratorDetail(Type generator)
         {
 #if DEBUG && STACKTRACE
@@ -400,7 +384,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return className + "." + methodName + "():" + lineNumber;
         }
 #endif
-        
+
         private CodegenMethod AddChild(CodegenMethod methodNode)
         {
             if (Children.IsEmpty()) {

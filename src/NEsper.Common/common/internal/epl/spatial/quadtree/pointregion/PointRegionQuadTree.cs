@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion
 
         public void Clear()
         {
-            Root = new PointRegionQuadTreeNodeLeaf<TL>(Root.Bb, Root.Level, default(TL), 0);
+            Root = new PointRegionQuadTreeNodeLeaf<TL>(Root.Bb, Root.Level, default, 0);
         }
     }
 } // end of namespace

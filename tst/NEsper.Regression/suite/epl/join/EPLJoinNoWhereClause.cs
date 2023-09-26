@@ -22,8 +22,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithWInnerKeywordWOOnClause(execs);
-            WithNoWhereClause(execs);
+            With(NoWhereClause)(execs);
+#endif
             return execs;
         }
 
@@ -60,9 +62,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new[] {"a.TheString", "b.TheString"};
+                var fields = new[] { "a.TheString", "b.TheString" };
                 var epl =
-                    "@Name('s0') select * from SupportBean(TheString like 'A%')#length(3) as a inner join SupportBean(TheString like 'B%')#length(3) as b " +
+                    "@name('s0') select * from SupportBean(TheString like 'A%')#length(3) as a inner join SupportBean(TheString like 'B%')#length(3) as b " +
                     "where a.IntPrimitive = b.IntPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -70,10 +72,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 SendEvent(env, "A2", 2);
                 SendEvent(env, "A3", 3);
                 SendEvent(env, "B2", 2);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
+                env.AssertPropsNew(
+                    "s0",
                     fields,
-                    new object[] {"A2", "B2"});
+                    new object[] { "A2", "B2" });
 
                 env.UndeployAll();
             }
@@ -83,8 +85,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"stream_0.Volume", "stream_1.LongBoxed"};
-                var joinStatement = "@Name('s0') select * from " +
+                string[] fields = { "stream_0.Volume", "stream_1.LongBoxed" };
+                var joinStatement = "@name('s0') select * from " +
                                     "SupportMarketDataBean#length(3)," +
                                     "SupportBean#length(3)";
                 env.CompileDeploy(joinStatement).AddListener("s0");
@@ -101,32 +103,37 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // Send 2 events, should join on second one
                 SendEvent(env, setOne[0]);
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(env.Statement("s0").GetEnumerator(), fields, null);
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
 
                 SendEvent(env, setTwo[0]);
-                Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual(setOne[0], env.Listener("s0").LastNewData[0].Get("stream_0"));
-                Assert.AreEqual(setTwo[0], env.Listener("s0").LastNewData[0].Get("stream_1"));
-                env.Listener("s0").Reset();
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertListener(
+                    "s0",
+                    listener => {
+                        Assert.AreEqual(1, listener.LastNewData.Length);
+                        Assert.AreEqual(setOne[0], listener.LastNewData[0].Get("stream_0"));
+                        Assert.AreEqual(setTwo[0], listener.LastNewData[0].Get("stream_1"));
+                        listener.Reset();
+                    });
+
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
                     fields,
-                    new[] {new object[] {0L, 0L}});
+                    new[] { new object[] { 0L, 0L } });
 
                 SendEvent(env, setOne[1]);
                 SendEvent(env, setOne[2]);
                 SendEvent(env, setTwo[1]);
-                Assert.AreEqual(3, env.Listener("s0").LastNewData.Length);
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Statement("s0").GetEnumerator(),
+                env.AssertListener("s0", listener => Assert.AreEqual(3, listener.LastNewData.Length));
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
                     fields,
                     new[] {
-                        new object[] {0L, 0L},
-                        new object[] {1L, 0L},
-                        new object[] {2L, 0L},
-                        new object[] {0L, 1L},
-                        new object[] {1L, 1L},
-                        new object[] {2L, 1L}
+                        new object[] { 0L, 0L },
+                        new object[] { 1L, 0L },
+                        new object[] { 2L, 0L },
+                        new object[] { 0L, 1L },
+                        new object[] { 1L, 1L },
+                        new object[] { 2L, 1L }
                     });
 
                 env.UndeployAll();

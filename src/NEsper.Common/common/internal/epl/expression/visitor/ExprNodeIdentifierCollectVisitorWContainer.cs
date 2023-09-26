@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         {
             ExprProperties = new List<Pair<ExprNode, ExprIdentNode>>(2);
         }
-        
+
         public bool IsWalkDeclExprParam => true;
 
         /// <summary>

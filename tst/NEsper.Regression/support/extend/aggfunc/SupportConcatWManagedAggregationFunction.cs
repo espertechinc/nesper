@@ -25,6 +25,12 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
             delimiter = "";
         }
 
+        public SupportConcatWManagedAggregationFunction(StringBuilder builder)
+        {
+            this.builder = builder;
+            this.delimiter = Convert.ToString(DELIMITER);
+        }
+
         public void Enter(object value)
         {
             if (value != null) {

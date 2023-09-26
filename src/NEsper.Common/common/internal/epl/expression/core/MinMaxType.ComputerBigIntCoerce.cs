@@ -61,8 +61,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 var bigIntTwo = convertors[1].CoerceBoxedBigInt(valueChildTwo);
 
                 BigInteger result;
-                if (isMax && bigIntOne.CompareTo(bigIntTwo) > 0 ||
-                    !isMax && bigIntOne.CompareTo(bigIntTwo) < 0) {
+                if ((isMax && bigIntOne.CompareTo(bigIntTwo) > 0) ||
+                    (!isMax && bigIntOne.CompareTo(bigIntTwo) < 0)) {
                     result = bigIntOne;
                 }
                 else {
@@ -76,8 +76,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     }
 
                     var bigInt = convertors[i].CoerceBoxedBigInt(valueChild);
-                    if (isMax && result.CompareTo(bigInt) < 0 ||
-                        !isMax && result.CompareTo(bigInt) > 0) {
+                    if ((isMax && result.CompareTo(bigInt) < 0) ||
+                        (!isMax && result.CompareTo(bigInt) > 0)) {
                         result = bigInt;
                     }
                 }

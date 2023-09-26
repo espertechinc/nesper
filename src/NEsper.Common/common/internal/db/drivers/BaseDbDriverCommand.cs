@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <returns></returns>
         public virtual DbDriverCommand Clone()
         {
-            var dbClone = (BaseDbDriverCommand) MemberwiseClone();
+            var dbClone = (BaseDbDriverCommand)MemberwiseClone();
             // Create an independent lock
             dbClone._allocLock = new object();
             // Ensure theConnection and theCommand are not copied
@@ -376,13 +376,13 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <returns></returns>
         protected virtual Type GetColumnType(DataRow schemaDataRow)
         {
-            var columnType = (Type) schemaDataRow["DataType"];
-            var columnSize = (int) schemaDataRow["ColumnSize"];
+            var columnType = (Type)schemaDataRow["DataType"];
+            var columnSize = (int)schemaDataRow["ColumnSize"];
 
             // Some providers (read MySQL) provide bools as an integer
             // with a size of 1.  We should probably convert these to bool
             // to make client integration easier.
-            if ((columnType == typeof(sbyte)) && (columnSize == 1)) {
+            if (columnType == typeof(sbyte) && columnSize == 1) {
                 columnType = typeof(bool);
             }
 
@@ -397,7 +397,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <returns></returns>
         protected virtual string GetColumnSqlType(DataRow schemaDataRow)
         {
-            var dataType = (Type) schemaDataRow["DataType"];
+            var dataType = (Type)schemaDataRow["DataType"];
             return dataType.FullName;
 
             //var providerType = (Int32)schemaDataRow["ProviderType"];
@@ -418,7 +418,7 @@ namespace com.espertech.esper.common.@internal.db.drivers
         {
             IDictionary<string, DBOutputTypeDesc> outputProperties = new Dictionary<string, DBOutputTypeDesc>();
             foreach (DataRow dataRow in schemaTable.Rows) {
-                var columnName = (string) dataRow["ColumnName"];
+                var columnName = (string)dataRow["ColumnName"];
                 var columnType = GetColumnType(dataRow);
                 var sqlTypeName = GetColumnSqlType(dataRow);
                 //var canBeNull = (Boolean)dataRow["AllowDBNull"];

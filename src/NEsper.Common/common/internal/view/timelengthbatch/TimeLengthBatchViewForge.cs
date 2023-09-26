@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -31,22 +32,15 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
         ScheduleHandleCallbackProvider,
         DataWindowBatchingViewForge
     {
-        internal bool isForceUpdate;
-        internal bool isStartEager;
-        internal int scheduleCallbackId;
-
         /// <summary>
-        ///     Number of events to collect before batch fires.
+        /// Number of events to collect before batch fires.
         /// </summary>
-        internal ExprForge sizeForge;
+        protected ExprForge sizeForge;
 
-        internal TimePeriodComputeForge timePeriodCompute;
-
-        public override string ViewName => "Time-Length-Batch";
-
-        public int ScheduleCallbackId {
-            set => scheduleCallbackId = value;
-        }
+        protected bool isForceUpdate;
+        protected bool isStartEager;
+        protected TimePeriodComputeForge timePeriodCompute;
+        protected int scheduleCallbackId;
 
         public override void SetViewParameters(
             IList<ExprNode> parameters,
@@ -54,9 +48,8 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             int streamNumber)
         {
             var validated = ViewForgeSupport.Validate(ViewName, parameters, viewForgeEnv, streamNumber);
-            var errorMessage =
-                ViewName +
-                " view requires a numeric or time period parameter as a time interval size, and an integer parameter as a maximal number-of-events, and an optional list of control keywords as a string parameter (please see the documentation)";
+            var errorMessage = ViewName +
+                               " view requires a numeric or time period parameter as a time interval size, and an integer parameter as a maximal number-of-events, and an optional list of control keywords as a string parameter (please see the documentation)";
             if (validated.Length != 2 && validated.Length != 3) {
                 throw new ViewParameterException(errorMessage);
             }
@@ -66,11 +59,8 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
                 parameters[0],
                 errorMessage,
                 0,
-                viewForgeEnv,
-                streamNumber);
-
+                viewForgeEnv);
             sizeForge = ViewForgeSupport.ValidateSizeParam(ViewName, validated[1], 1);
-
             if (validated.Length > 2) {
                 var keywords = ViewForgeSupport.Evaluate(validated[2].Forge.ExprEvaluator, 2, ViewName);
                 var flags = TimeBatchFlags.ProcessKeywords(keywords, errorMessage);
@@ -79,23 +69,15 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             }
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(TimeLengthBatchViewFactory);
-        }
-
-        internal override string FactoryMethod()
-        {
-            return "Timelengthbatch";
-        }
+        internal override Type TypeOfFactory => typeof(TimeLengthBatchViewFactory);
+        internal override string FactoryMethod => "timelengthbatch";
 
         internal override void Assign(
             CodegenMethod method,
@@ -108,12 +90,30 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             }
 
             method.Block
-                .DeclareVar<TimePeriodCompute>("eval", timePeriodCompute.MakeEvaluator(method, classScope))
-                .SetProperty(factory, "SizeEvaluator", CodegenEvaluator(sizeForge, method, GetType(), classScope))
-                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
-                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))
-                .SetProperty(factory, "ForceUpdate", Constant(isForceUpdate))
-                .SetProperty(factory, "StartEager", Constant(isStartEager));
+                .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodCompute.MakeEvaluator(method, classScope))
+                .ExprDotMethod(factory, "setSize", CodegenEvaluator(sizeForge, method, GetType(), classScope))
+                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
+                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId))
+                .ExprDotMethod(factory, "setForceUpdate", Constant(isForceUpdate))
+                .ExprDotMethod(factory, "setStartEager", Constant(isStartEager));
         }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_TIMELENGTHBATCH;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
+
+        public int ScheduleCallbackId {
+            get => scheduleCallbackId;
+
+            set => scheduleCallbackId = value;
+        }
+
+        public override string ViewName => "Time-Length-Batch";
     }
 } // end of namespace

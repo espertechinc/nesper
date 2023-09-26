@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             AggregationForgeFactoryAccessPlugin parent,
             AggregationMultiFunctionAccessorModeManaged mode)
         {
-            this._parent = parent;
-            this._mode = mode;
+            _parent = parent;
+            _mode = mode;
         }
 
         public void GetValueCodegen(AggregationAccessorForgeGetCodegenContext context)
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         {
             if (_accessorField == null) {
                 var injectionStrategy =
-                    (InjectionStrategyClassNewInstance) _mode.InjectionStrategyAggregationAccessorFactory;
+                    (InjectionStrategyClassNewInstance)_mode.InjectionStrategyAggregationAccessorFactory;
                 _accessorField = classScope.AddDefaultFieldUnshared(
                     true,
                     typeof(AggregationMultiFunctionAccessor),

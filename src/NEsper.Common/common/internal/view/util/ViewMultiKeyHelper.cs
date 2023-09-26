@@ -16,21 +16,29 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.view.util
 {
-	public class ViewMultiKeyHelper
-	{
-		public static void Assign(
-			ExprNode[] criteriaExpressions,
-			MultiKeyClassRef multiKeyClassNames,
-			CodegenMethod method,
-			CodegenExpressionRef factory,
-			SAIFFInitializeSymbol symbols,
-			CodegenClassScope classScope)
-		{
-			CodegenExpression criteriaEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(criteriaExpressions, null, multiKeyClassNames, method, classScope);
-			method.Block
-				.SetProperty(factory, "CriteriaEval", criteriaEval)
-				.SetProperty(factory, "CriteriaTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions)))
-				.SetProperty(factory, "KeySerde", multiKeyClassNames.GetExprMKSerde(method, classScope));
-		}
-	}
+    public class ViewMultiKeyHelper
+    {
+        public static void Assign(
+            ExprNode[] criteriaExpressions,
+            MultiKeyClassRef multiKeyClassNames,
+            CodegenMethod method,
+            CodegenExpressionRef factory,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            var criteriaEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
+                criteriaExpressions,
+                null,
+                multiKeyClassNames,
+                method,
+                classScope);
+            method.Block
+                .SetProperty(factory, "CriteriaEval", criteriaEval)
+                .SetProperty(
+                    factory,
+                    "CriteriaTypes",
+                    Constant(ExprNodeUtilityQuery.GetExprResultTypes(criteriaExpressions)))
+                .SetProperty(factory, "KeySerde", multiKeyClassNames.GetExprMKSerde(method, classScope));
+        }
+    }
 } // end of namespace

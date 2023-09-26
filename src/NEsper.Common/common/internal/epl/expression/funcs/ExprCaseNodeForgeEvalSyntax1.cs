@@ -45,12 +45,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             // Case 1 expression example:
             //      case when a=b then x [when c=d then y...] [else y]
             object caseResult = null;
-            bool matched = false;
-            foreach (UniformPair<ExprEvaluator> p in whenThenNodeList) {
+            var matched = false;
+            foreach (var p in whenThenNodeList) {
                 var whenResult = p.First.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 // If the 'when'-expression returns true
-                if ((whenResult != null) && true.Equals(whenResult)) {
+                if (whenResult != null && true.Equals(whenResult)) {
                     caseResult = p.Second.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                     matched = true;
                     break;
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return null;
             }
 
-            if ((caseResult.GetType() != forge.EvaluationType) && forge.IsNumericResult) {
+            if (caseResult.GetType() != forge.EvaluationType && forge.IsNumericResult) {
                 caseResult = TypeHelper.CoerceBoxed(caseResult, forge.EvaluationType);
             }
 
@@ -78,17 +78,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            Type evaluationType = forge.EvaluationType == null
-                ? typeof(IDictionary<object, object>)
-                : forge.EvaluationType;
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var evaluationType = forge.EvaluationType ?? typeof(IDictionary<object, object>);
+            var methodNode = codegenMethodScope.MakeChild(
                 evaluationType,
                 typeof(ExprCaseNodeForgeEvalSyntax1),
                 codegenClassScope);
 
-            CodegenBlock block = methodNode.Block.DeclareVar<bool?>("when", ConstantFalse());
+            var block = methodNode.Block.DeclareVar<bool?>("when", ConstantFalse());
 
-            foreach (UniformPair<ExprNode> pair in forge.WhenThenNodeList) {
+            foreach (var pair in forge.WhenThenNodeList) {
                 block.AssignRef(
                     "when",
                     pair.First.Forge.EvaluateCodegen(typeof(bool?), methodNode, exprSymbol, codegenClassScope));
@@ -114,18 +112,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            Type nodeEvaluationType = node.Forge.EvaluationType;
-            if (nodeEvaluationType == forge.EvaluationType || !forge.IsNumericResult) {
-                return node.Forge.EvaluateCodegen(nodeEvaluationType, methodNode, exprSymbol, codegenClassScope);
+            var nodeType = node.Forge.EvaluationType;
+            if (nodeType == forge.EvaluationType || !forge.IsNumericResult) {
+                return node.Forge.EvaluateCodegen(nodeType, methodNode, exprSymbol, codegenClassScope);
             }
 
-            if (nodeEvaluationType == null) {
+            if (nodeType == null) {
                 return ConstantNull();
             }
 
+            if (nodeType == forge.EvaluationType || !forge.IsNumericResult) {
+                return node.Forge.EvaluateCodegen(nodeType, methodNode, exprSymbol, codegenClassScope);
+            }
+
             return TypeHelper.CoerceNumberToBoxedCodegen(
-                node.Forge.EvaluateCodegen(nodeEvaluationType, methodNode, exprSymbol, codegenClassScope),
-                nodeEvaluationType,
+                node.Forge.EvaluateCodegen(nodeType, methodNode, exprSymbol, codegenClassScope),
+                nodeType,
                 forge.EvaluationType);
         }
     }

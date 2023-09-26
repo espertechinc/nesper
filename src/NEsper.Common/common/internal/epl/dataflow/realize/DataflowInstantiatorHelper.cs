@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             EPDataFlowInstantiationOptions options,
             AgentInstanceContext agentInstanceContext)
         {
-            IDictionary<int, OperatorMetadataDescriptor> operatorMetadata = dataflow.OperatorMetadata;
+            var operatorMetadata = dataflow.OperatorMetadata;
 
             // First pass: inject runtime context
             IDictionary<int, EPDataFlowEmitter> runtimeContexts = new Dictionary<int, EPDataFlowEmitter>();
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                 statisticsProvider = new OperatorStatisticsProvider(operatorMetadata);
             }
 
-            foreach (int producerOpNum in dataflow.OperatorBuildOrder) {
+            foreach (var producerOpNum in dataflow.OperatorBuildOrder) {
                 var operatorPrettyPrint = operatorMetadata.Get(producerOpNum).OperatorPrettyPrint;
                 if (Log.IsDebugEnabled) {
                     Log.Debug("Generating runtime context for " + operatorPrettyPrint);
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             }
 
             // Second pass: hook punctuation such that it gets forwarded
-            foreach (int producerOpNum in dataflow.OperatorBuildOrder) {
+            foreach (var producerOpNum in dataflow.OperatorBuildOrder) {
                 var operatorPrettyPrint = operatorMetadata.Get(producerOpNum).OperatorPrettyPrint;
                 if (Log.IsDebugEnabled) {
                     Log.Debug("Handling signals for " + operatorPrettyPrint);
@@ -162,8 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                 return new SignalHandlerDefaultWInvoke(target, consumingSignalBindingDesc.Method);
             }
 
-            if (consumingSignalBindingDesc.BindingType is LogicalChannelBindingTypePassAlongWStream) {
-                var streamInfo = (LogicalChannelBindingTypePassAlongWStream) consumingSignalBindingDesc.BindingType;
+            if (consumingSignalBindingDesc.BindingType is LogicalChannelBindingTypePassAlongWStream streamInfo) {
                 return new SignalHandlerDefaultWInvokeStream(
                     target,
                     consumingSignalBindingDesc.Method,
@@ -213,8 +212,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                     importService);
             }
 
-            if (bindingType is LogicalChannelBindingTypePassAlongWStream) {
-                var type = (LogicalChannelBindingTypePassAlongWStream) bindingType;
+            if (bindingType is LogicalChannelBindingTypePassAlongWStream type) {
                 return new EPDataFlowEmitter1Stream1TargetPassAlongWStream(
                     producerOpNum,
                     dataFlowSignalManager,
@@ -254,7 +252,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             }
 
             var dataflowName = dataflow.DataflowName;
-            var classpathImportService = agentInstanceContext.ImportServiceRuntime;
+            var importService = agentInstanceContext.ImportServiceRuntime;
 
             // handle single-stream case
             if (targetsPerStream.Length == 1) {
@@ -272,7 +270,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                         dataFlowSignalManager,
                         target,
                         options.ExceptionHandler,
-                        classpathImportService);
+                        importService);
                 }
 
                 var handlers = new SubmitHandler[targets.Count];
@@ -286,7 +284,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                         dataFlowSignalManager,
                         targets[i],
                         options.ExceptionHandler,
-                        classpathImportService);
+                        importService);
                 }
 
                 return new EPDataFlowEmitter1StreamNTarget(producerOpNum, dataFlowSignalManager, handlers);
@@ -307,7 +305,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                         dataFlowSignalManager,
                         targetsPerStream[streamNum][i],
                         options.ExceptionHandler,
-                        classpathImportService);
+                        importService);
                 }
             }
 

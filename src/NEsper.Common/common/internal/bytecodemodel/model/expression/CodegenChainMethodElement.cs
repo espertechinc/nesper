@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             _method = method;
             _methodTypeParameters = methodTypeParameters;
             _optionalParams = optionalParams;
-            
+
             if (optionalParams != null) {
                 for (var ii = 0; ii < optionalParams.Length; ii++) {
                     if (optionalParams[ii] == null) {

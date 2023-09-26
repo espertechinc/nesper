@@ -9,7 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Text;
 
+using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -20,23 +22,27 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
+
+using Microsoft.CodeAnalysis;
+
+using NEsper.Avro.Extensions;
+
+using NUnit.Framework;
+
+using static com.espertech.esper.common.@internal.support.SupportEventPropUtil; // assertPropEquals;
+//using static com.espertech.esper.regressionlib.support.events.SupportGenericColUtil;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-
-using NEsper.Avro.Core;
-using NEsper.Avro.Extensions;
-using NEsper.Avro.Util.Support;
+using com.espertech.esper.regressionlib.support.util;
 
 using Newtonsoft.Json.Linq;
 
-using NUnit.Framework;
+using static com.espertech.esper.regressionlib.support.events.SupportGenericColUtil;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
-using static NEsper.Avro.Extensions.TypeBuilder;
+using Exception = System.Exception;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -45,6 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPathSimple(execs);
             WithPublicSimple(execs);
             WithArrayPrimitiveType(execs);
@@ -62,10 +69,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             WithSameCRC(execs);
             WithBeanImport(execs);
             WithCopyFromDeepWithValueObject(execs);
+            With(TypeParameterized)(execs);
+#endif
             return execs;
         }
 
-        public static IList<RegressionExecution> WithCopyFromDeepWithValueObject(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithTypeParameterized(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherCreateSchemaTypeParameterized());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCopyFromDeepWithValueObject(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLOtherCreateSchemaCopyFromDeepWithValueObject());
@@ -184,218 +201,313 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             return execs;
         }
 
-        public class EPLOtherCreateSchemaCopyFromDeepWithValueObject : RegressionExecution
+        internal class EPLOtherCreateSchemaTypeParameterized : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl =
-                    "create schema SchemaA (account string, foo " +
-                    typeof(MyLocalValueObject).MaskTypeName() +
-                    ");\n" +
-                    "create schema SchemaB (symbol string) copyfrom SchemaA;\n" +
-                    "create schema SchemaC () copyfrom SchemaB;\n" +
-                    "create schema SchemaD () copyfrom SchemaB;\n" +
-                    "insert into SchemaD select account, " +
-                    typeof(EPLOtherCreateSchema).FullName +
-                    ".GetLocalValueObject() as foo, symbol from SchemaC;\n";
+                TryAssertionTypeParameterized(env, GetSchema(EventRepresentationChoice.OBJECTARRAY), "MyEvent");
+                TryAssertionTypeParameterized(env, GetSchema(EventRepresentationChoice.MAP), "MyEvent");
+
+                var beanSchema = "@name('schema') create schema MyEvent as " +
+                                 typeof(MyLocalSchemaTypeParamEvent<>).FullName +
+                                 ";\n";
+                TryAssertionTypeParameterized(env, beanSchema, "MyEvent");
+
+                TryAssertionTypeParameterized(env, null, "MyPreconfiguredParameterizeTypeMap");
+            }
+
+            private string GetSchema(EventRepresentationChoice rep)
+            {
+                var buf = new StringBuilder();
+                buf.Append("@name('schema') ").Append(rep.GetAnnotationText()).Append("create schema MyEvent(");
+                var delimiter = "";
+                foreach (var pair in NAMESANDTYPES) {
+                    buf
+                        .Append(delimiter)
+                        .Append(pair.Name)
+                        .Append(" ")
+                        .Append(pair.TypeName);
+                    delimiter = ",";
+                }
+
+                buf.Append(");\n");
+                return buf.ToString();
+            }
+
+            private void TryAssertionTypeParameterized(
+                RegressionEnvironment env,
+                string schemaEPL,
+                string eventTypeName)
+            {
+                var epl = schemaEPL == null ? "" : schemaEPL;
+                epl += "@name('s0') select " + AllNames() + " from " + eventTypeName + ";\n";
+                env.CompileDeploy(epl);
+
+                if (schemaEPL != null) {
+                    env.AssertStatement("schema", statement => AssertPropertyTypes(statement.EventType));
+                }
+
+                env.AssertStatement("s0", statement => AssertPropertyTypes(statement.EventType));
+
+                env.UndeployAll();
+            }
+        }
+
+        internal class EPLOtherCreateSchemaCopyFromDeepWithValueObject : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "create schema SchemaA (account string, foo " +
+                          typeof(MyLocalValueObject).Name +
+                          ");\n" +
+                          "create schema SchemaB (symbol string) copyfrom SchemaA;\n" +
+                          "create schema SchemaC () copyfrom SchemaB;\n" +
+                          "create schema SchemaD () copyfrom SchemaB;\n" +
+                          "insert into SchemaD select account, " +
+                          typeof(EPLOtherCreateSchema).Name +
+                          ".getLocalValueObject() as foo, symbol from SchemaC;\n";
                 env.CompileDeploy(epl).UndeployAll();
             }
         }
 
-        public class EPLOtherCreateSchemaBeanImport : RegressionExecution
+        internal class EPLOtherCreateSchemaBeanImport : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy("create schema MyEvent as Rectangle");
 
-                TryInvalidCompile(env, "create schema MyEvent as XXUnknown", "Could not load class by name 'XXUnknown', please check imports");
+                env.TryInvalidCompile(
+                    "create schema MyEvent as XXUnknown",
+                    "Could not load class by name 'XXUnknown', please check imports");
 
                 env.UndeployAll();
             }
         }
 
-        public class EPLOtherCreateSchemaSameCRC : RegressionExecution
+        internal class EPLOtherCreateSchemaSameCRC : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 try {
-                    env.CompileDeployWBusPublicType(
-                        "create schema b5a7b602ab754d7ab30fb42c4fb28d82();\n" +
-                        "create schema d19f2e9e82d14b96be4fa12b8a27ee9f();",
+                    env.CompileDeploy(
+                        "@Public @buseventtype create schema b5a7b602ab754d7ab30fb42c4fb28d82();\n" +
+                        "@Public @buseventtype create schema d19f2e9e82d14b96be4fa12b8a27ee9f();",
                         new RegressionPath());
                 }
                 catch (Exception ex) {
                     Assert.AreEqual(
-                        "Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consider renaming either of these types",
+                        "Test failed due to exception: Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consider renaming either of these types",
                         ex.Message);
                 }
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
         }
 
-        public class EPLOtherCreateSchemaPathSimple : RegressionExecution
+        internal class EPLOtherCreateSchemaPathSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl =
-                    "@Name('schema') create schema SimpleSchema(p0 string, p1 int);" +
-                    "@Name('s0') select * from SimpleSchema;\n" +
-                    "insert into SimpleSchema select TheString as p0, IntPrimitive as p1 from SupportBean;\n";
-
+                var epl = "@name('schema') create schema SimpleSchema(p0 string, p1 int);" +
+                          "@name('s0') select * from SimpleSchema;\n" +
+                          "insert into SimpleSchema select theString as p0, intPrimitive as p1 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
-                Assert.AreEqual(StatementType.CREATE_SCHEMA, env.Statement("schema").GetProperty(StatementProperty.STATEMENTTYPE));
-                Assert.AreEqual("SimpleSchema", env.Statement("schema").GetProperty(StatementProperty.CREATEOBJECTNAME));
+                env.AssertStatement(
+                    "schema",
+                    statement => {
+                        Assert.AreEqual(
+                            StatementType.CREATE_SCHEMA,
+                            statement.GetProperty(StatementProperty.STATEMENTTYPE));
+                        Assert.AreEqual("SimpleSchema", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
+                    });
 
                 env.SendEventBean(new SupportBean("a", 20));
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "p0,p1".SplitCsv(), new object[] {"a", 20});
+                env.AssertPropsNew("s0", "p0,p1".Split(","), new object[] { "a", 20 });
 
-                Assert.IsNull(env.Runtime.EventTypeService.GetBusEventType("SimpleSchema"));
+                env.AssertThat(() => Assert.IsNull(env.Runtime.EventTypeService.GetBusEventType("SimpleSchema")));
 
                 env.UndeployAll();
             }
         }
 
-        public class EPLOtherCreateSchemaPublicSimple : RegressionExecution
+        internal class EPLOtherCreateSchemaPublicSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create schema MySchema as (p0 string, p1 int);\n" +
-                          "@Name('s0') select p0, p1 from MySchema;\n";
-                env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
+                var epl = "@buseventtype @public create schema MySchema as (p0 string, p1 int);\n" +
+                          "@name('s0') select p0, p1 from MySchema;\n";
+                env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
 
                 env.SendEventMap(CollectionUtil.BuildMap("p0", "a", "p1", 20), "MySchema");
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "p0,p1".SplitCsv(), new object[] {"a", 20});
+                env.AssertPropsNew("s0", "p0,p1".Split(","), new object[] { "a", 20 });
 
-                var eventType = env.Runtime.EventTypeService.GetBusEventType("MySchema");
-                Assert.AreEqual("MySchema", eventType.Name);
+                env.AssertThat(
+                    () => {
+                        var eventType = env.Runtime.EventTypeService.GetBusEventType("MySchema");
+                        Assert.AreEqual("MySchema", eventType.Name);
+                    });
 
                 env.UndeployAll();
             }
         }
 
-        public class EPLOtherCreateSchemaCopyFromOrderObjectArray : RegressionExecution
+        internal class EPLOtherCreateSchemaCopyFromOrderObjectArray : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "@Name('s1') create objectarray schema MyEventOne(p0 string, p1 double);\n " +
-                          "create objectarray schema MyEventTwo(p2 string) copyfrom MyEventOne;\n";
-                env.CompileDeployWBusPublicType(epl, path);
+                var epl =
+                    "@name('s1') @public @buseventtype create objectarray schema MyEventOne(p0 string, p1 double);\n " +
+                    "@Public create objectarray schema MyEventTwo(p2 string) copyfrom MyEventOne;\n";
+                env.CompileDeploy(epl, path);
 
-                var type = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s1"), "MyEventTwo");
-                EPAssertionUtil.AssertEqualsExactOrder("p0,p1,p2".SplitCsv(), type.PropertyNames);
+                env.AssertThat(
+                    () => {
+                        var type = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s1"), "MyEventTwo");
+                        EPAssertionUtil.AssertEqualsExactOrder("p0,p1,p2".Split(","), type.PropertyNames);
+                    });
 
                 epl = "insert into MyEventTwo select 'abc' as p2, s.* from MyEventOne as s;\n" +
-                      "@Name('s0') select p0, p1, p2 from MyEventTwo;\n";
+                      "@name('s0') select p0, p1, p2 from MyEventTwo;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
-                env.SendEventObjectArray(new object[] {"E1", 10d}, "MyEventOne");
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "p0,p1,p2".SplitCsv(), new object[] {"E1", 10d, "abc"});
+                env.SendEventObjectArray(new object[] { "E1", 10d }, "MyEventOne");
+                env.AssertPropsNew("s0", "p0,p1,p2".Split(","), new object[] { "E1", 10d, "abc" });
 
                 env.UndeployAll();
             }
         }
 
-        public class EPLOtherCreateSchemaArrayPrimitiveType : RegressionExecution
+        internal class EPLOtherCreateSchemaArrayPrimitiveType : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 TryAssertionSchemaArrayPrimitiveType(env, true);
                 TryAssertionSchemaArrayPrimitiveType(env, false);
 
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "create schema Invalid (x dummy[primitive])",
                     "Type 'dummy' is not a primitive type [create schema Invalid (x dummy[primitive])]");
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "create schema Invalid (x int[dummy])",
                     "Invalid array keyword 'dummy', expected 'primitive'");
+                env.TryInvalidCompile(
+                    "create schema Invalid (x int<string>[primitive])",
+                    "Cannot use the 'primitive' keyword with type parameters");
             }
 
             private static void TryAssertionSchemaArrayPrimitiveType(
                 RegressionEnvironment env,
                 bool soda)
             {
-                CompileDeployWExport("@Name('schema') create schema MySchema as (c0 int[primitive], c1 int[])", soda, env);
-                var expectedType = new[] {
-                    new object[] {"c0", typeof(int[])},
-                    new object[] {"c1", typeof(int?[])}
-                };
-                SupportEventTypeAssertionUtil.AssertEventTypeProperties(
-                    expectedType,
-                    GetTypeStmt(env, "schema"),
-                    SupportEventTypeAssertionEnum.NAME,
-                    SupportEventTypeAssertionEnum.TYPE);
+                CompileDeployWExport(
+                    "@name('schema') @public @buseventtype create schema MySchema as (c0 int[primitive], c1 int[])",
+                    soda,
+                    env);
+                var expectedType = new object[][]
+                    { new object[] { "c0", typeof(int[]) }, new object[] { "c1", typeof(int?[]) } };
+                env.AssertStatement(
+                    "schema",
+                    statement => SupportEventTypeAssertionUtil.AssertEventTypeProperties(
+                        expectedType,
+                        statement.EventType,
+                        SupportEventTypeAssertionEnum.NAME,
+                        SupportEventTypeAssertionEnum.TYPE));
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
             }
         }
 
-        public class EPLOtherCreateSchemaWithEventType : RegressionExecution
+        internal class EPLOtherCreateSchemaWithEventType : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var theEvent = new SupportBeanSourceEvent(new SupportBean("E1", 1), new[] {new SupportBean_S0(2)});
+                var theEvent = new SupportBeanSourceEvent(
+                    new SupportBean("E1", 1),
+                    new SupportBean_S0[] { new SupportBean_S0(2) });
 
                 // test schema
-                env.CompileDeploy("@Name('schema') create schema MySchema (bean SupportBean, beanarray SupportBean_S0[])");
-                var stmtSchemaType = env.Statement("schema").EventType;
-                Assert.AreEqual(
-                    new EventPropertyDescriptor("bean", typeof(SupportBean), null, false, false, false, false, true),
-                    stmtSchemaType.GetPropertyDescriptor("bean"));
-                Assert.AreEqual(
-                    new EventPropertyDescriptor("beanarray", typeof(SupportBean_S0[]), typeof(SupportBean_S0), false, false, true, false, true),
-                    stmtSchemaType.GetPropertyDescriptor("beanarray"));
+                env.CompileDeploy(
+                    "@name('schema') create schema MySchema (bean SupportBean, beanarray SupportBean_S0[])");
+                env.AssertStatement(
+                    "schema",
+                    statement => {
+                        var stmtSchemaType = statement.EventType;
+                        AssertPropEquals(
+                            new SupportEventPropDesc("bean", typeof(SupportBean)).WithFragment(),
+                            stmtSchemaType.GetPropertyDescriptor("bean"));
+                        AssertPropEquals(
+                            new SupportEventPropDesc("beanarray", typeof(SupportBean_S0[])).WithIndexed()
+                                .WithFragment(),
+                            stmtSchemaType.GetPropertyDescriptor("beanarray"));
+                    });
 
-                env.CompileDeploy("@Name('s0') insert into MySchema select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent").AddListener("s0");
+                env.CompileDeploy(
+                        "@name('s0') insert into MySchema select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent")
+                    .AddListener("s0");
                 env.SendEventBean(theEvent);
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "bean.TheString,beanarray[0].Id".SplitCsv(), new object[] {"E1", 2});
+                env.AssertPropsNew("s0", "bean.theString,beanarray[0].id".Split(","), new object[] { "E1", 2 });
                 env.UndeployModuleContaining("s0");
 
                 // test named window
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('window') create window MyWindow#keepall as (bean SupportBean, beanarray SupportBean_S0[])", path)
+                env.CompileDeploy(
+                        "@name('window') @public create window MyWindow#keepall as (bean SupportBean, beanarray SupportBean_S0[])",
+                        path)
                     .AddListener("window");
-                var stmtWindowType = env.Statement("window").EventType;
-                Assert.AreEqual(
-                    new EventPropertyDescriptor("bean", typeof(SupportBean), null, false, false, false, false, true),
-                    stmtWindowType.GetPropertyDescriptor("bean"));
-                Assert.AreEqual(
-                    new EventPropertyDescriptor("beanarray", typeof(SupportBean_S0[]), typeof(SupportBean_S0), false, false, true, false, true),
-                    stmtWindowType.GetPropertyDescriptor("beanarray"));
+                env.AssertStatement(
+                    "window",
+                    statement => {
+                        var stmtWindowType = statement.EventType;
+                        AssertPropEquals(
+                            new SupportEventPropDesc("bean", typeof(SupportBean)).WithFragment(),
+                            stmtWindowType.GetPropertyDescriptor("bean"));
+                        AssertPropEquals(
+                            new SupportEventPropDesc("beanarray", typeof(SupportBean_S0[])).WithIndexed()
+                                .WithFragment(),
+                            stmtWindowType.GetPropertyDescriptor("beanarray"));
+                    });
 
-                env.CompileDeploy("@Name('windowInsertOne') insert into MyWindow select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent", path);
+                env.CompileDeploy(
+                    "@name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent",
+                    path);
                 env.SendEventBean(theEvent);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("window").AssertOneGetNewAndReset(),
-                    "bean.TheString,beanarray[0].Id".SplitCsv(),
-                    new object[] {"E1", 2});
+                env.AssertPropsNew("window", "bean.theString,beanarray[0].id".Split(","), new object[] { "E1", 2 });
                 env.UndeployModuleContaining("windowInsertOne");
 
                 // insert pattern to named window
                 env.CompileDeploy(
-                    "@Name('windowInsertOne') insert into MyWindow select sb as bean, S0Arr as beanarray from pattern [sb=SupportBean -> S0Arr=SupportBean_S0 until SupportBean_S0(Id=0)]",
+                    "@name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from pattern [sb=SupportBean -> s0Arr=SupportBean_S0 until SupportBean_S0(id=0)]",
                     path);
                 env.SendEventBean(new SupportBean("E2", 2));
                 env.SendEventBean(new SupportBean_S0(10, "S0_1"));
                 env.SendEventBean(new SupportBean_S0(20, "S0_2"));
                 env.SendEventBean(new SupportBean_S0(0, "S0_3"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("window").AssertOneGetNewAndReset(),
-                    "bean.TheString,beanarray[0].Id,beanarray[1].Id".SplitCsv(),
-                    new object[] {"E2", 10, 20});
+                env.AssertPropsNew(
+                    "window",
+                    "bean.theString,beanarray[0].id,beanarray[1].id".Split(","),
+                    new object[] { "E2", 10, 20 });
                 env.UndeployModuleContaining("windowInsertOne");
 
                 // test configured Map type
-                env.CompileDeploy("@Name('s0') insert into MyConfiguredMap select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent")
+                env.CompileDeploy(
+                        "@name('s0') insert into MyConfiguredMap select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent")
                     .AddListener("s0");
                 env.SendEventBean(theEvent);
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "bean.TheString,beanarray[0].Id".SplitCsv(), new object[] {"E1", 2});
+                env.AssertPropsNew("s0", "bean.theString,beanarray[0].id".Split(","), new object[] { "E1", 2 });
 
                 env.UndeployAll();
             }
         }
 
-        public class EPLOtherCreateSchemaCopyProperties : RegressionExecution
+        internal class EPLOtherCreateSchemaCopyProperties : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -410,21 +522,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var epl =
-                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedBaseOne>() +
-                    " create schema BaseOne (prop1 String, prop2 int);\n" +
-                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedBaseTwo>() +
-                    " create schema BaseTwo (prop3 long);\n" +
-                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedE1>() +
-                    " create schema E1 () copyfrom BaseOne;\n";
-                env.CompileDeployWBusPublicType(epl, path);
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedBaseOne)) +
+                    " @public @buseventtype create schema BaseOne (prop1 String, prop2 int);\n" +
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedBaseTwo)) +
+                    " @public @buseventtype create schema BaseTwo (prop3 long);\n" +
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedE1)) +
+                    " @public @buseventtype create schema E1 () copyfrom BaseOne;\n";
+                env.CompileDeploy(epl, path);
 
-                env.CompileDeploy("@Name('s0') select * from E1", path).AddListener("s0");
-                Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("s0").EventType.UnderlyingType));
-                Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("prop1"));
-                Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(env.Statement("s0").EventType.GetPropertyType("prop2")));
+                env.CompileDeploy("@name('s0') select * from E1", path).AddListener("s0");
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
+                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("prop1"));
+                        Assert.AreEqual(
+                            typeof(int?),
+                            Boxing.GetBoxedType(statement.EventType.GetPropertyType("prop2")));
+                    });
 
                 if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                    env.SendEventObjectArray(new object[] {"v1", 2}, "E1");
+                    env.SendEventObjectArray(new object[] { "v1", 2 }, "E1");
                 }
                 else if (eventRepresentationEnum.IsMapEvent()) {
                     IDictionary<string, object> @event = new LinkedHashMap<string, object>();
@@ -433,7 +551,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env.SendEventMap(@event, "E1");
                 }
                 else if (eventRepresentationEnum.IsAvroEvent()) {
-                    var @event = new GenericRecord(SchemaBuilder.Record("name", RequiredString("prop1"), RequiredInt("prop2")));
+                    var @event = new GenericRecord(
+                        SchemaBuilder.Record(
+                            "name",
+                            TypeBuilder.RequiredString("prop1"),
+                            TypeBuilder.RequiredInt("prop2")));
                     @event.Put("prop1", "v1");
                     @event.Put("prop2", 2);
                     env.SendEventAvro(@event, "E1");
@@ -448,128 +570,161 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     Assert.Fail();
                 }
 
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "prop1,prop2".SplitCsv(), new object[] {"v1", 2});
+                env.AssertPropsNew("s0", "prop1,prop2".Split(","), new object[] { "v1", 2 });
                 env.UndeployModuleContaining("s0");
 
                 // test two copy-from types
                 env.CompileDeploy(
-                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedE2>() + " create schema E2 () copyfrom BaseOne, BaseTwo",
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedE2)) +
+                    " @public create schema E2 () copyfrom BaseOne, BaseTwo",
                     path);
-                env.CompileDeploy("@Name('s0') select * from E2", path);
-                var stmtEventType = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(string), stmtEventType.GetPropertyType("prop1"));
-                Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(stmtEventType.GetPropertyType("prop2")));
-                Assert.AreEqual(typeof(long?), Boxing.GetBoxedType(stmtEventType.GetPropertyType("prop3")));
+                env.CompileDeploy("@name('s0') select * from E2", path);
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        var stmtEventType = statement.EventType;
+                        Assert.AreEqual(typeof(string), stmtEventType.GetPropertyType("prop1"));
+                        Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(stmtEventType.GetPropertyType("prop2")));
+                        Assert.AreEqual(typeof(long?), Boxing.GetBoxedType(stmtEventType.GetPropertyType("prop3")));
+                    });
                 env.UndeployModuleContaining("s0");
 
                 // test API-defined type
-                if (!eventRepresentationEnum.IsAvroEvent() || eventRepresentationEnum.IsObjectArrayEvent() || eventRepresentationEnum.IsJsonEvent()) {
-                    env.CompileDeploy("create schema MyType(a string, b string, c BaseOne, d BaseTwo[])", path);
+                if (!eventRepresentationEnum.IsAvroEvent() ||
+                    eventRepresentationEnum.IsObjectArrayEvent() ||
+                    eventRepresentationEnum.IsJsonEvent()) {
+                    env.CompileDeploy("@Public create schema MyType(a string, b string, c BaseOne, d BaseTwo[])", path);
                 }
                 else if (eventRepresentationEnum.IsJsonProvidedClassEvent()) {
                     env.CompileDeploy(
-                        "@JsonSchema(ClassName='" +
+                        "@JsonSchema(className='" +
                         typeof(MyLocalJsonProvidedMyType).FullName +
-                        "') create json schema MyType(a string, b string, c BaseOne, d BaseTwo[])",
+                        "') @public create json schema MyType(a string, b string, c BaseOne, d BaseTwo[])",
                         path);
                 }
                 else {
-                    env.CompileDeploy("create avro schema MyType(a string, b string, c BaseOne, d BaseTwo[])", path);
+                    env.CompileDeploy(
+                        "@Public create avro schema MyType(a string, b string, c BaseOne, d BaseTwo[])",
+                        path);
                 }
 
                 env.CompileDeploy(
-                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedE3>() +
-                    " create schema E3(e long, f BaseOne) copyfrom MyType",
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedE3)) +
+                    " @public create schema E3(e long, f BaseOne) copyfrom MyType",
                     path);
-                env.CompileDeploy("@Name('s0') select * from E3", path);
-                var stmtThree = env.Statement("s0");
-                Assert.AreEqual(typeof(string), stmtThree.EventType.GetPropertyType("a"));
-                Assert.AreEqual(typeof(string), stmtThree.EventType.GetPropertyType("b"));
-                if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                    Assert.AreEqual(typeof(object[]), stmtThree.EventType.GetPropertyType("c"));
-                    Assert.AreEqual(typeof(object[][]), stmtThree.EventType.GetPropertyType("d"));
-                    Assert.AreEqual(typeof(object[]), stmtThree.EventType.GetPropertyType("f"));
-                }
-                else if (eventRepresentationEnum.IsMapEvent()) {
-                    Assert.AreEqual(typeof(IDictionary<string, object>), stmtThree.EventType.GetPropertyType("c"));
-                    Assert.AreEqual(typeof(IDictionary<string, object>[]), stmtThree.EventType.GetPropertyType("d"));
-                    Assert.AreEqual(typeof(IDictionary<string, object>), stmtThree.EventType.GetPropertyType("f"));
-                }
-                else if (eventRepresentationEnum.IsAvroEvent()) {
-                    Assert.AreEqual(typeof(GenericRecord), stmtThree.EventType.GetPropertyType("c"));
-                    Assert.AreEqual(typeof(GenericRecord[]), stmtThree.EventType.GetPropertyType("d"));
-                    Assert.AreEqual(typeof(GenericRecord), stmtThree.EventType.GetPropertyType("f"));
-                }
-                else if (eventRepresentationEnum.IsJsonEvent()) {
-                    Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(stmtThree.EventType.GetPropertyType("c"), typeof(JsonEventObject)));
-                    Assert.IsTrue(
-                        TypeHelper.IsSubclassOrImplementsInterface(stmtThree.EventType.GetPropertyType("d").GetElementType(), typeof(JsonEventObject)));
-                    Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(stmtThree.EventType.GetPropertyType("f"), typeof(JsonEventObject)));
-                }
-                else if (eventRepresentationEnum.IsJsonProvidedClassEvent()) {
-                    Assert.AreEqual(typeof(MyLocalJsonProvidedBaseOne), stmtThree.EventType.GetPropertyType("c"));
-                    Assert.AreEqual(typeof(MyLocalJsonProvidedBaseTwo[]), stmtThree.EventType.GetPropertyType("d"));
-                    Assert.AreEqual(typeof(MyLocalJsonProvidedBaseOne), stmtThree.EventType.GetPropertyType("f"));
-                }
-                else {
-                    Assert.Fail();
-                }
+                env.CompileDeploy("@name('s0') select * from E3", path);
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a"));
+                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("b"));
+                        if (eventRepresentationEnum.IsObjectArrayEvent()) {
+                            Assert.AreEqual(typeof(object[]), statement.EventType.GetPropertyType("c"));
+                            Assert.AreEqual(typeof(object[][]), statement.EventType.GetPropertyType("d"));
+                            Assert.AreEqual(typeof(object[]), statement.EventType.GetPropertyType("f"));
+                        }
+                        else if (eventRepresentationEnum.IsMapEvent()) {
+                            Assert.AreEqual(
+                                typeof(IDictionary<string, object>),
+                                statement.EventType.GetPropertyType("c"));
+                            Assert.AreEqual(
+                                typeof(IDictionary<string, object>[]),
+                                statement.EventType.GetPropertyType("d"));
+                            Assert.AreEqual(
+                                typeof(IDictionary<string, object>),
+                                statement.EventType.GetPropertyType("f"));
+                        }
+                        else if (eventRepresentationEnum.IsAvroEvent()) {
+                            Assert.AreEqual(typeof(GenericRecord), statement.EventType.GetPropertyType("c"));
+                            Assert.AreEqual(typeof(ICollection<object>), statement.EventType.GetPropertyType("d"));
+                            Assert.AreEqual(typeof(GenericRecord), statement.EventType.GetPropertyType("f"));
+                        }
+                        else if (eventRepresentationEnum.IsJsonEvent()) {
+                            Assert.IsTrue(
+                                TypeHelper.IsSubclassOrImplementsInterface(
+                                    statement.EventType.GetPropertyType("c"),
+                                    typeof(JsonEventObject)));
+                            Assert.IsTrue(
+                                TypeHelper.IsSubclassOrImplementsInterface(
+                                    statement.EventType.GetPropertyType("d").GetElementType(),
+                                    typeof(JsonEventObject)));
+                            Assert.IsTrue(
+                                TypeHelper.IsSubclassOrImplementsInterface(
+                                    statement.EventType.GetPropertyType("f"),
+                                    typeof(JsonEventObject)));
+                        }
+                        else if (eventRepresentationEnum.IsJsonProvidedClassEvent()) {
+                            Assert.AreEqual(
+                                typeof(MyLocalJsonProvidedBaseOne),
+                                statement.EventType.GetPropertyType("c"));
+                            Assert.AreEqual(
+                                typeof(MyLocalJsonProvidedBaseTwo[]),
+                                statement.EventType.GetPropertyType("d"));
+                            Assert.AreEqual(
+                                typeof(MyLocalJsonProvidedBaseOne),
+                                statement.EventType.GetPropertyType("f"));
+                        }
+                        else {
+                            Assert.Fail();
+                        }
 
-                Assert.AreEqual(typeof(long?), Boxing.GetBoxedType(stmtThree.EventType.GetPropertyType("e")));
+                        Assert.AreEqual(typeof(long?), Boxing.GetBoxedType(statement.EventType.GetPropertyType("e")));
+                    });
 
                 // invalid tests
-                var prefix = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedDummy>();
-                TryInvalidCompile(
-                    env,
+                var prefix = eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedDummy));
+                env.TryInvalidCompile(
                     path,
                     prefix + " create schema E4(a long) copyFrom MyType",
                     "Duplicate column name 'a' [");
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     path,
                     prefix + " create schema E4(c BaseTwo) copyFrom MyType",
                     "Duplicate column name 'c' [");
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     path,
                     prefix + " create schema E4(c BaseTwo) copyFrom XYZ",
                     "Type by name 'XYZ' could not be located [");
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     path,
-                    prefix + " create schema E4 as " + typeof(SupportBean).FullName + " copyFrom XYZ",
+                    prefix + " create schema E4 as " + typeof(SupportBean).Name + " copyFrom XYZ",
                     "Copy-from types are not allowed with class-provided types [");
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     path,
                     prefix + " create variant schema E4(c BaseTwo) copyFrom XYZ",
                     "Copy-from types are not allowed with variant types [");
 
                 // test SODA
-                prefix = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedE2>();
+                prefix = eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedE2));
                 var createEPL = prefix + " create schema EX as () copyFrom BaseOne, BaseTwo";
                 env.EplToModelCompileDeploy(createEPL, path).UndeployAll();
             }
         }
 
-        public class EPLOtherCreateSchemaConfiguredNotRemoved : RegressionExecution
+        internal class EPLOtherCreateSchemaConfiguredNotRemoved : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('s1') create schema ABCType(col1 int, col2 int)", path);
+                env.CompileDeploy("@name('s1') @public create schema ABCType(col1 int, col2 int)", path);
                 var deploymentIdS1 = env.DeploymentId("s1");
                 Assert.IsNotNull(env.Runtime.EventTypeService.GetEventType(deploymentIdS1, "ABCType"));
                 env.UndeployAll();
+
                 Assert.IsNull(env.Runtime.EventTypeService.GetEventType(deploymentIdS1, "ABCType"));
 
                 AssertTypeExistsPreconfigured(env, "SupportBean");
                 AssertTypeExistsPreconfigured(env, "MapTypeEmpty");
                 AssertTypeExistsPreconfigured(env, "TestXMLNoSchemaType");
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
         }
 
-        public class EPLOtherCreateSchemaInvalid : RegressionExecution
+        internal class EPLOtherCreateSchemaInvalid : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -577,8 +732,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     TryAssertionInvalid(env, rep);
                 }
 
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "create objectarray schema A();\n" +
                     "create objectarray schema B();\n" +
                     "create objectarray schema InvalidOA () inherits A, B;\n",
@@ -590,52 +744,50 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 EventRepresentationChoice eventRepresentationEnum)
             {
                 var expectedOne = !eventRepresentationEnum.IsAvroEvent()
-                    ? "Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected Type or Dictionary or the name of a previously-declared event type ["
+                    ? "Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected System.Type or System.Collections.Generic.IDictionary or the name of a previously-declared event type ["
                     : "Type definition encountered an unexpected property type name 'xxxx' for property 'col1', expected the name of a previously-declared Avro type";
-                var prefix = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedDummy>();
-                TryInvalidCompile(env, $"{prefix} create schema MyEventType as (col1 xxxx)", expectedOne);
+                var prefix = eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedDummy));
+                env.TryInvalidCompile(prefix + " create schema MyEventType as (col1 xxxx)", expectedOne);
 
-                TryInvalidCompile(
-                    env,
-                    $"{prefix} create schema MyEventType as (col1 int, col1 string)",
+                env.TryInvalidCompile(
+                    prefix + " create schema MyEventType as (col1 int, col1 string)",
                     "Duplicate column name 'col1' [");
 
                 var path = new RegressionPath();
-                env.CompileDeploy($"{prefix} create schema MyEventType as (col1 string)", path);
+                env.CompileDeploy(prefix + " @public create schema MyEventType as (col1 string)", path);
                 var expectedTwo = "Event type named 'MyEventType' has already been declared";
-                TryInvalidCompile(env, path, "create schema MyEventType as (col1 string, col2 string)", expectedTwo);
+                env.TryInvalidCompile(path, "create schema MyEventType as (col1 string, col2 string)", expectedTwo);
 
-                TryInvalidCompile(
-                    env,
-                    $"{prefix} create schema MyEventTypeT1 as () inherit ABC",
+                env.TryInvalidCompile(
+                    prefix + " create schema MyEventTypeT1 as () inherit ABC",
                     "Expected 'inherits', 'starttimestamp', 'endtimestamp' or 'copyfrom' keyword after create-schema clause but encountered 'inherit' [");
 
-                TryInvalidCompile(
-                    env,
-                    $"{prefix} create schema MyEventTypeT2 as () inherits ABC",
+                env.TryInvalidCompile(
+                    prefix + " create schema MyEventTypeT2 as () inherits ABC",
                     "Supertype by name 'ABC' could not be found [");
 
-                TryInvalidCompile(
-                    env,
-                    $"{prefix} create schema MyEventTypeT3 as () inherits",
-                    "Incorrect syntax near end-of-input expecting an identifier but found EOF at line 1 column ");
+                env.TryInvalidCompile(
+                    prefix + " create schema MyEventTypeT3 as () inherits",
+                    "Incorrect syntax near end-of-input expecting an identifier but found end-of-input at line 1 column ");
 
                 env.UndeployAll();
             }
         }
 
-        public class EPLOtherCreateSchemaAvroSchemaWAnnotation : RegressionExecution
+        internal class EPLOtherCreateSchemaAvroSchemaWAnnotation : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var schema = SchemaBuilder.Union(IntType(), StringType());
-                var epl = $"@AvroSchemaField(Name='carId',Schema='{schema}') create avro schema MyEvent(carId object)";
+                Schema schema = SchemaBuilder.Union(TypeBuilder.IntType(), TypeBuilder.StringType());
+                var epl = "@AvroSchemaField(name='carId',schema='" +
+                          schema.ToString() +
+                          "') create avro schema MyEvent(carId object)";
                 env.CompileDeploy(epl);
                 env.UndeployAll();
             }
         }
 
-        public class EPLOtherCreateSchemaColDefPlain : RegressionExecution
+        internal class EPLOtherCreateSchemaColDefPlain : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -645,59 +797,72 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test property classname, either simple or fully-qualified.
                 var path = new RegressionPath();
-                env.CompileDeploy("@Name('create') create schema MySchema (f1 TimeSpan, f2 System.Drawing.PointF, f3 EventHandler, f4 null)", path);
+                env.CompileDeploy(
+                    "@name('create') create schema MySchema (f1 TimeSpan, f2 System.Drawing.PointF, f3 EventHandler, f4 null)",
+                    path);
 
-                var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("create"), "MySchema");
-                Assert.AreEqual(typeof(TimeSpan?), eventType.GetPropertyType("f1"));
-                Assert.AreEqual(typeof(PointF?), eventType.GetPropertyType("f2"));
-                Assert.AreEqual(typeof(EventHandler), eventType.GetPropertyType("f3"));
-                Assert.AreEqual(null, eventType.GetPropertyType("f4"));
+                env.AssertStatement(
+                    "create",
+                    statement => {
+                        var eventType = statement.EventType;
+                        Assert.AreEqual(typeof(TimeSpan?), eventType.GetPropertyType("f1"));
+                        Assert.AreEqual(typeof(PointF?), eventType.GetPropertyType("f2"));
+                        Assert.AreEqual(typeof(EventHandler), eventType.GetPropertyType("f3"));
+                        Assert.AreEqual(null, eventType.GetPropertyType("f4"));
+                    });
 
                 env.UndeployAll();
             }
         }
 
-        public class EPLOtherCreateSchemaModelPONO : RegressionExecution
+        internal class EPLOtherCreateSchemaModelPONO : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var schema = "@Name('c1') create schema SupportBeanOne as " +
-                             typeof(SupportBean_ST0).FullName +
+                var schema = "@name('c1') @public @buseventtype create schema SupportBeanOne as " +
+                             typeof(SupportBean_ST0).Name +
                              ";\n" +
-                             "@Name('c2') create schema SupportBeanTwo as " +
-                             typeof(SupportBean_ST0).FullName +
+                             "@name('c2') @public @buseventtype create schema SupportBeanTwo as " +
+                             typeof(SupportBean_ST0).Name +
                              ";\n";
-                env.CompileDeployWBusPublicType(schema, path);
+                env.CompileDeploy(schema, path);
 
-                Assert.AreEqual(typeof(SupportBean_ST0), env.Statement("c1").EventType.UnderlyingType);
-                Assert.AreEqual(typeof(SupportBean_ST0), env.Statement("c2").EventType.UnderlyingType);
+                env.AssertStatement(
+                    "c1",
+                    statement => Assert.AreEqual(typeof(SupportBean_ST0), statement.EventType.UnderlyingType));
+                env.AssertStatement(
+                    "c2",
+                    statement => Assert.AreEqual(typeof(SupportBean_ST0), statement.EventType.UnderlyingType));
 
-                env.CompileDeploy("@Name('s0') select * from SupportBeanOne", path).AddListener("s0");
-                Assert.AreEqual(typeof(SupportBean_ST0), env.Statement("s0").EventType.UnderlyingType);
+                env.CompileDeploy("@name('s0') select * from SupportBeanOne", path).AddListener("s0");
+                env.AssertStatement(
+                    "s0",
+                    statement => Assert.AreEqual(typeof(SupportBean_ST0), statement.EventType.UnderlyingType));
 
-                env.CompileDeploy("@Name('s1') select * from SupportBeanTwo", path).AddListener("s1");
-                Assert.AreEqual(typeof(SupportBean_ST0), env.Statement("s1").EventType.UnderlyingType);
+                env.CompileDeploy("@name('s1') select * from SupportBeanTwo", path).AddListener("s1");
+                env.AssertStatement(
+                    "s1",
+                    statement => Assert.AreEqual(typeof(SupportBean_ST0), statement.EventType.UnderlyingType));
 
                 env.SendEventBean(new SupportBean_ST0("E1", 2), "SupportBeanOne");
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "Id,P00".SplitCsv(), new object[] {"E1", 2});
-                Assert.IsFalse(env.Listener("s1").IsInvoked);
+                env.AssertPropsNew("s0", "id,p00".Split(","), new object[] { "E1", 2 });
+                env.AssertListenerNotInvoked("s1");
 
                 env.SendEventBean(new SupportBean_ST0("E2", 3), "SupportBeanTwo");
-                EPAssertionUtil.AssertProps(env.Listener("s1").AssertOneGetNewAndReset(), "Id,P00".SplitCsv(), new object[] {"E2", 3});
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+                env.AssertPropsNew("s1", "id,p00".Split(","), new object[] { "E2", 3 });
+                env.AssertListenerNotInvoked("s0");
 
                 // assert type information
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(EventTypeTypeClass.STREAM, type.Metadata.TypeClass);
+                env.AssertStatement(
+                    "s0",
+                    statement => Assert.AreEqual(EventTypeTypeClass.STREAM, statement.EventType.Metadata.TypeClass));
 
                 // test keyword
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "create schema MySchemaInvalid as com.mycompany.event.ABC",
                     "Could not load class by name 'com.mycompany.event.ABC', please check imports");
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "create schema MySchemaInvalid as com.mycompany.events.ABC",
                     "Could not load class by name 'com.mycompany.events.ABC', please check imports");
 
@@ -705,7 +870,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             }
         }
 
-        public class EPLOtherCreateSchemaNestableMapArray : RegressionExecution
+        internal class EPLOtherCreateSchemaNestableMapArray : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
@@ -715,78 +880,109 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             }
         }
 
-        public class EPLOtherCreateSchemaInherit : RegressionExecution
+        internal class EPLOtherCreateSchemaInherit : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema MyParentType as (col1 int, col2 string)", path);
-                env.CompileDeploy("@Name('child') create schema MyChildTypeOne (col3 int) inherits MyParentType", path);
+                env.CompileDeploy("@Public create schema MyParentType as (col1 int, col2 string)", path);
+                env.CompileDeploy(
+                    "@name('child') @public create schema MyChildTypeOne (col3 int) inherits MyParentType",
+                    path);
 
-                var childType = env.Statement("child").EventType;
-                Assert.AreEqual(typeof(int?), childType.GetPropertyType("col1"));
-                Assert.AreEqual(typeof(string), childType.GetPropertyType("col2"));
-                Assert.AreEqual(typeof(int?), childType.GetPropertyType("col3"));
+                env.AssertStatement(
+                    "child",
+                    statement => {
+                        var childType = statement.EventType;
+                        Assert.AreEqual(typeof(int?), childType.GetPropertyType("col1"));
+                        Assert.AreEqual(typeof(string), childType.GetPropertyType("col2"));
+                        Assert.AreEqual(typeof(int?), childType.GetPropertyType("col3"));
+                    });
 
-                env.CompileDeploy("create schema MyChildTypeTwo as (col4 boolean)", path);
-                var createText = "@Name('childchild') create schema MyChildChildType as (col5 short, col6 long) inherits MyChildTypeOne, MyChildTypeTwo";
+                env.CompileDeploy("@Public create schema MyChildTypeTwo as (col4 boolean)", path);
+                var createText =
+                    "@name('childchild') @public create schema MyChildChildType as (col5 short, col6 long) inherits MyChildTypeOne, MyChildTypeTwo";
                 var model = env.EplToModel(createText);
                 Assert.AreEqual(createText, model.ToEPL());
                 env.CompileDeploy(model, path);
-                var stmtChildChildType = env.Statement("childchild").EventType;
-                Assert.AreEqual(typeof(bool?), stmtChildChildType.GetPropertyType("col4"));
-                Assert.AreEqual(typeof(int?), stmtChildChildType.GetPropertyType("col3"));
-                Assert.AreEqual(typeof(short?), stmtChildChildType.GetPropertyType("col5"));
+                env.AssertStatement(
+                    "childchild",
+                    statement => {
+                        var stmtChildChildType = statement.EventType;
+                        Assert.AreEqual(typeof(bool?), stmtChildChildType.GetPropertyType("col4"));
+                        Assert.AreEqual(typeof(int?), stmtChildChildType.GetPropertyType("col3"));
+                        Assert.AreEqual(typeof(short?), stmtChildChildType.GetPropertyType("col5"));
+                    });
 
-                env.CompileDeploy("@Name('cc2') create schema MyChildChildTypeTwo () inherits MyChildTypeOne, MyChildTypeTwo", path);
-                var eventTypeCC2 = env.Statement("cc2").EventType;
-                Assert.AreEqual(typeof(bool?), eventTypeCC2.GetPropertyType("col4"));
-                Assert.AreEqual(typeof(int?), eventTypeCC2.GetPropertyType("col3"));
+                env.CompileDeploy(
+                    "@name('cc2') create schema MyChildChildTypeTwo () inherits MyChildTypeOne, MyChildTypeTwo",
+                    path);
+                env.AssertStatement(
+                    "cc2",
+                    statement => {
+                        var eventTypeCC2 = statement.EventType;
+                        Assert.AreEqual(typeof(bool?), eventTypeCC2.GetPropertyType("col4"));
+                        Assert.AreEqual(typeof(int?), eventTypeCC2.GetPropertyType("col3"));
+                    });
 
                 env.UndeployAll();
             }
         }
 
-        public class EPLOtherCreateSchemaVariantType : RegressionExecution
+        internal class EPLOtherCreateSchemaVariantType : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "create schema MyTypeZero as (col1 int, col2 string);\n" +
-                          "create schema MyTypeOne as (col1 int, col3 string, col4 int);\n" +
-                          "create schema MyTypeTwo as (col1 int, col4 boolean, col5 short)";
+                var epl = "@Public create schema MyTypeZero as (col1 int, col2 string);\n" +
+                          "@Public create schema MyTypeOne as (col1 int, col3 string, col4 int);\n" +
+                          "@Public create schema MyTypeTwo as (col1 int, col4 boolean, col5 short)";
                 env.CompileDeploy(epl, path);
 
                 // try predefined
-                env.CompileDeploy("@Name('predef') create variant schema MyVariantPredef as MyTypeZero, MyTypeOne", path);
-                var variantTypePredef = env.Statement("predef").EventType;
-                Assert.AreEqual(typeof(int?), variantTypePredef.GetPropertyType("col1"));
-                Assert.AreEqual(1, variantTypePredef.PropertyDescriptors.Count);
+                env.CompileDeploy(
+                    "@name('predef') @public create variant schema MyVariantPredef as MyTypeZero, MyTypeOne",
+                    path);
+                env.AssertStatement(
+                    "predef",
+                    statement => {
+                        var variantTypePredef = statement.EventType;
+                        Assert.AreEqual(typeof(int?), variantTypePredef.GetPropertyType("col1"));
+                        Assert.AreEqual(1, variantTypePredef.PropertyDescriptors.Count);
+                    });
 
-                env.CompileDeploy("insert into MyVariantPredef select * from MyTypeZero", path);
-                env.CompileDeploy("insert into MyVariantPredef select * from MyTypeOne", path);
-                TryInvalidCompile(
-                    env,
+                env.CompileDeploy("@Public insert into MyVariantPredef select * from MyTypeZero", path);
+                env.CompileDeploy("@Public insert into MyVariantPredef select * from MyTypeOne", path);
+                env.TryInvalidCompile(
                     path,
                     "insert into MyVariantPredef select * from MyTypeTwo",
                     "Selected event type is not a valid event type of the variant stream 'MyVariantPredef' [insert into MyVariantPredef select * from MyTypeTwo]");
 
                 // try predefined with any
-                var createText = "@Name('predef_any') create variant schema MyVariantAnyModel as MyTypeZero, MyTypeOne, *";
+                var createText =
+                    "@name('predef_any') @public create variant schema MyVariantAnyModel as MyTypeZero, MyTypeOne, *";
                 var model = env.EplToModel(createText);
                 Assert.AreEqual(createText, model.ToEPL());
                 env.CompileDeploy(model, path);
-                var predefAnyType = env.Statement("predef_any").EventType;
-                Assert.AreEqual(4, predefAnyType.PropertyDescriptors.Count);
-                Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col1"));
-                Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col2"));
-                Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col3"));
-                Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col4"));
+                env.AssertStatement(
+                    "predef_any",
+                    statement => {
+                        var predefAnyType = statement.EventType;
+                        Assert.AreEqual(4, predefAnyType.PropertyDescriptors.Count);
+                        Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col1"));
+                        Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col2"));
+                        Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col3"));
+                        Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col4"));
+                    });
 
                 // try "any"
-                env.CompileDeploy("@Name('any') create variant schema MyVariantAny as *", path);
-                var variantTypeAny = env.Statement("any").EventType;
-                Assert.AreEqual(0, variantTypeAny.PropertyDescriptors.Count);
+                env.CompileDeploy("@name('any') @public create variant schema MyVariantAny as *", path);
+                env.AssertStatement(
+                    "any",
+                    statement => {
+                        var variantTypeAny = statement.EventType;
+                        Assert.AreEqual(0, variantTypeAny.PropertyDescriptors.Count);
+                    });
 
                 env.CompileDeploy("insert into MyVariantAny select * from MyTypeZero", path);
                 env.CompileDeploy("insert into MyVariantAny select * from MyTypeOne", path);
@@ -802,45 +998,57 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@Name('create') " +
-                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEventTypeCol1To4>() +
-                " create schema MyEventType as (col1 string, col2 int, col3col4 int)",
+                "@name('create') " +
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedMyEventTypeCol1To4)) +
+                " @public create schema MyEventType as (col1 string, col2 int, col3col4 int)",
                 path);
-            AssertTypeColDef(env.Statement("create").EventType);
+            env.AssertStatement("create", statement => AssertTypeColDef(statement.EventType));
             env.CompileDeploy(
-                "@Name('select') " +
-                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEventTypeCol1To4>() +
+                "@name('select') " +
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedMyEventTypeCol1To4)) +
                 " select * from MyEventType",
                 path);
-            AssertTypeColDef(env.Statement("select").EventType);
+            env.AssertStatement("select", statement => AssertTypeColDef(statement.EventType));
             env.UndeployAll();
 
             // destroy and create differently
             env.CompileDeploy(
-                "@Name('create') " +
-                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEventTypCol34>() +
-                " create schema MyEventType as (col3 string, col4 int)");
-            Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(env.Statement("create").EventType.GetPropertyType("col4")));
-            Assert.AreEqual(2, env.Statement("create").EventType.PropertyDescriptors.Count);
+                "@name('create') " +
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedMyEventTypCol34)) +
+                " @public create schema MyEventType as (col3 string, col4 int)");
+            env.AssertStatement(
+                "create",
+                statement => {
+                    Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(statement.EventType.GetPropertyType("col4")));
+                    Assert.AreEqual(2, statement.EventType.PropertyDescriptors.Count);
+                });
             env.UndeployAll();
 
             // destroy and create differently
             path.Clear();
-            var schemaEPL = "@Name('create') " +
-                            eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEventTypCol56>() +
-                            " create schema MyEventType as (col5 string, col6 int)";
-            env.CompileDeployWBusPublicType(schemaEPL, path);
+            var schemaEPL = "@name('create') " +
+                            eventRepresentationEnum.GetAnnotationTextWJsonProvided(
+                                typeof(MyLocalJsonProvidedMyEventTypCol56)) +
+                            " @public @buseventtype create schema MyEventType as (col5 string, col6 int)";
+            env.CompileDeploy(schemaEPL, path);
 
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("create").EventType.UnderlyingType));
-            Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(env.Statement("create").EventType.GetPropertyType("col6")));
-            Assert.AreEqual(2, env.Statement("create").EventType.PropertyDescriptors.Count);
+            env.AssertStatement(
+                "create",
+                statement => {
+                    Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
+                    Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(statement.EventType.GetPropertyType("col6")));
+                    Assert.AreEqual(2, statement.EventType.PropertyDescriptors.Count);
+                });
+
             env.CompileDeploy(
-                    "@Name('select') " +
-                    eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEventTypCol56>() +
+                    "@name('select') " +
+                    eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedMyEventTypCol56)) +
                     " select * from MyEventType",
                     path)
                 .AddListener("select");
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("select").EventType.UnderlyingType));
+            env.AssertStatement(
+                "select",
+                statement => Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
 
             // send event
             if (eventRepresentationEnum.IsMapEvent()) {
@@ -850,12 +1058,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventMap(data, "MyEventType");
             }
             else if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                env.SendEventObjectArray(new object[] {"abc", 1}, "MyEventType");
+                env.SendEventObjectArray(new object[] { "abc", 1 }, "MyEventType");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
-                var avroType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("create"), "MyEventType");
-                var schema = AvroSchemaUtil.ResolveAvroSchema(avroType).AsRecordSchema();
-                var @event = new GenericRecord(schema);
+                var schema = env.RuntimeAvroSchemaByDeployment("create", "MyEventType");
+                var @event = new GenericRecord(schema.AsRecordSchema());
                 @event.Put("col5", "abc");
                 @event.Put("col6", 1);
                 env.SendEventAvro(@event, "MyEventType");
@@ -870,24 +1077,37 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.Fail();
             }
 
-            EPAssertionUtil.AssertProps(env.Listener("select").AssertOneGetNewAndReset(), "col5,col6".SplitCsv(), new object[] {"abc", 1});
+            env.AssertPropsNew("select", "col5,col6".Split(","), new object[] { "abc", 1 });
 
             // assert type information
-            var type = env.Statement("select").EventType;
-            Assert.AreEqual(EventTypeTypeClass.STREAM, type.Metadata.TypeClass);
-            Assert.AreEqual(type.Name, type.Metadata.Name);
+            env.AssertStatement(
+                "select",
+                statement => {
+                    var type = statement.EventType;
+                    Assert.AreEqual(EventTypeTypeClass.STREAM, type.Metadata.TypeClass);
+                    Assert.AreEqual(type.Name, type.Metadata.Name);
+                });
 
             // test non-enum create-schema
-            var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEventTypeTwo>() +
-                      " @name('c2') create schema MyEventTypeTwo as (col1 string, col2 int, col3col4 int)";
+            var epl =
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedMyEventTypeTwo)) +
+                " @name('c2') create schema MyEventTypeTwo as (col1 string, col2 int, col3col4 int)";
             env.CompileDeploy(epl);
-            AssertTypeColDef(env.Statement("c2").EventType);
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("c2").EventType.UnderlyingType));
+            env.AssertStatement(
+                "c2",
+                statement => {
+                    AssertTypeColDef(env.Statement("c2").EventType);
+                    Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
+                });
             env.UndeployModuleContaining("c2");
 
             env.EplToModelCompileDeploy(epl);
-            AssertTypeColDef(env.Statement("c2").EventType);
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("c2").EventType.UnderlyingType));
+            env.AssertStatement(
+                "c2",
+                statement => {
+                    AssertTypeColDef(statement.EventType);
+                    Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
+                });
 
             env.UndeployAll();
         }
@@ -898,55 +1118,73 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var path = new RegressionPath();
             var schema =
-                "@Name('innerType') " + eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNestableArray>() + " create schema MyInnerType as (inn1 string[], inn2 int[]);\n" +
-                "@Name('outerType') " + eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNestableOuter>() + " create schema MyOuterType as (col1 MyInnerType, col2 MyInnerType[]);\n";
-            env.CompileDeployWBusPublicType(schema, path);
+                "@name('innerType') " +
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedNestableArray)) +
+                " @public create schema MyInnerType as (inn1 string[], inn2 int[]);\n" +
+                "@name('outerType') " +
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedNestableOuter)) +
+                " @public @buseventtype create schema MyOuterType as (col1 MyInnerType, col2 MyInnerType[]);\n";
+            env.CompileDeploy(schema, path);
 
-            var innerType = env.Statement("innerType").EventType;
-            Assert.AreEqual(typeof(string[]), innerType.GetPropertyType("inn1"));
-            Assert.IsTrue(innerType.GetPropertyDescriptor("inn1").IsIndexed);
-            Assert.AreEqual(typeof(int?[]), innerType.GetPropertyType("inn2"));
-            Assert.IsTrue(innerType.GetPropertyDescriptor("inn2").IsIndexed);
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(innerType.UnderlyingType));
+            env.AssertStatement(
+                "innerType",
+                statement => {
+                    var innerType = statement.EventType;
+                    Assert.AreEqual(
+                        eventRepresentationEnum.IsAvroEvent() ? typeof(ICollection<object>) : typeof(string[]),
+                        innerType.GetPropertyType("inn1"));
+                    Assert.IsTrue(innerType.GetPropertyDescriptor("inn1").IsIndexed);
+                    Assert.AreEqual(
+                        eventRepresentationEnum.IsAvroEvent() ? typeof(ICollection<object>) : typeof(int?[]),
+                        innerType.GetPropertyType("inn2"));
+                    Assert.IsTrue(innerType.GetPropertyDescriptor("inn2").IsIndexed);
+                    Assert.IsTrue(eventRepresentationEnum.MatchesClass(innerType.UnderlyingType));
+                });
+            env.AssertStatement(
+                "outerType",
+                statement => {
+                    var type = statement.EventType.GetFragmentType("col1");
+                    Assert.IsFalse(type.IsIndexed);
+                    Assert.AreEqual(false, type.IsNative);
+                    type = statement.EventType.GetFragmentType("col2");
+                    Assert.IsTrue(type.IsIndexed);
+                    Assert.AreEqual(false, type.IsNative);
+                });
 
-            var outerType = env.Statement("outerType").EventType;
-            var type = outerType.GetFragmentType("col1");
-            Assert.IsFalse(type.IsIndexed);
-            Assert.AreEqual(false, type.IsNative);
-            type = outerType.GetFragmentType("col2");
-            Assert.IsTrue(type.IsIndexed);
-            Assert.AreEqual(false, type.IsNative);
-
-            env.CompileDeploy("@Name('s0') select * from MyOuterType", path).AddListener("s0");
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(env.Statement("s0").EventType.UnderlyingType));
+            env.CompileDeploy("@name('s0') select * from MyOuterType", path).AddListener("s0");
+            env.AssertStatement(
+                "s0",
+                statement => Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
 
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                var innerData = new object[] {"abc,def".SplitCsv(), new[] {1, 2}};
-                var outerData = new object[] {innerData, new object[] {innerData, innerData}};
+                var innerData = new object[] { "abc,def".Split(","), new int[] { 1, 2 } };
+                var outerData = new object[] { innerData, new object[] { innerData, innerData } };
                 env.SendEventObjectArray(outerData, "MyOuterType");
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
-                var innerData = new Dictionary<string, object>();
-                innerData.Put("inn1", "abc,def".SplitCsv());
-                innerData.Put("inn2", new[] {1, 2});
-                var outerData = new Dictionary<string, object>();
+                IDictionary<string, object> innerData = new Dictionary<string, object>();
+                innerData.Put("inn1", "abc,def".Split(","));
+                innerData.Put("inn2", new int[] { 1, 2 });
+                IDictionary<string, object> outerData = new Dictionary<string, object>();
                 outerData.Put("col1", innerData);
-                outerData.Put("col2", new[] {innerData, innerData});
+                outerData.Put("col2", new IDictionary<string, object>[] { innerData, innerData });
                 env.SendEventMap(outerData, "MyOuterType");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
-                var innerData = new GenericRecord(SupportAvroUtil.GetAvroSchema(innerType).AsRecordSchema());
+                var innerSchema = env.RuntimeAvroSchemaByDeployment("innerType", "MyInnerType");
+                var outerSchema = env.RuntimeAvroSchemaByDeployment("outerType", "MyOuterType");
+                var innerData = new GenericRecord(innerSchema.AsRecordSchema());
                 innerData.Put("inn1", Arrays.AsList("abc", "def"));
                 innerData.Put("inn2", Arrays.AsList(1, 2));
-                var outerData = new GenericRecord(SupportAvroUtil.GetAvroSchema(outerType).AsRecordSchema());
+                var outerData = new GenericRecord(outerSchema.AsRecordSchema());
                 outerData.Put("col1", innerData);
                 outerData.Put("col2", Arrays.AsList(innerData, innerData));
                 env.SendEventAvro(outerData, "MyOuterType");
             }
             else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
-                var inn1 = new JArray(new JValue("abc"), new JValue("def"));
-                var inn2 = new JArray(new JValue(1), new JValue(2));
-                var inn = new JObject(new JProperty("inn1", inn1), new JProperty("inn2", inn2));
+                var inn1 = new JArray("abc", "def");
+                var inn2 = new JArray(1, 2);
+                var inn = new JObject("inn1", "inn2");
                 var outer = new JObject(new JProperty("col1", inn));
                 var col2 = new JArray(inn, inn);
                 outer.Add("col2", col2);
@@ -956,7 +1194,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 Assert.Fail();
             }
 
-            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "col1.inn1[1],col2[1].inn2[1]".SplitCsv(), new object[] {"def", 2});
+            env.AssertPropsNew("s0", "col1.inn1[1],col2[1].inn2[1]".Split(","), new object[] { "def", 2 });
 
             env.UndeployAll();
         }
@@ -967,20 +1205,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             RegressionEnvironment env)
         {
             EPCompiled compiled;
-            if (!soda) {
-                compiled = env.CompileWBusPublicType(epl);
-            }
-            else {
-                var model = env.EplToModel(epl);
-                var module = new Module();
-                module.Items.Add(new ModuleItem(model));
+            try {
+                if (!soda) {
+                    compiled = env.Compile(epl);
+                }
+                else {
+                    var model = env.EplToModel(epl);
+                    var module = new Module();
+                    module.Items.Add(new ModuleItem(model));
 
-                var args = new CompilerArguments();
-                args.Configuration = env.Configuration;
-                args.Options
-                    .SetAccessModifierEventType(ctx => NameAccessModifier.PUBLIC)
-                    .SetBusModifierEventType(ctx => EventTypeBusModifier.BUS);
-                compiled = env.Compiler.Compile(module, args);
+                    var args = new CompilerArguments();
+                    args.Configuration = env.Configuration;
+                    args.Options
+                        .SetAccessModifierEventType(ctx => NameAccessModifier.PUBLIC)
+                        .SetBusModifierEventType(ctx => EventTypeBusModifier.BUS);
+                    compiled = env.Compiler.Compile(module, args);
+                }
+            }
+            catch (Exception ex) {
+                throw new EPRuntimeException(ex);
             }
 
             env.Deploy(compiled);
@@ -991,13 +1234,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             string typeName)
         {
             Assert.IsNotNull(env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName));
-        }
-
-        private static EventType GetTypeStmt(
-            RegressionEnvironment env,
-            string statementName)
-        {
-            return env.Statement(statementName).EventType;
         }
 
         private static void AssertTypeColDef(EventType eventType)
@@ -1011,7 +1247,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         // ReSharper disable UnusedMember.Global
         // ReSharper disable InconsistentNaming
         [Serializable]
-        public class MyLocalJsonProvidedMyEventTypeCol1To4
+        internal class MyLocalJsonProvidedMyEventTypeCol1To4
         {
             public string col1;
             public int col2;
@@ -1019,55 +1255,55 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedMyEventTypCol34
+        internal class MyLocalJsonProvidedMyEventTypCol34
         {
             public string col3;
             public int col4;
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedMyEventTypCol56
+        internal class MyLocalJsonProvidedMyEventTypCol56
         {
             public string col5;
             public int col6;
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedNestableArray
+        internal class MyLocalJsonProvidedNestableArray
         {
             public string[] inn1;
             public int?[] inn2;
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedNestableOuter
+        internal class MyLocalJsonProvidedNestableOuter
         {
             public MyLocalJsonProvidedNestableArray col1;
             public MyLocalJsonProvidedNestableArray[] col2;
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedBaseOne
+        internal class MyLocalJsonProvidedBaseOne
         {
             public string prop1;
             public int prop2;
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedBaseTwo
+        internal class MyLocalJsonProvidedBaseTwo
         {
             public long prop3;
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedE1
+        internal class MyLocalJsonProvidedE1
         {
             public string prop1;
             public int prop2;
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedE2
+        internal class MyLocalJsonProvidedE2
         {
             public string prop1;
             public int prop2;
@@ -1075,7 +1311,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedE3
+        internal class MyLocalJsonProvidedE3
         {
             public string a;
             public string b;
@@ -1086,13 +1322,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedDummy
+        internal class MyLocalJsonProvidedDummy
         {
             public string col1;
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedMyType
+        internal class MyLocalJsonProvidedMyType
         {
             public string a;
             public string b;
@@ -1101,7 +1337,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         }
 
         [Serializable]
-        public class MyLocalJsonProvidedMyEventTypeTwo
+        internal class MyLocalJsonProvidedMyEventTypeTwo
         {
             public string col1;
             public int col2;
@@ -1115,6 +1351,34 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         public class MyLocalValueObject
         {
+        }
+
+        internal class MyLocalSchemaTypeParamEvent<T>
+        {
+            private System.Collections.Generic.IList<string> listOfString;
+            private System.Collections.Generic.IList<Optional<int?>> listOfOptionalInteger;
+            private IDictionary<string, int?> mapOfStringAndInteger;
+            private IList<string>[] listArrayOfString;
+            IList<string[]> listOfStringArray;
+            IList<string>[][] listArray2DimOfString;
+            IList<string[][]> listOfStringArray2Dim;
+            IList<T> listOfT;
+
+            public IList<string> ListOfString => listOfString;
+
+            public IList<Optional<int?>> ListOfOptionalInteger => listOfOptionalInteger;
+
+            public IDictionary<string, int?> MapOfStringAndInteger => mapOfStringAndInteger;
+
+            public IList<string>[] ListArrayOfString => listArrayOfString;
+
+            public IList<string[]> ListOfStringArray => listOfStringArray;
+
+            public IList<string>[][] ListArray2DimOfString => listArray2DimOfString;
+
+            public IList<string[][]> ListOfStringArray2Dim => listOfStringArray2Dim;
+
+            public IList<T> ListOfT => listOfT;
         }
         // ReSharper restore InconsistentNaming
         // ReSharper restore UnusedMember.Global

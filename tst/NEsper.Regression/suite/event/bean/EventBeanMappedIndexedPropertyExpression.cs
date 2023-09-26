@@ -8,14 +8,10 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
-
-using NUnit.Framework;
-
-using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
@@ -26,72 +22,74 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             // test bean-type
             var path = new RegressionPath();
             var eplBeans = "select " +
-                           "Mapped(TheString) as val0, " +
-                           "Indexed(IntPrimitive) as val1 " +
+                           "mapped(theString) as val0, " +
+                           "indexed(intPrimitive) as val1 " +
                            "from SupportBeanComplexProps#lastevent, SupportBean sb unidirectional";
             RunAssertionBean(env, path, eplBeans);
 
             // test bean-type prefixed
             var eplBeansPrefixed = "select " +
-                                   "sbcp.Mapped(TheString) as val0, " +
-                                   "sbcp.Indexed(IntPrimitive) as val1 " +
+                                   "sbcp.mapped(theString) as val0, " +
+                                   "sbcp.indexed(intPrimitive) as val1 " +
                                    "from SupportBeanComplexProps#lastevent sbcp, SupportBean sb unidirectional";
             RunAssertionBean(env, path, eplBeansPrefixed);
 
             // test wrap
-            env.CompileDeploy("insert into SecondStream select 'a' as val0, * from SupportBeanComplexProps", path);
+            env.CompileDeploy(
+                "@public insert into SecondStream select 'a' as val0, * from SupportBeanComplexProps",
+                path);
 
             var eplWrap = "select " +
-                          "Mapped(TheString) as val0," +
-                          "Indexed(IntPrimitive) as val1 " +
+                          "mapped(theString) as val0," +
+                          "indexed(intPrimitive) as val1 " +
                           "from SecondStream #lastevent, SupportBean unidirectional";
             RunAssertionBean(env, path, eplWrap);
 
             var eplWrapPrefixed = "select " +
-                                  "sbcp.Mapped(TheString) as val0," +
-                                  "sbcp.Indexed(IntPrimitive) as val1 " +
+                                  "sbcp.mapped(theString) as val0," +
+                                  "sbcp.indexed(intPrimitive) as val1 " +
                                   "from SecondStream #lastevent sbcp, SupportBean unidirectional";
             RunAssertionBean(env, path, eplWrapPrefixed);
-            
+
             // test Map-type
             var eplMap = "select " +
-                         "Mapped(TheString) as val0," +
-                         "Indexed(IntPrimitive) as val1 " +
+                         "mapped(theString) as val0," +
+                         "indexed(intPrimitive) as val1 " +
                          "from MapEvent#lastevent, SupportBean unidirectional";
             RunAssertionMap(env, eplMap);
 
             var eplMapPrefixed = "select " +
-                                 "sbcp.Mapped(TheString) as val0," +
-                                 "sbcp.Indexed(IntPrimitive) as val1 " +
+                                 "sbcp.mapped(theString) as val0," +
+                                 "sbcp.indexed(intPrimitive) as val1 " +
                                  "from MapEvent#lastevent sbcp, SupportBean unidirectional";
             RunAssertionMap(env, eplMapPrefixed);
 
             // test insert-int
-            env.CompileDeploy("@Name('s0') select name,value,properties(name) = value as ok from InputEvent")
+            env.CompileDeploy("@name('s0') select name,value,properties(name) = value as ok from InputEvent")
                 .AddListener("s0");
 
             env.SendEventMap(
                 MakeMapEvent("name", "value1", Collections.SingletonDataMap("name", "xxxx")),
                 "InputEvent");
-            Assert.IsFalse((bool) env.Listener("s0").AssertOneGetNewAndReset().Get("ok"));
+            env.AssertEqualsNew("s0", "ok", false);
 
             env.SendEventMap(
                 MakeMapEvent("name", "value1", Collections.SingletonDataMap("name", "value1")),
                 "InputEvent");
-            Assert.IsTrue((bool) env.Listener("s0").AssertOneGetNewAndReset().Get("ok"));
+            env.AssertEqualsNew("s0", "ok", true);
 
             env.UndeployAll();
 
             // test Object-array-type
             var eplObjectArray = "select " +
-                                 "Mapped(TheString) as val0," +
-                                 "Indexed(IntPrimitive) as val1 " +
+                                 "mapped(theString) as val0," +
+                                 "indexed(intPrimitive) as val1 " +
                                  "from ObjectArrayEvent#lastevent, SupportBean unidirectional";
             RunAssertionObjectArray(env, eplObjectArray);
 
             var eplObjectArrayPrefixed = "select " +
-                                         "sbcp.Mapped(TheString) as val0," +
-                                         "sbcp.Indexed(IntPrimitive) as val1 " +
+                                         "sbcp.mapped(theString) as val0," +
+                                         "sbcp.indexed(intPrimitive) as val1 " +
                                          "from ObjectArrayEvent#lastevent sbcp, SupportBean unidirectional";
             RunAssertionObjectArray(env, eplObjectArrayPrefixed);
         }
@@ -100,14 +98,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             RegressionEnvironment env,
             string epl)
         {
-            env.CompileDeploy("@Name('s0') " + epl).AddListener("s0");
+            env.CompileDeploy("@name('s0') " + epl).AddListener("s0");
 
             env.SendEventMap(MakeMapEvent(), "MapEvent");
             env.SendEventBean(new SupportBean("keyOne", 1));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "val0", "val1" },
-                new object[] {"valueOne", 2});
+            env.AssertPropsNew("s0", "val0,val1".SplitCsv(), new object[] { "valueOne", 2 });
             env.UndeployModuleContaining("s0");
         }
 
@@ -115,16 +110,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             RegressionEnvironment env,
             string epl)
         {
-            env.CompileDeploy("@Name('s0') " + epl).AddListener("s0");
+            env.CompileDeploy("@name('s0') " + epl).AddListener("s0");
 
             env.SendEventObjectArray(
-                new object[] {Collections.SingletonMap("keyOne", "valueOne"), new[] {1, 2}},
+                new object[] { Collections.SingletonMap("keyOne", "valueOne"), new int[] { 1, 2 } },
                 "ObjectArrayEvent");
             env.SendEventBean(new SupportBean("keyOne", 1));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "val0", "val1" },
-                new object[] {"valueOne", 2});
+            env.AssertPropsNew("s0", "val0,val1".SplitCsv(), new object[] { "valueOne", 2 });
             env.UndeployModuleContaining("s0");
         }
 
@@ -133,22 +125,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             RegressionPath path,
             string epl)
         {
-            env.CompileDeploy("@Name('s0') " + epl, path).AddListener("s0");
+            env.CompileDeploy("@name('s0') " + epl, path).AddListener("s0");
 
             env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
             env.SendEventBean(new SupportBean("keyOne", 1));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "val0", "val1" },
-                new object[] {"valueOne", 2});
+            env.AssertPropsNew("s0", "val0,val1".SplitCsv(), new object[] { "valueOne", 2 });
             env.UndeployModuleContaining("s0");
         }
 
         private IDictionary<string, object> MakeMapEvent()
         {
             IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Put("Mapped", Collections.SingletonMap("keyOne", "valueOne"));
-            map.Put("Indexed", new[] {1, 2});
+            map.Put("mapped", Collections.SingletonMap("keyOne", "valueOne"));
+            map.Put("indexed", new int[] { 1, 2 });
             return map;
         }
 

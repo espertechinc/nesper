@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.type
         /// <param name="patternText">regex to match</param>
         public StringPatternSetRegex(string patternText)
         {
-            this._patternText = patternText;
-            this._pattern = new Regex(patternText);
+            _patternText = patternText;
+            _pattern = new Regex(patternText);
         }
 
         /// <summary>
@@ -42,12 +42,19 @@ namespace com.espertech.esper.common.@internal.type
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o) {
+                return true;
+            }
 
-            StringPatternSetRegex that = (StringPatternSetRegex) o;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
 
-            if (!_patternText.Equals(that._patternText)) return false;
+            var that = (StringPatternSetRegex)o;
+
+            if (!_patternText.Equals(that._patternText)) {
+                return false;
+            }
 
             return true;
         }

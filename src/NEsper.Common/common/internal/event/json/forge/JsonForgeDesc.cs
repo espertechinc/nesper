@@ -22,6 +22,7 @@ namespace com.espertech.esper.common.@internal.@event.json.forge
             DeserializerForge = deserializerForge ?? throw new ArgumentException("Deserializer forge must not be null");
             SerializerForge = serializerForge ?? throw new ArgumentException("Serialzier forget must not be null");
         }
+
         public JsonDeserializerForge DeserializerForge { get; }
 
         public JsonSerializerForge SerializerForge { get; }

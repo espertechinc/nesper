@@ -20,6 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
     {
         public static CodegenExpression ToExpression(SortedSet<int> values)
         {
+            if (values.IsEmpty()) {
+                return StaticMethod(typeof(Collections), "GetEmptySortedSet");
+            }
+
             var arr = values.ToArray();
             return NewInstance<SortedSet<int>>(StaticMethod(typeof(CompatExtensions), "AsList", Constant(arr)));
         }

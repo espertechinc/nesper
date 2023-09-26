@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var array = (Array) rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var array = (Array)rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (array == null) {
                 return null;
             }

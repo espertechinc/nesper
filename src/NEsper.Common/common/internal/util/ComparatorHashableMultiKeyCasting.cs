@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.util
             object firstValues,
             object secondValues)
         {
-            return comparator.Compare((HashableMultiKey) firstValues, (HashableMultiKey) secondValues);
+            return comparator.Compare((HashableMultiKey)firstValues, (HashableMultiKey)secondValues);
         }
     }
 } // end of namespace

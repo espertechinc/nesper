@@ -44,8 +44,7 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the order-by value expression.
         /// </summary>
         /// <returns>expression</returns>
-        public Expression Expression
-        {
+        public Expression Expression {
             get => expression;
             set => expression = value;
         }
@@ -54,8 +53,7 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for descending sorts for this column, false for ascending sort.
         /// </summary>
         /// <returns>true for descending sort</returns>
-        public bool IsDescending
-        {
+        public bool IsDescending {
             get => descending;
             set => descending = value;
         }
@@ -67,8 +65,7 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             expression.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            if (descending)
-            {
+            if (descending) {
                 writer.Write(" desc");
             }
         }

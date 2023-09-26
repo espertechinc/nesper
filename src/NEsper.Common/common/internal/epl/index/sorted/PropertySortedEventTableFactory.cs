@@ -9,7 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.util;
 
@@ -49,14 +49,14 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
             false,
             false,
             streamNum,
-            new[] {propertyName},
+            new[] { propertyName },
             EventTableOrganizationType.BTREE);
 
         public EventTable[] MakeEventTables(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             int? subqueryNumber)
         {
-            return new EventTable[] {new PropertySortedEventTableImpl(this)};
+            return new EventTable[] { new PropertySortedEventTableImpl(this) };
         }
 
         public Type EventTableClass => typeof(PropertySortedEventTable);

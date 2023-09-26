@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.poll
@@ -44,6 +44,6 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
         public abstract IList<EventBean> Convert(
             object invocationResult,
             MethodTargetStrategy origin,
-            AgentInstanceContext agentInstanceContext);
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

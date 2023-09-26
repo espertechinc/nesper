@@ -29,7 +29,6 @@ using com.espertech.esper.common.@internal.epl.script.compiletime;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.variable.compiletime;
 using com.espertech.esper.common.@internal.settings;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
@@ -52,14 +51,14 @@ namespace com.espertech.esper.compiler.@internal.util
             string fireAndForgetEPLQuery,
             CompilerArguments arguments)
         {
-            return CompileQueryInternal(new CompilableEPL(fireAndForgetEPLQuery), arguments);
+            return CompileQueryInternal(new CompilableEPL(fireAndForgetEPLQuery, 1), arguments);
         }
 
         public EPCompiled CompileQuery(
             EPStatementObjectModel fireAndForgetEPLQueryModel,
             CompilerArguments arguments)
         {
-            return CompileQueryInternal(new CompilableSODA(fireAndForgetEPLQueryModel), arguments);
+            return CompileQueryInternal(new CompilableSODA(fireAndForgetEPLQueryModel, 1), arguments);
         }
 
         public EPCompiled Compile(
@@ -75,7 +74,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 IList<Compilable> compilables = new List<Compilable>();
                 foreach (var item in module.Items.Where(m => !m.IsCommentOnly)) {
                     var stmtEpl = item.Expression;
-                    compilables.Add(new CompilableEPL(stmtEpl));
+                    compilables.Add(new CompilableEPL(stmtEpl, item.LineNumber));
                 }
 
                 // determine module name
@@ -86,13 +85,20 @@ namespace com.espertech.esper.compiler.@internal.util
                 var compileTimeServices = GetCompileTimeServices(arguments, moduleName, moduleUses, false);
                 AddModuleImports(module.Imports, compileTimeServices);
 
+                IDictionary<ModuleProperty, object> moduleProperties = EmptyDictionary<ModuleProperty, object>.Instance;
+                if (arguments.Configuration.Compiler.ByteCode.IsAttachModuleEPL) {
+                    moduleProperties = new Dictionary<ModuleProperty, object>();
+                    moduleProperties[ModuleProperty.MODULETEXT] = epl;
+                }
+
                 // compile
                 return CompilerHelperModuleProvider.Compile(
                     compilables,
                     moduleName,
-                    new EmptyDictionary<ModuleProperty, object>(),
+                    moduleProperties,
                     compileTimeServices,
-                    arguments.Options);
+                    arguments.Options,
+                    arguments.Path);
             }
             catch (EPCompileException) {
                 throw;
@@ -122,6 +128,7 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             try {
                 var mapEnv = new StatementSpecMapEnv(
+                    configuration.Container,
                     MakeImportService(configuration),
                     VariableCompileTimeResolverEmpty.INSTANCE,
                     configuration,
@@ -175,10 +182,10 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
 
                 if (item.Expression != null) {
-                    compilables.Add(new CompilableEPL(item.Expression));
+                    compilables.Add(new CompilableEPL(item.Expression, item.LineNumber));
                 }
                 else if (item.Model != null) {
-                    compilables.Add(new CompilableSODA(item.Model));
+                    compilables.Add(new CompilableSODA(item.Model, item.LineNumber));
                 }
                 else {
                     throw new EPCompileException(
@@ -203,7 +210,8 @@ namespace com.espertech.esper.compiler.@internal.util
                 moduleName,
                 moduleProperties,
                 compileTimeServices,
-                arguments.Options);
+                arguments.Options,
+                arguments.Path);
         }
 
         public Module ReadModule(
@@ -214,7 +222,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 Log.Debug("Reading module from input stream");
             }
 
-            return EPLModuleUtil.ReadInternal(stream, uri, false);
+            return EPLModuleUtil.ReadInternal(stream, uri);
         }
 
         public Module ReadModule(FileInfo file)
@@ -233,7 +241,7 @@ namespace com.espertech.esper.compiler.@internal.util
             }
 
             using (var stream = new WebClient().OpenRead(url)) {
-                return EPLModuleUtil.ReadInternal(stream, url.ToString(), false);
+                return EPLModuleUtil.ReadInternal(stream, url.ToString());
             }
         }
 
@@ -274,12 +282,19 @@ namespace com.espertech.esper.compiler.@internal.util
                         throw new EPCompileException(
                             "Module item has both an EPL expression and a statement object model");
                     }
-
+                    
+                    var inlinedClassInspection = arguments.Options?.InlinedClassInspection;
                     if (item.Expression != null) {
-                        CompilerHelperSingleEPL.ParseCompileInlinedClassesWalk(new CompilableEPL(item.Expression), services);
+                        CompilerHelperSingleEPL.ParseCompileInlinedClassesWalk(
+                            new CompilableEPL(item.Expression, item.LineNumber),
+                            inlinedClassInspection,
+                            services);
                     }
                     else if (item.Model != null) {
-                        CompilerHelperSingleEPL.ParseCompileInlinedClassesWalk(new CompilableSODA(item.Model), services);
+                        CompilerHelperSingleEPL.ParseCompileInlinedClassesWalk(
+                            new CompilableSODA(item.Model, item.LineNumber),
+                            inlinedClassInspection,
+                            services);
                         item.Model.ToEPL();
                     }
                     else {

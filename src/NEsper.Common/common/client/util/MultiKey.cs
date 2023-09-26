@@ -26,8 +26,9 @@ namespace com.espertech.esper.common.client.util
         /// <returns>key value</returns>
         object GetKey(int num);
     }
-    
-    public static class MultiKeyExtensions {
+
+    public static class MultiKeyExtensions
+    {
         /// <summary>
         ///     Convert the multi-key to an object array
         /// </summary>

@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 
         {
             var eventBeanToObjectIndexes = new HashSet<int>();
-            var type = (ObjectArrayEventType) resultEventType;
+            var type = (ObjectArrayEventType)resultEventType;
             foreach (var name in eventBeanToObjectProps) {
                 if (type.PropertiesIndexes.TryGetValue(name, out var index)) {
                     eventBeanToObjectIndexes.Add(index);
@@ -75,8 +75,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
         {
             foreach (var propertyIndex in eventBeanToObjectIndexes) {
                 var value = props[propertyIndex];
-                if (value is EventBean) {
-                    props[propertyIndex] = ((EventBean) value).Underlying;
+                if (value is EventBean bean) {
+                    props[propertyIndex] = bean.Underlying;
                 }
             }
 

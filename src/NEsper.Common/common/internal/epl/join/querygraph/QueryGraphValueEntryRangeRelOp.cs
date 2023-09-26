@@ -32,6 +32,6 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public bool IsBetweenPart { get; }
 
-        public override ExprEvaluator[] Expressions => new[] {Expression};
+        public override ExprEvaluator[] Expressions => new[] { Expression };
     }
 } // end of namespace

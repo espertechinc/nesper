@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
     ///     Plan for lookup using a from-stream event looking up one or more to-streams using a specified lookup plan for each
     ///     to-stream.
     /// </summary>
-    public class LookupInstructionPlanForge : CodegenMakeable
+    public class LookupInstructionPlanForge : CodegenMakeable<SAIFFInitializeSymbol>
     {
         /// <summary>
         ///     Ctor.
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             CodegenSymbolProvider symbols,
             CodegenClassScope classScope)
         {
-            return Make(parent, (SAIFFInitializeSymbol) symbols, classScope);
+            return Make(parent, (SAIFFInitializeSymbol)symbols, classScope);
         }
 
         public CodegenExpression Make(

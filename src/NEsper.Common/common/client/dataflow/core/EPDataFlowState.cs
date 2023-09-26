@@ -21,6 +21,6 @@ namespace com.espertech.esper.common.client.dataflow.core
         COMPLETE,
 
         /// <summary>Cancelled means the data flow instance was cancelled. </summary>
-        CANCELLED,
+        CANCELLED
     }
 }

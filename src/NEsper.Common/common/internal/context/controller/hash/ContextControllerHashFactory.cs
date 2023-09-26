@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 foundPartition = FindHashItemSpec(hashSpec, filterSpec);
             }
             else {
-                var factory = (StatementAgentInstanceFactoryCreateNW) optionalStatementDesc.Lightweight.StatementContext
+                var factory = (StatementAgentInstanceFactoryCreateNW)optionalStatementDesc.Lightweight.StatementContext
                     .StatementAIFactoryProvider.Factory;
                 var declaredAsName = factory.AsEventTypeName;
                 foreach (var partitionItem in hashSpec.Items) {
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 hashCode);
 
             var addendum = new FilterValueSetParam[1][];
-            addendum[0] = new[] {filter};
+            addendum[0] = new[] { filter };
 
             var partitionFilters = foundPartition.FilterSpecActivatable.GetValueSet(
                 null,

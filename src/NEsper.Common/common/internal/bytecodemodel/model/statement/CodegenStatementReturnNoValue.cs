@@ -15,9 +15,9 @@ using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
-    public class CodegenStatementReturnNoValue 
-        : CodegenStatementBase
-        , CodegenStatement
+    public class CodegenStatementReturnNoValue
+        : CodegenStatementBase,
+            CodegenStatement
     {
         public static readonly CodegenStatementReturnNoValue INSTANCE = new CodegenStatementReturnNoValue();
 
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         {
             builder.Append("return");
         }
-        
+
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
         }

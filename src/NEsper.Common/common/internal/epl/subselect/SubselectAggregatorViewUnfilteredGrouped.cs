@@ -30,17 +30,17 @@ namespace com.espertech.esper.common.@internal.epl.subselect
             exprEvaluatorContext.InstrumentationProvider.QSubselectAggregation();
 
             if (newData != null) {
-                foreach (EventBean theEvent in newData) {
+                foreach (var theEvent in newData) {
                     eventsPerStream[0] = theEvent;
-                    object groupKey = GenerateGroupKey(true);
+                    var groupKey = GenerateGroupKey(true);
                     aggregationService.ApplyEnter(eventsPerStream, groupKey, exprEvaluatorContext);
                 }
             }
 
             if (oldData != null) {
-                foreach (EventBean theEvent in oldData) {
+                foreach (var theEvent in oldData) {
                     eventsPerStream[0] = theEvent;
-                    object groupKey = GenerateGroupKey(false);
+                    var groupKey = GenerateGroupKey(false);
                     aggregationService.ApplyLeave(eventsPerStream, groupKey, exprEvaluatorContext);
                 }
             }

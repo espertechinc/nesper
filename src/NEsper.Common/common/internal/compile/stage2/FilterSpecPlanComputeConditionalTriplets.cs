@@ -15,11 +15,13 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
     public class FilterSpecPlanComputeConditionalTriplets : FilterSpecPlanComputeConditional
     {
-        public static readonly FilterSpecPlanComputeConditionalTriplets INSTANCE = new FilterSpecPlanComputeConditionalTriplets();
+        public static readonly FilterSpecPlanComputeConditionalTriplets INSTANCE =
+            new FilterSpecPlanComputeConditionalTriplets();
 
         protected override FilterValueSetParam[][] Compute(
             EventBean[] eventsPerStream,
@@ -29,14 +31,20 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementContextFilterEvalEnv filterEvalEnv)
         {
             if (plan.FilterNegate != null) {
-                var controlResult = plan.FilterNegate.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && false.Equals(controlResult)) {
+                var controlResult = (bool?)plan.FilterNegate.Evaluate(
+                    eventsPerStream,
+                    true,
+                    exprEvaluatorContext);
+                if (controlResult == null || false.Equals(controlResult)) {
                     return null;
                 }
             }
 
             if (plan.FilterConfirm != null) {
-                var controlResult = plan.FilterConfirm.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                var controlResult = (bool?)plan.FilterConfirm.Evaluate(
+                    eventsPerStream,
+                    true,
+                    exprEvaluatorContext);
                 if (controlResult != null && true.Equals(controlResult)) {
                     return FilterValueSetParamConstants.EMPTY;
                 }
@@ -45,23 +53,35 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return ComputePathsWithNegate(eventsPerStream, plan, matchedEvents, exprEvaluatorContext, filterEvalEnv);
         }
 
-        private FilterValueSetParam[][] ComputePathsWithNegate(EventBean[] eventsPerStream,
+        private FilterValueSetParam[][] ComputePathsWithNegate(
+            EventBean[] eventsPerStream,
             FilterSpecPlan plan,
             MatchedEventMap matchedEvents,
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)
         {
             var paths = plan.Paths;
-            IList<FilterValueSetParam[]> pathList = new List<FilterValueSetParam[]>(paths.Length);
+            var pathList = new List<FilterValueSetParam[]>(paths.Length);
             foreach (var path in paths) {
                 var pass = true;
-                var controlResult = path.PathNegate?.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && false.Equals(controlResult)) {
-                    pass = false;
+                if (path.PathNegate != null) {
+                    var controlResult = (bool?)path.PathNegate.Evaluate(
+                        eventsPerStream,
+                        true,
+                        exprEvaluatorContext);
+                    if (controlResult == null || false.Equals(controlResult)) {
+                        pass = false;
+                    }
                 }
 
                 if (pass) {
-                    var valueList = ComputeTriplets(pathList, path, eventsPerStream, matchedEvents, exprEvaluatorContext, filterEvalEnv);
+                    var valueList = ComputeTriplets(
+                        pathList,
+                        path,
+                        eventsPerStream,
+                        matchedEvents,
+                        exprEvaluatorContext,
+                        filterEvalEnv);
                     pathList.Add(valueList);
                 }
             }
@@ -82,17 +102,23 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             StatementContextFilterEvalEnv filterEvalEnv)
         {
             var triplets = path.Triplets;
-            var valueList = new List<FilterValueSetParam>(triplets.Length);
-            var count = 0;
+            IList<FilterValueSetParam> valueList = new List<FilterValueSetParam>(triplets.Length);
             foreach (var triplet in triplets) {
-                var controlResult = triplet.TripletConfirm?.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult != null && true.Equals(controlResult)) {
-                    continue;
+                if (triplet.TripletConfirm != null) {
+                    var controlResult = (bool?)triplet.TripletConfirm.Evaluate(
+                        eventsPerStream,
+                        true,
+                        exprEvaluatorContext);
+                    if (controlResult != null && true.Equals(controlResult)) {
+                        continue;
+                    }
                 }
 
-                FilterValueSetParam valueParam = triplet.Param.GetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+                var valueParam = triplet.Param.GetFilterValue(
+                    matchedEvents,
+                    exprEvaluatorContext,
+                    filterEvalEnv);
                 valueList.Add(valueParam);
-                count++;
             }
 
             return valueList.ToArray();

@@ -86,8 +86,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
 
             var evaluationType = child.Forge.EvaluationType;
-            var serde = validationContext.SerdeResolver.SerdeForAggregation(evaluationType, validationContext.StatementRawInfo);
-            var distinctSerde = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(evaluationType, validationContext.StatementRawInfo) : null;
+            var serde = validationContext.SerdeResolver.SerdeForAggregation(
+                evaluationType,
+                validationContext.StatementRawInfo);
+            var distinctSerde = isDistinct
+                ? validationContext.SerdeResolver.SerdeForAggregationDistinct(
+                    evaluationType,
+                    validationContext.StatementRawInfo)
+                : null;
             return new AggregationForgeFactoryMinMax(this, evaluationType, hasDataWindows, serde, distinctSerde);
         }
 

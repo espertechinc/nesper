@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             AggregationAccessorWindowNoEval.GetValueCodegen(
                 this,
-                (AggregationStateLinearForge) context.AccessStateForge,
+                (AggregationStateLinearForge)context.AccessStateForge,
                 context);
         }
 
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             AggregationAccessorWindowNoEval.GetEnumerableEventsCodegen(
                 this,
-                (AggregationStateLinearForge) context.AccessStateForge,
+                (AggregationStateLinearForge)context.AccessStateForge,
                 context);
         }
 
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         {
             AggregationAccessorWindowNoEval.GetEnumerableScalarCodegen(
                 this,
-                (AggregationStateLinearForge) context.AccessStateForge,
+                (AggregationStateLinearForge)context.AccessStateForge,
                 context);
         }
     }

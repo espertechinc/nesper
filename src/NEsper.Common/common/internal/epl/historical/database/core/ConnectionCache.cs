@@ -64,10 +64,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             string sql,
             IEnumerable<Attribute> contextAttributes)
         {
-            this._databaseConnectionFactory = databaseConnectionFactory;
-            this._sql = sql;
-            this._sqlFragments = PlaceholderParser.ParsePlaceholder(sql);
-            this._contextAttributes = contextAttributes;
+            _databaseConnectionFactory = databaseConnectionFactory;
+            _sql = sql;
+            _sqlFragments = PlaceholderParser.ParsePlaceholder(sql);
+            _contextAttributes = contextAttributes;
         }
 
         /// <summary>
@@ -95,9 +95,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
             try {
                 // Get the driver
-                DbDriver dbDriver = _databaseConnectionFactory.Driver;
+                var dbDriver = _databaseConnectionFactory.Driver;
                 // Get the command
-                DbDriverCommand dbCommand = dbDriver.CreateCommand(_sqlFragments, null, _contextAttributes);
+                var dbCommand = dbDriver.CreateCommand(_sqlFragments, null, _contextAttributes);
 
                 return new Pair<DbDriver, DbDriverCommand>(dbDriver, dbCommand);
             }

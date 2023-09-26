@@ -6,41 +6,59 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
+using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertEquals
+
+// assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
     public class EventBeanEventPropertyDynamicPerformance : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+        }
+
         public void Run(RegressionEnvironment env)
         {
-            var stmtText = "@Name('s0') select SimpleProperty?, " +
-                           "Indexed[1]? as Indexed, " +
-                           "Mapped('keyOne')? as Mapped " +
+            var stmtText = "@name('s0') select simpleProperty?, " +
+                           "indexed[1]? as indexed, " +
+                           "mapped('keyOne')? as mapped " +
                            "from SupportBeanComplexProps";
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var type = env.Statement("s0").EventType;
-            Assert.AreEqual(typeof(object), type.GetPropertyType("SimpleProperty?"));
-            Assert.AreEqual(typeof(object), type.GetPropertyType("Indexed"));
-            Assert.AreEqual(typeof(object), type.GetPropertyType("Mapped"));
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    var type = statement.EventType;
+                    Assert.AreEqual(typeof(object), type.GetPropertyType("simpleProperty?"));
+                    Assert.AreEqual(typeof(object), type.GetPropertyType("indexed"));
+                    Assert.AreEqual(typeof(object), type.GetPropertyType("mapped"));
+                });
 
-            var inner = SupportBeanComplexProps.MakeDefaultBean();
+            SupportBeanComplexProps inner = SupportBeanComplexProps.MakeDefaultBean();
             env.SendEventBean(inner);
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual(inner.SimpleProperty, theEvent.Get("SimpleProperty?"));
-            Assert.AreEqual(inner.GetIndexed(1), theEvent.Get("Indexed"));
-            Assert.AreEqual(inner.GetMapped("keyOne"), theEvent.Get("Mapped"));
+            env.AssertEventNew(
+                "s0",
+                theEvent => {
+                    Assert.AreEqual(inner.SimpleProperty, theEvent.Get("simpleProperty?"));
+                    Assert.AreEqual(inner.GetIndexed(1), theEvent.Get("indexed"));
+                    Assert.AreEqual(inner.GetMapped("keyOne"), theEvent.Get("mapped"));
+                });
 
             var start = PerformanceObserver.MilliTime;
             for (var i = 0; i < 10000; i++) {
                 env.SendEventBean(inner);
                 if (i % 1000 == 0) {
-                    env.Listener("s0").Reset();
+                    env.ListenerReset("s0");
                 }
             }
 

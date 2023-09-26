@@ -13,13 +13,13 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
-	public class AggregationMethodSortedWrapperCollection : TransformCollection<object, ICollection<EventBean>>
-	{
-		public AggregationMethodSortedWrapperCollection(ICollection<object> trueCollection) : base(
-			trueCollection,
-			_ => _,
-			AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents)
-		{
-		}
-	}
+    public class AggregationMethodSortedWrapperCollection : TransformCollection<object, ICollection<EventBean>>
+    {
+        public AggregationMethodSortedWrapperCollection(ICollection<object> trueCollection) : base(
+            trueCollection,
+            _ => _,
+            AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents)
+        {
+        }
+    }
 } // end of namespace

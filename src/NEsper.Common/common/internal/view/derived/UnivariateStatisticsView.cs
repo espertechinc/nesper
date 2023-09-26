@@ -62,22 +62,22 @@ namespace com.espertech.esper.common.@internal.view.derived
 
             // add data points to the bean
             if (newData != null) {
-                for (int i = 0; i < newData.Length; i++) {
+                for (var i = 0; i < newData.Length; i++) {
                     eventsPerStream[0] = newData[i];
                     var pointnum = viewFactory.fieldEval.Evaluate(eventsPerStream, true, agentInstanceContext);
                     if (pointnum != null) {
-                        double point = pointnum.AsDouble();
+                        var point = pointnum.AsDouble();
                         baseStatisticsBean.AddPoint(point, 0);
                     }
                 }
 
-                if ((viewFactory.additionalProps != null) && (newData.Length != 0)) {
+                if (viewFactory.additionalProps != null && newData.Length != 0) {
                     var additionalEvals = viewFactory.additionalProps.AdditionalEvals;
                     if (lastValuesEventNew == null) {
                         lastValuesEventNew = new object[additionalEvals.Length];
                     }
 
-                    for (int val = 0; val < additionalEvals.Length; val++) {
+                    for (var val = 0; val < additionalEvals.Length; val++) {
                         lastValuesEventNew[val] =
                             additionalEvals[val].Evaluate(eventsPerStream, true, agentInstanceContext);
                     }
@@ -86,11 +86,11 @@ namespace com.espertech.esper.common.@internal.view.derived
 
             // remove data points from the bean
             if (oldData != null) {
-                for (int i = 0; i < oldData.Length; i++) {
+                for (var i = 0; i < oldData.Length; i++) {
                     eventsPerStream[0] = oldData[i];
                     var pointnum = viewFactory.fieldEval.Evaluate(eventsPerStream, true, agentInstanceContext);
                     if (pointnum != null) {
-                        double point = pointnum.AsDouble();
+                        var point = pointnum.AsDouble();
                         baseStatisticsBean.RemovePoint(point, 0);
                     }
                 }
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
             // If there are child view, call update method
             if (child != null) {
-                EventBean newDataMap = PopulateMap(
+                var newDataMap = PopulateMap(
                     baseStatisticsBean,
                     agentInstanceContext.EventBeanTypedEventFactory,
                     viewFactory.eventType,
@@ -106,12 +106,12 @@ namespace com.espertech.esper.common.@internal.view.derived
                     lastValuesEventNew);
 
                 EventBean[] oldEvents;
-                EventBean[] newEvents = new EventBean[] {newDataMap};
+                var newEvents = new EventBean[] { newDataMap };
                 if (lastNewEvent == null) {
-                    oldEvents = new EventBean[] {oldDataMap};
+                    oldEvents = new EventBean[] { oldDataMap };
                 }
                 else {
-                    oldEvents = new EventBean[] {lastNewEvent};
+                    oldEvents = new EventBean[] { lastNewEvent };
                 }
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newEvents, oldEvents);
@@ -124,9 +124,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();
         }
 
-        public override EventType EventType {
-            get => viewFactory.eventType;
-        }
+        public override EventType EventType => viewFactory.eventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
@@ -141,7 +139,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public override string ToString()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
 
         public static EventBean PopulateMap(
@@ -169,10 +167,9 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public static EventType CreateEventType(
             StatViewAdditionalPropsForge additionalProps,
-            ViewForgeEnv env,
-            int streamNum)
+            ViewForgeEnv env)
         {
-            LinkedHashMap<string, object> eventTypeMap = new LinkedHashMap<string, object>();
+            var eventTypeMap = new LinkedHashMap<string, object>();
             eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS.GetName(), typeof(long?));
             eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__TOTAL.GetName(), typeof(double?));
             eventTypeMap.Put(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV.GetName(), typeof(double?));
@@ -189,24 +186,18 @@ namespace com.espertech.esper.common.@internal.view.derived
                 ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE,
                 ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE
             );
-            return DerivedViewTypeUtil.NewType("statview", eventTypeMap, env, streamNum);
+            return DerivedViewTypeUtil.NewType("statview", eventTypeMap, env);
         }
 
-        public BaseStatisticsBean BaseStatisticsBean {
-            get => baseStatisticsBean;
-        }
+        public BaseStatisticsBean BaseStatisticsBean => baseStatisticsBean;
 
-        public object[] LastValuesEventNew {
-            get => lastValuesEventNew;
-        }
+        public object[] LastValuesEventNew => lastValuesEventNew;
 
         public void SetLastValuesEventNew(object[] lastValuesEventNew)
         {
             this.lastValuesEventNew = lastValuesEventNew;
         }
 
-        public ViewFactory ViewFactory {
-            get => viewFactory;
-        }
+        public ViewFactory ViewFactory => viewFactory;
     }
 } // end of namespace

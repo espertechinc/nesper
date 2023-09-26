@@ -8,10 +8,10 @@
 
 namespace com.espertech.esper.common.client.hook.aggmultifunc
 {
-	/// <summary>
-	/// Describes to the compiler how it should manage code for aggregation multi-function aggregation method.
-	/// </summary>
-	public interface AggregationMultiFunctionAggregationMethodMode
-	{
-	}
+    /// <summary>
+    /// Describes to the compiler how it should manage code for aggregation multi-function aggregation method.
+    /// </summary>
+    public interface AggregationMultiFunctionAggregationMethodMode
+    {
+    }
 } // end of namespace

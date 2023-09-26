@@ -42,6 +42,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             string scriptName,
             int numParameters);
 
+        NameAccessModifier GetAccessModifierInlinedClass(
+            StatementBaseInfo @base,
+            string inlinedClassName);
+
         EventTypeBusModifier GetBusModifierEventType(
             StatementRawInfo raw,
             string eventTypeName);

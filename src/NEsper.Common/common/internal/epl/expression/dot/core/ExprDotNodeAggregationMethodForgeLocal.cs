@@ -51,9 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             var future = agg.GetAggFuture(classScope);
             var method = parent.MakeChild(requiredType, GetType(), classScope);
             method.Block
-                .DeclareVar(
-                    typeof(AggregationRow),
-                    "row",
+                .DeclareVar<AggregationRow>("row",
                     ExprDotMethod(
                         future,
                         "GetAggregationRow",

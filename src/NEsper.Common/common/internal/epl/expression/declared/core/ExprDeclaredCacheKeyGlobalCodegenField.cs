@@ -36,10 +36,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.core
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o) {
+                return true;
+            }
 
-            ExprDeclaredCacheKeyGlobalCodegenField that = (ExprDeclaredCacheKeyGlobalCodegenField) o;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
+
+            var that = (ExprDeclaredCacheKeyGlobalCodegenField)o;
 
             return expressionName.Equals(that.expressionName);
         }

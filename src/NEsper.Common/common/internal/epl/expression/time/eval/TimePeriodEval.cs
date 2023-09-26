@@ -37,6 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.eval
         }
 
         public TimePeriodEvalFunc ProcTimePeriodEvalFunc { get; set; }
+
         public TimePeriod TimePeriodEval(
             EventBean[] eventsPerStream,
             bool isNewData,

@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.prior
         public static PriorEventViewFactory FindPriorViewFactory(ViewFactory[] factories)
         {
             ViewFactory factoryFound = null;
-            foreach (ViewFactory factory in factories) {
+            foreach (var factory in factories) {
                 if (factory is PriorEventViewFactory) {
                     factoryFound = factory;
                     break;
@@ -32,19 +32,19 @@ namespace com.espertech.esper.common.@internal.epl.prior
                     "Failed to find 'prior'-handling view factory"); // was verified earlier, should not occur
             }
 
-            return (PriorEventViewFactory) factoryFound;
+            return (PriorEventViewFactory)factoryFound;
         }
 
         public static PriorEvalStrategy ToStrategy(AgentInstanceViewFactoryChainContext viewFactoryChainContext)
         {
-            ViewUpdatedCollection priorViewUpdatedCollection = viewFactoryChainContext.PriorViewUpdatedCollection;
-            if (priorViewUpdatedCollection is RandomAccessByIndex) {
-                return new ExprPriorEvalStrategyRandomAccess((RandomAccessByIndex) priorViewUpdatedCollection);
+            var priorViewUpdatedCollection = viewFactoryChainContext.PriorViewUpdatedCollection;
+            if (priorViewUpdatedCollection is RandomAccessByIndex index) {
+                return new ExprPriorEvalStrategyRandomAccess(index);
             }
 
-            if (priorViewUpdatedCollection is RelativeAccessByEventNIndex) {
+            if (priorViewUpdatedCollection is RelativeAccessByEventNIndex collection) {
                 return new ExprPriorEvalStrategyRelativeAccess(
-                    (RelativeAccessByEventNIndex) priorViewUpdatedCollection);
+                    collection);
             }
 
             return null;

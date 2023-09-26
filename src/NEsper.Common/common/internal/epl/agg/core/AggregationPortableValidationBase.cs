@@ -20,16 +20,19 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public abstract class AggregationPortableValidationBase : AggregationPortableValidation
     {
-        public const string INVALID_TABLE_AGG_RESET = "The table aggregation'reset' method is only available for the on-merge update action";
-        public const string INVALID_TABLE_AGG_RESET_PARAMS = "The table aggregation 'reset' method does not allow parameters";
-        
+        public const string INVALID_TABLE_AGG_RESET =
+            "The table aggregation'reset' method is only available for the on-merge update action";
+
+        public const string INVALID_TABLE_AGG_RESET_PARAMS =
+            "The table aggregation 'reset' method does not allow parameters";
+
         protected AggregationPortableValidationBase()
         {
         }
 
         protected AggregationPortableValidationBase(bool distinct)
         {
-            this.IsDistinct = distinct;
+            IsDistinct = distinct;
         }
 
         public bool IsDistinct { get; set; }
@@ -55,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             AggregationForgeFactory factory)
         {
             AggregationValidationUtil.ValidateAggregationType(this, tableExpression, intoTableAgg, intoExpression);
-            var that = (AggregationPortableValidationBase) intoTableAgg;
+            var that = (AggregationPortableValidationBase)intoTableAgg;
             AggregationValidationUtil.ValidateDistinct(IsDistinct, that.IsDistinct);
             ValidateIntoTable(tableExpression, intoTableAgg, intoExpression, factory);
         }
@@ -66,18 +69,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(TypeOf(), GetType(), classScope);
-            method.Block
-                .DeclareVar(TypeOf(), "v", NewInstance(TypeOf()))
+            method.Block.DeclareVar(TypeOf(), "v", NewInstance(TypeOf()))
                 .SetProperty(Ref("v"), "IsDistinct", Constant(IsDistinct));
             CodegenInlineSet(Ref("v"), method, symbols, classScope);
             method.Block.MethodReturn(Ref("v"));
             return LocalMethod(method);
-        }
-
-        public AggregationPortableValidationBase SetDistinct(bool distinct)
-        {
-            this.IsDistinct = distinct;
-            return this;
         }
 
         public bool IsAggregationMethod(
@@ -93,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             string aggMethodName,
             ExprNode[] parameters)
         {
-            if (String.Equals(aggMethodName, "reset", StringComparison.InvariantCultureIgnoreCase)) {
+            if (string.Equals(aggMethodName, "reset", StringComparison.InvariantCultureIgnoreCase)) {
                 if (!validationContext.IsAllowTableAggReset) {
                     throw new ExprValidationException(INVALID_TABLE_AGG_RESET);
                 }

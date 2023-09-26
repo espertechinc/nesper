@@ -20,10 +20,11 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
         public override object Deserialize(JsonElement element)
         {
             if (element.ValueKind != JsonValueKind.Object) {
-                throw new IllegalStateException($"expected {nameof(JsonValueKind.Object)}, but received {element.ValueKind}");
+                throw new IllegalStateException(
+                    $"expected {nameof(JsonValueKind.Object)}, but received {element.ValueKind}");
             }
 
-            _result = JsonElementExtensions.ElementToDictionary(element);
+            _result = element.ElementToDictionary();
             return _result;
         }
     }

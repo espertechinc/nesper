@@ -7,22 +7,22 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertEquals
+
+// assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
     public class EPLJoin2StreamSimplePerformance
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
@@ -53,6 +53,104 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             return execs;
         }
 
+        private class EPLJoinPerformanceJoinNoResults : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                SetupStatement(env);
+                var methodName = ".testPerformanceJoinNoResults";
+
+                // Send events for each stream
+                log.Info($"{methodName} Preloading events");
+                var startTime = PerformanceObserver.MilliTime;
+                for (var i = 0; i < 1000; i++) {
+                    SendEvent(env, MakeMarketEvent($"IBM_{i}"));
+                    SendEvent(env, MakeSupportEvent($"CSCO_{i}"));
+                }
+
+                log.Info($"{methodName} Done preloading");
+
+                var endTime = PerformanceObserver.MilliTime;
+                log.Info($"{methodName} delta={(endTime - startTime)}");
+
+                // Stay below 50 ms
+                Assert.IsTrue((endTime - startTime) < 500);
+                env.UndeployAll();
+            }
+        }
+
+        private class EPLJoinJoinPerformanceStreamA : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                SetupStatement(env);
+                var methodName = ".testJoinPerformanceStreamA";
+
+                // Send 100k events
+                log.Info($"{methodName} Preloading events");
+                for (var i = 0; i < 50000; i++) {
+                    SendEvent(env, MakeMarketEvent($"IBM_{i}"));
+                }
+
+                log.Info($"{methodName} Done preloading");
+
+                var startTime = PerformanceObserver.MilliTime;
+                SendEvent(env, MakeSupportEvent("IBM_10"));
+                var endTime = PerformanceObserver.MilliTime;
+                log.Info($"{methodName} delta={(endTime - startTime)}");
+
+                env.AssertListener("s0", listener => Assert.AreEqual(1, listener.LastNewData.Length));
+                // Stay below 50 ms
+                Assert.IsTrue((endTime - startTime) < 50);
+                env.UndeployAll();
+            }
+        }
+
+        private class EPLJoinJoinPerformanceStreamB : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
+            public void Run(RegressionEnvironment env)
+            {
+                var methodName = ".testJoinPerformanceStreamB";
+                SetupStatement(env);
+
+                // Send 100k events
+                log.Info($"{methodName} Preloading events");
+                for (var i = 0; i < 50000; i++) {
+                    SendEvent(env, MakeSupportEvent($"IBM_{i}"));
+                }
+
+                log.Info($"{methodName} Done preloading");
+
+                var startTime = PerformanceObserver.MilliTime;
+
+                env.ListenerReset("s0");
+                SendEvent(env, MakeMarketEvent($"IBM_{10}"));
+
+                var endTime = PerformanceObserver.MilliTime;
+                log.Info($"{methodName} delta={(endTime - startTime)}");
+
+                env.AssertListener("s0", listener => Assert.AreEqual(1, listener.LastNewData.Length));
+                // Stay below 50 ms
+                Assert.IsTrue((endTime - startTime) < 25);
+                env.UndeployAll();
+            }
+        }
+
         private static void SendEvent(
             RegressionEnvironment env,
             object theEvent)
@@ -74,97 +172,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         private static void SetupStatement(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select * from " +
+            var epl = "@name('s0') select * from " +
                       "SupportMarketDataBean#length(1000000)," +
                       "SupportBean#length(1000000)" +
-                      " where Symbol=TheString";
+                      " where symbol=theString";
             env.CompileDeployAddListenerMileZero(epl, "s0");
         }
 
-        internal class EPLJoinPerformanceJoinNoResults : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                SetupStatement(env);
-
-                var methodName = ".testPerformanceJoinNoResults";
-
-                // Send events for each stream
-                log.Info(methodName + " Preloading events");
-                var startTime = PerformanceObserver.MilliTime;
-                for (var i = 0; i < 1000; i++) {
-                    SendEvent(env, MakeMarketEvent("IBM_" + i));
-                    SendEvent(env, MakeSupportEvent("CSCO_" + i));
-                }
-
-                log.Info(methodName + " Done preloading");
-
-                var endTime = PerformanceObserver.MilliTime;
-                log.Info(methodName + " delta=" + (endTime - startTime));
-
-                // Stay below 50 ms
-                Assert.IsTrue(endTime - startTime < 500);
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLJoinJoinPerformanceStreamA : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                SetupStatement(env);
-
-                var methodName = ".testJoinPerformanceStreamA";
-
-                // Send 100k events
-                log.Info(methodName + " Preloading events");
-                for (var i = 0; i < 50000; i++) {
-                    SendEvent(env, MakeMarketEvent("IBM_" + i));
-                }
-
-                log.Info(methodName + " Done preloading");
-
-                var startTime = PerformanceObserver.MilliTime;
-                SendEvent(env, MakeSupportEvent("IBM_10"));
-                var endTime = PerformanceObserver.MilliTime;
-                log.Info(methodName + " delta=" + (endTime - startTime));
-
-                Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                // Stay below 50 ms
-                Assert.IsTrue(endTime - startTime < 50);
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLJoinJoinPerformanceStreamB : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var methodName = ".testJoinPerformanceStreamB";
-
-                SetupStatement(env);
-
-                // Send 100k events
-                log.Info(methodName + " Preloading events");
-                for (var i = 0; i < 50000; i++) {
-                    SendEvent(env, MakeSupportEvent("IBM_" + i));
-                }
-
-                log.Info(methodName + " Done preloading");
-
-                var startTime = PerformanceObserver.MilliTime;
-
-                env.Listener("s0").Reset();
-                SendEvent(env, MakeMarketEvent("IBM_" + 10));
-
-                var endTime = PerformanceObserver.MilliTime;
-                log.Info(methodName + " delta=" + (endTime - startTime));
-
-                Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                // Stay below 50 ms
-                Assert.IsTrue(endTime - startTime < 25);
-                env.UndeployAll();
-            }
-        }
+        private static readonly ILog log = LogManager.GetLogger(typeof(EPLJoin2StreamSimplePerformance));
     }
 } // end of namespace

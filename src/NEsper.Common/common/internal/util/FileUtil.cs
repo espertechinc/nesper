@@ -21,8 +21,8 @@ namespace com.espertech.esper.common.@internal.util
 
         public static string LinesToText(IList<string> lines)
         {
-            StringWriter writer = new StringWriter();
-            foreach (string line in lines) {
+            var writer = new StringWriter();
+            foreach (var line in lines) {
                 writer.Write(line);
                 writer.Write(Environment.NewLine);
             }
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.util
 
         public static IList<string> ReadFile(TextReader reader)
         {
-            List<string> list = new List<string>();
+            var list = new List<string>();
 
             string text;
             // repeat until all lines is read

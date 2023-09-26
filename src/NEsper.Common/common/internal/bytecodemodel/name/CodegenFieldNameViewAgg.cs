@@ -16,19 +16,22 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.name
 
         public CodegenFieldNameViewAgg(int streamNumber)
         {
-            this._streamNumber = streamNumber;
+            _streamNumber = streamNumber;
         }
 
-        public string Name {
-            get => CodegenNamespaceScopeNames.AggView(_streamNumber);
-        }
+        public string Name => CodegenNamespaceScopeNames.AggView(_streamNumber);
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o) {
+                return true;
+            }
 
-            CodegenFieldNameViewAgg that = (CodegenFieldNameViewAgg) o;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
+
+            var that = (CodegenFieldNameViewAgg)o;
 
             return _streamNumber == that._streamNumber;
         }

@@ -10,13 +10,18 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.multikey;
+using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -28,9 +33,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// <summary>
     ///     Specifies an index to build as part of an overall query plan.
     /// </summary>
-    public class QueryPlanIndexItemForge : CodegenMakeable
+    public class QueryPlanIndexItemForge : CodegenMakeable<SAIFFInitializeSymbol>
     {
-        private readonly EventType eventType;
+        private readonly EventType _eventType;
+        private StateMgmtSetting _stateMgmtSettings;
 
         public QueryPlanIndexItemForge(
             string[] hashProps,
@@ -69,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             RangeTypes = rangeTypes;
             IsUnique = unique;
             AdvancedIndexProvisionDesc = advancedIndexProvisionDesc;
-            this.eventType = eventType;
+            _eventType = eventType;
         }
 
         public QueryPlanIndexItemForge(
@@ -95,13 +101,13 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         public string[] HashProps { get; }
 
         public Type[] HashTypes { get; set; }
-        
+
         public MultiKeyClassRef HashMultiKeyClasses { get; set; }
 
         public string[] RangeProps { get; }
 
         public Type[] RangeTypes { get; }
-        
+
         public DataInputOutputSerdeForge[] RangeSerdes { get; set; }
 
         public bool IsUnique { get; }
@@ -112,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
-            CodegenSymbolProvider symbols,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             return Make(parent, classScope);
@@ -173,10 +179,16 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         {
             var method = parent.MakeChild(typeof(QueryPlanIndexItem), GetType(), classScope);
 
-            var propertyGetters = EventTypeUtility.GetGetters(eventType, HashProps);
-            var propertyTypes = EventTypeUtility.GetPropertyTypes(eventType, HashProps);
+            var propertyGetters = EventTypeUtility.GetGetters(_eventType, HashProps);
+            var propertyTypes = EventTypeUtility.GetPropertyTypes(_eventType, HashProps);
             var valueGetter = MultiKeyCodegen.CodegenGetterMayMultiKey(
-                eventType, propertyGetters, propertyTypes, HashTypes, HashMultiKeyClasses, method, classScope);
+                _eventType,
+                propertyGetters,
+                propertyTypes,
+                HashTypes,
+                HashMultiKeyClasses,
+                method,
+                classScope);
 
             CodegenExpression rangeGetters;
             if (RangeProps.Length == 0) {
@@ -188,9 +200,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                     "getters",
                     NewArrayByLength(typeof(EventPropertyValueGetter), Constant(RangeProps.Length)));
                 for (var i = 0; i < RangeProps.Length; i++) {
-                    var getter = ((EventTypeSPI) eventType).GetGetterSPI(RangeProps[i]);
-                    var getterType = eventType.GetPropertyType(RangeProps[i]);
-                    var coercionType = RangeTypes == null ? null : RangeTypes[i];
+                    var getter = ((EventTypeSPI)_eventType).GetGetterSPI(RangeProps[i]);
+                    var getterType = _eventType.GetPropertyType(RangeProps[i]);
+                    var coercionType = RangeTypes?[i];
                     var eval = EventTypeUtility.CodegenGetterWCoerce(
                         getter,
                         getterType,
@@ -205,8 +217,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 rangeGetters = LocalMethod(makeMethod);
             }
 
-            CodegenExpression multiKeyTransform = MultiKeyCodegen.CodegenMultiKeyFromArrayTransform(
-                HashMultiKeyClasses, method, classScope);
+            var multiKeyTransform = MultiKeyCodegen.CodegenMultiKeyFromArrayTransform(
+                HashMultiKeyClasses,
+                method,
+                classScope);
 
             method.Block.MethodReturn(
                 NewInstance<QueryPlanIndexItem>(
@@ -214,7 +228,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                     Constant(HashTypes),
                     valueGetter,
                     multiKeyTransform,
-                    HashMultiKeyClasses != null ? HashMultiKeyClasses.GetExprMKSerde(method, classScope) : ConstantNull(),
+                    HashMultiKeyClasses != null
+                        ? HashMultiKeyClasses.GetExprMKSerde(method, classScope)
+                        : ConstantNull(),
                     Constant(RangeProps),
                     Constant(RangeTypes),
                     rangeGetters,
@@ -263,7 +279,73 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 null,
                 null,
                 IsUnique,
-                AdvancedIndexProvisionDesc.ToRuntime());
+                AdvancedIndexProvisionDesc.ToRuntime(),
+                _stateMgmtSettings);
+        }
+
+        public void PlanStateMgmtSettings(
+            FabricCharge fabricCharge,
+            QueryPlanAttributionKey attributionKey,
+            string indexName,
+            QueryPlanIndexItemForge forge,
+            StatementRawInfo raw,
+            StatementCompileTimeServices compileTimeServices)
+        {
+            if (HashProps.Length > 0 && RangeProps.Length == 0) {
+                var indexDesc = new StateMgmtIndexDescHash(
+                    forge.HashProps,
+                    forge.HashMultiKeyClasses,
+                    forge.IsUnique);
+                _stateMgmtSettings = compileTimeServices.StateMgmtSettingsProvider.Index.IndexHash(
+                    fabricCharge,
+                    attributionKey,
+                    indexName,
+                    forge._eventType,
+                    indexDesc,
+                    raw);
+            }
+            else if (HashProps.Length == 0 && RangeProps.Length == 1) {
+                var indexDesc = new StateMgmtIndexDescSorted(RangeProps[0], RangeSerdes[0]);
+                _stateMgmtSettings = compileTimeServices.StateMgmtSettingsProvider
+                    .Index
+                    .Sorted(fabricCharge, attributionKey, indexName, forge._eventType, indexDesc, raw);
+            }
+            else if (HashProps.Length + RangeProps.Length > 1) {
+                var composite = new StateMgmtIndexDescComposite(
+                    HashProps,
+                    HashMultiKeyClasses,
+                    RangeProps,
+                    RangeSerdes);
+                _stateMgmtSettings = compileTimeServices.StateMgmtSettingsProvider
+                    .Index
+                    .Composite(
+                        fabricCharge,
+                        attributionKey,
+                        indexName,
+                        forge._eventType,
+                        composite,
+                        raw);
+            }
+            else if (AdvancedIndexProvisionDesc == null) {
+                _stateMgmtSettings = compileTimeServices.StateMgmtSettingsProvider
+                    .Index
+                    .Unindexed(
+                        fabricCharge,
+                        attributionKey,
+                        forge._eventType,
+                        raw);
+            }
+            else {
+                _stateMgmtSettings = compileTimeServices.StateMgmtSettingsProvider
+                    .Index
+                    .Advanced(
+                        fabricCharge,
+                        attributionKey,
+                        indexName,
+                        forge._eventType,
+                        forge.AdvancedIndexProvisionDesc,
+                        raw);
+            }
         }
     }
 } // end of namespace

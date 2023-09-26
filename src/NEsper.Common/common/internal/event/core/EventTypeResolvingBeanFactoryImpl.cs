@@ -96,11 +96,11 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             var type = eventTypeRepository.GetTypeByName(eventTypeName);
             EventTypeUtility.ValidateTypeJson(eventTypeName, type);
-            var jsonEventType = (JsonEventType) type;
+            var jsonEventType = (JsonEventType)type;
             var underlying = jsonEventType.Parse(json);
             return new JsonEventBean(underlying, type);
         }
-        
+
         public static XmlNode GetXMLNodeFromDocument(XmlNode node)
         {
             var resultNode = node;

@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionlib.support.multithread;
@@ -43,6 +45,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
         public bool HAWithCOnly => true;
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             var statementTwo = "select * from pattern[( every event1=SupportTradeEvent(UserId in ('100','101')) ->\n" +

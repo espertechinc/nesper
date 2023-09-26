@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     Pluggables.Put(entry.Key, namespaceMap);
                 }
 
-                foreach (string name in entry.Value.Keys) {
+                foreach (var name in entry.Value.Keys) {
                     if (namespaceMap.ContainsKey(name)) {
                         throw new ConfigurationException(
                             "Duplicate object detected in namespace '" +

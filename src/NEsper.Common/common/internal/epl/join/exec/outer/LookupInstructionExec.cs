@@ -62,9 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.outer
             }
 
             FromStream = fromStream;
-            this._fromStreamName = fromStreamName;
+            _fromStreamName = fromStreamName;
             _numSubStreams = toStreams.Length;
-            this._lookupStrategies = lookupStrategies;
+            _lookupStrategies = lookupStrategies;
 
             _resultPerStream = new ISet<EventBean>[_numSubStreams];
 

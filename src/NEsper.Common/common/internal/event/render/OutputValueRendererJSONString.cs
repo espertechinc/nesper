@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                 }
                 else {
                     if (c < ' ') {
-                        t = "000" + ((short) c).ToString("X2");
+                        t = "000" + ((short)c).ToString("X2");
                         sb.Append("\\u");
                         sb.Append(t.Substring(t.Length - 4));
                     }

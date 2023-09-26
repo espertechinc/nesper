@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,18 +15,19 @@ using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.updatehelper;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.type;
+
 
 namespace com.espertech.esper.common.@internal.epl.table.update
 {
     public class TableUpdateStrategyIndexNonUnique : TableUpdateStrategy
     {
-        private readonly ISet<string> affectedIndexNames;
-
         private readonly EventBeanUpdateHelperNoCopy updateHelper;
+        private readonly ISet<NameAndModule> affectedIndexNames;
 
         public TableUpdateStrategyIndexNonUnique(
             EventBeanUpdateHelperNoCopy updateHelper,
-            ISet<string> affectedIndexNames)
+            ISet<NameAndModule> affectedIndexNames)
         {
             this.updateHelper = updateHelper;
             this.affectedIndexNames = affectedIndexNames;
@@ -48,14 +49,14 @@ namespace com.espertech.esper.common.@internal.epl.table.update
 
             // remove from affected indexes
             foreach (var affectedIndexName in affectedIndexNames) {
-                var index = instance.GetIndex(affectedIndexName);
+                var index = instance.GetIndex(affectedIndexName.Name, affectedIndexName.ModuleName);
                 index.Remove(events, instance.AgentInstanceContext);
             }
 
             // update (no-copy unless original values required)
             foreach (var @event in events) {
                 eventsPerStream[0] = @event;
-                var updatedEvent = (ObjectArrayBackedEventBean) @event;
+                var updatedEvent = (ObjectArrayBackedEventBean)@event;
 
                 // if "initial.property" is part of the assignment expressions, provide initial value event
                 if (updateHelper.IsRequiresStream2InitialValueEvent) {
@@ -71,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.table.update
 
             // add to affected indexes
             foreach (var affectedIndexName in affectedIndexNames) {
-                var index = instance.GetIndex(affectedIndexName);
+                var index = instance.GetIndex(affectedIndexName.Name, affectedIndexName.ModuleName);
                 index.Add(events, instance.AgentInstanceContext);
             }
         }

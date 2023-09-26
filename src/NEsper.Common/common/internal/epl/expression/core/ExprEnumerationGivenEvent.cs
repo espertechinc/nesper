@@ -30,8 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             EventBean @event,
             ExprEvaluatorContext context);
     }
-    
-        public class ProxyExprEnumerationGivenEvent : ExprEnumerationGivenEvent
+
+    public class ProxyExprEnumerationGivenEvent : ExprEnumerationGivenEvent
     {
         public delegate FlexCollection EvaluateEventGetROCollectionEventsFunc(
             EventBean @event,

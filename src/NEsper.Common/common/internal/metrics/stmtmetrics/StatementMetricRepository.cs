@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.diagnostics;
+using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.threading.locks;
 
 namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
@@ -25,9 +26,9 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
     /// </summary>
     public class StatementMetricRepository
     {
-        private readonly StatementMetricArray[] groupMetrics;
-        private readonly ConfigurationRuntimeMetricsReporting specification;
-        private readonly IDictionary<DeploymentIdNamePair, int> statementGroups;
+        private readonly StatementMetricArray[] _groupMetrics;
+        private readonly ConfigurationRuntimeMetricsReporting _specification;
+        private readonly IDictionary<DeploymentIdNamePair, int> _statementGroups;
 
         /// <summary>
         ///     Ctor.
@@ -40,12 +41,12 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             ConfigurationRuntimeMetricsReporting specification,
             IReaderWriterLockManager rwLockManager)
         {
-            this.specification = specification;
+            this._specification = specification;
             var numGroups = specification.StatementGroups.Count + 1; // +1 for default group (remaining stmts)
-            groupMetrics = new StatementMetricArray[numGroups];
+            _groupMetrics = new StatementMetricArray[numGroups];
 
             // default group
-            groupMetrics[0] = new StatementMetricArray(
+            _groupMetrics[0] = new StatementMetricArray(
                 runtimeUri,
                 "group-default",
                 100,
@@ -62,7 +63,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
                     initialNumStmts = 10;
                 }
 
-                groupMetrics[countGroups] = new StatementMetricArray(
+                _groupMetrics[countGroups] = new StatementMetricArray(
                     runtimeUri,
                     "group-" + countGroups,
                     initialNumStmts,
@@ -71,7 +72,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
                 countGroups++;
             }
 
-            statementGroups = new Dictionary<DeploymentIdNamePair, int>();
+            _statementGroups = new Dictionary<DeploymentIdNamePair, int>();
         }
 
         /// <summary>
@@ -84,7 +85,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             // determine group
             var countGroups = 1;
             var groupNumber = -1;
-            foreach (var entry in specification.StatementGroups) {
+            foreach (var entry in _specification.StatementGroups) {
                 var patterns = entry.Value.Patterns;
                 var result = StringPatternSetUtil.Evaluate(entry.Value.IsDefaultInclude, patterns, statement.Name);
 
@@ -101,9 +102,9 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
                 groupNumber = 0;
             }
 
-            var index = groupMetrics[groupNumber].AddStatementGetIndex(statement);
+            var index = _groupMetrics[groupNumber].AddStatementGetIndex(statement);
 
-            statementGroups.Put(statement, groupNumber);
+            _statementGroups.Put(statement, groupNumber);
 
             return new StatementMetricHandle(groupNumber, index);
         }
@@ -114,8 +115,8 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <param name="statement">to remove</param>
         public void RemoveStatement(DeploymentIdNamePair statement)
         {
-            if (statementGroups.TryRemove(statement, out var group)) {
-                groupMetrics[group].RemoveStatement(statement);
+            if (_statementGroups.TryRemove(statement, out var group)) {
+                _groupMetrics[group].RemoveStatement(statement);
             }
         }
 
@@ -130,8 +131,8 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             PerformanceMetrics performanceMetrics,
             int numInput)
         {
-            var array = groupMetrics[handle.GroupNum];
-            using (array.RWLock.AcquireReadLock()) {
+            var array = _groupMetrics[handle.GroupNum];
+            using (array.RWLock.AcquireDisposableReadLock()) {
                 var metric = array.GetAddMetric(handle.Index);
                 metric.AddMetrics(performanceMetrics);
                 metric.AddNumInput(numInput);
@@ -149,8 +150,8 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             int numIStream,
             int numRStream)
         {
-            var array = groupMetrics[handle.GroupNum];
-            using (array.RWLock.AcquireReadLock()) {
+            var array = _groupMetrics[handle.GroupNum];
+            using (array.RWLock.AcquireDisposableReadLock()) {
                 var metric = array.GetAddMetric(handle.Index);
                 metric.AddNumOutputIStream(numIStream);
                 metric.AddNumOutputRStream(numRStream);
@@ -164,7 +165,15 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <returns>metrics or null if none</returns>
         public StatementMetric[] ReportGroup(int group)
         {
-            return groupMetrics[group].FlushMetrics();
+            return _groupMetrics[group].FlushMetrics();
+        }
+
+        public void EnumerateMetrics(Consumer<EPMetricsStatementGroup> consumer)
+        {
+            for (var i = 0; i < _groupMetrics.Length; i++) {
+                var array = _groupMetrics[i];
+                consumer.Invoke(new EPMetricsStatementGroup(array));
+            }
         }
     }
 } // end of namespace

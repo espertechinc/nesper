@@ -16,8 +16,8 @@ namespace com.espertech.esper.common.@internal.context.util
     {
         public static IEnumerator<EventBean> Create(AgentInstance[] instances)
         {
-            foreach (AgentInstance agentInstance in instances) {
-                foreach (EventBean eventBean in agentInstance.FinalView) {
+            foreach (var agentInstance in instances) {
+                foreach (var eventBean in agentInstance.FinalView) {
                     yield return eventBean;
                 }
             }

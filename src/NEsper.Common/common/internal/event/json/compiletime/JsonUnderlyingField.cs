@@ -20,19 +20,19 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
     {
         public JsonUnderlyingField(
             string fieldName,
-            string propertyName,
+            int propertyNumber,
             Type propertyType,
             FieldInfo optionalField)
         {
             FieldName = fieldName;
-            PropertyName = propertyName;
+            PropertyNumber = propertyNumber;
             PropertyType = propertyType;
             OptionalField = optionalField;
         }
 
         public string FieldName { get; }
-        
-        public string PropertyName { get; }
+
+        public int PropertyNumber { get; }
 
         public Type PropertyType { get; }
 
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
             return NewInstance<JsonUnderlyingField>(
                 Constant(FieldName),
-                Constant(PropertyName),
+                Constant(PropertyNumber),
                 Constant(PropertyType),
                 field);
         }

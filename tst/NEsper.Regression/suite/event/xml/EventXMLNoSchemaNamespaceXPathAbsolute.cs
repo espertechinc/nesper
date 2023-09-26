@@ -21,8 +21,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -71,20 +73,26 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string eventTypeName,
             RegressionPath path)
         {
-            var epl = "@Name('s0') select symbol_a, symbol_b, symbol_c, request.symbol as symbol_d, symbol as symbol_e from " + eventTypeName;
+            var epl =
+                "@name('s0') select symbol_a, symbol_b, symbol_c, request.symbol as symbol_d, symbol as symbol_e from " +
+                eventTypeName;
             env.CompileDeploy(epl, path).AddListener("s0");
 
-            var xml = "<m0:getQuote xmlns:m0=\"http://services.samples/xsd\"><m0:request><m0:symbol>IBM</m0:symbol></m0:request></m0:getQuote>";
+            var xml =
+                "<m0:getQuote xmlns:m0=\"http://services.samples/xsd\"><m0:request><m0:symbol>IBM</m0:symbol></m0:request></m0:getQuote>";
             SendXMLEvent(env, xml, eventTypeName);
 
             // For XPath resolution testing and namespaces...
 
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("IBM", theEvent.Get("symbol_a"));
-            Assert.AreEqual("IBM", theEvent.Get("symbol_b"));
-            Assert.AreEqual("IBM", theEvent.Get("symbol_c"));
-            Assert.AreEqual("IBM", theEvent.Get("symbol_d"));
-            Assert.IsNull(theEvent.Get("symbol_e")); // should be empty as we are doing absolute XPath
+            env.AssertEventNew(
+                "s0",
+                theEvent => {
+                    Assert.AreEqual("IBM", theEvent.Get("symbol_a"));
+                    Assert.AreEqual("IBM", theEvent.Get("symbol_b"));
+                    Assert.AreEqual("IBM", theEvent.Get("symbol_c"));
+                    Assert.AreEqual("IBM", theEvent.Get("symbol_d"));
+                    Assert.IsNull(theEvent.Get("symbol_e")); // should be empty as we are doing absolute XPath
+                });
 
             env.UndeployAll();
         }

@@ -8,24 +8,45 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
     /// <summary>
-    ///     NOTE: More namedwindow-related tests in "nwtable"
+    /// NOTE: More namedwindow-related tests in "nwtable"
     /// </summary>
     public class InfraNamedWindowConsumer
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new InfraNamedWindowConsumerKeepAll());
-            execs.Add(new InfraNamedWindowConsumerLengthWin());
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithKeepAll(execs);
+            WithLengthWin(execs);
+            WithWBatch(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWBatch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNamedWindowConsumerWBatch());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLengthWin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNamedWindowConsumerLengthWin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithKeepAll(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNamedWindowConsumerKeepAll());
             return execs;
         }
 
@@ -33,27 +54,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "TheString" };
-                var epl = "@Name('create') create window MyWindow.win:keepall() as SupportBean;\n" +
-                          "@Name('insert') insert into MyWindow select * from SupportBean;\n" +
-                          "@Name('select') select irstream * from MyWindow;\n";
+                var fields = "theString".SplitCsv();
+                var epl = "@name('create') create window MyWindow.win:keepall() as SupportBean;\n" +
+                          "@name('insert') insert into MyWindow select * from SupportBean;\n" +
+                          "@name('select') select irstream * from MyWindow;\n";
                 env.CompileDeploy(epl).AddListener("select");
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("E1", 10));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("select").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E1"});
+                env.AssertPropsNew("select", fields, new object[] { "E1" });
 
                 env.Milestone(1);
 
                 env.SendEventBean(new SupportBean("E2", 10));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("select").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E2"});
+                env.AssertPropsNew("select", fields, new object[] { "E2" });
 
                 env.UndeployAll();
 
@@ -65,35 +80,23 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = "c0,c1".SplitCsv();
                 var epl = "create window MyWindow#length(2) as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "@Name('s0') select TheString as c0, sum(IntPrimitive) as c1 from MyWindow;\n";
+                          "@name('s0') select theString as c0, sum(intPrimitive) as c1 from MyWindow;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E1", 10});
+                env.AssertPropsNew("s0", fields, new object[] { "E1", 10 });
 
                 env.SendEventBean(new SupportBean("E2", 20));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E2", 30});
+                env.AssertPropsNew("s0", fields, new object[] { "E2", 30 });
 
                 env.SendEventBean(new SupportBean("E3", 25));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E3", 45});
+                env.AssertPropsNew("s0", fields, new object[] { "E3", 45 });
 
                 env.SendEventBean(new SupportBean("E4", 26));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E4", 51});
+                env.AssertPropsNew("s0", fields, new object[] { "E4", 51 });
 
                 env.UndeployAll();
             }
@@ -101,17 +104,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
         public class InfraNamedWindowConsumerWBatch : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED);
+            }
+
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create schema IncomingEvent(Id int);\n" +
-                          "create schema RetainedEvent(Id int);\n" +
+                var epl = "@buseventtype @public create schema IncomingEvent(id int);\n" +
+                          "create schema RetainedEvent(id int);\n" +
                           "insert into RetainedEvent select * from IncomingEvent#expr_batch(current_count >= 10000);\n" +
                           "create window RetainedEventWindow#keepall as RetainedEvent;\n" +
                           "insert into RetainedEventWindow select * from RetainedEvent;\n";
-                env.CompileDeployWBusPublicType(epl, new RegressionPath());
+                env.CompileDeploy(epl, new RegressionPath());
 
                 IDictionary<string, object> @event = new Dictionary<string, object>();
-                @event.Put("Id", 1);
+                @event.Put("id", 1);
                 for (var i = 0; i < 10000; i++) {
                     env.SendEventMap(@event, "IncomingEvent");
                 }

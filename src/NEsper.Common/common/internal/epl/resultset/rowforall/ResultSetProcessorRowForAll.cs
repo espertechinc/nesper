@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowforall
     {
         AggregationService AggregationService { get; }
 
-        ExprEvaluatorContext ExprEvaluatorContext { get; }
+        //ExprEvaluatorContext ExprEvaluatorContext { get; }
 
         bool EvaluateHavingClause(
             EventBean[] eventsPerStream,

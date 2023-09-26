@@ -1,13 +1,10 @@
 ﻿using System;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.context.module
 {

@@ -60,8 +60,7 @@ namespace com.espertech.esper.common.client.soda
             Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             writer.Write(",");
             writer.Write(TypeName);
-            for (var i = 1; i < Children.Count; i++)
-            {
+            for (var i = 1; i < Children.Count; i++) {
                 writer.Write(",");
                 Children[i].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

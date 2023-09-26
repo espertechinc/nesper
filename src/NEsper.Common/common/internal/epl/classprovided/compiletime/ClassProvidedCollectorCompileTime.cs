@@ -11,20 +11,28 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 {
-	public class ClassProvidedCollectorCompileTime : ClassProvidedCollector {
-	    private readonly IDictionary<string, ClassProvided> moduleClassProvideds;
-	    private readonly TypeResolver parentTypeResolver;
+    public class ClassProvidedCollectorCompileTime : ClassProvidedCollector
+    {
+        private readonly IDictionary<string, ClassProvided> moduleClassProvideds;
+        private readonly TypeResolver parentTypeResolver;
 
-	    public ClassProvidedCollectorCompileTime(IDictionary<string, ClassProvided> moduleClassProvideds, TypeResolver parentTypeResolver) {
-	        this.moduleClassProvideds = moduleClassProvideds;
-	        this.parentTypeResolver = parentTypeResolver;
-	    }
+        public ClassProvidedCollectorCompileTime(
+            IDictionary<string, ClassProvided> moduleClassProvideds,
+            TypeResolver parentTypeResolver)
+        {
+            this.moduleClassProvideds = moduleClassProvideds;
+            this.parentTypeResolver = parentTypeResolver;
+        }
 
-	    public void RegisterClass(string className, ClassProvided meta) {
-	        moduleClassProvideds.Put(className, meta);
-	        meta.LoadClasses(parentTypeResolver);
-	    }
-	}
+        public void RegisterClass(
+            string className,
+            ClassProvided meta)
+        {
+            moduleClassProvideds.Put(className, meta);
+            meta.LoadClasses(parentTypeResolver);
+        }
+    }
 } // end of namespace

@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var dtx = ((DateTimeEx) target).Clone();
+            var dtx = ((DateTimeEx)target).Clone();
             DTLocalUtil.EvaluateCalOpsDtx(calendarOps, dtx, eventsPerStream, isNewData, exprEvaluatorContext);
             return reformatOp.Evaluate(dtx, eventsPerStream, isNewData, exprEvaluatorContext);
         }
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                     forge.reformatForge.ReturnType,
                     typeof(DTLocalDtxOpsReformatEval),
                     codegenClassScope)
-                .AddParam(typeof(DateTimeEx), "target");
+                .AddParam<DateTimeEx>("target");
 
             var block = methodNode.Block
                 .DeclareVar<DateTimeEx>(

@@ -47,9 +47,12 @@ namespace com.espertech.esper.common.@internal.type
                 CodegenExpressionRef s2,
                 CodegenClassScope codegenClassScope)
             {
-                CodegenExpression math = codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(_mathContext));
+                CodegenExpression math =
+                    codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(_mathContext));
                 return CodegenExpressionBuilder.ExprDotMethod(
-                    math, "Apply", CodegenExpressionBuilder.Op(s1, "/", s2));
+                    math,
+                    "Apply",
+                    CodegenExpressionBuilder.Op(s1, "/", s2));
             }
         }
     }

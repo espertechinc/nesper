@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
@@ -20,6 +19,7 @@ using NUnit.Framework;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
+
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
     public class ResultSetAggregateCountSum
@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         private const string SYMBOL_DELL = "DELL";
         private const string SYMBOL_IBM = "IBM";
 
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
             WithCountSimple(execs);
@@ -42,10 +42,19 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             WithCountDistinctGrouped(execs);
             WithSumNamedWindowRemoveGroup(execs);
             WithCountDistinctMultikeyWArray(execs);
+            WithCountSumInvalid(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> WithCountDistinctMultikeyWArray(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithCountSumInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateCountSumInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCountDistinctMultikeyWArray(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateCountDistinctMultikeyWArray());
@@ -87,7 +96,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             return execs;
         }
 
-        public static IList<RegressionExecution> WithGroupByCountNestedAggregationAvg(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithGroupByCountNestedAggregationAvg(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetAggregateGroupByCountNestedAggregationAvg());
@@ -129,13 +139,379 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             return execs;
         }
 
-        private static void TryAssertionCount(RegressionEnvironment env)
+        private class ResultSetAggregateCountSumInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl;
+
+                var message =
+                    "Failed to validate select-clause expression 'XXX': Implicit conversion from datatype 'null' to numeric is not allowed for aggregation function '";
+                epl = "select avg(null) from SupportBean";
+                env.TryInvalidCompile(epl, message.Replace("XXX", "avg(null)"));
+                epl = "select avg(distinct null) from SupportBean";
+                env.TryInvalidCompile(epl, message.Replace("XXX", "avg(distinct null)"));
+                epl = "select median(null) from SupportBean";
+                env.TryInvalidCompile(epl, message.Replace("XXX", "median(null)"));
+                epl = "select sum(null) from SupportBean";
+                env.TryInvalidCompile(epl, message.Replace("XXX", "sum(null)"));
+                epl = "select stddev(null) from SupportBean";
+                env.TryInvalidCompile(epl, message.Replace("XXX", "stddev(null)"));
+            }
+        }
+
+        private class ResultSetAggregateCountDistinctMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('s0') select count(distinct intOne) as c0, count(distinct {intOne, intTwo}) as c1 from SupportEventWithManyArray#length(3)";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                SendManyArrayAssert(env, new int[] { 1, 2 }, new int[] { 1 }, 1, 1);
+                SendManyArrayAssert(env, new int[] { 1, 2 }, new int[] { 1 }, 1, 1);
+                SendManyArrayAssert(env, new int[] { 1, 3 }, new int[] { 1 }, 2, 2);
+
+                env.Milestone(0);
+
+                SendManyArrayAssert(env, new int[] { 1, 4 }, new int[] { 1 }, 3, 3);
+                SendManyArrayAssert(env, new int[] { 1, 3 }, new int[] { 2 }, 2, 3);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateCountPlusStar : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // Test for ESPER-118
+                var fields = "symbol,cnt".SplitCsv();
+                var statementText = "@name('s0') select *, count(*) as cnt from SupportMarketDataBean";
+                env.CompileDeploy(statementText).AddListener("s0");
+
+                SendEvent(env, "S0", 1L);
+                env.AssertPropsNew("s0", fields, new object[] { "S0", 1L });
+
+                SendEvent(env, "S1", 1L);
+                env.AssertPropsNew("s0", fields, new object[] { "S1", 2L });
+
+                env.Milestone(0);
+
+                SendEvent(env, "S2", 1L);
+                env.AssertPropsNew("s0", fields, new object[] { "S2", 3L });
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateCountSimple : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var statementText = "@name('s0') select count(*) as cnt from SupportMarketDataBean#time(1)";
+                env.CompileDeploy(statementText).AddListener("s0");
+
+                SendEvent(env, "DELL", 1L);
+                env.AssertEqualsNew("s0", "cnt", 1L);
+
+                SendEvent(env, "DELL", 1L);
+                env.AssertEqualsNew("s0", "cnt", 2L);
+
+                env.Milestone(0);
+
+                SendEvent(env, "DELL", 1L);
+                env.AssertEqualsNew("s0", "cnt", 3L);
+
+                // test invalid distinct
+                env.TryInvalidCompile(
+                    "select count(distinct *) from SupportMarketDataBean",
+                    "Failed to validate select-clause expression 'count(distinct *)': Invalid use of the 'distinct' keyword with count and wildcard");
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateCountHaving : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var statementText =
+                    "@name('s0') select irstream sum(intPrimitive) as mysum from SupportBean having sum(intPrimitive) = 2";
+                env.CompileDeploy(statementText).AddListener("s0");
+
+                SendEvent(env);
+                env.AssertListenerNotInvoked("s0");
+                SendEvent(env);
+                env.AssertEqualsNew("s0", "mysum", 2);
+
+                env.Milestone(0);
+
+                SendEvent(env);
+                env.AssertEqualsOld("s0", "mysum", 2);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateSumHaving : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var statementText =
+                    "@name('s0') select irstream count(*) as mysum from SupportBean having count(*) = 2";
+                env.CompileDeploy(statementText).AddListener("s0");
+
+                SendEvent(env);
+                env.AssertListenerNotInvoked("s0");
+                SendEvent(env);
+                env.AssertEqualsNew("s0", "mysum", 2L);
+
+                env.Milestone(0);
+
+                SendEvent(env);
+                env.AssertEqualsOld("s0", "mysum", 2L);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateCountOneViewOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var model = new EPStatementObjectModel();
+                model.SelectClause = SelectClause.Create()
+                    .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
+                    .Add("symbol")
+                    .Add(Expressions.CountStar(), "countAll")
+                    .Add(Expressions.CountDistinct("volume"), "countDistVol")
+                    .Add(Expressions.Count("volume"), "countVol");
+                model.FromClause = FromClause.Create(
+                    FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(3)));
+                model.WhereClause = Expressions.Or()
+                    .Add(Expressions.Eq("symbol", "DELL"))
+                    .Add(Expressions.Eq("symbol", "IBM"))
+                    .Add(Expressions.Eq("symbol", "GE"));
+                model.GroupByClause = GroupByClause.Create("symbol");
+                model = env.CopyMayFail(model);
+
+                var epl = "select irstream symbol, " +
+                          "count(*) as countAll, " +
+                          "count(distinct volume) as countDistVol, " +
+                          "count(volume) as countVol" +
+                          " from SupportMarketDataBean#length(3) " +
+                          "where symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\" " +
+                          "group by symbol";
+                Assert.AreEqual(epl, model.ToEPL());
+
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                env.CompileDeploy(model).AddListener("s0");
+
+                TryAssertionCount(env, new AtomicLong());
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateGroupByCountNestedAggregationAvg : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // test for ESPER-328
+                var epl =
+                    "@name('s0') select symbol, count(*) as cnt, avg(count(*)) as val from SupportMarketDataBean#length(3)" +
+                    "group by symbol order by symbol asc";
+                env.CompileDeployAddListenerMileZero(epl, "s0");
+
+                SendEvent(env, SYMBOL_DELL, 50L);
+                env.AssertPropsNew("s0", "symbol,cnt,val".SplitCsv(), new object[] { "DELL", 1L, 1d });
+
+                SendEvent(env, SYMBOL_DELL, 51L);
+                env.AssertPropsNew("s0", "symbol,cnt,val".SplitCsv(), new object[] { "DELL", 2L, 1.5d });
+
+                env.Milestone(1);
+
+                SendEvent(env, SYMBOL_DELL, 52L);
+                env.AssertPropsNew("s0", "symbol,cnt,val".SplitCsv(), new object[] { "DELL", 3L, 2d });
+
+                SendEvent(env, "IBM", 52L);
+                env.AssertPropsPerRowNewOnly(
+                    "s0",
+                    "symbol,cnt,val".SplitCsv(),
+                    new object[][] { new object[] { "DELL", 2L, 2d }, new object[] { "IBM", 1L, 1d } });
+
+                env.Milestone(2);
+
+                SendEvent(env, SYMBOL_DELL, 53L);
+                env.AssertPropsNew("s0", "symbol,cnt,val".SplitCsv(), new object[] { "DELL", 2L, 2.5d });
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateCountOneViewCompile : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select irstream symbol, " +
+                          "count(*) as countAll, " +
+                          "count(distinct volume) as countDistVol, " +
+                          "count(volume) as countVol" +
+                          " from SupportMarketDataBean#length(3) " +
+                          "where symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\" " +
+                          "group by symbol";
+                env.EplToModelCompileDeploy(epl).AddListener("s0");
+
+                TryAssertionCount(env, new AtomicLong());
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateCountOneView : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var milestone = new AtomicLong();
+                var epl = "@name('s0') select irstream symbol, " +
+                          "count(*) as countAll," +
+                          "count(distinct volume) as countDistVol," +
+                          "count(all volume) as countVol" +
+                          " from SupportMarketDataBean#length(3) " +
+                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
+                          "group by symbol";
+
+                env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
+
+                TryAssertionCount(env, milestone);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ResultSetAggregateCountJoin : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var milestone = new AtomicLong();
+                var epl = "@name('s0') select irstream symbol, " +
+                          "count(*) as countAll," +
+                          "count(distinct volume) as countDistVol," +
+                          "count(volume) as countVol " +
+                          " from SupportBeanString#length(100) as one, " +
+                          "SupportMarketDataBean#length(3) as two " +
+                          "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
+                          "  and one.theString = two.symbol " +
+                          "group by symbol";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
+                env.SendEventBean(new SupportBeanString(SYMBOL_IBM));
+
+                env.MilestoneInc(milestone);
+
+                TryAssertionCount(env, milestone);
+
+                env.UndeployAll();
+            }
+        }
+
+        public class ResultSetAggregateCountDistinctGrouped : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select irstream symbol, count(distinct price) as countDistinctPrice " +
+                          "from SupportMarketDataBean group by symbol";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.Milestone(0);
+
+                env.SendEventBean(MakeMarketDataEvent("ONE", 100));
+
+                env.UndeployAll();
+            }
+        }
+
+        public class ResultSetAggregateSumNamedWindowRemoveGroup : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "theString,mysum".SplitCsv();
+                var epl = "create window MyWindow.win:keepall() as select * from SupportBean;\n" +
+                          "insert into MyWindow select * from SupportBean;\n" +
+                          "on SupportBean_A a delete from MyWindow w where w.theString = a.id;\n" +
+                          "on SupportBean_B delete from MyWindow;\n" +
+                          "@name('s0') select theString, sum(intPrimitive) as mysum from MyWindow group by theString order by theString";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBean("A", 100));
+                env.AssertPropsNew("s0", fields, new object[] { "A", 100 });
+
+                env.SendEventBean(new SupportBean("B", 20));
+                env.AssertPropsNew("s0", fields, new object[] { "B", 20 });
+
+                env.Milestone(0);
+
+                env.SendEventBean(new SupportBean("A", 101));
+                env.AssertPropsNew("s0", fields, new object[] { "A", 201 });
+
+                env.Milestone(1);
+
+                env.SendEventBean(new SupportBean("B", 21));
+                env.AssertPropsNew("s0", fields, new object[] { "B", 41 });
+                env.AssertPropsPerRowIterator(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "A", 201 }, new object[] { "B", 41 } });
+
+                env.Milestone(2);
+
+                env.SendEventBean(new SupportBean_A("A"));
+                env.AssertPropsNew("s0", fields, new object[] { "A", null });
+                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "B", 41 } });
+
+                env.Milestone(3);
+
+                env.SendEventBean(new SupportBean("A", 102));
+                env.AssertPropsNew("s0", fields, new object[] { "A", 102 });
+                env.AssertPropsPerRowIterator(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "A", 102 }, new object[] { "B", 41 } });
+
+                env.Milestone(4);
+
+                env.SendEventBean(new SupportBean_A("B"));
+                env.AssertPropsNew("s0", fields, new object[] { "B", null });
+                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "A", 102 } });
+
+                env.Milestone(5);
+
+                env.SendEventBean(new SupportBean("B", 22));
+                env.AssertPropsNew("s0", fields, new object[] { "B", 22 });
+                env.AssertPropsPerRowIterator(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "A", 102 }, new object[] { "B", 22 } });
+
+                env.UndeployAll();
+            }
+        }
+
+        private static void TryAssertionCount(
+            RegressionEnvironment env,
+            AtomicLong milestone)
         {
             // assert select result type
-            Assert.AreEqual(typeof(string), env.Statement("s0").EventType.GetPropertyType("Symbol"));
-            Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("countAll"));
-            Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("countDistVol"));
-            Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("countVol"));
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("symbol"));
+                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("countAll"));
+                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("countDistVol"));
+                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("countVol"));
+                });
 
             SendEvent(env, SYMBOL_DELL, 50L);
             AssertEvents(
@@ -162,6 +538,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 1L,
                 1L
             );
+
+            env.MilestoneInc(milestone);
 
             SendEvent(env, SYMBOL_DELL, 25L);
             AssertEvents(
@@ -202,6 +580,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 3L
             );
 
+            env.MilestoneInc(milestone);
+
             SendEvent(env, SYMBOL_IBM, 1L);
             SendEvent(env, SYMBOL_IBM, null);
             SendEvent(env, SYMBOL_IBM, null);
@@ -230,24 +610,26 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             long? countDistVolNew,
             long? countVolNew)
         {
-            var oldData = env.Listener("s0").LastOldData;
-            var newData = env.Listener("s0").LastNewData;
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var oldData = listener.LastOldData;
+                    var newData = listener.LastNewData;
+                    listener.Reset();
 
-            Assert.AreEqual(1, oldData.Length);
-            Assert.AreEqual(1, newData.Length);
+                    Assert.AreEqual(1, oldData.Length);
+                    Assert.AreEqual(1, newData.Length);
 
-            Assert.AreEqual(symbolOld, oldData[0].Get("Symbol"));
-            Assert.AreEqual(countAllOld, oldData[0].Get("countAll"));
-            Assert.AreEqual(countDistVolOld, oldData[0].Get("countDistVol"));
-            Assert.AreEqual(countVolOld, oldData[0].Get("countVol"));
+                    Assert.AreEqual(symbolOld, oldData[0].Get("symbol"));
+                    Assert.AreEqual(countAllOld, oldData[0].Get("countAll"));
+                    Assert.AreEqual(countDistVolOld, oldData[0].Get("countDistVol"));
+                    Assert.AreEqual(countVolOld, oldData[0].Get("countVol"));
 
-            Assert.AreEqual(symbolNew, newData[0].Get("Symbol"));
-            Assert.AreEqual(countAllNew, newData[0].Get("countAll"));
-            Assert.AreEqual(countDistVolNew, newData[0].Get("countDistVol"));
-            Assert.AreEqual(countVolNew, newData[0].Get("countVol"));
-
-            env.Listener("s0").Reset();
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+                    Assert.AreEqual(symbolNew, newData[0].Get("symbol"));
+                    Assert.AreEqual(countAllNew, newData[0].Get("countAll"));
+                    Assert.AreEqual(countDistVolNew, newData[0].Get("countDistVol"));
+                    Assert.AreEqual(countVolNew, newData[0].Get("countVol"));
+                });
         }
 
         private static void SendEvent(
@@ -280,396 +662,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             long expectedC1)
         {
             env.SendEventBean(new SupportEventWithManyArray("id").WithIntOne(intOne).WithIntTwo(intTwo));
-            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0,c1".SplitCsv(), new object[] {expectedC0, expectedC1});
-        }
-
-        internal class ResultSetAggregateCountDistinctMultikeyWArray : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                string epl = "@Name('s0') select count(distinct IntOne) as c0, count(distinct {IntOne, IntTwo}) as c1 from SupportEventWithManyArray#length(3)";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                SendManyArrayAssert(env, new int[] {1, 2}, new int[] {1}, 1, 1);
-                SendManyArrayAssert(env, new int[] {1, 2}, new int[] {1}, 1, 1);
-                SendManyArrayAssert(env, new int[] {1, 3}, new int[] {1}, 2, 2);
-
-                env.Milestone(0);
-
-                SendManyArrayAssert(env, new int[] {1, 4}, new int[] {1}, 3, 3);
-                SendManyArrayAssert(env, new int[] {1, 3}, new int[] {2}, 2, 3);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateCountPlusStar : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // Test for ESPER-118
-                var statementText = "@Name('s0') select *, count(*) as cnt from SupportMarketDataBean";
-                env.CompileDeploy(statementText).AddListener("s0");
-
-                SendEvent(env, "S0", 1L);
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
-                Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual(1L, env.Listener("s0").LastNewData[0].Get("cnt"));
-                Assert.AreEqual("S0", env.Listener("s0").LastNewData[0].Get("Symbol"));
-
-                SendEvent(env, "S1", 1L);
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
-                Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual(2L, env.Listener("s0").LastNewData[0].Get("cnt"));
-                Assert.AreEqual("S1", env.Listener("s0").LastNewData[0].Get("Symbol"));
-
-                SendEvent(env, "S2", 1L);
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
-                Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual(3L, env.Listener("s0").LastNewData[0].Get("cnt"));
-                Assert.AreEqual("S2", env.Listener("s0").LastNewData[0].Get("Symbol"));
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateCountSimple : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var statementText = "@Name('s0') select count(*) as cnt from SupportMarketDataBean#time(1)";
-                env.CompileDeploy(statementText).AddListener("s0");
-
-                SendEvent(env, "DELL", 1L);
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
-                Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual(1L, env.Listener("s0").LastNewData[0].Get("cnt"));
-
-                SendEvent(env, "DELL", 1L);
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
-                Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual(2L, env.Listener("s0").LastNewData[0].Get("cnt"));
-
-                SendEvent(env, "DELL", 1L);
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
-                Assert.AreEqual(1, env.Listener("s0").LastNewData.Length);
-                Assert.AreEqual(3L, env.Listener("s0").LastNewData[0].Get("cnt"));
-
-                // test invalid distinct
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
-                    "select count(distinct *) from SupportMarketDataBean",
-                    "Failed to validate select-clause expression 'count(distinct *)': Invalid use of the 'distinct' keyword with count and wildcard");
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateCountHaving : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var statementText =
-                    "@Name('s0') select irstream sum(IntPrimitive) as mysum from SupportBean having sum(IntPrimitive) = 2";
-                env.CompileDeploy(statementText).AddListener("s0");
-
-                SendEvent(env);
-                Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
-                SendEvent(env);
-                Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("mysum"));
-                SendEvent(env);
-                Assert.AreEqual(2, env.Listener("s0").AssertOneGetOldAndReset().Get("mysum"));
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateSumHaving : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var statementText =
-                    "@Name('s0') select irstream count(*) as mysum from SupportBean having count(*) = 2";
-                env.CompileDeploy(statementText).AddListener("s0");
-
-                SendEvent(env);
-                Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
-                SendEvent(env);
-                Assert.AreEqual(2L, env.Listener("s0").AssertOneGetNewAndReset().Get("mysum"));
-                SendEvent(env);
-                Assert.AreEqual(2L, env.Listener("s0").AssertOneGetOldAndReset().Get("mysum"));
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateCountOneViewOM : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create()
-                    .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
-                    .Add("Symbol")
-                    .Add(Expressions.CountStar(), "countAll")
-                    .Add(Expressions.CountDistinct("Volume"), "countDistVol")
-                    .Add(Expressions.Count("Volume"), "countVol");
-                model.FromClause = FromClause
-                    .Create(
-                        FilterStream.Create(nameof(SupportMarketDataBean))
-                            .AddView("length", Expressions.Constant(3)));
-                model.WhereClause = Expressions.Or()
-                    .Add(Expressions.Eq("Symbol", "DELL"))
-                    .Add(Expressions.Eq("Symbol", "IBM"))
-                    .Add(Expressions.Eq("Symbol", "GE"));
-                model.GroupByClause = GroupByClause.Create("Symbol");
-                model = env.CopyMayFail(model);
-
-                var epl = "select irstream Symbol, " +
-                          "count(*) as countAll, " +
-                          "count(distinct Volume) as countDistVol, " +
-                          "count(Volume) as countVol" +
-                          " from " +
-                          nameof(SupportMarketDataBean) +
-                          "#length(3) " +
-                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
-                          "group by Symbol";
-                Assert.That(model.ToEPL(), Is.EqualTo(epl));
-
-                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                env.CompileDeploy(model).AddListener("s0");
-
-                TryAssertionCount(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateGroupByCountNestedAggregationAvg : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // test for ESPER-328
-                var epl =
-                    "@Name('s0') select Symbol, count(*) as cnt, avg(count(*)) as val from SupportMarketDataBean#length(3)" +
-                    "group by Symbol order by Symbol asc";
-                env.CompileDeployAddListenerMileZero(epl, "s0");
-
-                SendEvent(env, SYMBOL_DELL, 50L);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"Symbol", "cnt", "val"},
-                    new object[] {"DELL", 1L, 1d});
-
-                SendEvent(env, SYMBOL_DELL, 51L);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"Symbol", "cnt", "val"},
-                    new object[] {"DELL", 2L, 1.5d});
-
-                SendEvent(env, SYMBOL_DELL, 52L);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"Symbol", "cnt", "val"},
-                    new object[] {"DELL", 3L, 2d});
-
-                SendEvent(env, "IBM", 52L);
-                var events = env.Listener("s0").LastNewData;
-                EPAssertionUtil.AssertProps(
-                    events[0],
-                    new[] {"Symbol", "cnt", "val"},
-                    new object[] {"DELL", 2L, 2d});
-                EPAssertionUtil.AssertProps(
-                    events[1],
-                    new[] {"Symbol", "cnt", "val"},
-                    new object[] {"IBM", 1L, 1d});
-                env.Listener("s0").Reset();
-
-                SendEvent(env, SYMBOL_DELL, 53L);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"Symbol", "cnt", "val"},
-                    new object[] {"DELL", 2L, 2.5d});
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateCountOneViewCompile : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select irstream Symbol, " +
-                          "count(*) as countAll, " +
-                          "count(distinct Volume) as countDistVol, " +
-                          "count(Volume) as countVol" +
-                          " from SupportMarketDataBean#length(3) " +
-                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
-                          "group by Symbol";
-                env.EplToModelCompileDeploy(epl).AddListener("s0");
-
-                TryAssertionCount(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateCountOneView : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select irstream Symbol, " +
-                          "count(*) as countAll," +
-                          "count(distinct Volume) as countDistVol," +
-                          "count(all Volume) as countVol" +
-                          " from SupportMarketDataBean#length(3) " +
-                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
-                          "group by Symbol";
-
-                env.CompileDeployAddListenerMileZero(epl, "s0");
-
-                TryAssertionCount(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ResultSetAggregateCountJoin : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select irstream Symbol, " +
-                          "count(*) as countAll," +
-                          "count(distinct Volume) as countDistVol," +
-                          "count(Volume) as countVol " +
-                          " from SupportBeanString#length(100) as one, " +
-                          "SupportMarketDataBean#length(3) as two " +
-                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
-                          "  and one.TheString = two.Symbol " +
-                          "group by Symbol";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
-                env.SendEventBean(new SupportBeanString(SYMBOL_IBM));
-
-                env.Milestone(0);
-
-                TryAssertionCount(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        public class ResultSetAggregateCountDistinctGrouped : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select irstream Symbol, count(distinct Price) as countDistinctPrice " +
-                          "from SupportMarketDataBean group by Symbol";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                env.Milestone(0);
-
-                env.SendEventBean(MakeMarketDataEvent("ONE", 100));
-
-                env.UndeployAll();
-            }
-        }
-
-        public class ResultSetAggregateSumNamedWindowRemoveGroup : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new[] {"TheString", "mysum"};
-                var epl = "create window MyWindow.win:keepall() as select * from SupportBean;\n" +
-                          "insert into MyWindow select * from SupportBean;\n" +
-                          "on SupportBean_A a delete from MyWindow w where w.TheString = a.Id;\n" +
-                          "on SupportBean_B delete from MyWindow;\n" +
-                          "@Name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                env.SendEventBean(new SupportBean("A", 100));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A", 100});
-
-                env.SendEventBean(new SupportBean("B", 20));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"B", 20});
-
-                env.Milestone(0);
-
-                env.SendEventBean(new SupportBean("A", 101));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A", 201});
-
-                env.Milestone(1);
-
-                env.SendEventBean(new SupportBean("B", 21));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"B", 41});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s0"),
-                    fields,
-                    new[] {new object[] {"A", 201}, new object[] {"B", 41}});
-
-                env.Milestone(2);
-
-                env.SendEventBean(new SupportBean_A("A"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A", null});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s0"),
-                    fields,
-                    new[] {new object[] {"B", 41}});
-
-                env.Milestone(3);
-
-                env.SendEventBean(new SupportBean("A", 102));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"A", 102});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s0"),
-                    fields,
-                    new[] {new object[] {"A", 102}, new object[] {"B", 41}});
-
-                env.Milestone(4);
-
-                env.SendEventBean(new SupportBean_A("B"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"B", null});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s0"),
-                    fields,
-                    new[] {new object[] {"A", 102}});
-
-                env.Milestone(5);
-
-                env.SendEventBean(new SupportBean("B", 22));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"B", 22});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s0"),
-                    fields,
-                    new[] {new object[] {"A", 102}, new object[] {"B", 22}});
-
-                env.UndeployAll();
-            }
+            env.AssertPropsNew("s0", "c0,c1".SplitCsv(), new object[] { expectedC0, expectedC1 });
         }
     }
 } // end of namespace

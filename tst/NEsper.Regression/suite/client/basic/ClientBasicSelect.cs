@@ -15,12 +15,11 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select * from SupportBean";
+            var epl = "@name('s0') select * from SupportBean";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
-            env.SendEventBean(new SupportBean())
-                .Listener("s0")
-                .AssertInvokedAndReset();
+            env.SendEventBean(new SupportBean());
+            env.AssertListenerInvoked("s0");
             env.Milestone(1);
 
             env.UndeployAll();

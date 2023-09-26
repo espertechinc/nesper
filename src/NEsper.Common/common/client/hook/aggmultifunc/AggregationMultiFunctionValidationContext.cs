@@ -112,8 +112,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
             get {
                 var named = new LinkedHashMap<string, IList<ExprNode>>();
                 foreach (var node in AllParameterExpressions) {
-                    if (node is ExprNamedParameterNode) {
-                        var namedNode = (ExprNamedParameterNode) node;
+                    if (node is ExprNamedParameterNode namedNode) {
                         named.Put(namedNode.ParameterName, Arrays.AsList(namedNode.ChildNodes));
                     }
                 }

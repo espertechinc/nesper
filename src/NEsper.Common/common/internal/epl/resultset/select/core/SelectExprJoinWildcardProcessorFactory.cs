@@ -32,13 +32,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         public static SelectExprProcessorForgeWForgables Create(
             SelectProcessorArgs args,
             InsertIntoDesc insertIntoDesc,
-            Func<String, String> eventTypeNamePostfix) 
+            Func<string, string> eventTypeNamePostfix)
         {
             var streamNames = args.TypeService.StreamNames;
             var streamTypes = args.TypeService.EventTypes;
             var moduleName = args.ModuleName;
             var additionalForgeables = new List<StmtClassForgeableFactory>();
-            
+
             if (streamNames.Length < 2 || streamTypes.Length < 2 || streamNames.Length != streamTypes.Length) {
                 throw new ArgumentException(
                     "Stream names and types parameter length is invalid, expected use of this class is for join statements");
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             false,
                             EventTypeIdPair.Unassigned()));
                     if (representation == EventUnderlyingType.MAP) {
-                        IDictionary<string, object> propertyTypes =
+                        var propertyTypes =
                             EventTypeUtility.GetPropertyTypesNonPrimitive(selectProperties);
                         resultEventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
                             metadata.Invoke(EventTypeApplicationType.MAP),
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             args.EventTypeCompileTimeResolver);
                     }
                     else if (representation == EventUnderlyingType.OBJECTARRAY) {
-                        IDictionary<string, object> propertyTypes =
+                        var propertyTypes =
                             EventTypeUtility.GetPropertyTypesNonPrimitive(selectProperties);
                         resultEventType = BaseNestableEventUtil.MakeOATypeCompileTime(
                             metadata.Invoke(EventTypeApplicationType.OBJECTARR),
@@ -134,8 +134,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             null,
                             null,
                             args.StatementName);
-                    } else if (representation == EventUnderlyingType.JSON) {
-                        EventTypeForgeablesPair pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
+                    }
+                    else if (representation == EventUnderlyingType.JSON) {
+                        var pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
                             metadata.Invoke(EventTypeApplicationType.JSON),
                             selectProperties,
                             null,
@@ -154,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 else {
                     var eventTypeName = eventTypeNamePostfix.Invoke(
                         args.CompileTimeServices.EventTypeNameGeneratorStatement.AnonymousTypeName);
-                    IDictionary<string, object> propertyTypes =
+                    var propertyTypes =
                         EventTypeUtility.GetPropertyTypesNonPrimitive(selectProperties);
                     var metadata = new Func<EventTypeApplicationType, EventTypeMetadata>(
                         type => new EventTypeMetadata(
@@ -199,8 +200,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                             null,
                             null,
                             args.StatementName);
-                    } else if (representation == EventUnderlyingType.JSON) {
-                        EventTypeForgeablesPair pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
+                    }
+                    else if (representation == EventUnderlyingType.JSON) {
+                        var pair = JsonEventTypeUtility.MakeJsonTypeCompileTimeNewType(
                             metadata.Invoke(EventTypeApplicationType.JSON),
                             propertyTypes,
                             null,
@@ -227,15 +229,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 }
                 else if (resultEventType is AvroSchemaEventType) {
                     processor = args.EventTypeAvroHandler.OutputFactory.MakeJoinWildcard(streamNames, resultEventType);
-                } else if (resultEventType is JsonEventType) {
-                    processor = new SelectEvalJoinWildcardProcessorJson(streamNames, (JsonEventType) resultEventType);
+                }
+                else if (resultEventType is JsonEventType type) {
+                    processor = new SelectEvalJoinWildcardProcessorJson(streamNames, type);
                 }
             }
 
             if (!hasTables) {
                 return new SelectExprProcessorForgeWForgables(processor, additionalForgeables);
             }
-            processor = new SelectEvalJoinWildcardProcessorTableRows(streamTypes, processor, args.TableCompileTimeResolver);
+
+            processor = new SelectEvalJoinWildcardProcessorTableRows(
+                streamTypes,
+                processor,
+                args.TableCompileTimeResolver);
             return new SelectExprProcessorForgeWForgables(processor, additionalForgeables);
         }
     }

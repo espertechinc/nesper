@@ -21,12 +21,12 @@ namespace com.espertech.esper.common.@internal.support
     {
         public static SupportEnum GetEnumFor(string value)
         {
-            return (SupportEnum) Enum.Parse(typeof(SupportEnum), value, false);
+            return (SupportEnum)Enum.Parse(typeof(SupportEnum), value, false);
         }
 
         public static SupportEnum GetValueForEnum(int value)
         {
-            return (SupportEnum) Enum.ToObject(typeof(SupportEnum), value);
+            return (SupportEnum)Enum.ToObject(typeof(SupportEnum), value);
         }
     }
 }

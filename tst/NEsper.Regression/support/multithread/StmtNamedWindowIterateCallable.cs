@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
             var stmtName = UuidGenerator.Generate();
             env.CompileDeploy(
-                "@Name('" +
+                "@name('" +
                 stmtName +
                 "') select TheString, sum(LongPrimitive) as sumLong from MyWindow group by TheString",
                 path);

@@ -6,11 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -48,7 +50,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             this.convertor = convertor;
         }
 
-        public void CollectSchedule(IList<ScheduleHandleCallbackProvider> schedules)
+        public void CollectSchedule(
+            short factoryNodeId,
+            Func<short, CallbackAttribution> callbackAttribution,
+            IList<ScheduleHandleTracked> schedules)
         {
             // nothing to collect
         }

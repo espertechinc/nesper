@@ -6,24 +6,44 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.multikey
 {
-    public class DIOMultiKeyArrayIntSerde : DataInputOutputSerdeBase<MultiKeyArrayInt>
+    public class DIOMultiKeyArrayIntSerde : DIOMultiKeyArraySerde<MultiKeyArrayInt>
     {
         public static readonly DIOMultiKeyArrayIntSerde INSTANCE = new DIOMultiKeyArrayIntSerde();
 
-        public override MultiKeyArrayInt ReadValue(
+        public Type ComponentType => typeof(int);
+
+        public void Write(
+            object @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            Write((MultiKeyArrayInt)@object, output, unitKey, writer);
+        }
+
+        public object Read(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadValue(input, unitKey);
+        }
+
+        public MultiKeyArrayInt ReadValue(
             DataInput input,
             byte[] unitKey)
         {
             return new MultiKeyArrayInt(ReadInternal(input));
         }
 
-        public override void Write(
+        public void Write(
             MultiKeyArrayInt mk,
             DataOutput output,
             byte[] unitKey,

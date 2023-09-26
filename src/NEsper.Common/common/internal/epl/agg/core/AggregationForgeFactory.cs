@@ -10,8 +10,6 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.epl.agg.access.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
@@ -40,15 +38,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         MathContext OptionalMathContext { get; }
 
-        void InitMethodForge(
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope);
-
         AggregationMultiFunctionStateKey GetAggregationStateKey(bool isMatchRecognize);
 
-        AggregationStateFactoryForge GetAggregationStateFactory(bool isMatchRecognize);
+        AggregationStateFactoryForge GetAggregationStateFactory(
+            bool isMatchRecognize,
+            bool isJoin);
 
         AggregationAgentForge GetAggregationStateAgent(
             ImportService importService,

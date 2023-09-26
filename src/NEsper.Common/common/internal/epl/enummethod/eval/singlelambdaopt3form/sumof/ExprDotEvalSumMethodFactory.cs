@@ -13,17 +13,22 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof
 {
-	public interface ExprDotEvalSumMethodFactory {
-		ExprDotEvalSumMethod SumAggregator { get; }
+    public interface ExprDotEvalSumMethodFactory
+    {
+        ExprDotEvalSumMethod SumAggregator { get; }
 
-		Type ValueType { get; }
+        Type ValueType { get; }
 
-	    void CodegenDeclare(CodegenBlock block);
+        void CodegenDeclare(CodegenBlock block);
 
-	    void CodegenEnterNumberTypedNonNull(CodegenBlock block, CodegenExpressionRef value);
+        void CodegenEnterNumberTypedNonNull(
+            CodegenBlock block,
+            CodegenExpressionRef value);
 
-	    void CodegenEnterObjectTypedNonNull(CodegenBlock block, CodegenExpressionRef value);
+        void CodegenEnterObjectTypedNonNull(
+            CodegenBlock block,
+            CodegenExpressionRef value);
 
-	    void CodegenReturn(CodegenBlock block);
-	}
+        void CodegenReturn(CodegenBlock block);
+    }
 } // end of namespace

@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.@event.util
                     accessType == AccessType.EXISTS ? typeof(bool) : typeof(object),
                     generator,
                     codegenClassScope)
-                .AddParam(typeof(object), "value");
+                .AddParam<object>("value");
             var block = methodNode.Block
                 .IfInstanceOf("value", typeof(EventBean))
                 .DeclareVarWCast(typeof(EventBean), "bean", "value");

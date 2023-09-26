@@ -31,17 +31,11 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             this.aggregationNode = aggregationNode;
         }
 
-        public int Column {
-            get => column;
-        }
+        public int Column => column;
 
-        public ExprNode AggregationNode {
-            get => aggregationNode;
-        }
+        public ExprNode AggregationNode => aggregationNode;
 
-        public ExprForge[] Forges {
-            get { return forges; }
-        }
+        public ExprForge[] Forges => forges;
 
         public static CodegenExpression MakeArray(
             TableColumnMethodPairForge[] methodPairs,
@@ -49,8 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression[] inits = new CodegenExpression[methodPairs.Length];
-            for (int i = 0; i < inits.Length; i++) {
+            var inits = new CodegenExpression[methodPairs.Length];
+            for (var i = 0; i < inits.Length; i++) {
                 inits[i] = methodPairs[i].Make(method, symbols, classScope);
             }
 
@@ -65,16 +59,16 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             CodegenExpression eval;
             if (forges.Length == 0) {
                 eval = ExprNodeUtilityCodegen.CodegenEvaluator(
-                    new ExprConstantNodeImpl((object) null).Forge,
+                    new ExprConstantNodeImpl((object)null).Forge,
                     method,
-                    this.GetType(),
+                    GetType(),
                     classScope);
             }
             else if (forges.Length == 1) {
-                eval = ExprNodeUtilityCodegen.CodegenEvaluator(forges[0], method, this.GetType(), classScope);
+                eval = ExprNodeUtilityCodegen.CodegenEvaluator(forges[0], method, GetType(), classScope);
             }
             else {
-                eval = ExprNodeUtilityCodegen.CodegenEvaluatorObjectArray(forges, method, this.GetType(), classScope);
+                eval = ExprNodeUtilityCodegen.CodegenEvaluatorObjectArray(forges, method, GetType(), classScope);
             }
 
             return NewInstance<TableColumnMethodPairEval>(eval, Constant(column));

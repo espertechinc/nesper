@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                 bool isNewData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                return reformatOp.Evaluate((DateTimeEx) target, eventsPerStream, isNewData, exprEvaluatorContext);
+                return reformatOp.Evaluate((DateTimeEx)target, eventsPerStream, isNewData, exprEvaluatorContext);
             }
         }
     }

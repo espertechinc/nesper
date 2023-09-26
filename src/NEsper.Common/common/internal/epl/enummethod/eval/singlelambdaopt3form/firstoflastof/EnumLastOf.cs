@@ -20,50 +20,50 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.firstoflastof
 {
-	public class EnumLastOf : EnumForgeBasePlain,
-		EnumForge,
-		EnumEval
-	{
-		private readonly EPType _resultType;
+    public class EnumLastOf : EnumForgeBasePlain,
+        EnumForge,
+        EnumEval
+    {
+        private readonly EPChainableType _resultType;
 
-		public EnumLastOf(
-			int streamCountIncoming,
-			EPType resultType) : base(streamCountIncoming)
-		{
-			this._resultType = resultType;
-		}
+        public EnumLastOf(
+            int streamCountIncoming,
+            EPChainableType resultType) : base(streamCountIncoming)
+        {
+            _resultType = resultType;
+        }
 
-		public override EnumEval EnumEvaluator => this;
+        public override EnumEval EnumEvaluator => this;
 
-		public object EvaluateEnumMethod(
-			EventBean[] eventsLambda,
-			ICollection<object> enumcoll,
-			bool isNewData,
-			ExprEvaluatorContext context)
-		{
-			object result = null;
-			foreach (object next in enumcoll) {
-				result = next;
-			}
+        public object EvaluateEnumMethod(
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            object result = null;
+            foreach (var next in enumcoll) {
+                result = next;
+            }
 
-			return result;
-		}
+            return result;
+        }
 
-		public override CodegenExpression Codegen(
-			EnumForgeCodegenParams args,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			var type = _resultType.GetCodegenReturnType().GetBoxedType();
-			var method = codegenMethodScope.MakeChild(type, typeof(EnumLastOf), codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS)
-				.Block
-				.DeclareVar<object>("result", ConstantNull())
-				.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-				.AssignRef("result", Ref("next"))
-				.BlockEnd()
-				.MethodReturn(FlexCast(type, Ref("result")));
-			return LocalMethod(method, args.Expressions);
-		}
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var type = _resultType.GetCodegenReturnType().GetBoxedType();
+            var method = codegenMethodScope.MakeChild(type, typeof(EnumLastOf), codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
+                .DeclareVar<object>("result", ConstantNull())
+                .ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+                .AssignRef("result", Ref("next"))
+                .BlockEnd()
+                .MethodReturn(FlexCast(type, Ref("result")));
+            return LocalMethod(method, args.Expressions);
+        }
+    }
 } // end of namespace

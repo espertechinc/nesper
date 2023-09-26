@@ -7,92 +7,98 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.regressionlib.support.bean
 {
-    public enum SupportEnumTwo
-    {
-        ENUM_VALUE_1,
-        ENUM_VALUE_2,
-        ENUM_VALUE_3
-    }
+	public enum SupportEnumTwo
+	{
+		ENUM_VALUE_1,
+		ENUM_VALUE_2,
+		ENUM_VALUE_3
+	}
 
-    public static class SupportEnumTwoExtensions
-    {
-        public static int GetAssociatedValue(this SupportEnumTwo value)
-        {
-            switch (value) {
-                case SupportEnumTwo.ENUM_VALUE_1:
-                    return 100;
+	public static class SupportEnumTwoExtensions
+	{
+		public static int GetAssociatedValue(this SupportEnumTwo value)
+		{
+			return value switch {
+				SupportEnumTwo.ENUM_VALUE_1 => 100,
+				SupportEnumTwo.ENUM_VALUE_2 => 200,
+				SupportEnumTwo.ENUM_VALUE_3 => 300,
+				_ => throw new ArgumentException(nameof(value))
+			};
+		}
 
-                case SupportEnumTwo.ENUM_VALUE_2:
-                    return 200;
+		public static string[] GetMystrings(this SupportEnumTwo value)
+		{
+			return value switch {
+				SupportEnumTwo.ENUM_VALUE_1 => new[] { "1", "0", "0" },
+				SupportEnumTwo.ENUM_VALUE_2 => new[] { "2", "0", "0" },
+				SupportEnumTwo.ENUM_VALUE_3 => new[] { "3", "0", "0" },
+				_ => throw new ArgumentException(nameof(value))
+			};
+		}
 
-                case SupportEnumTwo.ENUM_VALUE_3:
-                    return 300;
+		public static bool CheckAssociatedValue(
+			this SupportEnumTwo enumValue,
+			int value)
+		{
+			return GetAssociatedValue(enumValue) == value;
+		}
 
-                default:
-                    throw new ArgumentException(nameof(value));
-            }
-        }
+		public static bool CheckEventBeanPropInt(
+			this SupportEnumTwo enumValue,
+			EventBean @event,
+			string propertyName)
+		{
+			var value = @event.Get(propertyName);
+			if (value is int intValue) {
+				return GetAssociatedValue(enumValue) == intValue;
+			}
 
-        public static string[] GetMystrings(this SupportEnumTwo value)
-        {
-            switch (value) {
-                case SupportEnumTwo.ENUM_VALUE_1:
-                    return new[] {"1", "0", "0"};
+			return false;
+		}
 
-                case SupportEnumTwo.ENUM_VALUE_2:
-                    return new[] {"2", "0", "0"};
+		public static Nested GetNested(this SupportEnumTwo enumValue)
+		{
+			return new Nested(GetAssociatedValue(enumValue), GetMystrings(enumValue));
+		}
 
-                case SupportEnumTwo.ENUM_VALUE_3:
-                    return new[] {"3", "0", "0"};
+		public class Nested
+		{
+			private readonly int value;
+			private readonly string[] mystrings;
 
-                default:
-                    throw new ArgumentException(nameof(value));
-            }
-        }
+			public Nested(
+				int value,
+				string[] mystrings)
+			{
+				this.value = value;
+				this.mystrings = mystrings;
+			}
 
-        public static bool CheckAssociatedValue(
-            this SupportEnumTwo enumValue,
-            int value)
-        {
-            return GetAssociatedValue(enumValue) == value;
-        }
+			public int Value => value;
 
-        public static bool CheckEventBeanPropInt(
-            this SupportEnumTwo enumValue,
-            EventBean @event,
-            string propertyName)
-        {
-            var value = @event.Get(propertyName);
-            if (value == null && !(value is int?)) {
-                return false;
-            }
+			public int GetValue()
+			{
+				return Value;
+			}
 
-            return GetAssociatedValue(enumValue) == (int?) value;
-        }
+			public string[] Mystrings => mystrings;
 
-        public static Nested GetNested(this SupportEnumTwo enumValue)
-        {
-            return new Nested(GetAssociatedValue(enumValue));
-        }
+			public string[] GetMystrings()
+			{
+				return mystrings;
+			}
 
-        public class Nested
-        {
-            public Nested(int value)
-            {
-                Value = value;
-            }
-
-            public int Value { get; }
-
-            public int GetValue()
-            {
-                return Value;
-            }
-        }
-    }
+			public IList<string> GetMyStringsNestedAsList()
+			{
+				return Arrays.AsList(mystrings);
+			}
+		}
+	}
 } // end of namespace

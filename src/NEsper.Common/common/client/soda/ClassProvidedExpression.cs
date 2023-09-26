@@ -43,7 +43,8 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Print part.
         /// </summary>
-        public void ToEPL(TextWriter writer) {
+        public void ToEPL(TextWriter writer)
+        {
             writer.Write("inlined_class ");
             writer.Write("\"\"\"");
             writer.Write(_classText);
@@ -56,15 +57,20 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">output writer</param>
         /// <param name="classProvidedList">list of class provided expressions</param>
         /// <param name="formatter">formatter for newline-whitespace formatting</param>
-        public static void ToEPL(TextWriter writer, IList<ClassProvidedExpression> classProvidedList, EPStatementFormatter formatter) {
-            if ((classProvidedList == null) || (classProvidedList.IsEmpty())) {
+        public static void ToEPL(
+            TextWriter writer,
+            IList<ClassProvidedExpression> classProvidedList,
+            EPStatementFormatter formatter)
+        {
+            if (classProvidedList == null || classProvidedList.IsEmpty()) {
                 return;
             }
 
-            foreach (ClassProvidedExpression part in classProvidedList) {
+            foreach (var part in classProvidedList) {
                 if (part.ClassText == null) {
                     continue;
                 }
+
                 formatter.BeginExpressionDecl(writer);
                 part.ToEPL(writer);
             }

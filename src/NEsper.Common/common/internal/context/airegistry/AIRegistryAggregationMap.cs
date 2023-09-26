@@ -45,10 +45,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             ExprEvaluatorContext exprEvaluatorContext)
         {
             services.Get(exprEvaluatorContext.AgentInstanceId)
-                .ApplyEnter(
-                    eventsPerStream,
-                    optionalGroupKeyPerRow,
-                    exprEvaluatorContext);
+                .ApplyEnter(eventsPerStream, optionalGroupKeyPerRow, exprEvaluatorContext);
         }
 
         public void ApplyLeave(
@@ -57,10 +54,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             ExprEvaluatorContext exprEvaluatorContext)
         {
             services.Get(exprEvaluatorContext.AgentInstanceId)
-                .ApplyLeave(
-                    eventsPerStream,
-                    optionalGroupKeyPerRow,
-                    exprEvaluatorContext);
+                .ApplyLeave(eventsPerStream, optionalGroupKeyPerRow, exprEvaluatorContext);
         }
 
         public void SetCurrentAccess(
@@ -89,12 +83,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             ExprEvaluatorContext exprEvaluatorContext)
         {
             return services.Get(agentInstanceId)
-                .GetValue(
-                    column,
-                    agentInstanceId,
-                    eventsPerStream,
-                    isNewData,
-                    exprEvaluatorContext);
+                .GetValue(column, agentInstanceId, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
         public ICollection<EventBean> GetCollectionOfEvents(
@@ -126,15 +115,13 @@ namespace com.espertech.esper.common.@internal.context.airegistry
             return services.Get(context.AgentInstanceId).GetEventBean(column, eventsPerStream, isNewData, context);
         }
 
-
         public AggregationRow GetAggregationRow(
             int agentInstanceId,
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return services
-                .Get(context.AgentInstanceId)
+            return services.Get(context.AgentInstanceId)
                 .GetAggregationRow(agentInstanceId, eventsPerStream, isNewData, context);
         }
 
@@ -142,7 +129,7 @@ namespace com.espertech.esper.common.@internal.context.airegistry
         {
             // not applicable
         }
-
+        
         public void Accept(AggregationServiceVisitor visitor)
         {
             throw new UnsupportedOperationException("Not applicable");

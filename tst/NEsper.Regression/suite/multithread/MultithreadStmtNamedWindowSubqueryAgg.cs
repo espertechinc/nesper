@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -25,6 +26,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtNamedWindowSubqueryAgg : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             TrySend(env, 3, 1000, false);
@@ -39,11 +45,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             // setup statements
             var path = new RegressionPath();
-            var schemas = "create schema UpdateEvent as (uekey string, ueint int);\n" +
-                          "create schema WindowSchema as (wskey string, wsint int);\n";
-            env.CompileDeployWBusPublicType(schemas, path);
+            var schemas = 
+                "@public create schema UpdateEvent as (uekey string, ueint int);\n" +
+                "@public create schema WindowSchema as (wskey string, wsint int);\n";
+            env.CompileDeploy(schemas, path);
 
-            var createEpl = "@Name('namedWindow') create window MyWindow#keepall as WindowSchema";
+            var createEpl = "@public @Name('namedWindow') create window MyWindow#keepall as WindowSchema";
             if (indexShare) {
                 createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
             }
@@ -59,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 path);
             // note: here all threads use the same string key to insert/delete and different values for the int
             env.CompileDeploy(
-                "@Name('target') select (select intListAgg(wsint) from MyWindow mw where wskey = sb.TheString) as val from SupportBean sb",
+                "@name('target') select (select intListAgg(wsint) from MyWindow mw where wskey = sb.TheString) as val from SupportBean sb",
                 path);
 
             // execute

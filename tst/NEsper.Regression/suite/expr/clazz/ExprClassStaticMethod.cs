@@ -8,13 +8,15 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.fireandforget;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compiler.client.option;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.expr.clazz
 {
@@ -22,24 +24,42 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
     {
         public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
             WithStaticMethodLocal(execs);
             WithStaticMethodCreate(execs);
             WithStaticMethodCreateCompileVsRuntime(execs);
             WithStaticMethodLocalFAFQuery(execs);
             WithStaticMethodCreateFAFQuery(execs);
-            WithStaticMethodLocalWithPackageName(execs);
-            WithStaticMethodCreateClassWithPackageName(execs);
             WithStaticMethodLocalAndCreateClassTogether(execs);
-            WithInvalidCompile(execs);
             WithDocSamples(execs);
+            WithInvalidCompile(execs);
+            WithStaticMethodCreateClassWithPackageName(execs);
+            WithCompilerInlinedClassInspectionOption(execs);
+            WithStaticMethodLocalWithPackageName(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithStaticMethodLocalWithPackageName(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ExprClassDocSamples());
+            execs.Add(new ExprClassStaticMethodLocalWithPackageName());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCompilerInlinedClassInspectionOption(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassCompilerInlinedClassInspectionOption());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStaticMethodCreateClassWithPackageName(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassStaticMethodCreateClassWithPackageName());
             return execs;
         }
 
@@ -50,24 +70,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
             return execs;
         }
 
-        public static IList<RegressionExecution> WithStaticMethodLocalAndCreateClassTogether(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithDocSamples(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprClassDocSamples());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStaticMethodLocalAndCreateClassTogether(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprClassStaticMethodLocalAndCreateClassTogether());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithStaticMethodCreateClassWithPackageName(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ExprClassStaticMethodCreateClassWithPackageName());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithStaticMethodLocalWithPackageName(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ExprClassStaticMethodLocalWithPackageName());
             return execs;
         }
 
@@ -85,7 +99,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
             return execs;
         }
 
-        public static IList<RegressionExecution> WithStaticMethodCreateCompileVsRuntime(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithStaticMethodCreateCompileVsRuntime(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprClassStaticMethodCreateCompileVsRuntime());
@@ -108,6 +123,33 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
             return execs;
         }
 
+        private class ExprClassCompilerInlinedClassInspectionOption : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "inlined_class \"\"\"\n" +
+                          "  import java.io.File;" +
+                          "  import java.util.Arrays;" +
+                          "  public class MyUtility {\n" +
+                          "    public static void Fib(int n) {\n" +
+                          "      Console.WriteLine(Arrays.AsList(new File(\".\").list()));\n" +
+                          "    }\n" +
+                          "  }\n" +
+                          "\"\"\"\n" +
+                          "@name('s0') select MyUtility.Fib(intPrimitive) from SupportBean";
+
+                var support = new MySupportInlinedClassInspection();
+                env.Compile(epl, compilerOptions => compilerOptions.InlinedClassInspection = support);
+
+                env.AssertThat(
+                    () => {
+                        Assert.AreEqual(1, support.Contexts.Count);
+                        var ctx = support.Contexts[0];
+                        Assert.AreEqual("MyUtility", ctx.GetClassFiles()[0]); // .ThisClassName
+                    });
+            }
+        }
+
         private class ExprClassDocSamples : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -123,9 +165,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                           "\"\"\"\n" +
                           "select MyUtilityA.Fib(IntPrimitive) from SupportBean";
                 env.Compile(epl);
-                
+
                 var path = new RegressionPath();
-                var eplCreate = "create inlined_class \"\"\" \n" +
+                var eplCreate = "@public create inlined_class \"\"\" \n" +
                                 "  public class MyUtilityB {\n" +
                                 "    public static double MidPrice(double buy, double sell) {\n" +
                                 "      return (buy + sell) / 2;\n" +
@@ -157,9 +199,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                                "    }\n" +
                                "\"\"\"\n";
                 env.CompileDeploy(eplClass, path);
-                var epl = "@Name('s0') select MyClass.DoIt() as c0 from SupportBean\n";
+
+                var epl = "@name('s0') select MyClass.DoIt() as c0 from SupportBean\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
+
                 SendSBAssert(env, "E1", 1, "|bubba|");
+
                 env.UndeployAll();
             }
         }
@@ -168,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') inlined_class \"\"\"\n" +
+                var epl = "@name('s0') inlined_class \"\"\"\n" +
                           "namespace mypackage {" +
                           "    public class MyUtil {\n" +
                           "        public static string DoIt() {\n" +
@@ -179,7 +224,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                           "\"\"\" \n" +
                           "select mypackage.MyUtil.DoIt() as c0 from SupportBean\n";
                 env.CompileDeploy(epl).AddListener("s0");
+
                 SendSBAssert(env, "E1", 1, "test");
+
                 env.UndeployAll();
             }
         }
@@ -188,18 +235,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create inlined_class \"\"\"\n" +
-                          "namespace mypackage {" +
-                          "    public class MyUtil {\n" +
-                          "        public static string DoIt(string TheString, int IntPrimitive) {\n" +
-                          "            return TheString + System.Convert.ToString(IntPrimitive);\n" +
-                          "        }\n" +
-                          "    }\n" +
-                          "}\n" +
-                          "\"\"\";\n" +
-                          "@Name('s0') select mypackage.MyUtil.DoIt(TheString, IntPrimitive) as c0 from SupportBean;\n";
+                var epl =
+                    "create inlined_class \"\"\"\n" +
+                    "namespace mypackage {" +
+                    "    public class MyUtil {\n" +
+                    "        public static string DoIt(string TheString, int IntPrimitive) {\n" +
+                    "            return TheString + System.Convert.ToString(IntPrimitive);\n" +
+                    "        }\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "\"\"\";\n" +
+                    "@name('s0') select mypackage.MyUtil.DoIt(TheString, IntPrimitive) as c0 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
+
                 SendSBAssert(env, "E1", 1, "E11");
+
                 env.UndeployAll();
             }
         }
@@ -209,24 +259,35 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var eplWindow = "@public create inlined_class \"\"\"\n" +
-                                "    public class MyClass {\n" +
-                                "        public static string DoIt(string parameter) {\n" +
-                                "            return \"abc\";\n" +
-                                "        }\n" +
-                                "    }\n" +
-                                "\"\"\";\n" +
-                                "create window MyWindow#keepall as (TheString string);\n" +
-                                "on SupportBean merge MyWindow insert select TheString;\n";
+                var eplWindow =
+                    "@public create inlined_class \"\"\"\n" +
+                    "    public class MyClass {\n" +
+                    "        public static string DoIt(string parameter) {\n" +
+                    "            return \"abc\";\n" +
+                    "        }\n" +
+                    "    }\n" +
+                    "\"\"\";\n" +
+                    "@public create window MyWindow#keepall as (TheString string);\n" +
+                    "on SupportBean merge MyWindow insert select TheString;\n";
                 env.CompileDeploy(eplWindow, path);
+
                 env.SendEventBean(new SupportBean("E1", 1));
+
                 var eplFAF = "select MyClass.DoIt(TheString) as c0 from MyWindow";
                 var result = env.CompileExecuteFAF(eplFAF, path);
                 Assert.AreEqual("abc", result.Array[0].Get("c0"));
+
                 env.Milestone(0);
+
                 result = env.CompileExecuteFAF(eplFAF, path);
                 Assert.AreEqual("abc", result.Array[0].Get("c0"));
+
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.FIREANDFORGET);
             }
         }
 
@@ -235,9 +296,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var eplWindow = "create window MyWindow#keepall as (TheString string);\n" + "on SupportBean merge MyWindow insert select TheString;\n";
+                var eplWindow = "@public create window MyWindow#keepall as (TheString string);\n" +
+                                "on SupportBean merge MyWindow insert select TheString;\n";
                 env.CompileDeploy(eplWindow, path);
                 env.SendEventBean(new SupportBean("E1", 1));
+
                 var eplFAF = "inlined_class \"\"\"\n" +
                              "namespace ${NAMESPACE} {\n" +
                              "    public class MyClass {\n" +
@@ -247,17 +310,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                              "    }\n" +
                              "}\n" +
                              "\"\"\"\n select ${NAMESPACE}.MyClass.DoIt(TheString) as c0 from MyWindow";
-                var result = env.CompileExecuteFAF(
-                    eplFAF.Replace("${NAMESPACE}", NamespaceGenerator.Create()),
-                    path);
+                var result = env.CompileExecuteFAF(eplFAF.Replace("${NAMESPACE}", NamespaceGenerator.Create()), path);
                 Assert.AreEqual(">E1<", result.Array[0].Get("c0"));
+
                 env.Milestone(0);
 
-                result = env.CompileExecuteFAF(
-                    eplFAF.Replace("${NAMESPACE}", NamespaceGenerator.Create()),
-                    path);
+                result = env.CompileExecuteFAF(eplFAF.Replace("${NAMESPACE}", NamespaceGenerator.Create()), path);
                 Assert.AreEqual(">E1<", result.Array[0].Get("c0"));
+
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.FIREANDFORGET);
             }
         }
 
@@ -267,21 +333,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
             {
                 // we allow empty class text
                 env.Compile("inlined_class \"\"\" \"\"\" select * from SupportBean");
+
                 // invalid class
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "inlined_class \"\"\" x \"\"\" select * from SupportBean",
-                    "Exception processing statement: " +
-                    "Failure during module compilation: " +
-                    "[(1,2): error CS0116:");
-                //"Failed to compile class: Line 1, Column 2: One of 'class enum interface @' expected instead of 'x' for class [\"\"\" x \"\"\"]");
+                    "Failed to compile an inlined-class: Line 1, Column 2: One of 'class enum interface @' expected instead of 'x' for class [\"\"\" x \"\"\"]");
 
                 // invalid already deployed
                 var path = new RegressionPath();
-                var createClassEPL = "create inlined_class \"\"\" public class MyClass {}\"\"\"";
+                var createClassEPL = "@public create inlined_class \"\"\" public class MyClass {}\"\"\"";
                 env.Compile(createClassEPL, path);
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     path,
                     createClassEPL,
                     "Class 'MyClass' has already been declared");
@@ -289,30 +351,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                 // duplicate local class
                 var eplDuplLocal =
                     "inlined_class \"\"\" class MyDuplicate{} \"\"\" inlined_class \"\"\" class MyDuplicate{} \"\"\" select * from SupportBean";
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     eplDuplLocal,
-                    "Exception processing statement: " +
-                    "Failure during module compilation: " +
-                    "[(1,8): error CS0101: The namespace '<global namespace>' already contains a definition for 'MyDuplicate']");
+                    "Failed to compile an inlined-class: Duplicate class by name 'MyDuplicate'");
 
                 // duplicate local class and create-class class
-                var eplDuplLocalAndCreate = "inlined_class \"\"\" class MyDuplicate{} \"\"\" create inlined_class \"\"\" class MyDuplicate{} \"\"\"";
-                TryInvalidCompile(
-                    env,
+                var eplDuplLocalAndCreate =
+                    "inlined_class \"\"\" class MyDuplicate{} \"\"\" create inlined_class \"\"\" class MyDuplicate{} \"\"\"";
+                env.TryInvalidCompile(
                     eplDuplLocalAndCreate,
-                    "Exception processing statement: " +
-                    "Failure during module compilation: " +
-                    "[(1,8): error CS0101: The namespace '<global namespace>' already contains a definition for 'MyDuplicate']");
+                    "Failed to compile an inlined-class: Duplicate class by name 'MyDuplicate'");
 
                 // duplicate create-class class
-                var eplDuplCreate =
-                    "create inlined_class \"\"\" public class MyDuplicate{} \"\"\";\n" +
-                    "create inlined_class \"\"\" public class MyDuplicate{} \"\"\";\n";
-                TryInvalidCompile(
-                    env,
-                    eplDuplCreate,
-                    "Class 'MyDuplicate' has already been declared");
+                var eplDuplCreate = "create inlined_class \"\"\" public class MyDuplicate{} \"\"\";\n" +
+                                    "create inlined_class \"\"\" public class MyDuplicate{} \"\"\";\n";
+                env.TryInvalidCompile(eplDuplCreate, "Class 'MyDuplicate' has already been declared");
             }
         }
 
@@ -320,16 +373,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
         {
             public void Run(RegressionEnvironment env)
             {
-                var eplTemplate =
-                    "@public create inlined_class \"\"\"\n" +
-                    "namespace ${NAMESPACE} {\n" +
-                    "    public class MyClass {\n" +
-                    "        public static int DoIt(int parameter) {\n" +
-                    "            return ${REPLACE};\n" +
-                    "        }\n" +
-                    "    }\n" +
-                    "}\n" +
-                    "\"\"\"\n";
+                var eplTemplate = "@public create inlined_class \"\"\"\n" +
+                                  "namespace ${NAMESPACE} {\n" +
+                                  "    public class MyClass {\n" +
+                                  "        public static int DoIt(int parameter) {\n" +
+                                  "            return ${REPLACE};\n" +
+                                  "        }\n" +
+                                  "    }\n" +
+                                  "}\n" +
+                                  "\"\"\"\n";
 
                 var ns1 = NamespaceGenerator.Create();
                 var ns2 = NamespaceGenerator.Create();
@@ -341,15 +393,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                     eplTemplate
                         .Replace("${REPLACE}", "parameter+1")
                         .Replace("${NAMESPACE}", ns2));
+
                 var path = new RegressionPath();
                 path.Add(compiledReturnZero);
-                
-                var compiledQuery = env.Compile($"@Name('s0') select {ns2}.MyClass.DoIt(IntPrimitive) as c0 from SupportBean;\n", path);
+
+                var compiledQuery = env.Compile(
+                    $"@nName('s0') select {ns2}.MyClass.DoIt(IntPrimitive) as c0 from SupportBean;\n",
+                    path);
                 env.Deploy(compiledReturnPlusOne);
                 env.Deploy(compiledQuery).AddListener("s0");
+
                 SendSBAssert(env, "E1", 10, 11);
+
                 env.Milestone(0);
+
                 SendSBAssert(env, "E2", 20, 21);
+
                 env.UndeployAll();
             }
         }
@@ -377,12 +436,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                                "}\n" +
                                "\"\"\"\n";
                 env.CompileDeploy(_soda, eplClass, path);
-                env.CompileDeploy(_soda, $"@Name('s0') select {namespc}.MyClass.DoIt(TheString) as c0 from SupportBean", path);
+                env.CompileDeploy(
+                    _soda,
+                    $"@name('s0') select {namespc}.MyClass.DoIt(TheString) as c0 from SupportBean",
+                    path);
                 env.AddListener("s0");
+
                 SendSBAssert(env, "E1", 0, "|E1|");
+
                 env.Milestone(0);
+
                 SendSBAssert(env, "E2", 0, "|E2|");
+
                 env.UndeployAll();
+            }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "soda=" +
+                       _soda +
+                       '}';
             }
         }
 
@@ -409,10 +484,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                           "\"\"\" " +
                           $"select {nsp}.MyClass.DoIt(TheString) as c0 from SupportBean\n";
                 env.CompileDeploy(_soda, epl).AddListener("s0");
+
                 SendSBAssert(env, "E1", 0, "|E1|");
+
                 env.Milestone(0);
+
                 SendSBAssert(env, "E2", 0, "|E2|");
+
                 env.UndeployAll();
+            }
+
+            public string Name()
+            {
+                return $"{this.GetType().Name}{{soda={_soda}}}";
             }
         }
 
@@ -423,7 +507,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
             object expected)
         {
             env.SendEventBean(new SupportBean(theString, intPrimitive));
-            Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+            env.AssertEqualsNew("s0", "c0", expected);
         }
 
         private class MyClass
@@ -431,6 +515,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
             public string DoIt(string parameter)
             {
                 return "|" + parameter + "|";
+            }
+        }
+
+        private class MySupportInlinedClassInspection : InlinedClassInspectionOption
+        {
+            private IList<InlinedClassInspectionContext> contexts = new List<InlinedClassInspectionContext>();
+
+            public IList<InlinedClassInspectionContext> Contexts => contexts;
+
+            public void Visit(InlinedClassInspectionContext env)
+            {
+                contexts.Add(env);
             }
         }
     }

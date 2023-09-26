@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -24,13 +25,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
 {
     public class SAIFFInitializeBuilder
     {
-        private readonly CodegenClassScope classScope;
         private readonly Type originator;
         private readonly string refName;
         private readonly SAIFFInitializeSymbol symbols;
+        private readonly CodegenClassScope classScope;
+
+        private CodegenMethod method;
         private bool closed;
 
-        private readonly CodegenMethod method;
+        // Cant be a property because we have a method named... Method (WTF)
+        public CodegenMethod Method() => method;
+
+        public bool IsClosed => closed;
 
         public SAIFFInitializeBuilder(
             Type returnType,
@@ -46,7 +52,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             this.classScope = classScope;
 
             method = parent.MakeChild(returnType, originator, classScope);
-            method.Block.DeclareVar(returnType, refName, NewInstance(returnType));
+            method.Block.DeclareVarNewInstance(returnType, refName);
         }
 
         public SAIFFInitializeBuilder(
@@ -121,16 +127,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             return SetValue(name, value == null ? ConstantNull() : CodegenExpressionBuilder.Constant(value));
         }
 
-        public CodegenMethod Method()
-        {
-            return method;
-        }
-
         public SAIFFInitializeBuilder Method(
             string name,
             Func<CodegenMethod, CodegenExpression> expressionFunc)
         {
-            CodegenExpression expression = expressionFunc.Invoke(method);
+            var expression = expressionFunc.Invoke(method);
             return SetValue(name, expression ?? ConstantNull());
         }
 
@@ -138,7 +139,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             string name,
             CodegenExpression expression)
         {
-            return SetValue(name, expression == null ? ConstantNull() : expression);
+            return SetValue(name, expression ?? ConstantNull());
         }
 
         public SAIFFInitializeBuilder Forges(
@@ -161,7 +162,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             }
 
             var manufacturer = classScope.AddDefaultFieldUnshared<EventBeanManufacturer>(
-                true, forge.Make(method.Block, method, classScope));
+                true,
+                forge.Make(method.Block, method, classScope));
             return SetValue(name, manufacturer);
         }
 
@@ -169,7 +171,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             string name,
             IDictionary<string, T> values)
         {
-            return SetValue(name, BuildMap<T>(values));
+            return SetValue(name, BuildMap(values));
         }
 
         private CodegenExpression BuildMap<T>(IDictionary<string, T> map)
@@ -179,24 +181,24 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             }
 
             if (map.IsEmpty()) {
-                return StaticMethod(typeof(Collections), "GetEmptyMap", new Type[] { typeof(string), typeof(T) });
+                return StaticMethod(typeof(Collections), "GetEmptyMap", new[] { typeof(string), typeof(T) });
             }
 
             if (map.Count == 1) {
                 var single = map.First();
                 return StaticMethod(
-                    typeof(Collections),
+                        typeof(Collections),
                     "SingletonMap",
                     new Type[] { typeof(string), typeof(T) },
-                    CodegenExpressionBuilder.Constant(single.Key),
+                        CodegenExpressionBuilder.Constant(single.Key),
                     BuildMapValue(single.Value));
             }
 
             var child = method.MakeChild(typeof(IDictionary<string, T>), originator, classScope);
             child.Block.DeclareVar<IDictionary<string, T>>(
-                "map",
+                    "map",
                 NewInstance(typeof(LinkedHashMap<string, T>)));
-            foreach (var entry in map) {
+                foreach (var entry in map) {
                 child.Block.ExprDotMethod(
                     Ref("map"),
                     "Put",

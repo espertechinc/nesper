@@ -27,8 +27,10 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         private readonly Dictionary<GroupByViewAgedEntry, Pair<object, object>> groupedEvents =
             new Dictionary<GroupByViewAgedEntry, Pair<object, object>>();
+
         private readonly IDictionary<object, GroupByViewAgedEntry> subViewPerKey =
             new Dictionary<object, GroupByViewAgedEntry>();
+
         private readonly GroupByViewFactory _groupByViewFactory;
         private long? nextSweepTime;
 
@@ -207,7 +209,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             eventsPerStream[0] = theEvent;
             return _groupByViewFactory.CriteriaEval.Evaluate(eventsPerStream, true, AgentInstanceContext);
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }

@@ -119,8 +119,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             if (enumcoll.IsEventBeanCollection) {
                 return FlexCollection.Of(
                     enumcoll.EventBeanCollection
-                    .Take(size)
-                    .ToList());
+                        .Take(size)
+                        .ToList());
             }
 
             return FlexCollection.Of(
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ICollection<T> enumcoll,
             int size)
         {
-            if (CompatExtensions.IsEmpty(enumcoll)) {
+            if (enumcoll.IsEmpty()) {
                 return enumcoll;
             }
 

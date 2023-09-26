@@ -31,25 +31,26 @@ namespace com.espertech.esper.common.@internal.@event.map
             object value,
             IDictionary<string, object> map)
         {
-            var mapEntry = (IDictionary<string, object>) map.Get(propertyName);
+            var mapEntry = (IDictionary<string, object>)map.Get(propertyName);
             mapEntry?.Put(_key, value);
         }
-        
+
         public override CodegenExpression WriteCodegen(
-            CodegenExpression assigned, 
+            CodegenExpression assigned,
             CodegenExpression underlying,
             CodegenExpression target,
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
             return CodegenExpressionBuilder.StaticMethod(
-                this.GetBoxedType(), "MapWriteSetMapProp", 
+                this.GetBoxedType(),
+                "MapWriteSetMapProp",
                 CodegenExpressionBuilder.Constant(propertyName),
                 CodegenExpressionBuilder.Constant(_key),
                 underlying,
                 assigned);
         }
-        
+
         /// <summary>
         /// NOTE: Code-generation-invoked method, method name and parameter order matters 
         /// </summary>
@@ -57,14 +58,13 @@ namespace com.espertech.esper.common.@internal.@event.map
         /// <param name="key"></param>
         /// <param name="map"></param>
         /// <param name="value"></param>
-        
         public static void MapWriteSetMapProp(
             string propertyName,
             string key,
             IDictionary<string, object> map,
             object value)
         {
-            var mapEntry = (IDictionary<string, object>) map.Get(propertyName);
+            var mapEntry = (IDictionary<string, object>)map.Get(propertyName);
             if (mapEntry != null) {
                 mapEntry[key] = value;
             }

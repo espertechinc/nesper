@@ -8,7 +8,7 @@ namespace com.espertech.esper.common.client.artifact
     public class InMemoryStore : IStore
     {
         private readonly IDictionary<string, byte[]> _bytesMap;
-        
+
         public InMemoryStore()
         {
             _bytesMap = new Dictionary<string, byte[]>();

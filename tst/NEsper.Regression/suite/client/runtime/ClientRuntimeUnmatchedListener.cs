@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -21,9 +22,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithSendEvent(execs);
             WithCreateStatement(execs);
-            WithInsertInto(execs);
+            With(InsertInto)(execs);
+#endif
             return execs;
         }
 
@@ -62,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                var compiled = env.Compile("@Name('s0') select * from SupportBean");
+                var compiled = env.Compile("@name('s0') select * from SupportBean");
                 var listener = new MyUnmatchedListener();
                 env.EventService.UnmatchedListener = listener.Update;
 
@@ -101,6 +104,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 Assert.AreEqual(1, listener.Received.Count);
                 Assert.AreSame(theEvent, listener.Received[0].Underlying);
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
         }
 
         internal class ClientRuntimeUnmatchedCreateStatement : RegressionExecution
@@ -120,6 +128,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 env.UndeployAll();
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
         }
 
         internal class ClientRuntimeUnmatchedInsertInto : RegressionExecution
@@ -130,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.EventService.UnmatchedListener = listener.Update;
 
                 // create insert into
-                env.CompileDeploy("@Name('s0') insert into MyEvent select TheString from SupportBean");
+                env.CompileDeploy("@name('s0') insert into MyEvent select TheString from SupportBean");
 
                 // no statement, should be unmatched
                 SendEvent(env, "E1");
@@ -150,6 +163,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 Assert.AreEqual(1, listener.Received.Count);
                 Assert.AreEqual("E3", listener.Received[0].Get("TheString"));
                 listener.Reset();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
 

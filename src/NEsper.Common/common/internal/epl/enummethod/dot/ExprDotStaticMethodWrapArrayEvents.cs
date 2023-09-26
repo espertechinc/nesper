@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             this.type = type;
         }
 
-        public EPType TypeInfo => EPTypeHelper.CollectionOfEvents(type);
+        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfEvents(type);
 
         public ICollection<EventBean> ConvertNonNull(object result)
         {
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     typeof(BeanEventType),
                     EventTypeUtility.ResolveTypeCodegen(type, EPStatementInitServicesConstants.REF)));
             return NewInstance(
-                typeof(ExprDotStaticMethodWrapArrayEvents.WrappingCollection),
+                typeof(WrappingCollection),
                 eventSvcMember,
                 typeMember,
                 result);
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             {
                 this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
                 this.type = type;
-                this.array = (Array) array;
+                this.array = (Array)array;
             }
 
             public int Count => array.Length;
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             public IEnumerator<EventBean> GetEnumerator()
             {
-                for (int ii = 0; ii < array.Length; ii++) {
+                for (var ii = 0; ii < array.Length; ii++) {
                     yield return eventBeanTypedEventFactory.AdapterForTypedObject(
                         array.GetValue(ii),
                         type);

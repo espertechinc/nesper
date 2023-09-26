@@ -25,11 +25,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            if (requiredType == null) {
+                requiredType = typeof(object);
+            }
+
             if (forge.EvaluationType != typeof(void)) {
                 return forge.EvaluateCodegen(requiredType, parentNode, exprSymbol, codegenClassScope);
             }
 
-            CodegenMethod methodNode = parentNode.MakeChild(
+            var methodNode = parentNode.MakeChild(
                 typeof(object),
                 typeof(CodegenLegoMayVoid),
                 codegenClassScope);

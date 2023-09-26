@@ -19,59 +19,63 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.firstoflastof
 {
-	public class EnumFirstOfEvent : EnumForgeBasePlain
-	{
-		public EnumFirstOfEvent(ExprDotEvalParamLambda lambda) : base(lambda)
-		{
-		}
+    public class EnumFirstOfEvent : EnumForgeBasePlain
+    {
+        public EnumFirstOfEvent(ExprDotEvalParamLambda lambda) : base(lambda)
+        {
+        }
 
-		public override EnumEval EnumEvaluator {
-			get {
-				var inner = InnerExpression.ExprEvaluator;
-				return new ProxyEnumEval() {
-					ProcEvaluateEnumMethod = (
-						eventsLambda,
-						enumcoll,
-						isNewData,
-						context) => {
-						var beans = (ICollection<EventBean>) enumcoll;
-						foreach (var next in beans) {
-							eventsLambda[StreamNumLambda] = next;
+        public override EnumEval EnumEvaluator {
+            get {
+                var inner = InnerExpression.ExprEvaluator;
+                return new ProxyEnumEval() {
+                    ProcEvaluateEnumMethod = (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        var beans = (ICollection<EventBean>)enumcoll;
+                        foreach (var next in beans) {
+                            eventsLambda[StreamNumLambda] = next;
 
-							var pass = inner.Evaluate(eventsLambda, isNewData, context);
-							if (pass == null || false.Equals(pass)) {
-								continue;
-							}
+                            var pass = inner.Evaluate(eventsLambda, isNewData, context);
+                            if (pass == null || false.Equals(pass)) {
+                                continue;
+                            }
 
-							return next;
-						}
+                            return next;
+                        }
 
-						return null;
-					},
-				};
-			}
-		}
+                        return null;
+                    }
+                };
+            }
+        }
 
-		public override CodegenExpression Codegen(
-			EnumForgeCodegenParams premade,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			var scope = new ExprForgeCodegenSymbol(false, null);
-			var methodNode = codegenMethodScope.MakeChildWithScope(typeof(EventBean), typeof(EnumFirstOfEvent), scope, codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS);
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope.MakeChildWithScope(
+                    typeof(EventBean),
+                    typeof(EnumFirstOfEvent),
+                    scope,
+                    codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
-			var block = methodNode.Block;
-			var forEach = block
-				.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
-			CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
-				forEach,
-				InnerExpression.EvaluationType,
-				InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
-			forEach.BlockReturn(Ref("next"));
-			block.MethodReturn(ConstantNull());
-			return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
-		}
-	}
+            var block = methodNode.Block;
+            var forEach = block
+                .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
+            CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
+                forEach,
+                InnerExpression.EvaluationType,
+                InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
+            forEach.BlockReturn(Ref("next"));
+            block.MethodReturn(ConstantNull());
+            return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
+        }
+    }
 } // end of namespace

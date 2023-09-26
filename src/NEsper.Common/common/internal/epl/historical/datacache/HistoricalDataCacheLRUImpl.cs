@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.datacache
         public HistoricalDataCacheLRUImpl(int cacheSize)
         {
             CacheSize = cacheSize;
-            var hashTableCapacity = (int) Math.Ceiling(cacheSize / HASH_TABLE_LOAD_FACTOR) + 1;
+            var hashTableCapacity = (int)Math.Ceiling(cacheSize / HASH_TABLE_LOAD_FACTOR) + 1;
             cache = new LinkedHashMap<object, EventTable[]>();
             cache.RemoveEldest += entry => cache.Count > cacheSize;
         }

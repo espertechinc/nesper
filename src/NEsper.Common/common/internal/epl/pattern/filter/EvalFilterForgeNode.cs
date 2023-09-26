@@ -12,9 +12,11 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
@@ -88,8 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
         /// </summary>
         /// <value>is the optimized filter</value>
         public FilterSpecCompiled FilterSpec {
-            get => this.filterSpec;
-            set => this.filterSpec = value;
+            get => filterSpec;
+            set => filterSpec = value;
         }
 
         public override string ToString()
@@ -125,15 +127,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
             }
         }
 
-        protected override Type TypeOfFactory()
-        {
-            return typeof(EvalFilterFactoryNode);
-        }
+        protected override Type TypeOfFactory => typeof(EvalFilterFactoryNode);
 
-        protected override string NameOfFactory()
-        {
-            return "Filter";
-        }
+        protected override string NameOfFactory => "Filter";
 
         protected override void InlineCodegen(
             CodegenMethod method,
@@ -151,10 +147,16 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
         }
 
         public override void CollectSelfFilterAndSchedule(
-            IList<FilterSpecCompiled> filters,
-            IList<ScheduleHandleCallbackProvider> schedules)
+            Func<short, CallbackAttribution> callbackAttribution,
+            IList<FilterSpecTracked> filters,
+            IList<ScheduleHandleTracked> schedules)
         {
-            filters.Add(filterSpec);
+            filters.Add(new FilterSpecTracked(callbackAttribution.Invoke(FactoryNodeId), filterSpec));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.PATTERN_FILTER;
         }
     }
 } // end of namespace

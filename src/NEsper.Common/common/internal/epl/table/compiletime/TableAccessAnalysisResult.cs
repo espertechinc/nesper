@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         public IDictionary<string, TableMetadataColumn> TableColumns { get; }
 
         public ObjectArrayEventType InternalEventType { get; }
-        
+
         public DataInputOutputSerdeForge[] InternalEventTypePropertySerdes { get; }
 
         public ObjectArrayEventType PublicEventType { get; }
@@ -75,10 +75,9 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
         public string[] PrimaryKeyColumns { get; }
 
         public int[] PrimaryKeyColNums { get; }
-        
-        public MultiKeyClassRef PrimaryKeyMultikeyClasses { get; }
-        
-        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
 
+        public MultiKeyClassRef PrimaryKeyMultikeyClasses { get; }
+
+        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
     }
 } // end of namespace

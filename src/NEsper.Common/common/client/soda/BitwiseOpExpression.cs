@@ -81,10 +81,8 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             var isFirst = true;
-            foreach (var child in Children)
-            {
-                if (!isFirst)
-                {
+            foreach (var child in Children) {
+                if (!isFirst) {
                     writer.Write(BinaryOp.ExpressionText);
                 }
 

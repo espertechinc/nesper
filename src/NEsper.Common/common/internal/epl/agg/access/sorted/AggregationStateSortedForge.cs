@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,43 +7,25 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
     public class AggregationStateSortedForge : AggregationStateFactoryForge
     {
-        internal readonly AggregationForgeFactoryAccessSorted factory;
-        private AggregatorAccessSorted aggregatorAccess;
+        protected readonly AggregationForgeFactoryAccessSorted factory;
+        private readonly AggregatorAccessSorted aggregatorAccess;
 
-        public AggregationStateSortedForge(AggregationForgeFactoryAccessSorted factory)
+        public AggregationStateSortedForge(
+            AggregationForgeFactoryAccessSorted factory,
+            bool join)
         {
             this.factory = factory;
+            aggregatorAccess = new AggregatorAccessSortedImpl(join, this, factory.Parent.OptionalFilter);
         }
-
-        public SortedAggregationStateDesc Spec => factory.OptionalSortedStateDesc;
-
-        public void InitAccessForge(
-            int col,
-            bool join,
-            CodegenCtor ctor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope)
-        {
-            aggregatorAccess = new AggregatorAccessSortedImpl(
-                join,
-                this,
-                col,
-                ctor,
-                membersColumnized,
-                classScope,
-                factory.Parent.OptionalFilter);
-        }
-
-        public AggregatorAccess Aggregator => aggregatorAccess;
 
         public CodegenExpression CodegenGetAccessTableState(
             int column,
@@ -52,6 +34,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             return AggregatorAccessSortedImpl.CodegenGetAccessTableState(column, parent, classScope);
         }
+
+        public AggregatorAccess Aggregator => aggregatorAccess;
+
+        public SortedAggregationStateDesc Spec => factory.OptionalSortedStateDesc;
 
         public ExprNode Expression => factory.AggregationExpression;
     }

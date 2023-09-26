@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
@@ -27,6 +29,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     public class InfraTableMTUngroupedAccessReadMergeWrite : RegressionExecution
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         /// <summary>
         ///     For a given number of seconds:
@@ -49,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numWriteThreads)
         {
             var path = new RegressionPath();
-            var eplCreateVariable = "create table varagg (c0 int, c1 int, c2 int, c3 int, c4 int, c5 int)";
+            var eplCreateVariable = "@public create table varagg (c0 int, c1 int, c2 int, c3 int, c4 int, c5 int)";
             env.CompileDeploy(eplCreateVariable, path);
 
             var eplMerge = "on SupportBean_S0 merge varagg " +
@@ -57,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                            "when matched then update set c0=Id, c1=Id, c2=Id, c3=Id, c4=Id, c5=Id";
             env.CompileDeploy(eplMerge, path);
 
-            var eplQuery = "@Name('s0') select varagg.c0 as c0, varagg.c1 as c1, varagg.c2 as c2," +
+            var eplQuery = "@name('s0') select varagg.c0 as c0, varagg.c1 as c1, varagg.c2 as c2," +
                            "varagg.c3 as c3, varagg.c4 as c4, varagg.c5 as c5 from SupportBean_S1";
             env.CompileDeploy(eplQuery, path).AddListener("s0");
 
@@ -160,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 try {
                     while (!shutdown) {
-                        var fields = new[] {"c1", "c2", "c3", "c4", "c5"};
+                        var fields = new[] { "c1", "c2", "c3", "c4", "c5" };
                         env.SendEventBean(new SupportBean_S1(0));
                         var @event = listener.AssertOneGetNewAndReset();
                         var valueOne = @event.Get("c0");

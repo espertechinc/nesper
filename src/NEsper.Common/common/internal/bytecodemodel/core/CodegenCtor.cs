@@ -24,8 +24,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public CodegenCtor(
             Type generator,
             bool includeDebugSymbols,
-            IList<CodegenTypedParam> @params)
-            : this(generator, null, includeDebugSymbols, @params)
+            IList<CodegenTypedParam> @params) : this(generator, null, includeDebugSymbols, @params)
         {
         }
 
@@ -33,8 +32,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Type generator,
             string className,
             bool includeDebugSymbols,
-            IList<CodegenTypedParam> @params)
-            : base(null, null, generator, CodegenSymbolProviderEmpty.INSTANCE, new CodegenScope(includeDebugSymbols))
+            IList<CodegenTypedParam> @params) : base(
+            null,
+            null,
+            generator,
+            CodegenSymbolProviderEmpty.INSTANCE,
+            new CodegenScope(includeDebugSymbols))
         {
             CtorParams = @params;
             ClassName = className;
@@ -43,15 +46,18 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public CodegenCtor(
             Type generator,
             CodegenClassScope classScope,
-            IList<CodegenTypedParam> @params)
-            : base(null, null, generator, CodegenSymbolProviderEmpty.INSTANCE, new CodegenScope(classScope.IsDebug))
+            IList<CodegenTypedParam> @params) : base(
+            null,
+            null,
+            generator,
+            CodegenSymbolProviderEmpty.INSTANCE,
+            new CodegenScope(classScope.IsDebug))
         {
             CtorParams = @params;
             ClassName = classScope.ClassName;
         }
 
         public IList<CodegenTypedParam> CtorParams { get; }
-
         public string ClassName { get; }
 
         public override void MergeClasses(ISet<Type> classes)
@@ -66,8 +72,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         {
             return ConstructorDeclaration(Identifier(ClassName))
                 .WithModifiers(GetModifiers())
-                .WithParameterList(GetParameterList())
-                .WithBody(GetBody());
+                .WithParameterList(ParameterList)
+                .WithBody(Body);
         }
 
         private StatementSyntax[] AssignConstructorParametersToFields()
@@ -91,22 +97,23 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             return statements.ToArray();
         }
 
-        private BlockSyntax GetBody()
-        {
-            var block = Block();
-            // Assign constructor parameters to fields
-            block = block.AddStatements(AssignConstructorParametersToFields());
-            // Render the remainder of the constructor body
-            block = block.AddStatements(Block.CodegenSyntax());
-            // Done
-            return block;
+        public BlockSyntax Body {
+            get {
+                var block = Block();
+                // Assign constructor parameters to fields
+                block = block.AddStatements(AssignConstructorParametersToFields());
+                // Render the remainder of the constructor body
+                block = block.AddStatements(Block.CodegenSyntax());
+                // Done
+                return block;
+            }
         }
 
-        private ParameterListSyntax GetParameterList()
-        {
-            return ParameterList(
-                SeparatedList<ParameterSyntax>(
-                    CtorParams.Select(param => param.CodegenSyntaxAsParameter())));
+        public ParameterListSyntax ParameterList {
+            get {
+                return ParameterList(
+                    SeparatedList<ParameterSyntax>(CtorParams.Select(param => param.CodegenSyntaxAsParameter())));
+            }
         }
     }
 } // end of namespace

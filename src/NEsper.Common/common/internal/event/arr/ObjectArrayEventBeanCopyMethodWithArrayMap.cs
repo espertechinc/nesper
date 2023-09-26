@@ -39,13 +39,13 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public EventBean Copy(EventBean theEvent)
         {
-            var arrayBacked = (ObjectArrayBackedEventBean) theEvent;
+            var arrayBacked = (ObjectArrayBackedEventBean)theEvent;
             var props = arrayBacked.Properties;
             var shallowCopy = new object[props.Length];
             Array.Copy(props, 0, shallowCopy, 0, props.Length);
 
             foreach (var index in mapIndexesToCopy) {
-                var innerMap = (IDictionary<string, object>) shallowCopy[index];
+                var innerMap = (IDictionary<string, object>)shallowCopy[index];
                 if (innerMap != null) {
                     var copy = new Dictionary<string, object>(innerMap);
                     shallowCopy[index] = copy;

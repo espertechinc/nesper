@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         determineLocalMinMax,
                         REF_OUTGOINGEVENTS,
                         REF_GENERATINGEVENTS,
-                        ExprForgeCodegenNames.REF_ISNEWDATA,
+                        REF_ISNEWDATA,
                         REF_EXPREVALCONTEXT,
                         MEMBER_AGGREGATIONSVC))
                 .BlockReturn(NewArrayWithInit(typeof(EventBean), Ref("minmax")))
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         sortPlain,
                         REF_OUTGOINGEVENTS,
                         REF_GENERATINGEVENTS,
-                        ExprForgeCodegenNames.REF_ISNEWDATA,
+                        REF_ISNEWDATA,
                         REF_EXPREVALCONTEXT,
                         MEMBER_AGGREGATIONSVC))
                 .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "ApplyLimit", Ref("sorted")));
@@ -86,8 +86,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         sortRollup,
                         REF_OUTGOINGEVENTS,
                         REF_ORDERCURRENTGENERATORS,
-                        ExprForgeCodegenNames.REF_ISNEWDATA,
-                        MEMBER_AGENTINSTANCECONTEXT,
+                        REF_ISNEWDATA,
+                        MEMBER_EXPREVALCONTEXT,
                         MEMBER_AGGREGATIONSVC))
                 .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "DetermineLimitAndApply", Ref("sorted")));
         }
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         REF_OUTGOINGEVENTS,
                         REF_GENERATINGEVENTS,
                         REF_ORDERGROUPBYKEYS,
-                        ExprForgeCodegenNames.REF_ISNEWDATA,
+                        REF_ISNEWDATA,
                         REF_EXPREVALCONTEXT,
                         MEMBER_AGGREGATIONSVC))
                 .MethodReturn(ExprDotMethod(REF_ROWLIMITPROCESSOR, "DetermineLimitAndApply", Ref("sorted")));
@@ -146,7 +146,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            CodegenExpression comparator = classScope.AddOrGetDefaultFieldSharable(forge.OrderByProcessorForge.IComparer);
+            CodegenExpression comparator =
+                classScope.AddOrGetDefaultFieldSharable(forge.OrderByProcessorForge.IComparer);
             method.Block.MethodReturn(
                 StaticMethod(
                     typeof(OrderByProcessorUtil),

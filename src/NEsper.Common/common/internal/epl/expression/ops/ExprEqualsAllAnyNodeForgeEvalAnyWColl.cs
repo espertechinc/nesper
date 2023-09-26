@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -233,8 +233,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else if (reftype != null && reftype.IsGenericCollection()) {
                     var leftInitializer = refforge.EvaluateCodegen(
                         reftype,
-                        methodNode,
-                        exprSymbol,
+                                methodNode,
+                                exprSymbol,
                         codegenClassScope);
                     
                     var leftWithBoxing = ExprEqualsAllAnyNodeForgeHelper.ItemToCollectionUnboxing(
@@ -272,13 +272,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else {
                     var leftCoercedInitializer = refforge.EvaluateCodegen(
                         forge.CoercionTypeBoxed,
-                        methodNode,
+                                methodNode,
                         exprSymbol,
                         codegenClassScope);
-                    
+
                     block.IfRefNullReturnNull("leftCoerced");
                     block.DeclareVar(
-                        forge.CoercionTypeBoxed,
+                                forge.CoercionTypeBoxed,
                         refname,
                         forge.Coercer == null
                             ? leftCoercedInitializer
@@ -287,7 +287,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                 reftype,
                                 methodNode,
                                 codegenClassScope));
-                    
+
                     block
                         .IfRefNotNull(refname)
                         .AssignRef("hasNonNullRow", ConstantTrue())
