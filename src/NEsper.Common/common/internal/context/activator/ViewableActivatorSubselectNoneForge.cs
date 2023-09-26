@@ -36,9 +36,8 @@ namespace com.espertech.esper.common.@internal.context.activator
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF));
             var method = parent.MakeChild(typeof(ViewableActivatorSubselectNone), GetType(), classScope);
-            method.Block.DeclareVar<ViewableActivatorSubselectNone>(
-                    "none",
-                    NewInstance(typeof(ViewableActivatorSubselectNone)))
+            method.Block
+                .DeclareVarNewInstance<ViewableActivatorSubselectNone>("none")
                 .SetProperty(Ref("none"), "EventType", type)
                 .MethodReturn(Ref("none"));
             return LocalMethod(method);

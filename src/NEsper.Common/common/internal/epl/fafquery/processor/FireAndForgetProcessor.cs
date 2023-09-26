@@ -19,12 +19,12 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 
         public abstract string ContextDeploymentId { get; }
 
-        public abstract FireAndForgetInstance GetProcessorInstanceContextById(int agentInstanceId);
-
         public abstract FireAndForgetInstance ProcessorInstanceNoContext { get; }
 
         public abstract EventType EventTypePublic { get; }
 
         public abstract StatementContext StatementContext { get; }
+
+        public abstract FireAndForgetInstance GetProcessorInstanceContextById(int agentInstanceId);
     }
 } // end of namespace

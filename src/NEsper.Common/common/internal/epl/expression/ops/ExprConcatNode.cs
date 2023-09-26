@@ -9,7 +9,6 @@
 using System;
 using System.IO;
 
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.container;
@@ -59,7 +58,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var threadLocalManager = validationContext.Container.ThreadLocalManager();
-            var threadingProfile = validationContext.StatementCompileTimeService.Configuration.Common.Execution.ThreadingProfile;
+            var threadingProfile = validationContext.StatementCompileTimeService.Configuration.Common.Execution
+                .ThreadingProfile;
             _forge = new ExprConcatNodeForge(threadLocalManager, this, threadingProfile);
             return null;
         }

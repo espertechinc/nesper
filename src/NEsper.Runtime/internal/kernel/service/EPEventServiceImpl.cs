@@ -342,7 +342,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		public void Route(
 			EventBean theEvent,
 			EPStatementHandle epStatementHandle,
-			bool addToFront)
+			bool addToFront,
+			int precedence)
 		{
 			if (InstrumentationHelper.ENABLED) {
 				InstrumentationHelper.Get().QRouteBetweenStmt(theEvent, epStatementHandle, addToFront);
@@ -910,10 +911,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			}
 		}
 
-		public bool IsExternalClockingEnabled()
-		{
-			return _isUsingExternalClocking;
-		}
+		public bool IsExternalClockingEnabled => _isUsingExternalClocking;
 
 		/// <summary>
 		/// Destroy for destroying an runtime instance: sets references to null and clears thread-locals

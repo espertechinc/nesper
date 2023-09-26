@@ -12,7 +12,6 @@ using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client.artifact;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client
 {
@@ -45,9 +44,7 @@ namespace com.espertech.esper.common.client
         /// <summary>
         ///     Returns a set of assemblies.
         /// </summary>
-        public IEnumerable<Assembly> Assemblies {
-            get => Artifacts.Select(_ => _.Runtime.Assembly);
-        }
+        public IEnumerable<Assembly> Assemblies => Artifacts.Select(_ => _.Runtime.Assembly);
 
         /// <summary>
         ///     Returns a set of compiled artifacts.

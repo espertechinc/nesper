@@ -23,13 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             this.isDescending = isDescending;
         }
 
-        public ExprNode ExprNode {
-            get => exprNode;
-        }
+        public ExprNode ExprNode => exprNode;
 
-        public bool IsDescending()
-        {
-            return isDescending;
-        }
+        public bool IsDescending => isDescending;
     }
 } // end of namespace

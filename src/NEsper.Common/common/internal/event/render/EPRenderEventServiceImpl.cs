@@ -30,9 +30,11 @@ namespace com.espertech.esper.common.@internal.@event.render
             if (eventType is JsonEventType) {
                 return JSONEventRendererJsonEventType.INSTANCE;
             }
+
             if (options == null) {
                 options = new JSONRenderingOptions();
             }
+
             return new JSONRendererImpl(eventType, options);
         }
 

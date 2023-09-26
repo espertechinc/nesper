@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             EventTable[] eventTables,
             EventType[] eventTypes)
         {
-            var index = (PropertyHashedEventTable) eventTables[0];
+            var index = (PropertyHashedEventTable)eventTables[0];
             if (eventPropertyValueGetter != null) {
                 return new IndexedTableLookupStrategyHashedProp(this, index);
             }

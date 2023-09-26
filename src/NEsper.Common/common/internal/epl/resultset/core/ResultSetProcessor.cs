@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             IList<UniformPair<EventBean[]>> viewEventsList,
             bool generateSynthetic);
 
-        void SetAgentInstanceContext(AgentInstanceContext value);
+        ExprEvaluatorContext ExprEvaluatorContext { get; set; }
 
         void ApplyViewResult(
             EventBean[] newData,

@@ -25,9 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             RandomAccessByIndexGetter randomAccessGetter,
             RelativeAccessByEventNIndexGetter relativeAccessGetter)
         {
-            this._streamNumber = streamNumber;
-            this._randomAccessGetter = randomAccessGetter;
-            this._relativeAccessGetter = relativeAccessGetter;
+            _streamNumber = streamNumber;
+            _randomAccessGetter = randomAccessGetter;
+            _relativeAccessGetter = relativeAccessGetter;
         }
 
         public object Evaluate(
@@ -36,12 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         {
             long size;
             if (_randomAccessGetter != null) {
-                RandomAccessByIndex randomAccess = _randomAccessGetter.Accessor;
+                var randomAccess = _randomAccessGetter.Accessor;
                 size = randomAccess.WindowCount;
             }
             else {
-                EventBean evalEvent = eventsPerStream[_streamNumber];
-                RelativeAccessByEventNIndex relativeAccess = _relativeAccessGetter.GetAccessor(evalEvent);
+                var evalEvent = eventsPerStream[_streamNumber];
+                var relativeAccess = _relativeAccessGetter.GetAccessor(evalEvent);
                 if (relativeAccess == null) {
                     return null;
                 }

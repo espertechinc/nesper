@@ -11,7 +11,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
     {
         private class ExprDotEvalSumMethodFactoryInteger : ExprDotEvalSumMethodFactory
         {
-            internal static readonly ExprDotEvalSumMethodFactoryInteger INSTANCE = new ExprDotEvalSumMethodFactoryInteger();
+            internal static readonly ExprDotEvalSumMethodFactoryInteger INSTANCE =
+                new ExprDotEvalSumMethodFactoryInteger();
 
             private ExprDotEvalSumMethodFactoryInteger()
             {

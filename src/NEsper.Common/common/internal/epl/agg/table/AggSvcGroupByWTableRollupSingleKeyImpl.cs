@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             object compositeGroupByKey,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var groupKeyPerLevel = (object[]) compositeGroupByKey;
+            var groupKeyPerLevel = (object[])compositeGroupByKey;
             foreach (var groupByKey in groupKeyPerLevel) {
                 ApplyEnterTableKey(eventsPerStream, groupByKey, exprEvaluatorContext);
             }
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.table
             object compositeGroupByKey,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var groupKeyPerLevel = (object[]) compositeGroupByKey;
+            var groupKeyPerLevel = (object[])compositeGroupByKey;
             foreach (var groupByKey in groupKeyPerLevel) {
                 ApplyLeaveTableKey(eventsPerStream, groupByKey, exprEvaluatorContext);
             }

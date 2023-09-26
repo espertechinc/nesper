@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 
 namespace com.espertech.esper.common.@internal.context.controller.core
 {
@@ -17,5 +18,7 @@ namespace com.espertech.esper.common.@internal.context.controller.core
         public ContextControllerFactory[] ControllerFactories { get; set; }
 
         public EventType EventTypeContextProperties { get; set; }
+
+        public StateMgmtSetting PartitionIdSvcStateMgmtSettings { get; set; }
     }
 } // end of namespace

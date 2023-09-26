@@ -22,8 +22,8 @@ namespace com.espertech.esper.common.@internal.util
         public static byte[] ObjectToByteArr(object underlying)
         {
             return SerializerFactory.Instance.Serialize(
-                new[] {SerializerFactory.Instance.OBJECT_SERIALIZER},
-                new[] {underlying});
+                new[] { SerializerFactory.Instance.OBJECT_SERIALIZER },
+                new[] { underlying });
         }
 
         /// <summary>Deserialize byte array to object. </summary>
@@ -38,18 +38,18 @@ namespace com.espertech.esper.common.@internal.util
             return SerializerFactory.Instance.Deserialize(
                 1,
                 bytes,
-                new[] {SerializerFactory.Instance.OBJECT_SERIALIZER})[0];
+                new[] { SerializerFactory.Instance.OBJECT_SERIALIZER })[0];
         }
 
         public static object ByteArrBase64ToObject(string s)
         {
-            byte[] bytes = Convert.FromBase64String(s);
+            var bytes = Convert.FromBase64String(s);
             return ByteArrToObject(bytes);
         }
-        
+
         public static string ObjectToByteArrBase64(object userObject)
         {
-            byte[] bytes = ObjectToByteArr(userObject);
+            var bytes = ObjectToByteArr(userObject);
             return Convert.ToBase64String(bytes);
         }
 
@@ -64,13 +64,13 @@ namespace com.espertech.esper.common.@internal.util
                 return Constant(userObject);
             }
 
-            var value = SerializerUtil.ObjectToByteArrBase64(userObject);
+            var value = ObjectToByteArrBase64(userObject);
             return StaticMethod(typeof(SerializerUtil), "ByteArrBase64ToObject", Constant(value));
         }
 
         private static bool IsUseSerialize(Type clazz)
         {
-            if (TypeHelper.IsBuiltinDataType(clazz)) {
+            if (clazz.IsBuiltinDataType()) {
                 return false;
             }
 

@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.type
             int min,
             int max)
         {
-            if ((min >= Low) && (max <= High)) {
+            if (min >= Low && max <= High) {
                 return true;
             }
 
@@ -58,8 +58,8 @@ namespace com.espertech.esper.common.@internal.type
         {
             ICollection<int> values = new HashSet<int>();
 
-            int start = (min > Low) ? min : Low;
-            int end = (max > High) ? High : max;
+            var start = min > Low ? min : Low;
+            var end = max > High ? High : max;
 
             while (start <= end) {
                 values.Add(start);
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public bool ContainsPoint(int point)
         {
-            return (Low <= point && point <= High);
+            return Low <= point && point <= High;
         }
 
         public string Formatted()

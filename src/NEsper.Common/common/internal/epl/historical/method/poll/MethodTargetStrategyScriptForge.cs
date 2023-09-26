@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(MethodTargetStrategyScript), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(MethodTargetStrategyScript), GetType(), classScope);
             method.Block
                 .DeclareVar<MethodTargetStrategyScript>("target", NewInstance(typeof(MethodTargetStrategyScript)))
                 .SetProperty(Ref("target"), "ScriptEvaluator", script.GetField(classScope))

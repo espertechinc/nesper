@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,8 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public class SubselectForgeStrategyRowPlain : SubselectForgeStrategyRowBase
     {
-        public SubselectForgeStrategyRowPlain(ExprSubselectRowNode subselect)
-            : base(subselect)
+        public SubselectForgeStrategyRowPlain(ExprSubselectRowNode subselect) : base(subselect)
         {
         }
 
@@ -35,23 +34,27 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(subselect.EvaluationType, this.GetType(), classScope);
+            if (Subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
 
-            if (subselect.FilterExpr == null) {
+            var method = parent.MakeChild(Subselect.EvaluationType, GetType(), classScope);
+
+            if (Subselect.filterExpr == null) {
                 method.Block
                     .IfCondition(
                         Relational(
-                            ExprDotName(symbols.GetAddMatchingEvents(method), "Count"),
+                            ExprDotMethod(symbols.GetAddMatchingEvents(method), "size"),
                             CodegenExpressionRelational.CodegenRelational.GT,
                             Constant(1)))
                     .BlockReturn(ConstantNull());
-                if (subselect.SelectClause == null) {
+                if (Subselect.selectClause == null) {
                     method.Block.MethodReturn(
-                        FlexCast(
-                            subselect.EvaluationType,
+                        Cast(
+                            Subselect.EvaluationType,
                             StaticMethod(
                                 typeof(EventBeanUtility),
-                                "GetNonemptyFirstEventUnderlying",
+                                "getNonemptyFirstEventUnderlying",
                                 symbols.GetAddMatchingEvents(method))));
                     return LocalMethod(method);
                 }
@@ -62,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             Constant(0),
                             StaticMethod(
                                 typeof(EventBeanUtility),
-                                "GetNonemptyFirstEvent",
+                                "getNonemptyFirstEvent",
                                 symbols.GetAddMatchingEvents(method)));
                 }
             }
@@ -76,7 +79,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     symbols.GetAddMatchingEvents(method));
                 {
                     @foreach.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"));
-                    var filter = CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, method, classScope, true);
+                    var filter = CodegenLegoMethodExpression.CodegenExpression(
+                        Subselect.filterExpr,
+                        method,
+                        classScope);
                     CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                         @foreach,
                         typeof(bool?),
@@ -85,22 +91,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             REF_EVENTS_SHIFTED,
                             symbols.GetAddIsNewData(method),
                             symbols.GetAddExprEvalCtx(method)));
-                    @foreach
-                        .IfCondition(NotEqualsNull(Ref("filtered")))
+                    @foreach.IfCondition(NotEqualsNull(Ref("filtered")))
                         .BlockReturn(ConstantNull())
                         .AssignRef("filtered", Ref("@event"));
                 }
 
-                if (subselect.SelectClause == null) {
-                    method.Block
-                        .IfRefNullReturnNull("filtered")
-                        .MethodReturn(Cast(subselect.EvaluationType, ExprDotUnderlying(Ref("filtered"))));
-
+                if (Subselect.selectClause == null) {
+                    method.Block.IfRefNullReturnNull("filtered")
+                        .MethodReturn(Cast(Subselect.EvaluationType, ExprDotUnderlying(Ref("filtered"))));
                     return LocalMethod(method);
                 }
 
-                method.Block
-                    .IfRefNullReturnNull("filtered")
+                method.Block.IfRefNullReturnNull("filtered")
                     .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("filtered"));
             }
 
@@ -114,46 +116,47 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (subselect.FilterExpr == null) {
-                if (subselect.SelectClause == null) {
+            if (Subselect.filterExpr == null) {
+                if (Subselect.selectClause == null) {
                     return symbols.GetAddMatchingEvents(parent);
                 }
                 else {
-                    if (subselect.subselectMultirowType == null) {
-                        var eval = ((ExprIdentNode) subselect.SelectClause[0]).ExprEvaluatorIdent;
+                    if (Subselect.SubselectMultirowType == null) {
+                        var eval = ((ExprIdentNode)Subselect.selectClause[0]).ExprEvaluatorIdent;
                         var method = parent.MakeChild(
                             typeof(FlexCollection),
-                            this.GetType(),
+                            GetType(),
                             classScope);
                         method.Block.DeclareVar<ICollection<EventBean>>(
                             "events",
                             NewInstance<ArrayDeque<EventBean>>(
-                                ExprDotName(symbols.GetAddMatchingEvents(method), "Count")));
+                                ExprDotMethod(symbols.GetAddMatchingEvents(method), "size")));
                         var @foreach = method.Block.ForEach(
                             typeof(EventBean),
                             "@event",
                             symbols.GetAddMatchingEvents(method));
                         {
-                            @foreach.DeclareVar<EventBean>(
+                            @foreach.DeclareVar<object>(
                                     "fragment",
-                                    CodegenLegoCast.CastSafeFromObjectType(
-                                        typeof(EventBean),
-                                        eval.Getter.EventBeanFragmentCodegen(Ref("@event"), method, classScope)))
+                                    eval.Getter.EventBeanFragmentCodegen(Ref("@event"), method, classScope))
                                 .IfRefNull("fragment")
                                 .BlockContinue()
                                 .ExprDotMethod(Ref("events"), "Add", Ref("fragment"));
                         }
-                        method.Block.MethodReturn(FlexWrap(Ref("events")));
+                        method.Block.MethodReturn(Ref("events"));
                         return LocalMethod(method);
                     }
 
                     // when selecting a combined output row that contains multiple fields
-                    var methodX = parent.MakeChild(typeof(FlexCollection), this.GetType(), classScope);
+                    var methodX = parent.MakeChild(
+                        typeof(FlexCollection),
+                        GetType(),
+                        classScope);
                     var fieldEventType = classScope.AddDefaultFieldUnshared(
                         true,
                         typeof(EventType),
                         EventTypeUtility.ResolveTypeCodegen(
-                            subselect.subselectMultirowType,
+                            Subselect.SubselectMultirowType,
                             EPStatementInitServicesConstants.REF));
                     var eventBeanSvc =
                         classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
@@ -162,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         .DeclareVar<ICollection<EventBean>>(
                             "result",
                             NewInstance<ArrayDeque<EventBean>>(
-                                ExprDotName(symbols.GetAddMatchingEvents(methodX), "Count")))
+                                ExprDotMethod(symbols.GetAddMatchingEvents(methodX), "size")))
                         .ApplyTri(DECLARE_EVENTS_SHIFTED, methodX, symbols);
                     var foreachX = methodX.Block.ForEach(
                         typeof(EventBean),
@@ -173,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             .DeclareVar<IDictionary<string, object>>(
                                 "row",
                                 LocalMethod(
-                                    subselect.EvaluateRowCodegen(methodX, classScope),
+                                    Subselect.EvaluateRowCodegen(methodX, classScope),
                                     REF_EVENTS_SHIFTED,
                                     ConstantTrue(),
                                     symbols.GetAddExprEvalCtx(methodX)))
@@ -182,17 +185,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                                 ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", Ref("row"), fieldEventType))
                             .ExprDotMethod(Ref("result"), "Add", Ref("rowEvent"));
                     }
-                    methodX.Block.MethodReturn(FlexWrap(Ref("result")));
+                    methodX.Block.MethodReturn(Ref("result"));
                     return LocalMethod(methodX);
                 }
             }
 
-            if (subselect.SelectClause != null) {
+            if (Subselect.selectClause != null) {
                 return ConstantNull();
             }
 
             // handle filtered
-            var methodY = parent.MakeChild(typeof(FlexCollection), this.GetType(), classScope);
+            var methodY = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
 
             methodY.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, methodY, symbols);
 
@@ -203,7 +206,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 symbols.GetAddMatchingEvents(methodY));
             {
                 foreachY.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"));
-                var filter = CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, methodY, classScope, true);
+                var filter = CodegenLegoMethodExpression.CodegenExpression(
+                    Subselect.filterExpr,
+                    methodY,
+                    classScope);
                 CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
                     foreachY,
                     typeof(bool?),
@@ -227,12 +233,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (subselect.FilterExpr == null) {
-                if (subselect.SelectClause == null) {
+            if (Subselect.filterExpr == null) {
+                if (Subselect.selectClause == null) {
                     return ConstantNull();
                 }
                 else {
-                    var method = parent.MakeChild(typeof(FlexCollection), this.GetType(), classScope);
+                    var method = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
                     method.Block
                         .DeclareVar<IList<object>>("result", NewInstance(typeof(List<object>)))
                         .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
@@ -251,16 +257,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 }
             }
 
-            if (subselect.SelectClause == null) {
+            if (Subselect.SelectClause == null) {
                 return ConstantNull();
             }
 
-            var methodX = parent.MakeChild(typeof(FlexCollection), this.GetType(), classScope);
+            var methodX = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
             methodX.Block
                 .DeclareVar<IList<object>>("result", NewInstance(typeof(List<object>)))
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, methodX, symbols);
             var selectClauseX = GetSelectClauseExpr(methodX, symbols, classScope);
-            var filter = CodegenLegoMethodExpression.CodegenExpression(subselect.FilterExpr, methodX, classScope, true);
+            var filter = CodegenLegoMethodExpression.CodegenExpression(Subselect.FilterExpr, methodX, classScope);
             var foreachX = methodX.Block.ForEach(
                 typeof(EventBean),
                 "@event",
@@ -287,12 +293,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(EventBean), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(EventBean), GetType(), classScope);
 
-            if (subselect.SelectClause == null) {
-                if (subselect.FilterExpr == null) {
-                    method
-                        .Block
+            if (Subselect.SelectClause == null) {
+                if (Subselect.FilterExpr == null) {
+                    method.Block
                         .IfCondition(
                             Relational(
                                 ExprDotName(
@@ -302,20 +307,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                                 Constant(1)))
                         .BlockReturn(ConstantNull())
                         .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
-                        .MethodReturn(StaticMethod(typeof(EventBeanUtility), "GetNonemptyFirstEvent", symbols.GetAddMatchingEvents(method)));
+                        .MethodReturn(
+                            StaticMethod(
+                                typeof(EventBeanUtility),
+                                "GetNonemptyFirstEvent",
+                                symbols.GetAddMatchingEvents(method)));
                     return LocalMethod(method);
                 }
 
                 CodegenExpression filterX = ExprNodeUtilityCodegen.CodegenEvaluator(
-                    subselect.FilterExpr,
+                    Subselect.FilterExpr,
                     method,
                     GetType(),
                     classScope);
-                method
-                    .Block
+                method.Block
                     .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
-                    .DeclareVar(
-                        typeof(EventBean),
+                    .DeclareVar<EventBean>(
                         "subSelectResult",
                         StaticMethod(
                             typeof(EventBeanUtility),
@@ -335,10 +342,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(
-                    subselect.subselectMultirowType,
+                    Subselect.SubselectMultirowType,
                     EPStatementInitServicesConstants.REF));
 
-            if (subselect.FilterExpr == null) {
+            if (Subselect.FilterExpr == null) {
                 method.Block
                     .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
                     .AssignArrayElement(
@@ -351,7 +358,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .DeclareVar<IDictionary<string, object>>(
                         "row",
                         LocalMethod(
-                            subselect.EvaluateRowCodegen(method, classScope),
+                            Subselect.EvaluateRowCodegen(method, classScope),
                             REF_EVENTS_SHIFTED,
                             ConstantTrue(),
                             symbols.GetAddExprEvalCtx(method)))
@@ -363,9 +370,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             var filter = ExprNodeUtilityCodegen.CodegenEvaluator(
-                subselect.FilterExpr,
+                Subselect.FilterExpr,
                 method,
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
@@ -379,11 +386,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         symbols.GetAddMatchingEvents(method),
                         symbols.GetAddExprEvalCtx(method),
                         filter))
-                .IfRefNullReturnNull("subselectResult")
+                .IfRefNullReturnNull("subSelectResult")
                 .DeclareVar<IDictionary<string, object>>(
                     "row",
                     LocalMethod(
-                        subselect.EvaluateRowCodegen(method, classScope),
+                        Subselect.EvaluateRowCodegen(method, classScope),
                         REF_EVENTS_SHIFTED,
                         ConstantTrue(),
                         symbols.GetAddExprEvalCtx(method)))
@@ -399,15 +406,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (subselect.SelectClause.Length == 1) {
-                var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[0].Forge, method, classScope, true);
+            if (Subselect.SelectClause.Length == 1) {
+                var eval = CodegenLegoMethodExpression.CodegenExpression(
+                    Subselect.SelectClause[0].Forge,
+                    method,
+                    classScope);
                 return LocalMethod(eval, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method));
             }
 
             var methodSelect = ExprNodeUtilityCodegen.CodegenMapSelect(
-                subselect.SelectClause,
-                subselect.SelectAsNames,
-                this.GetType(),
+                Subselect.SelectClause,
+                Subselect.SelectAsNames,
+                GetType(),
                 method,
                 classScope);
             return LocalMethod(methodSelect, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method));

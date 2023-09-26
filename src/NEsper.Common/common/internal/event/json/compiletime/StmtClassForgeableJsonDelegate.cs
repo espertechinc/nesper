@@ -79,9 +79,10 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
 			var trySetPropertyMethod = CodegenMethod
 				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-				.AddParam(new CodegenNamedParam(typeof(string), "name"))
-				.AddParam(new CodegenNamedParam(typeof(object), "underlying"))
-				.AddParam(new CodegenNamedParam(typeof(object), "value"));
+				.AddParam(new CodegenNamedParam(typeof(string), "index"))
+				.AddParam(new CodegenNamedParam(typeof(object), "value"))
+				.AddParam(new CodegenNamedParam(typeof(object), "underlying"));
+
 			trySetPropertyMethod = MakeTrySetProperty(trySetPropertyMethod);
 
 			// --------------------------------------------------------------------------------

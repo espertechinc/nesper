@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.core;
+
 
 namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
@@ -37,12 +38,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             this.inner = inner;
         }
 
-        public DTLocalEvaluator DTEvaluator {
-            get => new DTLocalBeanIntervalWithEndEval(
-                getterStartTimestamp,
-                getterEndTimestamp,
-                inner.MakeEvaluatorComp());
-        }
+        public DTLocalEvaluator DTEvaluator => new DTLocalBeanIntervalWithEndEval(
+            getterStartTimestamp,
+            getterEndTimestamp,
+            inner.MakeEvaluatorComp());
 
         public CodegenExpression Codegen(
             CodegenExpression inner,

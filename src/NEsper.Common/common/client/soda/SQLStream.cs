@@ -134,10 +134,9 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the metadata SQL if any.
         /// </summary>
         /// <returns>metadata SQL</returns>
-        public string OptionalMetadataSQL
-        {
+        public string OptionalMetadataSQL {
             get => optionalMetadataSQL;
-            set { optionalMetadataSQL = value; }
+            set => optionalMetadataSQL = value;
         }
 
         public override void ToEPLStream(

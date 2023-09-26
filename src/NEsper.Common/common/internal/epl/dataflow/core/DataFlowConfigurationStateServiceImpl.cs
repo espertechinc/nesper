@@ -29,9 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.core
             savedConfigs.Put(savedConfiguration.SavedConfigurationName, savedConfiguration);
         }
 
-        public string[] SavedConfigNames {
-            get { return savedConfigs.Keys.ToArray(); }
-        }
+        public string[] SavedConfigNames => savedConfigs.Keys.ToArray();
 
         public EPDataFlowSavedConfiguration GetSavedConfig(string savedConfigName)
         {

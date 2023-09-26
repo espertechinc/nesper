@@ -56,9 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public ImportSingleRowDesc Config => config;
 
-        public bool IsLocalInlinedClass {
-            get => forge.IsLocalInlinedClass;
-        }
+        public bool IsLocalInlinedClass => forge.IsLocalInlinedClass;
 
         public ExprEvaluator ExprEvaluator {
             get {
@@ -80,9 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public bool FilterLookupEligible {
+        public bool IsFilterLookupEligible {
             get {
-                var eligible = !forge.IsReturnsConstantResult;
+                var eligible = !forge.IsReturnsConstantResult && forge.EvaluationType != null;
                 if (eligible) {
                     eligible = ChainSpec.Count == 1;
                 }
@@ -131,7 +129,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public ExprFilterSpecLookupableForge FilterLookupable {
             get {
                 CheckValidated(forge);
-                var filterSerde = compileTimeServices.SerdeResolver.SerdeForFilter(forge.EvaluationType, statementRawInfo);
+                var filterSerde = compileTimeServices.SerdeResolver.SerdeForFilter(
+                    forge.EvaluationType,
+                    statementRawInfo);
                 return new ExprFilterSpecLookupableForge(
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this),
                     forge,
@@ -155,11 +155,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprPlugInSingleRowNode)) {
+            if (!(node is ExprPlugInSingleRowNode other)) {
                 return false;
             }
 
-            var other = (ExprPlugInSingleRowNode) node;
             if (other.ChainSpec.Count != ChainSpec.Count) {
                 return false;
             }
@@ -177,12 +176,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             compileTimeServices = validationContext.StatementCompileTimeService;
             statementRawInfo = validationContext.StatementRawInfo;
-            
+
             ExprNodeUtilityValidate.Validate(ExprNodeOrigin.PLUGINSINGLEROWPARAM, ChainSpec, validationContext);
 
             // get first chain item
             var chainList = new List<Chainable>(ChainSpec);
-            var firstItem = chainList.DeleteAt(0);
+            Chainable firstItem = chainList.DeleteAt(0);
 
             // Get the types of the parameters for the first invocation
             var allowWildcard = validationContext.StreamTypeService.EventTypes.Length == 1;
@@ -194,11 +193,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var staticMethodDesc = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
                 clazz.FullName,
                 null,
-                firstItem.GetRootNameOrEmptyString(),
-                firstItem.GetParametersOrEmpty(),
+                firstItem.RootNameOrEmptyString,
+                firstItem.ParametersOrEmpty,
                 allowWildcard,
                 streamZeroType,
-                new ExprNodeUtilResolveExceptionHandlerDefault(firstItem.GetRootNameOrEmptyString(), true),
+                new ExprNodeUtilResolveExceptionHandlerDefault(firstItem.RootNameOrEmptyString, true),
                 FunctionName,
                 validationContext.StatementRawInfo,
                 validationContext.StatementCompileTimeService);
@@ -228,14 +227,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             // this may return a pair of null if there is no lambda or the result cannot be wrapped for lambda-function use
-            ExprDotStaticMethodWrap optionalLambdaWrap = ExprDotStaticMethodWrapFactory.Make(
+            var optionalLambdaWrap = ExprDotStaticMethodWrapFactory.Make(
                 staticMethodDesc.ReflectionMethod,
                 chainList,
                 config.OptionalEventTypeName,
                 validationContext);
+
+            var methodReturnClass = staticMethodDesc.ReflectionMethod.ReturnType;
             var typeInfo = optionalLambdaWrap != null
                 ? optionalLambdaWrap.TypeInfo
-                : EPTypeHelper.SingleValue(staticMethodDesc.ReflectionMethod.ReturnType);
+                : EPChainableTypeHelper.SingleValue(methodReturnClass);
 
             var eval = ExprDotNodeUtility.GetChainEvaluators(
                     -1,

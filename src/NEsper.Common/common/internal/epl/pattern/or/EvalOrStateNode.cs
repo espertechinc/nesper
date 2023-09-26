@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.or
                 child?.Quit();
             }
 
-            childNodes.Fill((EvalStateNode) null);
+            childNodes.Fill((EvalStateNode)null);
             quitted = true;
         }
     }

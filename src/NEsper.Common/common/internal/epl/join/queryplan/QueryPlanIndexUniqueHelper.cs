@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                         functions = new List<QueryGraphValueEntryHashKeyedForge>();
                     for (var i = 0; i < indexes.Length; i++) {
                         props[i] = hashPropsProvided[indexes[i]];
-                        types[i] = hashCoercionTypes == null ? null : hashCoercionTypes[indexes[i]];
+                        types[i] = hashCoercionTypes?[indexes[i]];
                         functions.Add(hashFunctions[indexes[i]]);
                     }
 

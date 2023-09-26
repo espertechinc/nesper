@@ -10,7 +10,7 @@ using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 {
-    class SelectFromInfo
+    internal class SelectFromInfo
     {
         private readonly EventType eventType;
         private readonly string typeName;
@@ -23,12 +23,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             this.typeName = typeName;
         }
 
-        public EventType EventType {
-            get => eventType;
-        }
+        public EventType EventType => eventType;
 
-        public string TypeName {
-            get => typeName;
-        }
+        public string TypeName => typeName;
     }
 } // end of namespace

@@ -65,9 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 classScope);
 
             method.Block
-                .DeclareVar<PollResultIndexingStrategyHash>(
-                    "strat",
-                    NewInstance(typeof(PollResultIndexingStrategyHash)))
+                .DeclareVarNewInstance<PollResultIndexingStrategyHash>("strat")
                 .SetProperty(Ref("strat"), "StreamNum", Constant(_streamNum))
                 .SetProperty(Ref("strat"), "PropertyNames", Constant(_propertyNames))
                 .SetProperty(Ref("strat"), "ValueGetter", valueGetter)

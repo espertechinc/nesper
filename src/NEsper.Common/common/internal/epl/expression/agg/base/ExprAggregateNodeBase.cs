@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -27,64 +26,76 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 {
     /// <summary>
-    ///     Base expression node that represents an aggregation function such as 'sum' or 'count'.
-    ///     <para />
-    ///     In terms of validation each concrete aggregation node must implement it's own validation.
-    ///     <para />
-    ///     In terms of evaluation this base class will ask the assigned <seealso cref="AggregationResultFuture" /> for the
-    ///     current state,
-    ///     using a column number assigned to the node.
-    ///     <para />
-    ///     Concrete subclasses must supply an aggregation state prototype node that reflects
-    ///     each group's (there may be group-by criteria) current aggregation state.
+    /// Base expression node that represents an aggregation function such as 'sum' or 'count'.
+    /// <para />In terms of validation each concrete aggregation node must implement it's own validation.
+    /// <para />In terms of evaluation this base class will ask the assigned <seealso cref="AggregationResultFuture" /> for the current state,
+    /// using a column number assigned to the node.
+    /// <para />Concrete subclasses must supply an aggregation state prototype node that reflects
+    /// each group's (there may be group-by critera) current aggregation state.
     /// </summary>
     public abstract class ExprAggregateNodeBase : ExprNodeBase,
         ExprEvaluator,
         ExprAggregateNode,
         ExprForgeInstrumentable
     {
+        protected int column = -1;
         private AggregationForgeFactory aggregationForgeFactory;
-        internal CodegenFieldName aggregationResultFutureMemberName;
-
-        internal int column = -1;
+        protected ExprAggregateLocalGroupByDesc optionalAggregateLocalGroupByDesc;
+        protected ExprNode optionalFilter;
+        protected ExprNode[] positionalParams;
+        protected CodegenFieldName aggregationResultFutureMemberName;
 
         /// <summary>
-        ///     Indicator for whether the aggregation is distinct - i.e. only unique values are considered.
+        /// Indicator for whether the aggregation is distinct - i.e. only unique values are considered.
         /// </summary>
-        internal bool isDistinct;
-
-        internal ExprAggregateLocalGroupByDesc optionalAggregateLocalGroupByDesc;
-        internal ExprNode optionalFilter;
-        internal ExprNode[] positionalParams;
+        protected bool isDistinct;
 
         /// <summary>
-        ///     Ctor.
+        /// Returns the aggregation function name for representation in a generate expression string.
+        /// </summary>
+        /// <value>aggregation function name</value>
+        public abstract string AggregationFunctionName { get; }
+
+        public abstract bool IsFilterExpressionAsLastParameter { get; }
+
+        /// <summary>
+        /// Return true if a expression aggregate node semantically equals the current node, or false if not.
+        /// <para />For use by the equalsNode implementation which compares the distinct flag.
+        /// </summary>
+        /// <param name="node">to compare to</param>
+        /// <returns>true if semantically equal, or false if not equals</returns>
+        public abstract bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node);
+
+        /// <summary>
+        /// Gives the aggregation node a chance to validate the sub-expression types.
+        /// </summary>
+        /// <param name="validationContext">validation information</param>
+        /// <returns>aggregation function factory to use</returns>
+        /// <throws>ExprValidationException when expression validation failed</throws>
+        public abstract AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext);
+
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
+
+        /// <summary>
+        /// Ctor.
         /// </summary>
         /// <param name="distinct">sets the flag indicatating whether only unique values should be aggregated</param>
-        protected internal ExprAggregateNodeBase(bool distinct)
+        protected ExprAggregateNodeBase(bool distinct)
         {
             isDistinct = distinct;
         }
 
-        /// <summary>
-        ///     Returns the aggregation function name for representation in a generate expression string.
-        /// </summary>
-        /// <returns>aggregation function name</returns>
-        public abstract string AggregationFunctionName { get; }
-
-        public bool IsConstantResult => false;
-
-        public ExprNode ForgeRenderableLocal => this;
-
-        public ExprNodeRenderable ExprForgeRenderable => ForgeRenderableLocal;
-
-        public ExprNodeRenderable EnumForgeRenderable => ForgeRenderableLocal;
-
-        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
-
         public ExprNode[] PositionalParams => positionalParams;
 
         public ExprEvaluator ExprEvaluator => this;
+
+        public bool IsConstantResult => false;
+
+        public ExprNode ForgeRenderable => this;
+        
+        public ExprNodeRenderable EnumForgeRenderable => ForgeRenderable;
+
+        public ExprNodeRenderable ExprForgeRenderable => ForgeRenderable;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
@@ -104,7 +115,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 
         public void ValidatePositionals(ExprValidationContext validationContext)
         {
-            ExprAggregateNodeParamDesc paramDesc = ExprAggregateNodeUtil.GetValidatePositionalParams(ChildNodes, true);
+            var paramDesc =
+                ExprAggregateNodeUtil.GetValidatePositionalParams(ChildNodes, true);
             if (validationContext.StatementRawInfo.StatementType == StatementType.CREATE_TABLE &&
                 (paramDesc.OptLocalGroupBy != null || paramDesc.OptionalFilter != null)) {
                 throw new ExprValidationException(
@@ -119,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             }
 
             if (optionalFilter != null) {
-                ExprNodeUtilityValidate.ValidateNoSpecialsGroupByExpressions(new[] {optionalFilter});
+                ExprNodeUtilityValidate.ValidateNoSpecialsGroupByExpressions(new ExprNode[] { optionalFilter });
             }
 
             if (optionalFilter != null && IsFilterExpressionAsLastParameter) {
@@ -134,58 +146,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             }
         }
 
-        public CodegenExpression EvaluateCodegen(
-            Type requiredType,
-            CodegenMethodScope parent,
-            ExprForgeCodegenSymbol exprSymbol,
-            CodegenClassScope codegenClassScope)
-        {
-            return new InstrumentationBuilderExpr(
-                GetType(),
-                this,
-                "ExprAggValue",
-                requiredType,
-                parent,
-                exprSymbol,
-                codegenClassScope).Build();
-        }
-
-        public override ExprForge Forge => this;
-
         /// <summary>
-        ///     Returns true if the aggregation node is only aggregatig distinct values, or false if
-        ///     aggregating all values.
+        /// Returns the aggregation state factory for use in grouping aggregation states per group-by keys.
         /// </summary>
-        /// <returns>true if 'distinct' keyword was given, false if not</returns>
-        public bool IsDistinct => isDistinct;
+        /// <value>prototype aggregation state as a factory for aggregation states per group-by key value</value>
+        public AggregationForgeFactory Factory {
+            get {
+                if (aggregationForgeFactory == null) {
+                    throw new IllegalStateException("Aggregation method has not been set");
+                }
 
-        public override bool EqualsNode(
-            ExprNode node,
-            bool ignoreStreamPrefix)
-        {
-            if (!(node is ExprAggregateNode)) {
-                return false;
+                return aggregationForgeFactory;
             }
-
-            var other = (ExprAggregateNode) node;
-
-            if (other.IsDistinct != isDistinct) {
-                return false;
-            }
-
-            return EqualsNodeAggregateMethodOnly(other);
         }
-
-        public virtual int Column {
-            get => column;
-            set => column = value;
-        }
-
-        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.MINIMUM;
-
-        public ExprAggregateLocalGroupByDesc OptionalLocalGroupBy => optionalAggregateLocalGroupByDesc;
-
-        public ExprNode OptionalFilter => optionalFilter;
 
         public object Evaluate(
             EventBean[] events,
@@ -217,37 +190,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             return CodegenLegoCast.CastSafeFromObjectType(EvaluationType, eval);
         }
 
-        public abstract bool IsFilterExpressionAsLastParameter { get; }
-
-        /// <summary>
-        ///     Return true if a expression aggregate node semantically equals the current node, or false if not.
-        ///     <para />
-        ///     For use by the equalsNode implementation which compares the distinct flag.
-        /// </summary>
-        /// <param name="node">to compare to</param>
-        /// <returns>true if semantically equal, or false if not equals</returns>
-        public abstract bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node);
-
-        /// <summary>
-        ///     Gives the aggregation node a chance to validate the sub-expression types.
-        /// </summary>
-        /// <param name="validationContext">validation information</param>
-        /// <returns>aggregation function factory to use</returns>
-        /// <throws>ExprValidationException when expression validation failed</throws>
-        public abstract AggregationForgeFactory ValidateAggregationChild(ExprValidationContext validationContext);
-
-        /// <summary>
-        ///     Returns the aggregation state factory for use in grouping aggregation states per group-by keys.
-        /// </summary>
-        /// <value>prototype aggregation state as a factory for aggregation states per group-by key value</value>
-        public AggregationForgeFactory Factory {
-            get {
-                if (aggregationForgeFactory == null) {
-                    throw new IllegalStateException("Aggregation method has not been set");
-                }
-
-                return aggregationForgeFactory;
-            }
+        public CodegenExpression EvaluateCodegen(
+            Type requiredType,
+            CodegenMethodScope parent,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            return new InstrumentationBuilderExpr(
+                GetType(),
+                this,
+                "ExprAggValue",
+                requiredType,
+                parent,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         public Type EvaluationType {
@@ -256,11 +212,41 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                     throw new IllegalStateException("Aggregation method has not been set");
                 }
 
-                return aggregationForgeFactory.ResultType;
+                var resultType = aggregationForgeFactory.ResultType;
+                return resultType;
             }
         }
 
-        protected internal Type ValidateNumericChildAllowFilter(bool hasFilter)
+        public override ExprForge Forge => this;
+
+        /// <summary>
+        /// Returns true if the aggregation node is only aggregatig distinct values, or false if
+        /// aggregating all values.
+        /// </summary>
+        /// <value>true if 'distinct' keyword was given, false if not</value>
+        public bool IsDistinct => isDistinct;
+
+        public override bool EqualsNode(
+            ExprNode node,
+            bool ignoreStreamPrefix)
+        {
+            if (!(node is ExprAggregateNode other)) {
+                return false;
+            }
+
+            if (other.IsDistinct != isDistinct) {
+                return false;
+            }
+
+            return EqualsNodeAggregateMethodOnly(other);
+        }
+
+        public int Column {
+            get => column;
+            set => column = value;
+        }
+
+        protected Type ValidateNumericChildAllowFilter(bool hasFilter)
         {
             if (positionalParams.Length == 0 || positionalParams.Length > 2) {
                 throw MakeExceptionExpectedParamNum(1, 2);
@@ -273,19 +259,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             }
 
             var childType = child.Forge.EvaluationType;
-            if (!childType.IsNumeric()) {
-                throw new ExprValidationException(
+            ExprNodeUtilityValidate.ValidateReturnsNumeric(
+                child.Forge,
+                () =>
                     "Implicit conversion from datatype '" +
-                    (childType == null ? "null" : childType.CleanName()) +
+                    childType.CleanName() +
                     "' to numeric is not allowed for aggregation function '" +
                     AggregationFunctionName +
                     "'");
-            }
 
             return childType;
         }
 
-        protected internal ExprValidationException MakeExceptionExpectedParamNum(
+        protected ExprValidationException MakeExceptionExpectedParamNum(
             int lower,
             int upper)
         {
@@ -333,9 +319,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             writer.Write(')');
         }
 
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.MINIMUM;
+
         public void ValidateFilter(ExprNode filterEvaluator)
         {
-            if (filterEvaluator.Forge.EvaluationType.GetBoxedType() != typeof(bool?)) {
+            if (!TypeHelper.IsTypeBoolean(filterEvaluator.Forge.EvaluationType)) {
                 throw new ExprValidationException(
                     "Invalid filter expression parameter to the aggregation function '" +
                     AggregationFunctionName +
@@ -344,15 +332,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             }
         }
 
-        public virtual bool IsExprTextWildcardWhenNoParams => true;
+        public ExprAggregateLocalGroupByDesc OptionalLocalGroupBy => optionalAggregateLocalGroupByDesc;
+
+        public ExprNode OptionalFilter => optionalFilter;
+
+        protected bool IsExprTextWildcardWhenNoParams => true;
 
         public CodegenExpression GetAggFuture(CodegenClassScope codegenClassScope)
         {
-            var statementFields = Ref(ResultSetProcessorCodegenNames.NAME_STATEMENT_FIELDS);
-            var fieldExpression = codegenClassScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+            return codegenClassScope.NamespaceScope.AddOrGetFieldWellKnown(
                 aggregationResultFutureMemberName,
                 typeof(AggregationResultFuture));
-            return fieldExpression;
         }
     }
 } // end of namespace

@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             string intoExpression,
             AggregationForgeFactory factory)
         {
-            var that = (AggregationPortableValidationMinMax) intoTableAgg;
+            var that = (AggregationPortableValidationMinMax)intoTableAgg;
             if (MinMax != that.MinMax) {
                 throw new ExprValidationException(
                     "The aggregation declares " +

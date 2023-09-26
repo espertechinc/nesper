@@ -21,8 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccessForges =
                 new LinkedHashMap<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge>();
 
-            foreach (ExprTableAccessNode entry in tableAccessNodes) {
-                ExprTableEvalStrategyFactoryForge forge = entry.TableAccessFactoryForge;
+            foreach (var entry in tableAccessNodes) {
+                var forge = entry.TableAccessFactoryForge;
                 tableAccessForges.Put(entry, forge);
             }
 

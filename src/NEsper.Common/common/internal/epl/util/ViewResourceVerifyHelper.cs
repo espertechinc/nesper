@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,9 +8,14 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
+using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.prev;
 using com.espertech.esper.common.@internal.epl.expression.prior;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.groupwin;
@@ -20,16 +25,20 @@ namespace com.espertech.esper.common.@internal.epl.util
 {
     public class ViewResourceVerifyHelper
     {
-        public static ViewResourceDelegateDesc[] VerifyPreviousAndPriorRequirements(
+        public static ViewResourceVerifyResult VerifyPreviousAndPriorRequirements(
             IList<ViewFactoryForge>[] unmaterializedViewChain,
-            ViewResourceDelegateExpr @delegate)
+            ViewResourceDelegateExpr @delegate,
+            int? subqueryNumber,
+            StatementRawInfo raw,
+            StatementCompileTimeServices services)
         {
             var numStreams = unmaterializedViewChain.Length;
             var perStream = new ViewResourceDelegateDesc[numStreams];
+            var fabricCharge = services.StateMgmtSettingsProvider.NewCharge();
 
             // verify "previous"
             var previousPerStream = new bool[numStreams];
-            foreach (ExprPreviousNode previousNode in @delegate.PreviousRequests) {
+            foreach (var previousNode in @delegate.PreviousRequests) {
                 var stream = previousNode.StreamNumber;
                 var forges = unmaterializedViewChain[stream];
 
@@ -46,6 +55,20 @@ namespace com.espertech.esper.common.@internal.epl.util
                 }
 
                 previousPerStream[stream] = true;
+            }
+
+            var previousStateMgmtSettings = new StateMgmtSetting[numStreams];
+            for (var streamNum = 0; streamNum < numStreams; streamNum++) {
+                if (previousPerStream[streamNum]) {
+                    var forges = unmaterializedViewChain[streamNum];
+                    var eventType = forges[^1].EventType;
+                    previousStateMgmtSettings[streamNum] = services.StateMgmtSettingsProvider.Previous(
+                        fabricCharge,
+                        raw,
+                        streamNum,
+                        subqueryNumber,
+                        eventType);
+                }
             }
 
             // determine 'prior' indexes
@@ -89,10 +112,11 @@ namespace com.espertech.esper.common.@internal.epl.util
 
                 perStream[i] = new ViewResourceDelegateDesc(
                     previousPerStream[i],
+                    previousStateMgmtSettings[i],
                     new SortedSet<int>(priorPerStream[i].Keys));
             }
 
-            return perStream;
+            return new ViewResourceVerifyResult(perStream, fabricCharge);
         }
 
         private static bool FindDataWindow(IList<ViewFactoryForge> forges)
@@ -102,8 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                     return true;
                 }
 
-                if (forge is GroupByViewFactoryForge) {
-                    var group = (GroupByViewFactoryForge) forge;
+                if (forge is GroupByViewFactoryForge group) {
                     return FindDataWindow(group.Groupeds);
                 }
             }

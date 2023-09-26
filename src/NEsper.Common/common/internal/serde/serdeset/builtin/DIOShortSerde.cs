@@ -11,29 +11,43 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	/// <summary>
-	/// Binding for non-null short values.
-	/// </summary>
-	public class DIOShortSerde : DataInputOutputSerdeBase<short> {
-	    public static readonly DIOShortSerde INSTANCE = new DIOShortSerde();
+    /// <summary>
+    /// Binding for non-null short values.
+    /// </summary>
+    public class DIOShortSerde : DataInputOutputSerdeBase<short>
+    {
+        public static readonly DIOShortSerde INSTANCE = new DIOShortSerde();
 
-	    private DIOShortSerde() {
-	    }
+        private DIOShortSerde()
+        {
+        }
 
-	    public override void Write(short @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
-	        output.WriteShort(@object);
-	    }
+        public override void Write(
+            short @object,
+            DataOutput output,
+            byte[] pageFullKey,
+            EventBeanCollatedWriter writer)
+        {
+            output.WriteShort(@object);
+        }
 
-	    public void Write(short @object, DataOutput stream) {
-	        stream.WriteShort(@object);
-	    }
+        public void Write(
+            short @object,
+            DataOutput stream)
+        {
+            stream.WriteShort(@object);
+        }
 
-	    public override short ReadValue(DataInput input, byte[] resourceKey) {
-	        return input.ReadShort();
-	    }
+        public override short ReadValue(
+            DataInput input,
+            byte[] resourceKey)
+        {
+            return input.ReadShort();
+        }
 
-	    public short Read(DataInput input) {
-	        return input.ReadShort();
-	    }
-	}
+        public short Read(DataInput input)
+        {
+            return input.ReadShort();
+        }
+    }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,14 +19,10 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
     {
         private readonly IDictionary<object, ISet<EventBean>> _propertyIndex;
 
-        public PropertyHashedEventTableUnadorned(PropertyHashedEventTableFactory factory)
-            : base(factory)
+        public PropertyHashedEventTableUnadorned(PropertyHashedEventTableFactory factory) : base(factory)
         {
-            _propertyIndex = new Dictionary<object, ISet<EventBean>>(AsymmetricEqualityComparer.Instance)
-                .WithNullKeySupport();
+            _propertyIndex = new Dictionary<object, ISet<EventBean>>();
         }
-
-        public override bool IsEmpty => _propertyIndex.IsEmpty();
 
         public override int? NumberOfEvents => null;
 
@@ -46,18 +42,26 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             return _propertyIndex.Get(key);
         }
 
+        /// <summary>
+        ///     Same as lookup except always returns a copy of the set
+        /// </summary>
+        /// <param name="key">key</param>
+        /// <returns>copy</returns>
+        public override ISet<EventBean> LookupFAF(object key)
+        {
+            var result = _propertyIndex.Get(key);
+            return result == null ? null : new LinkedHashSet<EventBean>(result);
+        }
+
         public override void Add(
             EventBean theEvent,
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var key = GetKey(theEvent);
 
-            var events = _propertyIndex.Get(key);
-            if (events == null) {
-                events = new LinkedHashSet<EventBean>();
-                _propertyIndex.Put(key, events);
+            if (!_propertyIndex.TryGetValue(key, out var events)) {
+                _propertyIndex[key] = events = new LinkedHashSet<EventBean>();
             }
-
             events.Add(theEvent);
         }
 
@@ -82,6 +86,8 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
                 _propertyIndex.Remove(key);
             }
         }
+
+        public override bool IsEmpty => _propertyIndex.IsEmpty();
 
         public override IEnumerator<EventBean> GetEnumerator()
         {

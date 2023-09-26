@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     continue;
                 }
 
-                QueryPlanNodeForgeDesc desc = BuildPlanNode(
+                var desc = BuildPlanNode(
                     numStreams,
                     streamNo,
                     streamNames,
@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                     streamJoinAnalysisResult,
                     statementRawInfo,
                     services);
-                QueryPlanNodeForge queryPlanNode = desc.Forge;
+                var queryPlanNode = desc.Forge;
                 additionalForgeables.AddAll(desc.AdditionalForgeables);
 
                 if (Log.IsDebugEnabled) {
@@ -206,7 +206,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             VerifyJoinedPerStream(streamNo, substreamsPerStream);
 
             // build list of instructions for lookup
-            LookupInstructionPlanDesc lookupDesc = BuildLookupInstructions(
+            var lookupDesc = BuildLookupInstructions(
                 streamNo,
                 substreamsPerStream,
                 requiredPerStream,
@@ -231,7 +231,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                         continue;
                     }
 
-                    JoinSetComposerPrototypeHistoricalDesc desc = historicalStreamIndexLists[historical.StreamNum]
+                    var desc = historicalStreamIndexLists[historical.StreamNum]
                         .GetStrategy(historical.LookupStreamNum, statementRawInfo, services.SerdeResolver);
                     historical.HistoricalIndexLookupStrategy = desc.LookupForge;
                     historical.PollResultIndexingStrategy = desc.IndexingForge;
@@ -254,7 +254,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 requiredPerStream,
                 lookupInstructions,
                 assemblyInstructionFactories);
-            
+
             return new QueryPlanNodeForgeDesc(forge, additionalForgeables);
         }
 
@@ -284,14 +284,14 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 // add node as a nested join to the previous stream
                 var substreams = substreamsPerStream.Get(previous);
                 if (substreams == null) {
-                    substreams = new int[0];
+                    substreams = Array.Empty<int>();
                 }
 
                 var added = CollectionUtil.AddValue(substreams, stream);
                 substreamsPerStream.Put(previous, added);
 
                 if (!substreamsPerStream.ContainsKey(stream)) {
-                    substreamsPerStream.Put(stream, new int[0]);
+                    substreamsPerStream.Put(stream, Array.Empty<int>());
                 }
 
                 previous = stream;
@@ -316,7 +316,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
         {
             var result = new List<LookupInstructionPlanForge>();
             var additionalForgeables = new List<StmtClassForgeableFactory>();
-            
+
             foreach (var fromStream in substreamsPerStream.Keys) {
                 var substreams = substreamsPerStream.Get(fromStream);
 
@@ -359,10 +359,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                             rootStreamNum,
                             fromStream,
                             typesPerStream.Length,
-                            outerJoinExpr == null ? null : outerJoinExpr.Forge);
+                            outerJoinExpr?.Forge);
                     }
                     else {
-                        TableLookupPlanDesc planDesc = NStreamQueryPlanBuilder.CreateLookupPlan(
+                        var planDesc = NStreamQueryPlanBuilder.CreateLookupPlan(
                             queryGraph,
                             fromStream,
                             toStream,
@@ -469,7 +469,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
             // if we are a leaf node, we are done
             if (navigableStreams.IsEmpty()) {
-                substreamsPerStream.Put(streamNum, new int[0]);
+                substreamsPerStream.Put(streamNum, Array.Empty<int>());
                 return;
             }
 
@@ -568,7 +568,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
             // remove streams with a dependency on other streams not yet processed
             var navigableStreamArr = navigableStreams.ToArray();
-            foreach (int navigableStream in navigableStreamArr) {
+            foreach (var navigableStream in navigableStreamArr) {
                 if (dependencyGraph.HasUnsatisfiedDependency(navigableStream, completedStreams)) {
                     navigableStreams.Remove(navigableStream);
                 }
@@ -579,7 +579,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
             // if we are a leaf node, we are done
             if (navigableStreams.IsEmpty()) {
-                substreamsPerStream.Put(streamNum, new int[0]);
+                substreamsPerStream.Put(streamNum, Array.Empty<int>());
                 return;
             }
 

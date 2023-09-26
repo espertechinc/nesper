@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             BeanEventType beanEventType,
             MethodInfo copyMethod)
         {
-            this._beanEventType = beanEventType;
-            this._copyMethod = copyMethod;
+            _beanEventType = beanEventType;
+            _copyMethod = copyMethod;
         }
 
         public CodegenExpression MakeCopyMethodClassScoped(CodegenClassScope classScope)

@@ -26,12 +26,12 @@ namespace com.espertech.esper.common.@internal.util
                 throw new ArgumentException("Number of characters less then zero");
             }
 
-            char[] buf = new char[numChars];
-            for (int ii = 0; ii < buf.Length; ii++) {
+            var buf = new char[numChars];
+            for (var ii = 0; ii < buf.Length; ii++) {
                 buf[ii] = ' ';
             }
 
-            return (new string(buf));
+            return new string(buf);
         }
     }
 }

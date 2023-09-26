@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             MatchedEventMap beginState,
             PatternAgentInstanceContext context)
         {
-            var events = optionalConvertor == null ? null : optionalConvertor.Invoke(beginState);
+            var events = optionalConvertor?.Invoke(beginState);
             var numCountToVal = PatternExpressionUtil.EvaluateChecked(
                 "Timer-Within-Or-Max-Count guard",
                 countEval,

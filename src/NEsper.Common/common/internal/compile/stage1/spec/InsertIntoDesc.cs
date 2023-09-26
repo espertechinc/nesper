@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.@internal.epl.expression.core;
+
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     /// <summary>
@@ -53,6 +55,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         /// column names or empty list if none supplied
         /// </returns>
         public IList<string> ColumnNames { get; private set; }
+
+        public ExprNode EventPrecedence { get; set; }
 
         /// <summary>
         /// Add a column name to the insert-into clause.

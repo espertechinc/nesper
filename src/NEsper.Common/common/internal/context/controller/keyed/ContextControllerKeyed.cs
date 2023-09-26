@@ -57,8 +57,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             ContextPartitionVisitor visitor,
             ContextPartitionSelector[] selectorPerLevel)
         {
-            if (selector is ContextPartitionSelectorSegmented) {
-                var partitioned = (ContextPartitionSelectorSegmented) selector;
+            if (selector is ContextPartitionSelectorSegmented partitioned) {
                 if (partitioned.PartitionKeys == null || partitioned.PartitionKeys.IsEmpty()) {
                     return;
                 }
@@ -79,8 +78,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 return;
             }
 
-            if (selector is ContextPartitionSelectorFiltered) {
-                var filtered = (ContextPartitionSelectorFiltered) selector;
+            if (selector is ContextPartitionSelectorFiltered filtered) {
                 var identifier = new ContextPartitionIdentifierPartitioned();
                 VisitPartitions(
                     path,
@@ -119,8 +117,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 return;
             }
 
-            if (selector is ContextPartitionSelectorById) {
-                var ids = (ContextPartitionSelectorById) selector;
+            if (selector is ContextPartitionSelectorById ids) {
                 VisitPartitions(
                     path,
                     (
@@ -138,7 +135,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             }
 
             throw ContextControllerSelectorUtil.GetInvalidSelector(
-                new[] {typeof(ContextPartitionSelectorSegmented)},
+                new[] { typeof(ContextPartitionSelectorSegmented) },
                 selector);
         }
     }

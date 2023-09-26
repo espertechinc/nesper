@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         private readonly bool joinRemoveStream;
         internal readonly QueryStrategy[] queryStrategies;
         internal readonly EventTable[][] repositories;
-        
+
         // Set semantic eliminates duplicates in result set, use Linked set to preserve order
         internal ISet<MultiKeyArrayOfKeys<EventBean>> oldResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
         internal ISet<MultiKeyArrayOfKeys<EventBean>> newResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();

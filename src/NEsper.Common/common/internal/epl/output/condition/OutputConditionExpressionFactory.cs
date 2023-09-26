@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
@@ -48,6 +49,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             get => isUsingBuiltinProperties;
             set => isUsingBuiltinProperties = value;
         }
+
+        public StateMgmtSetting StateMgmtSetting { get; set; }
 
         public OutputCondition InstantiateOutputCondition(
             AgentInstanceContext agentInstanceContext,

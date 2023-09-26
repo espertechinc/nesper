@@ -19,63 +19,69 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.orderby
 {
-	public class EnumOrderByScalarNoParams : EnumForgeBasePlain,
-		EnumEval
-	{
-		private readonly bool _descending;
+    public class EnumOrderByScalarNoParams : EnumForgeBasePlain,
+        EnumEval
+    {
+        private readonly bool _descending;
 
-		public EnumOrderByScalarNoParams(
-			int streamCountIncoming,
-			bool descending) : base(streamCountIncoming)
-		{
-			_descending = descending;
-		}
+        public EnumOrderByScalarNoParams(
+            int streamCountIncoming,
+            bool descending) : base(streamCountIncoming)
+        {
+            _descending = descending;
+        }
 
-		public override EnumEval EnumEvaluator {
-			get { return this; }
-		}
+        public override EnumEval EnumEvaluator => this;
 
-		public object EvaluateEnumMethod(
-			EventBean[] eventsLambda,
-			ICollection<object> enumcoll,
-			bool isNewData,
-			ExprEvaluatorContext context)
-		{
+        public object EvaluateEnumMethod(
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            if (enumcoll == null || enumcoll.IsEmpty()) {
+                return enumcoll;
+            }
 
-			if (enumcoll == null || enumcoll.IsEmpty()) {
-				return enumcoll;
-			}
+            var list = new List<object>(enumcoll);
+            list.Sort();
+            if (_descending) {
+                list.Reverse();
+            }
 
-			var list = new List<object>(enumcoll);
-			list.Sort();
-			if (_descending) {
-				list.Reverse();
-			}
+            return list;
+        }
 
-			return list;
-		}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var block = codegenMethodScope
+                .MakeChild(typeof(ICollection<object>), typeof(EnumOrderByScalarNoParams), codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
+                .IfCondition(
+                    Or(
+                        EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL),
+                        ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty")))
+                .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
+                .DeclareVar<List<object>>(
+                    "list",
+                    NewInstance(typeof(List<object>), EnumForgeCodegenNames.REF_ENUMCOLL));
+            if (_descending) {
+                block.StaticMethod(
+                    typeof(Collections),
+                    "SortInPlace",
+                    Ref("list"),
+                    StaticMethod(typeof(Comparers), "Inverse", new[] { typeof(object) }));
+            }
+            else {
+                block.StaticMethod(typeof(Collections), "SortInPlace", Ref("list"));
+            }
 
-		public override CodegenExpression Codegen(
-			EnumForgeCodegenParams args,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			var block = codegenMethodScope
-				.MakeChild(typeof(ICollection<object>), typeof(EnumOrderByScalarNoParams), codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS)
-				.Block
-				.IfCondition(Or(EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL), ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty")))
-				.BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-				.DeclareVar<List<object>>("list", NewInstance(typeof(List<object>), EnumForgeCodegenNames.REF_ENUMCOLL));
-			if (_descending) {
-				block.StaticMethod(typeof(Collections), "SortInPlace", Ref("list"), StaticMethod(typeof(Comparers), "Inverse", new[] {typeof(object)}));
-			}
-			else {
-				block.StaticMethod(typeof(Collections), "SortInPlace", Ref("list"));
-			}
-
-			var method = block.MethodReturn(Ref("list"));
-			return LocalMethod(method, args.Expressions);
-		}
-	}
+            var method = block.MethodReturn(Ref("list"));
+            return LocalMethod(method, args.Expressions);
+        }
+    }
 } // end of namespace

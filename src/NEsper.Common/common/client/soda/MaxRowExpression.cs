@@ -38,8 +38,7 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(new PropertyValueExpression(propertyOne));
             AddChild(new PropertyValueExpression(propertyTwo));
-            for (int i = 0; i < moreProperties.Length; i++)
-            {
+            for (var i = 0; i < moreProperties.Length; i++) {
                 AddChild(new PropertyValueExpression(moreProperties[i]));
             }
         }
@@ -57,8 +56,7 @@ namespace com.espertech.esper.common.client.soda
         {
             AddChild(exprOne);
             AddChild(exprTwo);
-            for (int i = 0; i < moreExpressions.Length; i++)
-            {
+            for (var i = 0; i < moreExpressions.Length; i++) {
                 AddChild(moreExpressions[i]);
             }
         }
@@ -96,18 +94,14 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("max(");
 
-            string delimiter = "";
-            foreach (Expression expr in Children)
-            {
+            var delimiter = "";
+            foreach (var expr in Children) {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";

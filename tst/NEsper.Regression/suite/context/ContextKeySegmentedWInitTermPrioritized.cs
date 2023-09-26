@@ -655,7 +655,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SupportMessageAssertUtil.TryInvalidCompile(
                     env,
                     epl,
-                    "Segmented context 'InvalidCtx' requires that all of the event types that are listed in the initialized-by also appear in the partition-by, type 'SupportBean_S0' is not one of the types listed in partition-by");
+                    "Segmented context 'InvalidCtx' requires that all of the event types that are listed in the initialized-by also appear in the partition-by, Type 'SupportBean_S0' is not one of the types listed in partition-by");
 
                 // cannot assign name in different places
                 epl =

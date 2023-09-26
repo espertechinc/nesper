@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                 // find dups
                 foreach (var row in result) {
                     foreach (var existing in rollup) {
-                        if (CompatExtensions.AreEqual(row, existing)) {
+                        if (row.AreEqual(existing)) {
                             throw new GroupByRollupDuplicateException(row);
                         }
                     }

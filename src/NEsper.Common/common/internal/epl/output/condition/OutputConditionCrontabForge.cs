@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -82,12 +83,15 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             return LocalMethod(method);
         }
 
-        public void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
+        public void CollectSchedules(
+            CallbackAttributionOutputRate callbackAttribution,
+            IList<ScheduleHandleTracked> scheduleHandleCallbackProviders)
         {
-            scheduleHandleCallbackProviders.Add(this);
+            scheduleHandleCallbackProviders.Add(new ScheduleHandleTracked(callbackAttribution, this));
         }
 
         public int ScheduleCallbackId {
+            get => scheduleCallbackId;
             set => scheduleCallbackId = value;
         }
     }

@@ -55,9 +55,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.path
                 if (pair != null) {
                     if (!isFireAndForget &&
                         !NameAccessModifierExtensions.Visible(
-                        pair.First.EventType.Metadata.AccessModifier,
-                        pair.First.NamedWindowModuleName,
-                        moduleName)) {
+                            pair.First.EventType.Metadata.AccessModifier,
+                            pair.First.NamedWindowModuleName,
+                            moduleName)) {
                         return null;
                     }
 

@@ -20,10 +20,10 @@ namespace com.espertech.esper.common.@internal.type
     {
         /// <summary>Microsecond</summary>
         MICROSECONDS,
-        
+
         /// <summary>Millisecond</summary>
         MILLISECONDS,
-        
+
         /// <summary> Second.</summary>
         SECONDS,
 
@@ -53,20 +53,28 @@ namespace com.espertech.esper.common.@internal.type
             switch (value) {
                 case ScheduleUnit.MICROSECONDS:
                     return 0;
+
                 case ScheduleUnit.MILLISECONDS:
                     return 0;
+
                 case ScheduleUnit.SECONDS:
                     return 0;
+
                 case ScheduleUnit.MINUTES:
                     return 0;
+
                 case ScheduleUnit.HOURS:
                     return 0;
+
                 case ScheduleUnit.DAYS_OF_MONTH:
                     return 1;
+
                 case ScheduleUnit.MONTHS:
                     return 1;
+
                 case ScheduleUnit.DAYS_OF_WEEK:
                     return 0;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
@@ -77,24 +85,31 @@ namespace com.espertech.esper.common.@internal.type
         /// </returns>
         public static int Max(this ScheduleUnit value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case ScheduleUnit.MICROSECONDS:
                     return 999;
+
                 case ScheduleUnit.MILLISECONDS:
                     return 999;
+
                 case ScheduleUnit.SECONDS:
                     return 59;
+
                 case ScheduleUnit.MINUTES:
                     return 59;
+
                 case ScheduleUnit.HOURS:
                     return 23;
+
                 case ScheduleUnit.DAYS_OF_MONTH:
                     return 31;
+
                 case ScheduleUnit.MONTHS:
                     return 12;
+
                 case ScheduleUnit.DAYS_OF_WEEK:
                     return 6;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }

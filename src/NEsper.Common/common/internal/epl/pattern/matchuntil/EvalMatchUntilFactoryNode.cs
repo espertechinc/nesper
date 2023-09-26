@@ -28,52 +28,48 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             PatternAgentInstanceContext agentInstanceContext,
             EvalNode parentNode)
         {
-            EvalNode[] nodes = EvalNodeUtil.MakeEvalNodeChildren(children, agentInstanceContext, parentNode);
+            var nodes = EvalNodeUtil.MakeEvalNodeChildren(children, agentInstanceContext, parentNode);
             return new EvalMatchUntilNode(agentInstanceContext, this, nodes[0], nodes.Length == 1 ? null : nodes[1]);
         }
 
         public ExprEvaluator LowerBounds {
             get => lowerBounds;
-            set { this.lowerBounds = value; }
+            set => lowerBounds = value;
         }
 
         public ExprEvaluator UpperBounds {
             get => upperBounds;
-            set { this.upperBounds = value; }
+            set => upperBounds = value;
         }
 
         public ExprEvaluator SingleBound {
             get => singleBound;
-            set { this.singleBound = value; }
+            set => singleBound = value;
         }
 
         public EvalFactoryNode[] Children {
             get => children;
-            set { this.children = value; }
+            set => children = value;
         }
 
         public MatchedEventConvertor OptionalConvertor {
             get => optionalConvertor;
-            set { this.optionalConvertor = value; }
+            set => optionalConvertor = value;
         }
 
         public int[] TagsArrayed {
             get => tagsArrayed;
-            set { this.tagsArrayed = value; }
+            set => tagsArrayed = value;
         }
 
-        public override bool IsFilterChildNonQuitting {
-            get => true;
-        }
+        public override bool IsFilterChildNonQuitting => true;
 
-        public override bool IsStateful {
-            get => true;
-        }
+        public override bool IsStateful => true;
 
         public override void Accept(EvalFactoryNodeVisitor visitor)
         {
             visitor.Visit(this);
-            foreach (EvalFactoryNode child in children) {
+            foreach (var child in children) {
                 child.Accept(visitor);
             }
         }

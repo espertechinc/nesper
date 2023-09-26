@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             {
                 constants.Add(value);
             }
-            
+
             public void ValueToString(StringBuilder @out)
             {
                 @out.Append("collection");

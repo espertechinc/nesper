@@ -73,8 +73,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the list of streams in the from-clause.
         /// </summary>
         /// <returns>list of streams</returns>
-        public IList<Stream> Streams
-        {
+        public IList<Stream> Streams {
             get => streams;
             set => streams = value;
         }
@@ -84,8 +83,7 @@ namespace com.espertech.esper.common.client.soda
         ///     none of the streams are outer joined.
         /// </summary>
         /// <returns>list of outer join qualifiers</returns>
-        public IList<OuterJoinQualifier> OuterJoinQualifiers
-        {
+        public IList<OuterJoinQualifier> OuterJoinQualifiers {
             get => outerJoinQualifiers;
             set => outerJoinQualifiers = value;
         }
@@ -175,18 +173,19 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter,
             bool includeFrom)
         {
+            if (streams.IsEmpty()) {
+                return;
+            }
+
             var delimiter = "";
-            if (includeFrom)
-            {
+            if (includeFrom) {
                 formatter.BeginFrom(writer);
                 writer.Write("from");
             }
 
-            if (outerJoinQualifiers == null || outerJoinQualifiers.Count == 0)
-            {
+            if (outerJoinQualifiers == null || outerJoinQualifiers.Count == 0) {
                 var first = true;
-                foreach (var stream in streams)
-                {
+                foreach (var stream in streams) {
                     writer.Write(delimiter);
                     formatter.BeginFromStream(writer, first);
                     first = false;
@@ -194,36 +193,29 @@ namespace com.espertech.esper.common.client.soda
                     delimiter = ",";
                 }
             }
-            else
-            {
-                if (outerJoinQualifiers.Count != streams.Count - 1)
-                {
+            else {
+                if (outerJoinQualifiers.Count != streams.Count - 1) {
                     throw new ArgumentException(
                         "Number of outer join qualifiers must be one less then the number of streams.");
                 }
 
                 var first = true;
-                for (var i = 0; i < streams.Count; i++)
-                {
+                for (var i = 0; i < streams.Count; i++) {
                     var stream = streams[i];
                     formatter.BeginFromStream(writer, first);
                     first = false;
                     stream.ToEPL(writer, formatter);
 
-                    if (i > 0)
-                    {
+                    if (i > 0) {
                         var qualCond = outerJoinQualifiers[i - 1];
-                        if (qualCond.Left != null)
-                        {
+                        if (qualCond.Left != null) {
                             writer.Write(" on ");
                             qualCond.Left.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                             writer.Write(" = ");
                             qualCond.Right.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
 
-                            if (qualCond.AdditionalProperties.Count > 0)
-                            {
-                                foreach (var pair in qualCond.AdditionalProperties)
-                                {
+                            if (qualCond.AdditionalProperties.Count > 0) {
+                                foreach (var pair in qualCond.AdditionalProperties) {
                                     writer.Write(" and ");
                                     pair.Left.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                                     writer.Write(" = ");
@@ -233,17 +225,14 @@ namespace com.espertech.esper.common.client.soda
                         }
                     }
 
-                    if (i < streams.Count - 1)
-                    {
+                    if (i < streams.Count - 1) {
                         var qualType = outerJoinQualifiers[i];
                         writer.Write(" ");
-                        if (qualType.Type != OuterJoinType.INNER)
-                        {
+                        if (qualType.Type != OuterJoinType.INNER) {
                             writer.Write(qualType.Type.GetText());
                             writer.Write(" outer");
                         }
-                        else
-                        {
+                        else {
                             writer.Write(qualType.Type.GetText());
                         }
 

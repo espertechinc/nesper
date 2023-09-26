@@ -31,9 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
         public int StreamNumSize { get; }
 
-        public virtual EnumEval EnumEvaluator {
-            get => new EnumTakeForgeEval(SizeEval.ExprEvaluator);
-        }
+        public virtual EnumEval EnumEvaluator => new EnumTakeForgeEval(SizeEval.ExprEvaluator);
 
         public virtual CodegenExpression Codegen(
             EnumForgeCodegenParams premade,
@@ -41,7 +39,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             return EnumTakeForgeEval.Codegen(
-                this, premade, codegenMethodScope, codegenClassScope);
+                this,
+                premade,
+                codegenMethodScope,
+                codegenClassScope);
         }
     }
 } // end of namespace

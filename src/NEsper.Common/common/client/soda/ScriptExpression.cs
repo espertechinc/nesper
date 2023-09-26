@@ -86,15 +86,12 @@ namespace com.espertech.esper.common.client.soda
             IList<ScriptExpression> scripts,
             EPStatementFormatter formatter)
         {
-            if ((scripts == null) || (scripts.IsEmpty()))
-            {
+            if (scripts == null || scripts.IsEmpty()) {
                 return;
             }
 
-            foreach (ScriptExpression part in scripts)
-            {
-                if (part.Name == null)
-                {
+            foreach (var part in scripts) {
+                if (part.Name == null) {
                     continue;
                 }
 
@@ -107,60 +104,54 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the script name.
         /// </summary>
         /// <value>script name</value>
-        public string Name
-        {
-            get { return _name; }
-            set { _name = value; }
+        public string Name {
+            get => _name;
+            set => _name = value;
         }
 
         /// <summary>
         /// Returns the return type, if any is specified.
         /// </summary>
         /// <value>return type</value>
-        public string OptionalReturnType
-        {
-            get { return _optionalReturnType; }
-            set { _optionalReturnType = value; }
+        public string OptionalReturnType {
+            get => _optionalReturnType;
+            set => _optionalReturnType = value;
         }
 
         /// <summary>
         /// Returns a dialect name, or null if none is defined and the configured default applies
         /// </summary>
         /// <value>dialect name</value>
-        public string OptionalDialect
-        {
-            get { return _optionalDialect; }
-            set { _optionalDialect = value; }
+        public string OptionalDialect {
+            get => _optionalDialect;
+            set => _optionalDialect = value;
         }
 
         /// <summary>
         /// Returns the script body.
         /// </summary>
         /// <value>script body</value>
-        public string ExpressionText
-        {
-            get { return _expressionText; }
-            set { _expressionText = value; }
+        public string ExpressionText {
+            get => _expressionText;
+            set => _expressionText = value;
         }
 
         /// <summary>
         /// Returns the lambda expression parameters.
         /// </summary>
         /// <value>lambda expression parameters</value>
-        public IList<string> ParameterNames
-        {
-            get { return _parameterNames; }
-            set { _parameterNames = value; }
+        public IList<string> ParameterNames {
+            get => _parameterNames;
+            set => _parameterNames = value;
         }
 
         /// <summary>
         /// Returns the optional event type name.
         /// </summary>
         /// <value>type name</value>
-        public string OptionalEventTypeName
-        {
-            get { return _optionalEventTypeName; }
-            set { _optionalEventTypeName = value; }
+        public string OptionalEventTypeName {
+            get => _optionalEventTypeName;
+            set => _optionalEventTypeName = value;
         }
 
         /// <summary>
@@ -170,32 +161,27 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPL(TextWriter writer)
         {
             writer.Write("expression ");
-            if (_optionalReturnType != null)
-            {
+            if (_optionalReturnType != null) {
                 writer.Write(_optionalReturnType);
                 writer.Write(" ");
             }
 
-            if (_optionalEventTypeName != null)
-            {
+            if (_optionalEventTypeName != null) {
                 writer.Write("@type(");
                 writer.Write(_optionalEventTypeName);
                 writer.Write(") ");
             }
 
-            if (!string.IsNullOrWhiteSpace(_optionalDialect))
-            {
+            if (!string.IsNullOrWhiteSpace(_optionalDialect)) {
                 writer.Write(_optionalDialect);
                 writer.Write(":");
             }
 
             writer.Write(_name);
             writer.Write("(");
-            if (_parameterNames != null && !_parameterNames.IsEmpty())
-            {
-                string delimiter = "";
-                foreach (string name in _parameterNames)
-                {
+            if (_parameterNames != null && !_parameterNames.IsEmpty()) {
+                var delimiter = "";
+                foreach (var name in _parameterNames) {
                     writer.Write(delimiter);
                     writer.Write(name);
                     delimiter = ",";

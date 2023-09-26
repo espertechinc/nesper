@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.client.util
     public class CountMinSketchAgentStringUTF16Forge : CountMinSketchAgentForge
     {
         public Type[] AcceptableValueTypes {
-            get { return new Type[] {typeof(string)}; }
+            get { return new Type[] { typeof(string) }; }
         }
 
         public CodegenExpression CodegenMake(

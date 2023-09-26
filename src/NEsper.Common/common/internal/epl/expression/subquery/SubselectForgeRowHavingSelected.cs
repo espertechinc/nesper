@@ -29,8 +29,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
             var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
-            var havingMethod = CodegenLegoMethodExpression.CodegenExpression(subselect.HavingExpr, method, classScope, true);
+            var havingMethod = CodegenLegoMethodExpression.CodegenExpression(
+                subselect.HavingExpr,
+                method,
+                classScope);
             CodegenExpression having = LocalMethod(
                 havingMethod,
                 REF_EVENTS_SHIFTED,
@@ -45,7 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 ConstantNull());
 
             if (subselect.SelectClause.Length == 1) {
-                var eval = CodegenLegoMethodExpression.CodegenExpression(subselect.SelectClause[0].Forge, method, classScope, true);
+                var eval = CodegenLegoMethodExpression.CodegenExpression(
+                    subselect.SelectClause[0].Forge,
+                    method,
+                    classScope);
                 method.Block.MethodReturn(
                     LocalMethod(eval, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)));
             }

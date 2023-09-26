@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             CodegenSymbolProvider symbols,
             CodegenClassScope classScope)
         {
-            return Make(parent, (SAIFFInitializeSymbol) symbols, classScope);
+            return Make(parent, (SAIFFInitializeSymbol)symbols, classScope);
         }
 
         public CodegenExpression Make(

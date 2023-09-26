@@ -24,12 +24,12 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             TableMetaData metadata,
             EPStatementInitServices services)
         {
-            Table existing = tables.Get(tableName);
+            var existing = tables.Get(tableName);
             if (existing != null) {
                 throw new IllegalStateException("Table already found for name '" + tableName + "'");
             }
 
-            Table table = services.TableManagementService.AllocateTable(metadata);
+            var table = services.TableManagementService.AllocateTable(metadata);
             tables.Put(tableName, table);
         }
 

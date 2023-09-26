@@ -11,10 +11,10 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	/// <summary>
-	///     Binding for nullable character values.
-	/// </summary>
-	public class DIONullableCharacterSerde : DataInputOutputSerdeBase<char?>
+    /// <summary>
+    ///     Binding for nullable character values.
+    /// </summary>
+    public class DIONullableCharacterSerde : DataInputOutputSerdeBase<char?>
     {
         public static readonly DIONullableCharacterSerde INSTANCE = new DIONullableCharacterSerde();
 

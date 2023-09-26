@@ -46,26 +46,24 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public EventType EventType {
             get => eventType;
-            set { this.eventType = value; }
+            set => eventType = value;
         }
 
         public StatViewAdditionalPropsEval AdditionalProps {
             get => additionalProps;
-            set { this.additionalProps = value; }
+            set => additionalProps = value;
         }
 
         public ExprEvaluator ExpressionXEval {
             get => expressionXEval;
-            set { this.expressionXEval = value; }
+            set => expressionXEval = value;
         }
 
         public ExprEvaluator ExpressionYEval {
             get => expressionYEval;
-            set { this.expressionYEval = value; }
+            set => expressionYEval = value;
         }
 
-        public string ViewName {
-            get => ViewEnum.CORRELATION.GetViewName();
-        }
+        public string ViewName => ViewEnum.CORRELATION.GetViewName();
     }
 } // end of namespace

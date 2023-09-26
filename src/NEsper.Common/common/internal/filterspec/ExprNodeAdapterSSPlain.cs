@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public override bool Evaluate(EventBean theEvent)
         {
-            return EvaluatePerStream(new[] {theEvent});
+            return EvaluatePerStream(new[] { theEvent });
         }
     }
 } // end of namespace

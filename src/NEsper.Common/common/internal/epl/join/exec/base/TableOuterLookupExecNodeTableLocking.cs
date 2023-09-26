@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.@base
             var joinedEvents = lookupStrategy.Lookup(lookupEvent, null, exprEvaluatorContext);
 
             // process results
-            base.ProcessResults(prefillPath, result, joinedEvents);
+            ProcessResults(prefillPath, result, joinedEvents);
         }
     }
 } // end of namespace

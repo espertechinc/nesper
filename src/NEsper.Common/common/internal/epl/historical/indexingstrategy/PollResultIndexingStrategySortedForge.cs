@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         {
             var method = parent.MakeChild(typeof(PollResultIndexingStrategySorted), GetType(), classScope);
 
-            var propertyGetter = ((EventTypeSPI) eventType).GetGetterSPI(propertyName);
+            var propertyGetter = ((EventTypeSPI)eventType).GetGetterSPI(propertyName);
             var propertyType = eventType.GetPropertyType(propertyName);
             var valueGetter = EventTypeUtility.CodegenGetterWCoerce(
                 propertyGetter,
@@ -60,9 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 classScope);
 
             method.Block
-                .DeclareVar<PollResultIndexingStrategySorted>(
-                    "strat",
-                    NewInstance(typeof(PollResultIndexingStrategySorted)))
+                .DeclareVarNewInstance<PollResultIndexingStrategySorted>("strat")
                 .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
                 .SetProperty(Ref("strat"), "PropertyName", Constant(propertyName))
                 .SetProperty(Ref("strat"), "ValueGetter", valueGetter)

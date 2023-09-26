@@ -109,7 +109,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public Type EvaluationType => forge.EvaluationType;
 
-        public ExprEvaluator ExprEvaluator => throw new UnsupportedOperationException("Evaluator not available at compile-time");
+        public ExprEvaluator ExprEvaluator =>
+            throw new UnsupportedOperationException("Evaluator not available at compile-time");
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 

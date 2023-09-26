@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -32,9 +33,12 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         private readonly EventTable[][] repositories;
 
         // Set semantic eliminates duplicates in result set, use Linked set to preserve order
-        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> newResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
-        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> oldResults = new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
-        
+        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> newResults =
+            new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+
+        private readonly ISet<MultiKeyArrayOfKeys<EventBean>> oldResults =
+            new LinkedHashSet<MultiKeyArrayOfKeys<EventBean>>();
+
         private readonly ExprEvaluatorContext staticEvalExprEvaluatorContext;
         private readonly Viewable[] streamViews;
 
@@ -56,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         ///     Returns tables.
         /// </summary>
         /// <value>tables for stream.</value>
-        protected EventTable[][] Tables { get; } = new EventTable[0][];
+        protected EventTable[][] Tables { get; } = Array.Empty<EventTable[]>();
 
         /// <summary>
         ///     Returns query strategies.
@@ -175,14 +179,14 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                 // for each stream, perform query strategy
                 for (var stream = 0; stream < QueryStrategies.Length; stream++) {
                     if (streamViews[stream] is HistoricalEventViewable) {
-                        var historicalViewable = (HistoricalEventViewable) streamViews[stream];
+                        var historicalViewable = (HistoricalEventViewable)streamViews[stream];
                         if (historicalViewable.HasRequiredStreams) {
                             continue;
                         }
 
                         // there may not be a query strategy since only a full outer join may need to consider all rows
                         if (QueryStrategies[stream] != null) {
-                            IEnumerator<EventBean> streamEvents = historicalViewable.GetEnumerator();
+                            var streamEvents = historicalViewable.GetEnumerator();
                             for (; streamEvents.MoveNext();) {
                                 lookupEvents[0] = streamEvents.Current;
                                 QueryStrategies[stream].Lookup(lookupEvents, result, staticEvalExprEvaluatorContext);
@@ -190,7 +194,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                         }
                     }
                     else {
-                        IEnumerator<EventBean> streamEvents = streamViews[stream].GetEnumerator();
+                        var streamEvents = streamViews[stream].GetEnumerator();
                         for (; streamEvents.MoveNext();) {
                             lookupEvents[0] = streamEvents.Current;
                             QueryStrategies[stream].Lookup(lookupEvents, result, staticEvalExprEvaluatorContext);
@@ -216,7 +220,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         {
             for (var stream = 0; stream < streamViews.Length; stream++) {
                 if (streamViews[stream] is HistoricalEventViewable) {
-                    var historicalViewable = (HistoricalEventViewable) streamViews[stream];
+                    var historicalViewable = (HistoricalEventViewable)streamViews[stream];
                     caches[stream] = new HistoricalDataCacheClearableMap();
                     historicalViewable.DataCacheThreadLocal.Value = caches[stream];
                 }
@@ -229,7 +233,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         {
             for (var stream = 0; stream < streamViews.Length; stream++) {
                 if (streamViews[stream] is HistoricalEventViewable) {
-                    var historicalViewable = (HistoricalEventViewable) streamViews[stream];
+                    var historicalViewable = (HistoricalEventViewable)streamViews[stream];
                     historicalViewable.DataCacheThreadLocal.Value = null;
                     caches[stream].Clear();
                 }

@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 return false;
             }
 
-            var other = (ScheduleSpec) otherObject;
+            var other = (ScheduleSpec)otherObject;
             if (UnitValues.Count != other.UnitValues.Count) {
                 return false;
             }
@@ -232,10 +232,9 @@ namespace com.espertech.esper.common.@internal.schedule
 
             foreach (var unit in EnumHelper.GetValues<ScheduleUnit>()) {
                 if ((unit == ScheduleUnit.SECONDS ||
-                     unit == ScheduleUnit.MILLISECONDS || 
-                     unit == ScheduleUnit.MICROSECONDS) && 
-                    (!unitValues.ContainsKey(unit)))
-                {
+                     unit == ScheduleUnit.MILLISECONDS ||
+                     unit == ScheduleUnit.MICROSECONDS) &&
+                    !unitValues.ContainsKey(unit)) {
                     // Seconds, milliseconds and microseconds are optional
                     continue;
                 }
@@ -264,7 +263,7 @@ namespace com.espertech.esper.common.@internal.schedule
         {
             var method = parent.MakeChild(typeof(ScheduleSpec), GetType(), classScope);
             var spec = Ref("spec");
-            method.Block.DeclareVar<ScheduleSpec>(spec.Ref, NewInstance(typeof(ScheduleSpec)));
+            method.Block.DeclareVarNewInstance<ScheduleSpec>(spec.Ref);
             if (_optionalTimeZone != null) {
                 method.Block.SetProperty(spec, "OptionalTimeZone", Constant(_optionalTimeZone));
             }

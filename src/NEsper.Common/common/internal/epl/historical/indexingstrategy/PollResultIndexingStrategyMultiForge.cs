@@ -60,9 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
             }
 
             method.Block
-                .DeclareVar<PollResultIndexingStrategyMulti>(
-                    "strat",
-                    NewInstance(typeof(PollResultIndexingStrategyMulti)))
+                .DeclareVarNewInstance<PollResultIndexingStrategyMulti>("strat")
                 .SetProperty(Ref("strat"), "IndexingStrategies", Ref("strats"))
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);

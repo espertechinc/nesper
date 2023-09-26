@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.schedule
             int bucket,
             int slot)
         {
-            return ((long) bucket << 32) | slot & 0xFFFFFFFFL;
+            return ((long)bucket << 32) | (slot & 0xFFFFFFFFL);
         }
 
         public long AllocateSlot()

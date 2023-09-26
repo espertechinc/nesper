@@ -73,17 +73,27 @@ namespace com.espertech.esper.common.@internal.collection
             var a1 = ReferenceEquals(o1, null);
             var a2 = ReferenceEquals(o2, null);
 
-            if (a1 && a2) return 0;
-            if (a1) return o2.GetHashCode();
-            if (a2) return o1.GetHashCode();
+            if (a1 && a2) {
+                return 0;
+            }
+
+            if (a1) {
+                return o2.GetHashCode();
+            }
+
+            if (a2) {
+                return o1.GetHashCode();
+            }
 
             var h1 = o1.GetHashCode();
             var h2 = o2.GetHashCode();
 
-            if (h1 > h2)
-                return h1 * 397 ^ h2;
-            else
-                return h2 * 397 ^ h1;
+            if (h1 > h2) {
+                return (h1 * 397) ^ h2;
+            }
+            else {
+                return (h2 * 397) ^ h1;
+            }
         }
 
         /// <summary>

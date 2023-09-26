@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            DateTime dateTime = (DateTime) target;
+            var dateTime = (DateTime)target;
             return EvaluateCalOpsDateTime(calendarOps, dateTime, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -46,11 +46,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope
+            var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTime), typeof(DTLocalDtxOpsDtzEval), codegenClassScope)
-                .AddParam(typeof(DateTime), "dateTime");
+                .AddParam<DateTime>("dateTime");
 
-            CodegenBlock block = methodNode.Block;
+            var block = methodNode.Block;
             EvaluateCalOpsDateTimeCodegen(
                 block,
                 "dateTime",

@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
             }
         }
 
-        public EventType FragmentEventType => fragmentEventTypes[fragmentEventTypes.Length - 1].FragmentType;
+        public EventType FragmentEventType => fragmentEventTypes[^1].FragmentType;
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.contained
                     Ref("pe"),
                     "ResultEventType",
                     EventTypeUtility.ResolveTypeCodegen(
-                        fragmentEventTypes[fragmentEventTypes.Length - 1].FragmentType,
+                        fragmentEventTypes[^1].FragmentType,
                         symbols.GetAddInitSvc(method)))
                 .SetProperty(Ref("pe"), "ExpressionTexts", Constant(expressionTexts))
                 .SetProperty(

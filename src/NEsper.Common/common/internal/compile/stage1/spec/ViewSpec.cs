@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     [Serializable]
     public class ViewSpec : ObjectSpec
     {
-        public static readonly ViewSpec[] EMPTY_VIEWSPEC_ARRAY = new ViewSpec[0];
+        public static readonly ViewSpec[] EMPTY_VIEWSPEC_ARRAY = Array.Empty<ViewSpec>();
 
         /// <summary>
         ///     Constructor.

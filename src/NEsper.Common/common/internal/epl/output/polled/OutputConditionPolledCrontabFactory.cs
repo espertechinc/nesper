@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,7 +10,6 @@ using System;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.compat.logging;
@@ -18,12 +17,10 @@ using com.espertech.esper.compat.logging;
 namespace com.espertech.esper.common.@internal.epl.output.polled
 {
     /// <summary>
-    ///     Output condition handling crontab-at schedule output.
+    /// Output condition handling crontab-at schedule output.
     /// </summary>
     public class OutputConditionPolledCrontabFactory : OutputConditionPolledFactory
     {
-        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         private readonly ExprEvaluator[] expressions;
 
         public OutputConditionPolledCrontabFactory(ExprEvaluator[] expressions)
@@ -31,11 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             this.expressions = expressions;
         }
 
-        public OutputConditionPolled MakeNew(AgentInstanceContext agentInstanceContext)
+        public OutputConditionPolled MakeNew(ExprEvaluatorContext exprEvaluatorContext)
         {
             ScheduleSpec scheduleSpec;
             try {
-                var scheduleSpecParameterList = Evaluate(expressions, agentInstanceContext);
+                var scheduleSpecParameterList = Evaluate(expressions, exprEvaluatorContext);
                 scheduleSpec = ScheduleSpecUtil.ComputeValues(scheduleSpecParameterList);
             }
             catch (ScheduleParameterException e) {
@@ -43,14 +40,14 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             }
 
             var state = new OutputConditionPolledCrontabState(scheduleSpec, null, 0);
-            return new OutputConditionPolledCrontab(agentInstanceContext, state);
+            return new OutputConditionPolledCrontab(exprEvaluatorContext, state);
         }
 
         public OutputConditionPolled MakeFromState(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             OutputConditionPolledState state)
         {
-            return new OutputConditionPolledCrontab(agentInstanceContext, (OutputConditionPolledCrontabState) state);
+            return new OutputConditionPolledCrontab(exprEvaluatorContext, (OutputConditionPolledCrontabState)state);
         }
 
         private static object[] Evaluate(
@@ -79,5 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
 
             return results;
         }
+
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

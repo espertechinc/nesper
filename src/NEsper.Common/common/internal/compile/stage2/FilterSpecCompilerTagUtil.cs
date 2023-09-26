@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             foreach (var filterNode in filterFactoryNodes) {
-                var forge = (EvalFilterForgeNode) filterNode;
+                var forge = (EvalFilterForgeNode)filterNode;
                 int tagNumber;
                 if (forge.EventAsName != null) {
                     if (!allTagNamesOrdered.Contains(forge.EventAsName)) {
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 evalForgeNode,
                 StreamSpecCompiler.FilterForFilterFactoryNodes.INSTANCE);
             foreach (var filterNode in filterFactoryNodes) {
-                var forge = (EvalFilterForgeNode) filterNode;
+                var forge = (EvalFilterForgeNode)filterNode;
                 if (forge.EventAsName != null) {
                     tags.Add(forge.EventAsName);
                 }

@@ -79,10 +79,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             if (map.Count == 1) {
                 method.Block.MethodReturn(
                     StaticMethod(
-                        typeof(Collections), 
+                        typeof(Collections),
                         "SingletonMap",
                         new Type[] { clazzKey, clazzValue },
-                        Ref("key0"), 
+                        Ref("key0"),
                         Ref("value0")));
             }
             else {

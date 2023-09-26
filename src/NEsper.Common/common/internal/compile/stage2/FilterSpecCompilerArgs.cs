@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
         public readonly ContextCompileTimeDescriptor contextDescriptor;
         public readonly StatementRawInfo statementRawInfo;
         public readonly StreamTypeService streamTypeService;
-        
+
         public FilterSpecCompilerArgs(
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,

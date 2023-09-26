@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         {
             StreamsRequired = new HashSet<int>();
         }
-        
+
         public bool IsWalkDeclExprParam => true;
 
         public ISet<int> StreamsRequired { get; }
@@ -30,8 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
 
         public void Visit(ExprNode exprNode)
         {
-            if (exprNode is ExprStreamRefNode) {
-                var streamRefNode = (ExprStreamRefNode) exprNode;
+            if (exprNode is ExprStreamRefNode streamRefNode) {
                 var streamRef = streamRefNode.StreamReferencedIfAny;
                 if (streamRef != null) {
                     StreamsRequired.Add(streamRef.Value);

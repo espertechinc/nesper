@@ -37,13 +37,13 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
         public object[] MgmtGetParentPartitionKeys(IntSeqKey controllerPath)
         {
             var entry = mgmt.Get(controllerPath);
-            return entry == null ? null : entry.parentPartitionKeys;
+            return entry?.parentPartitionKeys;
         }
 
         public ContextControllerConditionNonHA MgmtDelete(IntSeqKey controllerPath)
         {
             var existing = mgmt.Delete(controllerPath);
-            return existing == null ? null : existing.startCondition;
+            return existing?.startCondition;
         }
 
         public ContextControllerConditionNonHA MgmtUpdClearStartCondition(IntSeqKey controllerPath)
@@ -78,12 +78,12 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             return existing.currentSubpath++;
         }
 
-        
+
         public ContextControllerCondition MgmtGetStartCondition(IntSeqKey controllerPath)
         {
             return mgmt.TryGetValue(controllerPath, out var existing) ? existing.startCondition : null;
         }
-        
+
         public void EndCreate(
             IntSeqKey endConditionPath,
             int subpathIdOrCPId,

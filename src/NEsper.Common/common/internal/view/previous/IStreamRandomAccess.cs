@@ -41,13 +41,13 @@ namespace com.espertech.esper.common.@internal.view.previous
         {
             updateObserver?.Updated(this);
             if (newData != null) {
-                for (int i = 0; i < newData.Length; i++) {
+                for (var i = 0; i < newData.Length; i++) {
                     arrayList.Insert(0, newData[i]);
                 }
             }
 
             if (oldData != null) {
-                for (int i = 0; i < oldData.Length; i++) {
+                for (var i = 0; i < oldData.Length; i++) {
                     arrayList.RemoveAt(arrayList.Count - 1);
                 }
             }
@@ -99,9 +99,7 @@ namespace com.espertech.esper.common.@internal.view.previous
         /// Returns true for empty.
         /// </summary>
         /// <returns>indicator</returns>
-        public bool IsEmpty {
-            get => arrayList.IsEmpty();
-        }
+        public bool IsEmpty => arrayList.IsEmpty();
 
         public EventBean GetNewDataTail(int index)
         {
@@ -118,16 +116,10 @@ namespace com.espertech.esper.common.@internal.view.previous
             return arrayList.GetEnumerator();
         }
 
-        public ICollection<EventBean> WindowCollectionReadOnly {
-            get => arrayList;
-        }
+        public ICollection<EventBean> WindowCollectionReadOnly => arrayList;
 
-        public int WindowCount {
-            get => arrayList.Count;
-        }
+        public int WindowCount => arrayList.Count;
 
-        public int NumEventsInsertBuf {
-            get => WindowCount;
-        }
+        public int NumEventsInsertBuf => WindowCount;
     }
 } // end of namespace

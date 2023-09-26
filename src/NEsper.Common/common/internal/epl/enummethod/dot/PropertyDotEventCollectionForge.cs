@@ -103,7 +103,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             return EvaluateGetROCollectionEventsCodegenImpl(
-                codegenMethodScope, exprSymbol, codegenClassScope);
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public CodegenExpression EvaluateEventGetROCollectionEventsCodegen(
@@ -217,7 +219,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             EventBean eventInQuestion,
             ExprEvaluatorContext context)
         {
-            var events = (EventBean[]) _getter.GetFragment(eventInQuestion);
+            var events = (EventBean[])_getter.GetFragment(eventInQuestion);
             return events?.Unwrap<EventBean>();
         }
 
@@ -232,7 +234,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                         typeof(FlexCollection),
                         typeof(PropertyDotEventCollectionForge),
                         codegenClassScope)
-                    .AddParam(typeof(EventBean), "@event");
+                    .AddParam<EventBean>("@event");
 
                 methodNodeX.Block
                     .DeclareVar<EventBean[]>(
@@ -247,8 +249,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(FlexCollection), typeof(PropertyDotEventCollectionForge), codegenClassScope)
-                .AddParam(typeof(EventBean), "@event");
-            CodegenExpressionRef refExprEvalCtx = refExprEvalCtxFunc.Invoke(methodNode);
+                .AddParam<EventBean>("@event");
+            var refExprEvalCtx = refExprEvalCtxFunc.Invoke(methodNode);
 
             methodNode.Block
                 .DeclareVar<ExpressionResultCacheForPropUnwrap>(
@@ -283,7 +285,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return LocalMethod(methodNode, @event);
         }
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {

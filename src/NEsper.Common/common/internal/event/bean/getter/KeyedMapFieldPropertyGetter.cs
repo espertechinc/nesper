@@ -41,8 +41,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                TypeHelper.GetGenericFieldTypeMap(field, false),
-                null)
+                TypeHelper.GetGenericFieldTypeMap(field, false))
         {
             _key = key;
             _field = field;
@@ -53,13 +52,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             var underlying = obj.Underlying;
             return GetBeanProp(underlying);
         }
-        
+
         public object Get(
             EventBean eventBean,
             string mapKey)
         {
             return FieldGetterHelper.GetFieldMap(_field, eventBean.Underlying, mapKey);
         }
+
         public object GetBeanProp(object @object)
         {
             return FieldGetterHelper.GetFieldMap(_field, @object, _key);
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => TypeHelper.GetGenericFieldTypeMap(_field, false);
+        //public override Type BeanPropType => TypeHelper.GetGenericFieldTypeMap(_field, false);
 
         public override Type TargetType => _field.DeclaringType;
 
@@ -135,10 +135,11 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return codegenMethodScope.MakeChild(BeanPropType, GetType(), codegenClassScope)
                 .AddParam(TargetType, "@object")
-                .AddParam(typeof(object), "key")
+                .AddParam<object>("key")
                 .Block
                 .DeclareVar<object>("result", ExprDotName(Ref("@object"), _field.Name))
-                .DeclareVar<IDictionary<object, object>>("resultMap",
+                .DeclareVar<IDictionary<object, object>>(
+                    "resultMap",
                     StaticMethod(typeof(CompatExtensions), "AsObjectDictionary", Ref("result")))
                 .IfRefNullReturnNull("resultMap")
                 .MethodReturn(Cast(BeanPropType, ExprDotMethod(Ref("resultMap"), "Get", Ref("key"))));

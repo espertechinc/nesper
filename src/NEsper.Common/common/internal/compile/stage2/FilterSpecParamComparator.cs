@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var values = Enum.GetValues(typeof(FilterOperator));
             FilterSortOrder = new int[values.Length];
             for (var i = 0; i < FilterSortOrder.Length; i++) {
-                FilterSortOrder[i] = IndexOf((FilterOperator) values.GetValue(i));
+                FilterSortOrder[i] = IndexOf((FilterOperator)values.GetValue(i));
             }
         }
 
@@ -70,8 +70,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             // Within different filter operator types sort by the table above
-            var opIndex1 = FilterSortOrder[(int) param1];
-            var opIndex2 = FilterSortOrder[(int) param2];
+            var opIndex1 = FilterSortOrder[(int)param1];
+            var opIndex2 = FilterSortOrder[(int)param2];
             return opIndex1 < opIndex2 ? -1 : 1;
         }
 

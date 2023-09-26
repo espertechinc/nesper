@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.context.util
             AgentInstance ai1,
             AgentInstance ai2)
         {
-            EPStatementAgentInstanceHandle o1 = ai1.AgentInstanceContext.EpStatementAgentInstanceHandle;
-            EPStatementAgentInstanceHandle o2 = ai2.AgentInstanceContext.EpStatementAgentInstanceHandle;
+            var o1 = ai1.AgentInstanceContext.EpStatementAgentInstanceHandle;
+            var o2 = ai2.AgentInstanceContext.EpStatementAgentInstanceHandle;
             return _innerComparer.Compare(o1, o2);
         }
     }

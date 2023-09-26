@@ -8,18 +8,18 @@
 
 namespace com.espertech.esper.common.client.json.util
 {
-	/// <summary>
-	///     Event sender for JSON documents and pre-parsed event objects.
-	///     <para />
-	///     Allows parsing a JSON document returning the event object.
-	/// </summary>
-	public interface EventSenderJson : EventSender
+    /// <summary>
+    ///     Event sender for JSON documents and pre-parsed event objects.
+    ///     <para />
+    ///     Allows parsing a JSON document returning the event object.
+    /// </summary>
+    public interface EventSenderJson : EventSender
     {
-	    /// <summary>
-	    /// </summary>
-	    /// <param name="json">to parse</param>
-	    /// <returns>event object</returns>
-	    /// <throws>com.espertech.esper.common.client.EPException when parsing the document failed</throws>
-	    object Parse(string json);
+        /// <summary>
+        /// </summary>
+        /// <param name="json">to parse</param>
+        /// <returns>event object</returns>
+        /// <throws>com.espertech.esper.common.client.EPException when parsing the document failed</throws>
+        object Parse(string json);
     }
 } // end of namespace

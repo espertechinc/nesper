@@ -133,8 +133,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 new DependencyGraph(6, false));
 
             Assert.AreEqual(6, substreamsPerStream.Count);
-            EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream.Get(2), new[] {3, 1});
-            EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream.Get(3), new[] {4, 5});
+            EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream[2], new[] {3, 1});
+            EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream[3], new[] {4, 5});
             EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream.Get(1), new[] {0});
             EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream.Get(4), new int[] { });
             EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream.Get(5), new int[] { });

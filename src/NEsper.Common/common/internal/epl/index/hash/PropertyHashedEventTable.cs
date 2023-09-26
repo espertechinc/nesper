@@ -101,6 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
         public MultiKeyFromObjectArray MultiKeyTransform => Factory.MultiKeyTransform;
 
         public abstract ISet<EventBean> Lookup(object key);
+        public abstract ISet<EventBean> LookupFAF(object key);
 
         /// <summary>
         ///     Determine multikey for index access.

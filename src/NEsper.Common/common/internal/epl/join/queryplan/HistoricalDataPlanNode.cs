@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             VirtualDWView[] viewExternal,
             ILockable[] tableSecondaryIndexLocks)
         {
-            var viewable = (HistoricalEventViewable) streamViews[streamNum];
+            var viewable = (HistoricalEventViewable)streamViews[streamNum];
             return new HistoricalDataExecNode(viewable, indexingStrategy, lookupStrategy, numStreams, streamNum);
         }
 
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// <returns>strategy</returns>
         public HistoricalTableLookupStrategy MakeOuterJoinStategy(Viewable[] streamViews)
         {
-            var viewable = (HistoricalEventViewable) streamViews[streamNum];
+            var viewable = (HistoricalEventViewable)streamViews[streamNum];
             return new HistoricalTableLookupStrategy(
                 viewable,
                 indexingStrategy,

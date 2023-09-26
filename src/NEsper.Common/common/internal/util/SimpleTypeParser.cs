@@ -36,6 +36,9 @@ namespace com.espertech.esper.common.@internal.util
             ProcParse = procParse;
         }
 
-        public object Parse(string text) => ProcParse?.Invoke(text);
+        public object Parse(string text)
+        {
+            return ProcParse?.Invoke(text);
+        }
     }
 } // end of namespace

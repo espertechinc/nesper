@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             _block = new CodegenBlock(this);
             return _block;
         }
-        
+
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             consumer.Invoke(_expression);

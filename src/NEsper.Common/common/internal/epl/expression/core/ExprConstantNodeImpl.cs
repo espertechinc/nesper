@@ -31,27 +31,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprForgeInstrumentable
     {
         private object _value;
-        private readonly Type _clazz;
+        private readonly Type _type;
         private readonly EnumValue _enumValue;
         private readonly string _stringConstantWhenProvided;
 
         /// <summary>
         ///     Ctor.
         /// </summary>
-        /// <param name="value">is the constant's value.</param>
-        public ExprConstantNodeImpl(object value, string stringConstantWhenProvided)
+        /// <param name = "value">is the constant's value.</param>
+        public ExprConstantNodeImpl(
+            object value,
+            string stringConstantWhenProvided)
         {
             _value = value;
             _stringConstantWhenProvided = stringConstantWhenProvided;
             if (value == null) {
-                _clazz = null;
+                _type = null;
             }
             else {
-                _clazz = value.GetType().GetPrimitiveType();
+                _type = value.GetType().GetPrimitiveType();
             }
         }
 
-        public ExprConstantNodeImpl(object value) : this(value, (string) null)
+        public ExprConstantNodeImpl(object value) : this(value, (string)null)
         {
         }
 
@@ -59,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             _stringConstantWhenProvided = null;
             _enumValue = enumValue;
-            _clazz = enumValue.EnumField.FieldType;
+            _type = enumValue.EnumField.FieldType;
             try {
                 ConstantValue = enumValue.EnumField.GetValue(null);
             }
@@ -71,8 +73,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <summary>
         ///     Ctor.
         /// </summary>
-        /// <param name="value">is the constant's value.</param>
-        /// <param name="valueType">is the constant's value type.</param>
+        /// <param name = "value">is the constant's value.</param>
+        /// <param name = "valueType">is the constant's value type.</param>
         public ExprConstantNodeImpl(
             object value,
             Type valueType)
@@ -80,34 +82,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             _stringConstantWhenProvided = null;
             _value = value;
             if (value == null) {
-                _clazz = valueType.GetBoxedType();
+                _type = valueType.GetBoxedType();
             }
             else {
-                _clazz = value.GetType().GetPrimitiveType();
+                _type = value.GetType().GetPrimitiveType();
             }
         }
 
         /// <summary>
         ///     Ctor - for use when the constant should return a given type and the actual value is always null.
         /// </summary>
-        /// <param name="clazz">the type of the constant null.</param>
+        /// <param name = "clazz">the type of the constant null.</param>
         public ExprConstantNodeImpl(Type clazz)
         {
-            _clazz = clazz.GetBoxedType();
+            _type = clazz.GetBoxedType();
             _value = null;
             _stringConstantWhenProvided = null;
         }
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.COMPILETIMECONST;
-
         public ExprEvaluator ExprEvaluator => this;
-
-        public Type EvaluationType => _clazz;
-
+        public Type EvaluationType => _type;
         public ExprNodeRenderable ExprForgeRenderable => this;
-
         public override ExprForge Forge => this;
-
         public string StringConstantWhenProvided => _stringConstantWhenProvided;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -125,18 +122,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         }
 
         public Type ConstantType => EvaluationType;
-
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
+        public bool ConstantAvailable => true;
 
         public override bool EqualsNode(
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprConstantNodeImpl)) {
+            if (!(node is ExprConstantNodeImpl other)) {
                 return false;
             }
-
-            var other = (ExprConstantNodeImpl) node;
 
             if (other.ConstantValue == null && ConstantValue != null) {
                 return false;
@@ -174,8 +169,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     requiredType,
                     codegenMethodScope,
                     exprSymbol,
-                    codegenClassScope)
-                .Noqparam()
+                    codegenClassScope).Noqparam()
                 .Build();
         }
 
@@ -202,15 +196,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public bool IsConstantResult => true;
 
-        /// <summary>
-        ///     Sets the value of the constant.
-        /// </summary>
-        /// <param name="value">to set</param>
-        public void SetValue(object value)
-        {
-            ConstantValue = value;
-        }
-
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,
             ExprNodeRenderableFlags flags)
@@ -219,8 +204,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 writer.Write("\"" + ConstantValue + '\"');
             }
             else {
-                writer.Write(CompatExtensions.RenderAny(ConstantValue));
+                writer.Write(ConstantValue.RenderAny());
             }
+        }
+
+        public object Value {
+            set => ConstantValue = value;
         }
     }
 } // end of namespace

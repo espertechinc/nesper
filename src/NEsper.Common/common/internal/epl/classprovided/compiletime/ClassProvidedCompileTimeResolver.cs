@@ -14,21 +14,27 @@ using com.espertech.esper.common.@internal.epl.classprovided.core;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
+
 namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 {
-	public interface ClassProvidedCompileTimeResolver : CompileTimeResolver {
-	    ClassProvided ResolveClass(string name);
+    public interface ClassProvidedCompileTimeResolver : CompileTimeResolver
+    {
+        ClassProvided ResolveClass(string name);
 
-	    Pair<Type, ImportSingleRowDesc> ResolveSingleRow(string name);
+        Pair<Type, ImportSingleRowDesc> ResolveSingleRow(string name);
 
-	    Type ResolveAggregationFunction(string name);
+        Type ResolveAggregationFunction(string name);
 
-	    Pair<Type, string[]> ResolveAggregationMultiFunction(string name);
+        Pair<Type, string[]> ResolveAggregationMultiFunction(string name);
 
-	    bool IsEmpty();
+        bool IsEmpty();
 
-	    void AddTo(ICollection<IArtifact> artifacts);
+        void AddTo(ClassProvidedClassesAdd additionalClasses);
 
-	    void RemoveFrom(ICollection<IArtifact> artifacts);
-	}
+        void AddTo(ICollection<IArtifact> artifacts);
+
+        void RemoveFrom(ICollection<IArtifact> artifacts);
+
+        void RemoveFrom(ClassProvidedClassRemove removeClasses);
+    }
 } // end of namespace

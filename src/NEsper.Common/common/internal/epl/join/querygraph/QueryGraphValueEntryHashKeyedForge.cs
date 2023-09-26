@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                     return null;
                 }
 
-                getterSPIS[i] = ((QueryGraphValueEntryHashKeyedForgeProp) keys[i]).EventPropertyGetter;
+                getterSPIS[i] = ((QueryGraphValueEntryHashKeyedForgeProp)keys[i]).EventPropertyGetter;
             }
 
             return getterSPIS;

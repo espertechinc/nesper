@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                 null,
                 null,
                 null,
-                EmptyList<StatementAgentInstancePreload>.Instance, 
+                EmptyList<StatementAgentInstancePreload>.Instance,
                 null)
         {
         }

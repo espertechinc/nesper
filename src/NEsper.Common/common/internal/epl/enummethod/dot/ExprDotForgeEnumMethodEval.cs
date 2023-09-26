@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
@@ -29,10 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
     public class ExprDotForgeEnumMethodEval : ExprDotEval
     {
+        private readonly ExprDotForgeEnumMethodBase forge;
         private readonly EnumEval enumEval;
         private readonly int enumEvalNumRequiredEvents;
-
-        private readonly ExprDotForgeEnumMethodBase forge;
 
         public ExprDotForgeEnumMethodEval(
             ExprDotForgeEnumMethodBase forge,
@@ -43,8 +43,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             this.enumEval = enumEval;
             this.enumEvalNumRequiredEvents = enumEvalNumRequiredEvents;
         }
-
-        public EPType TypeInfo => forge.TypeInfo;
 
         public object Evaluate(
             object target,
@@ -61,11 +59,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            var eventsLambda = eventsPerStream == null ? new EventBean[0] : AllocateCopyEventLambda(eventsPerStream, enumEvalNumRequiredEvents);
+            var eventsLambda = eventsPerStream == null
+                ? new EventBean[0]
+                : AllocateCopyEventLambda(eventsPerStream, enumEvalNumRequiredEvents);
             return enumEval.EvaluateEnumMethod(eventsLambda, coll, isNewData, exprEvaluatorContext);
         }
-
-        public ExprDotForge DotForge => forge;
 
         public static CodegenExpression Codegen(
             ExprDotForgeEnumMethodBase forge,
@@ -75,23 +73,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var returnType = EPTypeHelper.GetCodegenReturnType(forge.TypeInfo);
+            var returnType = forge.TypeInfo.GetCodegenReturnType();
             var methodNode = codegenMethodScope
                 .MakeChild(returnType, typeof(ExprDotForgeEnumMethodEval), codegenClassScope)
                 .AddParam(innerType, "param");
-
-            methodNode.Block.DebugStack();
-
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
-
             var forgeMember = codegenClassScope.AddDefaultFieldUnshared(
-                true, typeof(object), NewInstance(typeof(object)));
+                true,
+                typeof(object),
+                NewInstance(typeof(object)));
             var block = methodNode.Block;
-
-            //block.Debug("param: {0}", ExprDotMethod(Ref("param"), "RenderAny"));
-
             if (innerType == typeof(EventBean)) {
                 block.DeclareVar<FlexCollection>("coll", FlexEvent(Ref("param")));
             }
@@ -110,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 ExprDotMethodChain(refExprEvalCtx)
                     .Get("ExpressionResultCacheService")
                     .Get("AllocateEnumerationMethod"));
-            
+
             var premade = new EnumForgeCodegenParams(
                 Ref("eventsLambda"),
                 Ref("coll"),
@@ -119,8 +112,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 refExprEvalCtx);
             
             if (forge.IsCache) {
-                block
-                    .DeclareVar<ExpressionResultCacheEntryLongArrayAndObj>(
+                block.DeclareVar<
+                        ExpressionResultCacheEntryLongArrayAndObj>(
                         "cacheValue",
                         ExprDotMethod(Ref("cache"), "GetEnumerationMethodLastValue", forgeMember))
                     .IfCondition(NotEqualsNull(Ref("cacheValue")))
@@ -134,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                             refEPS,
                             Constant(forge.EnumEvalNumRequiredEvents)))
                     .DeclareVar(
-                        EPTypeHelper.GetCodegenReturnType(forge.TypeInfo),
+                        forge.TypeInfo.GetCodegenReturnType(),
                         "result",
                         forge.EnumForge.Codegen(premade, methodNode, codegenClassScope))
                     .Expression(
@@ -172,10 +165,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         }
 
         /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
-        /// <param name="eventsPerStream">events</param>
-        /// <param name="enumEvalNumRequiredEvents">width</param>
+        /// <param name = "eventsPerStream">events</param>
+        /// <param name = "enumEvalNumRequiredEvents">width</param>
         /// <returns>allocated</returns>
         public static EventBean[] AllocateCopyEventLambda(
             EventBean[] eventsPerStream,
@@ -185,5 +178,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             EventBeanUtility.SafeArrayCopy(eventsPerStream, eventsLambda);
             return eventsLambda;
         }
+
+        public EPChainableType TypeInfo => forge.TypeInfo;
+
+        public ExprDotForge DotForge => forge;
     }
 } // end of namespace

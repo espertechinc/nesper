@@ -62,27 +62,27 @@ namespace com.espertech.esper.common.@internal.util
                 }
 
                 // handle absolute URIs, compare scheme and authority if present
-                if (((child.Scheme != null) && (factoryUri.Scheme == null)) ||
-                    ((child.Scheme == null) && (factoryUri.Scheme != null))) {
+                if ((child.Scheme != null && factoryUri.Scheme == null) ||
+                    (child.Scheme == null && factoryUri.Scheme != null)) {
                     continue;
                 }
 
-                if ((child.Scheme != null) && (!child.Scheme.Equals(factoryUri.Scheme))) {
+                if (child.Scheme != null && !child.Scheme.Equals(factoryUri.Scheme)) {
                     continue;
                 }
 
-                if (((child.Authority != null) && (factoryUri.Authority == null)) ||
-                    ((child.Authority == null) && (factoryUri.Authority != null))) {
+                if ((child.Authority != null && factoryUri.Authority == null) ||
+                    (child.Authority == null && factoryUri.Authority != null)) {
                     continue;
                 }
 
-                if ((child.Authority != null) && (child.Authority != factoryUri.Authority)) {
+                if (child.Authority != null && child.Authority != factoryUri.Authority) {
                     continue;
                 }
 
                 // Match the child
-                string[] factoryPathElements = ParsePathElements(factoryUri);
-                int score = ComputeScore(childPathElements, factoryPathElements);
+                var factoryPathElements = ParsePathElements(factoryUri);
+                var score = ComputeScore(childPathElements, factoryPathElements);
                 if (score > 0) {
                     result.Put(score, entry); // Partial match if score is positive
                 }
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.util
         {
             var path = GetPath(uri);
             if (path == null) {
-                return new string[0];
+                return Array.Empty<string>();
             }
 
             while (path.StartsWith("/")) {
@@ -113,8 +113,8 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             var split = path.Split('/');
-            if ((split.Length > 0) && (split[0].Length == 0)) {
-                return new string[0];
+            if (split.Length > 0 && split[0].Length == 0) {
+                return Array.Empty<string>();
             }
 
             return split;
@@ -124,16 +124,16 @@ namespace com.espertech.esper.common.@internal.util
             string[] childPathElements,
             string[] factoryPathElements)
         {
-            int index = 0;
+            var index = 0;
 
             if (factoryPathElements.Length == 0) {
                 return int.MaxValue; // the most general factory scores the lowest
             }
 
             while (true) {
-                if ((childPathElements.Length > index) &&
-                    (factoryPathElements.Length > index)) {
-                    if (!(childPathElements[index].Equals(factoryPathElements[index]))) {
+                if (childPathElements.Length > index &&
+                    factoryPathElements.Length > index) {
+                    if (!childPathElements[index].Equals(factoryPathElements[index])) {
                         return 0;
                     }
                 }

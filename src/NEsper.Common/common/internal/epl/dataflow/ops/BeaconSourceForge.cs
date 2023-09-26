@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 context.Services.EventTypeAvroHandler.GetTypeWidenerCustomizer(outputEventType);
             foreach (var writable in writables) {
                 object providedProperty = allProperties.Get(writable.PropertyName);
-                var exprNode = (ExprNode) providedProperty;
+                var exprNode = (ExprNode)providedProperty;
                 var validated = EPLValidationUtil.ValidateSimpleGetSubtree(
                     ExprNodeOrigin.DATAFLOWBEACON,
                     exprNode,
@@ -217,7 +217,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
                 context.Services.EventTypeCompileTimeResolver);
             context.Services.EventTypeCompileTimeRegistry.NewType(outputEventType);
 
-            return new DataFlowOpForgeInitializeResult(new[] {new GraphTypeDesc(false, true, outputEventType)});
+            return new DataFlowOpForgeInitializeResult(new[] { new GraphTypeDesc(false, true, outputEventType) });
         }
 
         private static WriteablePropertyDescriptor[] SetupProperties(

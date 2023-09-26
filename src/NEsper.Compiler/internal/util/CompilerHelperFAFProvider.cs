@@ -237,7 +237,8 @@ namespace com.espertech.esper.compiler.@internal.util
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementFields), classPostfix);
             var namespaceScope = new CodegenNamespaceScope(
-                compileTimeServices.Namespace, statementFieldsClassName, compileTimeServices.IsInstrumented());
+                compileTimeServices.Namespace, statementFieldsClassName, compileTimeServices.IsInstrumented,
+                TODO);
             var fafProviderClassName =
                 CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(FAFProvider), classPostfix);
             var classScope = new CodegenClassScope(true, namespaceScope, fafProviderClassName);

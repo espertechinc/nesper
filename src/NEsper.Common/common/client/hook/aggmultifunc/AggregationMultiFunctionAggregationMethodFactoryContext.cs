@@ -8,10 +8,10 @@
 
 namespace com.espertech.esper.common.client.hook.aggmultifunc
 {
-	/// <summary>
-	/// Context for use with plug-in aggregation multi-function that implement <seealso cref="AggregationMultiFunctionAggregationMethodFactory" />.
-	/// </summary>
-	public class AggregationMultiFunctionAggregationMethodFactoryContext
-	{
-	}
+    /// <summary>
+    /// Context for use with plug-in aggregation multi-function that implement <seealso cref="AggregationMultiFunctionAggregationMethodFactory" />.
+    /// </summary>
+    public class AggregationMultiFunctionAggregationMethodFactoryContext
+    {
+    }
 } // end of namespace

@@ -47,8 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 return null;
             }
 
-            if (top is RowRecogNFAViewService) {
-                return (RowRecogNFAViewService) top;
+            if (top is RowRecogNFAViewService service) {
+                return service;
             }
 
             return RecursiveFindRegexService(top.Child);
@@ -67,9 +67,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             ISet<string> variablesSingle,
             ISet<string> variablesMultiple)
         {
-            if (parent is RowRecogExprNodeNested) {
-                var nested = (RowRecogExprNodeNested) parent;
-                foreach (var child in parent.ChildNodes) {
+            if (parent is RowRecogExprNodeNested nested) {
+                foreach (var child in nested.ChildNodes) {
                     RecursiveInspectVariables(
                         child,
                         nested.Type.IsMultipleMatches() || isMultiple,
@@ -90,8 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
                 variablesSingle.RemoveAll(variablesMultiple);
             }
-            else if (parent is RowRecogExprNodeAtom) {
-                var atom = (RowRecogExprNodeAtom) parent;
+            else if (parent is RowRecogExprNodeAtom atom) {
                 var name = atom.Tag;
                 if (variablesMultiple.Contains(name)) {
                     return;
@@ -139,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         {
             var nodeNumStack = new Stack<int>();
 
-            RowRecogNFAStrand strand = RecursiveBuildStatesInternal(
+            var strand = RecursiveBuildStatesInternal(
                 parent,
                 variableDefinitions,
                 variableStreams,
@@ -149,13 +147,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             // add end state
             var end = new RowRecogNFAStateEndForge();
             end.NodeNumFlat = -1;
-            foreach (RowRecogNFAStateForgeBase endStates in strand.EndStates) {
+            foreach (var endStates in strand.EndStates) {
                 endStates.AddState(end);
             }
 
             // assign node num as a counter
             var nodeNumberFlat = 0;
-            foreach (RowRecogNFAStateForgeBase theBase in strand.AllStates) {
+            foreach (var theBase in strand.AllStates) {
                 theBase.NodeNumFlat = nodeNumberFlat++;
             }
 
@@ -254,8 +252,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     for (var j = i - 1; j >= 0; j--) {
                         var prior = strands[j];
 
-                        foreach (RowRecogNFAStateForgeBase endState in prior.EndStates) {
-                            foreach (RowRecogNFAStateForgeBase startState in current.StartStates) {
+                        foreach (var endState in prior.EndStates) {
+                            foreach (var startState in current.StartStates) {
                                 endState.AddState(startState);
                             }
                         }
@@ -269,11 +267,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 return new RowRecogNFAStrand(startStates, endStates, cumulativeStates, isPassthrough);
             }
 
-            if (node is RowRecogExprNodeNested) {
-                var nested = (RowRecogExprNodeNested) node;
+            if (node is RowRecogExprNodeNested nested) {
                 nodeNumStack.Push(0);
                 var strand = RecursiveBuildStatesInternal(
-                    node.ChildNodes[0],
+                    nested.ChildNodes[0],
                     variableDefinitions,
                     variableStreams,
                     nodeNumStack,
@@ -284,8 +281,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
                 // if this is a repeating node then pipe back each end state to each begin state
                 if (nested.Type.IsMultipleMatches()) {
-                    foreach (RowRecogNFAStateForgeBase endstate in strand.EndStates) {
-                        foreach (RowRecogNFAStateForgeBase startstate in strand.StartStates) {
+                    foreach (var endstate in strand.EndStates) {
+                        foreach (var startstate in strand.StartStates) {
                             if (!endstate.NextStates.Contains(startstate)) {
                                 endstate.NextStates.Add(startstate);
                             }
@@ -296,7 +293,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 return new RowRecogNFAStrand(strand.StartStates, strand.EndStates, strand.AllStates, isPassthrough);
             }
 
-            var atom = (RowRecogExprNodeAtom) node;
+            var atom = (RowRecogExprNodeAtom)node;
 
             // assign stream number for single-variables for most direct expression eval; multiple-variable gets -1
             var streamNum = variableStreams.Get(atom.Tag).First;
@@ -386,8 +383,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         {
             path.Add(parent);
             foreach (var child in parent.ChildNodes) {
-                if (child is RowRecogExprNodeAtom) {
-                    HandleAtom((RowRecogExprNodeAtom) child, path, map);
+                if (child is RowRecogExprNodeAtom atom) {
+                    HandleAtom(atom, path, map);
                 }
                 else {
                     RecursiveFindPatternAtoms(child, path, map);
@@ -407,17 +404,16 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             for (var i = 0; i < patharr.Length; i++) {
                 var parent = patharr[i];
-                if (!(parent is RowRecogExprNodeConcatenation)) {
+                if (!(parent is RowRecogExprNodeConcatenation concat)) {
                     continue;
                 }
 
-                var concat = (RowRecogExprNodeConcatenation) parent;
                 int indexWithinConcat;
                 if (i == patharr.Length - 1) {
-                    indexWithinConcat = parent.ChildNodes.IndexOf(atom);
+                    indexWithinConcat = concat.ChildNodes.IndexOf(atom);
                 }
                 else {
-                    indexWithinConcat = parent.ChildNodes.IndexOf(patharr[i + 1]);
+                    indexWithinConcat = concat.ChildNodes.IndexOf(patharr[i + 1]);
                 }
 
                 if (identifiers == null && indexWithinConcat > 0) {
@@ -448,8 +444,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             ISet<string> identifiers,
             string excludedTag)
         {
-            if (node is RowRecogExprNodeAtom) {
-                var atom = (RowRecogExprNodeAtom) node;
+            if (node is RowRecogExprNodeAtom atom) {
                 if (!excludedTag.Equals(atom.Tag)) {
                     identifiers.Add(atom.Tag);
                 }

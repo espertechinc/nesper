@@ -19,8 +19,9 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
     /// </summary>
     public class QueryGraphRangeUtil
     {
-        private static readonly IDictionary<UniformPair<QueryGraphRangeEnum>, QueryGraphRangeConsolidateDesc> OPS_TABLE =
-            new Dictionary<UniformPair<QueryGraphRangeEnum>, QueryGraphRangeConsolidateDesc>();
+        private static readonly IDictionary<UniformPair<QueryGraphRangeEnum>, QueryGraphRangeConsolidateDesc>
+            OPS_TABLE =
+                new Dictionary<UniformPair<QueryGraphRangeEnum>, QueryGraphRangeConsolidateDesc>();
 
         static QueryGraphRangeUtil()
         {

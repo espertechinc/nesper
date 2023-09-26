@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             object[] values,
             EventBean theEvent)
         {
-            var mappedEvent = (DecoratingEventBean) theEvent;
+            var mappedEvent = (DecoratingEventBean)theEvent;
             var map = mappedEvent.DecoratingProperties;
 
             for (var i = 0; i < properties.Length; i++) {

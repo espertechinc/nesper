@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.util
                 return false;
             }
 
-            var that = (EventTypePropertyPair) o;
+            var that = (EventTypePropertyPair)o;
             if (!eventType.Equals(that.eventType)) {
                 return false;
             }

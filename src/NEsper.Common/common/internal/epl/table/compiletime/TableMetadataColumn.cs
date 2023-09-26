@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             method.Block.DeclareVar<IDictionary<string, TableMetadataColumn>>(
                 "cols",
                 NewInstance(typeof(Dictionary<string, TableMetadataColumn>)));
-            foreach (KeyValuePair<string, TableMetadataColumn> entry in columns) {
+            foreach (var entry in columns) {
                 method.Block.ExprDotMethod(
                     Ref("cols"),
                     "Put",

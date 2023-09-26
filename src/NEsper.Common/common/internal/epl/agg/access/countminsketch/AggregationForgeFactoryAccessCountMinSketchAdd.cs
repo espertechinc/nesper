@@ -51,7 +51,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             throw new UnsupportedOperationException("State key not available as always used with tables");
         }
 
-        public override AggregationStateFactoryForge GetAggregationStateFactory(bool isMatchRecognize)
+        public override AggregationStateFactoryForge GetAggregationStateFactory(
+            bool isMatchRecognize,
+            bool isJoin)
         {
             throw new UnsupportedOperationException("State factory not available for 'add' operation");
         }
@@ -62,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
         {
             return new AggregationAgentCountMinSketchForge(
                 AddOrFrequencyEvaluator,
-                Parent.OptionalFilter == null ? null : Parent.OptionalFilter.Forge);
+                Parent.OptionalFilter?.Forge);
         }
     }
 } // end of namespace

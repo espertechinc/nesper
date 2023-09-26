@@ -35,9 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             ExprEvaluatorContext context)
         {
             return index.LookupRangeInverted(
-                base.EvaluateLookupStart(theEvent, context),
+                EvaluateLookupStart(theEvent, context),
                 includeStart,
-                base.EvaluateLookupEnd(theEvent, context),
+                EvaluateLookupEnd(theEvent, context),
                 includeEnd);
         }
 
@@ -47,9 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             ExprEvaluatorContext context,
             List<object> keys)
         {
-            object start = base.EvaluateLookupStart(theEvent, context);
+            var start = EvaluateLookupStart(theEvent, context);
             keys.Add(start);
-            object end = base.EvaluateLookupEnd(theEvent, context);
+            var end = EvaluateLookupEnd(theEvent, context);
             keys.Add(end);
             return index.LookupRangeInverted(start, includeStart, end, includeEnd);
         }
@@ -60,9 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             ExprEvaluatorContext context)
         {
             return index.LookupRangeInvertedColl(
-                base.EvaluatePerStreamStart(eventsPerStream, context),
+                EvaluatePerStreamStart(eventsPerStream, context),
                 includeStart,
-                base.EvaluatePerStreamEnd(eventsPerStream, context),
+                EvaluatePerStreamEnd(eventsPerStream, context),
                 includeEnd);
         }
 
@@ -72,9 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.sorted
             ExprEvaluatorContext context,
             List<object> keys)
         {
-            object start = base.EvaluatePerStreamStart(eventsPerStream, context);
+            var start = EvaluatePerStreamStart(eventsPerStream, context);
             keys.Add(start);
-            object end = base.EvaluatePerStreamEnd(eventsPerStream, context);
+            var end = EvaluatePerStreamEnd(eventsPerStream, context);
             keys.Add(end);
             return index.LookupRangeInvertedColl(start, includeStart, end, includeEnd);
         }

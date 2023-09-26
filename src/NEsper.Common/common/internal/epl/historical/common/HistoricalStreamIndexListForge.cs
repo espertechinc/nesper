@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.epl.historical.common
 {
     /// <summary>
@@ -29,13 +30,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
     /// </summary>
     public class HistoricalStreamIndexListForge
     {
-        private readonly int _historicalStreamNum;
-        private readonly EventType[] _typesPerStream;
-        private readonly QueryGraphForge _queryGraph;
-        private readonly SortedSet<int> _pollingStreams;
+        private readonly int historicalStreamNum;
+        private readonly EventType[] typesPerStream;
+        private readonly QueryGraphForge queryGraph;
+        private readonly ISet<int> pollingStreams;
 
-        private IDictionary<HistoricalStreamIndexDesc, IList<int>> _indexesUsedByStreams;
-        private PollResultIndexingStrategyForge _masterIndexingStrategy;
+        private IDictionary<HistoricalStreamIndexDesc, IList<int>> indexesUsedByStreams;
+        private PollResultIndexingStrategyForge masterIndexingStrategy;
 
         /// <summary>
         /// Ctor.
@@ -48,10 +49,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             EventType[] typesPerStream,
             QueryGraphForge queryGraph)
         {
-            this._historicalStreamNum = historicalStreamNum;
-            this._typesPerStream = typesPerStream;
-            this._queryGraph = queryGraph;
-            this._pollingStreams = new SortedSet<int>();
+            this.historicalStreamNum = historicalStreamNum;
+            this.typesPerStream = typesPerStream;
+            this.queryGraph = queryGraph;
+            pollingStreams = new SortedSet<int>();
         }
 
         /// <summary>
@@ -61,13 +62,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         /// <param name="streamViewStreamNum">the stream providing lookup events</param>
         public void AddIndex(int streamViewStreamNum)
         {
-            _pollingStreams.Add(streamViewStreamNum);
+            pollingStreams.Add(streamViewStreamNum);
         }
 
         /// <summary>
         /// Get the strategies to use for polling from a given stream.
         /// </summary>
         /// <param name="streamViewStreamNum">the stream providing the polling events</param>
+        /// <param name="raw">raw info</param>
+        /// <param name="serdeResolver">resolver</param>
         /// <returns>looking and indexing strategy</returns>
         public JoinSetComposerPrototypeHistoricalDesc GetStrategy(
             int streamViewStreamNum,
@@ -75,12 +78,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             SerdeCompileTimeResolver serdeResolver)
         {
             // If there is only a single polling stream, then build a single index
-            if (_pollingStreams.Count == 1) {
+            if (pollingStreams.Count == 1) {
                 return JoinSetComposerPrototypeForgeFactory.DetermineIndexing(
-                    _queryGraph,
-                    _typesPerStream[_historicalStreamNum],
-                    _typesPerStream[streamViewStreamNum],
-                    _historicalStreamNum,
+                    queryGraph,
+                    typesPerStream[historicalStreamNum],
+                    typesPerStream[streamViewStreamNum],
+                    historicalStreamNum,
                     streamViewStreamNum,
                     raw,
                     serdeResolver);
@@ -92,27 +95,22 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             //  (b) indexed property types are the same
             //  (c) key property types are the same (because of coercion)
             // A index lookup strategy is always specific to the providing stream.
-            
-            var additionalForgeables = new List<StmtClassForgeableFactory>();
-            
-            if (_indexesUsedByStreams == null) {
-                _indexesUsedByStreams = new LinkedHashMap<HistoricalStreamIndexDesc, IList<int>>();
-                foreach (var pollingStream in _pollingStreams) {
-                    var queryGraphValue = _queryGraph.GetGraphValue(pollingStream, _historicalStreamNum);
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
+            if (indexesUsedByStreams == null) {
+                indexesUsedByStreams = new LinkedHashMap<HistoricalStreamIndexDesc, IList<int>>();
+                foreach (var pollingStream in pollingStreams) {
+                    var queryGraphValue = queryGraph.GetGraphValue(pollingStream, historicalStreamNum);
                     var hashKeyProps = queryGraphValue.HashKeyProps;
                     var indexProperties = hashKeyProps.Indexed;
 
                     var keyTypes = GetPropertyTypes(hashKeyProps.Keys);
-                    var indexTypes = GetPropertyTypes(_typesPerStream[_historicalStreamNum], indexProperties);
+                    var indexTypes = GetPropertyTypes(typesPerStream[historicalStreamNum], indexProperties);
 
-                    var desc = new HistoricalStreamIndexDesc(
-                        indexProperties,
-                        indexTypes,
-                        keyTypes);
-                    var usedByStreams = _indexesUsedByStreams.Get(desc);
+                    var desc = new HistoricalStreamIndexDesc(indexProperties, indexTypes, keyTypes);
+                    var usedByStreams = indexesUsedByStreams.Get(desc);
                     if (usedByStreams == null) {
                         usedByStreams = new List<int>();
-                        _indexesUsedByStreams.Put(desc, usedByStreams);
+                        indexesUsedByStreams.Put(desc, usedByStreams);
                     }
 
                     usedByStreams.Add(pollingStream);
@@ -120,20 +118,19 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
 
                 // There are multiple indexes required:
                 // Build a master indexing strategy that forms multiple indexes and numbers each.
-                if (_indexesUsedByStreams.Count > 1) {
-                    var numIndexes = _indexesUsedByStreams.Count;
-                    var indexingStrategies =
-                        new PollResultIndexingStrategyForge[numIndexes];
+                if (indexesUsedByStreams.Count > 1) {
+                    var numIndexes = indexesUsedByStreams.Count;
+                    var indexingStrategies = new PollResultIndexingStrategyForge[numIndexes];
 
                     // create an indexing strategy for each index
                     var count = 0;
-                    foreach (var desc in _indexesUsedByStreams) {
+                    foreach (var desc in indexesUsedByStreams) {
                         var sampleStreamViewStreamNum = desc.Value[0];
                         var indexingX = JoinSetComposerPrototypeForgeFactory.DetermineIndexing(
-                            _queryGraph,
-                            _typesPerStream[_historicalStreamNum],
-                            _typesPerStream[sampleStreamViewStreamNum],
-                            _historicalStreamNum,
+                            queryGraph,
+                            typesPerStream[historicalStreamNum],
+                            typesPerStream[sampleStreamViewStreamNum],
+                            historicalStreamNum,
                             sampleStreamViewStreamNum,
                             raw,
                             serdeResolver);
@@ -143,19 +140,19 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                     }
 
                     // create a master indexing strategy that utilizes each indexing strategy to create a set of indexes
-                    _masterIndexingStrategy = new PollResultIndexingStrategyMultiForge(
+                    masterIndexingStrategy = new PollResultIndexingStrategyMultiForge(
                         streamViewStreamNum,
                         indexingStrategies);
                 }
             }
 
             // there is one type of index
-            if (_indexesUsedByStreams.Count == 1) {
+            if (indexesUsedByStreams.Count == 1) {
                 return JoinSetComposerPrototypeForgeFactory.DetermineIndexing(
-                    _queryGraph,
-                    _typesPerStream[_historicalStreamNum],
-                    _typesPerStream[streamViewStreamNum],
-                    _historicalStreamNum,
+                    queryGraph,
+                    typesPerStream[historicalStreamNum],
+                    typesPerStream[streamViewStreamNum],
+                    historicalStreamNum,
                     streamViewStreamNum,
                     raw,
                     serdeResolver);
@@ -164,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             // determine which index number the polling stream must use
             var indexUsed = 0;
             var found = false;
-            foreach (var desc in _indexesUsedByStreams.Values) {
+            foreach (var desc in indexesUsedByStreams.Values) {
                 if (desc.Contains(streamViewStreamNum)) {
                     found = true;
                     break;
@@ -178,18 +175,22 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             }
 
             // Use one of the indexes built by the master index and a lookup strategy
-            JoinSetComposerPrototypeHistoricalDesc indexing = JoinSetComposerPrototypeForgeFactory.DetermineIndexing(
-                _queryGraph,
-                _typesPerStream[_historicalStreamNum],
-                _typesPerStream[streamViewStreamNum],
-                _historicalStreamNum,
+            var indexing = JoinSetComposerPrototypeForgeFactory.DetermineIndexing(
+                queryGraph,
+                typesPerStream[historicalStreamNum],
+                typesPerStream[streamViewStreamNum],
+                historicalStreamNum,
                 streamViewStreamNum,
                 raw,
                 serdeResolver);
-            HistoricalIndexLookupStrategyForge innerLookupStrategy = indexing.LookupForge;
-            HistoricalIndexLookupStrategyForge lookupStrategy = new HistoricalIndexLookupStrategyMultiForge(indexUsed, innerLookupStrategy);
+            var innerLookupStrategy = indexing.LookupForge;
+            HistoricalIndexLookupStrategyForge lookupStrategy =
+                new HistoricalIndexLookupStrategyMultiForge(indexUsed, innerLookupStrategy);
             additionalForgeables.AddAll(indexing.AdditionalForgeables);
-            return new JoinSetComposerPrototypeHistoricalDesc(lookupStrategy, _masterIndexingStrategy, additionalForgeables);
+            return new JoinSetComposerPrototypeHistoricalDesc(
+                lookupStrategy,
+                masterIndexingStrategy,
+                additionalForgeables);
         }
 
         private Type[] GetPropertyTypes(
@@ -198,7 +199,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         {
             var types = new Type[properties.Length];
             for (var i = 0; i < properties.Length; i++) {
-                types[i] = Boxing.GetBoxedType(eventType.GetPropertyType(properties[i]));
+                types[i] = eventType.GetPropertyType(properties[i]).GetBoxedType();
             }
 
             return types;
@@ -208,7 +209,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
         {
             var types = new Type[hashKeys.Count];
             for (var i = 0; i < hashKeys.Count; i++) {
-                types[i] = Boxing.GetBoxedType(hashKeys[i].KeyExpr.Forge.EvaluationType);
+                types[i] = hashKeys[i].KeyExpr.Forge.EvaluationType.GetBoxedType();
             }
 
             return types;

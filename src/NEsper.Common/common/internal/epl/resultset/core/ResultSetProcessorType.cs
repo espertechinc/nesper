@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         AGGREGATED_UNGROUPED,
         FULLYAGGREGATED_GROUPED,
         FULLYAGGREGATED_GROUPED_ROLLUP,
-        AGGREGATED_GROUPED,
+        AGGREGATED_GROUPED
     }
 
     public static class ResultSetProcessorTypeExtensions

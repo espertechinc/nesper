@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                 rollup = HandleRollup(childIndexes);
             }
 
-            rollup.Add(new int[0]);
+            rollup.Add(Array.Empty<int>());
             return rollup;
         }
 
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             int[] one,
             int[] other)
         {
-            if (CompatExtensions.AreEqual(one, other)) {
+            if (one.AreEqual(other)) {
                 throw new GroupByRollupDuplicateException(one);
             }
         }
@@ -66,13 +66,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                 enumerationSorted.Add(e.Current);
             }
 
-            Collections.SortInPlace(
-                enumerationSorted,
+            enumerationSorted.SortInPlace(
                 new ProxyComparer<int[]> {
                     ProcCompare = (
                         o1,
                         o2) => {
-                        int shared = Math.Min(o1.Length, o2.Length);
+                        var shared = Math.Min(o1.Length, o2.Length);
                         for (var i = 0; i < shared; i++) {
                             if (o1[i] < o2[i]) {
                                 return -1;
@@ -139,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             var size = ChildNodes.Count;
             var childIndexes = new int[size][];
             for (var i = 0; i < size; i++) {
-                IList<int[]> childIndex = ChildNodes[i].Evaluate(context);
+                var childIndex = ChildNodes[i].Evaluate(context);
                 if (childIndex.Count != 1) {
                     throw new IllegalStateException();
                 }

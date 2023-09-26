@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             NamedWindowMetaData metadata,
             EPStatementInitServices services)
         {
-            NamedWindowDeployment deployment = deployments.Get(services.DeploymentId);
+            var deployment = deployments.Get(services.DeploymentId);
             if (deployment == null) {
                 deployment = new NamedWindowDeployment();
                 deployments.Put(services.DeploymentId, deployment);
@@ -37,19 +37,17 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             string deploymentId,
             string namedWindowName)
         {
-            NamedWindowDeployment deployment = deployments.Get(deploymentId);
-            return deployment == null ? null : deployment.GetProcessor(namedWindowName);
+            var deployment = deployments.Get(deploymentId);
+            return deployment?.GetProcessor(namedWindowName);
         }
 
-        public int DeploymentCount {
-            get => deployments.Count;
-        }
+        public int DeploymentCount => deployments.Count;
 
         public void DestroyNamedWindow(
             string deploymentId,
             string namedWindowName)
         {
-            NamedWindowDeployment deployment = deployments.Get(deploymentId);
+            var deployment = deployments.Get(deploymentId);
             if (deployment == null) {
                 return;
             }

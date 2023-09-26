@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             int stream,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean[] preloadEvents = bufferViews[stream].NewDataBuffer.GetAndFlush();
+            var preloadEvents = bufferViews[stream].NewDataBuffer.GetAndFlush();
             var eventsPerStream = new EventBean[numStreams][];
             eventsPerStream[stream] = preloadEvents;
             joinSetComposer.Init(eventsPerStream, exprEvaluatorContext);

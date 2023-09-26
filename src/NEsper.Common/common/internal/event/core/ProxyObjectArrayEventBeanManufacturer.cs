@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public override EventBean Make(object[] properties)
         {
-            var und = (object[]) MakeUnderlying(properties);
+            var und = (object[])MakeUnderlying(properties);
             return EventFactory.AdapterForTypedObjectArray(und, EventType);
         }
     }

@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.collection
 
             ComputeNext();
 
-            return (_current != null);
+            return _current != null;
         }
 
         public void Reset()
@@ -76,19 +76,19 @@ namespace com.espertech.esper.common.@internal.collection
         private void ComputeNext()
         {
             // determine whether there is a next for the outermost
-            int last = _current.Length - 1;
+            var last = _current.Length - 1;
             if (_current[last] + 1 < _n) {
                 _current[last]++;
                 return;
             }
 
             // overflow
-            int currOverflowedLevel = last - 1;
+            var currOverflowedLevel = last - 1;
             while (currOverflowedLevel >= 0) {
-                int maxAtPosition = _n - _level + currOverflowedLevel;
+                var maxAtPosition = _n - _level + currOverflowedLevel;
                 if (_current[currOverflowedLevel] < maxAtPosition) {
                     _current[currOverflowedLevel]++;
-                    for (int i = currOverflowedLevel + 1; i < _current.Length; i++) {
+                    for (var i = currOverflowedLevel + 1; i < _current.Length; i++) {
                         _current[i] = _current[i - 1] + 1;
                     }
 
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.collection
         private static int[] LevelCurrent(int level)
         {
             var current = new int[level];
-            for (int i = 0; i < level; i++) {
+            for (var i = 0; i < level; i++) {
                 current[i] = i;
             }
 

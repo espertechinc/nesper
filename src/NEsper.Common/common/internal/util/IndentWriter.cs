@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.util
         /// </param>
         public virtual void WriteLine(string text)
         {
-            int indent = _currentIndent;
+            var indent = _currentIndent;
             if (indent < 0) {
                 indent = 0;
             }

@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.pool
             this.maxPoolCountConfigured = maxPoolCountConfigured;
             this.preventStart = preventStart;
             poolCount = new AtomicLong();
-            patternContexts = CompatExtensions.AsSyncSet(new HashSet<StatementEntry>());
+            patternContexts = new HashSet<StatementEntry>().AsSyncSet();
         }
 
         public void AddPatternContext(

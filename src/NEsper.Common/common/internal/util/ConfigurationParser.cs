@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.util
             Stream stream,
             string resourceName)
         {
-            XmlDocument document = GetDocument(stream, resourceName);
+            var document = GetDocument(stream, resourceName);
             DoConfigure(configuration, document);
         }
 
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.util
             var root = doc.DocumentElement;
 
             foreach (var element in root.ChildNodes.CreateElementEnumerable()) {
-                string nodeName = element.Name;
+                var nodeName = element.Name;
                 switch (nodeName) {
                     case "common":
                         ConfigurationCommonParser.DoConfigure(configuration.Common, element);

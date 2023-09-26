@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
         public override void SubmitInternal(object @object)
         {
-            var parameters = (object[]) @object;
+            var parameters = (object[])@object;
             try {
                 exceptionHandler.HandleAudit(targetObject, parameters);
                 fastMethod.Invoke(targetObject, parameters);

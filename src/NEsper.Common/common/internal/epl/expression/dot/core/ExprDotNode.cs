@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         IList<Chainable> ChainSpec { get; set; }
 
         VariableMetaData IsVariableOpGetName(VariableCompileTimeResolver variableCompileTimeResolver);
-        
+
         bool IsLocalInlinedClass { get; }
     }
 

@@ -14,6 +14,6 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.logsink
 {
     public interface ConsoleOpRenderer
     {
-        void Render(EventBean eventBean, StringWriter writer);
+        void Render(EventBean eventBean, TextWriter writer);
     }
 } // end of namespace

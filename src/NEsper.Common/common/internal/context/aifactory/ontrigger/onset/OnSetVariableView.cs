@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
                 values = new Dictionary<string, object>();
             }
 
-            eventsPerStream[0] = newData[newData.Length - 1];
+            eventsPerStream[0] = newData[^1];
             factory.VariableReadWrite.WriteVariables(eventsPerStream, values, agentInstanceContext);
 
             if (values != null) {

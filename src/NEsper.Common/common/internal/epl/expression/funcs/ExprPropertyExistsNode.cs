@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     "Exists function expects an property value expression as the child node");
             }
 
-            identNode = (ExprIdentNode) ChildNodes[0];
+            identNode = (ExprIdentNode)ChildNodes[0];
             return null;
         }
 

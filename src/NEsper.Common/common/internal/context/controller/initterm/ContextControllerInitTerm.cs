@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,21 +16,24 @@ using com.espertech.esper.common.@internal.context.controller.condition;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.filterspec;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
+
 
 namespace com.espertech.esper.common.@internal.context.controller.initterm
 {
     public abstract class ContextControllerInitTerm : ContextController
     {
-        internal readonly ContextControllerInitTermFactory factory;
-        internal readonly ContextManagerRealization realization;
+        protected readonly ContextControllerInitTermFactory _factory;
+        protected readonly ContextManagerRealization realization;
 
         public ContextControllerInitTerm(
             ContextControllerInitTermFactory factory,
             ContextManagerRealization realization)
         {
-            this.factory = factory;
+            this._factory = factory;
             this.realization = realization;
         }
 
@@ -38,52 +41,22 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IntSeqKey controllerPath,
             BiConsumer<ContextControllerInitTermPartitionKey, int> partKeyAndCPId);
 
-        public abstract void Activate(
-            IntSeqKey path,
-            object[] parentPartitionKeys,
-            EventBean optionalTriggeringEvent,
-            IDictionary<string, object> optionalTriggeringPattern);
-
-        public abstract void Deactivate(
-            IntSeqKey path,
-            bool terminateChildContexts);
-
-        public abstract void Destroy();
-
-        public virtual void Transfer(
-            IntSeqKey path,
-            bool transferChildContexts,
-            AgentInstanceTransferServices xfer)
-        {
-        }
-
-        public ContextControllerInitTermFactory InitTermFactory {
-            get => factory;
-        }
-
-        public ContextControllerFactory Factory {
-            get => factory;
-        }
-
-        public ContextManagerRealization Realization {
-            get => realization;
-        }
-
         public void VisitSelectedPartitions(
             IntSeqKey path,
             ContextPartitionSelector selector,
             ContextPartitionVisitor visitor,
             ContextPartitionSelector[] selectorPerLevel)
         {
-            if (selector is ContextPartitionSelectorFiltered) {
-                ContextPartitionSelectorFiltered filter = (ContextPartitionSelectorFiltered) selector;
+            if (selector is ContextPartitionSelectorFiltered filter) {
                 VisitPartitions(
                     path,
                     (
                         partitionKey,
                         subpathOrCPIds) => {
-                        ContextPartitionIdentifierInitiatedTerminated identifier =
-                            ContextControllerInitTermUtil.KeyToIdentifier(subpathOrCPIds, partitionKey, this);
+                        var identifier = ContextControllerInitTermUtil.KeyToIdentifier(
+                            subpathOrCPIds,
+                            partitionKey,
+                            this);
                         if (filter.Filter(identifier)) {
                             realization.ContextPartitionRecursiveVisit(
                                 path,
@@ -112,8 +85,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 return;
             }
 
-            if (selector is ContextPartitionSelectorById) {
-                ContextPartitionSelectorById byId = (ContextPartitionSelectorById) selector;
+            if (selector is ContextPartitionSelectorById byId) {
                 VisitPartitions(
                     path,
                     (
@@ -131,7 +103,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                 return;
             }
 
-            throw ContextControllerSelectorUtil.GetInvalidSelector(new Type[0], selector);
+            throw ContextControllerSelectorUtil.GetInvalidSelector(Type.EmptyTypes, selector);
         }
 
         public void PopulateEndConditionFromTrigger(
@@ -139,43 +111,94 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             EventBean triggeringEvent)
         {
             // compute correlated termination
-            ContextConditionDescriptor start = factory.InitTermSpec.StartCondition;
-
-            ContextConditionDescriptorFilter filter = start as ContextConditionDescriptorFilter;
-            if (filter?.OptionalFilterAsName == null) {
+            var start = _factory.InitTermSpec.StartCondition;
+            if (!(start is ContextConditionDescriptorFilter filter)) {
                 return;
             }
 
-            int tag = map.Meta.GetTagFor(filter.OptionalFilterAsName);
+            if (filter.OptionalFilterAsName == null) {
+                return;
+            }
+
+            var tag = map.Meta.GetTagFor(filter.OptionalFilterAsName);
             if (tag == -1) {
                 return;
             }
 
             map.Add(tag, triggeringEvent);
         }
-        
-        public void PopulateEndConditionFromTrigger(MatchedEventMap map, IDictionary<String, Object> matchedEventMap) {
+
+        public void PopulateEndConditionFromTrigger(
+            MatchedEventMap map,
+            IDictionary<string, object> matchedEventMap,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
+        {
             // compute correlated termination
-            ContextConditionDescriptor start = factory.InitTermSpec.StartCondition;
-            if (!(start is ContextConditionDescriptorPattern)) {
+            var start = _factory.InitTermSpec.StartCondition;
+            if (!(start is ContextConditionDescriptorPattern pattern)) {
                 return;
             }
-            ContextConditionDescriptorPattern pattern = (ContextConditionDescriptorPattern) start;
-            foreach (String tagged in pattern.TaggedEvents) {
-                PopulatePattern(tagged, map, matchedEventMap);
-            }
-            foreach (String array in pattern.ArrayEvents) {
-                PopulatePattern(array, map, matchedEventMap);
-            }
-        }
 
-        private void PopulatePattern(String tagged, MatchedEventMap map, IDictionary<String, Object> matchedEventMap) {
-            if (matchedEventMap.TryGetValue(tagged, out var value)) {
-                int tag = map.Meta.GetTagFor(tagged);
-                if (tag != -1) {
-                    map.Add(tag, value);
+            if (pattern.AsName == null) {
+                foreach (var tagged in pattern.TaggedEvents) {
+                    PopulatePattern(tagged, map, matchedEventMap);
+                }
+
+                foreach (var array in pattern.ArrayEvents) {
+                    PopulatePattern(array, map, matchedEventMap);
+                }
+            }
+            else {
+                foreach (var entry in matchedEventMap) {
+                    var tag = map.Meta.GetTagFor(entry.Key);
+                    if (tag == -1) {
+                        return;
+                    }
+
+                    map.Add(tag, entry.Value);
                 }
             }
         }
+
+        private void PopulatePattern(
+            string tagged,
+            MatchedEventMap map,
+            IDictionary<string, object> matchedEventMap)
+        {
+            var value = matchedEventMap.Get(tagged);
+            if (value == null) {
+                return;
+            }
+
+            var tag = map.Meta.GetTagFor(tagged);
+            if (tag == -1) {
+                return;
+            }
+
+            map.Add(tag, value);
+        }
+
+        public ContextControllerFactory Factory => _factory;
+
+        public ContextControllerInitTermFactory InitTermFactory => _factory;
+        
+        public ContextManagerRealization Realization => realization;
+
+        public abstract void Activate(
+            IntSeqKey path,
+            object[] parentPartitionKeys,
+            EventBean optionalTriggeringEvent,
+            IDictionary<string, object> optionalTriggeringPattern);
+
+        public abstract void Deactivate(
+            IntSeqKey path,
+            bool terminateChildContexts);
+
+        public abstract void Transfer(
+            IntSeqKey path,
+            bool transferChildContexts,
+            AgentInstanceTransferServices xfer);
+
+        public abstract void Destroy();
     }
 } // end of namespace

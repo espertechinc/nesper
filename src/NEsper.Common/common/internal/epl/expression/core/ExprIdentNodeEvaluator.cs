@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         Type EvaluationType { get; }
 
-        bool OptionalEvent { set; }
+        bool OptionalEvent { get; set; }
 
         bool EvaluatePropertyExists(
             EventBean[] eventsPerStream,
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope);
-        
+
         EventTypeSPI EventType { get; }
     }
 } // end of namespace

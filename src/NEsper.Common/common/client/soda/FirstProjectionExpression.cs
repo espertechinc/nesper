@@ -32,9 +32,6 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public override string AggregationFunctionName
-        {
-            get => "first";
-        }
+        public override string AggregationFunctionName => "first";
     }
 } // end of namespace

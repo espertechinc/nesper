@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 if (repo.GetTypeByName(entry.Key) != null) {
                     continue;
                 }
-                
+
                 BuildAvroType(
                     repo,
                     entry.Key,

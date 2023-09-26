@@ -28,6 +28,9 @@ namespace com.espertech.esper.common.@internal.collection
             ProcFrom = procFrom;
         }
 
-        public object From(object[] values) => ProcFrom.Invoke(values);
+        public object From(object[] values)
+        {
+            return ProcFrom.Invoke(values);
+        }
     }
 } // end of namespace

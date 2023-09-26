@@ -23,9 +23,9 @@ namespace com.espertech.esper.common.@internal.type
                 object objOne,
                 object objTwo)
             {
-                string s1 = (string) objOne;
-                string s2 = (string) objTwo;
-                int result = s1.CompareTo(s2);
+                var s1 = (string)objOne;
+                var s2 = (string)objTwo;
+                var result = s1.CompareTo(s2);
                 return result > 0;
             }
 

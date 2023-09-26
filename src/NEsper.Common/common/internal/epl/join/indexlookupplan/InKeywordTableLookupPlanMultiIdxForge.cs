@@ -42,17 +42,12 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             this.keyExpr = keyExpr;
         }
 
-        public ExprNode KeyExpr {
-            get => keyExpr;
-        }
+        public ExprNode KeyExpr => keyExpr;
 
-        public override TableLookupKeyDesc KeyDescriptor {
-            get {
-                return new TableLookupKeyDesc(
-                    Collections.GetEmptyList<QueryGraphValueEntryHashKeyedForge>(),
-                    Collections.GetEmptyList<QueryGraphValueEntryRangeForge>());
-            }
-        }
+        public override TableLookupKeyDesc KeyDescriptor =>
+            new TableLookupKeyDesc(
+                Collections.GetEmptyList<QueryGraphValueEntryHashKeyedForge>(),
+                Collections.GetEmptyList<QueryGraphValueEntryRangeForge>());
 
         public override string ToString()
         {

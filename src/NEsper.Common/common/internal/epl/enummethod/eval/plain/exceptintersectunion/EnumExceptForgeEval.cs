@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             resultX.RemoveAll(other);
             return resultX.Unwrap<object>();
         }
-        
+
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
@@ -168,14 +168,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
         {
             if (other.IsEventBeanCollection) {
                 if (enumcoll.IsEventBeanCollection) {
-                    return FlexCollection.Of(EnumExceptForgeEvalSet(
-                        other.EventBeanCollection,
-                        enumcoll.EventBeanCollection));
+                    return FlexCollection.Of(
+                        EnumExceptForgeEvalSet(
+                            other.EventBeanCollection,
+                            enumcoll.EventBeanCollection));
                 }
-            } else if (enumcoll.IsObjectCollection) {
-                return FlexCollection.Of(EnumExceptForgeEvalSet(
-                    other.ObjectCollection,
-                    enumcoll.ObjectCollection));
+            }
+            else if (enumcoll.IsObjectCollection) {
+                return FlexCollection.Of(
+                    EnumExceptForgeEvalSet(
+                        other.ObjectCollection,
+                        enumcoll.ObjectCollection));
             }
 
             throw new ArgumentException("mismatch in FlexCollection types");

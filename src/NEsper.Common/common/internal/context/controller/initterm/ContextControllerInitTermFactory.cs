@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             IDictionary<string, object> props,
             object partitionKey)
         {
-            var key = (ContextControllerInitTermPartitionKey) partitionKey;
+            var key = (ContextControllerInitTermPartitionKey)partitionKey;
             props.Put(ContextPropertyEventType.PROP_CTX_STARTTIME, key.StartTime);
             props.Put(ContextPropertyEventType.PROP_CTX_ENDTIME, key.ExpectedEndTime);
 
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
 
         public override ContextPartitionIdentifier GetContextPartitionIdentifier(object partitionKey)
         {
-            var key = (ContextControllerInitTermPartitionKey) partitionKey;
+            var key = (ContextControllerInitTermPartitionKey)partitionKey;
             var ident = new ContextPartitionIdentifierInitiatedTerminated();
             ident.StartTime = key.StartTime;
             ident.EndTime = key.ExpectedEndTime;

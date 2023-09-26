@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,42 +15,48 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.serde.compiletime.sharable;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
+using static com.espertech.esper.common.@internal.serde.compiletime.sharable.CodegenSharableSerdeClassTyped.
+    CodegenSharableSerdeName;
 
 namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
 {
     /// <summary>
-    ///     Min/max aggregator for all values.
+    /// Min/max aggregator for all values.
     /// </summary>
     public class AggregatorMinMax : AggregatorMethodWDistinctWFilterWValueBase
     {
         private readonly AggregationForgeFactoryMinMax _factory;
-        private readonly CodegenExpressionMember _refSet;
-        private readonly CodegenExpressionInstanceField _serde;
+        private CodegenExpressionMember _refSet;
+        private CodegenExpressionInstanceField _serdeField;
 
         public AggregatorMinMax(
-                AggregationForgeFactoryMinMax factory,
-                int col,
-                CodegenCtor rowCtor,
-                CodegenMemberCol membersColumnized,
-                CodegenClassScope classScope,
-                Type optionalDistinctValueType,
-                DataInputOutputSerdeForge optionalDistinctSerde,
-                bool hasFilter,
-                ExprNode optionalFilter)
-            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
+            AggregationForgeFactoryMinMax factory,
+            Type optionalDistinctValueType,
+            DataInputOutputSerdeForge optionalDistinctSerde,
+            bool hasFilter,
+            ExprNode optionalFilter) : base(optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
             this._factory = factory;
+        }
+
+        public override void InitForgeFiltered(
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
+        {
             _refSet = membersColumnized.AddMember(col, typeof(SortedRefCountedSet<object>), "refSet");
-            _serde = classScope.AddOrGetDefaultFieldSharable(
+            _serdeField = classScope.AddOrGetDefaultFieldSharable(
                 new CodegenSharableSerdeClassTyped(
-                    CodegenSharableSerdeClassTyped.CodegenSharableSerdeName.SORTEDREFCOUNTEDSET,
-                    factory.ResultType,
-                    factory.Serde,
+                    SORTEDREFCOUNTEDSET,
+                    _factory.ResultType,
+                    _factory.Serde,
                     classScope));
             rowCtor.Block.AssignRef(_refSet, NewInstance(typeof(SortedRefCountedSet<object>)));
         }
@@ -119,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(_serde, "Write", RowDotMember(row, _refSet), output, unitKey, writer);
+            method.Block.ExprDotMethod(_serdeField, "Write", RowDotMember(row, _refSet), output, unitKey, writer);
         }
 
         protected override void ReadWODistinct(
@@ -132,7 +138,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
         {
             method.Block.AssignRef(
                 RowDotMember(row, _refSet),
-                Cast(typeof(SortedRefCountedSet<object>), ExprDotMethod(_serde, "Read", input, unitKey)));
+                Cast(typeof(SortedRefCountedSet<object>), ExprDotMethod(_serdeField, "Read", input, unitKey)));
+        }
+
+        protected override void AppendFormatWODistinct(FabricTypeCollector collector)
+        {
+            collector.SortedRefCountedSet(_factory.Serde);
         }
     }
 } // end of namespace

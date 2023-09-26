@@ -22,9 +22,6 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("*");
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
     }
 } // end of namespace

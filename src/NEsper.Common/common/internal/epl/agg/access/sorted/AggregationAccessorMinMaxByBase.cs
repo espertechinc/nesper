@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public void GetEnumerableEventsCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
-            var forge = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
+            var forge = (AggregatorAccessSorted)context.AccessStateForge.Aggregator;
             context.Method.Block
                 .DeclareVar<EventBean>(
                     "bean",
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public void GetEnumerableEventCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
-            var sorted = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
+            var sorted = (AggregatorAccessSorted)context.AccessStateForge.Aggregator;
             if (max) {
                 context.Method.Block.MethodReturn(sorted.GetLastValueCodegen(context.ClassScope, context.Method));
             }

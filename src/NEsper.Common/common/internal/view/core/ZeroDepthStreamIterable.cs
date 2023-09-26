@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.view.core
         {
             // Get a new array created rather then re-use the old one since some client listeners
             // to this view may keep reference to the new data
-            EventBean[] row = {theEvent};
+            EventBean[] row = { theEvent };
             Child.Update(row, null);
             lastInsertedEvent = theEvent;
         }
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.view.core
         public IEnumerator<EventBean> GetEnumerator()
         {
             if (lastInsertedEvents != null) {
-                foreach (EventBean eventBean in lastInsertedEvents) {
+                foreach (var eventBean in lastInsertedEvents) {
                     yield return eventBean;
                 }
             }

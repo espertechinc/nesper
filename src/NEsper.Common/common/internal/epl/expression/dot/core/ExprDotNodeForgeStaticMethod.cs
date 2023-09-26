@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -24,6 +24,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotNodeForgeStaticMethod : ExprDotNodeForge
     {
+        private readonly ExprNode parent;
+        private readonly bool isReturnsConstantResult;
+        private readonly string classOrPropertyName;
+        private readonly MethodInfo staticMethod;
+        private readonly ExprForge[] childForges;
+        private readonly bool isConstantParameters;
+        private readonly ExprDotForge[] chainForges;
+        private readonly ExprDotStaticMethodWrap resultWrapLambda;
+        private readonly bool rethrowExceptions;
+        private readonly ValueAndFieldDesc targetObject;
+        private readonly string optionalStatementName;
+        private readonly bool localInlinedClass;
+
         public ExprDotNodeForgeStaticMethod(
             ExprNode parent,
             bool isReturnsConstantResult,
@@ -36,69 +49,53 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool rethrowExceptions,
             ValueAndFieldDesc targetObject,
             string optionalStatementName,
-            bool isLocalInlinedClass)
+            bool localInlinedClass)
         {
-            ExprForgeRenderable = parent;
-            IsReturnsConstantResult = isReturnsConstantResult;
-            ClassOrPropertyName = classOrPropertyName;
-            StaticMethod = staticMethod;
-            ChildForges = childForges;
-            IsConstantParameters = chainForges.Length <= 0 && isConstantParameters;
+            this.parent = parent;
+            this.isReturnsConstantResult = isReturnsConstantResult;
+            this.classOrPropertyName = classOrPropertyName;
+            this.staticMethod = staticMethod;
+            this.childForges = childForges;
+            if (chainForges.Length > 0) {
+                this.isConstantParameters = false;
+            }
+            else {
+                this.isConstantParameters = isConstantParameters;
+            }
 
-            ChainForges = chainForges;
-            ResultWrapLambda = resultWrapLambda;
-            IsRethrowExceptions = rethrowExceptions;
-            TargetObject = targetObject;
-            OptionalStatementName = optionalStatementName;
-            IsLocalInlinedClass = isLocalInlinedClass;
+            this.chainForges = chainForges;
+            this.resultWrapLambda = resultWrapLambda;
+            this.rethrowExceptions = rethrowExceptions;
+            this.targetObject = targetObject;
+            this.optionalStatementName = optionalStatementName;
+            this.localInlinedClass = localInlinedClass;
         }
-
-        public string ClassOrPropertyName { get; }
-
-        public MethodInfo StaticMethod { get; }
-
-        public ExprForge[] ChildForges { get; }
-
-        public bool IsConstantParameters { get; }
-
-        public ExprDotForge[] ChainForges { get; }
-
-        public ExprDotStaticMethodWrap ResultWrapLambda { get; }
-
-        public ValueAndFieldDesc TargetObject { get; }
-
-        public override ExprNodeRenderable ExprForgeRenderable { get; }
-
-        public override bool IsReturnsConstantResult { get; }
-
-        public override FilterExprAnalyzerAffector FilterExprAnalyzerAffector => null;
-
-        public override int? StreamNumReferenced => null;
-
-        public override string RootPropertyName => null;
-
-        public string OptionalStatementName { get; }
 
         public override ExprEvaluator ExprEvaluator {
             get {
-                var childEvals = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ChildForges);
-                return new ExprDotNodeForgeStaticMethodEval(this, childEvals, ExprDotNodeUtility.GetEvaluators(ChainForges));
+                var childEvals = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(childForges);
+                return new ExprDotNodeForgeStaticMethodEval(
+                    this,
+                    childEvals,
+                    ExprDotNodeUtility.GetEvaluators(chainForges));
             }
         }
-
-        public override bool IsLocalInlinedClass { get; }
 
         public override Type EvaluationType {
             get {
-                if (ChainForges.Length == 0) {
-                    return StaticMethod.ReturnType.GetBoxedType();
+                Type type;
+                if (chainForges.Length == 0) {
+                    type = staticMethod.ReturnType;
+                }
+                else {
+                    var lastInChain = chainForges[^1];
+                    var chainableType = lastInChain.TypeInfo;
+                    type = chainableType.GetNormalizedType();
                 }
 
-                return ChainForges[ChainForges.Length - 1].TypeInfo.GetNormalizedClass();
+                return type.GetBoxedType();
             }
         }
-
-        public bool IsRethrowExceptions { get; }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
@@ -140,5 +137,35 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 codegenMethodScope,
                 codegenClassScope);
         }
+
+        public string ClassOrPropertyName => classOrPropertyName;
+
+        public MethodInfo StaticMethod => staticMethod;
+
+        public ExprForge[] ChildForges => childForges;
+
+        public bool IsConstantParameters => isConstantParameters;
+
+        public ExprDotForge[] ChainForges => chainForges;
+
+        public ExprDotStaticMethodWrap ResultWrapLambda => resultWrapLambda;
+
+        public bool IsRethrowExceptions => rethrowExceptions;
+
+        public ValueAndFieldDesc TargetObject => targetObject;
+
+        public override ExprNodeRenderable ExprForgeRenderable => parent;
+
+        public override bool IsReturnsConstantResult => isReturnsConstantResult;
+
+        public override FilterExprAnalyzerAffector FilterExprAnalyzerAffector => null;
+
+        public override int? StreamNumReferenced => null;
+
+        public override string RootPropertyName => null;
+
+        public string OptionalStatementName => optionalStatementName;
+
+        public override bool IsLocalInlinedClass => localInlinedClass;
     }
 } // end of namespace

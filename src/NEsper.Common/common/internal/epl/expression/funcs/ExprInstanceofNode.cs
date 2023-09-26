@@ -54,17 +54,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (this.ChildNodes.Length != 1) {
+            if (ChildNodes.Length != 1) {
                 throw new ExprValidationException(
                     "Instanceof node must have 1 child expression node supplying the expression to test");
             }
 
-            if ((classIdentifiers == null) || (classIdentifiers.Length == 0)) {
+            if (classIdentifiers == null || classIdentifiers.Length == 0) {
                 throw new ExprValidationException(
                     "Instanceof node must have 1 or more class identifiers to verify type against");
             }
 
-            ISet<Type> classList = GetClassSet(classIdentifiers, validationContext.ImportService);
+            var classList = GetClassSet(classIdentifiers, validationContext.ImportService);
             Type[] classes;
             lock (this) {
                 classes = classList.ToArray();
@@ -74,20 +74,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return null;
         }
 
-        public bool IsConstantResult {
-            get => false;
-        }
+        public bool IsConstantResult => false;
 
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
             writer.Write("instanceof(");
-            this.ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
+            ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
             writer.Write(",");
 
-            string delimiter = "";
-            for (int i = 0; i < classIdentifiers.Length; i++) {
+            var delimiter = "";
+            for (var i = 0; i < classIdentifiers.Length; i++) {
                 writer.Write(delimiter);
                 writer.Write(classIdentifiers[i]);
                 delimiter = ",";
@@ -96,19 +94,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             writer.Write(')');
         }
 
-        public override ExprPrecedenceEnum Precedence {
-            get => ExprPrecedenceEnum.UNARY;
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
         public override bool EqualsNode(
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprInstanceofNode)) {
+            if (!(node is ExprInstanceofNode other)) {
                 return false;
             }
 
-            var other = (ExprInstanceofNode) node;
             if (Collections.AreEqual(other.classIdentifiers, classIdentifiers)) {
                 return true;
             }
@@ -120,16 +115,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// Returns the list of class names or types to check instance of.
         /// </summary>
         /// <returns>class names</returns>
-        public string[] ClassIdentifiers {
-            get => classIdentifiers;
-        }
+        public string[] ClassIdentifiers => classIdentifiers;
 
         private ISet<Type> GetClassSet(
             string[] classIdentifiers,
             ImportServiceCompileTime importService)
         {
             ISet<Type> classList = new HashSet<Type>();
-            foreach (string className in classIdentifiers) {
+            foreach (var className in classIdentifiers) {
                 Type clazz;
 
                 // try the primitive names including "string"
@@ -142,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
                 // try to look up the class, not a primitive type name
                 try {
-                    clazz = TypeHelper.GetClassForName(className.Trim(), importService.TypeResolver);
+                    clazz = TypeHelper.GetTypeForName(className.Trim(), importService.TypeResolver);
                 }
                 catch (TypeLoadException e) {
                     throw new ExprValidationException(

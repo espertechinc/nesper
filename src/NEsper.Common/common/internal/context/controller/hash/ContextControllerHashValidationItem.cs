@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -32,6 +33,11 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
         {
             return NewInstance<ContextControllerHashValidationItem>(
                 EventTypeUtility.ResolveTypeCodegen(EventType, addInitSvc));
+        }
+
+        public void VisitFilterAddendumEventTypes(Consumer<EventType> consumer)
+        {
+            consumer.Invoke(EventType);
         }
     }
 } // end of namespace

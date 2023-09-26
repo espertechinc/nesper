@@ -48,8 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.join.strategy
         /// <returns>readable text with execution nodes constructed for actual streams</returns>
         public static string Print(ExecNode execNode)
         {
-            StringWriter writer = new StringWriter();
-            IndentWriter indentWriter = new IndentWriter(writer, 4, 2);
+            var writer = new StringWriter();
+            var indentWriter = new IndentWriter(writer, 4, 2);
             execNode.Print(indentWriter);
 
             return writer.ToString();

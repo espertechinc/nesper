@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             object value,
             EventBean target)
         {
-            var arrayEvent = (ObjectArrayBackedEventBean) target;
+            var arrayEvent = (ObjectArrayBackedEventBean)target;
             Write(value, arrayEvent.Properties);
         }
 

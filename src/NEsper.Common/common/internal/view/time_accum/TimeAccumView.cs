@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
             }
 
             if (addSchedule) {
-                long timeIntervalSize = timePeriodProvide.DeltaAdd(timestamp, null, true, agentInstanceContext);
+                var timeIntervalSize = timePeriodProvide.DeltaAdd(timestamp, null, true, agentInstanceContext);
                 agentInstanceContext.AuditProvider.ScheduleAdd(
                     timeIntervalSize,
                     agentInstanceContext,
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
         {
             return GetType().Name;
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }

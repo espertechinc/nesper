@@ -14,14 +14,17 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
         /// Numeric scalar values.
         /// </summary>
         SCALAR_NUMERIC,
+
         /// <summary>
         /// Any values.
         /// </summary>
         SCALAR_ANY,
+
         /// <summary>
         /// Collection of events.
         /// </summary>
         EVENTCOLL,
+
         /// <summary>
         /// Any input.
         /// </summary>

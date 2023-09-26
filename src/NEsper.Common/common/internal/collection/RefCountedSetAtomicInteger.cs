@@ -36,8 +36,7 @@ namespace com.espertech.esper.common.@internal.collection
                 _refs[key] = 1;
                 return true;
             }
-            else if (count is Mutable<int>) {
-                var mutable = (Mutable<int>) count;
+            else if (count is Mutable<int> mutable) {
                 Interlocked.Increment(ref mutable.Value);
                 return false;
             }
@@ -53,8 +52,7 @@ namespace com.espertech.esper.common.@internal.collection
             if (count == null) {
                 return false;
             }
-            else if (count is Mutable<int>) {
-                var mutable = (Mutable<int>) count;
+            else if (count is Mutable<int> mutable) {
                 var val = Interlocked.Decrement(ref mutable.Value);
                 if (val == 0) {
                     _refs.Remove(key);
@@ -79,8 +77,6 @@ namespace com.espertech.esper.common.@internal.collection
             return _refs.IsEmpty();
         }
 
-        public IDictionary<TK, object> Refs {
-            get { return _refs; }
-        }
+        public IDictionary<TK, object> Refs => _refs;
     }
 }

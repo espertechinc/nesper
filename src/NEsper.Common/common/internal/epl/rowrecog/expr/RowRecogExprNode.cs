@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
         public IList<RowRecogExprNode> ChildNodes { get; private set; }
 
         public abstract void ToPrecedenceFreeEPL(TextWriter writer);
-        
+
         public abstract RowRecogExprNode CheckedCopySelf(ExpressionCopier expressionCopier);
 
         public void ToEPL(

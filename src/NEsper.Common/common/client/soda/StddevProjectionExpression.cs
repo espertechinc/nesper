@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Ctor - for use to create an expression tree, without inner expression
         /// </summary>
-        /// <param name="isDistinct">true if distinct</param>
+        /// <param name = "isDistinct">true if distinct</param>
         public StddevProjectionExpression(bool isDistinct)
         {
             distinct = isDistinct;
@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Ctor - adds the expression to project.
         /// </summary>
-        /// <param name="expression">returning values to project</param>
-        /// <param name="isDistinct">true if distinct</param>
+        /// <param name = "expression">returning values to project</param>
+        /// <param name = "isDistinct">true if distinct</param>
         public StddevProjectionExpression(
             Expression expression,
             bool isDistinct)
@@ -48,10 +48,7 @@ namespace com.espertech.esper.common.client.soda
             Children.Add(expression);
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
@@ -65,16 +62,6 @@ namespace com.espertech.esper.common.client.soda
         public bool IsDistinct {
             get => distinct;
             set => distinct = value;
-        }
-
-        /// <summary>
-        /// Set the distinct flag indicating the projection considers distinct values only.
-        /// </summary>
-        /// <param name="distinct">true for distinct, false for not distinct</param>
-        public StddevProjectionExpression SetDistinct(bool distinct)
-        {
-            this.distinct = distinct;
-            return this;
         }
     }
 } // end of namespace

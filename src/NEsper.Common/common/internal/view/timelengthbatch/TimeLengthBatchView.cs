@@ -198,7 +198,7 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             // Only if there have been any events in this or the last interval do we schedule a callback,
             // such as to not waste resources when no events arrive.
             if (!currentBatch.IsEmpty() ||
-                lastBatch != null && !lastBatch.IsEmpty() ||
+                (lastBatch != null && !lastBatch.IsEmpty()) ||
                 factory.isForceUpdate) {
                 ScheduleCallback(0);
             }
@@ -251,7 +251,7 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             agentInstanceContext.StatementContext.SchedulingService.Add(scheduled, handle, scheduleSlot);
             callbackScheduledTime = agentInstanceContext.StatementContext.SchedulingService.Time + scheduled;
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }

@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             IDictionary<string, object> optionalTriggeringPattern)
         {
             var count = 0;
-            ContextControllerDetailCategoryItem[] categories = factory.CategorySpec.Items;
+            var categories = factory.CategorySpec.Items;
             var subpathOrCPIds = new int[categories.Length];
 
             for (var i = 0; i < categories.Length; i++) {
@@ -78,8 +78,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             ContextPartitionVisitor visitor,
             ContextPartitionSelector[] selectorPerLevel)
         {
-            if (contextPartitionSelector is ContextPartitionSelectorCategory) {
-                var category = (ContextPartitionSelectorCategory) contextPartitionSelector;
+            if (contextPartitionSelector is ContextPartitionSelectorCategory category) {
                 if (category.Labels == null || category.Labels.IsEmpty()) {
                     return;
                 }
@@ -87,7 +86,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                 var ids = CategorySvc.MgmtGetSubpathOrCPIds(path);
                 if (ids != null) {
                     var count = -1;
-                    foreach (ContextControllerDetailCategoryItem categoryItem in factory.CategorySpec.Items) {
+                    foreach (var categoryItem in factory.CategorySpec.Items) {
                         count++;
                         var subpathOrCPID = ids[count];
                         if (category.Labels.Contains(categoryItem.Name)) {
@@ -104,12 +103,11 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                 return;
             }
 
-            if (contextPartitionSelector is ContextPartitionSelectorFiltered) {
-                var filter = (ContextPartitionSelectorFiltered) contextPartitionSelector;
+            if (contextPartitionSelector is ContextPartitionSelectorFiltered filter) {
                 var ids = CategorySvc.MgmtGetSubpathOrCPIds(path);
                 if (ids != null) {
                     var count = -1;
-                    foreach (ContextControllerDetailCategoryItem categoryItem in factory.CategorySpec.Items) {
+                    foreach (var categoryItem in factory.CategorySpec.Items) {
                         var identifierCategory = new ContextPartitionIdentifierCategory(categoryItem.Name);
                         count++;
                         if (factory.FactoryEnv.IsLeaf) {
@@ -141,8 +139,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                 return;
             }
 
-            if (contextPartitionSelector is ContextPartitionSelectorById) {
-                var byId = (ContextPartitionSelectorById) contextPartitionSelector;
+            if (contextPartitionSelector is ContextPartitionSelectorById byId) {
                 var ids = CategorySvc.MgmtGetSubpathOrCPIds(path);
                 foreach (var id in ids) {
                     if (byId.ContextPartitionIds.Contains(id)) {
@@ -152,7 +149,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             }
 
             throw ContextControllerSelectorUtil.GetInvalidSelector(
-                new[] {typeof(ContextPartitionSelectorCategory)},
+                new[] { typeof(ContextPartitionSelectorCategory) },
                 contextPartitionSelector);
         }
 
@@ -171,9 +168,9 @@ namespace com.espertech.esper.common.@internal.context.controller.category
                 return;
             }
 
-            int[] ids = CategorySvc.MgmtGetSubpathOrCPIds(path);
+            var ids = CategorySvc.MgmtGetSubpathOrCPIds(path);
             if (ids != null) {
-                foreach (int id in ids) {
+                foreach (var id in ids) {
                     realization.TransferRecursive(path, id, this, xfer);
                 }
             }

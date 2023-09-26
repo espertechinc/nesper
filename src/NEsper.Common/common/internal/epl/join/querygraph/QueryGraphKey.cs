@@ -35,11 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 return true;
             }
 
-            if (!(obj is QueryGraphKey)) {
+            if (!(obj is QueryGraphKey other)) {
                 return false;
             }
 
-            var other = (QueryGraphKey) obj;
             return other.Streams.Equals(Streams);
         }
 

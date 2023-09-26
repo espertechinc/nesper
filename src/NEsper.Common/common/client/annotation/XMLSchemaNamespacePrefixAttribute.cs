@@ -10,21 +10,21 @@ using System;
 
 namespace com.espertech.esper.common.client.annotation
 {
-	/// <summary>
-	///     Annotation for use with XML schemas to define a namespace prefix.
-	/// </summary>
-	public class XMLSchemaNamespacePrefixAttribute : Attribute
+    /// <summary>
+    ///     Annotation for use with XML schemas to define a namespace prefix.
+    /// </summary>
+    public class XMLSchemaNamespacePrefixAttribute : Attribute
     {
-	    /// <summary>
-	    ///     Prefix
-	    /// </summary>
-	    /// <returns>prefix</returns>
-	    public virtual string Prefix { get; set; }
+        /// <summary>
+        ///     Prefix
+        /// </summary>
+        /// <returns>prefix</returns>
+        public virtual string Prefix { get; set; }
 
-	    /// <summary>
-	    ///     Namespace
-	    /// </summary>
-	    /// <returns>namespace</returns>
-	    public virtual string Namespace { get; set; }
+        /// <summary>
+        ///     Namespace
+        /// </summary>
+        /// <returns>namespace</returns>
+        public virtual string Namespace { get; set; }
     }
 } // end of namespace

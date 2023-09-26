@@ -43,15 +43,13 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             AgentInstanceContext = agentInstanceContext;
 
             IndexRepository = new EventTableIndexRepository(eventTableIndexMetadata);
-            foreach (var entry in eventTableIndexMetadata.Indexes
-            ) {
+            foreach (var entry in eventTableIndexMetadata.Indexes) {
                 if (entry.Value.OptionalQueryPlanIndexItem != null) {
                     var index = EventTableUtil.BuildIndex(
                         agentInstanceContext,
                         0,
                         entry.Value.OptionalQueryPlanIndexItem,
                         rootView.EventType,
-                        true,
                         entry.Key.IsUnique,
                         entry.Value.OptionalIndexName,
                         null,
@@ -94,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                     return null;
                 }
 
-                return (VirtualDWView) Child;
+                return (VirtualDWView)Child;
             }
         }
 
@@ -211,8 +209,8 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         {
             visitor.Visit(IndexRepository.Tables);
         }
-        
-        
+
+
         public void ClearDeliveriesRemoveStream(EventBean[] removedEvents)
         {
             AgentInstanceContext.StatementResultService.ClearDeliveriesRemoveStream(removedEvents);

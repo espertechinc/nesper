@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             BiConsumer<ContextControllerConditionNonHA, int> partKeyAndCPId);
 
         void Destroy();
-        
+
         ContextControllerCondition MgmtGetStartCondition(IntSeqKey conditionPath);
     }
 } // end of namespace

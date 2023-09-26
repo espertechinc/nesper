@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             ExprEvaluatorContext context)
         {
             if (index[0] is PropertyCompositeEventTable) {
-                var idx = (PropertyCompositeEventTable) index[0];
+                var idx = (PropertyCompositeEventTable)index[0];
                 var map = idx.Index;
                 var events = chain.Get(lookupEvent, map, context, idx.PostProcessor);
                 return events?.GetEnumerator();

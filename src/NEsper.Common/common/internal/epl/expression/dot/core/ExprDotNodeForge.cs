@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     public abstract class ExprDotNodeForge : ExprForgeInstrumentable
     {
         public abstract bool IsReturnsConstantResult { get; }
-        
+
         public abstract bool IsLocalInlinedClass { get; }
 
         public abstract FilterExprAnalyzerAffector FilterExprAnalyzerAffector { get; }

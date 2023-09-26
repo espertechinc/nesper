@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public override void MergeClasses(ISet<Type> classes)
         {
         }
-        
+
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
         }

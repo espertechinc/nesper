@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.client.configuration.common
                 }
             }
         }
-        
+
         private static void HandleScripting(
             ConfigurationCommon common,
             XmlElement element)
@@ -330,7 +330,7 @@ namespace com.espertech.esper.common.client.configuration.common
 
                     case "lru-cache":
                         var size = GetRequiredAttribute(subElement, "size");
-                        configDBRef.SetLRUCache(int.Parse(size));
+                        configDBRef.LRUCache = int.Parse(size);
                         break;
                 }
             }
@@ -716,15 +716,13 @@ namespace com.espertech.esper.common.client.configuration.common
         {
             var assembly = GetOptionalAttribute(element, "assembly");
             var @namespace = GetOptionalAttribute(element, "import-namespace");
-            if (@namespace != null)
-            {
+            if (@namespace != null) {
                 configuration.AddAnnotationImportNamespace(@namespace, assembly);
                 return;
             }
 
             var type = GetOptionalAttribute(element, "import-type");
-            if (type != null)
-            {
+            if (type != null) {
                 configuration.AddAnnotationImportType(type, assembly);
                 return;
             }
@@ -761,7 +759,7 @@ namespace com.espertech.esper.common.client.configuration.common
 
                     case "lru-cache":
                         var size = GetRequiredAttribute(subElement, "size");
-                        configMethodRef.SetLRUCache(int.Parse(size));
+                        configMethodRef.LRUCache = int.Parse(size);
                         break;
                 }
             }
@@ -772,6 +770,11 @@ namespace com.espertech.esper.common.client.configuration.common
             XmlElement parentElement)
         {
             var nodeEnumerator = DOMElementEnumerator.Create(parentElement.ChildNodes);
+            DOMUtil.ParseOptionalBoolean(
+                parentElement,
+                "enable-xmlxsd",
+                value => common.EventMeta.IsEnableXmlXsd = value);
+
             while (nodeEnumerator.MoveNext()) {
                 var subElement = nodeEnumerator.Current;
                 switch (subElement.Name) {

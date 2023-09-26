@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
@@ -24,24 +25,28 @@ namespace com.espertech.esper.common.@internal.view.core
 
         void Attach(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv);
 
         EventType EventType { get; }
 
         string ViewName { get; }
 
-        void Accept(ViewForgeVisitor visitor);
-
         IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv);
 
         IList<ViewFactoryForge> InnerForges { get; }
 
-#if FALSE // MIXIN
-        default void accept(ViewForgeVisitor visitor)
+        void AssignStateMgmtSettings(
+            FabricCharge fabricCharge,
+            ViewForgeEnv viewForgeEnv,
+            int[] grouping)
         {
-            visitor.visit(this);
         }
-#endif
+
+        T Accept<T>(ViewFactoryForgeVisitor<T> visitor);
+
+        void Accept(ViewForgeVisitor visitor)
+        {
+            visitor.Visit(this);
+        }
     }
 }

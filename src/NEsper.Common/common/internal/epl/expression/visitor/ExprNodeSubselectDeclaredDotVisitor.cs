@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             ChainedExpressionsDot = new List<ExprDotNode>(4);
             DeclaredExpressions = new List<ExprDeclaredNode>(1);
         }
-        
+
         public bool IsWalkDeclExprParam => true;
 
         /// <summary>
@@ -49,16 +49,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
 
         public void Visit(ExprNode exprNode)
         {
-            if (exprNode is ExprDotNode) {
-                ChainedExpressionsDot.Add((ExprDotNode) exprNode);
+            if (exprNode is ExprDotNode node) {
+                ChainedExpressionsDot.Add(node);
             }
 
-            if (exprNode is ExprDeclaredNode) {
-                DeclaredExpressions.Add((ExprDeclaredNode) exprNode);
+            if (exprNode is ExprDeclaredNode declaredNode) {
+                DeclaredExpressions.Add(declaredNode);
             }
 
-            if (exprNode is ExprSubselectNode) {
-                var subselectNode = (ExprSubselectNode) exprNode;
+            if (exprNode is ExprSubselectNode subselectNode) {
                 Subselects.Add(subselectNode);
             }
         }

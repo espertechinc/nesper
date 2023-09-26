@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.core;
@@ -21,12 +22,12 @@ using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprFor
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
     /// <summary>
-    ///     Represents the aggregation accessor that provides the result for the "maxBy" aggregation function.
+    /// Represents the aggregation accessor that provides the result for the "maxBy" aggregation function.
     /// </summary>
     public class AggregationAccessorSortedTable : AggregationAccessorForge
     {
-        private readonly Type componentType;
         private readonly bool max;
+        private readonly Type componentType;
         private readonly TableMetaData table;
 
         public AggregationAccessorSortedTable(
@@ -41,15 +42,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public void GetValueCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
-            var eventToPublic =
-                TableDeployTimeResolver.MakeTableEventToPublicField(table, context.ClassScope, GetType());
-            var sorted = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
+            var eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(table, context.ClassScope, GetType());
+            var sorted = (AggregatorAccessSorted)context.AccessStateForge.Aggregator;
             var size = sorted.SizeCodegen();
             var enumerator = max ? sorted.ReverseEnumeratorCodegen() : sorted.EnumeratorCodegen();
 
-            context.Method.Block.IfCondition(EqualsIdentity(size, Constant(0)))
+            var arrayType = TypeHelper.GetArrayType(componentType);
+            context.Method.Block
+                .IfCondition(EqualsIdentity(size, Constant(0)))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(TypeHelper.GetArrayType(componentType), "array", NewArrayByLength(componentType, size))
+                .DeclareVar(arrayType, "array", NewArrayByLength(componentType, size))
                 .DeclareVar<int>("count", Constant(0))
                 .DeclareVar<IEnumerator<EventBean>>("enumerator", enumerator)
                 .WhileLoop(ExprDotMethod(Ref("enumerator"), "MoveNext"))
@@ -71,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         public void GetEnumerableEventsCodegen(AggregationAccessorForgeGetCodegenContext context)
         {
-            var sorted = (AggregatorAccessSorted) context.AccessStateForge.Aggregator;
+            var sorted = (AggregatorAccessSorted)context.AccessStateForge.Aggregator;
             context.Method.Block.MethodReturn(sorted.CollectionReadOnlyCodegen());
         }
 

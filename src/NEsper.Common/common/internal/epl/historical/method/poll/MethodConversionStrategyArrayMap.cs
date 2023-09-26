@@ -9,7 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.poll
 {
@@ -17,10 +17,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
     {
         protected override EventBean GetEventBean(
             object value,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            return agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedMap(
-                (IDictionary<string, object>) value,
+            return exprEvaluatorContext.EventBeanTypedEventFactory.AdapterForTypedMap(
+                (IDictionary<string, object>)value,
                 eventType);
         }
     }

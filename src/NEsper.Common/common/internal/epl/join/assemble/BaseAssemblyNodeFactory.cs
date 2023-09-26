@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             CodegenSymbolProvider symbolsArg,
             CodegenClassScope classScope)
         {
-            return Make(parent, (SAIFFInitializeSymbol) symbolsArg, classScope);
+            return Make(parent, (SAIFFInitializeSymbol)symbolsArg, classScope);
         }
 
         public abstract BaseAssemblyNode MakeAssemblerUnassociated();

@@ -8,12 +8,12 @@
 
 namespace com.espertech.esper.common.client.hook.datetimemethod
 {
-	/// <summary>
-	///     Interface for use with date-time method operations. Use an implementation class provided by the extension API.
-	///     <para />
-	///     Not intended to be implemented by applications.
-	/// </summary>
-	public interface DateTimeMethodOps
+    /// <summary>
+    ///     Interface for use with date-time method operations. Use an implementation class provided by the extension API.
+    ///     <para />
+    ///     Not intended to be implemented by applications.
+    /// </summary>
+    public interface DateTimeMethodOps
     {
     }
 } // end of namespace

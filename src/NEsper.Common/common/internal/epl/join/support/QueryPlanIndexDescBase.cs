@@ -19,8 +19,6 @@ namespace com.espertech.esper.common.@internal.epl.join.support
             this.tables = tables;
         }
 
-        public IndexNameAndDescPair[] Tables {
-            get => tables;
-        }
+        public IndexNameAndDescPair[] Tables => tables;
     }
 } // end of namespace

@@ -83,9 +83,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         ///     Returns true for unbound.
         /// </summary>
         /// <returns>unbound indicator</returns>
-        public bool IsUnbound()
-        {
-            return isUnbound;
-        }
+        public bool IsUnbound => isUnbound;
     }
 } // end of namespace

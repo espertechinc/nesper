@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.type
             int min,
             int max)
         {
-            if ((IntValue == min) && (IntValue == max)) {
+            if (IntValue == min && IntValue == max) {
                 return true;
             }
 
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.type
         {
             ICollection<int> values = new HashSet<int>();
 
-            if ((IntValue >= min) && (IntValue <= max)) {
+            if (IntValue >= min && IntValue <= max) {
                 values.Add(IntValue);
             }
 

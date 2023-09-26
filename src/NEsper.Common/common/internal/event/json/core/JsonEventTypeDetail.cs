@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
         {
             var method = parent.MakeChild(typeof(JsonEventTypeDetail), typeof(JsonEventTypeDetail), classScope);
             method.Block
-                .DeclareVar<JsonEventTypeDetail>("detail", NewInstance(typeof(JsonEventTypeDetail)))
+                .DeclareVarNewInstance<JsonEventTypeDetail>("detail")
                 .SetProperty(Ref("detail"), "UnderlyingClassName", Constant(UnderlyingClassName))
                 .SetProperty(Ref("detail"), "OptionalUnderlyingProvided", Constant(OptionalUnderlyingProvided))
                 .SetProperty(Ref("detail"), "DelegateClassName", Constant(DelegateClassName))
@@ -99,7 +99,11 @@ namespace com.espertech.esper.common.@internal.@event.json.core
                 NewInstance(typeof(Dictionary<string, JsonUnderlyingField>)));
 
             foreach (var entry in FieldDescriptors) {
-                method.Block.ExprDotMethod(Ref("fields"), "Put", Constant(entry.Key), entry.Value.ToCodegenExpression());
+                method.Block.ExprDotMethod(
+                    Ref("fields"),
+                    "Put",
+                    Constant(entry.Key),
+                    entry.Value.ToCodegenExpression());
             }
 
             method.Block.MethodReturn(Ref("fields"));

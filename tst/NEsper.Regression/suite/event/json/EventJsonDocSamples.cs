@@ -167,9 +167,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "create json schema IdAndType(int string, type string);\n" +
+				var epl = "create json schema IdAndType(int string, Type string);\n" +
 				          "create json schema Batters(machine string, batter IdAndType[]);\n" +
-				          "@public @buseventtype create json schema CakeEvent(id string, type string, name string, batters Batters, topping IdAndType[]);\n" +
+				          "@public @buseventtype create json schema CakeEvent(id string, Type string, name string, batters Batters, topping IdAndType[]);\n" +
 				          "@Name('s0') select name, batters.batter[0].type as firstBatterType,\n" +
 				          "  topping[0].type as firstToppingType, batters.machine as batterMachine, batters.batter.countOf() as countBatters,\n" +
 				          "  topping.countOf() as countToppings from CakeEvent;\n";

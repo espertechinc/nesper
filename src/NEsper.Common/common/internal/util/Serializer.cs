@@ -76,8 +76,8 @@ namespace com.espertech.esper.common.@internal.util
             object value,
             Stream stream)
         {
-            if (value is T) {
-                Serialize((T) value, new BinaryWriter(stream));
+            if (value is T value1) {
+                Serialize(value1, new BinaryWriter(stream));
             }
         }
 

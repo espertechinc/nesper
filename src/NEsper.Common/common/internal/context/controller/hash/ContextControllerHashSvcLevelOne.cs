@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.collection;
@@ -17,7 +18,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
 {
     public class ContextControllerHashSvcLevelOne : ContextControllerHashSvc
     {
-        private static readonly object[] EMPTY_PARENT_PARTITION_KEYS = new object[0];
+        private static readonly object[] EMPTY_PARENT_PARTITION_KEYS = Array.Empty<object>();
 
         private ContextControllerFilterEntry[] filterEntries;
         private readonly IDictionary<int, int> optionalHashes;

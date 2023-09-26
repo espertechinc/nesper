@@ -30,13 +30,13 @@ namespace com.espertech.esper.common.client.soda
         public DotExpressionItem()
         {
         }
-        
+
         /// <summary>
         /// Render to EPL.
         /// </summary>
         /// <param name="writer">writer to output to</param>
         public abstract void RenderItem(TextWriter writer);
-        
+
         /// <summary>RenderAny to EPL. </summary>
         /// <param name="chain">chain to render</param>
         /// <param name="writer">writer to output to</param>
@@ -47,8 +47,7 @@ namespace com.espertech.esper.common.client.soda
             bool prefixDot)
         {
             var delimiterOuter = prefixDot ? "." : "";
-            foreach (var item in chain)
-            {
+            foreach (var item in chain) {
                 if (!(item is DotExpressionItemArray)) {
                     writer.Write(delimiterOuter);
                 }

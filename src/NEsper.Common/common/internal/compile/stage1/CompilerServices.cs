@@ -28,12 +28,12 @@ namespace com.espertech.esper.common.@internal.compile.stage1
         ExprNode CompileExpression(
             string expression,
             StatementCompileTimeServices services);
-        
+
         Type CompileStandInClass(
             CodegenClassType classType,
             string classNameSimple,
             ModuleCompileTimeServices services);
-
+        
         ICompileArtifact Compile(CompileRequest request);
     }
 } // end of namespace

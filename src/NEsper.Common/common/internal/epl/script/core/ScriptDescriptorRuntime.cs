@@ -32,11 +32,6 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 
         public ScriptCompiler ScriptCompiler { get; set; }
 
-        public ImportService ClasspathImportService {
-            get => ImportService;
-            set => ImportService = value;
-        }
-
         public ExprEvaluator[] Parameters { get; set; }
 
         public Coercer Coercer { get; set; }

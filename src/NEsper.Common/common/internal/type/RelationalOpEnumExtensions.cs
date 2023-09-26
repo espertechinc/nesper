@@ -198,10 +198,10 @@ namespace com.espertech.esper.common.@internal.type
                 coercedType != typeof(string) &&
                 coercedType != typeof(decimal?) &&
                 coercedType != typeof(BigInteger?)) {
-                throw new ArgumentException("Unsupported type for relational op compare, type " + coercedType);
+                throw new ArgumentException("Unsupported type for relational op compare, Type " + coercedType);
             }
 
-            if (coercedType.IsBigInteger()) {
+            if (coercedType.IsTypeBigInteger()) {
                 return MakeBigIntegerComputer(value, typeOne, typeTwo);
             }
 
@@ -214,7 +214,7 @@ namespace com.espertech.esper.common.@internal.type
             Type typeOne,
             Type typeTwo)
         {
-            if (typeOne.IsBigInteger() && typeTwo.IsBigInteger()) {
+            if (typeOne.IsTypeBigInteger() && typeTwo.IsTypeBigInteger()) {
                 return computers.Get(new RelationalOpDesc(typeof(BigInteger), value));
             }
 
@@ -308,7 +308,10 @@ namespace com.espertech.esper.common.@internal.type
             CodegenExpressionRelational.CodegenRelational rel)
         {
             return CodegenExpressionBuilder.Relational(
-                CodegenExpressionBuilder.ExprDotMethod(CodegenAsString(lhs, lhsType),"CompareTo",CodegenAsString(rhs, rhsType)),
+                CodegenExpressionBuilder.ExprDotMethod(
+                    CodegenAsString(lhs, lhsType),
+                    "CompareTo",
+                    CodegenAsString(rhs, rhsType)),
                 rel,
                 CodegenExpressionBuilder.Constant(0));
         }

@@ -37,8 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprNode optionalCompareExprNode,
             ExprNode optionalElseExprNode)
         {
+            EvaluationType = resultType ?? throw new ArgumentNullException(nameof(resultType));
             ForgeRenderable = parent;
-            EvaluationType = resultType;
             this.mapResultType = mapResultType;
             IsNumericResult = isNumericResult;
             IsMustCoerce = mustCoerce;
@@ -95,14 +95,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     return new ExprCaseNodeForgeEvalSyntax1(
                         this,
                         evals,
-                        OptionalElseExprNode == null ? null : OptionalElseExprNode.Forge.ExprEvaluator);
+                        OptionalElseExprNode?.Forge.ExprEvaluator);
                 }
 
                 return new ExprCaseNodeForgeEvalSyntax2(
                     this,
                     evals,
                     OptionalCompareExprNode.Forge.ExprEvaluator,
-                    OptionalElseExprNode == null ? null : OptionalElseExprNode.Forge.ExprEvaluator);
+                    OptionalElseExprNode?.Forge.ExprEvaluator);
             }
         }
 
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public bool? IsMultirow => mapResultType == null ? (bool?) null : false;
+        public bool? IsMultirow => mapResultType == null ? (bool?)null : false;
 
         public IDictionary<string, object> RowProperties => mapResultType;
     }

@@ -32,9 +32,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             this.timeAbacus = timeAbacus;
         }
 
-        public DTLocalEvaluator DTEvaluator {
-            get => new DTLocalDtxOpsLongEval(GetCalendarOps(calendarForges), TimeZoneInfo.Utc, timeAbacus);
-        }
+        public DTLocalEvaluator DTEvaluator => new DTLocalDtxOpsLongEval(
+            GetCalendarOps(calendarForges),
+            TimeZoneInfo.Utc,
+            timeAbacus);
 
         public CodegenExpression Codegen(
             CodegenExpression inner,

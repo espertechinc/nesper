@@ -26,7 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
     public class ProxyEventBeanUpdateHelperNoCopy : EventBeanUpdateHelperNoCopy
     {
         public delegate string[] UpdatedPropertiesFunc();
+
         public delegate bool IsRequiresStream2InitialValueEventFunc();
+
         public delegate void UpdateNoCopyFunc(
             EventBean matchingEvent,
             EventBean[] eventsPerStream,
@@ -36,13 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
         public IsRequiresStream2InitialValueEventFunc ProcIsRequiresStream2InitialValueEvent { get; set; }
         public UpdateNoCopyFunc ProcUpdateNoCopy { get; set; }
 
-        public string[] UpdatedProperties {
-            get => ProcUpdatedProperties?.Invoke();
-        }
+        public string[] UpdatedProperties => ProcUpdatedProperties?.Invoke();
 
-        public bool IsRequiresStream2InitialValueEvent {
-            get => ProcIsRequiresStream2InitialValueEvent.Invoke();
-        }
+        public bool IsRequiresStream2InitialValueEvent => ProcIsRequiresStream2InitialValueEvent.Invoke();
 
         public void UpdateNoCopy(
             EventBean matchingEvent,

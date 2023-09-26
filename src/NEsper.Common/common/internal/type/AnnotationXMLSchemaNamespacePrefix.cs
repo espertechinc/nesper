@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.type
                     "nsprefix",
                     parent,
                     scope)
-                .Constant("Prefix", prefix.Prefix)
-                .Constant("Namespace", prefix.Namespace)
+                .ConstantExplicit("Prefix", prefix.Prefix)
+                .ConstantExplicit("Namespace", prefix.Namespace)
                 .Build();
         }
     }

@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.schedule
         /// </param>
         public ScheduleServiceException(
             string message,
-            System.Exception cause)
+            Exception cause)
             : base(message, cause)
         {
         }
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.schedule
         /// <summary> Constructor.</summary>
         /// <param name="cause">is the inner exception
         /// </param>
-        public ScheduleServiceException(System.Exception cause)
+        public ScheduleServiceException(Exception cause)
             : base(string.Empty, cause)
         {
         }

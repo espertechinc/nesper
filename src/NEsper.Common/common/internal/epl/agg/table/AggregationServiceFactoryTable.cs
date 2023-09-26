@@ -7,90 +7,79 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client.hook.aggmultifunc;
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.agg.core;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.table.core;
-using com.espertech.esper.common.@internal.settings;
 
 namespace com.espertech.esper.common.@internal.epl.agg.table
 {
     public class AggregationServiceFactoryTable : AggregationServiceFactory
     {
-        private Table table;
-        private TableColumnMethodPairEval[] methodPairs;
-        private AggregationMultiFunctionAgent[] accessAgents;
-        private int[] accessColumnsZeroOffset;
-        private AggregationGroupByRollupDesc groupByRollupDesc;
+        private Table _table;
+        private TableColumnMethodPairEval[] _methodPairs;
+        private AggregationMultiFunctionAgent[] _accessAgents;
+        private int[] _accessColumnsZeroOffset;
+        private AggregationGroupByRollupDesc _groupByRollupDesc;
 
-        public Table Table
-        {
-            set { this.table = value; }
+        public Table Table {
+            set => _table = value;
         }
 
-        public TableColumnMethodPairEval[] MethodPairs
-        {
-            set { this.methodPairs = value; }
+        public TableColumnMethodPairEval[] MethodPairs {
+            set => _methodPairs = value;
         }
 
-        public AggregationMultiFunctionAgent[] AccessAgents
-        {
-            set { this.accessAgents = value; }
+        public AggregationMultiFunctionAgent[] AccessAgents {
+            set => _accessAgents = value;
         }
 
-        public int[] AccessColumnsZeroOffset
-        {
-            set { this.accessColumnsZeroOffset = value; }
+        public int[] AccessColumnsZeroOffset {
+            set => _accessColumnsZeroOffset = value;
         }
 
-        public AggregationGroupByRollupDesc GroupByRollupDesc
-        {
-            set { this.groupByRollupDesc = value; }
+        public AggregationGroupByRollupDesc GroupByRollupDesc {
+            set => _groupByRollupDesc = value;
         }
 
         public AggregationService MakeService(
-            AgentInstanceContext agentInstanceContext,
-            ImportServiceRuntime importService,
-            bool isSubquery,
+            ExprEvaluatorContext exprEvaluatorContext,
+            int? streamNum,
             int? subqueryNumber,
             int[] groupId)
         {
-            var tableInstance = table.GetTableInstance(agentInstanceContext.AgentInstanceId);
-            if (!table.MetaData.IsKeyed)
-            {
-                var tableInstanceUngrouped = (TableInstanceUngrouped) tableInstance;
+            var tableInstance = _table.GetTableInstance(exprEvaluatorContext.AgentInstanceId);
+            if (!_table.MetaData.IsKeyed) {
+                var tableInstanceUngrouped = (TableInstanceUngrouped)tableInstance;
                 return new AggSvcGroupAllWTableImpl(
                     tableInstanceUngrouped,
-                    methodPairs,
-                    accessAgents,
-                    accessColumnsZeroOffset);
+                    _methodPairs,
+                    _accessAgents,
+                    _accessColumnsZeroOffset);
             }
 
-            var tableInstanceGrouped = (TableInstanceGrouped) tableInstance;
-            if (groupByRollupDesc == null)
-            {
+            var tableInstanceGrouped = (TableInstanceGrouped)tableInstance;
+            if (_groupByRollupDesc == null) {
                 return new AggSvcGroupByWTableImpl(
                     tableInstanceGrouped,
-                    methodPairs,
-                    accessAgents,
-                    accessColumnsZeroOffset);
+                    _methodPairs,
+                    _accessAgents,
+                    _accessColumnsZeroOffset);
             }
 
-            if (table.MetaData.KeyTypes.Length > 1)
-            {
+            if (_table.MetaData.KeyTypes.Length > 1) {
                 return new AggSvcGroupByWTableRollupMultiKeyImpl(
                     tableInstanceGrouped,
-                    methodPairs,
-                    accessAgents,
-                    accessColumnsZeroOffset,
-                    groupByRollupDesc);
+                    _methodPairs,
+                    _accessAgents,
+                    _accessColumnsZeroOffset,
+                    _groupByRollupDesc);
             }
-            else
-            {
+            else {
                 return new AggSvcGroupByWTableRollupSingleKeyImpl(
                     tableInstanceGrouped,
-                    methodPairs,
-                    accessAgents,
-                    accessColumnsZeroOffset);
+                    _methodPairs,
+                    _accessAgents,
+                    _accessColumnsZeroOffset);
             }
         }
     }

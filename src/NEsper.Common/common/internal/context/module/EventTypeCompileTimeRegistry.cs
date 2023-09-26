@@ -27,17 +27,18 @@ namespace com.espertech.esper.common.@internal.context.module
 
         public EventTypeCompileTimeRegistry(EventTypeRepository eventTypeRepositoryPreconfigured)
         {
-            this._eventTypeRepositoryPreconfigured = eventTypeRepositoryPreconfigured;
+            _eventTypeRepositoryPreconfigured = eventTypeRepositoryPreconfigured;
         }
 
         public void NewType(EventType type)
         {
             try {
                 EventTypeUtility.ValidateModifiers(type.Name, type.Metadata.BusModifier, type.Metadata.AccessModifier);
-            } catch (ExprValidationException e) {
+            }
+            catch (ExprValidationException e) {
                 throw new ArgumentException(e.Message, e);
             }
-            
+
             if (type.Metadata.AccessModifier == NameAccessModifier.PRECONFIGURED) {
                 if (type.Metadata.ApplicationType != EventTypeApplicationType.XML) {
                     throw new ArgumentException("Preconfigured-visibility is not allowed here");

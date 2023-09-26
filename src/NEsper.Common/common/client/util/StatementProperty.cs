@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.client.util
         ///     The statement type
         /// </summary>
         STATEMENTTYPE,
-        
+
         /// <summary>
         /// The name of the EPL-object created by the statement, of type, or null if not applicable,
         /// i.e. the name of the name window, table, variable, expression, index, schema or expression created by
@@ -32,13 +32,12 @@ namespace com.espertech.esper.common.client.util
         /// </para>
         /// </summary>
         CREATEOBJECTNAME,
-        
+
         /// <summary>
         /// The context name, of type or null if the statement is not associated to a context.
         /// </summary>
-        
         CONTEXTNAME,
-        
+
         /// <summary>
         /// The context deployment id, of type or null if the statement is not associated to a context.
         /// </summary>

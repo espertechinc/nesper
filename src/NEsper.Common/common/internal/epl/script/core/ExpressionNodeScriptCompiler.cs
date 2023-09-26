@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
     public class ExpressionNodeScriptCompiler
     {
         public const string DEFAULT_DIALECT = "js";
-        
+
         public static ExpressionScriptCompiled CompileScript(
             string dialect,
             string scriptName,
@@ -40,7 +40,6 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 expression,
                 parameterNames,
                 null,
-                false,
                 null,
                 dialect);
 

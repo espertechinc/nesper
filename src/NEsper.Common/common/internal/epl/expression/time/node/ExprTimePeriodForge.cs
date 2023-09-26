@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Numerics;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
@@ -28,10 +27,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
 {
     /// <summary>
     /// Expression representing a time period.
-    /// <para />Child nodes to this expression carry the actual parts and must return a numeric value.
+    /// <para/>Child nodes to this expression carry the actual parts and must return a numeric value.
     /// </summary>
     public class ExprTimePeriodForge : ExprForge
     {
+        private readonly ExprTimePeriodImpl parent;
+        private readonly bool hasVariable;
+        private readonly TimePeriodAdder[] adders;
         private ExprEvaluator[] evaluators;
 
         public ExprTimePeriodForge(
@@ -39,62 +41,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             bool hasVariable,
             TimePeriodAdder[] adders)
         {
-            ForgeRenderable = parent;
-            HasVariable = hasVariable;
-            Adders = adders;
-        }
-
-        public ExprForgeConstantType ForgeConstantType {
-            get => ForgeRenderable.IsConstantResult
-                ? ExprForgeConstantType.COMPILETIMECONST
-                : ExprForgeConstantType.NONCONST;
+            this.parent = parent;
+            this.hasVariable = hasVariable;
+            this.adders = adders;
         }
 
         public TimePeriodComputeForge ConstTimePeriodComputeForge()
         {
-            if (!ForgeRenderable.HasMonth && !ForgeRenderable.HasYear) {
+            if (!parent.HasMonth && !parent.HasYear) {
                 var seconds = EvaluateAsSeconds(null, true, null);
-                var msec = ForgeRenderable.TimeAbacus.DeltaForSecondsDouble(seconds);
+                var msec = parent.TimeAbacus.DeltaForSecondsDouble(seconds);
                 return new TimePeriodComputeConstGivenDeltaForge(msec);
             }
             else {
-                evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ForgeRenderable.ChildNodes);
-                var values = new int[Adders.Length];
+                evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(parent.ChildNodes);
+                var values = new int[adders.Length];
                 for (var i = 0; i < values.Length; i++) {
                     values[i] = evaluators[i].Evaluate(null, true, null).AsInt32();
                 }
 
-                return new TimePeriodComputeConstGivenCalAddForge(Adders, values, ForgeRenderable.TimeAbacus);
+                return new TimePeriodComputeConstGivenCalAddForge(adders, values, parent.TimeAbacus);
             }
         }
 
         public TimePeriodComputeForge NonconstTimePeriodComputeForge()
         {
-            if (!ForgeRenderable.HasMonth && !ForgeRenderable.HasYear) {
+            if (!parent.HasMonth && !parent.HasYear) {
                 return new TimePeriodComputeNCGivenTPNonCalForge(this);
             }
             else {
                 return new TimePeriodComputeNCGivenTPCalForge(this);
-            }
-        }
-
-        public TimeAbacus TimeAbacus {
-            get => ForgeRenderable.TimeAbacus;
-        }
-
-        public ExprEvaluator ExprEvaluator {
-            get {
-                return new ProxyExprEvaluator() {
-                    ProcEvaluate = (
-                        eventsPerStream,
-                        isNewData,
-                        context) => {
-                        throw new IllegalStateException(
-                            "Time-Period expression must be evaluated via any of " +
-                            typeof(ExprTimePeriod).GetSimpleName() +
-                            " interface methods");
-                    }
-                };
             }
         }
 
@@ -107,25 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             throw new IllegalStateException("Time period evaluator does not have a code representation");
         }
 
-        public Type EvaluationType => typeof(double?);
-
-        public bool HasVariable { get; }
-
-        public TimePeriodAdder[] Adders { get; }
-
-        public ExprTimePeriodImpl ForgeRenderable { get; }
-
-        ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
-
-        public ExprEvaluator[] Evaluators {
-            get {
-                if (evaluators == null) {
-                    evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ForgeRenderable.ChildNodes);
-                }
-
-                return evaluators;
-            }
-        }
+        public bool IsHasVariable => hasVariable;
 
         public double EvaluateAsSeconds(
             EventBean[] eventsPerStream,
@@ -133,18 +91,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             ExprEvaluatorContext context)
         {
             if (evaluators == null) {
-                evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ForgeRenderable.ChildNodes);
+                evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(parent.ChildNodes);
             }
 
             double seconds = 0;
-            for (int i = 0; i < Adders.Length; i++) {
+            for (var i = 0; i < adders.Length; i++) {
                 var result = Eval(evaluators[i], eventsPerStream, newData, context);
                 if (result == null) {
                     throw MakeTimePeriodParamNullException(
-                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(ForgeRenderable));
+                        ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(parent));
                 }
 
-                seconds += Adders[i].Compute(result.Value);
+                seconds += adders[i].Compute(result.Value);
             }
 
             return seconds;
@@ -155,23 +113,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(double),
                 typeof(ExprTimePeriodForge),
                 codegenClassScope);
-
             string exprText = null;
             if (codegenClassScope.IsInstrumented) {
                 exprText = ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(this);
             }
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "qExprTimePeriod", Constant(exprText)))
-                .DeclareVar<double>("seconds", Constant(0))
+                .DeclareVar(typeof(double), "seconds", Constant(0))
                 .DeclareVarNoInit(typeof(double?), "result");
-            for (int i = 0; i < ForgeRenderable.ChildNodes.Length; i++) {
-                ExprForge forge = ForgeRenderable.ChildNodes[i].Forge;
-                Type evaluationType = forge.EvaluationType;
+            for (var i = 0; i < parent.ChildNodes.Length; i++) {
+                var forge = parent.ChildNodes[i].Forge;
+                var evaluationType = forge.EvaluationType;
                 block.AssignRef(
                     "result",
                     SimpleNumberCoercerFactory.CoercerDouble.CodegenDoubleMayNullBoxedIncludeBig(
@@ -183,13 +140,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
                     .BlockThrow(
                         StaticMethod(
                             typeof(ExprTimePeriodForge),
-                            "MakeTimePeriodParamNullException",
-                            Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(ForgeRenderable))));
-                block.AssignRef("seconds", Op(Ref("seconds"), "+", Adders[i].ComputeCodegen(Unbox(Ref("result")))));
+                            "makeTimePeriodParamNullException",
+                            Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(parent))));
+                block.AssignRef("seconds", Op(Ref("seconds"), "+", adders[i].ComputeCodegen(Ref("result"))));
             }
 
-            block
-                .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprTimePeriod", Ref("seconds")))
+            block.Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprTimePeriod", Ref("seconds")))
                 .MethodReturn(Ref("seconds"));
             return LocalMethod(methodNode);
         }
@@ -200,20 +156,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object value = expr.Evaluate(events, isNewData, exprEvaluatorContext);
-            if (value == null) {
-                return null;
-            }
-
-            if (value is decimal) {
-                return value.AsDecimal().AsDouble();
-            }
-
-            if (value is BigInteger) {
-                return value.AsBigInteger().AsDouble();
-            }
-
-            return value.AsDouble();
+            return expr
+                .Evaluate(events, isNewData, exprEvaluatorContext)
+                .AsBoxedDouble();
         }
 
         public TimePeriod EvaluateGetTimePeriod(
@@ -222,53 +167,52 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             ExprEvaluatorContext context)
         {
             if (evaluators == null) {
-                evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ForgeRenderable.ChildNodes);
+                evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(parent.ChildNodes);
             }
 
-            int exprCtr = 0;
-
+            var exprCtr = 0;
             int? year = null;
-            if (ForgeRenderable.HasYear) {
+            if (parent.HasYear) {
                 year = GetInt(evaluators[exprCtr++].Evaluate(eventsPerStream, newData, context));
             }
 
             int? month = null;
-            if (ForgeRenderable.HasMonth) {
+            if (parent.HasMonth) {
                 month = GetInt(evaluators[exprCtr++].Evaluate(eventsPerStream, newData, context));
             }
 
             int? week = null;
-            if (ForgeRenderable.HasWeek) {
+            if (parent.HasWeek) {
                 week = GetInt(evaluators[exprCtr++].Evaluate(eventsPerStream, newData, context));
             }
 
             int? day = null;
-            if (ForgeRenderable.HasDay) {
+            if (parent.HasDay) {
                 day = GetInt(evaluators[exprCtr++].Evaluate(eventsPerStream, newData, context));
             }
 
             int? hours = null;
-            if (ForgeRenderable.HasHour) {
+            if (parent.HasHour) {
                 hours = GetInt(evaluators[exprCtr++].Evaluate(eventsPerStream, newData, context));
             }
 
             int? minutes = null;
-            if (ForgeRenderable.HasMinute) {
+            if (parent.HasMinute) {
                 minutes = GetInt(evaluators[exprCtr++].Evaluate(eventsPerStream, newData, context));
             }
 
             int? seconds = null;
-            if (ForgeRenderable.HasSecond) {
+            if (parent.HasSecond) {
                 seconds = GetInt(evaluators[exprCtr++].Evaluate(eventsPerStream, newData, context));
             }
 
             int? milliseconds = null;
-            if (ForgeRenderable.HasMillisecond) {
+            if (parent.HasMillisecond) {
                 milliseconds = GetInt(evaluators[exprCtr++].Evaluate(eventsPerStream, newData, context));
             }
 
             int? microseconds = null;
-            if (ForgeRenderable.HasMicrosecond) {
+            if (parent.HasMicrosecond) {
                 microseconds = GetInt(evaluators[exprCtr].Evaluate(eventsPerStream, newData, context));
             }
 
@@ -280,17 +224,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(TimePeriod),
                 typeof(ExprTimePeriodForge),
                 codegenClassScope);
-
-            CodegenBlock block = methodNode.Block;
-            int counter = 0;
+            var block = methodNode.Block;
+            var counter = 0;
             counter += EvaluateGetTimePeriodCodegenField(
                 block,
                 "year",
-                ForgeRenderable.HasYear,
+                parent.HasYear,
                 counter,
                 methodNode,
                 exprSymbol,
@@ -298,7 +241,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             counter += EvaluateGetTimePeriodCodegenField(
                 block,
                 "month",
-                ForgeRenderable.HasMonth,
+                parent.HasMonth,
                 counter,
                 methodNode,
                 exprSymbol,
@@ -306,7 +249,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             counter += EvaluateGetTimePeriodCodegenField(
                 block,
                 "week",
-                ForgeRenderable.HasWeek,
+                parent.HasWeek,
                 counter,
                 methodNode,
                 exprSymbol,
@@ -314,7 +257,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             counter += EvaluateGetTimePeriodCodegenField(
                 block,
                 "day",
-                ForgeRenderable.HasDay,
+                parent.HasDay,
                 counter,
                 methodNode,
                 exprSymbol,
@@ -322,7 +265,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             counter += EvaluateGetTimePeriodCodegenField(
                 block,
                 "hours",
-                ForgeRenderable.HasHour,
+                parent.HasHour,
                 counter,
                 methodNode,
                 exprSymbol,
@@ -330,7 +273,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             counter += EvaluateGetTimePeriodCodegenField(
                 block,
                 "minutes",
-                ForgeRenderable.HasMinute,
+                parent.HasMinute,
                 counter,
                 methodNode,
                 exprSymbol,
@@ -338,7 +281,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             counter += EvaluateGetTimePeriodCodegenField(
                 block,
                 "seconds",
-                ForgeRenderable.HasSecond,
+                parent.HasSecond,
                 counter,
                 methodNode,
                 exprSymbol,
@@ -346,7 +289,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             counter += EvaluateGetTimePeriodCodegenField(
                 block,
                 "milliseconds",
-                ForgeRenderable.HasMillisecond,
+                parent.HasMillisecond,
                 counter,
                 methodNode,
                 exprSymbol,
@@ -354,13 +297,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             EvaluateGetTimePeriodCodegenField(
                 block,
                 "microseconds",
-                ForgeRenderable.HasMicrosecond,
+                parent.HasMicrosecond,
                 counter,
                 methodNode,
                 exprSymbol,
                 codegenClassScope);
             block.MethodReturn(
-                NewInstance<TimePeriod>(
+                NewInstance(
+                    typeof(TimePeriod),
                     Ref("year"),
                     Ref("month"),
                     Ref("week"),
@@ -376,7 +320,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         /// <summary>
         /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
-        /// <param name="expressionText">text</param>
+        /// <param name = "expressionText">text</param>
         /// <returns>exception</returns>
         public static EPException MakeTimePeriodParamNullException(string expressionText)
         {
@@ -394,17 +338,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             CodegenClassScope codegenClassScope)
         {
             if (!present) {
-                block.DeclareVar<int?>(variable, ConstantNull());
+                block.DeclareVar(typeof(int?), variable, ConstantNull());
                 return 0;
             }
 
-            var forge = ForgeRenderable.ChildNodes[counter].Forge;
+            var forge = parent.ChildNodes[counter].Forge;
             var evaluationType = forge.EvaluationType;
-            block.DeclareVar<int?>(
+            block.DeclareVar(
+                typeof(int?),
                 variable,
                 SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                     forge.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),
-                    forge.EvaluationType,
+                    evaluationType,
                     codegenMethodScope,
                     codegenClassScope));
             return 1;
@@ -412,9 +357,49 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
 
         private int? GetInt(object evaluated)
         {
-            return evaluated?.AsInt32();
+            if (evaluated == null) {
+                return null;
+            }
+
+            return evaluated.AsInt32();
         }
 
-        public ExprForge[] Forges => ExprNodeUtilityQuery.GetForges(ForgeRenderable.ChildNodes);
+        public ExprForgeConstantType ForgeConstantType => parent.IsConstantResult
+            ? ExprForgeConstantType.COMPILETIMECONST
+            : ExprForgeConstantType.NONCONST;
+
+        public TimeAbacus TimeAbacus => parent.TimeAbacus;
+
+        public ExprEvaluator ExprEvaluator {
+            get {
+                return new ProxyExprEvaluator() {
+                    ProcEvaluate = (
+                        eventsPerStream,
+                        isNewData,
+                        context) => throw new IllegalStateException(
+                        "Time-Period expression must be evaluated via any of " +
+                        nameof(ExprTimePeriod) +
+                        " interface methods")
+                };
+            }
+        }
+
+        public Type EvaluationType => typeof(double?);
+
+        public TimePeriodAdder[] Adders => adders;
+
+        public ExprNodeRenderable ExprForgeRenderable => parent;
+
+        public ExprEvaluator[] Evaluators {
+            get {
+                if (evaluators == null) {
+                    evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(parent.ChildNodes);
+                }
+
+                return evaluators;
+            }
+        }
+
+        public ExprForge[] Forges => ExprNodeUtilityQuery.GetForges(parent.ChildNodes);
     }
 } // end of namespace

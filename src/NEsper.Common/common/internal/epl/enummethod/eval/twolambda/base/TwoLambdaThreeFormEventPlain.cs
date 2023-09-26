@@ -20,64 +20,64 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethodeval.twolambda.@base
 {
-	public abstract class TwoLambdaThreeFormEventPlain : EnumForgeBasePlain
-	{
-		private ExprForge _secondExpression;
+    public abstract class TwoLambdaThreeFormEventPlain : EnumForgeBasePlain
+    {
+        private ExprForge _secondExpression;
 
-		public ExprForge SecondExpression => _secondExpression;
+        public ExprForge SecondExpression => _secondExpression;
 
-		public abstract Type ReturnType();
+        public abstract Type ReturnType();
 
-		public abstract CodegenExpression ReturnIfEmptyOptional();
+        public abstract CodegenExpression ReturnIfEmptyOptional();
 
-		public abstract void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope);
+        public abstract void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope);
 
-		public abstract void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope);
+        public abstract void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope);
 
-		public abstract void ReturnResult(CodegenBlock block);
+        public abstract void ReturnResult(CodegenBlock block);
 
-		public TwoLambdaThreeFormEventPlain(
-			ExprForge innerExpression,
-			int streamCountIncoming,
-			ExprForge secondExpression) : base(innerExpression, streamCountIncoming)
-		{
-			this._secondExpression = secondExpression;
-		}
+        public TwoLambdaThreeFormEventPlain(
+            ExprForge innerExpression,
+            int streamCountIncoming,
+            ExprForge secondExpression) : base(innerExpression, streamCountIncoming)
+        {
+            _secondExpression = secondExpression;
+        }
 
-		public override CodegenExpression Codegen(
-			EnumForgeCodegenParams premade,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			ExprForgeCodegenSymbol scope = new ExprForgeCodegenSymbol(false, null);
-			CodegenMethod methodNode = codegenMethodScope
-				.MakeChildWithScope(ReturnType(), this.GetType(), scope, codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS);
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope
+                .MakeChildWithScope(ReturnType(), GetType(), scope, codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS);
 
-			CodegenExpression returnIfEmpty = ReturnIfEmptyOptional();
-			if (returnIfEmpty != null) {
-				methodNode.Block
-					.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
-					.BlockReturn(returnIfEmpty);
-			}
+            var returnIfEmpty = ReturnIfEmptyOptional();
+            if (returnIfEmpty != null) {
+                methodNode.Block
+                    .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
+                    .BlockReturn(returnIfEmpty);
+            }
 
-			InitBlock(methodNode.Block, methodNode, scope, codegenClassScope);
+            InitBlock(methodNode.Block, methodNode, scope, codegenClassScope);
 
-			CodegenBlock forEach = methodNode.Block
-				.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
-			ForEachBlock(forEach, methodNode, scope, codegenClassScope);
+            var forEach = methodNode.Block
+                .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+                .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
+            ForEachBlock(forEach, methodNode, scope, codegenClassScope);
 
-			ReturnResult(methodNode.Block);
-			return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
-		}
-	}
+            ReturnResult(methodNode.Block);
+            return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
+        }
+    }
 } // end of namespace

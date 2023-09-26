@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,33 +14,33 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
-    /// <summary>Specification for the merge statement insert-part. </summary>
-    [Serializable]
+    /// <summary>
+    ///     Specification for the merge statement insert-part.
+    /// </summary>
     public class OnTriggerMergeActionInsert : OnTriggerMergeAction
     {
-        [NonSerialized] private IList<SelectClauseElementCompiled> selectClauseCompiled;
-
         public OnTriggerMergeActionInsert(
             ExprNode optionalWhereClause,
             string optionalStreamName,
             IList<string> columns,
-            IList<SelectClauseElementRaw> selectClause)
-            : base(optionalWhereClause)
+            IList<SelectClauseElementRaw> selectClause,
+            ExprNode eventPrecedence) : base(optionalWhereClause)
         {
             OptionalStreamName = optionalStreamName;
             Columns = columns;
             SelectClause = selectClause;
+            EventPrecedence = eventPrecedence;
         }
 
-        public string OptionalStreamName { get; private set; }
+        public string OptionalStreamName { get; }
 
-        public IList<string> Columns { get; private set; }
+        public IList<string> Columns { get; }
 
-        public IList<SelectClauseElementRaw> SelectClause { get; private set; }
+        public IList<SelectClauseElementRaw> SelectClause { get; }
 
-        public IList<SelectClauseElementCompiled> SelectClauseCompiled {
-            get { return selectClauseCompiled; }
-            set { this.selectClauseCompiled = value; }
-        }
+        [field: NonSerialized]
+        public IList<SelectClauseElementCompiled> SelectClauseCompiled { set; get; }
+
+        public ExprNode EventPrecedence { get; }
     }
-}
+} // end of namespace

@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         {
             var eventBean = array[propertyIndex];
 
-            var theEvent = (EventBean) eventBean;
+            var theEvent = (EventBean)eventBean;
             return theEvent?.Underlying;
         }
 
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(underlyingType, GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array")
+                .AddParam<object[]>("array")
                 .Block
                 .DeclareVar<object>("eventBean", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
                 .IfRefNullReturnNull("eventBean")

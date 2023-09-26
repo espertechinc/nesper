@@ -28,13 +28,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             PointRegionQuadTreeNode node,
             Consumer<object> consumer)
         {
-            if (node is PointRegionQuadTreeNodeLeaf<object>) {
-                var leaf = (PointRegionQuadTreeNodeLeaf<object>) node;
+            if (node is PointRegionQuadTreeNodeLeaf<object> leaf) {
                 TraverseData(leaf.Points, consumer);
                 return;
             }
 
-            var branch = (PointRegionQuadTreeNodeBranch) node;
+            var branch = (PointRegionQuadTreeNodeBranch)node;
             Traverse(branch.Nw, consumer);
             Traverse(branch.Ne, consumer);
             Traverse(branch.Sw, consumer);
@@ -67,8 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             if (data is XYPointWOpaqueValue pointWOpaqueValue) {
                 consumer.Invoke(pointWOpaqueValue.OpaqueValue);
             }
-            else if (data is XYPointMultiType) {
-                var multiType = (XYPointMultiType) data;
+            else if (data is XYPointMultiType multiType) {
                 if (multiType.GetType().IsGenericCollection()) {
                     var collection = multiType.Multityped.UnwrapEnumerable<object>();
                     foreach (var datapoint in collection) {

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -40,6 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         public override string ViewName => "match-recognize";
 
         public int ScheduleCallbackId {
+            get => scheduleCallbackId;
             set => scheduleCallbackId = value;
         }
 
@@ -51,23 +53,16 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             // no action
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             // no action
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(RowRecogNFAViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(RowRecogNFAViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "RowRecog";
-        }
+        internal override string FactoryMethod => "RowRecog";
 
         internal override void Assign(
             CodegenMethod method,
@@ -84,9 +79,14 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
         }
 
-        public override void Accept(ViewForgeVisitor visitor)
+        public override AppliesTo AppliesTo()
         {
-            visitor.Visit(this);
+            return client.annotation.AppliesTo.WINDOW_ROWRECOG;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

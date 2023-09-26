@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.support
             bool array,
             string propertyExpressions)
         {
-            var names = propertyExpressions.SplitCsv();
+            var names = propertyExpressions.Split(",");
             foreach (var name in names) {
                 if (!array) {
                     AssertFragmentNonArray(@event, isNative, name);
@@ -95,8 +95,8 @@ namespace com.espertech.esper.common.@internal.support
                         try {
                             WriteIndent(writer, indent + 4);
                             writer.Write("bean #");
-                            writer.Write(Convert.ToString(count));
-                            var result = (EventBean) theEvent.GetFragment(desc.PropertyName + "[" + count + "]");
+                            writer.Write(count);
+                            var result = (EventBean)theEvent.GetFragment(desc.PropertyName + "[" + count + "]");
                             if (result == null) {
                                 writer.Write("(null EventBean)\n");
                             }
@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.support
 
                             count++;
                         }
-                        catch (PropertyAccessException) {
+                        catch (PropertyAccessException ex) {
                             writer.Write("-- no access --\n");
                             break;
                         }
@@ -122,8 +122,7 @@ namespace com.espertech.esper.common.@internal.support
                         continue;
                     }
 
-                    if (fragment is EventBean) {
-                        var fragmentBean = (EventBean) fragment;
+                    if (fragment is EventBean fragmentBean) {
                         writer.Write("EventBean type ");
                         writer.Write(fragmentBean.EventType.Name);
                         writer.Write("...\n");
@@ -140,7 +139,7 @@ namespace com.espertech.esper.common.@internal.support
                         }
                     }
                     else {
-                        var fragmentBeans = (EventBean[]) fragment;
+                        var fragmentBeans = (EventBean[])fragment;
                         writer.Write("EventBean[] type ");
                         if (fragmentBeans.Length == 0) {
                             writer.Write("(empty array)\n");
@@ -211,14 +210,14 @@ namespace com.espertech.esper.common.@internal.support
                         try {
                             WriteIndent(writer, indent + 2);
                             writer.Write("#");
-                            writer.Write(Convert.ToString(count));
+                            writer.Write(count);
                             writer.Write(" ");
                             var result = eventBean.Get(propertyName + "[" + count + "]");
                             WriteValue(writer, result);
                             writer.Write("\n");
                             count++;
                         }
-                        catch (PropertyAccessException) {
+                        catch (PropertyAccessException ex) {
                             writer.Write("-- no access --\n");
                             break;
                         }
@@ -242,13 +241,13 @@ namespace com.espertech.esper.common.@internal.support
                 WriteIndent(writer, indent);
                 writer.Write(propertyName);
                 var type = "mapped";
-                if (properties[i].IsRequiresMapKey) {
+                if (properties[i].IsRequiresMapkey) {
                     type = type + " requires-mapkey";
                 }
 
                 writer.Write(" (" + type + ") : ");
 
-                if (!properties[i].IsRequiresMapKey) {
+                if (!properties[i].IsRequiresMapkey) {
                     var result = eventBean.Get(propertyName);
                     WriteValue(writer, result);
                     writer.Write("\n");
@@ -271,7 +270,7 @@ namespace com.espertech.esper.common.@internal.support
                 var propertyName = properties[i].PropertyName;
 
                 // assert getter
-                if (!properties[i].IsRequiresIndex && !properties[i].IsRequiresMapKey) {
+                if (!properties[i].IsRequiresIndex && !properties[i].IsRequiresMapkey) {
                     var getter = eventBean.EventType.GetGetter(propertyName);
                     var resultGetter = getter.Get(eventBean);
                     var resultGet = eventBean.Get(propertyName);
@@ -279,17 +278,13 @@ namespace com.espertech.esper.common.@internal.support
                     if (resultGetter == null && resultGet == null) {
                         // fine
                     }
-                    else if (resultGet is XmlNodeList) {
-                        ScopeTestHelper.AssertEquals(
-                            failedMessage,
-                            ((XmlNodeList) resultGet).Count,
-                            ((XmlNodeList) resultGetter).Count);
+                    else if (resultGet is XmlNodeList resultGetNodeList) {
+                        var resultGetterNodeList = ((XmlNodeList)resultGetter);
+                        ScopeTestHelper.AssertEquals(failedMessage, resultGetNodeList.Count, resultGetterNodeList.Count);
                     }
-                    else if (resultGet.GetType().IsArray) {
-                        ScopeTestHelper.AssertEquals(
-                            failedMessage,
-                            ((Array) resultGet).Length,
-                            ((Array) resultGetter).Length);
+                    else if (resultGet is Array resultGetArray) {
+                        var resultGetterArray = (Array)resultGetter;
+                        ScopeTestHelper.AssertEquals(failedMessage, resultGetArray.Length, resultGetterArray.Length);
                     }
                     else {
                         ScopeTestHelper.AssertEquals(failedMessage, resultGet, resultGetter);
@@ -300,12 +295,13 @@ namespace com.espertech.esper.common.@internal.support
                             ScopeTestHelper.AssertTrue(properties[i].IsFragment);
                         }
                         else {
-                            var resultType = resultGet.GetType();
-                            var propertyType = properties[i].PropertyType.GetBoxedType();
-                            if ((resultType != propertyType) &&
-                                !TypeHelper.IsSubclassOrImplementsInterface(resultType, propertyType)) {
-                                ScopeTestHelper.Fail(failedMessage);
-                            }
+                            var propertyType = properties[i].PropertyType;
+                            var resultGetClass = resultGet.GetType();
+                            ScopeTestHelper.AssertTrue(
+                                failedMessage,
+                                TypeHelper.IsSubclassOrImplementsInterface(
+                                    resultGetClass,
+                                    propertyType.GetBoxedType()));
                         }
                     }
                 }
@@ -327,12 +323,12 @@ namespace com.espertech.esper.common.@internal.support
 
                 if (!fragmentType.IsIndexed) {
                     ScopeTestHelper.AssertTrue(failedMessage, fragment is EventBean);
-                    var fragmentEvent = (EventBean) fragment;
+                    var fragmentEvent = (EventBean)fragment;
                     AssertConsistencyRecursive(fragmentEvent, alreadySeenTypes);
                 }
                 else {
                     ScopeTestHelper.AssertTrue(failedMessage, fragment is EventBean[]);
-                    var events = (EventBean[]) fragment;
+                    var events = (EventBean[])fragment;
                     ScopeTestHelper.AssertTrue(failedMessage, events.Length > 0);
                     foreach (var theEvent in events) {
                         AssertConsistencyRecursive(theEvent, alreadySeenTypes);
@@ -393,12 +389,9 @@ namespace com.espertech.esper.common.@internal.support
                 ScopeTestHelper.AssertSame(properties[i], eventType.GetPropertyDescriptor(propertyName));
 
                 // test properties that can simply be in a property expression
-                if (!properties[i].IsRequiresIndex && !properties[i].IsRequiresMapKey) {
+                if (!properties[i].IsRequiresIndex && !properties[i].IsRequiresMapkey) {
                     ScopeTestHelper.AssertTrue(failedMessage, eventType.IsProperty(propertyName));
-                    ScopeTestHelper.AssertSame(
-                        failedMessage,
-                        eventType.GetPropertyType(propertyName),
-                        properties[i].PropertyType);
+                    ScopeTestHelper.AssertSame(failedMessage, eventType.GetPropertyType(propertyName), properties[i].PropertyType);
                     ScopeTestHelper.AssertNotNull(failedMessage, eventType.GetGetter(propertyName));
                 }
 
@@ -411,7 +404,7 @@ namespace com.espertech.esper.common.@internal.support
                 }
 
                 // test mapped property
-                if (properties[i].IsRequiresMapKey) {
+                if (properties[i].IsRequiresMapkey) {
                     var propertyNameMapped = propertyName + "('a')";
                     ScopeTestHelper.AssertTrue(failedMessage, eventType.IsProperty(propertyNameMapped));
                     ScopeTestHelper.AssertNotNull(failedMessage, eventType.GetPropertyType(propertyNameMapped));
@@ -424,7 +417,7 @@ namespace com.espertech.esper.common.@internal.support
                     ScopeTestHelper.AssertTrue(failedMessage, properties[i].IsIndexed);
                 }
 
-                if (properties[i].IsRequiresMapKey) {
+                if (properties[i].IsRequiresMapkey) {
                     ScopeTestHelper.AssertTrue(failedMessage, properties[i].IsMapped);
                 }
             }
@@ -451,9 +444,10 @@ namespace com.espertech.esper.common.@internal.support
                 return;
             }
 
-            if (result is Array resultArray) {
+            if (result.GetType().IsArray) {
+                var resultArray = (Array) result;
                 writer.Write("Array len=");
-                writer.Write(Convert.ToString(resultArray.Length));
+                writer.Write(resultArray.Length);
                 writer.Write("{");
                 var delimiter = "";
                 for (var i = 0; i < resultArray.Length; i++) {
@@ -470,34 +464,25 @@ namespace com.espertech.esper.common.@internal.support
         }
 
         public static void AssertEventTypeProperties(
-            object[][] expectedValuesArr,
+            object[][] expectedArr,
             EventType eventType,
             params SupportEventTypeAssertionEnum[] assertions)
         {
-            var propertyDescriptors = eventType.PropertyDescriptors
-                .OrderBy(p => p.PropertyName)
-                .ToList();
- 
-            for (var propNum = 0; propNum < expectedValuesArr.Length; propNum++) {
+            for (var propNum = 0; propNum < expectedArr.Length; propNum++) {
                 var message = "Failed assertion for property " + propNum;
-                var prop = propertyDescriptors[propNum];
-                var expectedArr = expectedValuesArr[propNum];
+                var prop = eventType.PropertyDescriptors[propNum];
 
                 for (var i = 0; i < assertions.Length; i++) {
                     var assertion = assertions[i];
-                    var expected = expectedArr[i];
+                    var expected = expectedArr[propNum][i];
                     var value = assertion.GetExtractor().Invoke(prop, eventType);
-                    if (expected is Type expectedType) {
-                        if (expectedType == typeof(object[])) {
-                            var valueAsType = (Type)value;
-                            if (valueAsType is { IsArray: true } && !valueAsType.GetElementType()!.IsPrimitive) {
-                                continue;
-                            }
-                        }
+                    if (expected == typeof(object[]) &&
+                        ((Type)value).IsArray &&
+                        !((Type)value).GetElementType().IsPrimitive) {
+                        continue;
                     }
 
-                    ScopeTestHelper.AssertEquals(
-                        message + " at assertion " + assertion, expected, value);
+                    ScopeTestHelper.AssertEquals(message + " at assertion " + assertion, expected, value);
                 }
             }
         }
@@ -507,14 +492,11 @@ namespace com.espertech.esper.common.@internal.support
             bool isNative,
             string propertyExpression)
         {
-            var fragmentBean = (EventBean) @event.GetFragment(propertyExpression);
+            var fragmentBean = (EventBean)@event.GetFragment(propertyExpression);
             var fragmentType = @event.EventType.GetFragmentType(propertyExpression);
             ScopeTestHelper.AssertFalse("failed for " + propertyExpression, fragmentType.IsIndexed);
             ScopeTestHelper.AssertEquals("failed for " + propertyExpression, isNative, fragmentType.IsNative);
-            ScopeTestHelper.AssertSame(
-                "failed for " + propertyExpression,
-                fragmentBean.EventType,
-                fragmentType.FragmentType);
+            ScopeTestHelper.AssertSame("failed for " + propertyExpression, fragmentBean.EventType, fragmentType.FragmentType);
             AssertConsistency(fragmentBean);
         }
 
@@ -523,15 +505,23 @@ namespace com.espertech.esper.common.@internal.support
             bool isNative,
             string propertyExpression)
         {
-            var fragmentBean = (EventBean[]) @event.GetFragment(propertyExpression);
+            var fragmentBean = (EventBean[])@event.GetFragment(propertyExpression);
             var fragmentType = @event.EventType.GetFragmentType(propertyExpression);
             ScopeTestHelper.AssertTrue("failed for " + propertyExpression, fragmentType.IsIndexed);
             ScopeTestHelper.AssertEquals("failed for " + propertyExpression, isNative, fragmentType.IsNative);
-            ScopeTestHelper.AssertSame(
-                "failed for " + propertyExpression,
-                fragmentBean[0].EventType,
-                fragmentType.FragmentType);
+            ScopeTestHelper.AssertSame("failed for " + propertyExpression, fragmentBean[0].EventType, fragmentType.FragmentType);
             AssertConsistency(fragmentBean[0]);
+        }
+
+        public static void AssertPropertiesTypes(
+            EventType eventType,
+            string names,
+            params Type[] type)
+        {
+            var split = names.Split(",");
+            for (var i = 0; i < split.Length; i++) {
+                ScopeTestHelper.AssertEquals("Type for " + split[i], type[i], eventType.GetPropertyType(split[i]));
+            }
         }
     }
 } // end of namespace

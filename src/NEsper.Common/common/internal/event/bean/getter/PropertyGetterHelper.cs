@@ -14,65 +14,65 @@ using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
-	public class PropertyGetterHelper
-	{
-		public static object GetPropertySimple(
-			PropertyInfo property,
-			object @object)
-		{
-			try {
-				return property.GetValue(@object);
-			}
-			catch (ArgumentException e) {
-				throw PropertyUtility.GetArgumentException(property, e);
-			}
-			catch (MemberAccessException e) {
-				throw PropertyUtility.GetMemberAccessException(property, e);
-			}
-		}
+    public class PropertyGetterHelper
+    {
+        public static object GetPropertySimple(
+            PropertyInfo property,
+            object @object)
+        {
+            try {
+                return property.GetValue(@object);
+            }
+            catch (ArgumentException e) {
+                throw PropertyUtility.GetArgumentException(property, e);
+            }
+            catch (MemberAccessException e) {
+                throw PropertyUtility.GetMemberAccessException(property, e);
+            }
+        }
 
-		public static object GetPropertyMap(
-			PropertyInfo property,
-			object @object,
-			object key)
-		{
-			try {
-				var result = property.GetValue(@object);
-				return CollectionUtil.GetMapValueChecked(result, key);
-			}
-			catch (InvalidCastException e) {
-				throw PropertyUtility.GetMismatchException(property, @object, e);
-			}
-			catch (ArgumentException e) {
-				throw PropertyUtility.GetArgumentException(property, e);
-			}
-			catch (MemberAccessException e) {
-				throw PropertyUtility.GetMemberAccessException(property, e);
-			}
-		}
+        public static object GetPropertyMap(
+            PropertyInfo property,
+            object @object,
+            object key)
+        {
+            try {
+                var result = property.GetValue(@object);
+                return CollectionUtil.GetMapValueChecked(result, key);
+            }
+            catch (InvalidCastException e) {
+                throw PropertyUtility.GetMismatchException(property, @object, e);
+            }
+            catch (ArgumentException e) {
+                throw PropertyUtility.GetArgumentException(property, e);
+            }
+            catch (MemberAccessException e) {
+                throw PropertyUtility.GetMemberAccessException(property, e);
+            }
+        }
 
-		public static object GetPropertyArray(
-			PropertyInfo property,
-			object @object,
-			int index)
-		{
-			try {
-				var value = property.GetValue(@object) as Array;
-				if ((value == null) || (value.Length <= index)) {
-					return null;
-				}
+        public static object GetPropertyArray(
+            PropertyInfo property,
+            object @object,
+            int index)
+        {
+            try {
+                var value = property.GetValue(@object) as Array;
+                if (value == null || value.Length <= index) {
+                    return null;
+                }
 
-				return value.GetValue(index);
-			}
-			catch (InvalidCastException e) {
-				throw PropertyUtility.GetMismatchException(property, @object, e);
-			}
-			catch (ArgumentException e) {
-				throw PropertyUtility.GetArgumentException(property, e);
-			}
-			catch (MemberAccessException e) {
-				throw PropertyUtility.GetMemberAccessException(property, e);
-			}
-		}
-	}
+                return value.GetValue(index);
+            }
+            catch (InvalidCastException e) {
+                throw PropertyUtility.GetMismatchException(property, @object, e);
+            }
+            catch (ArgumentException e) {
+                throw PropertyUtility.GetArgumentException(property, e);
+            }
+            catch (MemberAccessException e) {
+                throw PropertyUtility.GetMemberAccessException(property, e);
+            }
+        }
+    }
 } // end of namespace

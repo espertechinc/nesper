@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
             }
 
             eventTypes = new EventType[context.InputPorts.Count];
-            foreach (KeyValuePair<int, DataFlowOpInputPort> entry in context.InputPorts) {
+            foreach (var entry in context.InputPorts) {
                 eventTypes[entry.Key] = entry.Value.TypeDesc.EventType;
             }
 
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.ops
         {
             return new SAIFFInitializeBuilder(
                     OP_PACKAGE_NAME + ".logsink.LogSinkFactory",
-                    this.GetType(),
+                    GetType(),
                     "log",
                     parent,
                     symbols,

@@ -40,14 +40,14 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             if (assignedType == AssignedType.VARIANT ||
-                     assignedType != AssignedType.NONE) {
+                assignedType != AssignedType.NONE) {
                 throw new IllegalStateException("Not handled by event representation: " + assignedType);
             }
 
             // annotation has second priority
             var annotation = AnnotationUtil.FindAnnotation(annotations, typeof(EventRepresentationAttribute));
             if (annotation != null) {
-                var eventRepresentation = (EventRepresentationAttribute) annotation;
+                var eventRepresentation = (EventRepresentationAttribute)annotation;
                 return eventRepresentation.Value switch {
                     EventUnderlyingType.AVRO => EventUnderlyingType.AVRO,
                     EventUnderlyingType.JSON => EventUnderlyingType.JSON,

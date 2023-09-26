@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             set => dataflow = value;
         }
 
-        public void StatementCreate(StatementContext statementContext)
-        {
+        public StatementContext StatementCreate {
+            set { }
         }
 
         public void StatementDestroy(StatementContext statementContext)
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             StatementContext statementContext,
             int agentInstanceId)
         {
-            return AgentInstanceUtil.NewLock(statementContext);
+            return AgentInstanceUtil.NewLock(statementContext, agentInstanceId);
         }
 
         public void Ready(

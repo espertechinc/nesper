@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public JsonGetterDynamicSimpleSchema(string propertyName)
         {
-            this._propertyName = propertyName;
+            _propertyName = propertyName;
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -32,7 +32,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(typeof(IDictionary<string, object>), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(
@@ -40,7 +43,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(JsonGetterDynamicHelperSchema), "GetJsonPropertySimpleValue", Constant(_propertyName), underlyingExpression);
+            return StaticMethod(
+                typeof(JsonGetterDynamicHelperSchema),
+                "GetJsonPropertySimpleValue",
+                Constant(_propertyName),
+                underlyingExpression);
         }
 
         public CodegenExpression EventBeanExistsCodegen(
@@ -48,7 +55,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(typeof(IDictionary<string, object>), beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CastUnderlying(typeof(IDictionary<string, object>), beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingExistsCodegen(
@@ -56,7 +66,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return StaticMethod(typeof(JsonGetterDynamicHelperSchema), "GetJsonPropertySimpleExists", Constant(_propertyName), underlyingExpression);
+            return StaticMethod(
+                typeof(JsonGetterDynamicHelperSchema),
+                "GetJsonPropertySimpleExists",
+                Constant(_propertyName),
+                underlyingExpression);
         }
 
         public CodegenExpression EventBeanFragmentCodegen(
@@ -92,7 +106,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public object GetJsonProp(object @object)
         {
-            var und = (IDictionary<string, object>) @object;
+            var und = (IDictionary<string, object>)@object;
             return und.Get(_propertyName);
         }
 
@@ -103,7 +117,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
 
         public bool GetJsonExists(object @object)
         {
-            var und = (IDictionary<string, object>) @object;
+            var und = (IDictionary<string, object>)@object;
             return und.ContainsKey(_propertyName);
         }
     }

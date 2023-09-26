@@ -25,27 +25,19 @@ namespace com.espertech.esper.common.@internal.context.util
             ScheduleHandleCallback callback)
         {
             this.agentInstanceHandle = agentInstanceHandle;
-            this.scheduleCallback = callback;
+            scheduleCallback = callback;
         }
 
-        public int StatementId {
-            get => agentInstanceHandle.StatementId;
-        }
+        public int StatementId => agentInstanceHandle.StatementId;
 
-        public int AgentInstanceId {
-            get => agentInstanceHandle.AgentInstanceId;
-        }
+        public int AgentInstanceId => agentInstanceHandle.AgentInstanceId;
 
         /// <summary>
         /// Returns the statement handle.
         /// </summary>
         /// <returns>handle containing a statement resource lock</returns>
-        public EPStatementAgentInstanceHandle AgentInstanceHandle {
-            get => agentInstanceHandle;
-        }
+        public EPStatementAgentInstanceHandle AgentInstanceHandle => agentInstanceHandle;
 
-        public ScheduleHandleCallback ScheduleCallback {
-            get => scheduleCallback;
-        }
+        public ScheduleHandleCallback ScheduleCallback => scheduleCallback;
     }
 } // end of namespace

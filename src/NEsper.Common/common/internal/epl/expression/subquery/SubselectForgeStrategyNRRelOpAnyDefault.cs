@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,13 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge selectEval,
             bool resultWhenNoMatchingEvents,
             RelationalOpEnumComputer computer,
-            ExprForge filterEval)
-            : base(
-                subselect,
-                valueEval,
-                selectEval,
-                resultWhenNoMatchingEvents,
-                computer)
+            ExprForge filterEval) : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, computer)
         {
             this.filterEval = filterEval;
         }
@@ -47,42 +41,46 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             method.Block
-                .DeclareVar<bool>("hasRows", ConstantFalse())
-                .DeclareVar<bool>("hasNonNullRow", ConstantFalse());
-            var @foreach = method.Block.ForEach(
+                .DeclareVar(typeof(bool?), "hasRows", ConstantFalse())
+                .DeclareVar(typeof(bool?), "hasNonNullRow", ConstantFalse());
+            var foreachX = method.Block.ForEach(
                 typeof(EventBean),
                 "subselectEvent",
                 symbols.GetAddMatchingEvents(method));
             {
-                @foreach.AssignArrayElement(NAME_EPS, Constant(0), Ref("subselectEvent"));
+                foreachX.AssignArrayElement(NAME_EPS, Constant(0), Ref("subselectEvent"));
                 if (filterEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
-                        @foreach,
+                        foreachX,
                         filterEval.EvaluationType,
-                        filterEval.EvaluateCodegen(typeof(bool?), method, symbols, classScope));
+                        filterEval.EvaluateCodegen(typeof(bool), method, symbols, classScope));
                 }
 
-                @foreach.AssignRef("hasRows", ConstantTrue());
+                foreachX.AssignRef("hasRows", ConstantTrue());
 
                 Type valueRightType;
                 if (selectEval != null) {
                     valueRightType = selectEval.EvaluationType.GetBoxedType();
-                    @foreach.DeclareVar(
+                    foreachX.DeclareVar(
                         valueRightType,
                         "valueRight",
                         selectEval.EvaluateCodegen(valueRightType, method, symbols, classScope));
                 }
                 else {
                     valueRightType = typeof(object);
-                    @foreach.DeclareVar(
+                    foreachX.DeclareVar(
                         valueRightType,
                         "valueRight",
                         ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
                 }
 
-                @foreach.IfCondition(NotEqualsNull(Ref("valueRight")))
+                foreachX.IfCondition(NotEqualsNull(Ref("valueRight")))
                     .AssignRef("hasNonNullRow", ConstantTrue())
                     .BlockEnd()
                     .IfCondition(And(NotEqualsNull(symbols.GetAddLeftResult(method)), NotEqualsNull(Ref("valueRight"))))

@@ -13,6 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.fafquery.processor;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 }
 
                 var rows = snapshot.ToArray();
-                resultSetProcessor.SetAgentInstanceContext(contextPartitionResult.Context);
+                resultSetProcessor.ExprEvaluatorContext = contextPartitionResult.Context;
                 var results = resultSetProcessor.ProcessViewResult(rows, null, true);
                 if (results != null && results.First != null && results.First.Length > 0) {
                     events.Add(results.First);
@@ -84,6 +85,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 EventBeanUtility.Flatten(events),
                 select.DistinctKeyGetter);
             return new EPPreparedQueryResult(select.EventType, distinct);
+        }
+
+        public void ReleaseTableLocks(FireAndForgetProcessor[] processors)
+        {
+            FAFQueryMethodSelectExecUtil.ReleaseTableLocks(processors);
         }
 
         internal class ContextPartitionResult

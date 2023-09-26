@@ -30,12 +30,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            ObjectArrayBackedEventBean row = LockTableReadAndGet(exprEvaluatorContext);
+            var row = LockTableReadAndGet(exprEvaluatorContext);
             if (row == null) {
                 return null;
             }
 
-            AggregationRow aggs = ExprTableEvalStrategyUtil.GetRow(row);
+            var aggs = ExprTableEvalStrategyUtil.GetRow(row);
             return aggs.GetValue(Factory.AggColumnNum, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -44,12 +44,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ObjectArrayBackedEventBean row = LockTableReadAndGet(context);
+            var row = LockTableReadAndGet(context);
             if (row == null) {
                 return null;
             }
 
-            AggregationRow aggs = ExprTableEvalStrategyUtil.GetRow(row);
+            var aggs = ExprTableEvalStrategyUtil.GetRow(row);
             return aggs.GetCollectionOfEvents(Factory.AggColumnNum, eventsPerStream, isNewData, context);
         }
 

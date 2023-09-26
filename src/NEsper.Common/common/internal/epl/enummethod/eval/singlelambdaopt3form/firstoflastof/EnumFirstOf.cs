@@ -21,48 +21,51 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.firstoflastof
 {
-	public class EnumFirstOf : EnumForgeBasePlain,
-		EnumForge,
-		EnumEval
-	{
-		private readonly EPType _resultType;
+    public class EnumFirstOf : EnumForgeBasePlain,
+        EnumForge,
+        EnumEval
+    {
+        private readonly EPChainableType _resultType;
 
-		public EnumFirstOf(
-			int streamCountIncoming,
-			EPType resultType) : base(streamCountIncoming)
-		{
-			this._resultType = resultType;
-		}
+        public EnumFirstOf(
+            int streamCountIncoming,
+            EPChainableType resultType) : base(streamCountIncoming)
+        {
+            _resultType = resultType;
+        }
 
-		public override EnumEval EnumEvaluator => this;
+        public override EnumEval EnumEvaluator => this;
 
-		public object EvaluateEnumMethod(
-			EventBean[] eventsLambda,
-			ICollection<object> enumcoll,
-			bool isNewData,
-			ExprEvaluatorContext context)
-		{
-			if (enumcoll == null || enumcoll.IsEmpty()) {
-				return null;
-			}
+        public object EvaluateEnumMethod(
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            if (enumcoll == null || enumcoll.IsEmpty()) {
+                return null;
+            }
 
-			return enumcoll.First();
-		}
+            return enumcoll.First();
+        }
 
-		public override CodegenExpression Codegen(
-			EnumForgeCodegenParams args,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			var type = _resultType.GetCodegenReturnType();
-			var method = codegenMethodScope
-				.MakeChild(type, typeof(EnumFirstOf), codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS)
-				.Block
-				.IfCondition(Or(EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL), ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty")))
-				.BlockReturn(ConstantNull())
-				.MethodReturn(FlexCast(type, ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")));
-			return LocalMethod(method, args.Expressions);
-		}
-	}
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams args,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var type = _resultType.GetCodegenReturnType();
+            var method = codegenMethodScope
+                .MakeChild(type, typeof(EnumFirstOf), codegenClassScope)
+                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .Block
+                .IfCondition(
+                    Or(
+                        EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL),
+                        ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty")))
+                .BlockReturn(ConstantNull())
+                .MethodReturn(FlexCast(type, ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")));
+            return LocalMethod(method, args.Expressions);
+        }
+    }
 } // end of namespace

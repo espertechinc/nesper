@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
     public class ContextManagerResident : ContextManager,
         ContextIteratorHandler
     {
-        protected internal CopyOnWriteList<ContextPartitionStateListener> listenersLazy;
+        protected CopyOnWriteList<ContextPartitionStateListener> _listenersLazy;
 
         public ContextManagerResident(
             string deploymentId,
@@ -40,17 +40,14 @@ namespace com.espertech.esper.common.@internal.context.mgr
         }
 
         public ContextDefinition ContextDefinition { get; }
-
         public StatementContext StatementContextCreate { get; private set; }
-
+        public long ContextPartitionCount => ContextPartitionIdService.Count;
         public ContextPartitionIdService ContextPartitionIdService { get; private set; }
-
-        public CopyOnWriteList<ContextPartitionStateListener> ListenersMayNull => listenersLazy;
 
         public IEnumerator<EventBean> GetEnumerator(int statementId)
         {
             var instances = GetAgentInstancesForStmt(statementId, new ContextPartitionSelectorAll());
-            return AgentInstanceArrayIterator.Create(instances);
+            return new AgentInstanceArraySafeEnumerator(instances);
         }
 
         public SafeEnumerator<EventBean> GetSafeEnumerator(int statementId)
@@ -64,16 +61,15 @@ namespace com.espertech.esper.common.@internal.context.mgr
             ContextPartitionSelector selector)
         {
             var instances = GetAgentInstancesForStmt(statementId, selector);
-            return AgentInstanceArrayIterator.Create(instances);
+            return new AgentInstanceArraySafeEnumerator(instances);
         }
 
-        public void SetStatementContext(StatementContext value)
+        public SafeEnumerator<EventBean> GetSafeEnumerator(
+            int statementId,
+            ContextPartitionSelector selector)
         {
-            StatementContextCreate = value;
-            ContextPartitionKeySerdes = StatementContextCreate.ContextServiceFactory
-                .GetContextPartitionKeyBindings(ContextDefinition);
-            ContextPartitionIdService = StatementContextCreate.ContextServiceFactory
-                .GetContextPartitionIdService(StatementContextCreate, ContextPartitionKeySerdes);
+            var instances = GetAgentInstancesForStmt(statementId, selector);
+            return new AgentInstanceArraySafeEnumerator(instances);
         }
 
         public void AddStatement(
@@ -82,20 +78,16 @@ namespace com.espertech.esper.common.@internal.context.mgr
         {
             var statementContextOfStatement = statement.Lightweight.StatementContext;
             Statements.Put(statementContextOfStatement.StatementId, statement);
-
             // dispatch event
             ContextStateEventUtil.DispatchPartition(
-                listenersLazy,
+                _listenersLazy,
                 () => new ContextStateEventContextStatementAdded(
                     StatementContextCreate.RuntimeURI,
                     ContextRuntimeDescriptor.ContextDeploymentId,
                     ContextDefinition.ContextName,
                     statementContextOfStatement.DeploymentId,
                     statementContextOfStatement.StatementName),
-                (
-                    listener,
-                    context) => listener.OnContextStatementAdded(context));
-
+                (_, ev) => _.OnContextStatementAdded(ev));
             if (recovery) {
                 if (statement.Lightweight.StatementInformationals.StatementType == StatementType.CREATE_VARIABLE) {
                     Realization.ActivateCreateVariableStatement(statement);
@@ -108,14 +100,12 @@ namespace com.espertech.esper.common.@internal.context.mgr
             if (Statements.Count == 1) {
                 Realization.StartContext();
                 ContextStateEventUtil.DispatchPartition(
-                    listenersLazy,
+                    _listenersLazy,
                     () => new ContextStateEventContextActivated(
                         StatementContextCreate.RuntimeURI,
                         ContextRuntimeDescriptor.ContextDeploymentId,
                         ContextDefinition.ContextName),
-                    (
-                        listener,
-                        context) => listener.OnContextActivated(context));
+                    (_, ev) => _.OnContextActivated(ev));
             }
             else {
                 // activate statement in respect to existing context partitions
@@ -134,29 +124,24 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
             RemoveStatement(statementId);
             ContextStateEventUtil.DispatchPartition(
-                listenersLazy,
+                _listenersLazy,
                 () => new ContextStateEventContextStatementRemoved(
                     StatementContextCreate.RuntimeURI,
                     ContextRuntimeDescriptor.ContextDeploymentId,
                     ContextRuntimeDescriptor.ContextName,
-                    statementDeploymentId, 
+                    statementDeploymentId,
                     statementName),
-                (
-                    listener,
-                    context) => listener.OnContextStatementRemoved(context));
-
+                (_, ev) => _.OnContextStatementRemoved(ev));
             if (Statements.IsEmpty()) {
                 Realization.StopContext();
                 ContextPartitionIdService.Clear();
                 ContextStateEventUtil.DispatchPartition(
-                    listenersLazy,
+                    _listenersLazy,
                     () => new ContextStateEventContextDeactivated(
                         StatementContextCreate.RuntimeURI,
                         ContextRuntimeDescriptor.ContextDeploymentId,
                         ContextRuntimeDescriptor.ContextName),
-                    (
-                        listener,
-                        context) => listener.OnContextDeactivated(context));
+                    (_, ev) => _.OnContextDeactivated(ev));
             }
         }
 
@@ -231,7 +216,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 var resourceService = statementContext.StatementCPCacheService;
                 var holder = resourceService.MakeOrGetEntryCanNull(contextPartitionId, statementContext);
                 if (holder != null) {
-                    return ((MappedEventBean) holder.AgentInstanceContext.ContextProperties).Properties;
+                    return ((MappedEventBean)holder.AgentInstanceContext.ContextProperties).Properties;
                 }
             }
 
@@ -250,8 +235,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
         {
             if (selector is ContextPartitionSelectorAll) {
                 IDictionary<int, ContextPartitionIdentifier> map = new Dictionary<int, ContextPartitionIdentifier>();
-                var idsInner = ContextPartitionIdService.Ids;
-                foreach (var id in idsInner) {
+                var ids = ContextPartitionIdService.Ids;
+                foreach (var id in ids) {
                     var partitionKeys = ContextPartitionIdService.GetPartitionKeys(id);
                     if (partitionKeys != null) {
                         var identifier = GetContextPartitionIdentifier(partitionKeys);
@@ -262,10 +247,10 @@ namespace com.espertech.esper.common.@internal.context.mgr
                 return new ContextPartitionCollection(map);
             }
 
-            var ids = Realization.GetAgentInstanceIds(selector);
+            var idsX = Realization.GetAgentInstanceIds(selector);
             IDictionary<int, ContextPartitionIdentifier>
                 identifiers = new Dictionary<int, ContextPartitionIdentifier>();
-            foreach (var id in ids) {
+            foreach (var id in idsX) {
                 var partitionKeys = ContextPartitionIdService.GetPartitionKeys(id);
                 if (partitionKeys == null) {
                     continue;
@@ -301,36 +286,35 @@ namespace com.espertech.esper.common.@internal.context.mgr
         }
 
         public DataInputOutputSerde[] ContextPartitionKeySerdes { get; private set; }
-
         public int NumNestingLevels => ContextDefinition.ControllerFactories.Length;
 
         public void AddListener(ContextPartitionStateListener listener)
         {
-            if (listenersLazy == null) {
-                listenersLazy = new CopyOnWriteList<ContextPartitionStateListener>();
-            }
+            lock (this) {
+                if (_listenersLazy == null) {
+                    _listenersLazy = new CopyOnWriteList<ContextPartitionStateListener>();
+                }
 
-            listenersLazy.Add(listener);
+                _listenersLazy.Add(listener);
+            }
         }
 
         public void RemoveListener(ContextPartitionStateListener listener)
         {
-            listenersLazy?.Remove(listener);
-        }
-
-        public IEnumerator<ContextPartitionStateListener> Listeners {
-            get {
-                if (listenersLazy == null) {
-                    return EnumerationHelper.Empty<ContextPartitionStateListener>();
-                }
-
-                return listenersLazy.GetEnumerator();
+            if (_listenersLazy == null) {
+                return;
             }
+
+            _listenersLazy.Remove(listener);
         }
 
         public void RemoveListeners()
         {
-            listenersLazy?.Clear();
+            if (_listenersLazy == null) {
+                return;
+            }
+
+            _listenersLazy.Clear();
         }
 
         public bool HandleFilterFault(
@@ -365,14 +349,6 @@ namespace com.espertech.esper.common.@internal.context.mgr
             return new AgentInstanceFilterProxyImpl(generator);
         }
 
-        public SafeEnumerator<EventBean> GetSafeEnumerator(
-            int statementId,
-            ContextPartitionSelector selector)
-        {
-            var instances = GetAgentInstancesForStmt(statementId, selector);
-            return new AgentInstanceArraySafeEnumerator(instances);
-        }
-
         public ContextPartitionIdentifier GetContextPartitionIdentifier(object[] partitionKeys)
         {
             if (ContextDefinition.ControllerFactories.Length == 1) {
@@ -395,12 +371,26 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
         public DataInputOutputSerde[] GetContextPartitionKeySerdeSubset(int nestingLevel)
         {
+            return GetContextPartitionKeySerdeSubset(nestingLevel, ContextPartitionKeySerdes);
+        }
+
+        public static DataInputOutputSerde[] GetContextPartitionKeySerdeSubset(
+            int nestingLevel,
+            DataInputOutputSerde[] allSerdes)
+        {
             var serdes = new DataInputOutputSerde[nestingLevel - 1];
             for (var i = 0; i < nestingLevel - 1; i++) {
-                serdes[i] = ContextPartitionKeySerdes[i];
+                serdes[i] = allSerdes[i];
             }
 
             return serdes;
+        }
+
+        public void ClearCaches()
+        {
+            if (ContextPartitionIdService != null) {
+                ContextPartitionIdService.ClearCaches();
+            }
         }
 
         private AgentInstance[] GetAgentInstancesForStmt(
@@ -420,6 +410,30 @@ namespace com.espertech.esper.common.@internal.context.mgr
             }
 
             return null;
+        }
+
+        public StatementContext StatementContext {
+            set {
+                StatementContextCreate = value;
+                ContextPartitionKeySerdes =
+                    StatementContextCreate.ContextServiceFactory.GetContextPartitionKeyBindings(ContextDefinition);
+                ContextPartitionIdService = StatementContextCreate.ContextServiceFactory.GetContextPartitionIdService(
+                    StatementContextCreate,
+                    ContextPartitionKeySerdes,
+                    ContextDefinition.PartitionIdSvcStateMgmtSettings);
+            }
+        }
+
+        public CopyOnWriteList<ContextPartitionStateListener> ListenersMayNull => _listenersLazy;
+
+        public IEnumerator<ContextPartitionStateListener> Listeners {
+            get {
+                if (_listenersLazy == null) {
+                    return EnumerationHelper.Empty<ContextPartitionStateListener>();
+                }
+
+                return _listenersLazy.GetEnumerator();
+            }
         }
     }
 } // end of namespace

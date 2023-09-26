@@ -23,13 +23,13 @@ namespace com.espertech.esper.common.@internal.view.filter
             ExprEvaluator filter,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean[] evalEventArr = new EventBean[1];
+            var evalEventArr = new EventBean[1];
             while (sourceIterator.MoveNext()) {
-                EventBean candidate = sourceIterator.Current;
+                var candidate = sourceIterator.Current;
                 evalEventArr[0] = candidate;
 
                 var pass = filter.Evaluate(evalEventArr, true, exprEvaluatorContext);
-                if ((pass != null) && true.Equals(pass)) {
+                if (pass != null && true.Equals(pass)) {
                     yield return candidate;
                 }
             }

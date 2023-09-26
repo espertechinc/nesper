@@ -21,11 +21,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            EventBean[] eventsPerStream = new EventBean[2];
+            var eventsPerStream = new EventBean[2];
             eventsPerStream[0] = triggers[0];
 
-            EventBean[] events = new EventBean[matching.Length];
-            for (int i = 0; i < events.Length; i++) {
+            var events = new EventBean[matching.Length];
+            for (var i = 0; i < events.Length; i++) {
                 eventsPerStream[1] = matching[i];
                 events[i] = table.EventToPublic.Convert(matching[i], eventsPerStream, isNewData, context);
             }

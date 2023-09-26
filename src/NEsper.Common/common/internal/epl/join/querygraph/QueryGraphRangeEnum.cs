@@ -81,30 +81,40 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
     {
         public static string StringOp(this QueryGraphRangeEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case QueryGraphRangeEnum.LESS:
                     return "<";
+
                 case QueryGraphRangeEnum.LESS_OR_EQUAL:
                     return "<=";
+
                 case QueryGraphRangeEnum.GREATER_OR_EQUAL:
                     return ">=";
+
                 case QueryGraphRangeEnum.GREATER:
                     return ">";
+
                 case QueryGraphRangeEnum.RANGE_OPEN:
                     return "(,)";
+
                 case QueryGraphRangeEnum.RANGE_CLOSED:
                     return "[,]";
+
                 case QueryGraphRangeEnum.RANGE_HALF_OPEN:
                     return "[,)";
+
                 case QueryGraphRangeEnum.RANGE_HALF_CLOSED:
                     return "(,]";
+
                 case QueryGraphRangeEnum.NOT_RANGE_OPEN:
                     return "-(,)";
+
                 case QueryGraphRangeEnum.NOT_RANGE_CLOSED:
                     return "-[,]";
+
                 case QueryGraphRangeEnum.NOT_RANGE_HALF_OPEN:
                     return "-[,)";
+
                 case QueryGraphRangeEnum.NOT_RANGE_HALF_CLOSED:
                     return "-(,])";
             }
@@ -114,13 +124,13 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public static bool IsRange(this QueryGraphRangeEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case QueryGraphRangeEnum.LESS:
                 case QueryGraphRangeEnum.LESS_OR_EQUAL:
                 case QueryGraphRangeEnum.GREATER_OR_EQUAL:
                 case QueryGraphRangeEnum.GREATER:
                     return false;
+
                 case QueryGraphRangeEnum.RANGE_OPEN:
                 case QueryGraphRangeEnum.RANGE_CLOSED:
                 case QueryGraphRangeEnum.RANGE_HALF_OPEN:
@@ -137,8 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public static bool IsIncludeStart(this QueryGraphRangeEnum value)
         {
-            if (!value.IsRange())
-            {
+            if (!value.IsRange()) {
                 throw new UnsupportedOperationException("Cannot determine endpoint-start included for op " + value);
             }
 
@@ -150,8 +159,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public static bool IsIncludeEnd(this QueryGraphRangeEnum value)
         {
-            if (!value.IsRange())
-            {
+            if (!value.IsRange()) {
                 throw new UnsupportedOperationException("Cannot determine endpoint-end included for op " + value);
             }
 
@@ -163,63 +171,51 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public static QueryGraphRangeEnum? MapFrom(FilterOperator op)
         {
-            if (op == FilterOperator.GREATER)
-            {
+            if (op == FilterOperator.GREATER) {
                 return QueryGraphRangeEnum.GREATER;
             }
 
-            if (op == FilterOperator.GREATER_OR_EQUAL)
-            {
+            if (op == FilterOperator.GREATER_OR_EQUAL) {
                 return QueryGraphRangeEnum.GREATER_OR_EQUAL;
             }
 
-            if (op == FilterOperator.LESS)
-            {
+            if (op == FilterOperator.LESS) {
                 return QueryGraphRangeEnum.LESS;
             }
 
-            if (op == FilterOperator.LESS_OR_EQUAL)
-            {
+            if (op == FilterOperator.LESS_OR_EQUAL) {
                 return QueryGraphRangeEnum.LESS_OR_EQUAL;
             }
 
-            if (op == FilterOperator.RANGE_OPEN)
-            {
+            if (op == FilterOperator.RANGE_OPEN) {
                 return QueryGraphRangeEnum.RANGE_OPEN;
             }
 
-            if (op == FilterOperator.RANGE_HALF_CLOSED)
-            {
+            if (op == FilterOperator.RANGE_HALF_CLOSED) {
                 return QueryGraphRangeEnum.RANGE_HALF_CLOSED;
             }
 
-            if (op == FilterOperator.RANGE_HALF_OPEN)
-            {
+            if (op == FilterOperator.RANGE_HALF_OPEN) {
                 return QueryGraphRangeEnum.RANGE_HALF_OPEN;
             }
 
-            if (op == FilterOperator.RANGE_CLOSED)
-            {
+            if (op == FilterOperator.RANGE_CLOSED) {
                 return QueryGraphRangeEnum.RANGE_CLOSED;
             }
 
-            if (op == FilterOperator.NOT_RANGE_OPEN)
-            {
+            if (op == FilterOperator.NOT_RANGE_OPEN) {
                 return QueryGraphRangeEnum.NOT_RANGE_OPEN;
             }
 
-            if (op == FilterOperator.NOT_RANGE_HALF_CLOSED)
-            {
+            if (op == FilterOperator.NOT_RANGE_HALF_CLOSED) {
                 return QueryGraphRangeEnum.NOT_RANGE_HALF_CLOSED;
             }
 
-            if (op == FilterOperator.NOT_RANGE_HALF_OPEN)
-            {
+            if (op == FilterOperator.NOT_RANGE_HALF_OPEN) {
                 return QueryGraphRangeEnum.NOT_RANGE_HALF_OPEN;
             }
 
-            if (op == FilterOperator.NOT_RANGE_CLOSED)
-            {
+            if (op == FilterOperator.NOT_RANGE_CLOSED) {
                 return QueryGraphRangeEnum.NOT_RANGE_CLOSED;
             }
 
@@ -229,23 +225,19 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public static QueryGraphRangeEnum MapFrom(RelationalOpEnum relationalOpEnum)
         {
-            if (relationalOpEnum == RelationalOpEnum.GE)
-            {
+            if (relationalOpEnum == RelationalOpEnum.GE) {
                 return QueryGraphRangeEnum.GREATER_OR_EQUAL;
             }
 
-            if (relationalOpEnum == RelationalOpEnum.GT)
-            {
+            if (relationalOpEnum == RelationalOpEnum.GT) {
                 return QueryGraphRangeEnum.GREATER;
             }
 
-            if (relationalOpEnum == RelationalOpEnum.LT)
-            {
+            if (relationalOpEnum == RelationalOpEnum.LT) {
                 return QueryGraphRangeEnum.LESS;
             }
 
-            if (relationalOpEnum == RelationalOpEnum.LE)
-            {
+            if (relationalOpEnum == RelationalOpEnum.LE) {
                 return QueryGraphRangeEnum.LESS_OR_EQUAL;
             }
 
@@ -257,38 +249,31 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             bool includeEnd,
             bool isInverted)
         {
-            if (!isInverted)
-            {
-                if (includeStart)
-                {
-                    if (includeEnd)
-                    {
+            if (!isInverted) {
+                if (includeStart) {
+                    if (includeEnd) {
                         return QueryGraphRangeEnum.RANGE_CLOSED;
                     }
 
                     return QueryGraphRangeEnum.RANGE_HALF_OPEN;
                 }
 
-                if (includeEnd)
-                {
+                if (includeEnd) {
                     return QueryGraphRangeEnum.RANGE_HALF_CLOSED;
                 }
 
                 return QueryGraphRangeEnum.RANGE_OPEN;
             }
 
-            if (includeStart)
-            {
-                if (includeEnd)
-                {
+            if (includeStart) {
+                if (includeEnd) {
                     return QueryGraphRangeEnum.NOT_RANGE_CLOSED;
                 }
 
                 return QueryGraphRangeEnum.NOT_RANGE_HALF_OPEN;
             }
 
-            if (includeEnd)
-            {
+            if (includeEnd) {
                 return QueryGraphRangeEnum.NOT_RANGE_HALF_CLOSED;
             }
 

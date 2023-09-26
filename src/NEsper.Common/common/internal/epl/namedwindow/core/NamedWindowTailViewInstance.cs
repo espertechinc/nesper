@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,11 +8,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+
+using Antlr4.Runtime.Misc;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.hook.vdw;
+using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
@@ -60,32 +64,14 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         /// <summary>
         ///     Returns the number of events held.
         /// </summary>
-        /// <returns>number of events</returns>
+        /// <value>number of events</value>
         public long NumberOfEvents => _numberOfEvents;
 
         public NamedWindowTailView TailView => _tailView;
 
-        public override EventType EventType => TailView.EventType;
+        public override EventType EventType => _tailView.EventType;
 
         public AgentInstanceContext AgentInstanceContext => _agentInstanceContext;
-
-        public override IEnumerator<EventBean> GetEnumerator()
-        {
-            using (AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock()) {
-                using (var enumerator = parent.GetEnumerator()) {
-                    if (!enumerator.MoveNext()) {
-                        return CollectionUtil.NULL_EVENT_ITERATOR;
-                    }
-
-                    var list = new List<EventBean>();
-                    do {
-                        list.Add(enumerator.Current);
-                    } while (enumerator.MoveNext());
-
-                    return list.GetEnumerator();
-                }
-            }
-        }
 
         public override void Update(
             EventBean[] newData,
@@ -107,11 +93,11 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
             // Post to child views, only if there are listeners or subscribers
             if (TailView.StatementResultService.IsMakeNatural || TailView.StatementResultService.IsMakeSynthetic) {
-                Child.Update(newData, oldData);
+                child.Update(newData, oldData);
             }
 
             var delta = new NamedWindowDeltaData(newData, oldData);
-            TailView.AddDispatches(_latchFactory, _consumersInContext, delta, AgentInstanceContext);
+            TailView.AddDispatches(_latchFactory, _consumersInContext, delta, _agentInstanceContext);
         }
 
         public NamedWindowConsumerView AddConsumer(
@@ -120,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         {
             NamedWindowConsumerCallback consumerCallback = new ProxyNamedWindowConsumerCallback {
                 ProcGetEnumerator = () => {
-                    var instance = _namedWindow.GetNamedWindowInstance(AgentInstanceContext);
+                    var instance = _namedWindow.GetNamedWindowInstance(_agentInstanceContext);
                     if (instance == null) {
                         // this can happen on context-partition "output when terminated"
                         return GetEnumerator();
@@ -159,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                     consumerDesc.AgentInstanceContext.StatementName,
                     consumerDesc.AgentInstanceContext.AgentInstanceId,
                     consumerDesc.FilterEvaluator,
-                    AgentInstanceContext));
+                    _agentInstanceContext));
 
             // Keep a list of consumer views per statement to accommodate joins and subqueries
             var viewsPerStatements =
@@ -168,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                 viewsPerStatements = new CopyOnWriteList<NamedWindowConsumerView>();
 
                 // avoid concurrent modification as a thread may currently iterate over consumers as its dispatching
-                // without the runtime lock
+                // without the runtimelock
                 var newConsumers = NamedWindowUtil.CreateConsumerMap(TailView.IsPrioritized);
                 newConsumers.PutAll(_consumersInContext);
                 newConsumers.Put(consumerDesc.AgentInstanceContext.EpStatementAgentInstanceHandle, viewsPerStatements);
@@ -189,22 +175,21 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         ///     Called by the consumer view to indicate it was stopped or destroyed, such that the
         ///     consumer can be deregistered and further dispatches disregard this consumer.
         /// </summary>
-        public void RemoveConsumer(NamedWindowConsumerView namedWindowConsumerView)
-        {
+        /// <param name="namedWindowConsumerView">is the consumer representative view</param>
+        public void RemoveConsumer(NamedWindowConsumerView namedWindowConsumerView) {
             EPStatementAgentInstanceHandle handleRemoved = null;
             // Find the consumer view
             foreach (var entry in _consumersInContext) {
                 var foundAndRemoved = entry.Value.Remove(namedWindowConsumerView);
                 // Remove the consumer view
-                if (foundAndRemoved && entry.Value.IsEmpty()) {
+                if (foundAndRemoved && (entry.Value.Count == 0)) {
                     // Remove the handle if this list is now empty
                     handleRemoved = entry.Key;
                     break;
                 }
             }
-
             if (handleRemoved != null) {
-                var newConsumers = NamedWindowUtil.CreateConsumerMap(TailView.IsPrioritized);
+                var newConsumers = NamedWindowUtil.CreateConsumerMap(_tailView.IsPrioritized);
                 newConsumers.PutAll(_consumersInContext);
                 newConsumers.Remove(handleRemoved);
                 _consumersInContext = newConsumers;
@@ -215,10 +200,27 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             if (virtualDWView != null && handleRemoved != null) {
                 virtualDWView.VirtualDataWindow.HandleEvent(
                     new VirtualDataWindowEventConsumerRemove(
-                        TailView.EventType.Name,
+                        _tailView.EventType.Name,
                         namedWindowConsumerView,
                         handleRemoved.StatementHandle.StatementName,
                         handleRemoved.AgentInstanceId));
+            }
+        }
+
+        public override IEnumerator<EventBean> GetEnumerator()
+        {
+            using (_agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock()) {
+                var enumerator = parent.GetEnumerator();
+                if (!enumerator.MoveNext()) {
+                    return CollectionUtil.NULL_EVENT_ITERATOR;
+                }
+
+                var list = new List<EventBean>();
+                do {
+                    list.Add(enumerator.Current);
+                } while (enumerator.MoveNext());
+
+                return new ArrayEventEnumerator(list.ToArray());
             }
         }
 
@@ -226,12 +228,12 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             QueryGraph queryGraph,
             Attribute[] annotations)
         {
-            using (AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock()) {
+            using (_agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock()) {
                 try {
                     return SnapshotNoLock(queryGraph, annotations);
                 }
                 finally {
-                    ReleaseTableLocks(AgentInstanceContext);
+                    ReleaseTableLocks(_agentInstanceContext);
                 }
             }
         }
@@ -242,31 +244,31 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             EventBeanUpdateHelperWCopy updateHelper,
             Attribute[] annotations)
         {
-            using (AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock()) {
-                try {
-                    var events = SnapshotNoLockWithFilter(
-                        filterQueryGraph,
-                        annotations,
-                        optionalWhereClause,
-                        AgentInstanceContext);
-                    if (events.IsEmpty()) {
-                        return CollectionUtil.EVENTBEANARRAY_EMPTY;
-                    }
-
-                    var eventsPerStream = new EventBean[3];
-                    var updated = new EventBean[events.Count];
-                    var count = 0;
-                    foreach (var @event in events) {
-                        updated[count++] = updateHelper.Invoke(@event, eventsPerStream, AgentInstanceContext);
-                    }
-
-                    var deleted = events.ToArray();
-                    _rootViewInstance.Update(updated, deleted);
-                    return updated;
+            _agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireWriteLock();
+            try {
+                var events = SnapshotNoLockWithFilter(
+                    filterQueryGraph,
+                    annotations,
+                    optionalWhereClause,
+                    _agentInstanceContext);
+                if (events.IsEmpty()) {
+                    return CollectionUtil.EVENTBEANARRAY_EMPTY;
                 }
-                finally {
-                    ReleaseTableLocks(AgentInstanceContext);
+
+                var eventsPerStream = new EventBean[3];
+                var updated = new EventBean[events.Count];
+                var count = 0;
+                foreach (var @event in events) {
+                    updated[count++] = updateHelper.Invoke(@event, eventsPerStream, _agentInstanceContext);
                 }
+
+                var deleted = events.ToArray();
+                _rootViewInstance.Update(updated, deleted);
+                return updated;
+            }
+            finally {
+                ReleaseTableLocks(_agentInstanceContext);
+                _agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.ReleaseWriteLock();
             }
         }
 
@@ -275,24 +277,20 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             ExprEvaluator filterExpr,
             Attribute[] annotations)
         {
-            using (AgentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock()) {
-                try {
-                    var events = SnapshotNoLockWithFilter(
-                        filterQueryGraph,
-                        annotations,
-                        filterExpr,
-                        AgentInstanceContext);
-                    if (events.IsEmpty()) {
-                        return CollectionUtil.EVENTBEANARRAY_EMPTY;
-                    }
+            _agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireWriteLock();
+            try {
+                var events = SnapshotNoLockWithFilter(filterQueryGraph, annotations, filterExpr, _agentInstanceContext);
+                if (events.IsEmpty()) {
+                    return CollectionUtil.EVENTBEANARRAY_EMPTY;
+                }
 
-                    var eventsDeleted = events.ToArray();
-                    _rootViewInstance.Update(null, eventsDeleted);
-                    return eventsDeleted;
-                }
-                finally {
-                    ReleaseTableLocks(AgentInstanceContext);
-                }
+                var eventsDeleted = events.ToArray();
+                _rootViewInstance.Update(null, eventsDeleted);
+                return eventsDeleted;
+            }
+            finally {
+                ReleaseTableLocks(_agentInstanceContext);
+                _agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.ReleaseWriteLock();
             }
         }
 
@@ -305,12 +303,9 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                 return indexedResult;
             }
 
-            return parent.ToList();
-
-#if false
             var enumerator = parent.GetEnumerator();
             if (!enumerator.MoveNext()) {
-                return Collections.GetEmptyList<EventBean>();
+                return EmptyList<EventBean>.Instance;
             }
 
             var list = new ArrayDeque<EventBean>();
@@ -319,7 +314,6 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             } while (enumerator.MoveNext());
 
             return list;
-#endif
         }
 
         public ICollection<EventBean> SnapshotNoLockWithFilter(
@@ -348,19 +342,22 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             }
 
             // fall back to window operator if snapshot doesn't resolve successfully
-            using (var enumerator = parent.GetEnumerator()) {
-                var list = new ArrayDeque<EventBean>();
-                if (filterExpr != null) {
-                    ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(enumerator, filterExpr, AgentInstanceContext, list);
-                }
-                else {
-                    while (enumerator.MoveNext()) {
-                        list.Add(enumerator.Current);
-                    }
-                }
-
-                return list;
+            var enumerator = parent.GetEnumerator();
+            if (!enumerator.MoveNext()) {
+                return EmptyList<EventBean>.Instance;
             }
+
+            var list = new ArrayDeque<EventBean>();
+            if (filterExpr != null) {
+                ExprNodeUtilityEvaluate.ApplyFilterExpressionIterable(enumerator, filterExpr, _agentInstanceContext, list);
+            }
+            else {
+                do {
+                    list.Add(enumerator.Current);
+                } while (enumerator.MoveNext());
+            }
+
+            return list;
         }
 
         public void Destroy()

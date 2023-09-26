@@ -24,19 +24,19 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.fromschema
             JsonUnderlyingField field)
             : base(key, underlyingClassName)
         {
-            this._field = field;
+            _field = field;
         }
 
         public override string FieldName => _field.FieldName;
 
         public override object GetJsonProp(object @object)
         {
-            return JsonFieldGetterHelperSchema.GetJsonMappedProp(@object, _field.PropertyName, Key);
+            return JsonFieldGetterHelperSchema.GetJsonMappedProp(@object, _field.PropertyNumber, Key);
         }
 
         public override bool GetJsonExists(object @object)
         {
-            return JsonFieldGetterHelperSchema.GetJsonMappedExists(@object, _field.PropertyName, Key);
+            return JsonFieldGetterHelperSchema.GetJsonMappedExists(@object, _field.PropertyNumber, Key);
         }
     }
 } // end of namespace

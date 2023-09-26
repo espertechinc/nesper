@@ -18,45 +18,52 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 {
-	public class SelectEvalInsertCoercionJson : SelectExprProcessorForge
-	{
-		private readonly JsonEventType source;
-		private readonly JsonEventType target;
+    public class SelectEvalInsertCoercionJson : SelectExprProcessorForge
+    {
+        private readonly JsonEventType source;
+        private readonly JsonEventType target;
 
-		public SelectEvalInsertCoercionJson(
-			JsonEventType source,
-			JsonEventType target)
-		{
-			this.source = source;
-			this.target = target;
-		}
+        public SelectEvalInsertCoercionJson(
+            JsonEventType source,
+            JsonEventType target)
+        {
+            this.source = source;
+            this.target = target;
+        }
 
-		public EventType ResultEventType => target;
+        public EventType ResultEventType => target;
 
-		public CodegenMethod ProcessCodegen(
-			CodegenExpression resultEventType,
-			CodegenExpression eventBeanFactory,
-			CodegenMethodScope codegenMethodScope,
-			SelectExprProcessorCodegenSymbol selectSymbol,
-			ExprForgeCodegenSymbol exprSymbol,
-			CodegenClassScope codegenClassScope)
-		{
-			CodegenMethod methodNode = codegenMethodScope.MakeChild(typeof(EventBean), this.GetType(), codegenClassScope);
-			CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-			methodNode.Block
-				.DeclareVar(source.Detail.UnderlyingClassName, "src", CastUnderlying(source.Detail.UnderlyingClassName, ArrayAtIndex(refEPS, Constant(0))))
-				.DeclareVar(target.Detail.UnderlyingClassName, "und", NewInstanceInner(target.Detail.UnderlyingClassName));
-			foreach (var entryTarget in target.Detail.FieldDescriptors) {
-				var src = source.Detail.FieldDescriptors.Get(entryTarget.Key);
-				if (src == null) {
-					continue;
-				}
+        public CodegenMethod ProcessCodegen(
+            CodegenExpression resultEventType,
+            CodegenExpression eventBeanFactory,
+            CodegenMethodScope codegenMethodScope,
+            SelectExprProcessorCodegenSymbol selectSymbol,
+            ExprForgeCodegenSymbol exprSymbol,
+            CodegenClassScope codegenClassScope)
+        {
+            var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            methodNode.Block
+                .DeclareVar(
+                    source.Detail.UnderlyingClassName,
+                    "src",
+                    CastUnderlying(source.Detail.UnderlyingClassName, ArrayAtIndex(refEPS, Constant(0))))
+                .DeclareVar(
+                    target.Detail.UnderlyingClassName,
+                    "und",
+                    NewInstanceInner(target.Detail.UnderlyingClassName));
+            foreach (var entryTarget in target.Detail.FieldDescriptors) {
+                var src = source.Detail.FieldDescriptors.Get(entryTarget.Key);
+                if (src == null) {
+                    continue;
+                }
 
-				methodNode.Block.AssignRef("und." + entryTarget.Value.FieldName, Ref("src." + src.FieldName));
-			}
+                methodNode.Block.AssignRef("und." + entryTarget.Value.FieldName, Ref("src." + src.FieldName));
+            }
 
-			methodNode.Block.MethodReturn(ExprDotMethod(eventBeanFactory, "AdapterForTypedJson", Ref("und"), resultEventType));
-			return methodNode;
-		}
-	}
+            methodNode.Block.MethodReturn(
+                ExprDotMethod(eventBeanFactory, "AdapterForTypedJson", Ref("und"), resultEventType));
+            return methodNode;
+        }
+    }
 } // end of namespace

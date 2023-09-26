@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.util
                     return CodegenBigInt(value, valueType);
                 }
 
-                if (valueType.IsBigInteger()) {
+                if (valueType.IsTypeBigInteger()) {
                     return value;
                 }
 
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression value,
                 Type valueType)
             {
-                if (valueType.IsBigInteger()) {
+                if (valueType.IsTypeBigInteger()) {
                     return value;
                 }
 

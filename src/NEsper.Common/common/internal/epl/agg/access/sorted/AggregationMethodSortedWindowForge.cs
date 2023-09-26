@@ -17,27 +17,26 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
-	public class AggregationMethodSortedWindowForge : AggregationMethodForge
-	{
-		private readonly Type _arrayType;
+    public class AggregationMethodSortedWindowForge : AggregationMethodForge
+    {
+        private readonly Type arrayType;
 
-		public AggregationMethodSortedWindowForge(Type arrayType)
-		{
-			_arrayType = arrayType;
-		}
+        public AggregationMethodSortedWindowForge(Type arrayType)
+        {
+            this.arrayType = arrayType;
+        }
 
-		public Type ResultType => _arrayType;
+        public CodegenExpression CodegenCreateReader(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            var method = parent.MakeChild(typeof(AggregationMethodSortedWindow), GetType(), classScope);
+            method.Block.DeclareVarNewInstance(typeof(AggregationMethodSortedWindow), "strat")
+                .MethodReturn(Ref("strat"));
+            return LocalMethod(method);
+        }
 
-		public CodegenExpression CodegenCreateReader(
-			CodegenMethodScope parent,
-			SAIFFInitializeSymbol symbols,
-			CodegenClassScope classScope)
-		{
-			CodegenMethod method = parent.MakeChild(typeof(AggregationMethodSortedWindow), GetType(), classScope);
-			method.Block
-				.DeclareVar<AggregationMethodSortedWindow>("strat", NewInstance(typeof(AggregationMethodSortedWindow)))
-				.MethodReturn(Ref("strat"));
-			return LocalMethod(method);
-		}
-	}
+        public Type ResultType => arrayType;
+    }
 } // end of namespace

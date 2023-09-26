@@ -38,7 +38,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 		public static StatementSpecMapEnv Make(IContainer container)
 		{
-			return Make(SupportClasspathImport.GetInstance(container));
+			return Make(SupportImport.GetInstance(container));
 		}
 	}
 } // end of namespace

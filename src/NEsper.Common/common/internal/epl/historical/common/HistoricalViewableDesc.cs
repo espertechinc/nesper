@@ -23,13 +23,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
 
         public bool IsHistorical { get; private set; }
 
-        public SortedSet<int>[] DependenciesPerHistorical { get; }
+        public ISet<int>[] DependenciesPerHistorical { get; }
 
         public bool[] Historical { get; }
 
         public void SetHistorical(
             int streamNum,
-            SortedSet<int> dependencies)
+            ISet<int> dependencies)
         {
             IsHistorical = true;
             Historical[streamNum] = true;

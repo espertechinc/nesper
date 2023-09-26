@@ -197,18 +197,16 @@ namespace com.espertech.esper.common.@internal.util
         {
             var sourceName1 = type.ToLowerInvariant();
 
-            foreach (var val in VALUES)
-            {
+            foreach (var val in VALUES) {
                 var targetName1 = val.GetName().ToLowerInvariant();
-                if (targetName1 == sourceName1)
-                {
+                if (targetName1 == sourceName1) {
                     return val;
                 }
 
                 var dataType = val.GetDataType();
                 if (dataType != null) {
-                    if ((sourceName1 == dataType.FullName?.ToLowerInvariant()) ||
-                        (sourceName1 == dataType.GetBoxedType().FullName?.ToLowerInvariant())) {
+                    if (sourceName1 == dataType.FullName?.ToLowerInvariant() ||
+                        sourceName1 == dataType.GetBoxedType().FullName?.ToLowerInvariant()) {
                         return val;
                     }
                 }
@@ -219,30 +217,40 @@ namespace com.espertech.esper.common.@internal.util
 
         public static Type GetDataType(this DatabaseTypeEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case DatabaseTypeEnum.BOOLEAN:
                     return typeof(bool);
+
                 case DatabaseTypeEnum.BYTE:
                     return typeof(byte);
+
                 case DatabaseTypeEnum.BYTE_ARRAY:
                     return typeof(byte[]);
+
                 case DatabaseTypeEnum.DECIMAL:
                     return typeof(decimal);
+
                 case DatabaseTypeEnum.DOUBLE:
                     return typeof(double);
+
                 case DatabaseTypeEnum.FLOAT:
                     return typeof(float);
+
                 case DatabaseTypeEnum.INT32:
                     return typeof(int);
+
                 case DatabaseTypeEnum.INT64:
                     return typeof(long);
+
                 case DatabaseTypeEnum.INT16:
                     return typeof(short);
+
                 case DatabaseTypeEnum.STRING:
                     return typeof(string);
+
                 case DatabaseTypeEnum.TIMESTAMP:
                     return typeof(DateTime);
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }
@@ -250,30 +258,40 @@ namespace com.espertech.esper.common.@internal.util
 
         public static Type GetBoxedType(this DatabaseTypeEnum value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case DatabaseTypeEnum.BOOLEAN:
                     return typeof(bool?);
+
                 case DatabaseTypeEnum.BYTE:
                     return typeof(byte?);
+
                 case DatabaseTypeEnum.BYTE_ARRAY:
                     return typeof(byte[]);
+
                 case DatabaseTypeEnum.DECIMAL:
                     return typeof(decimal?);
+
                 case DatabaseTypeEnum.DOUBLE:
                     return typeof(double?);
+
                 case DatabaseTypeEnum.FLOAT:
                     return typeof(float?);
+
                 case DatabaseTypeEnum.INT32:
                     return typeof(int?);
+
                 case DatabaseTypeEnum.INT64:
                     return typeof(long?);
+
                 case DatabaseTypeEnum.INT16:
                     return typeof(short?);
+
                 case DatabaseTypeEnum.STRING:
                     return typeof(string);
+
                 case DatabaseTypeEnum.TIMESTAMP:
                     return typeof(DateTime?);
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(value), value, null);
             }

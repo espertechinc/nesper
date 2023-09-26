@@ -41,8 +41,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                TypeHelper.GetGenericPropertyType(property, false),
-                null)
+                TypeHelper.GetGenericPropertyType(property, false))
         {
             _index = index;
             _property = property;
@@ -73,7 +72,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => TypeHelper.GetGenericPropertyType(_property, false);
+        // public override Type BeanPropType => TypeHelper.GetGenericPropertyType(_property, false);
 
         public override Type TargetType => _property.DeclaringType;
 
@@ -141,7 +140,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return codegenMethodScope.MakeChild(BeanPropType, GetType(), codegenClassScope)
                 .AddParam(TargetType, "@object")
-                .AddParam(typeof(int), "index")
+                .AddParam<int>("index")
                 .Block
                 .DeclareVar<object>("value", ExprDotName(Ref("@object"), _property.Name))
                 .MethodReturn(

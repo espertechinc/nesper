@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,11 +23,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     public class ExprDotForgeUnpackBean : ExprDotForge,
         ExprDotEval
     {
-        private readonly EPType returnType;
+        private readonly EPChainableType returnType;
 
         public ExprDotForgeUnpackBean(EventType lambdaType)
         {
-            returnType = EPTypeHelper.SingleValue(lambdaType.UnderlyingType);
+            returnType = EPChainableTypeHelper.SingleValue(lambdaType.UnderlyingType);
         }
 
         public object Evaluate(
@@ -36,8 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean theEvent = (EventBean) target;
-            return theEvent?.Underlying;
+            if (target == null) {
+                return null;
+            }
+
+            var theEvent = (EventBean)target;
+            return theEvent.Underlying;
         }
 
         public CodegenExpression Codegen(
@@ -47,19 +51,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            Type resultType = EPTypeHelper.GetCodegenReturnType(returnType);
-            CodegenMethod methodNode = parent
-                .MakeChild(resultType, typeof(ExprDotForgeUnpackBean), classScope)
+            var resultType = returnType.GetCodegenReturnType();
+            var methodNode = parent.MakeChild(resultType, typeof(ExprDotForgeUnpackBean), classScope)
                 .AddParam(innerType, "target");
-
-            methodNode.Block
-                .IfRefNullReturnNull("target")
-                .MethodReturn(FlexCast(resultType, ExprDotUnderlying(Cast(typeof(EventBean), Ref("target")))));
+            methodNode.Block.IfRefNullReturnNull("target")
+                .MethodReturn(Cast(resultType, ExprDotUnderlying(Cast(typeof(EventBean), Ref("target")))));
             return LocalMethod(methodNode, inner);
-        }
-
-        public EPType TypeInfo {
-            get => returnType;
         }
 
         public void Visit(ExprDotEvalVisitor visitor)
@@ -67,12 +64,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             visitor.VisitUnderlyingEvent();
         }
 
-        public ExprDotEval DotEvaluator {
-            get => this;
-        }
+        public EPChainableType TypeInfo => returnType;
 
-        public ExprDotForge DotForge {
-            get => this;
-        }
+        public ExprDotEval DotEvaluator => this;
+
+        public ExprDotForge DotForge => this;
     }
 } // end of namespace

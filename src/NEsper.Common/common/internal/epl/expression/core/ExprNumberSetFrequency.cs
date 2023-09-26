@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             var forge = ChildNodes[0].Forge;
-            if (!forge.EvaluationType.IsNumericNonFP()) {
+            if (!forge.EvaluationType.IsTypeNumericNonFP()) {
                 throw new ExprValidationException("Frequency operator requires an integer-type parameter");
             }
 

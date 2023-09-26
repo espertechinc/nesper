@@ -44,15 +44,17 @@ namespace com.espertech.esper.common.client.soda
         {
             _indexes = indexes;
         }
-        
-        public override void RenderItem(TextWriter writer) {
+
+        public override void RenderItem(TextWriter writer)
+        {
             writer.Write('[');
-            string delimiter = "";
-            foreach (Expression index in _indexes) {
+            var delimiter = "";
+            foreach (var index in _indexes) {
                 writer.Write(delimiter);
                 delimiter = ",";
                 index.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
+
             writer.Write(']');
         }
     }

@@ -37,6 +37,6 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         public ExprEvaluator ExprEnd { get; }
 
-        public override ExprEvaluator[] Expressions => new[] {ExprStart, ExprEnd};
+        public override ExprEvaluator[] Expressions => new[] { ExprStart, ExprEnd };
     }
 } // end of namespace

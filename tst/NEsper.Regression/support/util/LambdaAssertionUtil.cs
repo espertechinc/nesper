@@ -80,9 +80,9 @@ namespace com.espertech.esper.regressionlib.support.util
             var delimiter = "";
             var writer = new StringBuilder();
             foreach (var item in arr) {
-                writer.Append(delimiter);
+                writer.Write(delimiter);
                 delimiter = ",";
-                writer.Append(item.Id);
+                writer.Write(item.Id);
             }
 
             return writer.ToString();

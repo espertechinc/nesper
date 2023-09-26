@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
 {
     public interface ContextManager : FilterFaultHandler
     {
-        void SetStatementContext(StatementContext value);
+        StatementContext StatementContext { set; }
 
         void AddStatement(
             ContextControllerStatementDesc statement,
@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
             string statementName,
             string statementDeploymentId);
 
-        int CountStatements(Func<StatementContext, Boolean> filter);
+        int CountStatements(Func<StatementContext, bool> filter);
 
         IDictionary<int, ContextControllerStatementDesc> Statements { get; }
 

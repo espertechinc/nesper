@@ -40,7 +40,8 @@ namespace com.espertech.esper.common.@internal.type
                 Type rtype)
             {
                 return Op(
-                    CodegenAsDouble(left, ltype), "-", 
+                    CodegenAsDouble(left, ltype),
+                    "-",
                     CodegenAsDouble(right, rtype));
             }
         }

@@ -46,7 +46,10 @@ namespace com.espertech.esper.common.@internal.util
         public Func<CodegenExpression, Type, CodegenMethodScope, CodegenClassScope, CodegenExpression> ProcCodegen;
         public Func<CodegenExpression, CodegenExpression> ProcCodegenInput;
 
-        public object Cast(object @object) => ProcCast?.Invoke(@object);
+        public object Cast(object @object)
+        {
+            return ProcCast?.Invoke(@object);
+        }
 
         public bool IsNumericCast { get; set; }
 

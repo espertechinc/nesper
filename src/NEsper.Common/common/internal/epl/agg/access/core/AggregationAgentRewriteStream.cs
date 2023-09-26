@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             AggregationRow row,
             int column)
         {
-            EventBean[] rewrite = {eventsPerStream[streamNum]};
+            EventBean[] rewrite = { eventsPerStream[streamNum] };
             row.EnterAccess(column, rewrite, exprEvaluatorContext);
         }
 
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             AggregationRow row,
             int column)
         {
-            EventBean[] rewrite = {eventsPerStream[streamNum]};
+            EventBean[] rewrite = { eventsPerStream[streamNum] };
             row.LeaveAccess(column, rewrite, exprEvaluatorContext);
         }
     }

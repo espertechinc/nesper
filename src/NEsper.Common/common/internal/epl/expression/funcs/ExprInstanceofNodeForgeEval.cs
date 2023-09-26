@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             object result)
         {
             // return cached value
-            foreach (Pair<Type, bool> pair in resultCache) {
+            foreach (var pair in resultCache) {
                 if (pair.First == result.GetType()) {
                     return pair.Second;
                 }
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             lock (resultCache) {
                 // check again in synchronized block
-                foreach (Pair<Type, bool> pair in resultCache) {
+                foreach (var pair in resultCache) {
                     if (pair.First == type) {
                         return pair.Second;
                     }

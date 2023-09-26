@@ -56,30 +56,24 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write(name);
             writer.Write(':');
-            if (Children.Count > 1 || Children.IsEmpty())
-            {
+            if (Children.Count > 1 || Children.IsEmpty()) {
                 writer.Write('(');
             }
 
-            string delimiter = "";
-            foreach (Expression expr in Children)
-            {
+            var delimiter = "";
+            foreach (var expr in Children) {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";
             }
 
-            if (Children.Count > 1 || Children.IsEmpty())
-            {
+            if (Children.Count > 1 || Children.IsEmpty()) {
                 writer.Write(')');
             }
         }

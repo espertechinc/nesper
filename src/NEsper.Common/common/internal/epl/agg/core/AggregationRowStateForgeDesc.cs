@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         public AggregationUseFlags UseFlags { get; }
 
-        public int NumMethods => MethodForges == null ? 0 : MethodForges.Length;
+        public int NumMethods => MethodForges?.Length ?? 0;
 
-        public int NumAccess => AccessAccessorsForges == null ? 0 : AccessAccessorsForges.Length;
+        public int NumAccess => AccessAccessorsForges?.Length ?? 0;
     }
 } // end of namespace

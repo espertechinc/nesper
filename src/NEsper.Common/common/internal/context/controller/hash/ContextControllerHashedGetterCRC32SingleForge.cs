@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                 value = code.GetCrc32() % granularity;
             }
 
-            int result = (int) value;
+            var result = (int)value;
             if (result >= 0) {
                 return result;
             }
@@ -62,9 +62,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope)
-                .AddParam(typeof(EventBean), "eventBean");
-            CodegenMethod methodExpr = CodegenLegoMethodExpression.CodegenExpression(eval.Forge, method, classScope, true);
+            var method = parent.MakeChild(typeof(object), GetType(), classScope)
+                .AddParam<EventBean>("eventBean");
+            var methodExpr = CodegenLegoMethodExpression.CodegenExpression(eval.Forge, method, classScope);
             method.Block
                 .DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), Ref("eventBean")))
                 .DeclareVar<string>(

@@ -12,7 +12,7 @@ namespace com.espertech.esper.common.client
     {
         public static void EnsureSerializable(object value)
         {
-            if ((value != null) && !value.GetType().IsSerializable) {
+            if (value != null && !value.GetType().IsSerializable) {
                 throw new EPNotSerializableException(value.GetType());
             }
         }

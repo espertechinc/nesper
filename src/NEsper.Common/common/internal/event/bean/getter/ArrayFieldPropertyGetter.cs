@@ -16,7 +16,6 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -40,8 +39,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                field.FieldType.GetElementType(),
-                null)
+                field.FieldType.GetElementType())
         {
             _index = index;
             _field = field;
@@ -66,7 +64,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return GetBeanProp(obj.Underlying);
         }
 
-        public override Type BeanPropType => _field.FieldType.GetElementType().GetBoxedType();
+        // public override Type BeanPropType => _field.FieldType.GetElementType().GetBoxedType();
 
         public override bool IsExistsProperty(EventBean eventBean)
         {
@@ -127,7 +125,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return codegenMethodScope
                 .MakeChild(BeanPropType, GetType(), codegenClassScope)
                 .AddParam(TargetType, "@object")
-                .AddParam(typeof(int), "index")
+                .AddParam<int>("index")
                 .Block
                 //.DeclareVar(_field.FieldType, "value", ExprDotName(Ref("@object"), _field.Name))
                 .DeclareVar<Array>("value", ExprDotName(Ref("@object"), _field.Name))

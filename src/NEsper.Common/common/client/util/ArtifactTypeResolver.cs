@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.client.util
             bool resolve)
         {
             typeName = typeName.Replace('$', '+');
-            
+
             // First pass is to see if the class exists in the materialized space
             var materializedType = _artifactRepository.Artifacts
                 .OfType<IRuntimeArtifact>()
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.client.util
             if (materializedType != null) {
                 return materializedType;
             }
-            
+
             // However, if we do not find a materialized version, then check with
             // the parent to see if there is an existing materialized type
             var parentType = _parent.ResolveType(typeName, false);

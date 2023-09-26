@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 
         private RowRecogExprNodePrecedenceEnum(int level)
         {
-            this.Level = level;
+            Level = level;
         }
 
         /// <summary>

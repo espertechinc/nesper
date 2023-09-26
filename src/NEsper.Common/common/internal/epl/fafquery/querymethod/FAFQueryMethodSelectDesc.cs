@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.select;
+using com.espertech.esper.common.@internal.context.compile;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
 using com.espertech.esper.common.@internal.epl.expression.table;
@@ -37,15 +38,32 @@ using com.espertech.esper.common.@internal.statement.helper;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
+
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
     /// <summary>
-    ///     Starts and provides the stop method for EPL statements.
+    /// Starts and provides the stop method for EPL statements.
     /// </summary>
     public class FAFQueryMethodSelectDesc
     {
         private static readonly ILog QUERY_PLAN_LOG = LogManager.GetLogger(AuditPath.QUERYPLAN_LOG);
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
+        private readonly FireAndForgetProcessorForge[] processors;
+        private readonly ResultSetProcessorDesc resultSetProcessor;
+        private readonly QueryGraphForge queryGraph;
+        private readonly ExprNode whereClause;
+        private readonly ExprNode[] consumerFilters;
+        private readonly JoinSetComposerPrototypeForge joins;
+        private readonly Attribute[] annotations;
+        private readonly string contextName;
+        private readonly string contextModuleName;
+        private bool hasTableAccess;
+        private readonly bool isDistinct;
+        private readonly MultiKeyClassRef distinctMultiKey;
+        private IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccessForges;
+        private readonly IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
+        private readonly IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselectForges;
 
         public FAFQueryMethodSelectDesc(
             StatementSpecCompiled statementSpec,
@@ -53,32 +71,41 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             StatementRawInfo statementRawInfo,
             StatementCompileTimeServices services)
         {
-            Annotations = statementSpec.Annotations;
-            ContextName = statementSpec.Raw.OptionalContextName;
+            annotations = statementSpec.Annotations;
+            contextName = statementSpec.Raw.OptionalContextName;
+            if (contextName != null) {
+                var contextMetaData = services.ContextCompileTimeResolver.GetContextInfo(contextName);
+                if (contextMetaData == null) {
+                    throw new ExprValidationException("Failed to find context '" + contextName + "'");
+                }
+
+                contextModuleName = contextMetaData.ContextModuleName;
+            }
+            else {
+                contextModuleName = null;
+            }
 
             var queryPlanLogging = services.Configuration.Common.Logging.IsEnableQueryPlan;
             if (queryPlanLogging) {
                 QUERY_PLAN_LOG.Info("Query plans for Fire-and-forget query '" + compilable.ToEPL() + "'");
             }
 
-            HasTableAccess = statementSpec.TableAccessNodes != null && statementSpec.TableAccessNodes.Count > 0;
+            hasTableAccess = statementSpec.TableAccessNodes != null && statementSpec.TableAccessNodes.Count > 0;
             foreach (var streamSpec in statementSpec.StreamSpecs) {
-                HasTableAccess |= streamSpec is TableQueryStreamSpec;
+                hasTableAccess |= streamSpec is TableQueryStreamSpec;
             }
 
-            HasTableAccess |= StatementLifecycleSvcUtil.IsSubqueryWithTable(
-                statementSpec.SubselectNodes, services.TableCompileTimeResolver);
-            IsDistinct = statementSpec.SelectClauseCompiled.IsDistinct;
-
+            hasTableAccess |= StatementLifecycleSvcUtil.IsSubqueryWithTable(
+                statementSpec.SubselectNodes,
+                services.TableCompileTimeResolver);
+            isDistinct = statementSpec.SelectClauseCompiled.IsDistinct;
             FAFQueryMethodHelper.ValidateFAFQuery(statementSpec);
-
             var numStreams = statementSpec.StreamSpecs.Length;
             var typesPerStream = new EventType[numStreams];
             var namesPerStream = new string[numStreams];
             var eventTypeNames = new string[numStreams];
-            Processors = new FireAndForgetProcessorForge[numStreams];
-            ConsumerFilters = new ExprNode[numStreams];
-
+            processors = new FireAndForgetProcessorForge[numStreams];
+            consumerFilters = new ExprNode[numStreams];
             // check context partition use
             if (statementSpec.Raw.OptionalContextName != null) {
                 if (numStreams > 1) {
@@ -90,32 +117,45 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             // resolve types and processors
             for (var i = 0; i < numStreams; i++) {
                 var streamSpec = statementSpec.StreamSpecs[i];
-                Processors[i] = FireAndForgetProcessorForgeFactory.ValidateResolveProcessor(streamSpec);
-                if (numStreams > 1 && Processors[i].ContextName != null) {
+                processors[i] = FireAndForgetProcessorForgeFactory.ValidateResolveProcessor(
+                    streamSpec,
+                    statementSpec,
+                    statementRawInfo,
+                    services);
+                if (numStreams > 1 && processors[i].ContextName != null) {
                     throw new ExprValidationException(
                         "Joins against named windows that are under context are not supported");
                 }
 
-                var streamName = Processors[i].NamedWindowOrTableName;
+                var streamName = processors[i].ProcessorName;
                 if (streamSpec.OptionalStreamName != null) {
                     streamName = streamSpec.OptionalStreamName;
                 }
 
                 namesPerStream[i] = streamName;
-                typesPerStream[i] = Processors[i].EventTypeRspInputEvents;
+                typesPerStream[i] = processors[i].EventTypeRSPInputEvents;
                 eventTypeNames[i] = typesPerStream[i].Name;
-
                 IList<ExprNode> consumerFilterExprs;
-                if (streamSpec is NamedWindowConsumerStreamSpec) {
-                    var namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+                if (streamSpec is NamedWindowConsumerStreamSpec namedSpec) {
                     consumerFilterExprs = namedSpec.FilterExpressions;
                 }
-                else {
-                    var tableSpec = (TableQueryStreamSpec) streamSpec;
+                else if (streamSpec is TableQueryStreamSpec tableSpec) {
                     consumerFilterExprs = tableSpec.FilterExpressions;
                 }
+                else {
+                    consumerFilterExprs = EmptyList<ExprNode>.Instance;
+                    if (i > 0) {
+                        throw new ExprValidationException(
+                            "Join between SQL query results in fire-and-forget is not supported");
+                    }
 
-                ConsumerFilters[i] = ExprNodeUtilityMake.ConnectExpressionsByLogicalAndWhenNeeded(consumerFilterExprs);
+                    if (contextName != null) {
+                        throw new ExprValidationException(
+                            "Context specification for SQL queries in fire-and-forget is not supported");
+                    }
+                }
+
+                consumerFilters[i] = ExprNodeUtilityMake.ConnectExpressionsByLogicalAndWhenNeeded(consumerFilterExprs);
             }
 
             // compile filter to optimize access to named window
@@ -127,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 false,
                 optionalStreamsIfAny);
             var excludePlanHint = ExcludePlanHint.GetHint(types.StreamNames, statementRawInfo, services);
-            QueryGraph = new QueryGraphForge(numStreams, excludePlanHint, false);
+            queryGraph = new QueryGraphForge(numStreams, excludePlanHint, false);
             if (statementSpec.Raw.WhereClause != null) {
                 for (var i = 0; i < numStreams; i++) {
                     try {
@@ -139,28 +179,41 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                             ExprNodeOrigin.FILTER,
                             statementSpec.Raw.WhereClause,
                             validationContext);
-                        FilterExprAnalyzer.Analyze(validated, QueryGraph, false);
+                        FilterExprAnalyzer.Analyze(validated, queryGraph, false);
                     }
                     catch (Exception ex) {
                         Log.Warn("Unexpected exception analyzing filter paths: " + ex.Message, ex);
                     }
                 }
             }
-            
+
             // handle subselects
             // first we create streams for subselects, if there are any
             var @base = new StatementBaseInfo(compilable, statementSpec, null, statementRawInfo, null);
-            var subqueryNamedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
-            SubSelectActivationDesc subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
-                EmptyList<FilterSpecCompiled>.Instance, subqueryNamedWindowConsumers, @base, services);
-            IDictionary<ExprSubselectNode, SubSelectActivationPlan> subselectActivation = subSelectActivationDesc.Subselects;
-            AdditionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
+            IList<NamedWindowConsumerStreamSpec> subqueryNamedWindowConsumers =
+                new List<NamedWindowConsumerStreamSpec>();
+            var subSelectActivationDesc = SubSelectHelperActivations.CreateSubSelectActivation(
+                true,
+                EmptyList<FilterSpecTracked>.Instance, 
+                subqueryNamedWindowConsumers,
+                @base,
+                services);
+            var subselectActivation = subSelectActivationDesc.Subselects;
+            additionalForgeables.AddAll(subSelectActivationDesc.AdditionalForgeables);
+            // validate dependent expressions which may have subselects themselves
+            for (var i = 0; i < numStreams; i++) {
+                processors[i].ValidateDependentExpr(statementSpec, statementRawInfo, services);
+            }
 
-            SubSelectHelperForgePlan subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
-                @base, subselectActivation, namesPerStream, typesPerStream, eventTypeNames, services);
-            SubselectForges = subSelectForgePlan.Subselects;
-            AdditionalForgeables.AddAll(subSelectForgePlan.AdditionalForgeables);
-
+            var subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
+                @base,
+                subselectActivation,
+                namesPerStream,
+                typesPerStream,
+                eventTypeNames,
+                services);
+            subselectForges = subSelectForgePlan.Subselects;
+            additionalForgeables.AddAll(subSelectForgePlan.AdditionalForgeables);
             // obtain result set processor
             var isIStreamOnly = new bool[namesPerStream.Length];
             isIStreamOnly.Fill(true);
@@ -170,15 +223,15 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 isIStreamOnly,
                 true,
                 optionalStreamsIfAny);
-            WhereClause = EPStatementStartMethodHelperValidate.ValidateNodes(
+            whereClause = EPStatementStartMethodHelperValidate.ValidateNodes(
                 statementSpec.Raw,
                 typeService,
                 null,
                 statementRawInfo,
                 services);
-
             var resultSetSpec = new ResultSetSpec(statementSpec);
-            ResultSetProcessor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(
+            resultSetProcessor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(
+                ResultSetProcessorAttributionKeyStatement.INSTANCE,
                 resultSetSpec,
                 typeService,
                 null,
@@ -189,21 +242,19 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 false,
                 statementRawInfo,
                 services);
-            AdditionalForgeables.AddAll(ResultSetProcessor.AdditionalForgeables);
-
+            additionalForgeables.AddAll(resultSetProcessor.AdditionalForgeables);
             // plan table access
-            TableAccessForges = ExprTableEvalHelperPlan.PlanTableAccess(statementSpec.Raw.TableExpressions);
-
+            tableAccessForges = ExprTableEvalHelperPlan.PlanTableAccess(statementSpec.Raw.TableExpressions);
             // plan joins or simple queries
             if (numStreams > 1) {
                 var streamJoinAnalysisResult = new StreamJoinAnalysisResultCompileTime(numStreams);
                 CompatExtensions.Fill(streamJoinAnalysisResult.NamedWindowsPerStream, (NamedWindowMetaData) null);
                 for (var i = 0; i < numStreams; i++) {
-                    var uniqueIndexes = Processors[i].UniqueIndexes;
+                    var uniqueIndexes = processors[i].UniqueIndexes;
                     streamJoinAnalysisResult.UniqueKeys[i] = uniqueIndexes;
                 }
 
-                var hasAggregations = ResultSetProcessor.ResultSetProcessorType.IsAggregated();
+                bool hasAggregations = resultSetProcessor.ResultSetProcessorType.IsAggregated();
                 var desc = JoinSetComposerPrototypeForgeFactory.MakeComposerPrototype(
                     statementSpec,
                     streamJoinAnalysisResult,
@@ -213,45 +264,59 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                     hasAggregations,
                     statementRawInfo,
                     services);
-                AdditionalForgeables.AddAll(desc.AdditionalForgeables);
-                Joins = desc.Forge;
+                additionalForgeables.AddAll(desc.AdditionalForgeables);
+                joins = desc.Forge;
             }
             else {
-                Joins = null;
+                joins = null;
             }
-            
+
+            // no-from-clause with context does not currently allow order-by
+            if (processors.Length == 0 &&
+                contextName != null &&
+                resultSetProcessor.OrderByProcessorFactoryForge != null) {
+                throw new ExprValidationException(
+                    "Fire-and-forget queries without a from-clause and with context do not allow order-by");
+            }
+
             var multiKeyPlan = MultiKeyPlanner.PlanMultiKeyDistinct(
-                IsDistinct, ResultSetProcessor.ResultEventType, statementRawInfo, SerdeCompileTimeResolverNonHA.INSTANCE);
-            AdditionalForgeables.AddAll(multiKeyPlan.MultiKeyForgeables);
-            DistinctMultiKey = multiKeyPlan.ClassRef;
+                isDistinct,
+                resultSetProcessor.ResultEventType,
+                statementRawInfo,
+                SerdeCompileTimeResolverNonHA.INSTANCE);
+            additionalForgeables.AddAll(multiKeyPlan.MultiKeyForgeables);
+            distinctMultiKey = multiKeyPlan.ClassRef;
         }
 
-        public JoinSetComposerPrototypeForge Joins { get; }
+        public bool HasTableAccess => hasTableAccess;
 
-        public FireAndForgetProcessorForge[] Processors { get; }
+        public bool IsDistinct => isDistinct;
 
-        public ResultSetProcessorDesc ResultSetProcessor { get; }
+        public JoinSetComposerPrototypeForge Joins => joins;
 
-        public QueryGraphForge QueryGraph { get; }
+        public FireAndForgetProcessorForge[] Processors => processors;
 
-        public bool HasTableAccess { get; }
+        public ResultSetProcessorDesc ResultSetProcessor => resultSetProcessor;
 
-        public ExprNode WhereClause { get; }
+        public QueryGraphForge QueryGraph => queryGraph;
 
-        public ExprNode[] ConsumerFilters { get; }
+        public ExprNode WhereClause => whereClause;
 
-        public Attribute[] Annotations { get; }
+        public ExprNode[] ConsumerFilters => consumerFilters;
 
-        public string ContextName { get; }
+        public Attribute[] Annotations => annotations;
 
-        public IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> TableAccessForges { get; }
+        public string ContextName => contextName;
 
-        public bool IsDistinct { get; }
-        
-        public MultiKeyClassRef DistinctMultiKey { get; }
-        
-        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; } = new List<StmtClassForgeableFactory>();
-        
-        public IDictionary<ExprSubselectNode, SubSelectFactoryForge> SubselectForges { get; }
+        public IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> TableAccessForges =>
+            tableAccessForges;
+
+        public IList<StmtClassForgeableFactory> AdditionalForgeables => additionalForgeables;
+
+        public MultiKeyClassRef DistinctMultiKey => distinctMultiKey;
+
+        public IDictionary<ExprSubselectNode, SubSelectFactoryForge> SubselectForges => subselectForges;
+
+        public string ContextModuleName => contextModuleName;
     }
 } // end of namespace

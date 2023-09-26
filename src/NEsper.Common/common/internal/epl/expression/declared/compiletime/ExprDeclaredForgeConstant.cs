@@ -66,6 +66,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                 return Constant(value);
             }
 
+            if (EvaluationType == null) {
+                return ConstantNull();
+            }
+
             var methodNode = codegenMethodScope.MakeChild(
                 EvaluationType,
                 typeof(ExprDeclaredForgeConstant),

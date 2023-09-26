@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -38,23 +39,16 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
             sizeForge = ViewForgeSupport.ValidateSizeSingleParam(ViewName, parameters, viewForgeEnv, streamNumber);
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(LengthBatchViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(LengthBatchViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "Lengthbatch";
-        }
+        internal override string FactoryMethod => "Lengthbatch";
 
         internal override void Assign(
             CodegenMethod method,
@@ -64,6 +58,16 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
         {
             var sizeEval = CodegenEvaluator(sizeForge, method, GetType(), classScope);
             method.Block.SetProperty(factory, "SizeEvaluator", sizeEval);
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_LENGTHBATCH;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

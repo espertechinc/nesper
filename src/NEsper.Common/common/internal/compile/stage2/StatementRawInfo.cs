@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public ContextCompileTimeDescriptor OptionalContextDescriptor { get; }
 
-        public string ContextName => OptionalContextDescriptor == null ? null : OptionalContextDescriptor.ContextName;
+        public string ContextName => OptionalContextDescriptor?.ContextName;
 
         public string IntoTableName { get; }
 

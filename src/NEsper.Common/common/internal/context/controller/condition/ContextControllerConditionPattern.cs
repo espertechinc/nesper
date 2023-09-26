@@ -74,9 +74,12 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
             }
 
             if (optionalTriggeringPattern != null) {
-                endConditionMatchEventProvider?.PopulateEndConditionFromTrigger(matchedEventMap, optionalTriggeringPattern);
+                endConditionMatchEventProvider?.PopulateEndConditionFromTrigger(
+                    matchedEventMap,
+                    optionalTriggeringPattern,
+                    agentInstanceContext.EventBeanTypedEventFactory);
             }
-            
+
             // capture any callbacks that may occur right after start
             var callback = new ConditionPatternMatchCallback(this);
             patternStopCallback = rootNode.Start(callback, pattern.PatternContext, matchedEventMap, false);
@@ -117,16 +120,35 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                 else {
                     // need to reorder according to tag order
                     var ordered = new LinkedHashMap<string, object>();
-                    foreach (string key in pattern.TaggedEvents) {
+                    foreach (var key in pattern.TaggedEvents) {
                         ordered.Put(key, matchEvent.Get(key));
                     }
 
-                    foreach (string key in pattern.ArrayEvents) {
+                    foreach (var key in pattern.ArrayEvents) {
                         ordered.Put(key, matchEvent.Get(key));
                     }
 
                     matchEventInclusive = ordered;
                 }
+            }
+
+            if (pattern.AsName != null) {
+                // make sure the termination event does not contain the full match-event data which contains prior state
+                IDictionary<string, object> termEvent = new LinkedHashMap<string, object>();
+                foreach (var tag in pattern.PatternTags) {
+                    if (matchEvent.TryGetValue(tag, out var value)) {
+                        termEvent[tag] = value;
+                    }
+                }
+
+                var compositeEvent = controller.Realization.AgentInstanceContextCreate.EventBeanTypedEventFactory
+                    .AdapterForTypedMap(
+                        termEvent,
+                        pattern.AsNameEventType);
+                var data = new Dictionary<string, object> {
+                    [pattern.AsName] = compositeEvent
+                };
+                matchEvent = data;
             }
 
             callback.RangeNotification(
@@ -135,7 +157,8 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
                 null,
                 matchEvent,
                 optionalTriggeringEvent,
-                matchEventInclusive);
+                matchEventInclusive,
+                matchEvent);
         }
 
         public void Transfer(AgentInstanceTransferServices xfer)

@@ -52,9 +52,11 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             RootViewInstance.IndexRepository.RemoveIndex(index);
         }
 
-        public void RemoveExplicitIndex(string indexName)
+        public void RemoveExplicitIndex(
+            string indexName,
+            string moduleName)
         {
-            RootViewInstance.IndexRepository.RemoveExplicitIndex(indexName);
+            RootViewInstance.IndexRepository.RemoveExplicitIndex(indexName, moduleName);
         }
     }
 } // end of namespace

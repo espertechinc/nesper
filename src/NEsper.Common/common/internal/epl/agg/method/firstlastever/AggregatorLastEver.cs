@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,10 +11,10 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
-using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.serde.compiletime.sharable;
 using com.espertech.esper.compat;
@@ -25,39 +25,43 @@ using static com.espertech.esper.common.@internal.epl.agg.method.core.Aggregator
 namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
 {
     /// <summary>
-    ///     Aggregator for the very last value.
+    /// Aggregator for the very last value.
     /// </summary>
     public class AggregatorLastEver : AggregatorMethodWDistinctWFilterWValueBase
     {
-        private readonly CodegenExpressionMember _lastValue;
-        private readonly CodegenExpressionInstanceField _serde;
+        private CodegenExpressionMember _lastValue;
+        private CodegenExpressionInstanceField _serdeField;
         private readonly Type _childType;
+        private readonly DataInputOutputSerdeForge _serde;
 
         public AggregatorLastEver(
-            AggregationForgeFactory factory,
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
             Type optionalDistinctValueType,
             DataInputOutputSerdeForge optionalDistinctSerde,
             bool hasFilter,
             ExprNode optionalFilter,
             Type childType,
-            DataInputOutputSerdeForge serde)
-            : base(factory, col, rowCtor, membersColumnized, classScope, optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
+            DataInputOutputSerdeForge serde) : base(
+            optionalDistinctValueType,
+            optionalDistinctSerde,
+            hasFilter,
+            optionalFilter)
         {
             _childType = childType.GetBoxedType();
-            // NOTE: we had originally set the value of the member to childType which seems correct an
-            //   appropriate.  However, the code is not doing proper type checking and cast conversion
-            //   elsewhere which makes assignment problematic.  Revisit this problem when we have more
-            //   time.
+            _serde = serde;
+        }
+
+        public override void InitForgeFiltered(
+            int col,
+            CodegenCtor rowCtor,
+            CodegenMemberCol membersColumnized,
+            CodegenClassScope classScope)
+        {
             _lastValue = membersColumnized.AddMember(col, typeof(object), "lastValue");
-            this._serde = classScope.AddOrGetDefaultFieldSharable(
+            _serdeField = classScope.AddOrGetDefaultFieldSharable(
                 new CodegenSharableSerdeClassTyped(
                     CodegenSharableSerdeClassTyped.CodegenSharableSerdeName.VALUE_NULLABLE,
-                    childType,
-                    serde,
+                    _childType,
+                    _serde,
                     classScope));
         }
 
@@ -141,7 +145,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             CodegenClassScope classScope)
         {
             method.Block.Expression(
-                WriteNullable(RowDotMember(row, _lastValue), _serde, output, unitKey, writer, classScope));
+                WriteNullable(RowDotMember(row, _lastValue), _serdeField, output, unitKey, writer, classScope));
         }
 
         protected override void ReadWODistinct(
@@ -152,9 +156,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.firstlastever
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block
-                .AssignRef(RowDotMember(row, _lastValue), 
-                    FlexCast(_childType, ReadNullable(_serde, input, unitKey, classScope)));
+            method.Block.AssignRef(RowDotMember(row, _lastValue), ReadNullable(_serdeField, input, unitKey, classScope));
+        }
+
+        protected override void AppendFormatWODistinct(FabricTypeCollector collector)
+        {
+            collector.Serde(_serde);
         }
     }
 } // end of namespace

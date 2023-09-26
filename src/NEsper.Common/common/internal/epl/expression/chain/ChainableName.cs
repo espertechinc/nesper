@@ -19,8 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
         public ChainableName(
             bool distinct,
             bool optional,
-            string name)
-            : base(distinct, optional)
+            string name) : base(distinct, optional)
         {
             Name = name;
             NameUnescaped = name;
@@ -30,8 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
             bool distinct,
             bool optional,
             string name,
-            string nameUnescaped)
-            : base(distinct, optional)
+            string nameUnescaped) : base(distinct, optional)
         {
             Name = name;
             NameUnescaped = nameUnescaped;
@@ -44,7 +42,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
         }
 
         public string Name { get; }
-
         public string NameUnescaped { get; }
 
         public override void AddParametersTo(ICollection<ExprNode> result)
@@ -67,16 +64,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
             ExprNode parent)
         {
             // no parameters
-        }
-
-        public override string GetRootNameOrEmptyString()
-        {
-            return Name;
-        }
-
-        public override IList<ExprNode> GetParametersOrEmpty()
-        {
-            return EmptyList<ExprNode>.Instance;
         }
 
         public override void ValidateExpressions(
@@ -110,12 +97,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
                 return false;
             }
 
-            return Equals((ChainableName) obj);
+            return Equals((ChainableName)obj);
         }
 
         public override int GetHashCode()
         {
             return Name != null ? Name.GetHashCode() : 0;
         }
+
+        public string RootNameOrEmptyString => Name;
+
+        public IList<ExprNode> ParametersOrEmpty => EmptyList<ExprNode>.Instance;
     }
 } // end of namespace

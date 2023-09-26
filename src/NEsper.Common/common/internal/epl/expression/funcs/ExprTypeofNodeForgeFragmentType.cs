@@ -62,8 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return null;
             }
 
-            if (fragment is EventBean) {
-                var bean = (EventBean) fragment;
+            if (fragment is EventBean bean) {
                 return bean.EventType.Name;
             }
 

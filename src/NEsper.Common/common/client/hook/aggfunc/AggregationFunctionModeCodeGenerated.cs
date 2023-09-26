@@ -22,9 +22,7 @@ namespace com.espertech.esper.common.client.hook.aggfunc
         /// Returns the aggregation method factory.
         /// </summary>
         /// <returns>factory</returns>
-        public AggregatorMethodFactory AggregatorMethodFactory {
-            get => aggregatorMethodFactory;
-        }
+        public AggregatorMethodFactory AggregatorMethodFactory => aggregatorMethodFactory;
 
         /// <summary>
         /// Sets the aggregation method factory

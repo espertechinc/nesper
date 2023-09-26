@@ -34,7 +34,10 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             BeanEventTypeFactory beanEventTypeFactory,
             ImportService importService)
         {
-            var creationOrder = EventTypeRepositoryUtil.GetCreationOrder(mapTypes.Keys, nestableMapEvents.Keys, mapTypeConfigurations);
+            var creationOrder = EventTypeRepositoryUtil.GetCreationOrder(
+                mapTypes.Keys,
+                nestableMapEvents.Keys,
+                mapTypeConfigurations);
             foreach (var mapName in creationOrder) {
                 if (repo.GetTypeByName(mapName) != null) {
                     continue;
@@ -48,8 +51,15 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 }
 
                 if (nestableMapEvents.TryGetValue(mapName, out var propertiesNestable)) {
-                    var propertiesNestableCompiled = EventTypeUtility.CompileMapTypeProperties(propertiesNestable, repo);
-                    AddNestableMapType(mapName, propertiesNestableCompiled, mapConfig, repo, beanEventTypeFactory, repo);
+                    var propertiesNestableCompiled =
+                        EventTypeUtility.CompileMapTypeProperties(propertiesNestable, repo);
+                    AddNestableMapType(
+                        mapName,
+                        propertiesNestableCompiled,
+                        mapConfig,
+                        repo,
+                        beanEventTypeFactory,
+                        repo);
                 }
             }
         }

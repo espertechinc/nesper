@@ -33,19 +33,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             this.componentType = componentType;
         }
 
-        public EPType TypeInfo => EPTypeHelper.CollectionOfSingleValue(
-            componentType,
-            null);
+        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfSingleValue(
+            componentType);
 
         public ICollection<EventBean> ConvertNonNull(object result)
         {
-            if (!(result is ICollection<EventBean>)) {
+            if (!(result is ICollection<EventBean> beans)) {
                 Log.Warn(
                     "Expected collection-type input from method '" + methodName + "' but received " + result.GetType());
                 return null;
             }
 
-            return (ICollection<EventBean>) result;
+            return beans;
         }
 
         public CodegenExpression CodegenConvertNonNull(

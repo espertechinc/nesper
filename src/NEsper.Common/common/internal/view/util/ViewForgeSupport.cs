@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -19,6 +18,7 @@ using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+
 namespace com.espertech.esper.common.@internal.view.util
 {
     public class ViewForgeSupport
@@ -26,16 +26,9 @@ namespace com.espertech.esper.common.@internal.view.util
         public static object ValidateAndEvaluate(
             string viewName,
             ExprNode expression,
-            ViewForgeEnv viewForgeEnv,
-            int streamNumber)
+            ViewForgeEnv viewForgeEnv)
         {
-            return ValidateAndEvaluateExpr(
-                viewName,
-                expression,
-                new StreamTypeServiceImpl(false),
-                viewForgeEnv,
-                0,
-                streamNumber);
+            return ValidateAndEvaluateExpr(viewName, expression, new StreamTypeServiceImpl(false), viewForgeEnv, 0);
         }
 
         public static object EvaluateAssertNoProperties(
@@ -48,7 +41,7 @@ namespace com.espertech.esper.common.@internal.view.util
         }
 
         /// <summary>
-        ///     Assert and throws an exception if the expression passed returns a non-constant value.
+        /// Assert and throws an exception if the expression passed returns a non-constant value.
         /// </summary>
         /// <param name="viewName">textual name of view</param>
         /// <param name="expression">expression to check</param>
@@ -91,16 +84,9 @@ namespace com.espertech.esper.common.@internal.view.util
             ExprNode expression,
             StreamTypeService streamTypeService,
             ViewForgeEnv viewForgeEnv,
-            int expressionNumber,
-            int streamNumber)
+            int expressionNumber)
         {
-            var validated = ValidateExpr(
-                viewName,
-                expression,
-                streamTypeService,
-                viewForgeEnv,
-                expressionNumber,
-                streamNumber);
+            var validated = ValidateExpr(viewName, expression, streamTypeService, viewForgeEnv, expressionNumber);
 
             try {
                 return validated.Forge.ExprEvaluator.Evaluate(null, true, null);
@@ -138,8 +124,15 @@ namespace com.espertech.esper.common.@internal.view.util
             int expressionNumber)
         {
             var forge = sizeNode.Forge;
-            var returnType = sizeNode.Forge.EvaluationType.GetBoxedType();
-            if (!returnType.IsNumeric() || returnType.IsFloatingPointClass() || returnType == typeof(long?)) {
+            var sizeType = sizeNode.Forge.EvaluationType;
+            if (sizeType == null) {
+                throw new ViewParameterException(GetViewParamMessage(viewName));
+            }
+
+            var sizeTypeBoxed = sizeType.GetBoxedType();
+            if (!sizeTypeBoxed.IsTypeNumeric() ||
+                sizeTypeBoxed.IsFloatingPointClass() ||
+                sizeTypeBoxed == typeof(long?)) {
                 throw new ViewParameterException(GetViewParamMessage(viewName));
             }
 
@@ -148,7 +141,7 @@ namespace com.espertech.esper.common.@internal.view.util
                 if (!size.IsNumber()) {
                     throw new IllegalStateException(nameof(size) + " is not a number");
                 }
-
+                
                 if (!ValidateSize(size)) {
                     throw new ViewParameterException(GetSizeValidationMsg(viewName, size));
                 }
@@ -158,19 +151,15 @@ namespace com.espertech.esper.common.@internal.view.util
         }
 
         /// <summary>
-        ///     Validate the view parameter expressions and return the validated expression for later execution.
-        ///     <para />
-        ///     Does not evaluate the expression.
+        /// Validate the view parameter expressions and return the validated expression for later execution.
+        /// <para />Does not evaluate the expression.
         /// </summary>
         /// <param name="viewName">textual name of view</param>
         /// <param name="eventType">is the event type of the parent view or stream attached.</param>
         /// <param name="expressions">view expression parameter to validate</param>
-        /// <param name="allowConstantResult">
-        ///     true to indicate whether expressions that return a constantresult should be allowed; false to indicate that if an
-        ///     expression is known to return a constant result
-        ///     the expression is considered invalid
+        /// <param name="allowConstantResult">true to indicate whether expressions that return a constantresult should be allowed; false to indicate that if an expression is known to return a constant result
+        /// the expression is considered invalid
         /// </param>
-        /// <param name="streamNumber">stream number</param>
         /// <param name="viewForgeEnv">view forge env</param>
         /// <returns>object result value of parameter expressions</returns>
         /// <throws>ViewParameterException if the expressions fail to validate</throws>
@@ -179,20 +168,13 @@ namespace com.espertech.esper.common.@internal.view.util
             EventType eventType,
             IList<ExprNode> expressions,
             bool allowConstantResult,
-            ViewForgeEnv viewForgeEnv,
-            int streamNumber)
+            ViewForgeEnv viewForgeEnv)
         {
-            IList<ExprNode> results = new List<ExprNode>();
+            var results = new List<ExprNode>();
             var expressionNumber = 0;
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, null, false);
             foreach (var expr in expressions) {
-                var validated = ValidateExpr(
-                    viewName,
-                    expr,
-                    streamTypeService,
-                    viewForgeEnv,
-                    expressionNumber,
-                    streamNumber);
+                var validated = ValidateExpr(viewName, expr, streamTypeService, viewForgeEnv, expressionNumber);
                 results.Add(validated);
 
                 if (!allowConstantResult && validated.Forge.ForgeConstantType.IsCompileTimeConstant) {
@@ -224,8 +206,7 @@ namespace com.espertech.esper.common.@internal.view.util
                     expr,
                     streamTypeService,
                     viewForgeEnv,
-                    expressionNumber,
-                    streamNumber);
+                    expressionNumber);
                 expressionNumber++;
             }
 
@@ -237,12 +218,12 @@ namespace com.espertech.esper.common.@internal.view.util
             ExprNode expression,
             StreamTypeService streamTypeService,
             ViewForgeEnv viewForgeEnv,
-            int expressionNumber,
-            int streamNumber)
+            int expressionNumber)
         {
             ExprNode validated;
             try {
-                var names = new ExprValidationMemberNameQualifiedView(streamNumber);
+                var names =
+                    new ExprValidationMemberNameQualifiedView(viewForgeEnv.StreamNumber);
                 var validationContext = new ExprValidationContextBuilder(
                         streamTypeService,
                         viewForgeEnv.StatementRawInfo,

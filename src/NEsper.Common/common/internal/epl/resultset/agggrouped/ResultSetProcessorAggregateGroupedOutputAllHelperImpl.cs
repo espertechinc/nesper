@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,20 +10,21 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
+using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+
 
 namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 {
     public class ResultSetProcessorAggregateGroupedOutputAllHelperImpl :
         ResultSetProcessorAggregateGroupedOutputAllHelper
     {
-        private readonly IList<EventBean> eventsNew = new List<EventBean>(2);
+        private readonly ResultSetProcessorAggregateGrouped processor;
 
         private readonly IList<EventBean> eventsOld = new List<EventBean>(2);
-        private readonly ISet<object> lastSeenKeys = new HashSet<object>();
-
-        private readonly ResultSetProcessorAggregateGrouped processor;
+        private readonly IList<EventBean> eventsNew = new List<EventBean>(2);
         private readonly IDictionary<object, EventBean[]> repsPerGroup = new LinkedHashMap<object, EventBean[]>();
+        private readonly ISet<object> lastSeenKeys = new HashSet<object>();
 
         public ResultSetProcessorAggregateGroupedOutputAllHelperImpl(ResultSetProcessorAggregateGrouped processor)
         {
@@ -44,11 +45,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 // apply new data to aggregates
                 var count = 0;
                 foreach (var aNewData in newData) {
-                    EventBean[] eventsPerStream = {aNewData};
+                    var eventsPerStream = new EventBean[] { aNewData };
                     var mk = newDataMultiKey[count];
                     repsPerGroup.Put(mk, eventsPerStream);
                     lastSeenKeys.Add(mk);
-                    processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyEnter(eventsPerStream, mk, processor.ExprEvaluatorContext);
                     count++;
                 }
             }
@@ -64,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     processor.AggregationService.ApplyLeave(
                         eventsPerStreamOneStream,
                         oldDataMultiKey[count],
-                        processor.GetAgentInstanceContext());
+                        processor.ExprEvaluatorContext);
                     count++;
                 }
             }
@@ -117,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     var mk = newDataMultiKey[count];
                     repsPerGroup.Put(mk, aNewData.Array);
                     lastSeenKeys.Add(mk);
-                    processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.GetAgentInstanceContext());
+                    processor.AggregationService.ApplyEnter(aNewData.Array, mk, processor.ExprEvaluatorContext);
                     count++;
                 }
             }
@@ -132,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     processor.AggregationService.ApplyLeave(
                         anOldData.Array,
                         oldDataMultiKey[count],
-                        processor.GetAgentInstanceContext());
+                        processor.ExprEvaluatorContext);
                     count++;
                 }
             }

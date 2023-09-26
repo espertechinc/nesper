@@ -8,7 +8,7 @@
 
 using System;
 
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 
 namespace com.espertech.esper.common.@internal.epl.index.unindexed
@@ -26,23 +26,19 @@ namespace com.espertech.esper.common.@internal.epl.index.unindexed
         }
 
         public EventTable[] MakeEventTables(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             int? subqueryNumber)
         {
-            return new EventTable[] {new UnindexedEventTableImpl(streamNum)};
+            return new EventTable[] { new UnindexedEventTableImpl(streamNum) };
         }
 
-        public Type EventTableClass {
-            get => typeof(UnindexedEventTable);
-        }
+        public Type EventTableClass => typeof(UnindexedEventTable);
 
         public string ToQueryPlan()
         {
-            return this.GetType().Name + " streamNum=" + streamNum;
+            return GetType().Name + " streamNum=" + streamNum;
         }
 
-        public int StreamNum {
-            get => streamNum;
-        }
+        public int StreamNum => streamNum;
     }
 } // end of namespace

@@ -137,14 +137,23 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                     stopCallbacks.Add(
                         new ProxyAgentInstanceMgmtCallback {
                             ProcStop = services => {
-                                for (var i = 0; i < queryPlan.IndexDescs.Length; i++) {
-                                    var last = NamedWindow.EventTableIndexMetadata.RemoveIndexReference(
-                                        queryPlan.IndexDescs[i].IndexMultiKey,
-                                        agentInstanceContext.DeploymentId);
-                                    if (last) {
-                                        NamedWindow.EventTableIndexMetadata.RemoveIndex(
-                                            queryPlan.IndexDescs[i].IndexMultiKey);
-                                        NamedWindow.RemoveAllInstanceIndexes(queryPlan.IndexDescs[i].IndexMultiKey);
+                                if (services.AgentInstanceContext.ContextName == null) {
+                                    for (var i = 0; i < queryPlan.IndexDescs.Length; i++) {
+                                        var last = NamedWindow.EventTableIndexMetadata.RemoveIndexReference(
+                                            queryPlan.IndexDescs[i].IndexMultiKey,
+                                            agentInstanceContext.DeploymentId);
+                                        if (last) {
+                                            NamedWindow.EventTableIndexMetadata.RemoveIndex(
+                                                queryPlan.IndexDescs[i].IndexMultiKey);
+                                            NamedWindow.RemoveAllInstanceIndexes(queryPlan.IndexDescs[i].IndexMultiKey);
+                                        }
+                                    }
+                                }
+                                else {
+                                    for (var i = 0; i < queryPlan.IndexDescs.Length; i++) {
+                                        NamedWindow.RemoveIndexInstance(
+                                            queryPlan.IndexDescs[i].IndexMultiKey,
+                                            services.AgentInstanceContext.AgentInstanceId);
                                     }
                                 }
                             }

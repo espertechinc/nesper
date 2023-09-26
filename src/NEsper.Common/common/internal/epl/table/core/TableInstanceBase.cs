@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                 throw new IllegalStateException("Unexpected event type for add: " + @event.EventType.Name);
             }
 
-            var oa = (ObjectArrayBackedEventBean) @event;
+            var oa = (ObjectArrayBackedEventBean)@event;
             var aggs = table.AggregationRowFactory.Make();
             oa.Properties[0] = aggs;
             AddEvent(@event);
@@ -69,8 +69,14 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             QueryPlanIndexItem explicitIndexDesc,
             bool isRecoveringResilient);
 
-        public abstract void RemoveExplicitIndex(string indexName);
-        public abstract EventTable GetIndex(string indexName);
+        public abstract void RemoveExplicitIndex(
+            string indexName,
+            string indexModuleName);
+
+        public abstract EventTable GetIndex(
+            string indexName,
+            string indexModuleName);
+
         public abstract void HandleRowUpdateKeyBeforeUpdate(ObjectArrayBackedEventBean updatedEvent);
         public abstract void HandleRowUpdateKeyAfterUpdate(ObjectArrayBackedEventBean updatedEvent);
     }

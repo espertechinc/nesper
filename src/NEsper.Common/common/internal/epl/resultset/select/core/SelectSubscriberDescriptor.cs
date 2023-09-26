@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         public bool IsForClauseDelivery { get; }
 
         public ExprNode[] GroupDelivery { get; }
-        
+
         public MultiKeyClassRef GroupDeliveryMultiKey { get; }
     }
 } // end of namespace

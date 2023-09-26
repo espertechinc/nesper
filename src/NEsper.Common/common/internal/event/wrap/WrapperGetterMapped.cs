@@ -28,11 +28,10 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             EventBean @event,
             string key)
         {
-            if (!(@event is DecoratingEventBean)) {
+            if (!(@event is DecoratingEventBean wrapper)) {
                 throw new PropertyAccessException("Mismatched property getter to EventBean type");
             }
 
-            var wrapper = (DecoratingEventBean) @event;
             var wrapped = wrapper.UnderlyingEvent;
             if (wrapped == null) {
                 return null;
@@ -48,8 +47,8 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             CodegenExpression key)
         {
             var method = codegenMethodScope.MakeChild(typeof(object), typeof(WrapperGetterMapped), codegenClassScope)
-                .AddParam(typeof(EventBean), "@event")
-                .AddParam(typeof(string), "key")
+                .AddParam<EventBean>("@event")
+                .AddParam<string>("key")
                 .Block
                 .DeclareVar<DecoratingEventBean>("wrapper", Cast(typeof(DecoratingEventBean), Ref("@event")))
                 .DeclareVar<EventBean>("wrapped", ExprDotName(Ref("wrapper"), "UnderlyingEvent"))

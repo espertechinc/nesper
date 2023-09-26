@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -31,17 +32,17 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 {
     public class HistoricalEventViewableMethodForge : HistoricalEventViewableForgeBase
     {
-        private readonly MethodPollingViewableMeta metadata;
         private readonly MethodStreamSpec methodStreamSpec;
-        private MethodConversionStrategyForge conversion;
+        private readonly MethodPollingViewableMeta metadata;
+
         private MethodTargetStrategyForge target;
+        private MethodConversionStrategyForge conversion;
 
         public HistoricalEventViewableMethodForge(
             int streamNum,
             EventType eventType,
             MethodStreamSpec methodStreamSpec,
-            MethodPollingViewableMeta metadata)
-            : base(streamNum, eventType)
+            MethodPollingViewableMeta metadata) : base(streamNum, eventType)
         {
             this.methodStreamSpec = methodStreamSpec;
             this.metadata = metadata;
@@ -49,17 +50,17 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
         public override IList<StmtClassForgeableFactory> Validate(
             StreamTypeService typeService,
-            StatementBaseInfo @base,
+            IDictionary<int, IList<ExprNode>> sqlParameters,
+            StatementRawInfo rawInfo,
             StatementCompileTimeServices services)
         {
             // validate and visit
-            var validationContext = new ExprValidationContextBuilder(typeService, @base.StatementRawInfo, services)
+            var validationContext = new ExprValidationContextBuilder(typeService, rawInfo, services)
                 .WithAllowBindingConsumption(true)
                 .Build();
 
             var visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
             var validatedInputParameters = new List<ExprNode>();
-
             foreach (var exprNode in methodStreamSpec.Expressions) {
                 var validated = ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.METHODINVJOIN,
@@ -70,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             }
 
             // determine required streams
-            foreach (ExprNodePropOrStreamDesc @ref in visitor.Refs) {
+            foreach (var @ref in visitor.Refs) {
                 SubordinateStreams.Add(@ref.StreamNum);
             }
 
@@ -78,8 +79,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             MethodInfo targetMethod = null;
             if (metadata.MethodProviderClass != null) {
                 // resolve actual method to use
-                ExprNodeUtilResolveExceptionHandler handler = new ProxyExprNodeUtilResolveExceptionHandler {
-                    ProcHandle = e => {
+                ExprNodeUtilResolveExceptionHandler handler = new ProxyExprNodeUtilResolveExceptionHandler() {
+                    ProcHandle = (e) => {
                         if (methodStreamSpec.Expressions.Count == 0) {
                             return new ExprValidationException(
                                 "Method footprint does not match the number or type of expression parameters, expecting no parameters in method: " +
@@ -96,14 +97,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 };
                 var desc = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
                     metadata.MethodProviderClass.FullName,
-                    metadata.IsStaticMethod ? null : metadata.MethodProviderClass,
+                    metadata.IsStaticMethod
+                        ? null
+                        : metadata.MethodProviderClass,
                     methodStreamSpec.MethodName,
                     validatedInputParameters,
                     false,
                     null,
                     handler,
                     methodStreamSpec.MethodName,
-                    @base.StatementRawInfo,
+                    rawInfo,
                     services);
                 InputParamEvaluators = desc.ChildForges;
                 targetMethod = desc.ReflectionMethod;
@@ -112,16 +115,19 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 // script-based evaluation
                 InputParamEvaluators = ExprNodeUtilityQuery.GetForges(ExprNodeUtilityQuery.ToArray(validatedInputParameters));
             }
-            
+
             // plan multikey
-            MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKey(InputParamEvaluators, false, @base.StatementRawInfo, services.SerdeResolver);
+            var multiKeyPlan = MultiKeyPlanner.PlanMultiKey(
+                InputParamEvaluators,
+                false,
+                rawInfo,
+                services.SerdeResolver);
             MultiKeyClassRef = multiKeyPlan.ClassRef;
 
-            Pair<MethodTargetStrategyForge, MethodConversionStrategyForge> strategies =
-                PollExecStrategyPlanner.Plan(metadata, targetMethod, EventType);
+            var strategies = PollExecStrategyPlanner.Plan(metadata, targetMethod, EventType);
             target = strategies.First;
             conversion = strategies.Second;
-            
+
             return multiKeyPlan.MultiKeyForgeables;
         }
 
@@ -136,9 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var configName = metadata.MethodProviderClass != null
-                ? metadata.MethodProviderClass.FullName
-                : methodStreamSpec.MethodName;
+            var configName = metadata.GetConfigurationName(methodStreamSpec);
             method.Block
                 .SetProperty(@ref, "ConfigurationName", Constant(configName))
                 .SetProperty(@ref, "TargetStrategy", target.Make(method, symbols, classScope))

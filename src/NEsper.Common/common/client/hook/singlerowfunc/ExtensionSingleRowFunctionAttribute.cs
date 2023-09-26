@@ -12,10 +12,10 @@ using com.espertech.esper.common.client.configuration.compiler;
 
 namespace com.espertech.esper.common.client.hook.singlerowfunc
 {
-	/// <summary>
-	///     Annotation for use in EPL statements with inline classes for providing a plug-in single-row function.
-	/// </summary>
-	public class ExtensionSingleRowFunctionAttribute : Attribute
+    /// <summary>
+    ///     Annotation for use in EPL statements with inline classes for providing a plug-in single-row function.
+    /// </summary>
+    public class ExtensionSingleRowFunctionAttribute : Attribute
     {
         public ExtensionSingleRowFunctionAttribute()
         {

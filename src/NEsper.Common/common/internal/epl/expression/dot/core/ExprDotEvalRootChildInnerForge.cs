@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         Type ComponentTypeCollection { get; }
 
-        EPType TypeInfo { get; }
+        EPChainableType TypeInfo { get; }
 
         ExprDotEvalRootChildInnerEval InnerEvaluator { get; }
 

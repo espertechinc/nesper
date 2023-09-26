@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.context.controller.category
             object[] parentPartitionKeys,
             int[] subpathOrCPId)
         {
-            ContextControllerCategorySvcLevelAnyEntry existing = mgmt.PutIfAbsent(
+            var existing = mgmt.PutIfAbsent(
                 controllerPath,
                 new ContextControllerCategorySvcLevelAnyEntry(parentPartitionKeys, subpathOrCPId));
             if (existing != null) {
@@ -35,12 +35,12 @@ namespace com.espertech.esper.common.@internal.context.controller.category
         public int[] MgmtGetSubpathOrCPIds(IntSeqKey controllerPath)
         {
             var existing = mgmt.Get(controllerPath);
-            return existing == null ? null : existing.SubpathOrCPids;
+            return existing?.SubpathOrCPids;
         }
 
         public int[] MgmtDelete(IntSeqKey controllerPath)
         {
-            return mgmt.TryRemove(controllerPath, out ContextControllerCategorySvcLevelAnyEntry entry)
+            return mgmt.TryRemove(controllerPath, out var entry)
                 ? entry.SubpathOrCPids
                 : null;
         }

@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.context.compile
                 throw new IllegalStateException("Invalid visibility for contexts");
             }
 
-            string name = detail.ContextName;
+            var name = detail.ContextName;
             var existing = Contexts.Get(name);
             if (existing != null) {
                 throw new IllegalStateException(

@@ -12,68 +12,74 @@ using System.Text.Json;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.bytecodemodel.model.statement;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.json.core;
+using com.espertech.esper.common.@internal.@event.json.forge;
 using com.espertech.esper.common.@internal.@event.json.serde;
 using com.espertech.esper.common.@internal.@event.json.serializers.forge;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.@event.json.compiletime.StmtClassForgeableJsonUtil; // getCasesNumberNtoM, makeNoSuchElementDefault
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.@event.json.compiletime.StmtClassForgeableJsonUtil;
 
 namespace com.espertech.esper.common.@internal.@event.json.compiletime
 {
-	public class StmtClassForgeableJsonUnderlying : StmtClassForgeable
-	{
-		public const string DYNAMIC_PROP_FIELD = "__dyn";
+    public class StmtClassForgeableJsonUnderlying : StmtClassForgeable
+    {
+        public const string DYNAMIC_PROP_FIELD = "__dyn";
+        
+        private readonly string className;
+        private readonly string classNameFull;
+        private readonly CodegenNamespaceScope namespaceScope;
+        private readonly StmtClassForgeableJsonDesc desc;
 
-		private readonly string className;
-		private readonly string classNameFull;
-		private readonly CodegenNamespaceScope namespaceScope;
-		private readonly StmtClassForgeableJsonDesc desc;
-
-		public StmtClassForgeableJsonUnderlying(
-			string className,
-			string classNameFull,
-			CodegenNamespaceScope namespaceScope,
-			StmtClassForgeableJsonDesc desc)
-		{
-			this.className = className;
+        public StmtClassForgeableJsonUnderlying(
+            string className,
+            string classNameFull,
+            CodegenNamespaceScope namespaceScope,
+            StmtClassForgeableJsonDesc desc)
+        {
+            this.className = className;
 			this.classNameFull = classNameFull;
-			this.namespaceScope = namespaceScope;
-			this.desc = desc;
-		}
+            this.namespaceScope = namespaceScope;
+            this.desc = desc;
+        }
 
-		public CodegenClass Forge(
-			bool includeDebugSymbols,
-			bool fireAndForget)
-		{
-			var dynamic = NeedDynamic();
-			var ctor = new CodegenCtor(typeof(StmtClassForgeableJsonUnderlying), includeDebugSymbols, EmptyList<CodegenTypedParam>.Instance);
-			if (dynamic) {
-				ctor.Block.AssignRef(DYNAMIC_PROP_FIELD, NewInstance(typeof(LinkedHashMap<string, object>)));
-			}
+        public CodegenClass Forge(
+            bool includeDebugSymbols,
+            bool fireAndForget)
+        {
+	        var needDynamic = NeedDynamic();
+            var ctor = new CodegenCtor(
+                typeof(StmtClassForgeableJsonUnderlying),
+                includeDebugSymbols,
+                EmptyList<CodegenTypedParam>.Instance);
+            if (needDynamic) {
+                ctor.Block.AssignRef(DYNAMIC_PROP_FIELD, NewInstance(typeof(LinkedHashMap<string, object>)));
+            }
 
-			var properties = new CodegenClassProperties();
-			var methods = new CodegenClassMethods();
-			var classScope = new CodegenClassScope(includeDebugSymbols, namespaceScope, className);
+            var properties = new CodegenClassProperties();
+            var methods = new CodegenClassMethods();
+            var classScope = new CodegenClassScope(includeDebugSymbols, namespaceScope, className);
+            IList<CodegenTypedParam> explicitMembers = new List<CodegenTypedParam>(desc.PropertiesThisType.Count);
+            if (needDynamic) {
+                explicitMembers.Add(new CodegenTypedParam(typeof(IDictionary<string, object>), DYNAMIC_PROP_FIELD, false, true));
+            }
 
-			IList<CodegenTypedParam> explicitMembers = new List<CodegenTypedParam>(desc.PropertiesThisType.Count);
-			if (dynamic) {
-				explicitMembers.Add(new CodegenTypedParam(typeof(IDictionary<string, object>), DYNAMIC_PROP_FIELD, false, true));
-			}
+            // add members
+            foreach (var property in desc.PropertiesThisType) {
+                var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
+                explicitMembers.Add(new CodegenTypedParam(field.PropertyType, field.FieldName, false, true));
+            }
 
-			// add members
-			foreach (var property in desc.PropertiesThisType) {
-				var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
-				explicitMembers.Add(new CodegenTypedParam(field.PropertyType, field.FieldName, false, true));
-			}
-
-			// --------------------------------------------------------------------------------
-			// - NativeCount => int
-			// --------------------------------------------------------------------------------
+            // --------------------------------------------------------------------------------
+            // - NativeCount => int
+            // --------------------------------------------------------------------------------
 
 			var nativeCountProperty = CodegenProperty
 				.MakePropertyNode(typeof(int), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
@@ -138,111 +144,108 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			MakeNativeWrite(nativeWriteMethod, classScope);
 			CodegenStackGenerator.RecursiveBuildStack(nativeWriteMethod, "NativeWrite", methods, properties);
 
-			if (!ParentDynamic() && dynamic) {
+			if (!ParentDynamic()) {
 				// --------------------------------------------------------------------------------
 				// AddJsonValue
 				// --------------------------------------------------------------------------------
 
 				var addJsonValueMethod = CodegenMethod
-					.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-					.AddParam(typeof(string), "name")
-					.AddParam(typeof(object), "value")
+					.MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+					.AddParam<string>("name")
+					.AddParam<object>("value")
 					.WithOverride();
-				addJsonValueMethod.Block.ExprDotMethod(Ref(DYNAMIC_PROP_FIELD), "Put", Ref("name"), Ref("value"));
+                if (needDynamic) {
+                    addJsonValueMethod.Block.ExprDotMethod(Ref(DYNAMIC_PROP_FIELD), "Put", Ref("name"), Ref("value"));
+                }
 
-				CodegenStackGenerator.RecursiveBuildStack(addJsonValueMethod, "AddJsonValue", methods, properties);
+                CodegenStackGenerator.RecursiveBuildStack(addJsonValueMethod, "AddJsonValue", methods, properties);
 
-				// - JsonValues => IDictionary<string, object>
-				var jsonValuesProperty = CodegenProperty
-					.MakePropertyNode(typeof(IDictionary<string, object>), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-					.WithOverride();
-				jsonValuesProperty.GetterBlock.BlockReturn(Ref(DYNAMIC_PROP_FIELD));
-				CodegenStackGenerator.RecursiveBuildStack(jsonValuesProperty, "JsonValues", methods, properties);
-			}
+                // - JsonValues => IDictionary<string, object>
+                var jsonValuesProperty = CodegenProperty
+                    .MakePropertyNode(typeof(IDictionary<string, object>), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                    .WithOverride();
+                jsonValuesProperty.GetterBlock.BlockReturn(Ref(DYNAMIC_PROP_FIELD));
+                CodegenStackGenerator.RecursiveBuildStack(jsonValuesProperty, "JsonValues", methods, properties);
+            }
 
-			var clazz = new CodegenClass(
-				CodegenClassType.JSONEVENT,
-				className,
-				classScope,
-				explicitMembers,
-				ctor,
-				methods,
-				properties,
-				EmptyList<CodegenInnerClass>.Instance);
-			
-			if (desc.OptionalSupertype == null) {
+            var clazz = new CodegenClass(
+                CodegenClassType.JSONEVENT,
+                className,
+                classScope,
+                explicitMembers,
+                ctor,
+                methods,
+                properties,
+                EmptyList<CodegenInnerClass>.Instance);
+            if (desc.OptionalSupertype == null) {
 				clazz.BaseList.AssignType(typeof(JsonEventObjectBase));
-			}
-			else {
+            }
+            else {
 				clazz.BaseList.AssignType(desc.OptionalSupertype.UnderlyingType);
-			}
+            }
 
-			return clazz;
-		}
+            return clazz;
+        }
 
-		public string ClassName => className;
-
-		public StmtClassForgeableType ForgeableType => StmtClassForgeableType.JSONEVENT;
-
-		private void MakeNativeEnumerable(
-			CodegenProperty nativeEnumerable,
-			CodegenClassScope classScope)
-		{
-			var getter = nativeEnumerable.GetterBlock;
+        private void MakeNativeEnumerable(
+            CodegenProperty nativeEnumerable,
+            CodegenClassScope classScope)
+        {
+            var getter = nativeEnumerable.GetterBlock;
 			
-			getter.DeclareVar<IList<KeyValuePair<string, object>>>("result", NewInstance<List<KeyValuePair<string, object>>>());
+            getter.DeclareVar<IList<KeyValuePair<string, object>>>("result", NewInstance<List<KeyValuePair<string, object>>>());
 
-			foreach (var property in desc.PropertiesThisType) {
-				var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
-				var name = Constant(property.Key);
-				var value = Ref(field.FieldName);
-				var entry = NewInstance(typeof(KeyValuePair<string, object>), name, value);
+            foreach (var property in desc.PropertiesThisType) {
+                var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
+                var name = Constant(property.Key);
+                var value = Ref(field.FieldName);
+                var entry = NewInstance(typeof(KeyValuePair<string, object>), name, value);
 
-				getter.ExprDotMethod(Ref("result"), "Add", entry);
-			}
+                getter.ExprDotMethod(Ref("result"), "Add", entry);
+            }
 
-			// Enumerable.Concat(result, base.NativeEnumerable);
+            // Enumerable.Concat(result, base.NativeEnumerable);
 
-			if (nativeEnumerable.IsOverride) {
-				getter.BlockReturn(
-					StaticMethod(
-						typeof(Enumerable),
-						"Concat",
-						Ref("result"),
-						ExprDotName(Ref("base"), "NativeEnumerable")));
-			}
-			else {
-				getter.BlockReturn(Ref("result"));
-			}
-		}
+            if (nativeEnumerable.IsOverride) {
+                getter.BlockReturn(
+                    StaticMethod(
+                        typeof(Enumerable),
+                        "Concat",
+                        Ref("result"),
+                        ExprDotName(Ref("base"), "NativeEnumerable")));
+            }
+            else {
+                getter.BlockReturn(Ref("result"));
+            }
+        }
+        
+        private void MakeNativeWrite(
+            CodegenMethod method,
+            CodegenClassScope classScope)
+        {
+            if (desc.OptionalSupertype != null && !desc.OptionalSupertype.Types.IsEmpty()) {
+                method.Block
+                    .ExprDotMethod(Ref("base"), "NativeWrite", Ref("context"));
+            }
 
-		private void MakeNativeWrite(
-			CodegenMethod method,
-			CodegenClassScope classScope)
-		{
-			if (desc.OptionalSupertype != null && !desc.OptionalSupertype.Types.IsEmpty()) {
-				method.Block
-					.ExprDotMethod(Ref("base"), "NativeWrite", Ref("context"));
-			}
-
-			method.Block
-				.DeclareVar<Utf8JsonWriter>("writer", ExprDotName(Ref("context"), "Writer"));
+            method.Block
+                .DeclareVar<Utf8JsonWriter>("writer", ExprDotName(Ref("context"), "Writer"));
 			
-			foreach (var property in desc.PropertiesThisType) {
-				var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
-				var forge = desc.Forges.Get(property.Key);
-				var fieldName = field.FieldName;
-				var write = forge.SerializerForge.CodegenSerialize(
-					new JsonSerializerForgeRefs(Ref("context"), Ref(fieldName), Constant(property.Key)),
-					method,
-					classScope);
-				method.Block
-					.ExprDotMethod(Ref("writer"), "WritePropertyName", Constant(property.Key))
-					.Expression(write);
-			}
-		}
+            foreach (var property in desc.PropertiesThisType) {
+                var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
+                var forge = desc.Forges.Get(property.Key);
+                var fieldName = field.FieldName;
+                var write = forge.SerializerForge.CodegenSerialize(
+                    new JsonSerializerForgeRefs(Ref("context"), Ref(fieldName), Constant(property.Key)),
+                    method,
+                    classScope);
+                method.Block
+                    .ExprDotMethod(Ref("writer"), "WritePropertyName", Constant(property.Key))
+                    .Expression(write);
+            }
+        }
 
-		private void MakeTryGetNativeEntry(
+        private void MakeTryGetNativeEntry(
 			CodegenMethod method,
 			CodegenClassScope classScope)
 		{
@@ -338,14 +341,18 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			}
 		}
 
-		private bool NeedDynamic()
-		{
-			return desc.IsDynamic && !ParentDynamic();
-		}
+        private bool NeedDynamic()
+        {
+            return desc.IsDynamic && !ParentDynamic();
+        }
 
-		private bool ParentDynamic()
-		{
-			return desc.OptionalSupertype != null && desc.OptionalSupertype.Detail.IsDynamic;
-		}
-	}
+        private bool ParentDynamic()
+        {
+            return desc.OptionalSupertype != null && desc.OptionalSupertype.Detail.IsDynamic;
+        }
+
+        public string ClassName => className;
+
+        public StmtClassForgeableType ForgeableType => StmtClassForgeableType.JSONEVENT;
+    }
 } // end of namespace

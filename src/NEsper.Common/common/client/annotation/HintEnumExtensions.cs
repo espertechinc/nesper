@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.client.annotation
 
                 case HintEnum.FILTERINDEX:
                     return "FILTERINDEX";
-                
+
                 case HintEnum.DISABLE_WHEREEXPR_MOVETO_FILTER:
                     return "DISABLE_WHEREEXPR_MOVETO_FILTER";
 
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.client.annotation
 
                 case HintEnum.DISABLE_OUTPUTLIMIT_OPT:
                     return "DISABLE_OUTPUTLIMIT_OPT";
-                
+
                 case HintEnum.SILENT_DELETE:
                     return "SILENT_DELETE";
             }
@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.client.annotation
 
                 case HintEnum.MAX_FILTER_WIDTH:
                     return true;
-                
+
                 case HintEnum.FILTERINDEX:
                     return false;
 
@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.client.annotation
 
                 case HintEnum.DISABLE_OUTPUTLIMIT_OPT:
                     return false;
-                
+
                 case HintEnum.SILENT_DELETE:
                     return false;
             }
@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.client.annotation
 
                 case HintEnum.MAX_FILTER_WIDTH:
                     return true;
-                
+
                 case HintEnum.FILTERINDEX:
                     return false;
 
@@ -203,7 +203,7 @@ namespace com.espertech.esper.common.client.annotation
 
                 case HintEnum.DISABLE_OUTPUTLIMIT_OPT:
                     return false;
-                
+
                 case HintEnum.SILENT_DELETE:
                     return false;
             }
@@ -252,10 +252,10 @@ namespace com.espertech.esper.common.client.annotation
 
                 case HintEnum.MAX_FILTER_WIDTH:
                     return false;
-                
+
                 case HintEnum.FILTERINDEX:
                     return true;
-                
+
                 case HintEnum.DISABLE_WHEREEXPR_MOVETO_FILTER:
                     return false;
 
@@ -264,7 +264,7 @@ namespace com.espertech.esper.common.client.annotation
 
                 case HintEnum.DISABLE_OUTPUTLIMIT_OPT:
                     return false;
-                
+
                 case HintEnum.SILENT_DELETE:
                     return false;
             }
@@ -313,11 +313,10 @@ namespace com.espertech.esper.common.client.annotation
         /// <throws>AnnotationException if an invalid text was found</throws>
         public static IDictionary<HintEnum, IList<string>> ValidateGetListed(Attribute attribute)
         {
-            if (!(attribute is HintAttribute)) {
+            if (!(attribute is HintAttribute hint)) {
                 return new EmptyDictionary<HintEnum, IList<string>>();
             }
 
-            var hint = (HintAttribute) attribute;
             var hintValueCaseNeutral = hint.Value.Trim();
             var hintValueUppercase = hintValueCaseNeutral.ToUpper();
 

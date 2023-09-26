@@ -38,22 +38,22 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public override object HandleNestedValue(object value)
         {
-            if (!(value is IDictionary<string, object>)) {
-                if (value is EventBean) {
-                    return mapGetter.Get((EventBean) value);
+            if (!(value is IDictionary<string, object> objects)) {
+                if (value is EventBean bean) {
+                    return mapGetter.Get(bean);
                 }
 
                 return null;
             }
 
-            return mapGetter.GetMap((IDictionary<string, object>) value);
+            return mapGetter.GetMap(objects);
         }
 
         public override object HandleNestedValueFragment(object value)
         {
-            if (!(value is IDictionary<string, object>)) {
-                if (value is EventBean) {
-                    return mapGetter.GetFragment((EventBean) value);
+            if (!(value is IDictionary<string, object> objects)) {
+                if (value is EventBean bean) {
+                    return mapGetter.GetFragment(bean);
                 }
 
                 return null;
@@ -61,22 +61,22 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
             // If the map does not contain the key, this is allowed and represented as null
             EventBean eventBean = EventBeanTypedEventFactory.AdapterForTypedMap(
-                (IDictionary<string, object>) value,
+                objects,
                 FragmentType);
             return mapGetter.GetFragment(eventBean);
         }
 
         public override bool HandleNestedValueExists(object value)
         {
-            if (!(value is IDictionary<string, object>)) {
-                if (value is EventBean) {
-                    return mapGetter.IsExistsProperty((EventBean) value);
+            if (!(value is IDictionary<string, object> objects)) {
+                if (value is EventBean bean) {
+                    return mapGetter.IsExistsProperty(bean);
                 }
 
                 return false;
             }
 
-            return mapGetter.IsMapExistsProperty((IDictionary<string, object>) value);
+            return mapGetter.IsMapExistsProperty(objects);
         }
 
         public override CodegenExpression HandleNestedValueCodegen(

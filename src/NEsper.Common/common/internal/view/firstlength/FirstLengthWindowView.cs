@@ -102,8 +102,8 @@ namespace com.espertech.esper.common.@internal.view.firstlength
 
             // If there are child views, call update method
             if (child != null && (newDataToPost != null || oldDataToPost != null)) {
-                var nd = newDataToPost != null ? newDataToPost.ToArray() : null;
-                var od = oldDataToPost != null ? oldDataToPost.ToArray() : null;
+                var nd = newDataToPost?.ToArray();
+                var od = oldDataToPost?.ToArray();
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(lengthFirstFactory, nd, od);
                 child.Update(nd, od);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();

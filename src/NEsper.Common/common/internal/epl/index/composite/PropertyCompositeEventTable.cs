@@ -39,13 +39,13 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             exprEvaluatorContext.InstrumentationProvider.QIndexAddRemove(this, newData, oldData);
 
             if (newData != null) {
-                foreach (EventBean theEvent in newData) {
+                foreach (var theEvent in newData) {
                     Add(theEvent, exprEvaluatorContext);
                 }
             }
 
             if (oldData != null) {
-                foreach (EventBean theEvent in oldData) {
+                foreach (var theEvent in oldData) {
                     Remove(theEvent, exprEvaluatorContext);
                 }
             }
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null) {
-                foreach (EventBean theEvent in events) {
+                foreach (var theEvent in events) {
                     Add(theEvent, exprEvaluatorContext);
                 }
             }
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
             ExprEvaluatorContext exprEvaluatorContext)
         {
             if (events != null) {
-                foreach (EventBean theEvent in events) {
+                foreach (var theEvent in events) {
                     Remove(theEvent, exprEvaluatorContext);
                 }
             }
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
 
         public string ToQueryPlan()
         {
-            return this.GetType().Name;
+            return GetType().Name;
         }
 
         public int? NumberOfEvents => null;

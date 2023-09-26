@@ -12,12 +12,12 @@ using com.espertech.esper.common.@internal.filterspec;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
-	public interface FilterSpecPlanCompute
-	{
-		FilterValueSetParam[][] Compute(
-			FilterSpecPlan plan,
-			MatchedEventMap matchedEvents,
-			ExprEvaluatorContext exprEvaluatorContext,
-			StatementContextFilterEvalEnv filterEvalEnv);
-	}
+    public interface FilterSpecPlanCompute
+    {
+        FilterValueSetParam[][] Compute(
+            FilterSpecPlan plan,
+            MatchedEventMap matchedEvents,
+            ExprEvaluatorContext exprEvaluatorContext,
+            StatementContextFilterEvalEnv filterEvalEnv);
+    }
 } // end of namespace

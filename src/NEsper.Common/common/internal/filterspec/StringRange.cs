@@ -75,17 +75,17 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            var that = (StringRange) o;
+            var that = (StringRange)o;
 
             if (_hashCode != that._hashCode) {
                 return false;
             }
 
-            if (Max != null ? !Max.Equals(that.Max) : that.Max != null) {
+            if (!Max?.Equals(that.Max) ?? that.Max != null) {
                 return false;
             }
 
-            if (Min != null ? !Min.Equals(that.Min) : that.Min != null) {
+            if (!Min?.Equals(that.Min) ?? that.Min != null) {
                 return false;
             }
 

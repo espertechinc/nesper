@@ -35,22 +35,20 @@ namespace com.espertech.esper.common.@internal.epl.util
             IList<NamedWindowConsumerStreamSpec> namedWindows)
         {
             foreach (var compiled in streams) {
-                if (compiled is FilterStreamSpecCompiled) {
-                    var c = (FilterStreamSpecCompiled) compiled;
-                    filters.Add(c.FilterSpecCompiled);
+                if (compiled is FilterStreamSpecCompiled specCompiled) {
+                    filters.Add(specCompiled.FilterSpecCompiled);
                 }
 
-                if (compiled is PatternStreamSpecCompiled) {
-                    var r = (PatternStreamSpecCompiled) compiled;
-                    var evalNodeAnalysisResult = EvalNodeUtil.RecursiveAnalyzeChildNodes(r.Root);
+                if (compiled is PatternStreamSpecCompiled streamSpecCompiled) {
+                    var evalNodeAnalysisResult = EvalNodeUtil.RecursiveAnalyzeChildNodes(streamSpecCompiled.Root);
                     var filterNodes = evalNodeAnalysisResult.FilterNodes;
                     foreach (var filterNode in filterNodes) {
                         filters.Add(filterNode.FilterSpecCompiled);
                     }
                 }
 
-                if (compiled is NamedWindowConsumerStreamSpec) {
-                    namedWindows.Add((NamedWindowConsumerStreamSpec) compiled);
+                if (compiled is NamedWindowConsumerStreamSpec spec) {
+                    namedWindows.Add(spec);
                 }
             }
         }

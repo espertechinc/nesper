@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.output.condition;
@@ -36,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         public bool IsDistinct { get; set; }
 
         public EventPropertyValueGetter DistinctKeyGetter { get; set; }
-        
+
         public TimePeriodCompute AfterTimePeriod { get; set; }
 
         public int? AfterConditionNumberOfEvents { get; set; }
@@ -46,5 +47,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         public EventType ResultEventType { get; set; }
 
         public EventType[] EventTypes { get; set; }
+
+        public StateMgmtSetting ChangeSetStateMgmtSettings { get; set; }
+
+        public StateMgmtSetting OutputFirstStateMgmtSettings { get; set; }
     }
 } // end of namespace

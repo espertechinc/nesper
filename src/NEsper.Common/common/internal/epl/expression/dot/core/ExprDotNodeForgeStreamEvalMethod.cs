@@ -20,15 +20,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotNodeForgeStreamEvalMethod : ExprEvaluator
     {
-        private readonly ExprDotNodeForgeStream forge;
-        private readonly ExprDotEval[] evaluators;
+        private readonly ExprDotNodeForgeStream _forge;
+        private readonly ExprDotEval[] _evaluators;
 
         public ExprDotNodeForgeStreamEvalMethod(
             ExprDotNodeForgeStream forge,
             ExprDotEval[] evaluators)
         {
-            this.forge = forge;
-            this.evaluators = evaluators;
+            _forge = forge;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprEvaluatorContext exprEvaluatorContext)
         {
             // get underlying event
-            var @event = eventsPerStream[forge.StreamNumber];
+            var @event = eventsPerStream[_forge.StreamNumber];
             if (@event == null) {
                 return null;
             }
@@ -45,8 +45,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             var inner = @event.Underlying;
 
             inner = ExprDotNodeUtility.EvaluateChain(
-                forge.Evaluators,
-                evaluators,
+                _forge.Evaluators,
+                _evaluators,
                 inner,
                 eventsPerStream,
                 isNewData,
@@ -89,8 +89,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             var typeInformation = ConstantNull();
             if (codegenClassScope.IsInstrumented) {
                 typeInformation = codegenClassScope.AddOrGetDefaultFieldSharable(
-                    new EPTypeCodegenSharable(
-                        EPTypeHelper.SingleValue(forge.EventType.UnderlyingType),
+                    new EPChainableTypeCodegenSharable(
+                        EPChainableTypeHelper.SingleValue(forge.EventType.UnderlyingType),
                         codegenClassScope));
             }
 

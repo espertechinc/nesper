@@ -43,7 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return _manufacturerFactory.Codegen(this, codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        public ExprEvaluator ExprEvaluator => new ExprNewInstanceNodeNonArrayForgeEval(_manufacturerFactory.MakeEvaluator());
+        public ExprEvaluator ExprEvaluator =>
+            new ExprNewInstanceNodeNonArrayForgeEval(_manufacturerFactory.MakeEvaluator());
 
         public Type EvaluationType { get; }
 

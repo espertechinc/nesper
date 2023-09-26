@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -16,13 +17,15 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+
 
 namespace com.espertech.esper.common.@internal.context.aifactory.update
 {
-	/// <summary>
-	///     Routing implementation that allows to pre-process events.
-	/// </summary>
-	public class InternalEventRouterDescFactory
+    /// <summary>
+    /// Routing implementation that allows to pre-process events.
+    /// </summary>
+    public class InternalEventRouterDescFactory
     {
         public static InternalEventRouterDescForge GetValidatePreprocessing(
             EventType eventType,
@@ -30,16 +33,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             Attribute[] annotations)
         {
             if (!(eventType is EventTypeSPI)) {
-                throw new ExprValidationException("Update statements require the event type to implement the " + typeof(EventTypeSPI) + " interface");
+                throw new ExprValidationException(
+                    "Update statements require the event type to implement the " + typeof(EventTypeSPI) + " interface");
             }
 
-            var eventTypeSPI = (EventTypeSPI) eventType;
+            var eventTypeSPI = (EventTypeSPI)eventType;
 
-            var wideners = new List<TypeWidenerSPI>();
-            var properties = new List<string>();
-            var propertiesTouched = new List<string>();
-            var expressions = new List<ExprNode>();
-            var specialWriters = new List<InternalEventRouterWriterForge>();
+            IList<TypeWidenerSPI> wideners = new List<TypeWidenerSPI>();
+            IList<string> properties = new List<string>();
+            IList<string> propertiesTouched = new List<string>();
+            IList<ExprNode> expressions = new List<ExprNode>();
+            IList<InternalEventRouterWriterForge> specialWriters = new List<InternalEventRouterWriterForge>();
 
             for (var i = 0; i < desc.Assignments.Count; i++) {
                 var onSet = desc.Assignments[i];
@@ -53,14 +57,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                             var propertyName = ident.Ident;
                             var writableProperty = eventTypeSPI.GetWritableProperty(propertyName);
                             if (writableProperty == null) {
-                                throw new ExprValidationException("Property '" + propertyName + "' is not available for write access");
+                                throw new ExprValidationException(
+                                    "Property '" + propertyName + "' is not available for write access");
                             }
 
                             TypeWidenerSPI widener;
+                            var evalType = assignment.Rhs.Forge.EvaluationType;
                             try {
                                 widener = TypeWidenerFactory.GetCheckPropertyAssignType(
                                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(assignment.Rhs),
-                                    assignment.Rhs.Forge.EvaluationType,
+                                    evalType,
                                     writableProperty.PropertyType,
                                     propertyName,
                                     false,
@@ -77,25 +83,30 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
                             wideners.Add(widener);
                         }
                         else if (lhs is ExprAssignmentLHSIdentWSubprop subprop) {
-                            throw new ExprValidationException("Property '" + subprop.SubpropertyName + "' is not available for write access");
+                            throw new ExprValidationException(
+                                "Property '" + subprop.SubpropertyName + "' is not available for write access");
                         }
                         else if (lhs is ExprAssignmentLHSArrayElement arrayElement) {
-                            var propertyName = lhs.Ident;
+                            var propertyName = arrayElement.Ident;
                             var writableProperty = eventTypeSPI.GetWritableProperty(propertyName);
                             if (writableProperty == null) {
-                                throw new ExprValidationException("Property '" + propertyName + "' is not available for write access");
+                                throw new ExprValidationException(
+                                    "Property '" + propertyName + "' is not available for write access");
                             }
 
-                            if (!writableProperty.PropertyType.IsArray) {
+                            var type = writableProperty.PropertyType;
+                            if (type == null || !type.IsArray) {
                                 throw new ExprValidationException("Property '" + propertyName + "' type is not array");
                             }
+
+                            var typeClass = type;
 
                             TypeWidenerSPI widener;
                             try {
                                 widener = TypeWidenerFactory.GetCheckPropertyAssignType(
                                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(assignment.Rhs),
                                     assignment.Rhs.Forge.EvaluationType,
-                                    writableProperty.PropertyType.GetElementType(),
+                                    typeClass.GetComponentType(),
                                     propertyName,
                                     false,
                                     null,

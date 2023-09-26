@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         public AggregationCodegenRowDetailStateDesc StateDesc { get; }
 
         public AggregationAccessorSlotPairForge[] AccessAccessors { get; }
-        
+
         public MultiKeyClassRef MultiKeyClassRef { get; }
     }
 } // end of namespace

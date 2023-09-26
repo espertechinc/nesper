@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.view.sort
                 ViewName,
                 SizeEvaluator,
                 agentInstanceViewFactoryContext.AgentInstanceContext);
-            IStreamSortRankRandomAccess sortedRandomAccess =
+            var sortedRandomAccess =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprSortedRankedAccess(agentInstanceViewFactoryContext);
             return new SortWindowView(this, sortWindowSize, sortedRandomAccess, agentInstanceViewFactoryContext);

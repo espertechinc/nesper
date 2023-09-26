@@ -34,9 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             int? upperbounds = null;
 
             var convertor = factoryNode.OptionalConvertor;
-            var eventsPerStream = convertor == null ? null : convertor.Invoke(beginState);
+            var eventsPerStream = convertor?.Invoke(beginState);
             if (factoryNode.SingleBound != null) {
-                var bounds = (int?) factoryNode.SingleBound.Evaluate(
+                var bounds = (int?)factoryNode.SingleBound.Evaluate(
                     eventsPerStream,
                     true,
                     context.AgentInstanceContext);
@@ -45,14 +45,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             }
             else {
                 if (factoryNode.LowerBounds != null) {
-                    lowerbounds = (int?) factoryNode.LowerBounds.Evaluate(
+                    lowerbounds = (int?)factoryNode.LowerBounds.Evaluate(
                         eventsPerStream,
                         true,
                         context.AgentInstanceContext);
                 }
 
                 if (factoryNode.UpperBounds != null) {
-                    upperbounds = (int?) factoryNode.UpperBounds.Evaluate(
+                    upperbounds = (int?)factoryNode.UpperBounds.Evaluate(
                         eventsPerStream,
                         true,
                         context.AgentInstanceContext);

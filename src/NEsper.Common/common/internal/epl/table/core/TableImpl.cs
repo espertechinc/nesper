@@ -43,13 +43,13 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         {
             var instance = GetTableInstance(agentInstanceId);
             var @lock = writesToTables ? instance.TableLevelRWLock.WriteLock : instance.TableLevelRWLock.ReadLock;
-            if (instance is TableInstanceGrouped) {
+            if (instance is TableInstanceGrouped grouped) {
                 return new TableAndLockProviderGroupedImpl(
-                    new TableAndLockGrouped(@lock, (TableInstanceGrouped) instance));
+                    new TableAndLockGrouped(@lock, grouped));
             }
 
             return new TableAndLockProviderUngroupedImpl(
-                new TableAndLockUngrouped(@lock, (TableInstanceUngrouped) instance));
+                new TableAndLockUngrouped(@lock, (TableInstanceUngrouped)instance));
         }
     }
 } // end of namespace

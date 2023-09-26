@@ -10,10 +10,10 @@ using System;
 
 namespace com.espertech.esper.common.client.hook.aggmultifunc
 {
-	/// <summary>
-	///     Annotation for use in EPL statements to add a debug.
-	/// </summary>
-	public class ExtensionAggregationMultiFunctionAttribute : Attribute
+    /// <summary>
+    ///     Annotation for use in EPL statements to add a debug.
+    /// </summary>
+    public class ExtensionAggregationMultiFunctionAttribute : Attribute
     {
         public ExtensionAggregationMultiFunctionAttribute()
         {

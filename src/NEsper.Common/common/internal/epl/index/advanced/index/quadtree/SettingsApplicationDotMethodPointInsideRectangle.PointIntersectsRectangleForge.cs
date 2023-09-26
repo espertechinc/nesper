@@ -46,15 +46,14 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 this.heightEval = heightEval;
             }
 
-            public ExprEvaluator ExprEvaluator {
-                get => new PointIntersectsRectangleEvaluator(
+            public ExprEvaluator ExprEvaluator =>
+                new PointIntersectsRectangleEvaluator(
                     pxEval.ExprEvaluator,
                     pyEval.ExprEvaluator,
                     xEval.ExprEvaluator,
                     yEval.ExprEvaluator,
                     widthEval.ExprEvaluator,
                     heightEval.ExprEvaluator);
-            }
 
             public CodegenExpression EvaluateCodegen(
                 Type requiredType,
@@ -69,17 +68,11 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                     codegenClassScope);
             }
 
-            public ExprForgeConstantType ForgeConstantType {
-                get => ExprForgeConstantType.NONCONST;
-            }
+            public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-            public Type EvaluationType {
-                get => typeof(bool?);
-            }
+            public Type EvaluationType => typeof(bool?);
 
-            public ExprNodeRenderable ExprForgeRenderable {
-                get => parent;
-            }
+            public ExprNodeRenderable ExprForgeRenderable => parent;
         }
     }
 }

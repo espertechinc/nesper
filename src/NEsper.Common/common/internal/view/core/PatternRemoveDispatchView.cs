@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.view.core
                     if (matches.Length == 2) {
                         var overlaps = AddEventsFromMatch(matches[1], events);
                         if (overlaps) {
-                            matches = new[] {matches[0]};
+                            matches = new[] { matches[0] };
                         }
                     }
                     else {
@@ -115,11 +115,10 @@ namespace com.espertech.esper.common.@internal.view.core
                 var prop = propDictionary.Get(desc.PropertyName);
                 if (prop == null) {
                 }
-                else if (prop is EventBean) {
-                    overlaps |= !events.Add((EventBean) prop);
+                else if (prop is EventBean bean) {
+                    overlaps |= !events.Add(bean);
                 }
-                else if (prop is EventBean[]) {
-                    var arr = (EventBean[]) prop;
+                else if (prop is EventBean[] arr) {
                     foreach (var ele in arr) {
                         overlaps |= !events.Add(ele);
                     }

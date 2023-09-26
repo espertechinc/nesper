@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     {
         protected internal static void AssertNonNullArgs(CodegenExpression[] @params)
         {
-            for (int i = 0; i < @params.Length; i++) {
+            for (var i = 0; i < @params.Length; i++) {
                 if (@params[i] == null) {
                     throw new ArgumentException("Parameter " + i + " is null");
                 }

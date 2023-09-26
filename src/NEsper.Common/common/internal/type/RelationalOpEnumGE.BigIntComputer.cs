@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.type
                 object objOne,
                 object objTwo)
             {
-                BigInteger s1 = (BigInteger) objOne;
-                BigInteger s2 = (BigInteger) objTwo;
+                var s1 = (BigInteger)objOne;
+                var s2 = (BigInteger)objTwo;
                 return s1.CompareTo(s2) >= 0;
             }
 

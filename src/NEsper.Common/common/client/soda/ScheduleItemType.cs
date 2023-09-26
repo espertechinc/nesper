@@ -47,19 +47,18 @@ namespace com.espertech.esper.common.client.soda
         /// </returns>
         public static string GetSyntax(this ScheduleItemType value)
         {
-            switch (value)
-            {
+            switch (value) {
                 case ScheduleItemType.WILDCARD:
-                    return ("*");
+                    return "*";
 
                 case ScheduleItemType.LASTDAY:
-                    return ("last");
+                    return "last";
 
                 case ScheduleItemType.WEEKDAY:
-                    return ("weekday");
+                    return "weekday";
 
                 case ScheduleItemType.LASTWEEKDAY:
-                    return ("lastweekday");
+                    return "lastweekday";
             }
 
             throw new ArgumentException();

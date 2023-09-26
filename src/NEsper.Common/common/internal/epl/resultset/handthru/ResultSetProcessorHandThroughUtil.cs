@@ -29,26 +29,24 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
         /// <param name="events">input events</param>
         /// <param name="isNewData">indicates whether we are dealing with new data (istream) or old data (rstream)</param>
         /// <param name="isSynthesize">set to true to indicate that synthetic events are required for an iterator result set</param>
-        /// <param name="agentInstanceContext">context</param>
+        /// <param name="exprEvaluatorContext">context</param>
         /// <returns>output events, one for each input event</returns>
         public static EventBean[] GetSelectEventsNoHavingHandThruView(
             SelectExprProcessor exprProcessor,
             EventBean[] events,
             bool isNewData,
             bool isSynthesize,
-            ExprEvaluatorContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (events == null)
-            {
+            if (events == null) {
                 return null;
             }
 
-            EventBean[] result = new EventBean[events.Length];
-            EventBean[] eventsPerStream = new EventBean[1];
-            for (int i = 0; i < events.Length; i++)
-            {
+            var result = new EventBean[events.Length];
+            var eventsPerStream = new EventBean[1];
+            for (var i = 0; i < events.Length; i++) {
                 eventsPerStream[0] = events[i];
-                result[i] = exprProcessor.Process(eventsPerStream, isNewData, isSynthesize, agentInstanceContext);
+                result[i] = exprProcessor.Process(eventsPerStream, isNewData, isSynthesize, exprEvaluatorContext);
             }
 
             return result;
@@ -72,17 +70,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.handthru
             bool isSynthesize,
             ExprEvaluatorContext agentInstanceContext)
         {
-            int length = events.Count;
-            if (length == 0)
-            {
+            var length = events.Count;
+            if (length == 0) {
                 return null;
             }
 
-            EventBean[] result = new EventBean[length];
-            int count = 0;
-            foreach (MultiKeyArrayOfKeys<EventBean> key in events)
-            {
-                EventBean[] eventsPerStream = key.Array;
+            var result = new EventBean[length];
+            var count = 0;
+            foreach (var key in events) {
+                var eventsPerStream = key.Array;
                 result[count] = exprProcessor.Process(eventsPerStream, isNewData, isSynthesize, agentInstanceContext);
                 count++;
             }

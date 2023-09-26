@@ -29,7 +29,7 @@ namespace com.espertech.esper.container
         {
             var wrapper = new ContainerImpl(new WindsorContainer());
             if (initialize) {
-                ContainerInitializer.InitializeDefaultServices(wrapper);
+                wrapper.InitializeDefaultServices();
             }
 
             return wrapper;
@@ -105,9 +105,9 @@ namespace com.espertech.esper.container
                 return (T) constructor.Invoke(new object[] { container });
             }
 
-            constructor = viewFactoryClass.GetConstructor(new Type[0]);
+            constructor = viewFactoryClass.GetConstructor(Type.EmptyTypes);
             if (constructor != null) {
-                return (T) constructor.Invoke(new object[0]);
+                return (T) constructor.Invoke(Array.Empty<object>());
             }
 
             var instance = default(T);

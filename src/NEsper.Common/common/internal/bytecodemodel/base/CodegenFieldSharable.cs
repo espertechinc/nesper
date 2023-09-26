@@ -24,8 +24,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public Func<Type> ProcType;
         public Func<CodegenExpression> ProcInitCtorScoped;
 
-        public Type Type() => ProcType();
+        public Type Type()
+        {
+            return ProcType();
+        }
 
-        public CodegenExpression InitCtorScoped() => ProcInitCtorScoped();
+        public CodegenExpression InitCtorScoped()
+        {
+            return ProcInitCtorScoped();
+        }
     }
 } // end of namespace

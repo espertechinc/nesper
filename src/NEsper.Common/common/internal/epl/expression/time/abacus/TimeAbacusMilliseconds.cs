@@ -27,19 +27,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
 
         public long DeltaForSecondsDouble(double seconds)
         {
-            return (long) Math.Round(1000d * seconds);
+            return (long)Math.Round(1000d * seconds);
         }
 
         public CodegenExpression DeltaForSecondsDoubleCodegen(
             CodegenExpressionRef sec,
             CodegenClassScope codegenClassScope)
         {
-            return Cast<long>(StaticMethod(typeof(Math), "Round", Op(Constant(1000d), "*", ExprDotMethod(sec, "AsDouble"))));
+            return Cast<long>(
+                StaticMethod(typeof(Math), "Round", Op(Constant(1000d), "*", ExprDotMethod(sec, "AsDouble"))));
         }
 
         public long DeltaForSecondsNumber(object timeInSeconds)
         {
-            if (TypeHelper.IsFloatingPointNumber(timeInSeconds)) {
+            if (timeInSeconds.IsFloatingPointNumber()) {
                 return DeltaForSecondsDouble(timeInSeconds.AsDouble());
             }
 
@@ -62,8 +63,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
         {
             return LocalMethodBuild(
                     codegenMethodScope.MakeChild(typeof(long), typeof(TimeAbacusMilliseconds), codegenClassScope)
-                        .AddParam(typeof(long), "fromTime")
-                        .AddParam(typeof(DateTimeEx), "dtx")
+                        .AddParam<long>("fromTime")
+                        .AddParam<DateTimeEx>("dtx")
                         .Block
                         .Expression(ExprDotMethod(Ref("dtx"), "SetUtcMillis", Ref("fromTime")))
                         .MethodReturn(Constant(0)))
@@ -79,9 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
             return dateTime.UtcMillis;
         }
 
-        public long OneSecond {
-            get => 1000;
-        }
+        public long OneSecond => 1000;
 
         public DateTimeEx ToDateTimeEx(long ts)
         {

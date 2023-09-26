@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         {
             if (optionalInterfaceImplemented != null) {
             }
-            
+
             ClassName = className.CodeInclusionTypeName();
             BaseList.AssignType(optionalInterfaceImplemented);
             Ctor = ctor;
@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             Methods = methods;
             Properties = properties;
         }
-        
+
         public string ClassName { get; }
 
         public CodegenClassBaseList BaseList { get; }
@@ -63,5 +63,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public CodegenCtor Ctor { get; }
 
         public string InterfaceGenericClass { get; set; }
+
+        public void AddInterfaceImplemented(Type type)
+        {
+            BaseList.AddInterface(type);
+        }
     }
 } // end of namespace

@@ -82,17 +82,6 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             return Collections.GetEmptyList<IndexHintInstruction>();
         }
 
-        public IList<IndexHintInstruction> GetInstructionsFireAndForget()
-        {
-            foreach (var pair in pairs) {
-                if (pair.Selector.IsEmpty()) { // empty selector mean hint applies to all
-                    return pair.Instructions;
-                }
-            }
-
-            return Collections.GetEmptyList<IndexHintInstruction>();
-        }
-
         protected internal static bool CheckValueInParen(
             string type,
             string value)
@@ -159,6 +148,18 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             }
 
             throw new IllegalStateException("Not a parentheses value");
+        }
+
+        public IList<IndexHintInstruction> InstructionsFireAndForget {
+            get {
+                foreach (var pair in pairs) {
+                    if (pair.Selector.IsEmpty()) { // empty selector mean hint applies to all
+                        return pair.Instructions;
+                    }
+                }
+
+                return Collections.GetEmptyList<IndexHintInstruction>();
+            }
         }
     }
 } // end of namespace

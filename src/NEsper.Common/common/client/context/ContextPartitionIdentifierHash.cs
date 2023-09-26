@@ -31,13 +31,13 @@ namespace com.espertech.esper.common.client.context
         /// <summary>Returns the hash code. </summary>
         /// <value>hash code</value>
         public int Hash {
-            get { return _hash; }
-            set { _hash = value; }
+            get => _hash;
+            set => _hash = value;
         }
 
         public override bool CompareTo(ContextPartitionIdentifier other)
         {
-            return other is ContextPartitionIdentifierHash && _hash == ((ContextPartitionIdentifierHash) other)._hash;
+            return other is ContextPartitionIdentifierHash hash && _hash == hash._hash;
         }
 
         public override string ToString()

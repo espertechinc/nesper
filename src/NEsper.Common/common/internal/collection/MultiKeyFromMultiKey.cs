@@ -28,6 +28,9 @@ namespace com.espertech.esper.common.@internal.collection
             ProcFrom = procFrom;
         }
 
-        public object From(object multiKey) => ProcFrom.Invoke(multiKey);
+        public object From(object multiKey)
+        {
+            return ProcFrom.Invoke(multiKey);
+        }
     }
 } // end of namespace

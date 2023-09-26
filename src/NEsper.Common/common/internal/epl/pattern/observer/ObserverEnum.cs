@@ -101,8 +101,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             string name)
         {
             foreach (var observerEnum in EnumHelper.GetValues<ObserverEnum>()) {
-                if ((observerEnum.GetNamespace() == nspace) &&
-                    (observerEnum.GetName() == name)) {
+                if (observerEnum.GetNamespace() == nspace &&
+                    observerEnum.GetName() == name) {
                     return observerEnum;
                 }
             }

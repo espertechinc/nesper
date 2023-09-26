@@ -64,30 +64,25 @@ namespace com.espertech.esper.common.@internal.collection
         /// Gets the current.
         /// </summary>
         /// <value>The current.</value>
-        object IEnumerator.Current {
-            get { return _eventBeanEnum.Current; }
-        }
+        object IEnumerator.Current => _eventBeanEnum.Current;
 
         /// <summary>
         /// Gets the current.
         /// </summary>
         /// <value>The current.</value>
-        public EventBean Current {
-            get { return _eventBeanEnum.Current; }
-        }
+        public EventBean Current => _eventBeanEnum.Current;
 
         private IEnumerator<EventBean> MakeEnumerator(IEnumerator<object> keyEnumerator)
         {
             while (keyEnumerator.MoveNext()) {
                 var entry = GetValue(keyEnumerator.Current);
-                if (entry is ICollection<EventBean>) {
-                    var collection = (ICollection<EventBean>) entry;
-                    foreach (EventBean eventBean in collection) {
+                if (entry is ICollection<EventBean> collection) {
+                    foreach (var eventBean in collection) {
                         yield return eventBean;
                     }
                 }
-                else if (entry is EventBean) {
-                    yield return ((EventBean) entry);
+                else if (entry is EventBean bean) {
+                    yield return bean;
                 }
                 else if (entry == null) {
                 }

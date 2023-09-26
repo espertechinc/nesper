@@ -27,6 +27,11 @@ namespace com.espertech.esper.common.@internal.@event.core
             return typeName.Substring(TABLE_INTERNAL_PREFIX.Length);
         }
 
+        public static bool IsTableNamePrefix(string typeName)
+        {
+            return typeName.StartsWith(TABLE_INTERNAL_PREFIX);
+        }
+
         public static string GetTablePublicTypeName(string tableName)
         {
             return "table_" + tableName;

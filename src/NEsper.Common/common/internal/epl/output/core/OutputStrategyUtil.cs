@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             UniformPair<EventBean[]> result,
             UpdateDispatchView finalView)
         {
-            var newEvents = result != null ? result.First : null;
-            var oldEvents = result != null ? result.Second : null;
+            var newEvents = result?.First;
+            var oldEvents = result?.Second;
             if (newEvents != null || oldEvents != null) {
                 finalView.NewResult(result);
             }

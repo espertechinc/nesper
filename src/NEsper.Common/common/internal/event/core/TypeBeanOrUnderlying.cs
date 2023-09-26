@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return false;
             }
 
-            var that = (TypeBeanOrUnderlying) o;
+            var that = (TypeBeanOrUnderlying)o;
 
             return EventType.Equals(that.EventType);
         }

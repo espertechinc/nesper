@@ -44,6 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         public override string RootPropertyName => null;
 
         public override bool IsLocalInlinedClass => false;
+
         public override CodegenExpression EvaluateCodegen(
             Type requiredType,
             CodegenMethodScope codegenMethodScope,

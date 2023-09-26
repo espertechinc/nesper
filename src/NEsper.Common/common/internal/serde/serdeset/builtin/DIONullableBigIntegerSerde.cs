@@ -13,57 +13,57 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	/// <summary>
-	/// Binding for nullable boolean values.
-	/// </summary>
-	public class DIONullableBigIntegerSerde : DataInputOutputSerdeBase<BigInteger?>
-	{
-		public static readonly DIONullableBigIntegerSerde INSTANCE = new DIONullableBigIntegerSerde();
+    /// <summary>
+    /// Binding for nullable boolean values.
+    /// </summary>
+    public class DIONullableBigIntegerSerde : DataInputOutputSerdeBase<BigInteger?>
+    {
+        public static readonly DIONullableBigIntegerSerde INSTANCE = new DIONullableBigIntegerSerde();
 
-		private DIONullableBigIntegerSerde()
-		{
-		}
+        private DIONullableBigIntegerSerde()
+        {
+        }
 
-		public override void Write(
-			BigInteger? @object,
-			DataOutput output,
-			byte[] pageFullKey,
-			EventBeanCollatedWriter writer)
-		{
-			Write(@object, output);
-		}
+        public override void Write(
+            BigInteger? @object,
+            DataOutput output,
+            byte[] pageFullKey,
+            EventBeanCollatedWriter writer)
+        {
+            Write(@object, output);
+        }
 
-		public void Write(
-			BigInteger? bigInteger,
-			DataOutput stream)
-		{
-			bool isNull = bigInteger == null;
-			stream.WriteBoolean(isNull);
-			if (!isNull) {
-				DIOBigIntegerUtil.WriteBigInt(bigInteger.Value, stream);
-			}
-		}
+        public void Write(
+            BigInteger? bigInteger,
+            DataOutput stream)
+        {
+            var isNull = bigInteger == null;
+            stream.WriteBoolean(isNull);
+            if (!isNull) {
+                DIOBigIntegerUtil.WriteBigInt(bigInteger.Value, stream);
+            }
+        }
 
-		public BigInteger? Read(DataInput input)
-		{
-			return ReadInternal(input);
-		}
+        public BigInteger? Read(DataInput input)
+        {
+            return ReadInternal(input);
+        }
 
-		public override BigInteger? ReadValue(
-			DataInput input,
-			byte[] resourceKey)
-		{
-			return ReadInternal(input);
-		}
+        public override BigInteger? ReadValue(
+            DataInput input,
+            byte[] resourceKey)
+        {
+            return ReadInternal(input);
+        }
 
-		private BigInteger? ReadInternal(DataInput input)
-		{
-			bool isNull = input.ReadBoolean();
-			if (isNull) {
-				return null;
-			}
+        private BigInteger? ReadInternal(DataInput input)
+        {
+            var isNull = input.ReadBoolean();
+            if (isNull) {
+                return null;
+            }
 
-			return DIOBigIntegerUtil.ReadBigInt(input);
-		}
-	}
+            return DIOBigIntegerUtil.ReadBigInt(input);
+        }
+    }
 } // end of namespace

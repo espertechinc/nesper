@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
             classes.AddToSet(enumType);
         }
-        
+
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
         }

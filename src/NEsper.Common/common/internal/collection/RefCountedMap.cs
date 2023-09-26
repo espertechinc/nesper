@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.collection
         /// <value></value>
         public virtual TV this[TK key] {
             get {
-                if (!_refMap.TryGetValue(key, out Pair<TV, int> refValue)) {
-                    return default(TV);
+                if (!_refMap.TryGetValue(key, out var refValue)) {
+                    return default;
                 }
 
                 return refValue.First;
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.collection
                     throw new IllegalStateException("Value value already in collection");
                 }
 
-                Pair<TV, int> refValue = new Pair<TV, int>(value, 1);
+                var refValue = new Pair<TV, int>(value, 1);
                 _refMap[key] = refValue;
 
                 //return val;
@@ -68,8 +68,8 @@ namespace com.espertech.esper.common.@internal.collection
             TK key,
             out TV value)
         {
-            if (!_refMap.TryGetValue(key, out Pair<TV, int> refValue)) {
-                value = default(TV);
+            if (!_refMap.TryGetValue(key, out var refValue)) {
+                value = default;
                 return false;
             }
 
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.collection
                 throw new IllegalStateException("Value value not found in collection");
             }
 
-            int refCounter = refValue.Second;
+            var refCounter = refValue.Second;
             if (refCounter < 1) {
                 throw new IllegalStateException(
                     "Unexpected reference counter value " + refValue.Second + " encountered for key " + key);

@@ -141,26 +141,26 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
             }
         }
 
-        public EPType ReturnType {
+        public EPChainableType ReturnType {
             get {
                 var functionName = validationContext.FunctionName;
                 switch (functionName) {
                     case "ss":
-                        return EPTypeHelper.SingleValue(validationContext.AllParameterExpressions[0].Forge.EvaluationType);
+                        return EPChainableTypeHelper.SingleValue(validationContext.AllParameterExpressions[0].Forge.EvaluationType);
 
                     case "sa":
-                        return EPTypeHelper.Array(validationContext.AllParameterExpressions[0].Forge.EvaluationType);
+                        return EPChainableTypeHelper.Array(validationContext.AllParameterExpressions[0].Forge.EvaluationType);
 
                     case "sc":
-                        return EPTypeHelper.CollectionOfSingleValue(
-                            validationContext.AllParameterExpressions[0].Forge.EvaluationType, null);
+                        return EPChainableTypeHelper.CollectionOfSingleValue(
+                            validationContext.AllParameterExpressions[0].Forge.EvaluationType);
 
                     case "se1":
                     case "se2":
-                        return EPTypeHelper.SingleEvent(validationContext.EventTypes[0]);
+                        return EPChainableTypeHelper.SingleEvent(validationContext.EventTypes[0]);
 
                     case "ee":
-                        return EPTypeHelper.CollectionOfEvents(validationContext.EventTypes[0]);
+                        return EPChainableTypeHelper.CollectionOfEvents(validationContext.EventTypes[0]);
 
                     default:
                         throw new IllegalStateException("Unrecognized function name '" + functionName + "'");

@@ -15,12 +15,12 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
     public class ExprDotDTMethodDesc
     {
         private readonly ExprDotForge forge;
-        private readonly EPType returnType;
+        private readonly EPChainableType returnType;
         private readonly FilterExprAnalyzerAffector intervalFilterDesc;
 
         public ExprDotDTMethodDesc(
             ExprDotForge forge,
-            EPType returnType,
+            EPChainableType returnType,
             FilterExprAnalyzerAffector intervalFilterDesc)
         {
             this.forge = forge;
@@ -28,16 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             this.intervalFilterDesc = intervalFilterDesc;
         }
 
-        public ExprDotForge Forge {
-            get => forge;
-        }
+        public ExprDotForge Forge => forge;
 
-        public EPType ReturnType {
-            get => returnType;
-        }
+        public EPChainableType ReturnType => returnType;
 
-        public FilterExprAnalyzerAffector IntervalFilterDesc {
-            get => intervalFilterDesc;
-        }
+        public FilterExprAnalyzerAffector IntervalFilterDesc => intervalFilterDesc;
     }
 } // end of namespace

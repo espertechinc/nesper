@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 bool newData,
                 ExprEvaluatorContext context)
             {
-                long thresholdValue = threshold.Evaluate(leftStart, eventsPerStream, newData, context);
+                var thresholdValue = threshold.Evaluate(leftStart, eventsPerStream, newData, context);
 
                 if (during) {
                     var deltaStart = leftStart - rightStart;

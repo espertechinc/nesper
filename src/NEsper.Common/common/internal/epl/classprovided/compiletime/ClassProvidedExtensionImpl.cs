@@ -45,39 +45,47 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             this.classes.AddAll(classes);
 
             try {
-                EPTypeHelper.TraverseAnnotations<ExtensionSingleRowFunctionAttribute>(
+                EPChainableTypeHelper.TraverseAnnotations<ExtensionSingleRowFunctionAttribute>(
                     classes,
                     (
                         clazz,
                         annotation) => {
                         if (singleRowFunctionExtensions.IsEmpty()) {
-                            singleRowFunctionExtensions = new Dictionary<string, Pair<Type, ExtensionSingleRowFunctionAttribute>>();
+                            singleRowFunctionExtensions =
+                                new Dictionary<string, Pair<Type, ExtensionSingleRowFunctionAttribute>>();
                         }
 
                         if (singleRowFunctionExtensions.ContainsKey(annotation.Name)) {
-                            throw new EPException("The plug-in single-row function '" + annotation.Name + "' occurs multiple times");
+                            throw new EPException(
+                                "The plug-in single-row function '" + annotation.Name + "' occurs multiple times");
                         }
 
-                        singleRowFunctionExtensions.Put(annotation.Name, new Pair<Type, ExtensionSingleRowFunctionAttribute>(clazz, annotation));
+                        singleRowFunctionExtensions.Put(
+                            annotation.Name,
+                            new Pair<Type, ExtensionSingleRowFunctionAttribute>(clazz, annotation));
                     });
 
-                EPTypeHelper.TraverseAnnotations<ExtensionAggregationFunctionAttribute>(
+                EPChainableTypeHelper.TraverseAnnotations<ExtensionAggregationFunctionAttribute>(
                     classes,
                     (
                         clazz,
                         annotation) => {
                         if (aggregationFunctionExtensions.IsEmpty()) {
-                            aggregationFunctionExtensions = new Dictionary<string, Pair<Type, ExtensionAggregationFunctionAttribute>>();
+                            aggregationFunctionExtensions =
+                                new Dictionary<string, Pair<Type, ExtensionAggregationFunctionAttribute>>();
                         }
 
                         if (aggregationFunctionExtensions.ContainsKey(annotation.Name)) {
-                            throw new EPException("The plug-in aggregation function '" + annotation.Name + "' occurs multiple times");
+                            throw new EPException(
+                                "The plug-in aggregation function '" + annotation.Name + "' occurs multiple times");
                         }
 
-                        aggregationFunctionExtensions.Put(annotation.Name, new Pair<Type, ExtensionAggregationFunctionAttribute>(clazz, annotation));
+                        aggregationFunctionExtensions.Put(
+                            annotation.Name,
+                            new Pair<Type, ExtensionAggregationFunctionAttribute>(clazz, annotation));
                     });
 
-                EPTypeHelper.TraverseAnnotations<ExtensionAggregationMultiFunctionAttribute>(
+                EPChainableTypeHelper.TraverseAnnotations<ExtensionAggregationMultiFunctionAttribute>(
                     classes,
                     (
                         clazz,
@@ -97,7 +105,8 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 
                         foreach (var name in namesDeduplicated) {
                             if (aggregationMultiFunctionExtensions.ContainsKey(name)) {
-                                throw new EPException("The plug-in aggregation multi-function '" + name + "' occurs multiple times");
+                                throw new EPException(
+                                    "The plug-in aggregation multi-function '" + name + "' occurs multiple times");
                             }
 
                             aggregationMultiFunctionExtensions.Put(name, new Pair<Type, string[]>(clazz, namesArray));

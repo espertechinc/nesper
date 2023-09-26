@@ -42,7 +42,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(bool?), this.GetType(), classScope);
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
+            var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             var eps = symbols.GetAddEPS(method);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var left = symbols.GetAddLeftResult(method);
@@ -50,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block.IfNullReturnNull(symbols.GetAddLeftResult(method));
             if (havingEval != null) {
                 CodegenExpression having = LocalMethod(
-                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope, true),
+                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope),
                     eps,
                     ConstantTrue(),
                     evalCtx);
@@ -62,11 +66,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             CodegenExpression select = LocalMethod(
-                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope, true),
+                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope),
                 eps,
                 ConstantTrue(),
                 evalCtx);
-            var rightEvalType = Boxing.GetBoxedType(selectEval.EvaluationType);
+            var rightEvalType = selectEval.EvaluationType.GetBoxedType();
             method.Block
                 .DeclareVar(rightEvalType, "rhs", select)
                 .IfRefNullReturnNull("rhs");

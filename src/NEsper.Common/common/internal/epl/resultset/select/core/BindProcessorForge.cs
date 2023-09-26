@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,11 +23,15 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 {
     /// <summary>
-    ///     Works in conjunction with <seealso cref="SelectExprProcessor" /> to present
-    ///     a result as an object array for 'natural' delivery.
+    /// Works in conjunction with <seealso cref = "SelectExprProcessor"/> to present
+    /// a result as an object array for 'natural' delivery.
     /// </summary>
     public class BindProcessorForge
     {
+        private ExprForge[] expressionForges;
+        private Type[] expressionTypes;
+        private string[] columnNamesAssigned;
+
         public BindProcessorForge(
             SelectExprProcessorForge synthetic,
             SelectClauseElementCompiled[] selectionList,
@@ -38,7 +42,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             var expressions = new List<ExprForge>();
             var types = new List<Type>();
             var columnNames = new List<string>();
-
             foreach (var element in selectionList) {
                 // handle wildcards by outputting each stream's underlying event
                 if (element is SelectClauseElementWildcard) {
@@ -58,12 +61,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                         columnNames.Add(streamNames[i]);
                     }
                 }
-                else if (element is SelectClauseStreamCompiledSpec) {
+                else if (element is SelectClauseStreamCompiledSpec streamSpec) {
                     // handle stream wildcards by outputting the stream underlying event
-                    var streamSpec = (SelectClauseStreamCompiledSpec) element;
                     var type = typesPerStream[streamSpec.StreamNumber];
                     var returnType = type.UnderlyingType;
-
                     var tableMetadata = tableService.ResolveTableFromEventType(type);
                     ExprForge forge;
                     if (tableMetadata != null) {
@@ -77,12 +78,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     types.Add(returnType);
                     columnNames.Add(streamNames[streamSpec.StreamNumber]);
                 }
-                else if (element is SelectClauseExprCompiledSpec) {
+                else if (element is SelectClauseExprCompiledSpec expr) {
                     // handle expressions
-                    var expr = (SelectClauseExprCompiledSpec) element;
                     var forge = expr.SelectExpression.Forge;
                     expressions.Add(forge);
-                    types.Add(forge.EvaluationType);
+                    var evaluationType = forge.EvaluationType;
+                    types.Add(evaluationType == null ? null : evaluationType);
                     if (expr.AssignedName != null) {
                         columnNames.Add(expr.AssignedName);
                     }
@@ -97,16 +98,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 }
             }
 
-            ExpressionForges = expressions.ToArray();
-            ExpressionTypes = types.ToArray();
-            ColumnNamesAssigned = columnNames.ToArray();
+            expressionForges = expressions.ToArray();
+            expressionTypes = types.ToArray();
+            columnNamesAssigned = columnNames.ToArray();
         }
-
-        public ExprForge[] ExpressionForges { get; }
-
-        public Type[] ExpressionTypes { get; }
-
-        public string[] ColumnNamesAssigned { get; }
 
         public CodegenMethod ProcessCodegen(
             CodegenMethod processMethod,
@@ -114,17 +109,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             CodegenClassScope codegenClassScope)
         {
             var methodNode = processMethod.MakeChild(typeof(object[]), GetType(), codegenClassScope);
-            var block = methodNode.Block
-                .DeclareVar<object[]>(
-                    "parameters",
-                    NewArrayByLength(typeof(object), Constant(ExpressionForges.Length)));
-            for (var i = 0; i < ExpressionForges.Length; i++) {
+            var block = methodNode.Block.DeclareVar<object[]>(
+                "parameters",
+                NewArrayByLength(typeof(object), Constant(expressionForges.Length)));
+            for (var i = 0; i < expressionForges.Length; i++) {
                 block.AssignArrayElement(
                     "parameters",
                     Constant(i),
                     CodegenLegoMayVoid.ExpressionMayVoid(
                         typeof(object),
-                        ExpressionForges[i],
+                        expressionForges[i],
                         methodNode,
                         exprSymbol,
                         codegenClassScope));
@@ -133,5 +127,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             block.MethodReturn(Ref("parameters"));
             return methodNode;
         }
+
+        public ExprForge[] ExpressionForges => expressionForges;
+
+        public Type[] ExpressionTypes => expressionTypes;
+
+        public string[] ColumnNamesAssigned => columnNamesAssigned;
     }
 } // end of namespace

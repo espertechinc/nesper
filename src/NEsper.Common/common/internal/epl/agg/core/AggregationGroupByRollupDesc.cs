@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         public int NumLevelsAggregation { get; }
 
         public int NumLevels => Levels.Length;
-        
+
         public DataInputOutputSerde[] KeySerdes => Levels.Select(v => v.SubkeySerde).ToArray();
     }
 }

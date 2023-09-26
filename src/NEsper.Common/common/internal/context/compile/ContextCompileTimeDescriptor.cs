@@ -6,9 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.controller.core;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.context.compile
 {
@@ -37,5 +39,12 @@ namespace com.espertech.esper.common.@internal.context.compile
         public ContextPropertyRegistry ContextPropertyRegistry { get; }
 
         public ContextControllerPortableInfo[] ValidationInfos { get; }
+
+        public void VisitFilterAddendumEventTypes(Consumer<EventType> consumer)
+        {
+            foreach (var controller in ValidationInfos) {
+                controller.VisitFilterAddendumEventTypes(consumer);
+            }
+        }
     }
 } // end of namespace

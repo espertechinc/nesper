@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.context.module
 
         public bool HasMatchRecognize { get; set; }
 
-        public AuditProvider AuditProvider { get; set; }
+        public AuditProvider AuditProvider { get; set; } = AuditProviderDefault.INSTANCE;
 
         public bool IsInstrumented { get; set; }
 
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.context.module
         public IDictionary<StatementProperty, object> Properties { get; set; }
 
         public IDictionary<string, int> SubstitutionParamNames { get; set; }
-        
+
         public ExpressionScriptProvided[] OnScripts { get; set; }
     }
 } // end of namespace

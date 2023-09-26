@@ -42,12 +42,12 @@ namespace com.espertech.esper.common.@internal.collection
                 return false;
             }
 
-            var o = (IntSeqKeySix) other;
-            return (o.One == One) &&
-                   (o.Two == Two) &&
-                   (o.Three == Three) &&
-                   (o.Four == Four) &&
-                   (o.Five == Five);
+            var o = (IntSeqKeySix)other;
+            return o.One == One &&
+                   o.Two == Two &&
+                   o.Three == Three &&
+                   o.Four == Four &&
+                   o.Five == Five;
         }
 
         public IntSeqKey AddToEnd(int num)
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public int[] AsIntArray()
         {
-            return new[] {One, Two, Three, Four, Five};
+            return new[] { One, Two, Three, Four, Five };
         }
 
         public static void Write(
@@ -109,11 +109,11 @@ namespace com.espertech.esper.common.@internal.collection
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
-            return Equals((IntSeqKeyFive) obj);
+            return Equals((IntSeqKeyFive)obj);
         }
 
         public override int GetHashCode()

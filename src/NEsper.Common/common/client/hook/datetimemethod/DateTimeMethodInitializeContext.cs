@@ -8,10 +8,10 @@
 
 namespace com.espertech.esper.common.client.hook.datetimemethod
 {
-	/// <summary>
-	///     Context for use with the date-time method extension API
-	/// </summary>
-	public class DateTimeMethodInitializeContext
+    /// <summary>
+    ///     Context for use with the date-time method extension API
+    /// </summary>
+    public class DateTimeMethodInitializeContext
     {
     }
 } // end of namespace

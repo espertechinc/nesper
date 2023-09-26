@@ -15,7 +15,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.logsink
 {
     public class ConsoleOpRendererSummary : ConsoleOpRenderer
     {
-        public void Render(EventBean theEvent, StringWriter writer)
+        public void Render(EventBean theEvent, TextWriter writer)
         {
             EventBeanSummarizer.Summarize(theEvent, writer);
         }

@@ -9,7 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 
 namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
@@ -23,15 +23,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
         public EventTable[] Index(
             IList<EventBean> pollResult,
             bool isActiveCache,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             if (!isActiveCache) {
-                return new EventTable[] {new UnindexedEventTableList(pollResult, StreamNum)};
+                return new EventTable[] { new UnindexedEventTableList(pollResult, StreamNum) };
             }
 
             var tables = new EventTable[IndexingStrategies.Length];
             for (var i = 0; i < IndexingStrategies.Length; i++) {
-                tables[i] = IndexingStrategies[i].Index(pollResult, isActiveCache, agentInstanceContext)[0];
+                tables[i] = IndexingStrategies[i].Index(pollResult, isActiveCache, exprEvaluatorContext)[0];
             }
 
             var organization = new EventTableOrganization(
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
                 StreamNum,
                 null,
                 EventTableOrganizationType.MULTIINDEX);
-            return new EventTable[] {new MultiIndexEventTable(tables, organization)};
+            return new EventTable[] { new MultiIndexEventTable(tables, organization) };
         }
     }
 } // end of namespace

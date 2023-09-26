@@ -35,7 +35,10 @@ namespace com.espertech.esper.common.@internal.type
                 CodegenExpression rhs,
                 Type rhsType)
             {
-                return RelationalOpEnumExtensions.CodegenComparable(lhs, rhs, CodegenExpressionRelational.CodegenRelational.LE);
+                return RelationalOpEnumExtensions.CodegenComparable(
+                    lhs,
+                    rhs,
+                    CodegenExpressionRelational.CodegenRelational.LE);
             }
         }
     }

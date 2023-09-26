@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
             string myDeploymentId,
             PathRegistry<string, ContextMetaData> pathContextRegistry)
         {
-            bool protectedVisibility = contextVisibility == NameAccessModifier.PRIVATE;
+            var protectedVisibility = contextVisibility == NameAccessModifier.PRIVATE;
             string contextDeploymentId;
             if (protectedVisibility) {
                 contextDeploymentId = myDeploymentId;
@@ -44,8 +44,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
             NameAccessModifier? visibility,
             string contextName)
         {
-            bool protectedVisibility = visibility == NameAccessModifier.PRIVATE;
-            string message = "Failed find to context '" + contextName + "'";
+            var protectedVisibility = visibility == NameAccessModifier.PRIVATE;
+            var message = "Failed find to context '" + contextName + "'";
             if (!protectedVisibility) {
                 message += " module name '" + StringValue.UnnamedWhenNullOrEmpty(contextModuleName) + "'";
             }

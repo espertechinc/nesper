@@ -34,9 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             this.optionalFilter = optionalFilter;
         }
 
-        public ExprForge OptionalFilter {
-            get => optionalFilter;
-        }
+        public ExprForge OptionalFilter => optionalFilter;
 
         public CodegenExpression Make(
             CodegenMethod method,
@@ -44,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             CodegenClassScope classScope)
         {
             var injectionStrategy =
-                (InjectionStrategyClassNewInstance) mode.InjectionStrategyAggregationAgentFactory;
+                (InjectionStrategyClassNewInstance)mode.InjectionStrategyAggregationAgentFactory;
             var factoryField = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(AggregationMultiFunctionAgentFactory),

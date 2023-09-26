@@ -45,7 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             throw new UnsupportedOperationException("State key not available as always used with tables");
         }
 
-        public override AggregationStateFactoryForge GetAggregationStateFactory(bool isMatchRecognize)
+        public override AggregationStateFactoryForge GetAggregationStateFactory(
+            bool isMatchRecognize,
+            bool isJoin)
         {
             // For match-recognize we don't allow
             if (isMatchRecognize) {

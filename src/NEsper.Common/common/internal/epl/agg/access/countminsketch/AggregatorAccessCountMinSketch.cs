@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.approx.countminsketch;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
+using com.espertech.esper.common.@internal.fabric;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
@@ -24,17 +25,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
     public class AggregatorAccessCountMinSketch : AggregatorAccess
     {
         private readonly AggregationStateCountMinSketchForge forge;
-        private readonly CodegenExpressionMember state;
-        private readonly CodegenExpressionInstanceField spec;
+        private CodegenExpressionMember state;
+        private CodegenExpressionInstanceField spec;
 
-        public AggregatorAccessCountMinSketch(
-            AggregationStateCountMinSketchForge forge,
+        public AggregatorAccessCountMinSketch(AggregationStateCountMinSketchForge forge)
+        {
+            this.forge = forge;
+        }
+
+
+        public void InitAccessForge(
             int col,
             CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
             CodegenClassScope classScope)
         {
-            this.forge = forge;
             state = membersColumnized.AddMember(col, typeof(CountMinSketchAggState), "state");
             spec = classScope.NamespaceScope.AddDefaultFieldUnshared(
                 true,
@@ -96,6 +101,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.countminsketch
             method.Block.AssignRef(
                 RowDotMember(row, state),
                 StaticMethod(typeof(AggregationStateSerdeCountMinSketch), "ReadCountMinSketch", input, spec));
+        }
+
+        public void CollectFabricType(FabricTypeCollector collector)
+        {
+            AggregationStateSerdeCountMinSketch.AppendFormat(collector, forge.specification);
         }
 
         public static CodegenExpression CodegenGetAccessTableState(

@@ -32,55 +32,55 @@ namespace com.espertech.esper.common.@internal.collection
 
         public IEnumerator<T> GetEnumerator()
         {
-            return ((IList<T>) Array).GetEnumerator();
+            return ((IList<T>)Array).GetEnumerator();
         }
 
         public void Add(T item)
         {
-            ((IList<T>) Array).Add(item);
+            ((IList<T>)Array).Add(item);
         }
 
         public void Clear()
         {
-            ((IList<T>) Array).Clear();
+            ((IList<T>)Array).Clear();
         }
 
         public bool Contains(T item)
         {
-            return ((IList<T>) Array).Contains(item);
+            return ((IList<T>)Array).Contains(item);
         }
 
         public void CopyTo(
             T[] array,
             int arrayIndex)
         {
-            ((IList<T>) Array).CopyTo(array, arrayIndex);
+            ((IList<T>)Array).CopyTo(array, arrayIndex);
         }
 
         public bool Remove(T item)
         {
-            return ((IList<T>) Array).Remove(item);
+            return ((IList<T>)Array).Remove(item);
         }
 
-        public int Count => ((IList<T>) Array).Count;
+        public int Count => ((IList<T>)Array).Count;
 
-        public bool IsReadOnly => ((IList<T>) Array).IsReadOnly;
+        public bool IsReadOnly => ((IList<T>)Array).IsReadOnly;
 
         public int IndexOf(T item)
         {
-            return ((IList<T>) Array).IndexOf(item);
+            return ((IList<T>)Array).IndexOf(item);
         }
 
         public void Insert(
             int index,
             T item)
         {
-            ((IList<T>) Array).Insert(index, item);
+            ((IList<T>)Array).Insert(index, item);
         }
 
         public void RemoveAt(int index)
         {
-            ((IList<T>) Array).RemoveAt(index);
+            ((IList<T>)Array).RemoveAt(index);
         }
 
         public void Expand(int size)

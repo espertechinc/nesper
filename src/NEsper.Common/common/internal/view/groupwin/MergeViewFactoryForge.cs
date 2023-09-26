@@ -33,7 +33,6 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public void Attach(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             EventType = parentEventType;
@@ -58,9 +57,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public string ViewName => "merge";
 
-        public void Accept(ViewForgeVisitor visitor)
+        public T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
         {
-            visitor.Visit(this);
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

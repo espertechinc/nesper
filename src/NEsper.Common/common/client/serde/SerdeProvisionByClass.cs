@@ -42,13 +42,16 @@ namespace com.espertech.esper.common.client.serde
             }
 
             try {
-                MethodResolver.ResolveCtor(SerdeClass, new Type[0]);
+                MethodResolver.ResolveCtor(SerdeClass, Type.EmptyTypes);
                 return new DataInputOutputSerdeForgeEmptyCtor(SerdeClass);
             }
             catch (MethodResolverNoSuchCtorException) {
             }
 
-            throw new EPException("Serde class '" + SerdeClass.Name + "' does not have a singleton-style INSTANCE field or default constructor");
+            throw new EPException(
+                "Serde class '" +
+                SerdeClass.Name +
+                "' does not have a singleton-style INSTANCE field or default constructor");
         }
     }
 } // end of namespace

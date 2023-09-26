@@ -51,8 +51,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the name of the class providing the method.
         /// </summary>
         /// <returns>class name</returns>
-        public string ClassName
-        {
+        public string ClassName {
             get => className;
             set => className = value;
         }
@@ -61,8 +60,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the name of the static method to invoke in the from-clause.
         /// </summary>
         /// <returns>method name</returns>
-        public string MethodName
-        {
+        public string MethodName {
             get => methodName;
             set => methodName = value;
         }
@@ -71,8 +69,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns a list of expressions that are parameters to the method.
         /// </summary>
         /// <returns>list of parameter expressions</returns>
-        public IList<Expression> ParameterExpressions
-        {
+        public IList<Expression> ParameterExpressions {
             get => parameterExpressions;
             set => parameterExpressions = value;
         }
@@ -81,8 +78,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the optional event type name
         /// </summary>
         /// <returns>event type name name</returns>
-        public string OptionalEventTypeName
-        {
+        public string OptionalEventTypeName {
             get => optionalEventTypeName;
             set => optionalEventTypeName = value;
         }
@@ -137,8 +133,7 @@ namespace com.espertech.esper.common.client.soda
             writer.Write("(");
 
             var delimiter = "";
-            foreach (var expr in parameterExpressions)
-            {
+            foreach (var expr in parameterExpressions) {
                 writer.Write(delimiter);
                 expr.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";
@@ -146,8 +141,7 @@ namespace com.espertech.esper.common.client.soda
 
             writer.Write(")");
 
-            if (optionalEventTypeName != null)
-            {
+            if (optionalEventTypeName != null) {
                 writer.Write(" @type(");
                 writer.Write(optionalEventTypeName);
                 writer.Write(")");

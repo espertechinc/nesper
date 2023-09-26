@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -36,11 +37,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var left = betweenNode.ChildNodes[0];
             ExprFilterSpecLookupableForge lookupable = null;
 
-            if (left is ExprFilterOptimizableNode) {
-                var filterOptimizableNode = (ExprFilterOptimizableNode) left;
+            if (left is ExprFilterOptimizableNode filterOptimizableNode) {
                 lookupable = filterOptimizableNode.FilterLookupable;
             }
-            else if (FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.LKUPCOMPOSITE, raw, services) &&
+            else if (FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(
+                         FilterSpecCompilerIndexPlannerHint.LKUPCOMPOSITE,
+                         raw,
+                         services) &&
                      IsLimitedLookupableExpression(left)) {
                 lookupable = MakeLimitedLookupableForgeMayNull(left, raw, services);
             }
@@ -49,13 +52,27 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 return null;
             }
 
-            FilterOperator op = FilterOperatorExtensions.ParseRangeOperator(
+            var op = FilterOperatorExtensions.ParseRangeOperator(
                 betweenNode.IsLowEndpointIncluded,
                 betweenNode.IsHighEndpointIncluded,
                 betweenNode.IsNotBetween);
 
-            var low = HandleRangeNodeEndpoint(betweenNode.ChildNodes[1], taggedEventTypes, arrayEventTypes, allTagNamesOrdered, statementName, raw, services);
-            var high = HandleRangeNodeEndpoint(betweenNode.ChildNodes[2], taggedEventTypes, arrayEventTypes, allTagNamesOrdered, statementName, raw, services);
+            var low = HandleRangeNodeEndpoint(
+                betweenNode.ChildNodes[1],
+                taggedEventTypes,
+                arrayEventTypes,
+                allTagNamesOrdered,
+                statementName,
+                raw,
+                services);
+            var high = HandleRangeNodeEndpoint(
+                betweenNode.ChildNodes[2],
+                taggedEventTypes,
+                arrayEventTypes,
+                allTagNamesOrdered,
+                statementName,
+                raw,
+                services);
             return low == null || high == null ? null : new FilterSpecParamRangeForge(lookupable, op, low, high);
         }
 
@@ -75,46 +92,61 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     return null;
                 }
 
-                if (value is string) {
-                    return new FilterForEvalConstantStringForge((string) value);
+                if (value is string s) {
+                    return new FilterForEvalConstantStringForge(s);
                 }
-
-                return new FilterForEvalConstantDoubleForge(value.AsDouble());
+                else {
+                    return new FilterForEvalConstantDoubleForge(value.AsDouble());
+                }
             }
 
-            if (endpoint is ExprContextPropertyNode) {
-                var node = (ExprContextPropertyNode) endpoint;
-                if (node.Type == typeof(string)) {
-                    return new FilterForEvalContextPropStringForge(node.Getter, node.PropertyName);
+            if (endpoint is ExprContextPropertyNode propertyNode) {
+                if (propertyNode.ValueType == null) {
+                    return null;
                 }
 
-                return new FilterForEvalContextPropDoubleForge(node.Getter, node.PropertyName);
+                var type = propertyNode.ValueType;
+                if (type == typeof(string)) {
+                    return new FilterForEvalContextPropStringForge(propertyNode.Getter, propertyNode.PropertyName);
+                }
+                else {
+                    return new FilterForEvalContextPropDoubleForge(propertyNode.Getter, propertyNode.PropertyName);
+                }
             }
 
-            if (endpoint.Forge.ForgeConstantType.IsDeployTimeTimeConstant && endpoint is ExprNodeDeployTimeConst) {
-                var node = (ExprNodeDeployTimeConst) endpoint;
-                if (endpoint.Forge.EvaluationType == typeof(string)) {
+            if (endpoint.Forge.ForgeConstantType.IsDeployTimeTimeConstant && endpoint is ExprNodeDeployTimeConst node) {
+                var type = endpoint.Forge.EvaluationType;
+                if (type == typeof(string)) {
                     return new FilterForEvalDeployTimeConstStringForge(node);
                 }
-
-                return new FilterForEvalDeployTimeConstDoubleForge(node);
+                else {
+                    return new FilterForEvalDeployTimeConstDoubleForge(node);
+                }
             }
 
             // or property
-            if (endpoint is ExprIdentNode) {
-                return GetIdentNodeDoubleEval((ExprIdentNode) endpoint, arrayEventTypes, statementName);
+            if (endpoint is ExprIdentNode identNode) {
+                return GetIdentNodeDoubleEval(identNode, arrayEventTypes, statementName);
             }
 
             // or limited expression
-            if (FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(FilterSpecCompilerIndexPlannerHint.VALUECOMPOSITE, raw, services) &&
+            if (FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(
+                    FilterSpecCompilerIndexPlannerHint.VALUECOMPOSITE,
+                    raw,
+                    services) &&
                 IsLimitedValueExpression(endpoint)) {
                 var returnType = endpoint.Forge.EvaluationType;
-                MatchedEventConvertorForge convertor = GetMatchEventConvertor(endpoint, taggedEventTypes, arrayEventTypes, allTagNamesOrdered);
-                if (returnType == typeof(string)) {
+                if (returnType == null) {
+                    return null;
+                }
+
+                var returnClass = returnType;
+                var convertor = GetMatchEventConvertor(endpoint, taggedEventTypes, arrayEventTypes, allTagNamesOrdered);
+                if (returnClass == typeof(string)) {
                     return new FilterForEvalLimitedExprForge(endpoint, convertor, null);
                 }
 
-                var coercer = SimpleNumberCoercerFactory.GetCoercer(returnType, typeof(double?));
+                var coercer = SimpleNumberCoercerFactory.GetCoercer(returnClass, typeof(double?));
                 return new FilterForEvalLimitedExprForge(endpoint, convertor, coercer);
             }
 

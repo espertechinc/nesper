@@ -76,13 +76,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
         public object Get(EventBean obj)
         {
             // The underlying is expected to be a map
-            if (!(obj.Underlying is XmlNode)) {
+            if (!(obj.Underlying is XmlNode node)) {
                 throw new PropertyAccessException(
                     "Mismatched property getter to event bean type, " +
                     "the underlying data object is not of type Node");
             }
 
-            var node = (XmlNode) obj.Underlying;
             return GetValueAsNode(node);
         }
 

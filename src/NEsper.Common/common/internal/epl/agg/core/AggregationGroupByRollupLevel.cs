@@ -65,13 +65,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             int numExpected)
         {
             object[] keys;
-            
+
             if (subkey is MultiKey mk) {
                 if (mk.NumKeys == numExpected) {
                     return mk.ToObjectArray();
                 }
 
-                keys = new object[] {numExpected};
+                keys = new object[] { numExpected };
                 for (var i = 0; i < RollupKeys.Length; i++) {
                     keys[RollupKeys[i]] = mk.GetKey(i);
                 }
@@ -92,6 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public class ProxyAggregationGroupByRollupLevel : AggregationGroupByRollupLevel
     {
         private Func<object, object> ProcComputeSubkey { get; set; }
+
         public ProxyAggregationGroupByRollupLevel(
             int levelNumber,
             int levelOffset,

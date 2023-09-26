@@ -31,20 +31,12 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
             this.agentInstanceContext = agentInstanceContext;
         }
 
-        public int NamedWindowConsumerId {
-            get => namedWindowConsumerId;
-        }
+        public int NamedWindowConsumerId => namedWindowConsumerId;
 
-        public ExprEvaluator FilterEvaluator {
-            get => filterEvaluator;
-        }
+        public ExprEvaluator FilterEvaluator => filterEvaluator;
 
-        public PropertyEvaluator OptPropertyEvaluator {
-            get => optPropertyEvaluator;
-        }
+        public PropertyEvaluator OptPropertyEvaluator => optPropertyEvaluator;
 
-        public AgentInstanceContext AgentInstanceContext {
-            get => agentInstanceContext;
-        }
+        public AgentInstanceContext AgentInstanceContext => agentInstanceContext;
     }
 } // end of namespace

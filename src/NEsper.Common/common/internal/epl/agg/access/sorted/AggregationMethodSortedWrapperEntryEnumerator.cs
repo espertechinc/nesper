@@ -12,15 +12,16 @@ using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
-	public class AggregationMethodSortedWrapperEntryEnumerator
-	{
-		public static IEnumerator<KeyValuePair<object, ICollection<EventBean>>> For(IEnumerator<KeyValuePair<object, object>> enumerator)
-		{
-			while (enumerator.MoveNext()) {
-				yield return new KeyValuePair<object, ICollection<EventBean>>(
-					enumerator.Current.Key,
-					AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents(enumerator.Current.Value));
-			}
-		}
-	}
+    public class AggregationMethodSortedWrapperEntryEnumerator
+    {
+        public static IEnumerator<KeyValuePair<object, ICollection<EventBean>>> For(
+            IEnumerator<KeyValuePair<object, object>> enumerator)
+        {
+            while (enumerator.MoveNext()) {
+                yield return new KeyValuePair<object, ICollection<EventBean>>(
+                    enumerator.Current.Key,
+                    AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents(enumerator.Current.Value));
+            }
+        }
+    }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,20 +11,31 @@ using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.agg.core;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.table.core;
+using com.espertech.esper.compat.collections;
+
 
 namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
     /// <summary>
-    ///     View for the on-select statement that handles selecting events from a named window.
+    /// View for the on-select statement that handles selecting events from a named window.
     /// </summary>
     public class InfraOnSelectViewFactory : InfraOnExprBaseViewFactory
     {
+        private readonly bool addToFront;
+        private readonly bool isDistinct;
+        private readonly EventPropertyValueGetter distinctKeyGetter;
+        private readonly bool selectAndDelete;
+        private readonly StreamSelector? optionalStreamSelector;
         private readonly Table optionalInsertIntoTable;
+        private readonly bool insertInto;
         private readonly ResultSetProcessorFactoryProvider resultSetProcessorPrototype;
+        private readonly ExprEvaluator eventPrecedence;
 
         public InfraOnSelectViewFactory(
             EventType infraEventType,
@@ -35,30 +46,19 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             StreamSelector? optionalStreamSelector,
             Table optionalInsertIntoTable,
             bool insertInto,
-            ResultSetProcessorFactoryProvider resultSetProcessorPrototype)
-            : base(infraEventType)
+            ResultSetProcessorFactoryProvider resultSetProcessorPrototype,
+            ExprEvaluator eventPrecedence) : base(infraEventType)
         {
-            IsAddToFront = addToFront;
-            IsDistinct = isDistinct;
-            DistinctKeyGetter = distinctKeyGetter;
-            IsSelectAndDelete = selectAndDelete;
-            OptionalStreamSelector = optionalStreamSelector;
+            this.addToFront = addToFront;
+            this.isDistinct = isDistinct;
+            this.distinctKeyGetter = distinctKeyGetter;
+            this.selectAndDelete = selectAndDelete;
+            this.optionalStreamSelector = optionalStreamSelector;
             this.optionalInsertIntoTable = optionalInsertIntoTable;
-            IsInsertInto = insertInto;
+            this.insertInto = insertInto;
             this.resultSetProcessorPrototype = resultSetProcessorPrototype;
+            this.eventPrecedence = eventPrecedence;
         }
-
-        public EventPropertyValueGetter DistinctKeyGetter { get; }
-
-        public StreamSelector? OptionalStreamSelector { get; }
-
-        public bool IsAddToFront { get; }
-
-        public bool IsDistinct { get; }
-
-        public bool IsSelectAndDelete { get; }
-
-        public bool IsInsertInto { get; }
 
         public override InfraOnExprBaseViewResult MakeNamedWindow(
             SubordWMatchExprLookupStrategy lookupStrategy,
@@ -70,7 +70,6 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 agentInstanceContext,
                 false,
                 null);
-
             var audit = AuditEnum.INSERT.GetAudit(agentInstanceContext.Annotations) != null;
             TableInstance tableInstanceInsertInto = null;
             if (optionalInsertIntoTable != null) {
@@ -85,8 +84,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 this,
                 pair.First,
                 audit,
-                IsSelectAndDelete,
-                tableInstanceInsertInto);
+                selectAndDelete,
+                tableInstanceInsertInto,
+                eventPrecedence);
             return new InfraOnExprBaseViewResult(selectView, pair.Second);
         }
 
@@ -100,7 +100,6 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 agentInstanceContext,
                 false,
                 null);
-
             var audit = AuditEnum.INSERT.GetAudit(agentInstanceContext.Annotations) != null;
             TableInstance tableInstanceInsertInto = null;
             if (optionalInsertIntoTable != null) {
@@ -115,9 +114,22 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 pair.First,
                 this,
                 audit,
-                IsSelectAndDelete,
-                tableInstanceInsertInto);
+                selectAndDelete,
+                tableInstanceInsertInto,
+                eventPrecedence);
             return new InfraOnExprBaseViewResult(selectView, pair.Second);
         }
+
+        public bool IsAddToFront => addToFront;
+
+        public bool IsDistinct => isDistinct;
+
+        public bool IsSelectAndDelete => selectAndDelete;
+
+        public bool IsInsertInto => insertInto;
+
+        public EventPropertyValueGetter DistinctKeyGetter => distinctKeyGetter;
+
+        public StreamSelector? OptionalStreamSelector => optionalStreamSelector;
     }
 } // end of namespace

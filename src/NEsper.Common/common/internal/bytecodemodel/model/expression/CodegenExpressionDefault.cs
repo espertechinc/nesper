@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             _type = null;
         }
-        
+
         public CodegenExpressionDefault(Type type)
         {
             _type = type;
@@ -50,9 +50,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             if (_type == null) {
                 return;
             }
+
             classes.AddToSet(_type);
         }
-        
+
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
         }

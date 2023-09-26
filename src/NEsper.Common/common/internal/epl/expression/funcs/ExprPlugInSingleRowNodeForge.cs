@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprPlugInSingleRowNode parent,
             bool isReturnsConstantResult)
         {
-            this._parent = parent;
+            _parent = parent;
             IsReturnsConstantResult = isReturnsConstantResult;
         }
 
@@ -60,10 +60,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             return false;
         }
-        
-        public abstract MethodInfo Method { get;  }
+
+        public abstract MethodInfo Method { get; }
         public abstract bool IsLocalInlinedClass { get; }
-        
+
         public abstract ExprEvaluator ExprEvaluator { get; }
 
         public abstract CodegenExpression EvaluateCodegen(

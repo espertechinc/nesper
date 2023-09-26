@@ -39,11 +39,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 ExprEvaluatorContext context)
             {
                 if (overlaps) {
-                    long threshold = thresholdExpr.Evaluate(leftStart, eventsPerStream, newData, context);
+                    var threshold = thresholdExpr.Evaluate(leftStart, eventsPerStream, newData, context);
                     return ComputeIntervalOverlaps(leftStart, leftEnd, rightStart, rightEnd, 0, threshold);
                 }
                 else {
-                    long threshold = thresholdExpr.Evaluate(rightStart, eventsPerStream, newData, context);
+                    var threshold = thresholdExpr.Evaluate(rightStart, eventsPerStream, newData, context);
                     return ComputeIntervalOverlaps(rightStart, rightEnd, leftStart, leftEnd, 0, threshold);
                 }
             }

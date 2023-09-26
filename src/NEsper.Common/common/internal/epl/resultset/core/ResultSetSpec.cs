@@ -33,20 +33,20 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             StreamSpecCompiled[] streamSpecs,
             Attribute[] annotations)
         {
-            this.SelectClauseStreamSelector = selectClauseStreamSelector;
-            this.OrderByList = orderByList;
-            this.SelectClauseSpec = selectClauseSpec;
-            this.InsertIntoDesc = insertIntoDesc;
-            this.GroupByClauseExpressions = groupByClauseExpressions;
-            this.WhereClause = whereClause;
-            this.HavingClause = havingClause;
-            this.OptionalOutputLimitSpec = optionalOutputLimitSpec;
-            this.RowLimitSpec = rowLimitSpec;
-            this.ContextName = contextName;
-            this.ForClauseSpec = forClauseSpec;
-            this.IntoTableSpec = intoTableSpec;
-            this.StreamSpecs = streamSpecs;
-            this.Annotations = annotations;
+            SelectClauseStreamSelector = selectClauseStreamSelector;
+            OrderByList = orderByList;
+            SelectClauseSpec = selectClauseSpec;
+            InsertIntoDesc = insertIntoDesc;
+            GroupByClauseExpressions = groupByClauseExpressions;
+            WhereClause = whereClause;
+            HavingClause = havingClause;
+            OptionalOutputLimitSpec = optionalOutputLimitSpec;
+            RowLimitSpec = rowLimitSpec;
+            ContextName = contextName;
+            ForClauseSpec = forClauseSpec;
+            IntoTableSpec = intoTableSpec;
+            StreamSpecs = streamSpecs;
+            Annotations = annotations;
         }
 
         public ResultSetSpec(StatementSpecCompiled statementSpec)

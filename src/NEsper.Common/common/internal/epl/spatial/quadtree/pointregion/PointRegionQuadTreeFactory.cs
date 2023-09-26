@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion
             int maxTreeHeight)
         {
             var bb = new BoundingBox(x, y, x + width, y + height);
-            var leaf = new PointRegionQuadTreeNodeLeaf<TL>(bb, 1, default(TL), 0);
+            var leaf = new PointRegionQuadTreeNodeLeaf<TL>(bb, 1, default, 0);
             return new PointRegionQuadTree<TL>(leafCapacity, maxTreeHeight, leaf);
         }
 

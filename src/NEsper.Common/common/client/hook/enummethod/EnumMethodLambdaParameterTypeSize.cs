@@ -8,15 +8,15 @@
 
 namespace com.espertech.esper.common.client.hook.enummethod
 {
-	/// <summary>
-	///     A lambda parameter that assumes the size value.
-	/// </summary>
-	public class EnumMethodLambdaParameterTypeSize : EnumMethodLambdaParameterType
+    /// <summary>
+    ///     A lambda parameter that assumes the size value.
+    /// </summary>
+    public class EnumMethodLambdaParameterTypeSize : EnumMethodLambdaParameterType
     {
-	    /// <summary>
-	    ///     Instance.
-	    /// </summary>
-	    public static readonly EnumMethodLambdaParameterTypeSize INSTANCE = new EnumMethodLambdaParameterTypeSize();
+        /// <summary>
+        ///     Instance.
+        /// </summary>
+        public static readonly EnumMethodLambdaParameterTypeSize INSTANCE = new EnumMethodLambdaParameterTypeSize();
 
         private EnumMethodLambdaParameterTypeSize()
         {

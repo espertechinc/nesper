@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -33,14 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             bool resultWhenNoMatchingEvents,
             bool isNotIn,
             Coercer coercer,
-            ExprForge havingEval)
-            : base(
-                subselect,
-                valueEval,
-                selectEval,
-                resultWhenNoMatchingEvents,
-                isNotIn,
-                coercer)
+            ExprForge havingEval) : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNotIn, coercer)
         {
             this.havingEval = havingEval;
         }
@@ -50,7 +43,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
@@ -64,11 +61,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
                 .DeclareVar<AggregationService>(
                     "aggregationService",
-                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar<ICollection<object>>(
+                    ExprDotMethod(aggService, "getContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar(
+                    typeof(ICollection<object>),
                     "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
-                .DeclareVar<bool>("hasNullRow", ConstantFalse());
+                    ExprDotMethod(Ref("aggregationService"), "getGroupKeys", evalCtx))
+                .DeclareVar(typeof(bool?), "hasNullRow", ConstantFalse());
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
             {
@@ -107,16 +105,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .IfElse();
                 {
                     if (coercer == null) {
-                        ifRightNotNull.DeclareVar<bool>("eq", ExprDotMethod(left, "Equals", Ref("valueRight")));
+                        ifRightNotNull.DeclareVar(
+                            typeof(bool?),
+                            "eq",
+                            ExprDotMethod(left, "equals", Ref("valueRight")));
                     }
                     else {
-                        ifRightNotNull.DeclareVar<object>(
+                        ifRightNotNull.DeclareVar(
+                                typeof(object),
                                 "left",
                                 coercer.CoerceCodegen(left, symbols.LeftResultType))
-                            .DeclareVar<object>(
+                            .DeclareVar(
+                                typeof(object),
                                 "right",
                                 coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar<bool>("eq", StaticMethod<object>("Equals", Ref("left"), Ref("right")));
+                            .DeclareVar(typeof(bool?), "eq", ExprDotMethod(Ref("left"), "equals", Ref("right")));
                     }
 
                     ifRightNotNull.IfCondition(Ref("eq")).BlockReturn(Constant(!isNotIn));

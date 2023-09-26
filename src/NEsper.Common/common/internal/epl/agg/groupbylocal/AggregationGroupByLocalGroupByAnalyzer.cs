@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             for (var i = 0; i < localGroupDesc.Levels.Length; i++) {
                 var levelDesc = localGroupDesc.Levels[i];
                 if (levelDesc.PartitionExpr.Length == 0) {
-                    AggregationGroupByLocalGroupLevelDesc top = GetLevel(
+                    var top = GetLevel(
                         -1,
                         levelDesc,
                         methodForges,
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                                          levelDesc.PartitionExpr);
 
                 if (isDefaultLevel) {
-                    AggregationGroupByLocalGroupLevelDesc level = GetLevel(
+                    var level = GetLevel(
                         0,
                         levelDesc,
                         methodForges,
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                     continue;
                 }
 
-                AggregationGroupByLocalGroupLevelDesc level = GetLevel(
+                var level = GetLevel(
                     levelNumber,
                     levelDesc,
                     methodForges,
@@ -146,8 +146,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                 numAccesses += level.AccessStateForges.Length;
             }
 
-            AggregationLocalGroupByLevelForge[] levels = levelsList.ToArray();
-            AggregationLocalGroupByPlanForge forge = new AggregationLocalGroupByPlanForge(numMethods, numAccesses, columns, optionalTopLevel, levels);
+            var levels = levelsList.ToArray();
+            var forge = new AggregationLocalGroupByPlanForge(
+                numMethods,
+                numAccesses,
+                columns,
+                optionalTopLevel,
+                levels);
             return new AggregationLocalGroupByPlanDesc(forge, additionalForgeables);
         }
 
@@ -171,7 +176,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             if (defaultLevel && optionalGroupByMultiKey != null) { // use default multi-key that is already generated
                 multiKeyPlan = new MultiKeyPlan(EmptyList<StmtClassForgeableFactory>.Instance, optionalGroupByMultiKey);
                 partitionExpr = groupByExpressions;
-            } else {
+            }
+            else {
                 multiKeyPlan = MultiKeyPlanner.PlanMultiKey(partitionExpr, false, raw, serdeResolver);
             }
 
@@ -180,7 +186,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
             IList<AggregationStateFactoryForge> stateFactories = new List<AggregationStateFactoryForge>();
 
             foreach (var expr in level.Expressions) {
-                int column = expr.AggregationNode.Column;
+                var column = expr.AggregationNode.Column;
                 var methodOffset = -1;
                 var methodAgg = true;
                 AggregationAccessorSlotPairForge pair = null;
@@ -192,8 +198,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
                 }
                 else {
                     // slot gives us the number of the state factory
-                    int absoluteSlot = accessors[column - methodForgesAll.Length].Slot;
-                    AggregationAccessorForge accessor = accessors[column - methodForgesAll.Length].AccessorForge;
+                    var absoluteSlot = accessors[column - methodForgesAll.Length].Slot;
+                    var accessor = accessors[column - methodForgesAll.Length].AccessorForge;
                     var factory = accessForges[absoluteSlot];
                     var relativeSlot = stateFactories.IndexOf(factory);
                     if (relativeSlot == -1) {
@@ -224,8 +230,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
 
             // NOTE: The original code tests for multiKeyPlan being null, but if it was null it would have caused
             // a null pointer exception on the previous statement since it dereferences ClassRef.
-            var additionalForgeables = multiKeyPlan?.MultiKeyForgeables ?? EmptyList<StmtClassForgeableFactory>.Instance;
-            
+            var additionalForgeables =
+                multiKeyPlan?.MultiKeyForgeables ?? EmptyList<StmtClassForgeableFactory>.Instance;
+
             return new AggregationGroupByLocalGroupLevelDesc(forge, additionalForgeables);
         }
     }

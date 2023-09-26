@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             string code,
             string reluctantQuestion)
         {
-            bool reluctant = false;
+            var reluctant = false;
             if (reluctantQuestion != null) {
                 if (!reluctantQuestion.Equals("?")) {
                     throw new ArgumentException(

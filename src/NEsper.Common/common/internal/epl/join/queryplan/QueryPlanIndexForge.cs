@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
             CodegenSymbolProvider symbolsArg,
             CodegenClassScope classScope)
         {
-            var symbols = (SAIFFInitializeSymbol) symbolsArg;
+            var symbols = (SAIFFInitializeSymbol)symbolsArg;
             var itemsAsMakeables = Items.Transform<
                 CodegenMakeable,
                 CodegenMakeable,
@@ -71,8 +71,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 QueryPlanIndexItemForge>(
                 k => k,
                 v => v,
-                k => (TableLookupIndexReqKey) k,
-                v => (QueryPlanIndexItemForge) v);
+                k => (TableLookupIndexReqKey)k,
+                v => (QueryPlanIndexItemForge)v);
 
             return NewInstance<QueryPlanIndex>(
                 CodegenMakeableUtil.MakeMap(
@@ -148,8 +148,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                 new QueryPlanIndexItemForge(
                     indexProperties,
                     coercionTypes,
-                    new string[0],
-                    new Type[0],
+                    Array.Empty<string>(),
+                    Type.EmptyTypes,
                     false,
                     null,
                     eventType));

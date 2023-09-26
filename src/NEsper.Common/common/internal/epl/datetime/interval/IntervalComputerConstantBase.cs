@@ -17,8 +17,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             IntervalStartEndParameterPairForge pair,
             bool allowSwitch)
         {
-            long startVal = pair.Start.OptionalConstant.GetValueOrDefault();
-            long endVal = pair.End.OptionalConstant.GetValueOrDefault();
+            var startVal = pair.Start.OptionalConstant.GetValueOrDefault();
+            var endVal = pair.End.OptionalConstant.GetValueOrDefault();
 
             if (startVal > endVal && allowSwitch) {
                 start = endVal;

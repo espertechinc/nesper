@@ -33,9 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             this.eventType = eventType;
         }
 
-        public ExprDotEvalRootChildInnerEval InnerEvaluator {
-            get => new InnerDotEnumerableEventCollectionEval(rootLambdaForge.ExprEvaluatorEnumeration);
-        }
+        public ExprDotEvalRootChildInnerEval InnerEvaluator =>
+            new InnerDotEnumerableEventCollectionEval(rootLambdaForge.ExprEvaluatorEnumeration);
 
         public CodegenExpression CodegenEvaluate(
             CodegenMethod parentMethod,
@@ -69,20 +68,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             return ConstantNull();
         }
 
-        public EventType EventTypeCollection {
-            get => eventType;
-        }
+        public EventType EventTypeCollection => eventType;
 
-        public Type ComponentTypeCollection {
-            get => null;
-        }
+        public Type ComponentTypeCollection => null;
 
-        public EventType EventTypeSingle {
-            get => null;
-        }
+        public EventType EventTypeSingle => null;
 
-        public EPType TypeInfo {
-            get => EPTypeHelper.CollectionOfEvents(eventType);
-        }
+        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfEvents(eventType);
     }
 } // end of namespace

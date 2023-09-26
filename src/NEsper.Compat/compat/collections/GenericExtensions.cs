@@ -367,7 +367,7 @@ namespace com.espertech.esper.compat.collections
             return false;
         }
 
-        public static Type GetComponentType(Type type)
+        public static Type GetComponentType(this Type type)
         {
             if (type == null)
                 return null;

@@ -189,7 +189,7 @@ namespace com.espertech.esper.common.client.configuration
                 new Import[] {
                     new ImportNamespace("System"),
                     new ImportNamespace("System.Text"),
-                    new ImportNamespace("com.espertech.esper.common.internal.epl.dataflow.ops", commonsAssembly.FullName),
+                    new ImportNamespace("com.espertech.esper.common.@internal.epl.dataflow.ops", commonsAssembly.FullName),
                     new ImportNamespace("com.mycompany.myapp"),
                     new ImportNamespace("com.mycompany.myapp", "AssemblyA"),
                     new ImportNamespace("com.mycompany.myapp", "AssemblyB.dll"),

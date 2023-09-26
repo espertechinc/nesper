@@ -132,7 +132,7 @@ namespace NEsper.Avro.Getter
             AvroEventPropertyGetter[] getters)
         {
             return codegenMethodScope.MakeChild(typeof(bool), typeof(AvroEventBeanGetterDynamicPoly), codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record")
+                .AddParam<GenericRecord>("record")
                 .Block
                 .IfRefNullReturnFalse("record")
                 .AssignRef(
@@ -174,7 +174,7 @@ namespace NEsper.Avro.Getter
                     typeof(object),
                     typeof(AvroEventBeanGetterDynamicPoly),
                     codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record")
+                .AddParam<GenericRecord>("record")
                 .Block
                 .IfRefNullReturnNull("record")
                 .AssignRef(
@@ -216,7 +216,7 @@ namespace NEsper.Avro.Getter
                     typeof(object),
                     typeof(AvroEventBeanGetterDynamicPoly),
                     codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record")
+                .AddParam<GenericRecord>("record")
                 .Block
                 .IfRefNullReturnNull("record")
                 .AssignRef(
@@ -258,7 +258,7 @@ namespace NEsper.Avro.Getter
                     typeof(GenericRecord),
                     typeof(AvroEventBeanGetterDynamicPoly),
                     codegenClassScope)
-                .AddParam(typeof(GenericRecord), "record")
+                .AddParam<GenericRecord>("record")
                 .Block;
             block.DeclareVar<object>("value", CodegenExpressionBuilder.ConstantNull());
             for (var i = 0; i < getters.Length - 1; i++) {

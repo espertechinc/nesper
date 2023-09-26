@@ -49,8 +49,7 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write("then update ");
             UpdateClause.RenderEPLAssignments(writer, Assignments);
-            if (WhereClause != null)
-            {
+            if (WhereClause != null) {
                 writer.Write(" where ");
                 WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

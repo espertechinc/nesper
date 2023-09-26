@@ -28,9 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
         public bool Scalar => _scalar;
 
-        public override EnumEval EnumEvaluator {
-            get => new EnumSequenceEqualForgeEval(InnerExpression.ExprEvaluator);
-        }
+        public override EnumEval EnumEvaluator => new EnumSequenceEqualForgeEval(InnerExpression.ExprEvaluator);
 
         public override CodegenExpression Codegen(
             EnumForgeCodegenParams premade,

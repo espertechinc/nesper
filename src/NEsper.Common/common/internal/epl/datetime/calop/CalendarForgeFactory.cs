@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             IList<ExprNode> parameters,
             ExprForge[] forges)
         {
-            DateTimeMethodEnum method = desc.DatetimeMethod;
+            var method = desc.DatetimeMethod;
             switch (method) {
                 case DateTimeMethodEnum.WITHTIME:
                     return new CalendarWithTimeForge(forges[0], forges[1], forges[2], forges[3]);

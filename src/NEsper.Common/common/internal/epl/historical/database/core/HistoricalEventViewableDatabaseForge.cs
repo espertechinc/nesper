@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,12 +13,14 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
+using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
 using com.espertech.esper.common.@internal.epl.historical.common;
 using com.espertech.esper.common.@internal.epl.streamtype;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -38,8 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             string databaseName,
             string[] inputParameters,
             string preparedStatementText,
-            IDictionary<string, DBOutputTypeDesc> outputTypes)
-            : base(streamNum, eventType)
+            IDictionary<string, DBOutputTypeDesc> outputTypes) : base(streamNum, eventType)
         {
             this.databaseName = databaseName;
             this.inputParameters = inputParameters;
@@ -49,17 +50,17 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
         public override IList<StmtClassForgeableFactory> Validate(
             StreamTypeService typeService,
-            StatementBaseInfo @base,
+            IDictionary<int, IList<ExprNode>> sqlParameters,
+            StatementRawInfo rawInfo,
             StatementCompileTimeServices services)
         {
-            int count = 0;
-            ExprValidationContext validationContext =
-                new ExprValidationContextBuilder(typeService, @base.StatementRawInfo, services)
-                    .WithAllowBindingConsumption(true)
-                    .Build();
-            ExprNode[] inputParamNodes = new ExprNode[inputParameters.Length];
-            foreach (string inputParam in inputParameters) {
-                ExprNode raw = FindSQLExpressionNode(StreamNum, count, @base.StatementSpec.Raw.SqlParameters);
+            var count = 0;
+            var validationContext = new ExprValidationContextBuilder(typeService, rawInfo, services)
+                .WithAllowBindingConsumption(true)
+                .Build();
+            var inputParamNodes = new ExprNode[inputParameters.Length];
+            foreach (var inputParam in inputParameters) {
+                var raw = FindSQLExpressionNode(StreamNum, count, sqlParameters);
                 if (raw == null) {
                     throw new ExprValidationException(
                         "Internal error find expression for historical stream parameter " +
@@ -68,15 +69,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                         StreamNum);
                 }
 
-                ExprNode evaluator = ExprNodeUtilityValidate.GetValidatedSubtree(
+                var evaluator = ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.DATABASEPOLL,
                     raw,
                     validationContext);
                 inputParamNodes[count++] = evaluator;
 
-                ExprNodeIdentifierCollectVisitor visitor = new ExprNodeIdentifierCollectVisitor();
+                var visitor = new ExprNodeIdentifierCollectVisitor();
                 visitor.Visit(evaluator);
-                foreach (ExprIdentNode identNode in visitor.ExprProperties) {
+                foreach (var identNode in visitor.ExprProperties) {
                     if (identNode.StreamId == StreamNum) {
                         throw new ExprValidationException(
                             "Invalid expression '" + inputParam + "' resolves to the historical data itself");
@@ -87,10 +88,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             }
 
             InputParamEvaluators = ExprNodeUtilityQuery.GetForges(inputParamNodes);
-            
-            
+
             // plan multikey
-            MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKey(InputParamEvaluators, false, @base.StatementRawInfo, services.SerdeResolver);
+            var multiKeyPlan = MultiKeyPlanner.PlanMultiKey(
+                InputParamEvaluators,
+                false,
+                rawInfo,
+                services.SerdeResolver);
             MultiKeyClassRef = multiKeyPlan.ClassRef;
 
             return multiKeyPlan.MultiKeyForgeables;
@@ -119,11 +123,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(IDictionary<string, DBOutputTypeDesc>), this.GetType(), classScope);
+            var method = parent.MakeChild(typeof(IDictionary<string, DBOutputTypeDesc>), GetType(), classScope);
             method.Block.DeclareVar<IDictionary<string, DBOutputTypeDesc>>(
                 "types",
-                NewInstance(typeof(Dictionary<string, DBOutputTypeDesc>)));
-            foreach (KeyValuePair<string, DBOutputTypeDesc> entry in outputTypes) {
+                NewInstance(
+                    typeof(Dictionary<string, DBOutputTypeDesc>),
+                    Constant(CollectionUtil.CapacityHashMap(outputTypes.Count))));
+            foreach (var entry in outputTypes) {
                 method.Block.ExprDotMethod(Ref("types"), "Put", Constant(entry.Key), entry.Value.Make());
             }
 
@@ -136,12 +142,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             int count,
             IDictionary<int, IList<ExprNode>> sqlParameters)
         {
-            if ((sqlParameters == null) || (sqlParameters.IsEmpty())) {
+            if (sqlParameters == null || sqlParameters.IsEmpty()) {
                 return null;
             }
 
-            IList<ExprNode> parameters = sqlParameters.Get(myStreamNumber);
-            if ((parameters == null) || (parameters.IsEmpty()) || (parameters.Count < (count + 1))) {
+            var parameters = sqlParameters.Get(myStreamNumber);
+            if (parameters == null || parameters.IsEmpty() || parameters.Count < count + 1) {
                 return null;
             }
 

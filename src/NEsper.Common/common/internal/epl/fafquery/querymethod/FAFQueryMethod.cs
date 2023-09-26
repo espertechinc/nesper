@@ -7,10 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.context;
-using com.espertech.esper.common.@internal.context.mgr;
 using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
@@ -19,13 +16,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
     /// </summary>
     public interface FAFQueryMethod
     {
-        void Ready(StatementContextRuntimeServices services);
+        FAFQuerySessionUnprepared ReadyUnprepared(StatementContextRuntimeServices services);
 
-        EPPreparedQueryResult Execute(
-            AtomicBoolean serviceStatusProvider,
-            FAFQueryMethodAssignerSetter assignerSetter,
-            ContextPartitionSelector[] contextPartitionSelectors,
-            ContextManagementService contextManagementService);
+        FAFQueryMethodSessionPrepared ReadyPrepared(StatementContextRuntimeServices services);
 
         EventType EventType { get; }
     }

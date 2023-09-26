@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
 
         public EventType StatementEventType => desc.EventType;
 
-        public void StatementCreate(StatementContext statementContext)
-        {
+        public StatementContext StatementCreate {
+            set { }
         }
 
         public void StatementDestroy(StatementContext statementContext)
@@ -60,6 +60,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
 
             var subselectActivations = SubSelectHelperStart.StartSubselects(
                 subselects,
+                agentInstanceContext,
                 agentInstanceContext,
                 stopCallbacks,
                 isRecoveringResilient);
@@ -85,7 +86,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
             StatementContext statementContext,
             int agentInstanceId)
         {
-            return AgentInstanceUtil.NewLock(statementContext);
+            return AgentInstanceUtil.NewLock(statementContext, agentInstanceId);
         }
 
         public void Ready(

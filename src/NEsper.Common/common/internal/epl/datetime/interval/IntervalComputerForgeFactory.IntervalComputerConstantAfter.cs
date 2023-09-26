@@ -71,7 +71,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             /// <param name="start">start</param>
             /// <param name="end">end</param>
             /// <returns>flag</returns>
-            
             public static bool? ComputeIntervalAfter(
                 long? leftStart,
                 long? rightEnd,
@@ -90,7 +89,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             /// <param name="start">start</param>
             /// <param name="end">end</param>
             /// <returns>flag</returns>
-            
             public static bool ComputeIntervalAfter(
                 long leftStart,
                 long rightEnd,
@@ -100,7 +98,6 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 var delta = leftStart - rightEnd;
                 return start <= delta && delta <= end;
             }
-
         }
     }
 }

@@ -34,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
-            => ProcEvaluate?.Invoke(target, eventsPerStream, isNewData, exprEvaluatorContext);
+        {
+            return ProcEvaluate?.Invoke(target, eventsPerStream, isNewData, exprEvaluatorContext);
+        }
 
         public ExprDotForge DotForge
             => ProcDotForge?.Invoke();

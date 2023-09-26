@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.compile.util;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -51,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
                 throw new GuardParameterException(message);
             }
 
-            if (!parameters[0].Forge.EvaluationType.IsNumeric()) {
+            if (!parameters[0].Forge.EvaluationType.IsTypeNumeric()) {
                 throw new GuardParameterException(message);
             }
 
@@ -66,9 +67,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
             timeAbacus = services.ImportServiceCompileTime.TimeAbacus;
         }
 
-        public void CollectSchedule(IList<ScheduleHandleCallbackProvider> schedules)
+        public void CollectSchedule(
+            short factoryNodeId,
+            Func<short, CallbackAttribution> callbackAttribution,
+            IList<ScheduleHandleTracked> schedules)
         {
-            schedules.Add(this);
+            schedules.Add(new ScheduleHandleTracked(callbackAttribution.Invoke(factoryNodeId), this));
         }
 
         public CodegenExpression MakeCodegen(
@@ -118,6 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         }
 
         public int ScheduleCallbackId {
+            get => scheduleCallbackId;
             set => scheduleCallbackId = value;
         }
     }

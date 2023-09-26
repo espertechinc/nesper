@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -19,12 +19,15 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.ontrigger.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.subquery;
+using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.map;
+
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
 {
@@ -42,9 +45,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
             StatementCompileTimeServices services)
         {
             StreamTypeService typeService = new StreamTypeServiceImpl(
-                new[] {activatorResult.ActivatorResultEventType},
-                new[] {optionalStreamName},
-                new[] {true},
+                new EventType[] { activatorResult.ActivatorResultEventType },
+                new string[] { optionalStreamName },
+                new bool[] { true },
                 false,
                 false);
             var validationContext = new ExprValidationContextBuilder(typeService, @base.StatementRawInfo, services)
@@ -52,23 +55,29 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
                 .Build();
 
             // handle subselects
-            SubSelectHelperForgePlan subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
+            var subSelectForgePlan = SubSelectHelperForgePlanner.PlanSubSelect(
                 @base,
                 subselectActivation,
-                new string[] {optionalStreamName},
-                new EventType[] {activatorResult.ActivatorResultEventType},
-                new string[] {activatorResult.TriggerEventTypeName},
+                new string[] { optionalStreamName },
+                new EventType[] { activatorResult.ActivatorResultEventType },
+                new string[] { activatorResult.TriggerEventTypeName },
                 services);
-            IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselectForges = subSelectForgePlan.Subselects;
+            var subselectForges = subSelectForgePlan.Subselects;
 
             // validate assignments
             foreach (var assignment in desc.Assignments) {
-                ExprNodeUtilityValidate.ValidateAssignment(true, ExprNodeOrigin.UPDATEASSIGN, assignment, validationContext);
+                ExprNodeUtilityValidate.ValidateAssignment(
+                    true,
+                    ExprNodeOrigin.UPDATEASSIGN,
+                    assignment,
+                    validationContext);
             }
 
             // create read-write logic
-            VariableReadWritePackageForge variableReadWritePackageForge = new VariableReadWritePackageForge(
-                desc.Assignments, @base.StatementName, services);
+            var variableReadWritePackageForge = new VariableReadWritePackageForge(
+                desc.Assignments,
+                @base.StatementName,
+                services);
 
             // plan table access
             var tableAccessForges = ExprTableEvalHelperPlan.PlanTableAccess(@base.StatementSpec.TableAccessNodes);
@@ -97,15 +106,16 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
 
             // Handle output format
             var defaultSelectAllSpec = new StatementSpecCompiled();
-            defaultSelectAllSpec.SelectClauseCompiled.WithSelectExprList(new SelectClauseElementWildcard());
+            defaultSelectAllSpec.SelectClauseCompiled.SelectExprList = new[] { new SelectClauseElementWildcard() };
             defaultSelectAllSpec.Raw.SelectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(
-                new EventType[] {eventType},
-                new[] {"trigger_stream"},
-                new[] {true},
+                new EventType[] { eventType },
+                new string[] { "trigger_stream" },
+                new bool[] { true },
                 false,
                 false);
             var resultSetProcessor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(
+                ResultSetProcessorAttributionKeyStatement.INSTANCE,
                 new ResultSetSpec(defaultSelectAllSpec),
                 streamTypeService,
                 null,
@@ -127,15 +137,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onset
                 tableAccessForges,
                 variableReadWritePackageForge,
                 classNameRSP);
-            var forgeables = new List<StmtClassForgeable>();
-            forgeables.Add(new StmtClassForgeableRSPFactoryProvider(classNameRSP, resultSetProcessor, namespaceScope, @base.StatementRawInfo));
+            IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
+            forgeables.Add(
+                new StmtClassForgeableRSPFactoryProvider(
+                    classNameRSP,
+                    resultSetProcessor,
+                    namespaceScope,
+                    @base.StatementRawInfo,
+                    services.SerdeResolver.IsTargetHA));
 
             var onTrigger = new StmtClassForgeableAIFactoryProviderOnTrigger(className, namespaceScope, forge);
             return new OnTriggerSetPlan(
                 onTrigger,
                 forgeables,
                 resultSetProcessor.SelectSubscriberDescriptor,
-                subSelectForgePlan.AdditionalForgeables);
+                subSelectForgePlan.AdditionalForgeables,
+                subSelectForgePlan.FabricCharge);
         }
     }
 } // end of namespace

@@ -27,6 +27,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         private readonly Type[] _methodTypeArgs;
         private readonly CodegenExpression[] _params;
 
+        public Type Target => _target;
+
+        public string TargetClassName => _targetClassName;
+
         public CodegenExpressionStaticMethod(
             Type target,
             string methodName,
@@ -49,7 +53,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             _target = target;
             _targetClassName = null;
             _methodName = methodName;
-            _methodTypeArgs = new Type[0];
+            _methodTypeArgs = Type.EmptyTypes;
             _params = @params;
         }
 
@@ -61,7 +65,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             _target = null;
             _targetClassName = targetClassName;
             _methodName = methodName;
-            _methodTypeArgs = new Type[0];
+            _methodTypeArgs = Type.EmptyTypes;
             _params = @params;
         }
 
@@ -106,9 +110,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             foreach (var methodTypeArg in _methodTypeArgs) {
                 classes.AddToSet(methodTypeArg);
             }
+
             MergeClassesExpressions(classes, _params);
         }
-        
+
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             TraverseMultiple(_params, consumer);

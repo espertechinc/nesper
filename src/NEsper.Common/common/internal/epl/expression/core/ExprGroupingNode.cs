@@ -32,21 +32,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return null;
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get => this;
-        }
+        public ExprEvaluator ExprEvaluator => this;
 
-        public Type EvaluationType {
-            get => typeof(int?);
-        }
+        public Type EvaluationType => typeof(int?);
 
-        public override ExprForge Forge {
-            get => this;
-        }
+        public override ExprForge Forge => this;
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => this;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,
@@ -55,17 +47,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNodeUtilityPrint.ToExpressionStringWFunctionName("grouping", ChildNodes, writer);
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.DEPLOYCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.DEPLOYCONST;
 
-        public override ExprPrecedenceEnum Precedence {
-            get => ExprPrecedenceEnum.UNARY;
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public bool IsConstantResult {
-            get => false;
-        }
+        public bool IsConstantResult => false;
 
         public override bool EqualsNode(
             ExprNode node,

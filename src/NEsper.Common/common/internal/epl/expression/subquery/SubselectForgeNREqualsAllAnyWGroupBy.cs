@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -38,8 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             bool isNot,
             Coercer coercer,
             ExprForge havingEval,
-            bool isAll)
-            : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNot, coercer)
+            bool isAll) : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNot, coercer)
         {
             this.havingEval = havingEval;
             this.isAll = isAll;
@@ -50,23 +49,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+            if (subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
+            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
-            var method = parent.MakeChild(subselect.EvaluationType, this.GetType(), classScope);
+            var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var left = symbols.GetAddLeftResult(method);
 
             method.Block
-                .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar<AggregationService>(
+                .DeclareVar(typeof(int), "cpid", ExprDotName(evalCtx, "AgentInstanceId"))
+                .DeclareVar(
+                    typeof(AggregationService),
                     "aggregationService",
-                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar<ICollection<object>>(
+                    ExprDotMethod(aggService, "getContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar(
+                    typeof(ICollection<object>),
                     "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
-                .DeclareVar<bool>("hasNullRow", ConstantFalse());
+                    ExprDotMethod(Ref("aggregationService"), "getGroupKeys", evalCtx))
+                .DeclareVar(typeof(bool?), "hasNullRow", ConstantFalse());
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
             {
@@ -88,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
                 Type valueRightType;
                 if (selectEval != null) {
-                    valueRightType = Boxing.GetBoxedType(selectEval.EvaluationType);
+                    valueRightType = selectEval.EvaluationType.GetBoxedType();
                     forEach.DeclareVar(
                         valueRightType,
                         "valueRight",
@@ -107,12 +112,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .IfElse();
                 {
                     if (coercer == null) {
-                        ifRightNotNull.DeclareVar<bool>("eq", ExprDotMethod(left, "Equals", Ref("valueRight")));
+                        ifRightNotNull.DeclareVar(
+                            typeof(bool?),
+                            "eq",
+                            ExprDotMethod(left, "equals", Ref("valueRight")));
                     }
                     else {
-                        ifRightNotNull.DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
-                            .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar<bool>("eq", StaticMethod<object>("Equals", Ref("left"), Ref("right")));
+                        ifRightNotNull.DeclareVar(
+                                typeof(object),
+                                "left",
+                                coercer.CoerceCodegen(left, symbols.LeftResultType))
+                            .DeclareVar(
+                                typeof(object),
+                                "right",
+                                coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
+                            .DeclareVar(typeof(bool?), "eq", ExprDotMethod(Ref("left"), "equals", Ref("right")));
                     }
 
                     if (isNot) {

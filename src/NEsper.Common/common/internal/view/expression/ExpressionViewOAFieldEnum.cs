@@ -79,18 +79,18 @@ namespace com.espertech.esper.common.@internal.view.expression
             EventBean oldestEvent,
             EventBean newestEvent)
         {
-            properties[(int) ExpressionViewOAFieldEnum.CURRENT_COUNT] = windowSize;
-            properties[(int) ExpressionViewOAFieldEnum.OLDEST_TIMESTAMP] = oldestEventTimestamp;
-            properties[(int) ExpressionViewOAFieldEnum.NEWEST_TIMESTAMP] = newestEventTimestamp;
-            properties[(int) ExpressionViewOAFieldEnum.VIEW_REFERENCE] = viewReference;
-            properties[(int) ExpressionViewOAFieldEnum.EXPIRED_COUNT] = expiredCount;
-            properties[(int) ExpressionViewOAFieldEnum.OLDEST_EVENT] = oldestEvent;
-            properties[(int) ExpressionViewOAFieldEnum.NEWEST_EVENT] = newestEvent;
+            properties[(int)ExpressionViewOAFieldEnum.CURRENT_COUNT] = windowSize;
+            properties[(int)ExpressionViewOAFieldEnum.OLDEST_TIMESTAMP] = oldestEventTimestamp;
+            properties[(int)ExpressionViewOAFieldEnum.NEWEST_TIMESTAMP] = newestEventTimestamp;
+            properties[(int)ExpressionViewOAFieldEnum.VIEW_REFERENCE] = viewReference;
+            properties[(int)ExpressionViewOAFieldEnum.EXPIRED_COUNT] = expiredCount;
+            properties[(int)ExpressionViewOAFieldEnum.OLDEST_EVENT] = oldestEvent;
+            properties[(int)ExpressionViewOAFieldEnum.NEWEST_EVENT] = newestEvent;
         }
 
         public static object[] GetPrototypeOA()
         {
-            int valuesCount = EnumHelper.GetValues<ExpressionViewOAFieldEnum>().Count();
+            var valuesCount = EnumHelper.GetValues<ExpressionViewOAFieldEnum>().Count();
             return new object[valuesCount];
         }
     }

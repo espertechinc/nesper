@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
             ContextControllerStatementDesc statement,
             ICollection<int> agentInstanceIds)
         {
-            StatementContext statementContext = statement.Lightweight.StatementContext;
+            var statementContext = statement.Lightweight.StatementContext;
             IList<AgentInstance> instances = new List<AgentInstance>();
             foreach (var id in agentInstanceIds) {
                 var agentInstance = GetAgentInstance(statementContext, id);
@@ -37,7 +37,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
             StatementContext statementContext,
             int agentInstanceId)
         {
-            var holder = statementContext.StatementCPCacheService.MakeOrGetEntryCanNull(agentInstanceId, statementContext);
+            var holder =
+                statementContext.StatementCPCacheService.MakeOrGetEntryCanNull(agentInstanceId, statementContext);
             return new AgentInstance(holder.AgentInstanceStopCallback, holder.AgentInstanceContext, holder.FinalView);
         }
 
@@ -46,7 +47,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
             ICollection<int> agentInstanceIds,
             Func<AgentInstance, bool> filter)
         {
-            StatementContext statementContext = statement.Lightweight.StatementContext;
+            var statementContext = statement.Lightweight.StatementContext;
             IList<AgentInstance> instances = new List<AgentInstance>();
             foreach (var id in agentInstanceIds) {
                 var agentInstance = GetAgentInstance(statementContext, id);
@@ -65,7 +66,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
             object[] allPartitionKeys,
             AgentInstanceContext agentInstanceContextCreate)
         {
-            IDictionary<int, FilterSpecActivatable> filters =
+            var filters =
                 statementDesc.Lightweight.StatementContext.FilterSpecActivatables;
             IDictionary<FilterSpecActivatable, FilterValueSetParam[][]> map =
                 new IdentityDictionary<FilterSpecActivatable, FilterValueSetParam[][]>();
@@ -110,7 +111,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
             IDictionary<int, ContextControllerStatementDesc> statements,
             AgentInstanceContext agentInstanceContextCreate)
         {
-            var result = new FilterValueSetParam[0][];
+            var result = Array.Empty<FilterValueSetParam[]>();
             for (var i = 0; i < parentPartitionKeys.Length; i++) {
                 var addendumForController = controllerFactories[i]
                     .PopulateFilterAddendum(

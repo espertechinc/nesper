@@ -16,13 +16,15 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.access.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.sharable;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 using static com.espertech.esper.common.@internal.util.CollectionUtil;
 
@@ -35,20 +37,23 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         AggregatorAccessLinear
     {
         private readonly AggregationStateLinearForge _forge;
-        private readonly CodegenExpressionMember _refSet;
-        private readonly CodegenExpressionMember _array;
+        private CodegenExpressionMember _refSet;
+        private CodegenExpressionMember _array;
 
         public AggregatorAccessLinearJoin(
             AggregationStateLinearForge forge,
+            ExprNode optionalFilter)
+            : base(optionalFilter)
+        {
+            _forge = forge;
+        }
+
+        public override void InitAccessForge(
             int col,
             CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
-            ExprNode optionalFilter)
-            : base(optionalFilter)
-
+            CodegenClassScope classScope)
         {
-            _forge = forge;
             _refSet = membersColumnized.AddMember(col, typeof(LinkedHashMap<EventBean, object>), "refSet");
             _array = membersColumnized.AddMember(col, typeof(EventBean[]), "array");
             rowCtor.Block.AssignRef(_refSet, NewInstance(typeof(LinkedHashMap<EventBean, object>)));
@@ -71,7 +76,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(GetSerde(classScope), "Write", RowDotMember(row, _refSet), output, unitKey, writer);
+            method.Block.ExprDotMethod(
+                GetSerde(classScope),
+                "Write",
+                RowDotMember(row, _refSet),
+                output,
+                unitKey,
+                writer);
         }
 
         public override void ReadCodegen(
@@ -89,6 +100,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     ExprDotMethod(GetSerde(classScope), "Read", input, unitKey)));
         }
 
+        public override void CollectFabricType(FabricTypeCollector collector)
+        {
+            collector.LinkedHashMapEventsAndInt(_forge.EventType);
+        }
+
         public CodegenExpression GetFirstNthValueCodegen(
             CodegenExpressionRef index,
             CodegenMethod parentMethod,
@@ -101,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     typeof(AggregatorAccessLinearJoin),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(int), "index");
+                .AddParam<int>("index");
             method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
                 .BlockReturn(ConstantNull())
                 .IfCondition(ExprDotMethod(_refSet, "IsEmpty"))
@@ -127,7 +143,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     typeof(AggregatorAccessLinearJoin),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(int), "index");
+                .AddParam<int>("index");
             method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
                 .BlockReturn(ConstantNull())
                 .IfCondition(ExprDotMethod(_refSet, "IsEmpty"))
@@ -266,9 +282,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     typeof(AggregatorAccessLinearJoin),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(EventBean), "theEvent");
+                .AddParam<EventBean>("theEvent");
             method.Block.AssignRef(_array, ConstantNull())
-                .DeclareVar<int?>("value", ExprDotMethod(ExprDotMethod(_refSet, "Get", Ref("theEvent")), "AsBoxedInt32"))
+                .DeclareVar<int?>(
+                    "value",
+                    ExprDotMethod(ExprDotMethod(_refSet, "Get", Ref("theEvent")), "AsBoxedInt32"))
                 .IfRefNull("value")
                 .ExprDotMethod(_refSet, "Put", Ref("theEvent"), Constant(1))
                 .BlockReturnNoValue()
@@ -286,9 +304,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     typeof(AggregatorAccessLinearJoin),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(EventBean), "theEvent");
+                .AddParam<EventBean>("theEvent");
             method.Block.AssignRef(_array, ConstantNull())
-                .DeclareVar<int?>("value", ExprDotMethod(ExprDotMethod(_refSet, "Get", Ref("theEvent")), "AsBoxedInt32"))
+                .DeclareVar<int?>(
+                    "value",
+                    ExprDotMethod(ExprDotMethod(_refSet, "Get", Ref("theEvent")), "AsBoxedInt32"))
                 .IfRefNull("value")
                 .BlockReturnNoValue()
                 .IfCondition(EqualsIdentity(Ref("value"), Constant(1)))

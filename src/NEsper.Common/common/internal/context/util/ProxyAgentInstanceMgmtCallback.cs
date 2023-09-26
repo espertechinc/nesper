@@ -23,7 +23,9 @@ namespace com.espertech.esper.common.@internal.context.util
         {
         }
 
-        public ProxyAgentInstanceMgmtCallback(Action<AgentInstanceTransferServices> procTransfer) : this(null, procTransfer)
+        public ProxyAgentInstanceMgmtCallback(Action<AgentInstanceTransferServices> procTransfer) : this(
+            null,
+            procTransfer)
         {
         }
 

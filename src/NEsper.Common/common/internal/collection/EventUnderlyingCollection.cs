@@ -16,7 +16,8 @@ using com.espertech.esper.common.client.collection;
 
 namespace com.espertech.esper.common.@internal.collection
 {
-    public class EventUnderlyingCollection : ICollection<EventBean>, ICollection<object>
+    public class EventUnderlyingCollection : ICollection<EventBean>,
+        ICollection<object>
     {
         private ICollection<EventBean> _underlyingCollection;
 
@@ -24,7 +25,7 @@ namespace com.espertech.esper.common.@internal.collection
         {
             _underlyingCollection = flexCollection.EventBeanCollection;
         }
-        
+
         public EventUnderlyingCollection(ICollection<EventBean> events)
         {
             _underlyingCollection = events;
@@ -43,7 +44,7 @@ namespace com.espertech.esper.common.@internal.collection
         }
 
         #region ICollection<EventBean>
-        
+
         IEnumerator<EventBean> IEnumerable<EventBean>.GetEnumerator()
         {
             return _underlyingCollection.GetEnumerator();
@@ -79,9 +80,9 @@ namespace com.espertech.esper.common.@internal.collection
         int ICollection<EventBean>.Count => _underlyingCollection.Count();
 
         bool ICollection<EventBean>.IsReadOnly => true;
-        
+
         #endregion
-        
+
         #region ICollection<object>
 
         IEnumerator<object> IEnumerable<object>.GetEnumerator()
@@ -124,7 +125,7 @@ namespace com.espertech.esper.common.@internal.collection
         int ICollection<object>.Count => _underlyingCollection.Count;
 
         bool ICollection<object>.IsReadOnly => true;
-        
+
         #endregion
     }
 } // end of namespace

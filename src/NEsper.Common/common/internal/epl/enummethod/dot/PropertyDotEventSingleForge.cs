@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            return (EventBean) getter.GetFragment(@event);
+            return (EventBean)getter.GetFragment(@event);
         }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(
@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            return (EventBean) getter.GetFragment(@event);
+            return (EventBean)getter.GetFragment(@event);
         }
 
         public ICollection<EventBean> EvaluateEventGetROCollectionEvents(
@@ -192,7 +192,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return ConstantNull();
         }
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {

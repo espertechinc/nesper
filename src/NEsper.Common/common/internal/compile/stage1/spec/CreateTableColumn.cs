@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         public CreateTableColumn(
             string columnName,
             ExprNode optExpression,
-            ClassIdentifierWArray optType,
+            ClassDescriptor optType,
             IList<AnnotationDesc> annotations,
             bool? primaryKey)
         {
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             PrimaryKey = primaryKey;
         }
 
-        public ClassIdentifierWArray OptType { get; set; }
+        public ClassDescriptor OptType { get; set; }
 
         public string ColumnName { get; private set; }
 

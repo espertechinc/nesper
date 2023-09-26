@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
-
-using com.espertech.esper.compat;
-
-using Microsoft.CodeAnalysis;
-
-namespace com.espertech.esper.common.client.artifact
+﻿namespace com.espertech.esper.common.client.artifact
 {
     public interface IArtifactRepositoryManager
     {
@@ -20,7 +12,9 @@ namespace com.espertech.esper.common.client.artifact
         /// </summary>
         /// <param name="deploymentId"></param>
         /// <param name="createIfMissing">create the repository if it is missing</param>
-        IArtifactRepository GetArtifactRepository(string deploymentId, bool createIfMissing = false);
+        IArtifactRepository GetArtifactRepository(
+            string deploymentId,
+            bool createIfMissing = false);
 
         /// <summary>
         /// Deletes (and unloads) the named repository.

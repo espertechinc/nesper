@@ -63,7 +63,8 @@ namespace com.espertech.esper.common.client
         {
         }
 
-        protected PropertyAccessException(SerializationInfo info,
+        protected PropertyAccessException(
+            SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }
@@ -82,27 +83,22 @@ namespace com.espertech.esper.common.client
         /// <summary>
         /// Gets a message that describes the current exception.
         /// </summary>
-        public override string Message
-        {
+        public override string Message {
             get {
                 StringBuilder msg;
 
-                if (!string.IsNullOrEmpty(base.Message))
-                {
+                if (!string.IsNullOrEmpty(base.Message)) {
                     msg = new StringBuilder(base.Message);
                 }
-                else
-                {
+                else {
                     msg = new StringBuilder("Unexpected exception");
-                    if (InnerException != null)
-                    {
+                    if (InnerException != null) {
                         msg.Append(" : ");
                         msg.Append(InnerException.Message);
                     }
                 }
 
-                if (_expression != null)
-                {
+                if (_expression != null) {
                     msg.Append(" [");
                     msg.Append(_expression);
                     msg.Append(']');

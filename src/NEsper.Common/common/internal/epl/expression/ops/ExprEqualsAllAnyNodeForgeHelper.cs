@@ -25,7 +25,8 @@ public static class ExprEqualsAllAnyNodeForgeHelper
             // collectionType is same as itemType
             // - nothing to do
             return itemExpression;
-        } else if (collectionType.IsNullable()) {
+        }
+        else if (collectionType.IsNullable()) {
             // Let's make some assumptions that we've done sufficient type checking and that
             // the underlying data type for item is the same as the collection, but is just
             // a boxed or unboxed form.  If this is a reasonable assumption, then the type

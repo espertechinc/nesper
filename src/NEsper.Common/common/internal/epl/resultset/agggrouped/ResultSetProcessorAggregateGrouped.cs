@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
         AggregationService AggregationService { get; }
 
-        ExprEvaluatorContext GetAgentInstanceContext();
+        ExprEvaluatorContext GetExprEvaluatorContext();
 
         bool IsSelectRStream { get; }
 

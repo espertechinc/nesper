@@ -899,7 +899,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     epl,
-                    "Segmented context 'ABC' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [");
+                    "Segmented context 'ABC' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, Type 'SupportBean_S0' is not one of the types listed [");
 
                 env.UndeployAll();
             }

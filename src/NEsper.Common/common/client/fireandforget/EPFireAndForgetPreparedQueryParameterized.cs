@@ -35,5 +35,14 @@ namespace com.espertech.esper.common.client.fireandforget
         void SetObject(
             string parameterName,
             object value);
+
+        /// <summary>
+        /// Releases resources.
+        /// <para>
+        ///      Required for use with fire-and-forget queries that use SQL queries i.e. "from SQL:db [query]".
+        ///      Optional for all other EPL queries.
+        /// </para>
+        /// </summary>
+        public void Close();
     }
 } // end of namespace

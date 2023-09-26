@@ -27,9 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluator evaluatorLeft,
             ExprEvaluator evaluatorRight)
         {
-            this._forge = forge;
-            this._evaluatorLeft = evaluatorLeft;
-            this._evaluatorRight = evaluatorRight;
+            _forge = forge;
+            _evaluatorLeft = evaluatorLeft;
+            _evaluatorRight = evaluatorRight;
         }
 
         public object Evaluate(

@@ -22,7 +22,12 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.primiti
         {
             var innerMsg = ex.Message == null ? "" : " " + ex.Message.Replace("For", "for");
             return new EPException(
-                "Failed to parse json value as a " + type.Name + "-type from value '" + value + "': NumberFormatException" + innerMsg,
+                "Failed to parse json value as a " +
+                type.Name +
+                "-type from value '" +
+                value +
+                "': NumberFormatException" +
+                innerMsg,
                 ex);
         }
 
@@ -41,6 +46,5 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.primiti
                 "Failed to parse json value as a " + type.Name + "-type from value '" + value + "': " + innerMsg,
                 ex);
         }
-
     }
 } // end of namespace

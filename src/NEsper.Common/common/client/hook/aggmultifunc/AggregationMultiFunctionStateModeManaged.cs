@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
 
         /// <summary>
         ///     Returns indicator whether a serializer-deserialize to provide read and write methods is provided by
-        ///     <seealso cref="Serde" />
+        ///     <seealso cref = "Serde"/>
         /// </summary>
         /// <value>ha-indicator</value>
         public bool HasHA { get; set; }
@@ -44,40 +44,5 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// </summary>
         /// <returns>serde class</returns>
         public Type Serde { get; set; }
-
-        /// <summary>
-        ///     Sets the injection strategy for the aggregation state factory
-        /// </summary>
-        /// <param name="strategy">strategy</param>
-        /// <returns>itself</returns>
-        public AggregationMultiFunctionStateModeManaged SetInjectionStrategyAggregationStateFactory(
-            InjectionStrategy strategy)
-        {
-            InjectionStrategyAggregationStateFactory = strategy;
-            return this;
-        }
-
-        /// <summary>
-        ///     Sets indicator whether a serializer-deserialize to provide read and write methods is provided by
-        ///     <seealso cref="Serde" />
-        /// </summary>
-        /// <param name="hasHA">ha-indicator</param>
-        /// <returns>itself</returns>
-        public AggregationMultiFunctionStateModeManaged SetHasHA(bool hasHA)
-        {
-            HasHA = hasHA;
-            return this;
-        }
-
-        /// <summary>
-        ///     Sets the class providing the serde
-        /// </summary>
-        /// <param name="serde">serde class</param>
-        /// <returns>ifself</returns>
-        public AggregationMultiFunctionStateModeManaged SetSerde(Type serde)
-        {
-            Serde = serde;
-            return this;
-        }
     }
-} // end of namespace
+}

@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             var subProperty = forge.scalar
                 ? "ObjectCollection"
                 : "EventBeanCollection";
-            
+
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(returnType, typeof(EnumUnionForgeEval), scope, codegenClassScope)
@@ -106,10 +106,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             block
                 .DebugStack()
                 .DeclareVar(listType, "result", NewInstance(listType))
-                .Expression(ExprDotMethod(Ref("result"), "AddAll", 
-                    ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, subProperty)))
-                .Expression(ExprDotMethod(Ref("result"), "AddAll",
-                    ExprDotName(Ref("other"), subProperty)))
+                .Expression(
+                    ExprDotMethod(
+                        Ref("result"),
+                        "AddAll",
+                        ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, subProperty)))
+                .Expression(
+                    ExprDotMethod(
+                        Ref("result"),
+                        "AddAll",
+                        ExprDotName(Ref("other"), subProperty)))
                 .MethodReturn(FlexWrap(Ref("result")));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

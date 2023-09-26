@@ -75,14 +75,19 @@ namespace com.espertech.esper.common.@internal.epl.lookup
                 }
 
                 expressions.AddAll(ExprNodeUtilityPrint.ToExpressionStringsMinPrecedence(forges));
-                hashEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(forges, _hashTypes, _hashMultikeyClasses, method, classScope);
+                hashEval = MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
+                    forges,
+                    _hashTypes,
+                    _hashMultikeyClasses,
+                    method,
+                    classScope);
             }
 
             method.Block.DeclareVar<QueryGraphValueEntryRange[]>(
                 "rangeEvals",
                 NewArrayByLength(typeof(QueryGraphValueEntryRange), Constant(_rangeProps.Count)));
             for (var i = 0; i < _rangeProps.Count; i++) {
-                CodegenExpression rangeEval = _rangeProps[i]
+                var rangeEval = _rangeProps[i]
                     .RangeInfo.Make(
                         _coercionRangeTypes[i],
                         parent,

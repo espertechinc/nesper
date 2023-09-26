@@ -40,8 +40,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns expression to eval.
         /// </summary>
         /// <returns>eval expression</returns>
-        public Expression Value
-        {
+        public Expression Value {
             get => value;
             set => this.value = value;
         }

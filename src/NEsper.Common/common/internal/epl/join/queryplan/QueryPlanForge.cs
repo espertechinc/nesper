@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         public string ToQueryPlan()
         {
-            StringBuilder buffer = new StringBuilder();
+            var buffer = new StringBuilder();
             buffer.Append("QueryPlanNode\n");
             buffer.Append(QueryPlanIndexForge.Print(IndexSpecs));
             buffer.Append(QueryPlanNodeForge.Print(ExecNodeSpecs));

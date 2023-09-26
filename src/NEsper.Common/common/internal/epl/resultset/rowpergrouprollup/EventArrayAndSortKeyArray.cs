@@ -25,22 +25,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             this.sortKeyPerLevel = sortKeyPerLevel;
         }
 
-        public IList<EventBean>[] EventsPerLevel {
-            get { return eventsPerLevel; }
-        }
+        public IList<EventBean>[] EventsPerLevel => eventsPerLevel;
 
-        public IList<object>[] SortKeyPerLevel {
-            get { return sortKeyPerLevel; }
-        }
+        public IList<object>[] SortKeyPerLevel => sortKeyPerLevel;
 
         public void Reset()
         {
-            foreach (IList<EventBean> anEventsPerLevel in eventsPerLevel) {
+            foreach (var anEventsPerLevel in eventsPerLevel) {
                 anEventsPerLevel.Clear();
             }
 
             if (sortKeyPerLevel != null) {
-                foreach (IList<object> anSortKeyPerLevel in sortKeyPerLevel) {
+                foreach (var anSortKeyPerLevel in sortKeyPerLevel) {
                     anSortKeyPerLevel.Clear();
                 }
             }

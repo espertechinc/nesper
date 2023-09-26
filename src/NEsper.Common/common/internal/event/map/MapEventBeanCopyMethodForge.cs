@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public EventBean Copy(EventBean theEvent)
         {
-            var mapped = (MappedEventBean) theEvent;
+            var mapped = (MappedEventBean)theEvent;
             var props = mapped.Properties;
             return eventBeanTypedEventFactory.AdapterForTypedMap(new Dictionary<string, object>(props), mapEventType);
         }

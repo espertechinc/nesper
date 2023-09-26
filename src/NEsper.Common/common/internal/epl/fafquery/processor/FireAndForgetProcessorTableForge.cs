@@ -26,11 +26,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 
         public TableMetaData Table { get; }
 
-        public string NamedWindowOrTableName => Table.TableName;
+        public string ProcessorName => Table.TableName;
 
         public string ContextName => Table.OptionalContextName;
 
-        public EventType EventTypeRspInputEvents => Table.InternalEventType;
+        public EventType EventTypeRSPInputEvents => Table.InternalEventType;
 
         public EventType EventTypePublic => Table.PublicEventType;
 
@@ -44,9 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
             var method = parent.MakeChild(typeof(FireAndForgetProcessorTable), GetType(), classScope);
             var nw = Ref("tbl");
             method.Block
-                .DeclareVar<FireAndForgetProcessorTable>(
-                    nw.Ref,
-                    NewInstance(typeof(FireAndForgetProcessorTable)))
+                .DeclareVarNewInstance<FireAndForgetProcessorTable>(nw.Ref)
                 .SetProperty(
                     nw,
                     "Table",

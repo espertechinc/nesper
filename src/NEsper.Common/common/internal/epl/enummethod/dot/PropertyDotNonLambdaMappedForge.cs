@@ -55,7 +55,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {

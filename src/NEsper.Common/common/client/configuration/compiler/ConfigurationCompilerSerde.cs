@@ -11,10 +11,10 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.common.client.configuration.compiler
 {
-	/// <summary>
-	///     Serialization and Deserialization options.
-	/// </summary>
-	[Serializable]
+    /// <summary>
+    ///     Serialization and Deserialization options.
+    /// </summary>
+    [Serializable]
     public class ConfigurationCompilerSerde
     {
         private bool _enableExtendedBuiltin = true;

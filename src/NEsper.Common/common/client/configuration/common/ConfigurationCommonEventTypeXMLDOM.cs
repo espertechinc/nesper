@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Xml.XPath;
 
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
@@ -93,7 +92,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns a map of property name and descriptor for XPath-expression properties.
         /// </summary>
         /// <value>XPath property information</value>
-        public IDictionary<string, XPathPropertyDesc> XPathProperties { get; set;  }
+        public IDictionary<string, XPathPropertyDesc> XPathProperties { get; set; }
 
         /// <summary>
         ///     Returns false to indicate that property expressions are evaluated by the DOM-walker
@@ -231,7 +230,7 @@ namespace com.espertech.esper.common.client.configuration.common
             XPathResultType type,
             string eventTypeName)
         {
-            if ((type != XPathResultType.Any) && (type != XPathResultType.NodeSet)) {
+            if (type != XPathResultType.Any && type != XPathResultType.NodeSet) {
                 throw new ArgumentException(
                     "XPath property for fragments requires an XmlNode or XmlNodeset return value for property '" +
                     name +
@@ -267,41 +266,48 @@ namespace com.espertech.esper.common.client.configuration.common
             CodegenMethodScope parent,
             CodegenClassScope scope)
         {
-            CodegenSetterBuilderItemConsumer<XPathPropertyDesc> xPathBuild = (o, parentXPath, scopeXPath) => 
+            CodegenSetterBuilderItemConsumer<XPathPropertyDesc> xPathBuild = (
+                    o,
+                    parentXPath,
+                    scopeXPath) =>
                 o.ToCodegenExpression(parentXPath, scopeXPath);
 
-            return new CodegenSetterBuilder(typeof(ConfigurationCommonEventTypeXMLDOM), typeof(ConfigurationCommonEventTypeXMLDOM), "xmlconfig", parent, scope)
-                .Constant("RootElementName", RootElementName)
+            return new CodegenSetterBuilder(
+                    typeof(ConfigurationCommonEventTypeXMLDOM),
+                    typeof(ConfigurationCommonEventTypeXMLDOM),
+                    "xmlconfig",
+                    parent,
+                    scope)
+                .ConstantExplicit("RootElementName", RootElementName)
                 .Map("XPathProperties", XPathProperties, xPathBuild)
                 .MapOfConstants("NamespacePrefixes", NamespacePrefixes)
-                .Constant("SchemaResource", SchemaResource)
-                .Constant("SchemaText", SchemaText)
-                .Constant("IsEventSenderValidatesRoot", IsEventSenderValidatesRoot)
-                .Constant("IsAutoFragment", IsAutoFragment)
-                .Constant("IsXPathPropertyExpr", IsXPathPropertyExpr)
-                .Constant("XPathFunctionResolver", XPathFunctionResolver)
-                .Constant("XPathVariableResolver", XPathVariableResolver)
-                .Constant("IsXPathResolvePropertiesAbsolute", IsXPathResolvePropertiesAbsolute)
-                .Constant("DefaultNamespace", DefaultNamespace)
-                .Constant("RootElementNamespace", RootElementNamespace)
-                .Constant("StartTimestampPropertyName", StartTimestampPropertyName)
-                .Constant("EndTimestampPropertyName", EndTimestampPropertyName)
+                .ConstantExplicit("SchemaResource", SchemaResource)
+                .ConstantExplicit("SchemaText", SchemaText)
+                .ConstantExplicit("IsEventSenderValidatesRoot", IsEventSenderValidatesRoot)
+                .ConstantExplicit("IsAutoFragment", IsAutoFragment)
+                .ConstantExplicit("IsXPathPropertyExpr", IsXPathPropertyExpr)
+                .ConstantExplicit("XPathFunctionResolver", XPathFunctionResolver)
+                .ConstantExplicit("XPathVariableResolver", XPathVariableResolver)
+                .ConstantExplicit("IsXPathResolvePropertiesAbsolute", IsXPathResolvePropertiesAbsolute)
+                .ConstantExplicit("DefaultNamespace", DefaultNamespace)
+                .ConstantExplicit("RootElementNamespace", RootElementNamespace)
+                .ConstantExplicit("StartTimestampPropertyName", StartTimestampPropertyName)
+                .ConstantExplicit("EndTimestampPropertyName", EndTimestampPropertyName)
                 .Build();
         }
 
         public override bool Equals(object otherObj)
         {
-            if (!(otherObj is ConfigurationCommonEventTypeXMLDOM)) {
+            if (!(otherObj is ConfigurationCommonEventTypeXMLDOM other)) {
                 return false;
             }
 
-            var other = (ConfigurationCommonEventTypeXMLDOM) otherObj;
             if (!other.RootElementName.Equals(RootElementName)) {
                 return false;
             }
 
-            if (other.RootElementNamespace == null && RootElementNamespace != null ||
-                other.RootElementNamespace != null && RootElementNamespace == null) {
+            if ((other.RootElementNamespace == null && RootElementNamespace != null) ||
+                (other.RootElementNamespace != null && RootElementNamespace == null)) {
                 return false;
             }
 

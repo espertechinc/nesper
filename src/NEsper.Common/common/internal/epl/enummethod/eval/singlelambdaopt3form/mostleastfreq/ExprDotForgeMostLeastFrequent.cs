@@ -17,64 +17,72 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.mostleastfreq
 {
-	public class ExprDotForgeMostLeastFrequent : ExprDotForgeLambdaThreeForm
-	{
-		protected override EPType InitAndNoParamsReturnType(
-			EventType inputEventType,
-			Type collectionComponentType)
-		{
-			var returnType = collectionComponentType.GetBoxedType();
-			return EPTypeHelper.SingleValue(returnType);
-		}
+    public class ExprDotForgeMostLeastFrequent : ExprDotForgeLambdaThreeForm
+    {
+        protected override EPChainableType InitAndNoParamsReturnType(
+            EventType inputEventType,
+            Type collectionComponentType)
+        {
+            var returnType = collectionComponentType.GetBoxedType();
+            return new EPChainableTypeClass(returnType);
+        }
 
-		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
-			EnumMethodEnum enumMethod,
-			EPType type,
-			StatementCompileTimeServices services)
-		{
-			return streamCountIncoming => new EnumMostLeastFrequentScalarNoParam(
-				streamCountIncoming,
-				enumMethod == EnumMethodEnum.MOSTFREQUENT,
-				type.GetNormalizedClass());
-		}
+        protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
+            EnumMethodEnum enumMethod,
+            EPChainableType type,
+            StatementCompileTimeServices services)
+        {
+            return streamCountIncoming => new EnumMostLeastFrequentScalarNoParam(
+                streamCountIncoming,
+                enumMethod == EnumMethodEnum.MOSTFREQUENT,
+                type.GetNormalizedType());
+        }
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
-			EventType inputEventType,
-			Type collectionComponentType)
-		{
-			return lambda => {
-				var returnType = lambda.BodyForge.EvaluationType.GetBoxedType();
-				return EPTypeHelper.SingleValue(returnType);
-			};
-		}
+        protected override ThreeFormInitFunction InitAndSingleParamReturnType(
+            EventType inputEventType,
+            Type collectionComponentType)
+        {
+            return lambda => {
+                var returnType = ValidateNonNull(lambda.BodyForge.EvaluationType).GetBoxedType();
+                return EPChainableTypeHelper.SingleValue(returnType);
+            };
+        }
 
-		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				typeInfo1,
-				services) => new EnumMostLeastFrequentEvent(lambda, enumMethod == EnumMethodEnum.MOSTFREQUENT);
-		}
+        protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                typeInfo1,
+                services) => new EnumMostLeastFrequentEvent(lambda, enumMethod == EnumMethodEnum.MOSTFREQUENT);
+        }
 
-		protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				fieldType,
-				numParameters,
-				typeInfo1,
-				services) => new EnumMostLeastFrequentEventPlus(lambda, fieldType, numParameters, enumMethod == EnumMethodEnum.MOSTFREQUENT);
-		}
+        protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                fieldType,
+                numParameters,
+                typeInfo1,
+                services) => new EnumMostLeastFrequentEventPlus(
+                lambda,
+                fieldType,
+                numParameters,
+                enumMethod == EnumMethodEnum.MOSTFREQUENT);
+        }
 
-		protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
-		{
-			return (
-					lambda,
-					eventType,
-					numParams,
-					typeInfo,
-					services) =>
-				new EnumMostLeastFrequentScalar(lambda, eventType, numParams, enumMethod == EnumMethodEnum.MOSTFREQUENT);
-		}
-	}
+        protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
+        {
+            return (
+                    lambda,
+                    eventType,
+                    numParams,
+                    typeInfo,
+                    services) =>
+                new EnumMostLeastFrequentScalar(
+                    lambda,
+                    eventType,
+                    numParams,
+                    enumMethod == EnumMethodEnum.MOSTFREQUENT);
+        }
+    }
 } // end of namespace

@@ -40,10 +40,7 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for descending, false for ascending.
         /// </summary>
         /// <returns>indicator for descending sort</returns>
-        public bool IsDescending
-        {
-            get => descending;
-        }
+        public bool IsDescending => descending;
 
         /// <summary>
         /// Returns true for descending, false for ascending.
@@ -68,20 +65,15 @@ namespace com.espertech.esper.common.client.soda
         /// Return precedence.
         /// </summary>
         /// <returns>precedence</returns>
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            if (descending)
-            {
+            if (descending) {
                 writer.Write(" desc");
             }
-            else
-            {
+            else {
                 writer.Write(" asc");
             }
         }

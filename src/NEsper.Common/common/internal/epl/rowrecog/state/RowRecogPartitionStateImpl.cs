@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         ///     Returns partial matches.
         /// </summary>
         /// <returns>state</returns>
-        public IEnumerator<RowRecogNFAStateEntry> CurrentStatesIterator => CurrentStatesForPrint.GetEnumerator();
+        public IEnumerator<RowRecogNFAStateEntry> CurrentStatesEnumerator => CurrentStatesForPrint.GetEnumerator();
 
         /// <summary>
         ///     Sets partial matches.

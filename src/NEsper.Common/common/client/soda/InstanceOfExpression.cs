@@ -47,22 +47,17 @@ namespace com.espertech.esper.common.client.soda
             params string[] moreTypes)
         {
             Children.Add(expressionToCheck);
-            if (moreTypes == null)
-            {
+            if (moreTypes == null) {
                 typeNames = new string[] { typeName };
             }
-            else
-            {
+            else {
                 typeNames = new string[moreTypes.Length + 1];
                 typeNames[0] = typeName;
                 Array.Copy(moreTypes, 0, typeNames, 1, moreTypes.Length);
             }
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
@@ -70,9 +65,8 @@ namespace com.espertech.esper.common.client.soda
             Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             writer.Write(",");
 
-            string delimiter = "";
-            foreach (string typeName in typeNames)
-            {
+            var delimiter = "";
+            foreach (var typeName in typeNames) {
                 writer.Write(delimiter);
                 writer.Write(typeName);
                 delimiter = ",";

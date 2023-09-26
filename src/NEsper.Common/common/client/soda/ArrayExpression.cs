@@ -57,19 +57,14 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("{");
-            bool isFirst = true;
-            foreach (Expression child in Children)
-            {
-                if (!isFirst)
-                {
+            var isFirst = true;
+            foreach (var child in Children) {
+                if (!isFirst) {
                     writer.Write(",");
                 }
 

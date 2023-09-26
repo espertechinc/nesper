@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             int streamCountOuter,
             IList<ExprNode> exprNodes)
         {
-            this._streamCountOuter = streamCountOuter;
-            this._isNwOnTrigger = isNWOnTrigger;
+            _streamCountOuter = streamCountOuter;
+            _isNwOnTrigger = isNWOnTrigger;
             this.exprNodes = exprNodes;
         }
 

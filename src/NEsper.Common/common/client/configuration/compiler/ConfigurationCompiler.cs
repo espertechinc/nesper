@@ -49,7 +49,10 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     Returns the list of plug-in aggregation multi-functions.
         /// </summary>
         /// <value>plug-in aggregation multi-functions</value>
-        public IList<ConfigurationCompilerPlugInAggregationMultiFunction> PlugInAggregationMultiFunctions { get; private set; }
+        public IList<ConfigurationCompilerPlugInAggregationMultiFunction> PlugInAggregationMultiFunctions {
+            get;
+            private set;
+        }
 
         /// <summary>
         ///     Returns the list of plug-in single-row functions.
@@ -102,7 +105,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// </summary>
         /// <value>logging settings</value>
         public ConfigurationCompilerLogging Logging { get; private set; }
-        
+
         /// <summary>
         /// Returns true if the compiler should set optimization to debug.
         /// </summary>
@@ -551,7 +554,8 @@ namespace com.espertech.esper.common.client.configuration.compiler
             string enumMethodName,
             Type enumMethodForgeFactoryClass)
         {
-            PlugInEnumMethods.Add(new ConfigurationCompilerPlugInEnumMethod(enumMethodName, enumMethodForgeFactoryClass.FullName));
+            PlugInEnumMethods.Add(
+                new ConfigurationCompilerPlugInEnumMethod(enumMethodName, enumMethodForgeFactoryClass.FullName));
         }
 
         /// <summary>

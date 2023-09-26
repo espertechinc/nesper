@@ -55,23 +55,20 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
         {
             this.factory = factory;
             this.viewUpdatedCollection = viewUpdatedCollection;
-            this.timeWindow = new TimeWindow(agentInstanceViewFactoryContext.IsRemoveStream);
+            timeWindow = new TimeWindow(agentInstanceViewFactoryContext.IsRemoveStream);
             this.agentInstanceViewFactoryContext = agentInstanceViewFactoryContext;
             this.timePeriodProvide = timePeriodProvide;
         }
 
-        public override EventType EventType {
-            get {
-                // The schema is the parent view's schema
-                return Parent.EventType;
-            }
-        }
+        public override EventType EventType =>
+            // The schema is the parent view's schema
+            Parent.EventType;
 
         public override void Update(
             EventBean[] newData,
             EventBean[] oldData)
         {
-            AgentInstanceContext agentInstanceContext = agentInstanceViewFactoryContext.AgentInstanceContext;
+            var agentInstanceContext = agentInstanceViewFactoryContext.AgentInstanceContext;
             agentInstanceContext.AuditProvider.View(newData, oldData, agentInstanceContext, factory);
             agentInstanceContext.InstrumentationProvider.QViewProcessIRStream(factory, newData, oldData);
             long timestamp = -1;
@@ -79,7 +76,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
             // add data points to the window
             // we don't care about removed data from a prior view
             if (newData != null) {
-                for (int i = 0; i < newData.Length; i++) {
+                for (var i = 0; i < newData.Length; i++) {
                     timestamp = GetLongValue(newData[i]);
                     timeWindow.Add(timestamp, newData[i]);
                 }
@@ -95,12 +92,12 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
             }
 
             EventBean[] oldDataUpdate = null;
-            if ((expired != null) && (!expired.IsEmpty())) {
+            if (expired != null && !expired.IsEmpty()) {
                 oldDataUpdate = expired.ToArray();
             }
 
-            if ((oldData != null) && (agentInstanceViewFactoryContext.IsRemoveStream)) {
-                foreach (EventBean anOldData in oldData) {
+            if (oldData != null && agentInstanceViewFactoryContext.IsRemoveStream) {
+                foreach (var anOldData in oldData) {
                     timeWindow.Remove(anOldData);
                 }
 
@@ -145,16 +142,10 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
         /// Returns true to indicate the window is empty, or false if the view is not empty.
         /// </summary>
         /// <returns>true if empty</returns>
-        public bool IsEmpty {
-            get => timeWindow.IsEmpty();
-        }
+        public bool IsEmpty => timeWindow.IsEmpty();
 
-        public ViewUpdatedCollection ViewUpdatedCollection {
-            get => viewUpdatedCollection;
-        }
+        public ViewUpdatedCollection ViewUpdatedCollection => viewUpdatedCollection;
 
-        public ViewFactory ViewFactory {
-            get => factory;
-        }
+        public ViewFactory ViewFactory => factory;
     }
 } // end of namespace

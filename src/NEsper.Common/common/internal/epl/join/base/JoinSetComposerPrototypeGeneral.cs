@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -19,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.join.strategy;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.table.core;
 using com.espertech.esper.common.@internal.epl.virtualdw;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -84,18 +86,21 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
 
                 if (streamJoinAnalysisResult.Tables[streamNo] != null) {
                     // build for tables
-                    Table table = streamJoinAnalysisResult.Tables[streamNo];
+                    var table = streamJoinAnalysisResult.Tables[streamNo];
                     var state = table.GetTableInstance(agentInstanceContext.AgentInstanceId);
-                    foreach (string indexName in state.IndexRepository.ExplicitIndexNames) { // add secondary indexes
-                        var indexInner = state.GetIndex(indexName);
+
+                    foreach (var indexName in state.IndexRepository.ExplicitIndexNames) { // add secondary indexes
+                        var indexInner = state.GetIndex(indexName.Name, indexName.ModuleName);
                         indexesPerStream[streamNo]
                             .Put(
-                                new TableLookupIndexReqKey(indexName, null, table.Name),
+                                new TableLookupIndexReqKey(indexName.Name, indexName.ModuleName, table.Name),
                                 indexInner);
                     }
 
-                    var index = state.GetIndex(table.Name); // add primary index
-                    indexesPerStream[streamNo].Put(new TableLookupIndexReqKey(table.Name, null, table.Name), index);
+                    var index = state.GetIndex(table.Name, table.MetaData.TableModuleName); // add primary index
+                    indexesPerStream[streamNo]
+                        .Put(new TableLookupIndexReqKey(table.Name, table.MetaData.TableModuleName, table.Name), index);
+
                     hasTable = true;
                     tableSecondaryIndexLocks[streamNo] =
                         agentInstanceContext.StatementContext.StatementInformationals.IsWritesToTables
@@ -120,7 +125,6 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                                 streamNo,
                                 items.Get(entry.Key),
                                 streamTypes[streamNo],
-                                false,
                                 entry.Value.IsUnique,
                                 null,
                                 null,
@@ -177,9 +181,9 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             // If this is not unidirectional and not a self-join (excluding self-outer-join)
             JoinSetComposerDesc joinSetComposerDesc;
             if (JoinSetComposerUtil.IsNonUnidirectionalNonSelf(
-                isOuterJoins,
-                streamJoinAnalysisResult.IsUnidirectional,
-                streamJoinAnalysisResult.IsPureSelfJoin)) {
+                    isOuterJoins,
+                    streamJoinAnalysisResult.IsUnidirectional,
+                    streamJoinAnalysisResult.IsPureSelfJoin)) {
                 JoinSetComposer composer;
                 if (hasHistorical) {
                     composer = new JoinSetComposerHistoricalImpl(
@@ -272,7 +276,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
                         events.Clear();
                     }
                     else {
-                        eventsPerStream[i] = new EventBean[0];
+                        eventsPerStream[i] = Array.Empty<EventBean>();
                     }
                 }
 
@@ -288,7 +292,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
             StreamJoinAnalysisResultRuntime streamJoinAnalysisResult,
             AgentInstanceContext agentInstanceContext)
         {
-            NamedWindow namedWindow = streamJoinAnalysisResult.NamedWindows[streamNo];
+            var namedWindow = streamJoinAnalysisResult.NamedWindows[streamNo];
             if (namedWindow == null) {
                 return null;
             }

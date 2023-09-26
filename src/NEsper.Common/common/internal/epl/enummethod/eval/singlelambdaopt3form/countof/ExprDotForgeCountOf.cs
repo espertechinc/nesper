@@ -16,57 +16,56 @@ using com.espertech.esper.common.@internal.rettype;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.countof
 {
-	public class ExprDotForgeCountOf : ExprDotForgeLambdaThreeForm
-	{
+    public class ExprDotForgeCountOf : ExprDotForgeLambdaThreeForm
+    {
+        protected override EPChainableType InitAndNoParamsReturnType(
+            EventType inputEventType,
+            Type collectionComponentType)
+        {
+            return EPChainableTypeHelper.SingleValue(typeof(int?));
+        }
 
-		protected override EPType InitAndNoParamsReturnType(
-			EventType inputEventType,
-			Type collectionComponentType)
-		{
-			return EPTypeHelper.SingleValue(typeof(int?));
-		}
+        protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
+            EnumMethodEnum enumMethod,
+            EPChainableType type,
+            StatementCompileTimeServices services)
+        {
+            return _ => new EnumCountOfNoParams(_);
+        }
 
-		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
-			EnumMethodEnum enumMethod,
-			EPType type,
-			StatementCompileTimeServices services)
-		{
-			return _ => new EnumCountOfNoParams(_);
-		}
+        protected override ThreeFormInitFunction InitAndSingleParamReturnType(
+            EventType inputEventType,
+            Type collectionComponentType)
+        {
+            return lambda => EPChainableTypeHelper.SingleValue(typeof(int?));
+        }
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
-			EventType inputEventType,
-			Type collectionComponentType)
-		{
-			return lambda => EPTypeHelper.SingleValue(typeof(int?));
-		}
+        protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                typeInfo,
+                services) => new EnumCountOfEvent(lambda);
+        }
 
-		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				typeInfo,
-				services) => new EnumCountOfEvent(lambda);
-		}
+        protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                indexEventType,
+                numParameters,
+                typeInfo,
+                services) => new EnumCountOfEventPlus(lambda, indexEventType, numParameters);
+        }
 
-		protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				indexEventType,
-				numParameters,
-				typeInfo,
-				services) => new EnumCountOfEventPlus(lambda, indexEventType, numParameters);
-		}
-
-		protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				fieldType,
-				numParams,
-				typeInfo,
-				services) => new EnumCountOfScalar(lambda, fieldType, numParams);
-		}
-	}
+        protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                fieldType,
+                numParams,
+                typeInfo,
+                services) => new EnumCountOfScalar(lambda, fieldType, numParams);
+        }
+    }
 } // end of namespace

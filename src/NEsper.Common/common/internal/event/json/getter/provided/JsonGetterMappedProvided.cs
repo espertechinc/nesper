@@ -12,10 +12,10 @@ using com.espertech.esper.common.@internal.@event.json.getter.core;
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 {
-	/// <summary>
-	///     Property getter for Json underlying fields.
-	/// </summary>
-	public sealed class JsonGetterMappedProvided : JsonGetterMappedBase
+    /// <summary>
+    ///     Property getter for Json underlying fields.
+    /// </summary>
+    public sealed class JsonGetterMappedProvided : JsonGetterMappedBase
     {
         private readonly FieldInfo field;
 

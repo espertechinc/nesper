@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
 
         public JsonDeserializerForgeEnum(Type type)
         {
-            this._type = type;
+            _type = type;
         }
 
         public CodegenExpression CodegenDeserialize(
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
             return StaticMethod(
                 typeof(JsonElementExtensions),
                 "GetBoxedEnum",
-                new Type[] {_type},
+                new Type[] { _type },
                 elementExpr);
         }
     }

@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         protected override object GetValue(object keyValue)
         {
-            return ((TimeWindowPair) keyValue).EventHolder;
+            return ((TimeWindowPair)keyValue).EventHolder;
         }
     }
 }

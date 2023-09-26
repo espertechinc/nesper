@@ -36,9 +36,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateDataflow), GetType(), classScope);
             method.Block
-                .DeclareVar<StatementAgentInstanceFactoryCreateDataflow>(
-                    "saiff",
-                    NewInstance(typeof(StatementAgentInstanceFactoryCreateDataflow)))
+                .DeclareVarNewInstance<StatementAgentInstanceFactoryCreateDataflow>("saiff")
                 .SetProperty(
                     Ref("saiff"),
                     "EventType",

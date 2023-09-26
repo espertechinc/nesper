@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             EventTable[] eventTable,
             EventType[] eventTypes)
         {
-            return new FullTableScanUniqueValueLookupStrategy((EventTableAsSet) eventTable[0]);
+            return new FullTableScanUniqueValueLookupStrategy((EventTableAsSet)eventTable[0]);
         }
 
         public override string ToString()

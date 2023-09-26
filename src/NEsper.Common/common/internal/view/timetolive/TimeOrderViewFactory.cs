@@ -71,9 +71,9 @@ namespace com.espertech.esper.common.@internal.view.timetolive
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            TimePeriodProvide timePeriodProvide =
+            var timePeriodProvide =
                 timePeriodCompute.GetNonVariableProvide(agentInstanceViewFactoryContext.AgentInstanceContext);
-            IStreamSortRankRandomAccess sortedRandomAccess =
+            var sortedRandomAccess =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprSortedRankedAccess(agentInstanceViewFactoryContext);
             return new TimeOrderView(agentInstanceViewFactoryContext, this, sortedRandomAccess, timePeriodProvide);

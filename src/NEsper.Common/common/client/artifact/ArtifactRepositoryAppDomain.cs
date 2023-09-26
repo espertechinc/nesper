@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.client.artifact

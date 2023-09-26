@@ -18,7 +18,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
 {
     public class AggregationMethodLinearListReference : AggregationMultiFunctionAggregationMethod
     {
-        public static readonly AggregationMethodLinearListReference INSTANCE = new AggregationMethodLinearListReference();
+        public static readonly AggregationMethodLinearListReference INSTANCE =
+            new AggregationMethodLinearListReference();
 
         private AggregationMethodLinearListReference()
         {
@@ -31,7 +32,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var events = (IList<EventBean>) row.GetCollectionOfEvents(aggColNum, eventsPerStream, isNewData, exprEvaluatorContext);
+            var events = (IList<EventBean>)row.GetCollectionOfEvents(
+                aggColNum,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
             return events.AsReadOnlyList();
         }
 

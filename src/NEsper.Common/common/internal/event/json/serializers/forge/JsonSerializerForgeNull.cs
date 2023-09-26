@@ -16,20 +16,20 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.serializers.forge
 {
-	public class JsonSerializerForgeNull : JsonSerializerForge
-	{
-		public static readonly JsonSerializerForgeNull INSTANCE = new JsonSerializerForgeNull();
+    public class JsonSerializerForgeNull : JsonSerializerForge
+    {
+        public static readonly JsonSerializerForgeNull INSTANCE = new JsonSerializerForgeNull();
 
-		private JsonSerializerForgeNull()
-		{
-		}
+        private JsonSerializerForgeNull()
+        {
+        }
 
-		public CodegenExpression CodegenSerialize(
-			JsonSerializerForgeRefs refs,
-			CodegenMethod method,
-			CodegenClassScope classScope)
-		{
-			return ExprDotMethod(refs.Context, "WriteNullValue");
-		}
-	}
+        public CodegenExpression CodegenSerialize(
+            JsonSerializerForgeRefs refs,
+            CodegenMethod method,
+            CodegenClassScope classScope)
+        {
+            return ExprDotMethod(refs.Context, "WriteNullValue");
+        }
+    }
 } // end of namespace

@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.util
             var nunitAssertionType = TypeHelper.ResolveType("NUnit.Framework.Assert", false);
             if (nunitAssertionType != null) {
                 var asFastClass = FastClass.Create(nunitAssertionType);
-                var asFastMethod = asFastClass?.GetMethod("Fail", new Type[] {typeof(string)});
+                var asFastMethod = asFastClass?.GetMethod("Fail", new Type[] { typeof(string) });
                 if (asFastMethod != null) {
                     AssertFail = message => asFastMethod.InvokeStatic(message);
                 }

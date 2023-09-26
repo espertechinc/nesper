@@ -35,8 +35,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public void Visit(ExprNode exprNode)
         {
-            if (exprNode is ExprStreamRefNode) {
-                var streamRefNode = (ExprStreamRefNode) exprNode;
+            if (exprNode is ExprStreamRefNode streamRefNode) {
                 var stream = streamRefNode.StreamReferencedIfAny;
                 if (stream != null) {
                     if (stream == 0) {
@@ -47,8 +46,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     }
                 }
 
-                if (exprNode is ExprIdentNode) {
-                    var identNode = (ExprIdentNode) exprNode;
+                if (streamRefNode is ExprIdentNode identNode) {
                     if (identNode.ExprEvaluatorIdent.IsContextEvaluated) {
                         IsLimited = false;
                     }
@@ -56,15 +54,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             // we don't process enumeration methods
-            if (exprNode is ExprNodeWithChainSpec) {
-                if (!((ExprNodeWithChainSpec) exprNode).ChainSpec.IsEmpty()) {
+            if (exprNode is ExprNodeWithChainSpec spec) {
+                if (!spec.ChainSpec.IsEmpty()) {
                     IsLimited = false;
                 }
             }
 
-            if (exprNode is ExprVariableNode) {
-                var node = (ExprVariableNode) exprNode;
-                if (!node.VariableMetadata.IsConstant) {
+            if (exprNode is ExprVariableNode variableNode) {
+                if (!variableNode.VariableMetadata.IsConstant) {
                     IsLimited = false;
                 }
             }
@@ -75,9 +72,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                      exprNode is ExprNodeScript) {
                 IsLimited = false;
             }
-            else if (exprNode is ExprPlugInSingleRowNode) {
-                var plugIn = (ExprPlugInSingleRowNode) exprNode;
-                if (plugIn.Config != null && plugIn.Config.FilterOptimizable == ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED) {
+            else if (exprNode is ExprPlugInSingleRowNode plugIn) {
+                if (plugIn.Config != null &&
+                    plugIn.Config.FilterOptimizable ==
+                    ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED) {
                     IsLimited = false;
                 }
 
@@ -85,8 +83,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     IsLimited = false;
                 }
             }
-            else if (exprNode is ExprDotNode) {
-                var node = (ExprDotNode) exprNode;
+            else if (exprNode is ExprDotNode node) {
                 if (node.IsLocalInlinedClass) {
                     IsLimited = false;
                 }

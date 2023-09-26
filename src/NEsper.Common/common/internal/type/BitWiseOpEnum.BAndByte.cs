@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.type
                 object objOne,
                 object objTwo)
             {
-                var n1 = (byte) objOne;
-                var n2 = (byte) objTwo;
-                return (byte) (n1 & n2);
+                var n1 = (byte)objOne;
+                var n2 = (byte)objTwo;
+                return (byte)(n1 & n2);
             }
         }
     }

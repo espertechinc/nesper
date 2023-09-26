@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 if (enumerator.MoveNext()) {
                     var snapshot = new List<EventBean>();
                     do {
-                        EventBean @event = enumerator.Current;
+                        var @event = enumerator.Current;
                         snapshot.Add(@event);
                     } while (enumerator.MoveNext());
 

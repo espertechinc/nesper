@@ -50,13 +50,11 @@ namespace com.espertech.esper.common.@internal.type
                     .AddParam(typeof(int?), "i1")
                     .AddParam(typeof(int?), "i2")
                     .Block
-                    
                     .IfCondition(
                         CodegenExpressionBuilder.EqualsIdentity(
                             CodegenExpressionBuilder.Ref("i2"),
                             CodegenExpressionBuilder.Constant(0)))
                     .BlockReturn(CodegenExpressionBuilder.ConstantNull())
-
                     .MethodReturn(
                         CodegenExpressionBuilder.Op(
                             CodegenExpressionBuilder.Ref("i1"),

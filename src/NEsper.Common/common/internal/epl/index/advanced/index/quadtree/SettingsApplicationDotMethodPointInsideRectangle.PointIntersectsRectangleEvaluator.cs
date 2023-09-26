@@ -93,13 +93,13 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                CodegenMethod methodNode = codegenMethodScope.MakeChild(
+                var methodNode = codegenMethodScope.MakeChild(
                     typeof(bool?),
                     typeof(SettingsApplicationDotMethodRectangeIntersectsRectangle.RectangleIntersectsRectangleEvaluator
                     ),
                     codegenClassScope);
 
-                CodegenBlock block = methodNode.Block;
+                var block = methodNode.Block;
                 CodegenLegoCast.AsDoubleNullReturnNull(
                     block,
                     "px",

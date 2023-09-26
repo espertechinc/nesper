@@ -25,12 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.util
             _isAllowRangeReverse = allowRangeReverse;
         }
 
-        public QueryGraphRangeEnum Operator {
-            get => _operator;
-        }
+        public QueryGraphRangeEnum Operator => _operator;
 
-        public bool IsAllowRangeReverse {
-            get => _isAllowRangeReverse;
-        }
+        public bool IsAllowRangeReverse => _isAllowRangeReverse;
     }
 } // end of namespace

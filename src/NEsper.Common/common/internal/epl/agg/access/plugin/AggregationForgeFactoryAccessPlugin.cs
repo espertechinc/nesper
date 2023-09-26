@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
     {
         private readonly ExprPlugInMultiFunctionAggNode parent;
         private readonly AggregationMultiFunctionHandler handler;
-        private EPType returnType;
+        private EPChainableType returnType;
 
         public AggregationForgeFactoryAccessPlugin(
             ExprPlugInMultiFunctionAggNode parent,
@@ -39,11 +39,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             return handler.AggregationStateUniqueKey;
         }
 
-        public override AggregationStateFactoryForge GetAggregationStateFactory(bool isMatchRecognize)
+        public override AggregationStateFactoryForge GetAggregationStateFactory(
+            bool isMatchRecognize,
+            bool isJoin)
         {
-            AggregationMultiFunctionStateMode stateMode = handler.StateMode;
-            if (stateMode is AggregationMultiFunctionStateModeManaged) {
-                AggregationMultiFunctionStateModeManaged managed = (AggregationMultiFunctionStateModeManaged) stateMode;
+            var stateMode = handler.StateMode;
+            if (stateMode is AggregationMultiFunctionStateModeManaged managed) {
                 return new AggregationStateFactoryForgePlugin(this, managed);
             }
             else {
@@ -53,10 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 
         public override AggregationAccessorForge AccessorForge {
             get {
-                AggregationMultiFunctionAccessorMode accessorMode = handler.AccessorMode;
-                if (accessorMode is AggregationMultiFunctionAccessorModeManaged) {
-                    AggregationMultiFunctionAccessorModeManaged managed =
-                        (AggregationMultiFunctionAccessorModeManaged) accessorMode;
+                var accessorMode = handler.AccessorMode;
+                if (accessorMode is AggregationMultiFunctionAccessorModeManaged managed) {
                     return new AggregationAccessorForgePlugin(this, managed);
                 }
                 else {
@@ -69,13 +68,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             ImportService importService,
             string statementName)
         {
-            AggregationMultiFunctionAgentMode agentMode = handler.AgentMode;
-            if (agentMode is AggregationMultiFunctionAgentModeManaged) {
-                AggregationMultiFunctionAgentModeManaged managed = (AggregationMultiFunctionAgentModeManaged) agentMode;
+            var agentMode = handler.AgentMode;
+            if (agentMode is AggregationMultiFunctionAgentModeManaged managed) {
                 return new AggregationAgentForgePlugin(
                     this,
                     managed,
-                    parent.OptionalFilter == null ? null : parent.OptionalFilter.Forge);
+                    parent.OptionalFilter?.Forge);
             }
             else {
                 throw new IllegalStateException("Unrecognized accessor mode " + agentMode);
@@ -85,13 +83,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         public override Type ResultType {
             get {
                 ObtainReturnType();
-                return EPTypeHelper.GetNormalizedClass(returnType);
+                return returnType.GetNormalizedType();
             }
         }
 
-        public override ExprAggregateNodeBase AggregationExpression {
-            get => parent;
-        }
+        public override ExprAggregateNodeBase AggregationExpression => parent;
 
         public override AggregationPortableValidation AggregationPortableValidation {
             get {
@@ -105,21 +101,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         public EventType EventTypeCollection {
             get {
                 ObtainReturnType();
-                return EPTypeHelper.GetEventTypeMultiValued(returnType);
+                return EPChainableTypeHelper.GetEventTypeMultiValued(returnType);
             }
         }
 
         public EventType EventTypeSingle {
             get {
                 ObtainReturnType();
-                return EPTypeHelper.GetEventTypeSingleValued(returnType);
+                return EPChainableTypeEventSingle.FromInputOrNull(returnType);
             }
         }
 
         public Type ComponentTypeCollection {
             get {
                 ObtainReturnType();
-                return EPTypeHelper.GetClassMultiValued(returnType);
+                return EPChainableTypeHelper.GetCollectionOrArrayComponentTypeOrNull(returnType);
             }
         }
 

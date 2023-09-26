@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                     for (var val = 0; val < additionalEvals.Length; val++) {
                         lastValuesEventNew[val] = additionalEvals[val]
                             .Evaluate(
-                                new[] {newData[newData.Length - 1]},
+                                new[] { newData[^1] },
                                 true,
                                 agentInstanceContext);
                     }
@@ -99,13 +99,13 @@ namespace com.espertech.esper.common.@internal.view.derived
 
                 EventBean[] oldEvents;
                 if (lastSizeEvent != null) {
-                    oldEvents = new[] {lastSizeEvent};
+                    oldEvents = new[] { lastSizeEvent };
                 }
                 else {
-                    oldEvents = new[] {oldDataMap};
+                    oldEvents = new[] { oldDataMap };
                 }
 
-                EventBean[] newEvents = {newEvent};
+                EventBean[] newEvents = { newEvent };
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(sizeViewFactory, newEvents, oldEvents);
                 child.Update(newEvents, oldEvents);
@@ -135,8 +135,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public static EventType CreateEventType(
             ViewForgeEnv env,
-            StatViewAdditionalPropsForge additionalProps,
-            int streamNum)
+            StatViewAdditionalPropsForge additionalProps)
         {
             var schemaMap = new LinkedHashMap<string, object>();
             schemaMap.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), typeof(long));
@@ -144,7 +143,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 schemaMap,
                 additionalProps,
                 ViewFieldEnum.SIZE_VIEW__SIZE);
-            return DerivedViewTypeUtil.NewType("sizeview", schemaMap, env, streamNum);
+            return DerivedViewTypeUtil.NewType("sizeview", schemaMap, env);
         }
 
         private void AddProperties(IDictionary<string, object> newDataMap)

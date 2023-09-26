@@ -53,7 +53,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
 
             var childType = ChildNodes[0].Forge.EvaluationType;
-            var distinctSerde = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(childType, validationContext.StatementRawInfo) : null;
+            var distinctSerde = isDistinct
+                ? validationContext.SerdeResolver.SerdeForAggregationDistinct(
+                    childType,
+                    validationContext.StatementRawInfo)
+                : null;
             return new AggregationForgeFactoryCountEver(this, ignoreNulls, childType, distinctSerde);
         }
 

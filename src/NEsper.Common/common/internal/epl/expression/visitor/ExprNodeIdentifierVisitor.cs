@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
             isVisitAggregateNodes = visitAggregateNodes;
             ExprProperties = new List<Pair<int, string>>();
         }
-        
+
         public bool IsWalkDeclExprParam => true;
 
         /// <summary>
@@ -60,11 +60,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
 
         public void Visit(ExprNode exprNode)
         {
-            if (!(exprNode is ExprIdentNode)) {
+            if (!(exprNode is ExprIdentNode identNode)) {
                 return;
             }
-
-            var identNode = (ExprIdentNode) exprNode;
 
             var streamId = identNode.StreamId;
             var propertyName = identNode.ResolvedPropertyName;

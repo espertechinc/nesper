@@ -48,10 +48,7 @@ namespace com.espertech.esper.common.client.soda
             Children.Add(expression);
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
@@ -62,17 +59,13 @@ namespace com.espertech.esper.common.client.soda
         /// Returns true for distinct.
         /// </summary>
         /// <returns>boolean indicating distinct or not</returns>
-        public bool IsDistinct
-        {
-            get => distinct;
-        }
+        public bool IsDistinct => distinct;
 
         /// <summary>
         /// Returns true for distinct.
         /// </summary>
         /// <returns>boolean indicating distinct or not</returns>
-        public bool Distinct
-        {
+        public bool Distinct {
             get => distinct;
             set => distinct = value;
         }

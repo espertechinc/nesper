@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.context.util
         /// <param name="assignments">event property assignments</param>
         /// <param name="writer">writes values to an event</param>
         /// <param name="wideners">for widening types to write</param>
-        /// <param name="outputView">for indicating output</param>
+        /// <param name="OutputView">for indicating output</param>
         /// <param name="statementContext">the statement context</param>
         /// <param name="hasSubselect">indicator whether there are subselects</param>
         public InternalEventRouterEntry(
@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.context.util
         /// </summary>
         /// <returns>wideners.</returns>
         public TypeWidener[] Wideners { get; }
-        
+
         public InternalEventRouterWriter[] SpecialPropWriters { get; }
 
         /// <summary>

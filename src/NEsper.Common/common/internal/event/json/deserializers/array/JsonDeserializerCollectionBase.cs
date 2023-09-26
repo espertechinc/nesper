@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array
 {
     public abstract class JsonDeserializerCollectionBase<T> : JsonDeserializerBase
     {
-        private readonly Func<JsonElement,object> _itemDeserializer;
+        private readonly Func<JsonElement, object> _itemDeserializer;
         private IList<T> _result = EmptyList<T>.Instance;
 
         public JsonDeserializerCollectionBase(Func<JsonElement, object> itemDeserializer) : base()
@@ -28,10 +28,10 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.array
 
         public override object Deserialize(JsonElement element)
         {
-            _result = JsonElementExtensions.ElementToArray(element, _itemDeserializer)
+            _result = element.ElementToArray(_itemDeserializer)
                 .Cast<T>()
                 .ToList();
-            
+
             return _result;
         }
     }

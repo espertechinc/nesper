@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.util
             int conversionCount,
             bool varargs)
         {
-            int compareCount = ConversionCount.CompareTo(conversionCount);
+            var compareCount = ConversionCount.CompareTo(conversionCount);
             if (compareCount != 0) {
                 return compareCount;
             }
@@ -39,10 +39,7 @@ namespace com.espertech.esper.common.@internal.util
             return CompareTo(other.ConversionCount, other.varargs);
         }
 
-        public bool IsVarargs()
-        {
-            return varargs;
-        }
+        public bool IsVarargs => varargs;
 
         public override string ToString()
         {

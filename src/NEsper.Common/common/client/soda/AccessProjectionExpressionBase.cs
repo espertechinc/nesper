@@ -47,12 +47,10 @@ namespace com.espertech.esper.common.client.soda
             writer.Write('(');
             var delimiter = "";
             var children = Children;
-            if (children.Count > 0)
-            {
+            if (children.Count > 0) {
                 writer.Write(delimiter);
                 children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-                for (var i = 1; i < children.Count; i++)
-                {
+                for (var i = 1; i < children.Count; i++) {
                     writer.Write(",");
                     children[i].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 }

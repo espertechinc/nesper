@@ -23,87 +23,91 @@ using static com.espertech.esper.common.@internal.epl.enummethod.codegen.EnumFor
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base
 {
-	public abstract class ThreeFormEventPlus : EnumForgeBaseWFields
-	{
-		protected readonly int numParameters;
+    public abstract class ThreeFormEventPlus : EnumForgeBaseWFields
+    {
+        protected readonly int numParameters;
 
-		public abstract Type ReturnType();
+        public abstract Type ReturnTypeOfMethod();
 
-		public abstract CodegenExpression ReturnIfEmptyOptional();
+        public abstract CodegenExpression ReturnIfEmptyOptional();
 
-		public abstract void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope);
+        public abstract void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope);
 
-		public virtual bool HasForEachLoop()
-		{
-			return true;
-		}
+        public virtual bool HasForEachLoop()
+        {
+            return true;
+        }
 
-		public abstract void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope);
+        public abstract void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope);
 
-		public abstract void ReturnResult(CodegenBlock block);
+        public abstract void ReturnResult(CodegenBlock block);
 
-		public ThreeFormEventPlus(
-			ExprDotEvalParamLambda lambda,
-			ObjectArrayEventType indexEventType,
-			int numParameters)
-			: base(lambda, indexEventType)
-		{
-			this.numParameters = numParameters;
-		}
+        public ThreeFormEventPlus(
+            ExprDotEvalParamLambda lambda,
+            ObjectArrayEventType indexEventType,
+            int numParameters)
+            : base(lambda, indexEventType)
+        {
+            this.numParameters = numParameters;
+        }
 
-		public override CodegenExpression Codegen(
-			EnumForgeCodegenParams premade,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			var indexTypeMember = codegenClassScope.AddDefaultFieldUnshared(
-				true,
-				typeof(ObjectArrayEventType),
-				Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(FieldEventType, EPStatementInitServicesConstants.REF)));
+        public override CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            var indexTypeMember = codegenClassScope.AddDefaultFieldUnshared(
+                true,
+                typeof(ObjectArrayEventType),
+                Cast(
+                    typeof(ObjectArrayEventType),
+                    EventTypeUtility.ResolveTypeCodegen(FieldEventType, EPStatementInitServicesConstants.REF)));
 
-			var scope = new ExprForgeCodegenSymbol(false, null);
-			var methodNode = codegenMethodScope
-				.MakeChildWithScope(ReturnType(), GetType(), scope, codegenClassScope)
-				.AddParam(EnumForgeCodegenNames.PARAMS);
-			var block = methodNode.Block;
+            var scope = new ExprForgeCodegenSymbol(false, null);
+            var methodNode = codegenMethodScope
+                .MakeChildWithScope(ReturnTypeOfMethod(), GetType(), scope, codegenClassScope)
+                .AddParam(PARAMS);
+            var block = methodNode.Block;
 
-			var returnEmpty = ReturnIfEmptyOptional();
-			if (returnEmpty != null) {
-				block.IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
-					.BlockReturn(returnEmpty);
-			}
+            var returnEmpty = ReturnIfEmptyOptional();
+            if (returnEmpty != null) {
+                block.IfCondition(ExprDotMethod(REF_ENUMCOLL, "IsEmpty"))
+                    .BlockReturn(returnEmpty);
+            }
 
-			block.DeclareVar(
-					typeof(ObjectArrayEventBean),
-					"indexEvent",
-					NewInstance(typeof(ObjectArrayEventBean), NewArrayByLength(typeof(object), Constant(numParameters - 1)), indexTypeMember))
-				.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda + 1), Ref("indexEvent"))
-				.DeclareVar<object[]>("props", ExprDotName(Ref("indexEvent"), "Properties"));
-			block.DeclareVar<int>("count", Constant(-1));
-			if (numParameters == 3) {
-				block.AssignArrayElement(Ref("props"), Constant(1), ExprDotName(REF_ENUMCOLL, "Count"));
-			}
+            block.DeclareVar<ObjectArrayEventBean>(
+                    "indexEvent",
+                    NewInstance(
+                        typeof(ObjectArrayEventBean),
+                        NewArrayByLength(typeof(object), Constant(numParameters - 1)),
+                        indexTypeMember))
+                .AssignArrayElement(REF_EPS, Constant(StreamNumLambda + 1), Ref("indexEvent"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("indexEvent"), "Properties"));
+            block.DeclareVar<int>("count", Constant(-1));
+            if (numParameters == 3) {
+                block.AssignArrayElement(Ref("props"), Constant(1), ExprDotName(REF_ENUMCOLL, "Count"));
+            }
 
-			InitBlock(block, methodNode, scope, codegenClassScope);
+            InitBlock(block, methodNode, scope, codegenClassScope);
 
-			if (HasForEachLoop()) {
-				var forEach = block.ForEach(typeof(EventBean), "next", REF_ENUMCOLL)
-					.IncrementRef("count")
-					.AssignArrayElement("props", Constant(0), Ref("count"))
-					.AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
-				ForEachBlock(forEach, methodNode, scope, codegenClassScope);
-			}
+            if (HasForEachLoop()) {
+                var forEach = block.ForEach(typeof(EventBean), "next", REF_ENUMCOLL)
+                    .IncrementRef("count")
+                    .AssignArrayElement("props", Constant(0), Ref("count"))
+                    .AssignArrayElement(REF_EPS, Constant(StreamNumLambda), Ref("next"));
+                ForEachBlock(forEach, methodNode, scope, codegenClassScope);
+            }
 
-			ReturnResult(block);
-			return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
-		}
-	}
+            ReturnResult(block);
+            return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);
+        }
+    }
 } // end of namespace

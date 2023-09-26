@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 var map = value.AsObjectDictionary(MagicMarker.SingletonInstance);
                 constants.AddAll(map.Keys);
             }
-            
+
             public void ValueToString(StringBuilder @out)
             {
                 @out.Append("map keys");

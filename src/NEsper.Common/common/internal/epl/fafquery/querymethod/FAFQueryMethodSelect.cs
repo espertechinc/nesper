@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -23,86 +23,107 @@ using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
+using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodUtil;
+
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
     /// <summary>
-    ///     Starts and provides the stop method for EPL statements.
+    /// Starts and provides the stop method for EPL statements.
     /// </summary>
     public class FAFQueryMethodSelect : FAFQueryMethod
     {
-        public Attribute[] Annotations { get; set; }
+        private Attribute[] annotations;
+        private string contextName;
+        private string contextModuleName;
+        private ExprEvaluator whereClause;
+        private ExprEvaluator[] consumerFilters;
+        private ResultSetProcessorFactoryProvider resultSetProcessorFactoryProvider;
+        private FireAndForgetProcessor[] processors;
+        private JoinSetComposerPrototype joinSetComposerPrototype;
+        private QueryGraph queryGraph;
+        private IDictionary<int, ExprTableEvalStrategyFactory> tableAccesses;
+        private bool hasTableAccess;
+        private EventPropertyValueGetter distinctKeyGetter;
+        private IDictionary<int, SubSelectFactory> subselects;
 
-        public string ContextName { get; set; }
-
-        public ExprEvaluator WhereClause { get; set; }
-
-        public ExprEvaluator[] ConsumerFilters { get; set; }
-
-        public ResultSetProcessorFactoryProvider ResultSetProcessorFactoryProvider { get; set; }
-
-        public FireAndForgetProcessor[] Processors { get; set; }
-
-        public JoinSetComposerPrototype JoinSetComposerPrototype { get; set; }
-
-        public QueryGraph QueryGraph { get; set; }
-
-        public bool HasTableAccess { get; set; }
-
-        public FAFQueryMethodSelectExec SelectExec { get; private set; }
-
-        public IDictionary<int, ExprTableEvalStrategyFactory> TableAccesses { get; set; }
-        
-        public bool IsDistinct { get; set; }
-
-        public EventPropertyValueGetter DistinctKeyGetter { get; set; }
-        
-        public IDictionary<int, SubSelectFactory> Subselects { get; set; }
+        private FAFQueryMethodSelectExec selectExec;
 
         /// <summary>
-        ///     Returns the event type of the prepared statement.
+        /// Returns the event type of the prepared statement.
         /// </summary>
-        /// <returns>event type</returns>
-        public EventType EventType => ResultSetProcessorFactoryProvider.ResultEventType;
+        /// <value>event type</value>
+        public EventType EventType => resultSetProcessorFactoryProvider.ResultEventType;
 
-        public void Ready(StatementContextRuntimeServices services)
+        public FAFQuerySessionUnprepared ReadyUnprepared(StatementContextRuntimeServices services)
+        {
+            Ready(false, services);
+            return new FAFQueryMethodSelectSessionUnprepared(this);
+        }
+
+        public FAFQueryMethodSessionPrepared ReadyPrepared(StatementContextRuntimeServices services)
+        {
+            Ready(true, services);
+            selectExec.Prepare(this);
+            return new FAFQueryMethodSelectSessionPrepared(this);
+        }
+
+        private void Ready(
+            bool prepared,
+            StatementContextRuntimeServices svc)
         {
             var hasContext = false;
-            for (var i = 0; i < Processors.Length; i++) {
-                hasContext |= Processors[i].ContextName != null;
+            for (var i = 0; i < processors.Length; i++) {
+                hasContext |= processors[i].ContextName != null;
             }
 
-            if (ContextName == null) {
-                if (Processors.Length == 1) {
-                    if (!hasContext) {
-                        SelectExec = FAFQueryMethodSelectExecNoContextNoJoin.INSTANCE;
+            if (contextName == null) {
+                if (processors.Length == 0) {
+                    selectExec = new FAFQueryMethodSelectExecNoContextNoFromClause(svc);
+                }
+                else if (processors.Length == 1) {
+                    if (processors[0] is FireAndForgetProcessorDB) {
+                        if (!prepared) {
+                            selectExec = new FAFQueryMethodSelectExecDBUnprepared(svc);
+                        }
+                        else {
+                            selectExec = new FAFQueryMethodSelectExecDBPrepared(svc);
+                        }
+                    }
+                    else if (!hasContext) {
+                        selectExec = FAFQueryMethodSelectExecNoContextNoJoin.INSTANCE;
                     }
                     else {
-                        SelectExec = FAFQueryMethodSelectExecSomeContextNoJoin.INSTANCE;
+                        selectExec = FAFQueryMethodSelectExecSomeContextNoJoin.INSTANCE;
                     }
                 }
                 else {
                     if (!hasContext) {
-                        SelectExec = FAFQueryMethodSelectExecNoContextJoin.INSTANCE;
+                        selectExec = FAFQueryMethodSelectExecNoContextJoin.INSTANCE;
                     }
                     else {
-                        SelectExec = FAFQueryMethodSelectExecSomeContextJoin.INSTANCE;
+                        selectExec = FAFQueryMethodSelectExecSomeContextJoin.INSTANCE;
                     }
                 }
             }
             else {
-                if (Processors.Length != 1) {
-                    throw new UnsupportedOperationException("Context name is not supported in a join");
+                if (processors.Length == 0) {
+                    selectExec = new FAFQueryMethodSelectExecGivenContextNoFromClause(svc);
                 }
+                else {
+                    if (processors.Length != 1) {
+                        throw new UnsupportedOperationException("Context name is not supported in a join");
+                    }
 
-                if (!hasContext) {
-                    throw new UnsupportedOperationException("Query target is unpartitioned");
+                    if (!hasContext) {
+                        throw new UnsupportedOperationException("Query target is unpartitioned");
+                    }
+
+                    selectExec = FAFQueryMethodSelectExecGivenContextNoJoin.INSTANCE;
                 }
-
-                SelectExec = FAFQueryMethodSelectExecGivenContextNoJoin.INSTANCE;
             }
-            
-            if (!Subselects.IsEmpty()) {
-                FAFQueryMethodUtil.InitializeSubselects(services, Annotations, Subselects);
+
+            if (!subselects.IsEmpty()) {
+                InitializeSubselects(svc, annotations, subselects);
             }
         }
 
@@ -113,22 +134,91 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             ContextManagementService contextManagementService)
         {
             if (!serviceStatusProvider.Get()) {
-                throw FAFQueryMethodUtil.RuntimeDestroyed();
+                throw RuntimeDestroyed();
             }
 
-            if (contextPartitionSelectors != null && contextPartitionSelectors.Length != Processors.Length) {
+            if (processors.Length > 0 &&
+                contextPartitionSelectors != null &&
+                contextPartitionSelectors.Length != processors.Length) {
                 throw new ArgumentException(
                     "The number of context partition selectors does not match the number of named windows or tables in the from-clause");
             }
 
             try {
-                return SelectExec.Execute(this, contextPartitionSelectors, assignerSetter, contextManagementService);
+                return selectExec.Execute(this, contextPartitionSelectors, assignerSetter, contextManagementService);
             }
             finally {
-                if (HasTableAccess) {
-                    Processors[0].StatementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+                if (hasTableAccess) {
+                    selectExec.ReleaseTableLocks(processors);
                 }
             }
+        }
+
+        public Attribute[] Annotations {
+            get => annotations;
+            set => annotations = value;
+        }
+
+        public string ContextName {
+            get => contextName;
+            set => contextName = value;
+        }
+
+        public ExprEvaluator WhereClause {
+            get => whereClause;
+            set => whereClause = value;
+        }
+
+        public ExprEvaluator[] ConsumerFilters {
+            get => consumerFilters;
+            set => consumerFilters = value;
+        }
+
+        public ResultSetProcessorFactoryProvider ResultSetProcessorFactoryProvider {
+            get => resultSetProcessorFactoryProvider;
+            set => resultSetProcessorFactoryProvider = value;
+        }
+
+        public FireAndForgetProcessor[] Processors {
+            get => processors;
+            set => processors = value;
+        }
+
+        public JoinSetComposerPrototype JoinSetComposerPrototype {
+            get => joinSetComposerPrototype;
+            set => joinSetComposerPrototype = value;
+        }
+
+        public QueryGraph QueryGraph {
+            get => queryGraph;
+            set => queryGraph = value;
+        }
+
+        public bool HasTableAccess {
+            get => hasTableAccess;
+            set => hasTableAccess = value;
+        }
+
+        public FAFQueryMethodSelectExec SelectExec => selectExec;
+
+        public IDictionary<int, ExprTableEvalStrategyFactory> TableAccesses {
+            get => tableAccesses;
+            set => tableAccesses = value;
+        }
+
+        public EventPropertyValueGetter DistinctKeyGetter {
+            get => distinctKeyGetter;
+            set => distinctKeyGetter = value;
+        }
+
+        public IDictionary<int, SubSelectFactory> Subselects {
+            get => subselects;
+            set => subselects = value;
+        }
+
+        public string ContextModuleName {
+            get => contextModuleName;
+            set => contextModuleName = value;
         }
     }
 } // end of namespace

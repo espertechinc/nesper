@@ -30,13 +30,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             _block = block;
         }
 
-        public CodegenExpression Condition {
-            get => _condition;
-        }
+        public CodegenExpression Condition => _condition;
 
-        public CodegenBlock Block {
-            get => _block;
-        }
+        public CodegenBlock Block => _block;
 
         public void MergeClasses(ISet<Type> classes)
         {

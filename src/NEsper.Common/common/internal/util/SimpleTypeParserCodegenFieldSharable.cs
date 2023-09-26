@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.util
             //    classScope.NamespaceScope.InitMethod.Block,
             //    typeof(SimpleTypeParser));
             //CodegenMethod parse = CodegenMethod.MakeParentNode(typeof(object), this.GetType(), classScope)
-            //    .AddParam(typeof(string), "text");
+            //    .AddParam<string>("text");
             //anonymousClass.AddMethod("Parse", parse);
 
             parse.Block.BlockReturn(parser.Codegen(Ref("text")));
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.util
                 return false;
             }
 
-            SimpleTypeParserCodegenFieldSharable that = (SimpleTypeParserCodegenFieldSharable) o;
+            var that = (SimpleTypeParserCodegenFieldSharable)o;
 
             return parser.Equals(that.parser);
         }

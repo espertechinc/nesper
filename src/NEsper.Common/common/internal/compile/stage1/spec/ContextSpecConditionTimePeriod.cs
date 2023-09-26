@@ -45,9 +45,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
             var method = parent.MakeChild(typeof(ContextConditionDescriptorTimePeriod), GetType(), classScope);
             method.Block
-                .DeclareVar<ContextConditionDescriptorTimePeriod>(
-                    "condition",
-                    NewInstance(typeof(ContextConditionDescriptorTimePeriod)))
+                .DeclareVarNewInstance<ContextConditionDescriptorTimePeriod>("condition")
                 .DeclareVar<TimePeriodCompute>(
                     "eval",
                     TimePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope))
@@ -59,5 +57,10 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
         }
 
         public int ScheduleCallbackId { get; set; } = -1;
+
+        public T Accept<T>(ContextSpecConditionVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
     }
 } // end of namespace

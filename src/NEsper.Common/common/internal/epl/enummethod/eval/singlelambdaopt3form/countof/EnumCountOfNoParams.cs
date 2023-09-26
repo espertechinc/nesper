@@ -18,35 +18,35 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.countof
 {
-	public class EnumCountOfNoParams : EnumForge,
-		EnumEval
-	{
-		private readonly int _numStreams;
+    public class EnumCountOfNoParams : EnumForge,
+        EnumEval
+    {
+        private readonly int _numStreams;
 
-		public EnumCountOfNoParams(int numStreams)
-		{
-			this._numStreams = numStreams;
-		}
+        public EnumCountOfNoParams(int numStreams)
+        {
+            _numStreams = numStreams;
+        }
 
-		public EnumEval EnumEvaluator => this;
+        public EnumEval EnumEvaluator => this;
 
-		public int StreamNumSize => _numStreams;
+        public int StreamNumSize => _numStreams;
 
-		public object EvaluateEnumMethod(
-			EventBean[] eventsLambda,
-			ICollection<object> enumcoll,
-			bool isNewData,
-			ExprEvaluatorContext context)
-		{
-			return enumcoll.Count;
-		}
+        public object EvaluateEnumMethod(
+            EventBean[] eventsLambda,
+            ICollection<object> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext context)
+        {
+            return enumcoll.Count;
+        }
 
-		public CodegenExpression Codegen(
-			EnumForgeCodegenParams premade,
-			CodegenMethodScope codegenMethodScope,
-			CodegenClassScope codegenClassScope)
-		{
-			return ExprDotName(premade.Enumcoll, "Count");
-		}
-	}
+        public CodegenExpression Codegen(
+            EnumForgeCodegenParams premade,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
+        {
+            return ExprDotName(premade.Enumcoll, "Count");
+        }
+    }
 } // end of namespace

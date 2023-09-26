@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             AggregationService aggregationService,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            EventBean[] eventsPerStream = new EventBean[1];
+            var eventsPerStream = new EventBean[1];
 
             while (sourceIterator.MoveNext()) {
                 eventsPerStream[0] = sourceIterator.Current;

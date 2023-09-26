@@ -10,17 +10,17 @@ using System;
 
 namespace com.espertech.esper.common.client.annotation
 {
-	/// <summary>
-	///     Annotation for use with JSON schemas.
-	/// </summary>
-	public class JsonSchemaAttribute : Attribute
+    /// <summary>
+    ///     Annotation for use with JSON schemas.
+    /// </summary>
+    public class JsonSchemaAttribute : Attribute
     {
-	    /// <summary>
-	    ///     Flag indicating whether to discard unrecognized property names (the default, false, i.e. non-dynamic)
-	    ///     or whether to retain all JSON object properties (true, dynamic)
-	    /// </summary>
-	    /// <returns>dynamic flag</returns>
-	    public virtual bool Dynamic { get; set; } = false;
+        /// <summary>
+        ///     Flag indicating whether to discard unrecognized property names (the default, false, i.e. non-dynamic)
+        ///     or whether to retain all JSON object properties (true, dynamic)
+        /// </summary>
+        /// <returns>dynamic flag</returns>
+        public virtual bool Dynamic { get; set; } = false;
 
         public virtual string ClassName { get; set; } = "";
     }

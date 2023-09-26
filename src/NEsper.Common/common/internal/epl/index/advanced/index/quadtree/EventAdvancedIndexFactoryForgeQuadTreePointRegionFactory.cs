@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             AdvancedIndexConfigContextPartition configCP,
             EventTableOrganization organization)
         {
-            var qt = (AdvancedIndexConfigContextPartitionQuadTree) configCP;
+            var qt = (AdvancedIndexConfigContextPartitionQuadTree)configCP;
             var quadTree = PointRegionQuadTreeFactory<object>.Make(
                 qt.X,
                 qt.Y,
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 qt.MaxTreeHeight);
             return new EventTableQuadTreePointRegionImpl(
                 organization,
-                (AdvancedIndexConfigStatementPointRegionQuadtree) configStatement,
+                (AdvancedIndexConfigStatementPointRegionQuadtree)configStatement,
                 quadTree);
         }
 

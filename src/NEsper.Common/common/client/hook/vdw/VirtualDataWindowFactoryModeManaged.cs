@@ -21,9 +21,7 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// Returns the injection strategy for the virtual data window factory
         /// </summary>
         /// <returns>strategy</returns>
-        public InjectionStrategy InjectionStrategyFactoryFactory {
-            get => injectionStrategyFactoryFactory;
-        }
+        public InjectionStrategy InjectionStrategyFactoryFactory => injectionStrategyFactoryFactory;
 
         /// <summary>
         /// Sets the injection strategy for the virtual data window factory
@@ -32,7 +30,7 @@ namespace com.espertech.esper.common.client.hook.vdw
         /// <returns>itself</returns>
         public VirtualDataWindowFactoryModeManaged SetInjectionStrategyFactoryFactory(InjectionStrategy strategy)
         {
-            this.injectionStrategyFactoryFactory = strategy;
+            injectionStrategyFactoryFactory = strategy;
             return this;
         }
     }

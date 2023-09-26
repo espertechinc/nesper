@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -41,39 +41,37 @@ namespace com.espertech.esper.common.@internal.view.groupwin
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private bool addingProperties; // when adding additional properties to output events
-        private ExprNode[] criteriaExpressions;
-        private IList<ViewFactoryForge> groupeds;
         private bool isReclaimAged;
         private string[] propertyNames;
         private long reclaimFrequency;
         private long reclaimMaxAge;
-        private IList<ExprNode> viewParameters;
-        private MultiKeyClassRef multiKeyClassNames;
 
-        public IList<ViewFactoryForge> Groupeds {
-            get => groupeds;
-            set => groupeds = value;
-        }
+        internal override Type TypeOfFactory => typeof(GroupByViewFactory);
+
+        internal override string FactoryMethod => "group";
+
+        public IList<ViewFactoryForge> Groupeds { set; get; }
 
         public override string ViewName => "Group-By";
 
-        public ExprNode[] CriteriaExpressions => criteriaExpressions;
-
-        public IList<ExprNode> ViewParameters => viewParameters;
-
         public override EventType EventType {
-            get => eventType;
             set => eventType = value;
         }
 
-        public override IList<ViewFactoryForge> InnerForges => groupeds;
-        
+        public ExprNode[] CriteriaExpressions { get; private set; }
+
+        public IList<ExprNode> ViewParameters { get; private set; }
+
+        public override IList<ViewFactoryForge> InnerForges => Groupeds;
+
+        public MultiKeyClassRef MultiKeyClassNames { get; private set; }
+
         public override void SetViewParameters(
             IList<ExprNode> parameters,
             ViewForgeEnv viewForgeEnv,
             int streamNumber)
         {
-            viewParameters = parameters;
+            ViewParameters = parameters;
 
             var timeAbacus = viewForgeEnv.ImportServiceCompileTime.TimeAbacus;
             var reclaimGroupAged = HintEnum.RECLAIM_GROUP_AGED.GetHint(viewForgeEnv.Annotations);
@@ -89,10 +87,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 try {
                     reclaimMaxAge = timeAbacus.DeltaForSecondsDouble(double.Parse(hintValueMaxAge));
                 }
-                catch (EPException) {
-                    throw;
-                }
-                catch (Exception) {
+                catch (Exception ex) {
                     throw new ViewParameterException(
                         "Required hint value for hint '" +
                         HintEnum.RECLAIM_GROUP_AGED +
@@ -107,13 +102,9 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 }
                 else {
                     try {
-                        reclaimFrequency = timeAbacus.DeltaForSecondsDouble(
-                            double.Parse(hintValueFrequency));
+                        reclaimFrequency = timeAbacus.DeltaForSecondsDouble(double.Parse(hintValueFrequency));
                     }
-                    catch (EPException) {
-                        throw;
-                    }
-                    catch (Exception) {
+                    catch (Exception ex) {
                         throw new ViewParameterException(
                             "Required hint value for hint '" +
                             HintEnum.RECLAIM_GROUP_FREQ +
@@ -137,52 +128,44 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
-            criteriaExpressions = ViewForgeSupport.Validate(
+            CriteriaExpressions = ViewForgeSupport.Validate(
                 ViewName,
                 parentEventType,
-                viewParameters,
+                ViewParameters,
                 false,
-                viewForgeEnv,
-                streamNumber);
+                viewForgeEnv);
 
-            if (criteriaExpressions.Length == 0) {
-                var errorMessage =
-                    ViewName + " view requires a one or more expressions provinding unique values as parameters";
+            if (CriteriaExpressions.Length == 0) {
+                var errorMessage = ViewName +
+                                   " view requires a one or more expressions provinding unique values as parameters";
                 throw new ViewParameterException(errorMessage);
             }
 
-            propertyNames = new string[criteriaExpressions.Length];
-            for (var i = 0; i < criteriaExpressions.Length; i++) {
-                propertyNames[i] = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(criteriaExpressions[i]);
+            propertyNames = new string[CriteriaExpressions.Length];
+            for (var i = 0; i < CriteriaExpressions.Length; i++) {
+                propertyNames[i] = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(CriteriaExpressions[i]);
             }
 
-            var groupedEventType = groupeds[groupeds.Count - 1].EventType;
-            eventType = DetermineEventType(groupedEventType, criteriaExpressions, streamNumber, viewForgeEnv);
-            if (!Equals(eventType, groupedEventType)) {
+            var groupedEventType = Groupeds[Groupeds.Count - 1].EventType;
+            eventType = DetermineEventType(groupedEventType, CriteriaExpressions, viewForgeEnv);
+            if (eventType != groupedEventType) {
                 addingProperties = true;
             }
         }
 
         public override IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv)
         {
-            MultiKeyPlan desc = MultiKeyPlanner.PlanMultiKey(criteriaExpressions, false, viewForgeEnv.StatementRawInfo, viewForgeEnv.SerdeResolver);
-            multiKeyClassNames = desc.ClassRef;
+            var desc = MultiKeyPlanner.PlanMultiKey(
+                CriteriaExpressions,
+                false,
+                viewForgeEnv.StatementRawInfo,
+                viewForgeEnv.SerdeResolver);
+            MultiKeyClassNames = desc.ClassRef;
             return desc.MultiKeyForgeables;
-        }
-        
-        internal override Type TypeOfFactory()
-        {
-            return typeof(GroupByViewFactory);
-        }
-
-        internal override string FactoryMethod()
-        {
-            return "Group";
         }
 
         internal override void Assign(
@@ -191,61 +174,45 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (groupeds == null) {
+            if (Groupeds == null) {
                 throw new IllegalStateException("Empty grouped forges");
             }
 
             method.Block
-                .SetProperty(
+                .ExprDotMethod(factory, "setReclaimAged", Constant(isReclaimAged))
+                .ExprDotMethod(factory, "setReclaimMaxAge", Constant(reclaimMaxAge))
+                .ExprDotMethod(factory, "setReclaimFrequency", Constant(reclaimFrequency))
+                .ExprDotMethod(factory, "setPropertyNames", Constant(propertyNames))
+                .ExprDotMethod(
                     factory,
-                    "IsReclaimAged",
-                    Constant(isReclaimAged))
-                .SetProperty(
+                    "setGroupeds",
+                    LocalMethod(MakeViewFactories(Groupeds, GetType(), method, classScope, symbols)))
+                .ExprDotMethod(
                     factory,
-                    "ReclaimMaxAge",
-                    Constant(reclaimMaxAge))
-                .SetProperty(
-                    factory,
-                    "ReclaimFrequency",
-                    Constant(reclaimFrequency))
-                .SetProperty(
-                    factory,
-                    "PropertyNames",
-                    Constant(propertyNames))
-                .SetProperty(
-                    factory,
-                    "Groupeds",
-                    LocalMethod(MakeViewFactories(groupeds, GetType(), method, classScope, symbols)))
-                .SetProperty(
-                    factory,
-                    "EventType",
+                    "setEventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF))
-                .SetProperty(factory, "IsAddingProperties", Constant(addingProperties));
-            ViewMultiKeyHelper.Assign(criteriaExpressions, multiKeyClassNames, method, factory, symbols, classScope);
-        }
-
-        public override void Accept(ViewForgeVisitor visitor)
-        {
-            visitor.Visit(this);
-            foreach (var forge in groupeds) {
-                forge.Accept(visitor);
-            }
+                .ExprDotMethod(factory, "setAddingProperties", Constant(addingProperties));
+            ViewMultiKeyHelper.Assign(CriteriaExpressions, MultiKeyClassNames, method, factory, symbols, classScope);
         }
 
         private static EventType DetermineEventType(
             EventType groupedEventType,
             ExprNode[] criteriaExpressions,
-            int streamNum,
             ViewForgeEnv viewForgeEnv)
         {
             // determine types of fields
             var fieldTypes = new Type[criteriaExpressions.Length];
             for (var i = 0; i < fieldTypes.Length; i++) {
-                fieldTypes[i] = criteriaExpressions[i].Forge.EvaluationType;
+                var type = criteriaExpressions[i].Forge.EvaluationType;
+                if (type == null) {
+                    throw new ViewParameterException("Group-window received a null-typed criteria expression");
+                }
+
+                fieldTypes[i] = type;
             }
 
             // Determine the final event type that the merge view generates
-            // This event type is ultimately generated by AddPropertyValueView which is added to each view branch for each
+            // This event type is ultimatly generated by AddPropertyValueView which is added to each view branch for each
             // group key.
 
             // If the parent event type contains the merge fields, we use the same event type
@@ -257,14 +224,15 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 try {
                     if (!groupedEventType.IsProperty(name)) {
                         // for ident-nodes we also use the unresolved name as that has the unescaped property name
-                        if (criteriaExpressions[i] is ExprIdentNode identNode) {
-                            if (!(groupedEventType.IsProperty(identNode.UnresolvedPropertyName))) {
+                        if (criteriaExpressions[i] is ExprIdentNode) {
+                            var identNode = (ExprIdentNode)criteriaExpressions[i];
+                            if (!groupedEventType.IsProperty(identNode.UnresolvedPropertyName)) {
                                 parentContainsMergeKeys = false;
                             }
                         }
                     }
                 }
-                catch (PropertyAccessException) {
+                catch (PropertyAccessException ex) {
                     // expected
                     parentContainsMergeKeys = false;
                 }
@@ -284,7 +252,8 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
 
             var outputEventTypeName =
-                viewForgeEnv.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewGroup(streamNum);
+                viewForgeEnv.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewGroup(
+                    viewForgeEnv.StreamNumber);
             var metadata = new EventTypeMetadata(
                 outputEventTypeName,
                 viewForgeEnv.ModuleName,
@@ -303,6 +272,16 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 viewForgeEnv.EventTypeCompileTimeResolver);
             viewForgeEnv.EventTypeModuleCompileTimeRegistry.NewType(eventType);
             return eventType;
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_GROUP;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

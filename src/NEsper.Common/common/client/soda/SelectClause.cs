@@ -62,8 +62,7 @@ namespace com.espertech.esper.common.client.soda
         public static SelectClause Create(params string[] propertyNames)
         {
             var selectList = new List<SelectClauseElement>();
-            foreach (string name in propertyNames)
-            {
+            foreach (var name in propertyNames) {
                 selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
 
@@ -107,8 +106,7 @@ namespace com.espertech.esper.common.client.soda
             params string[] propertyNames)
         {
             var selectList = new List<SelectClauseElement>();
-            foreach (string name in propertyNames)
-            {
+            foreach (var name in propertyNames) {
                 selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
 
@@ -120,8 +118,7 @@ namespace com.espertech.esper.common.client.soda
         /// <returns>clause</returns>
         public SelectClause Add(params string[] propertyNames)
         {
-            foreach (string name in propertyNames)
-            {
+            foreach (var name in propertyNames) {
                 _selectList.Add(new SelectClauseExpression(new PropertyValueExpression(name)));
             }
 
@@ -163,10 +160,9 @@ namespace com.espertech.esper.common.client.soda
 
         /// <summary>Returns the list of expressions in the select clause. </summary>
         /// <value>list of expressions with column names</value>
-        public IList<SelectClauseElement> SelectList
-        {
-            get { return _selectList; }
-            set { _selectList = value; }
+        public IList<SelectClauseElement> SelectList {
+            get => _selectList;
+            set => _selectList = value;
         }
 
         /// <summary>Adds to the select-clause a stream wildcard selector (e.g. select streamName.* from MyStream as streamName) </summary>
@@ -217,10 +213,9 @@ namespace com.espertech.esper.common.client.soda
         /// Gets or sets the stream selector.
         /// </summary>
         /// <value>The stream selector.</value>
-        public StreamSelector StreamSelector
-        {
-            get { return _streamSelector; }
-            set { _streamSelector = value; }
+        public StreamSelector StreamSelector {
+            get => _streamSelector;
+            set => _streamSelector = value;
         }
 
         /// <summary>Add a select expression element. </summary>
@@ -245,41 +240,33 @@ namespace com.espertech.esper.common.client.soda
         {
             formatter.BeginSelect(writer, isTopLevel);
             writer.Write("select ");
-            if (andDelete)
-            {
+            if (andDelete) {
                 writer.Write("and delete ");
             }
 
-            if (IsDistinct)
-            {
+            if (IsDistinct) {
                 writer.Write("distinct ");
             }
 
-            if (_streamSelector == StreamSelector.ISTREAM_ONLY)
-            {
+            if (_streamSelector == StreamSelector.ISTREAM_ONLY) {
                 // the default, no action
             }
-            else if (_streamSelector == StreamSelector.RSTREAM_ONLY)
-            {
+            else if (_streamSelector == StreamSelector.RSTREAM_ONLY) {
                 writer.Write("rstream ");
             }
-            else if (_streamSelector == StreamSelector.RSTREAM_ISTREAM_BOTH)
-            {
+            else if (_streamSelector == StreamSelector.RSTREAM_ISTREAM_BOTH) {
                 writer.Write("irstream ");
             }
 
-            if (_selectList != null && !_selectList.IsEmpty())
-            {
-                string delimiter = "";
-                foreach (SelectClauseElement element in _selectList)
-                {
+            if (_selectList != null && !_selectList.IsEmpty()) {
+                var delimiter = "";
+                foreach (var element in _selectList) {
                     writer.Write(delimiter);
                     element.ToEPLElement(writer);
                     delimiter = ", ";
                 }
             }
-            else
-            {
+            else {
                 writer.Write('*');
             }
         }

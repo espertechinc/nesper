@@ -19,10 +19,11 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
 {
     public class JsonEventBeanPropertyWriter : EventPropertyWriterSPI
     {
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        
+        private static readonly ILog log =
+            LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly IJsonDelegate _delegate;
-        
+
         /// <summary>
         /// The field being assigned.
         /// </summary>
@@ -66,11 +67,11 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
             object value,
             object und)
         {
-            if (!_delegate.TrySetProperty(_field.PropertyName, und, value)) {
-                log.Warn($"Attempted to write property \"{_field.PropertyName}\" failed");
+            if (!_delegate.TrySetProperty(_field.PropertyNumber, und, value)) {
+                log.Warn($"Attempted to write property \"{_field.PropertyNumber}\" failed");
             }
         }
-        
+
         /// <summary>
         ///     Writes a single property value to a target event.
         /// </summary>
@@ -83,6 +84,5 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
         {
             return Assign(ExprDotName(underlying, _field.FieldName), assigned);
         }
-
     }
 } // end of namespace

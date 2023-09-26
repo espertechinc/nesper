@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -13,8 +13,8 @@ using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.type;
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.db;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.execstrategy;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.metrics.audit;
@@ -22,40 +22,32 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
-using DataMap = System.Collections.Generic.IDictionary<string, object>;
-
 namespace com.espertech.esper.common.@internal.epl.historical.database.core
 {
     /// <summary>
-    ///     Viewable providing historical data from a database.
+    /// Viewable providing historical data from a database.
     /// </summary>
     public class PollExecStrategyDBQuery : PollExecStrategy
     {
         private static readonly ILog ADO_PERF_LOG = LogManager.GetLogger(AuditPath.ADO_LOG);
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly ExprEvaluatorContext _exprEvaluatorContext;
         private readonly ConnectionCache _connectionCache;
         private readonly HistoricalEventViewableDatabaseFactory _factory;
         private Pair<DbDriver, DbDriverCommand> _resources;
 
-        private readonly SQLColumnTypeConversion _columnTypeConversionHook;
-        private readonly SQLOutputRowConversion _outputRowConversionHook;
-        private readonly IDictionary<string, DBOutputTypeDesc> _outputTypes;
         private List<DbInfo> _dbInfoList;
 
         public PollExecStrategyDBQuery(
             HistoricalEventViewableDatabaseFactory factory,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             ConnectionCache connectionCache)
         {
             _factory = factory;
-            _agentInstanceContext = agentInstanceContext;
+            _exprEvaluatorContext = exprEvaluatorContext;
             _connectionCache = connectionCache;
             _dbInfoList = null;
-            _outputTypes = factory.OutputTypes;
-            _columnTypeConversionHook = factory.ColumnTypeConversionHook;
-            _outputRowConversionHook = factory.OutputRowConversionHook;
         }
 
         /// <summary>
@@ -91,13 +83,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         /// Poll events using the keys provided.
         /// </summary>
         /// <param name="lookupValues">is keys for executing a query or such</param>
-        /// <param name="agentInstanceContext">The agent instance context.</param>
+        /// <param name="exprEvaluatorContext">The expr evaluator context.</param>
         /// <returns>
         /// a list of events for the keys
         /// </returns>
         public IList<EventBean> Poll(
             object lookupValues,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             IList<EventBean> result;
             try {
@@ -126,13 +118,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 
                 DbParameter dbParam;
 
+                var columnTypeConversionHook = _factory.ColumnTypeConversionHook;
+                var outputRowConversionHook = _factory.OutputRowConversionHook;
+
                 // set parameters
                 SQLInputParameterContext inputParameterContext = null;
-                if (_columnTypeConversionHook != null) {
+                if (columnTypeConversionHook != null) {
                     inputParameterContext = new SQLInputParameterContext();
                 }
 
-                var mk = _factory.InputParameters.Length == 1 ? null : (object[]) lookupValuePerStream;
+                var mk = _factory.InputParameters.Length == 1 ? null : (object[])lookupValuePerStream;
                 for (var i = 0; i < _factory.InputParameters.Length; i++) {
                     try {
                         object parameter;
@@ -149,13 +144,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                                 " to " +
                                 parameter +
                                 " typed " +
-                                ((parameter == null) ? "null" : parameter.GetType().Name));
+                                (parameter == null ? "null" : parameter.GetType().Name));
                         }
 
-                        if (_columnTypeConversionHook != null) {
+                        if (columnTypeConversionHook != null) {
                             inputParameterContext.ParameterNumber = i + 1;
                             inputParameterContext.ParameterValue = parameter;
-                            parameter = _columnTypeConversionHook.GetParameterValue(inputParameterContext);
+                            parameter = columnTypeConversionHook.GetParameterValue(inputParameterContext);
                         }
 
                         dbParam = dbCommand.Parameters[i];
@@ -174,17 +169,18 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                     using (var dataReader = dbCommand.ExecuteReader()) {
                         try {
                             SQLColumnValueContext valueContext = null;
-                            if (_columnTypeConversionHook != null) {
+                            if (columnTypeConversionHook != null) {
                                 valueContext = new SQLColumnValueContext();
                             }
 
                             SQLOutputRowValueContext rowContext = null;
-                            if (_outputRowConversionHook != null) {
+                            if (outputRowConversionHook != null) {
                                 rowContext = new SQLOutputRowValueContext();
                             }
 
-                            var rowNum = 0;
+                            var outputTypes = _factory.OutputTypes;
 
+                            var rowNum = 0;
                             if (dataReader.HasRows) {
                                 // Determine how many fields we will be receiving
                                 var fieldCount = dataReader.FieldCount;
@@ -195,7 +191,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                                 // the reader has rows.
                                 if (_dbInfoList == null) {
                                     _dbInfoList = new List<DbInfo>();
-                                    foreach (var entry in _outputTypes) {
+                                    foreach (var entry in outputTypes) {
                                         var dbInfo = new DbInfo();
                                         dbInfo.Name = entry.Key;
                                         dbInfo.Ordinal = dataReader.GetOrdinal(dbInfo.Name);
@@ -217,7 +213,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                                 while (dataReader.Read()) {
                                     var colNum = 1;
 
-                                    DataMap row = new Dictionary<string, object>();
+                                    var row = new Dictionary<string, object>();
                                     // Get all of the values for the row in one shot
                                     dataReader.GetValues(rawData);
                                     // Convert the items into raw row objects
@@ -233,12 +229,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                                             value = Convert.ChangeType(value, dbInfo.OutputTypeDesc.DataType);
                                         }
 
-                                        if (_columnTypeConversionHook != null) {
+                                        if (columnTypeConversionHook != null) {
                                             valueContext.ColumnName = fieldNames[colNum - 1];
                                             valueContext.ColumnNumber = colNum;
                                             valueContext.ColumnValue = value;
 
-                                            value = _columnTypeConversionHook.GetColumnValue(valueContext);
+                                            value = columnTypeConversionHook.GetColumnValue(valueContext);
                                         }
 
                                         row[dbInfo.Name] = value;
@@ -247,8 +243,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                                     }
 
                                     EventBean eventBeanRow = null;
-                                    if (_outputRowConversionHook == null) {
-                                        eventBeanRow = _agentInstanceContext.EventBeanTypedEventFactory
+                                    if (outputRowConversionHook == null) {
+                                        eventBeanRow = _exprEvaluatorContext.EventBeanTypedEventFactory
                                             .AdapterForTypedMap(
                                                 row,
                                                 _factory.EventType);
@@ -256,12 +252,12 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                                     else {
                                         rowContext.Values = row;
                                         rowContext.RowNum = rowNum;
-                                        var rowData = _outputRowConversionHook.GetOutputRow(rowContext);
+                                        var rowData = outputRowConversionHook.GetOutputRow(rowContext);
                                         if (rowData != null) {
-                                            eventBeanRow = _agentInstanceContext.EventBeanTypedEventFactory
+                                            eventBeanRow = _exprEvaluatorContext.EventBeanTypedEventFactory
                                                 .AdapterForTypedObject(
                                                     rowData,
-                                                    (BeanEventType) _factory.EventType);
+                                                    (BeanEventType)_factory.EventType);
                                         }
                                     }
 

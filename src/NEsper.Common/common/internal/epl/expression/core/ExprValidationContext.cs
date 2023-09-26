@@ -24,6 +24,7 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.serde.compiletime.eventtype;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.statemgmtsettings;
 using com.espertech.esper.common.@internal.view.access;
 using com.espertech.esper.container;
 
@@ -103,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public ImportServiceCompileTime ImportService =>
             StatementCompileTimeService.ImportServiceCompileTime;
-        
+
         public ClassProvidedExtension ClassProvidedExtension =>
             StatementCompileTimeService.ClassProvidedExtension;
 
@@ -136,7 +137,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public bool IsAllowBindingConsumption { get; }
 
-        public EnumMethodCallStackHelperImpl EnumMethodCallStackHelper => StatementCompileTimeService.EnumMethodCallStackHelper;
+        public EnumMethodCallStackHelperImpl EnumMethodCallStackHelper =>
+            StatementCompileTimeService.EnumMethodCallStackHelper;
 
         public bool IsAggregationFutureNameAlreadySet { get; }
 
@@ -147,10 +149,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public EventBeanTypedEventFactory EventBeanTypedEventFactory => EventBeanTypedEventFactoryCompileTime.INSTANCE;
 
         public string ModuleName => StatementRawInfo.ModuleName;
-        
+
         public SerdeCompileTimeResolver SerdeResolver => StatementCompileTimeService.SerdeResolver;
 
-        public SerdeEventTypeCompileTimeRegistry SerdeEventTypeRegistry => StatementCompileTimeService.SerdeEventTypeRegistry;
+        public StateMgmtSettingsProvider StateMgmtSettingsProvider =>
+            StatementCompileTimeService.StateMgmtSettingsProvider;
+
+        public SerdeEventTypeCompileTimeRegistry SerdeEventTypeRegistry =>
+            StatementCompileTimeService.SerdeEventTypeRegistry;
 
         public IList<StmtClassForgeableFactory> AdditionalForgeables => additionalForgeables;
 

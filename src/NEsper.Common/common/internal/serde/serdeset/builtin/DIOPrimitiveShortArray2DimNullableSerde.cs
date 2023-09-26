@@ -11,56 +11,77 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOPrimitiveShortArray2DimNullableSerde : DataInputOutputSerdeBase<short[][]> {
-	    public static readonly DIOPrimitiveShortArray2DimNullableSerde INSTANCE = new DIOPrimitiveShortArray2DimNullableSerde();
+    public class DIOPrimitiveShortArray2DimNullableSerde : DataInputOutputSerdeBase<short[][]>
+    {
+        public static readonly DIOPrimitiveShortArray2DimNullableSerde INSTANCE =
+            new DIOPrimitiveShortArray2DimNullableSerde();
 
-	    private DIOPrimitiveShortArray2DimNullableSerde() {
-	    }
+        private DIOPrimitiveShortArray2DimNullableSerde()
+        {
+        }
 
-	    public override void Write(short[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
-	        if (@object == null) {
-	            output.WriteInt(-1);
-	            return;
-	        }
-	        output.WriteInt(@object.Length);
-	        foreach (short[] i in @object) {
-	            WriteArray(i, output);
-	        }
-	    }
+        public override void Write(
+            short[][] @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            if (@object == null) {
+                output.WriteInt(-1);
+                return;
+            }
 
-	    public override short[][] ReadValue(DataInput input, byte[] unitKey) {
-	        int len = input.ReadInt();
-	        if (len == -1) {
-	            return null;
-	        }
-	        short[][] array = new short[len][];
-	        for (int i = 0; i < len; i++) {
-	            array[i] = ReadArray(input);
-	        }
-	        return array;
-	    }
+            output.WriteInt(@object.Length);
+            foreach (var i in @object) {
+                WriteArray(i, output);
+            }
+        }
 
-	    private void WriteArray(short[] array, DataOutput output) {
-	        if (array == null) {
-	            output.WriteInt(-1);
-	            return;
-	        }
-	        output.WriteInt(array.Length);
-	        foreach (short i in array) {
-	            output.WriteShort(i);
-	        }
-	    }
+        public override short[][] ReadValue(
+            DataInput input,
+            byte[] unitKey)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
 
-	    private short[] ReadArray(DataInput input) {
-	        int len = input.ReadInt();
-	        if (len == -1) {
-	            return null;
-	        }
-	        short[] array = new short[len];
-	        for (int i = 0; i < len; i++) {
-	            array[i] = input.ReadShort();
-	        }
-	        return array;
-	    }
-	}
+            var array = new short[len][];
+            for (var i = 0; i < len; i++) {
+                array[i] = ReadArray(input);
+            }
+
+            return array;
+        }
+
+        private void WriteArray(
+            short[] array,
+            DataOutput output)
+        {
+            if (array == null) {
+                output.WriteInt(-1);
+                return;
+            }
+
+            output.WriteInt(array.Length);
+            foreach (var i in array) {
+                output.WriteShort(i);
+            }
+        }
+
+        private short[] ReadArray(DataInput input)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
+
+            var array = new short[len];
+            for (var i = 0; i < len; i++) {
+                array[i] = input.ReadShort();
+            }
+
+            return array;
+        }
+    }
 } // end of namespace

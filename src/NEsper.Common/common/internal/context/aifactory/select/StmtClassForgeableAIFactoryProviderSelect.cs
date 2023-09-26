@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             StatementAgentInstanceFactoryForge forge)
             : base(className, namespaceScope)
         {
-            this._forge = forge;
+            _forge = forge;
         }
 
         protected override Type TypeOfFactory()
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
         {
             var saiffInitializeSymbol = new SAIFFInitializeSymbol();
             var method = parent.MakeChildWithScope(TypeOfFactory(), GetType(), saiffInitializeSymbol, classScope)
-                .AddParam(typeof(EPStatementInitServices), REF_STMTINITSVC.Ref);
+                .AddParam<EPStatementInitServices>(REF_STMTINITSVC.Ref);
             method.Block.MethodReturn(LocalMethod(_forge.InitializeCodegen(classScope, method, saiffInitializeSymbol)));
             return method;
         }

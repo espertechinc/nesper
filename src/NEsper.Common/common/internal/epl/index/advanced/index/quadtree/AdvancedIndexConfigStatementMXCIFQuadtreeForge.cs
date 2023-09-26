@@ -47,9 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             Func<ExprForge, CodegenExpression> expr = forge =>
                 ExprNodeUtilityCodegen.CodegenEvaluator(forge, method, GetType(), classScope);
             method.Block
-                .DeclareVar<AdvancedIndexConfigStatementMXCIFQuadtree>(
-                    "factory",
-                    NewInstance(typeof(AdvancedIndexConfigStatementMXCIFQuadtree)))
+                .DeclareVarNewInstance<AdvancedIndexConfigStatementMXCIFQuadtree>("factory")
                 .SetProperty(Ref("factory"), "XEval", expr.Invoke(XEval))
                 .SetProperty(Ref("factory"), "YEval", expr.Invoke(YEval))
                 .SetProperty(Ref("factory"), "WidthEval", expr.Invoke(WidthEval))

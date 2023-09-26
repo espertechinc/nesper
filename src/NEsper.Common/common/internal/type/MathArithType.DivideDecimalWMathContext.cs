@@ -37,8 +37,8 @@ namespace com.espertech.esper.common.@internal.type
                 bool divisionByZeroReturnsNull,
                 MathContext mathContext)
             {
-                this._divisionByZeroReturnsNull = divisionByZeroReturnsNull;
-                this._mathContext = mathContext;
+                _divisionByZeroReturnsNull = divisionByZeroReturnsNull;
+                _mathContext = mathContext;
             }
 
             public object Compute(
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.type
                 if (ltype.IsNullable() || rtype.IsNullable() || _divisionByZeroReturnsNull) {
                     returnType = typeof(decimal?);
                 }
-                
+
                 CodegenExpression math =
                     codegenClassScope.AddOrGetDefaultFieldSharable(new MathContextCodegenField(_mathContext));
                 var block = codegenMethodScope

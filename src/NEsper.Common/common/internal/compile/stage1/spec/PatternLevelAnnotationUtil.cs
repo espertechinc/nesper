@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 return flags;
             }
 
-            foreach (AnnotationPart part in parts) {
+            foreach (var part in parts) {
                 ValidateSetFlags(flags, part.Name);
             }
 
@@ -61,9 +61,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                 flags.IsDiscardPartialsOnMatch = true;
             }
             else if (string.Equals(
-                annotation,
-                SUPPRESSOVERLAPPINGMATCHES,
-                StringComparison.InvariantCultureIgnoreCase)) {
+                         annotation,
+                         SUPPRESSOVERLAPPINGMATCHES,
+                         StringComparison.InvariantCultureIgnoreCase)) {
                 flags.IsSuppressSameEventMatches = true;
             }
             else {

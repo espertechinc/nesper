@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -17,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCodegen;
@@ -24,22 +26,18 @@ using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUt
 namespace com.espertech.esper.common.@internal.view.sort
 {
     /// <summary>
-    ///     Factory for sort window views.
+    /// Factory for sort window views.
     /// </summary>
     public class SortWindowViewForge : ViewFactoryForgeBase,
         DataWindowViewForge,
         DataWindowViewForgeWithPrevious
     {
-        private const string NAME = "Sort";
-        private bool[] isDescendingValues;
+        private IList<ExprNode> viewParameters;
         private ExprForge sizeForge;
         private ExprNode[] sortCriteriaExpressions;
+        private bool[] isDescendingValues;
         private DataInputOutputSerdeForge[] sortSerdes;
-        private bool useCollatorSort;
-
-        private IList<ExprNode> viewParameters;
-
-        public override string ViewName => NAME;
+        private bool useCollatorSort = false;
 
         public override void SetViewParameters(
             IList<ExprNode> parameters,
@@ -50,27 +48,25 @@ namespace com.espertech.esper.common.@internal.view.sort
             useCollatorSort = viewForgeEnv.Configuration.Compiler.Language.IsSortUsingCollator;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
             var message =
-                NAME + " window requires a numeric size parameter and a list of expressions providing sort keys";
+                $"{ViewName} window requires a numeric size parameter and a list of expressions providing sort keys";
             if (viewParameters.Count < 2) {
                 throw new ViewParameterException(message);
             }
 
             var validated = ViewForgeSupport.Validate(
-                NAME + " window",
+                ViewName + " window",
                 parentEventType,
                 viewParameters,
                 true,
-                viewForgeEnv,
-                streamNumber);
+                viewForgeEnv);
             for (var i = 1; i < validated.Length; i++) {
-                ViewForgeSupport.AssertReturnsNonConstant(NAME + " window", validated[i], i);
+                ViewForgeSupport.AssertReturnsNonConstant(ViewName + " window", validated[i], i);
             }
 
             ViewForgeSupport.ValidateNoProperties(ViewName, validated[0], 0);
@@ -81,7 +77,7 @@ namespace com.espertech.esper.common.@internal.view.sort
 
             for (var i = 1; i < validated.Length; i++) {
                 if (validated[i] is ExprOrderedExpr) {
-                    isDescendingValues[i - 1] = ((ExprOrderedExpr) validated[i]).IsDescending;
+                    isDescendingValues[i - 1] = ((ExprOrderedExpr)validated[i]).IsDescending;
                     sortCriteriaExpressions[i - 1] = validated[i].ChildNodes[0];
                 }
                 else {
@@ -94,15 +90,9 @@ namespace com.espertech.esper.common.@internal.view.sort
                 viewForgeEnv.StatementRawInfo);
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(SortWindowViewFactory);
-        }
+        internal override Type TypeOfFactory => typeof(SortWindowViewFactory);
 
-        internal override string FactoryMethod()
-        {
-            return "Sort";
-        }
+        internal override string FactoryMethod => "sort";
 
         internal override void Assign(
             CodegenMethod method,
@@ -111,7 +101,10 @@ namespace com.espertech.esper.common.@internal.view.sort
             CodegenClassScope classScope)
         {
             method.Block
-                .SetProperty(factory, "SizeEvaluator", CodegenEvaluator(sizeForge, method, GetType(), classScope))
+                .SetProperty(
+                    factory,
+                    "SizeEvaluator",
+                    CodegenEvaluator(sizeForge, method, GetType(), classScope))
                 .SetProperty(
                     factory,
                     "SortCriteriaEvaluators",
@@ -120,10 +113,32 @@ namespace com.espertech.esper.common.@internal.view.sort
                     factory,
                     "SortCriteriaTypes",
                     Constant(ExprNodeUtilityQuery.GetExprResultTypes(sortCriteriaExpressions)))
-                .SetProperty(factory, "IsDescendingValues", Constant(isDescendingValues))
-                .SetProperty(factory, "IsUseCollatorSort", Constant(useCollatorSort))
-                .SetProperty(factory, "SortSerdes", DataInputOutputSerdeForgeExtensions.CodegenArray(sortSerdes, method, classScope, null));
+                .SetProperty(
+                    factory,
+                    "IsDescendingValues",
+                    Constant(isDescendingValues))
+                .SetProperty(
+                    factory,
+                    "UseCollatorSort",
+                    Constant(useCollatorSort))
+                .SetProperty(
+                    factory,
+                    "SortSerdes",
+                    DataInputOutputSerdeForgeExtensions.CodegenArray(sortSerdes, method, classScope, null));
+        }
 
+        public override string ViewName => ViewEnum.SORT_WINDOW.GetName();
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_SORTED;
+        }
+
+        public DataInputOutputSerdeForge[] SortSerdes => sortSerdes;
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

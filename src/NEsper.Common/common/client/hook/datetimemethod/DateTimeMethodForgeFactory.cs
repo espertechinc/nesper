@@ -8,26 +8,26 @@
 
 namespace com.espertech.esper.common.client.hook.datetimemethod
 {
-	/// <summary>
-	///     Date-time method extension API for adding date-time methods.
-	/// </summary>
-	public interface DateTimeMethodForgeFactory
+    /// <summary>
+    ///     Date-time method extension API for adding date-time methods.
+    /// </summary>
+    public interface DateTimeMethodForgeFactory
     {
-	    /// <summary>
-	    ///     Called by the compiler to receive the list of footprints.
-	    /// </summary>
-	    /// <param name="context">contextual information</param>
-	    /// <returns>footprints</returns>
-	    DateTimeMethodDescriptor Initialize(DateTimeMethodInitializeContext context);
+        /// <summary>
+        ///     Called by the compiler to receive the list of footprints.
+        /// </summary>
+        /// <param name="context">contextual information</param>
+        /// <returns>footprints</returns>
+        DateTimeMethodDescriptor Initialize(DateTimeMethodInitializeContext context);
 
-	    /// <summary>
-	    ///     Called by the compiler to allow validation of actual parameters beyond validation of the footprint information
-	    ///     that the compiler does automatically.
-	    ///     <para />
-	    ///     Can be used to pre-evaluate parameter expressions.
-	    /// </summary>
-	    /// <param name="context">contextual information</param>
-	    /// <returns>operations descriptor</returns>
-	    DateTimeMethodOps Validate(DateTimeMethodValidateContext context);
+        /// <summary>
+        ///     Called by the compiler to allow validation of actual parameters beyond validation of the footprint information
+        ///     that the compiler does automatically.
+        ///     <para />
+        ///     Can be used to pre-evaluate parameter expressions.
+        /// </summary>
+        /// <param name="context">contextual information</param>
+        /// <returns>operations descriptor</returns>
+        DateTimeMethodOps Validate(DateTimeMethodValidateContext context);
     }
 } // end of namespace

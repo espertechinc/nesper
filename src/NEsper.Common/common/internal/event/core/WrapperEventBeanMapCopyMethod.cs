@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public EventBean Copy(EventBean theEvent)
         {
-            var decorated = (DecoratingEventBean) theEvent;
+            var decorated = (DecoratingEventBean)theEvent;
             var decoratedUnderlying = decorated.UnderlyingEvent;
             IDictionary<string, object> copiedMap = new Dictionary<string, object>(decorated.DecoratingProperties);
             return eventAdapterService.AdapterForTypedWrapper(decoratedUnderlying, copiedMap, wrapperEventType);

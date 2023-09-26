@@ -45,10 +45,8 @@ namespace com.espertech.esper.common.@internal.util
 
                 var originalValue = original.Get(name);
 
-                if (originalValue is DataMap &&
-                    additionalValue is DataMap) {
-                    var innerAdditional = (DataMap) additionalValue;
-                    var innerOriginal = (DataMap) originalValue;
+                if (originalValue is DataMap innerOriginal &&
+                    additionalValue is DataMap innerAdditional) {
                     object newValue = MergeNestableMap(innerOriginal, innerAdditional);
                     result.Put(name, newValue);
                     continue;

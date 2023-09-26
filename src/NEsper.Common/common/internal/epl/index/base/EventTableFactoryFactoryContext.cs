@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
         RuntimeSettingsService RuntimeSettingsService { get; }
         Attribute[] Annotations { get; }
     }
-    
+
     public class ProxyEventTableFactoryFactoryContext : EventTableFactoryFactoryContext
     {
         public Func<EventTableIndexService> ProcEventTableIndexService { get; }

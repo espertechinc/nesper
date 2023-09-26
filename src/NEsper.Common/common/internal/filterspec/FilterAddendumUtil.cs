@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             FilterValueSetParam[][] filters,
             FilterValueSetParam toAdd)
         {
-            return AddAddendum(filters, new[] {toAdd});
+            return AddAddendum(filters, new[] { toAdd });
         }
 
         public static FilterValueSetParam[][] AddAddendum(
@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         {
             if (filters.Length == 0) {
                 filters = new FilterValueSetParam[1][];
-                filters[0] = new FilterValueSetParam[0];
+                filters[0] = Array.Empty<FilterValueSetParam>();
             }
 
             var @params = new FilterValueSetParam[filters.Length][];

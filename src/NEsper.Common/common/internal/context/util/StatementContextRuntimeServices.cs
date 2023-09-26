@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.collection;
@@ -32,13 +33,14 @@ using com.espertech.esper.common.@internal.@event.eventtyperepo;
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.metrics.stmtmetrics;
+using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.statement.resource;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat.directory;
-
-using IContainer = com.espertech.esper.container.IContainer;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
@@ -46,7 +48,9 @@ namespace com.espertech.esper.common.@internal.context.util
     {
         public StatementContextRuntimeServices(
             IContainer container,
+            Configuration configSnapshot,
             ContextManagementService contextManagementService,
+            PathRegistry<string, ContextMetaData> contextPathRegistry,
             ContextServiceFactory contextServiceFactory,
             DatabaseConfigServiceRuntime databaseConfigService,
             DataFlowFilterServiceAdapter dataFlowFilterServiceAdapter,
@@ -67,6 +71,7 @@ namespace com.espertech.esper.common.@internal.context.util
             PathRegistry<string, EventType> eventTypePathRegistry,
             EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
             EventTypeResolvingBeanFactory eventTypeResolvingBeanFactory,
+            ManagedReadWriteLock eventProcessingRWLock,
             ExceptionHandlingService exceptionHandlingService,
             ExpressionResultCacheService expressionResultCacheService,
             FilterBooleanExpressionFactory filterBooleanExpressionFactory,
@@ -81,6 +86,7 @@ namespace com.espertech.esper.common.@internal.context.util
             PathRegistry<string, NamedWindowMetaData> pathNamedWindowRegistry,
             RowRecogStateRepoFactory rowRecogStateRepoFactory,
             ResultSetProcessorHelperFactory resultSetProcessorHelperFactory,
+            SchedulingService schedulingService,
             StatementAgentInstanceLockFactory statementAgentInstanceLockFactory,
             StatementResourceHolderBuilder statementResourceHolderBuilder,
             TableExprEvaluatorContext tableExprEvaluatorContext,
@@ -90,7 +96,9 @@ namespace com.espertech.esper.common.@internal.context.util
             ViewServicePreviousFactory viewServicePreviousFactory)
         {
             Container = container;
+            ConfigSnapshot = configSnapshot;
             ContextManagementService = contextManagementService;
+            ContextPathRegistry = contextPathRegistry;
             ContextServiceFactory = contextServiceFactory;
             DatabaseConfigService = databaseConfigService;
             DataFlowFilterServiceAdapter = dataFlowFilterServiceAdapter;
@@ -111,6 +119,7 @@ namespace com.espertech.esper.common.@internal.context.util
             EventTypePathRegistry = eventTypePathRegistry;
             EventTypeRepositoryPreconfigured = eventTypeRepositoryPreconfigured;
             EventTypeResolvingBeanFactory = eventTypeResolvingBeanFactory;
+            EventProcessingRWLock = eventProcessingRWLock;
             ExceptionHandlingService = exceptionHandlingService;
             ExpressionResultCacheService = expressionResultCacheService;
             FilterBooleanExpressionFactory = filterBooleanExpressionFactory;
@@ -125,6 +134,7 @@ namespace com.espertech.esper.common.@internal.context.util
             PathNamedWindowRegistry = pathNamedWindowRegistry;
             RowRecogStateRepoFactory = rowRecogStateRepoFactory;
             ResultSetProcessorHelperFactory = resultSetProcessorHelperFactory;
+            SchedulingService = schedulingService;
             StatementAgentInstanceLockFactory = statementAgentInstanceLockFactory;
             StatementResourceHolderBuilder = statementResourceHolderBuilder;
             TableExprEvaluatorContext = tableExprEvaluatorContext;
@@ -134,10 +144,12 @@ namespace com.espertech.esper.common.@internal.context.util
             ViewServicePreviousFactory = viewServicePreviousFactory;
         }
 
-        public StatementContextRuntimeServices(IContainer container)
+        public StatementContextRuntimeServices()
         {
-            Container = container;
+            Container = null;
+            ConfigSnapshot = null;
             ContextManagementService = null;
+            ContextPathRegistry = null;
             ContextServiceFactory = null;
             DatabaseConfigService = null;
             DataFlowFilterServiceAdapter = null;
@@ -158,6 +170,7 @@ namespace com.espertech.esper.common.@internal.context.util
             EventTypePathRegistry = null;
             EventTypeRepositoryPreconfigured = null;
             EventTypeResolvingBeanFactory = null;
+            EventProcessingRWLock = null;
             ExceptionHandlingService = null;
             ExpressionResultCacheService = null;
             FilterBooleanExpressionFactory = null;
@@ -172,6 +185,7 @@ namespace com.espertech.esper.common.@internal.context.util
             PathNamedWindowRegistry = null;
             RowRecogStateRepoFactory = null;
             ResultSetProcessorHelperFactory = null;
+            SchedulingService = null;
             StatementAgentInstanceLockFactory = null;
             StatementResourceHolderBuilder = null;
             TableExprEvaluatorContext = null;
@@ -181,7 +195,8 @@ namespace com.espertech.esper.common.@internal.context.util
             ViewServicePreviousFactory = null;
         }
 
-        public IContainer Container { get; set; }
+        public IContainer Container { get; }
+        public Configuration ConfigSnapshot { get; }
 
         public ContextManagementService ContextManagementService { get; }
 
@@ -204,6 +219,8 @@ namespace com.espertech.esper.common.@internal.context.util
         public object Runtime { get; }
 
         public EventTableIndexService EventTableIndexService { get; }
+
+        public PathRegistry<string, EventType> EventTypePathRegistry { get; }
 
         public EventTypeResolvingBeanFactory EventTypeResolvingBeanFactory { get; }
 
@@ -230,6 +247,10 @@ namespace com.espertech.esper.common.@internal.context.util
         public NamedWindowConsumerManagementService NamedWindowConsumerManagementService { get; }
 
         public NamedWindowManagementService NamedWindowManagementService { get; }
+
+        public PathRegistry<string, ContextMetaData> PathContextRegistry { get; }
+
+        public PathRegistry<string, NamedWindowMetaData> PathNamedWindowRegistry { get; }
 
         public RowRecogStateRepoFactory RowRecogStateRepoFactory { get; }
 
@@ -263,10 +284,10 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public INamingContext RuntimeEnvContext { get; }
 
-        public PathRegistry<string, EventType> EventTypePathRegistry { get; }
+        public SchedulingService SchedulingService { get; }
 
-        public PathRegistry<string, ContextMetaData> PathContextRegistry { get; }
+        public PathRegistry<string, ContextMetaData> ContextPathRegistry { get; }
 
-        public PathRegistry<string, NamedWindowMetaData> PathNamedWindowRegistry { get; }
+        public ManagedReadWriteLock EventProcessingRWLock { get; }
     }
 } // end of namespace

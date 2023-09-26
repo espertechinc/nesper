@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.view.core
     {
         private static int _gid = 0;
         private int _uid = ++_gid;
-        
+
         /// <summary>
         ///     Ctor.
         /// </summary>
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.view.core
         {
             // Get a new array created rather then re-use the old one since some client listeners
             // to this view may keep reference to the new data
-            EventBean[] row = {theEvent};
+            EventBean[] row = { theEvent };
             Child.Update(row, null);
         }
 

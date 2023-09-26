@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         public virtual void MergeClasses(ISet<Type> classes)
         {
         }
-        
+
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
         }
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 return false;
             }
 
-            var that = (CodegenExpressionRef) obj;
+            var that = (CodegenExpressionRef)obj;
 
             return _ref.Equals(that._ref);
         }

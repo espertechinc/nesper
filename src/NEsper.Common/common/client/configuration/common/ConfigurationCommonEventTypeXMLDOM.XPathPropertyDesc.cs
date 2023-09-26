@@ -110,19 +110,24 @@ namespace com.espertech.esper.common.client.configuration.common
             /// </summary>
             /// <returns>type name</returns>
             public string OptionalEventTypeName { get; set; }
-            
+
             public CodegenExpression ToCodegenExpression(
                 CodegenMethodScope parent,
                 CodegenClassScope scope)
             {
                 var typeExpr = CodegenExpressionBuilder.EnumValue(typeof(XPathResultType), Type.GetName());
-                
-                return new CodegenSetterBuilder(typeof(XPathPropertyDesc), typeof(XPathPropertyDesc), "desc", parent, scope)
-                    .Constant("Name", Name)
+
+                return new CodegenSetterBuilder(
+                        typeof(XPathPropertyDesc),
+                        typeof(XPathPropertyDesc),
+                        "desc",
+                        parent,
+                        scope)
+                    .ConstantExplicit("Name", Name)
                     .Expression("Type", typeExpr)
-                    .Constant("XPath", XPath)
-                    .Constant("OptionalEventTypeName", OptionalEventTypeName)
-                    .Constant("OptionalCastToType", OptionalCastToType)
+                    .ConstantExplicit("XPath", XPath)
+                    .ConstantExplicit("OptionalEventTypeName", OptionalEventTypeName)
+                    .ConstantExplicit("OptionalCastToType", OptionalCastToType)
                     .Build();
             }
         }

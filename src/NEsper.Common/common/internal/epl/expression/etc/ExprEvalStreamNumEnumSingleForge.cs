@@ -22,12 +22,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprEvalStreamNumEnumSingleForge(ExprEnumerationForge enumeration)
         {
-            this._enumeration = enumeration;
+            _enumeration = enumeration;
         }
 
-        public ExprEvaluator ExprEvaluator {
-            get { throw ExprNodeUtilityMake.MakeUnsupportedCompileTime(); }
-        }
+        public ExprEvaluator ExprEvaluator => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
 
         public CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -38,16 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             return _enumeration.EvaluateGetEventBeanCodegen(codegenMethodScope, exprSymbol, codegenClassScope);
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public Type EvaluationType {
-            get => typeof(EventBean);
-        }
+        public Type EvaluationType => typeof(EventBean);
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => _enumeration.EnumForgeRenderable;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => _enumeration.EnumForgeRenderable;
     }
 } // end of namespace

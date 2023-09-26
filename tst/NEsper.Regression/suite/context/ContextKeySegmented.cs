@@ -825,7 +825,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     env,
                     path,
                     epl,
-                    "Segmented context 'SegmentedByAString' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [");
+                    "Segmented context 'SegmentedByAString' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, Type 'SupportBean_S0' is not one of the types listed [");
 
                 // invalid attempt to partition a named window's streams
                 env.CompileDeploy("create window MyWindow#keepall as SupportBean", path);

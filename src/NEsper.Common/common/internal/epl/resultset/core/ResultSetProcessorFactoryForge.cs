@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 
@@ -17,6 +18,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
     public interface ResultSetProcessorFactoryForge
     {
         Type InterfaceClass { get; }
+
+        EventType ResultEventType { get; }
+
+        EventType[] TypesPerStream { get; }
 
         string InstrumentedQName { get; }
 

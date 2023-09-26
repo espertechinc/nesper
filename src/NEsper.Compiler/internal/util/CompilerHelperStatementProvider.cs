@@ -274,7 +274,7 @@ namespace com.espertech.esper.compiler.@internal.util
                 
                 // add forgeables from filter-related processing i.e. multikeys
                 foreach (var additional in compiledDesc.AdditionalForgeables) {
-                    var namespaceScope = new CodegenNamespaceScope(compileTimeServices.Namespace, null, false);
+                    var namespaceScope = new CodegenNamespaceScope(compileTimeServices.Namespace, null, false, TODO);
                     forgeables.Add(additional.Make(namespaceScope, classPostfix));
                 }
                 

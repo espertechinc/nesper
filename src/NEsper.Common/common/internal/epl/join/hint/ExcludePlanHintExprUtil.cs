@@ -26,15 +26,15 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
 
         static ExcludePlanHintExprUtil()
         {
-            LinkedHashMap<string, object> properties = new LinkedHashMap<string, object>();
+            var properties = new LinkedHashMap<string, object>();
             properties.Put("from_streamnum", typeof(int?));
             properties.Put("to_streamnum", typeof(int?));
             properties.Put("from_streamname", typeof(string));
             properties.Put("to_streamname", typeof(string));
             properties.Put("opname", typeof(string));
             properties.Put("exprs", typeof(string[]));
-            string eventTypeName = EventTypeNameUtil.GetAnonymousTypeNameExcludePlanHint();
-            EventTypeMetadata eventTypeMetadata = new EventTypeMetadata(
+            var eventTypeName = EventTypeNameUtil.GetAnonymousTypeNameExcludePlanHint();
+            var eventTypeMetadata = new EventTypeMetadata(
                 eventTypeName,
                 null,
                 EventTypeTypeClass.EXCLUDEPLANHINTDERIVED,
@@ -62,12 +62,12 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             string opname,
             ExprNode[] expressions)
         {
-            string[] texts = new string[expressions.Length];
-            for (int i = 0; i < expressions.Length; i++) {
+            var texts = new string[expressions.Length];
+            for (var i = 0; i < expressions.Length; i++) {
                 texts[i] = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expressions[i]);
             }
 
-            object[] @event = new object[] {fromStreamnum, toStreamnum, fromStreamname, toStreamname, opname, texts};
+            var @event = new object[] { fromStreamnum, toStreamnum, fromStreamname, toStreamname, opname, texts };
             return new ObjectArrayEventBean(@event, OAEXPRESSIONTYPE);
         }
 
@@ -76,8 +76,8 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
             StatementRawInfo rawInfo,
             StatementCompileTimeServices services)
         {
-            ExprNode expr = services.CompilerServices.CompileExpression(hint, services);
-            ExprNode validated = EPLValidationUtil.ValidateSimpleGetSubtree(
+            var expr = services.CompilerServices.CompileExpression(hint, services);
+            var validated = EPLValidationUtil.ValidateSimpleGetSubtree(
                 ExprNodeOrigin.HINT,
                 expr,
                 OAEXPRESSIONTYPE,

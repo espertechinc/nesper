@@ -9,21 +9,31 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.fabric;
+
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 {
     public class RowRecogPlan
     {
+        private readonly RowRecogDescForge forge;
+        private readonly IList<StmtClassForgeableFactory> additionalForgeables;
+        private readonly FabricCharge fabricCharge;
+
         public RowRecogPlan(
             RowRecogDescForge forge,
-            IList<StmtClassForgeableFactory> additionalForgeables)
+            IList<StmtClassForgeableFactory> additionalForgeables,
+            FabricCharge fabricCharge)
         {
-            Forge = forge;
-            AdditionalForgeables = additionalForgeables;
+            this.forge = forge;
+            this.additionalForgeables = additionalForgeables;
+            this.fabricCharge = fabricCharge;
         }
 
-        public RowRecogDescForge Forge { get; }
+        public RowRecogDescForge Forge => forge;
 
-        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
+        public IList<StmtClassForgeableFactory> AdditionalForgeables => additionalForgeables;
+
+        public FabricCharge FabricCharge => fabricCharge;
     }
 } // end of namespace

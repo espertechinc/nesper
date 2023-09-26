@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.util
     {
         public object Value { get; private set; }
 
-        protected RangeIndexLookupValue(Object value)
+        protected RangeIndexLookupValue(object value)
         {
             Value = value;
         }

@@ -31,12 +31,12 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ObjectArrayBackedEventBean @event = LockTableReadAndGet(context);
+            var @event = LockTableReadAndGet(context);
             if (@event == null) {
                 return null;
             }
 
-            AggregationRow row = ExprTableEvalStrategyUtil.GetRow(@event);
+            var row = ExprTableEvalStrategyUtil.GetRow(@event);
             return ExprTableEvalStrategyUtil.EvalMap(
                 @event,
                 row,
@@ -51,13 +51,13 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ObjectArrayBackedEventBean @event = LockTableReadAndGet(context);
+            var @event = LockTableReadAndGet(context);
             if (@event == null) {
                 return null;
             }
 
-            AggregationRow row = ExprTableEvalStrategyUtil.GetRow(@event);
-            IDictionary<string, TableMetadataColumn> items = Factory.Table.MetaData.Columns;
+            var row = ExprTableEvalStrategyUtil.GetRow(@event);
+            var items = Factory.Table.MetaData.Columns;
             return ExprTableEvalStrategyUtil.EvalTypable(@event, row, items, eventsPerStream, isNewData, context);
         }
 

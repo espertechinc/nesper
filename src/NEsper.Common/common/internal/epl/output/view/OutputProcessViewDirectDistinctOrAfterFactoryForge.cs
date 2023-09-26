@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.epl.output.core;
-using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.schedule;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -47,7 +46,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         }
 
         public bool IsCodeGenerated => false;
-        
+
+        public bool IsDirectAndSimple => false;
+
         public MultiKeyClassRef DistinctMultiKey { get; }
 
         public int? AfterConditionNumberOfEvents { get; }
@@ -68,12 +69,15 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                         : _outputStrategyPostProcessForge.Make(method, symbols, classScope),
                     Constant(_isDistinct),
                     MultiKeyCodegen.CodegenGetterEventDistinct(
-                        _isDistinct, ResultEventType, DistinctMultiKey, method, classScope),
+                        _isDistinct,
+                        ResultEventType,
+                        DistinctMultiKey,
+                        method,
+                        classScope),
                     AfterTimePeriod == null
                         ? ConstantNull()
                         : AfterTimePeriod.TimePeriodComputeForge.MakeEvaluator(method, classScope),
-                    Constant(AfterConditionNumberOfEvents),
-                    EventTypeUtility.ResolveTypeCodegen(ResultEventType, symbols.GetAddInitSvc(method))));
+                    Constant(AfterConditionNumberOfEvents)));
         }
 
         public void UpdateCodegen(
@@ -94,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
         {
         }
 
-        public void CollectSchedules(IList<ScheduleHandleCallbackProvider> scheduleHandleCallbackProviders)
+        public void CollectSchedules(IList<ScheduleHandleTracked> scheduleHandleCallbackProviders)
         {
         }
     }

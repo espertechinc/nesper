@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         {
             //var timeClass = NewAnonymousClass(method.Block, typeof(TimePeriodEval));
             //var evalMethod = CodegenMethod.MakeMethod(typeof(TimePeriod), GetType(), classScope)
-			//	.AddParam(PARAMS);
+            //	.AddParam(PARAMS);
             //timeClass.AddMethod("timePeriodEval", evalMethod);
 
             var evalMethod = new CodegenExpressionLambda(method.Block).WithParams(PARAMS);
@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             var exprMethod = method.MakeChild(typeof(TimePeriod), GetType(), classScope)
                 .AddParam(PARAMS);
 
-            CodegenExpression expression = forge.EvaluateGetTimePeriodCodegen(exprMethod, exprSymbol, classScope);
+            var expression = forge.EvaluateGetTimePeriodCodegen(exprMethod, exprSymbol, classScope);
             //exprSymbol.DerivedSymbolsCodegen(evalMethod, exprMethod.Block, classScope);
             exprSymbol.DerivedSymbolsCodegen(exprMethod, exprMethod.Block, classScope);
             exprMethod.Block.MethodReturn(expression);
@@ -194,7 +194,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         public bool HasVariable {
             get {
                 CheckValidated(forge);
-                return forge.HasVariable;
+                return forge.IsHasVariable;
             }
         }
 
@@ -283,11 +283,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprTimePeriodImpl)) {
+            if (!(node is ExprTimePeriodImpl other)) {
                 return false;
             }
-
-            var other = (ExprTimePeriodImpl) node;
 
             if (HasYear != other.HasYear) {
                 return false;
@@ -407,9 +405,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             }
 
             var returnType = expression.Forge.EvaluationType;
-            if (!returnType.IsNumeric()) {
-                throw new ExprValidationException("Time period expression requires a numeric parameter type");
-            }
+            ExprNodeUtilityValidate.ValidateReturnsNumeric(
+                expression.Forge,
+                () => "Time period expression requires a numeric parameter type");
 
             if ((HasMonth || HasYear) && returnType.GetBoxedType() != typeof(int?)) {
                 throw new ExprValidationException(

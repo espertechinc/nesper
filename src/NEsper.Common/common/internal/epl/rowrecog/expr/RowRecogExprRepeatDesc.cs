@@ -52,11 +52,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 
             writer.Write("}");
         }
-        
-        public RowRecogExprRepeatDesc CheckedCopy(ExpressionCopier expressionCopier) {
-            ExprNode lowerCopy = Lower == null ? null : expressionCopier.Copy(Lower);
-            ExprNode upperCopy = Upper == null ? null : expressionCopier.Copy(Upper);
-            ExprNode singleCopy = Single == null ? null : expressionCopier.Copy(Single);
+
+        public RowRecogExprRepeatDesc CheckedCopy(ExpressionCopier expressionCopier)
+        {
+            var lowerCopy = Lower == null ? null : expressionCopier.Copy(Lower);
+            var upperCopy = Upper == null ? null : expressionCopier.Copy(Upper);
+            var singleCopy = Single == null ? null : expressionCopier.Copy(Single);
             return new RowRecogExprRepeatDesc(lowerCopy, upperCopy, singleCopy);
         }
     }

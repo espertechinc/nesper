@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             _tryBlock.TraverseExpressions(consumer);
-            foreach (CodegenStatementTryCatchCatchBlock pair in _catchBlocks) {
+            foreach (var pair in _catchBlocks) {
                 pair.TraverseExpressions(consumer);
             }
 

@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             if (value == null) {
                 return false;
             }
-            
+
             return HandleNestedValueExists(value);
         }
 
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public virtual bool IsExistsProperty(EventBean eventBean)
         {
-            return IsMapExistsProperty((IDictionary<string, object>) eventBean.Underlying);
+            return IsMapExistsProperty((IDictionary<string, object>)eventBean.Underlying);
         }
 
         public object GetFragment(EventBean obj)
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.@event.map
         }
 
         public abstract object HandleNestedValue(object value);
-        
+
         public abstract bool HandleNestedValueExists(object value);
 
         public abstract object HandleNestedValueFragment(object value);

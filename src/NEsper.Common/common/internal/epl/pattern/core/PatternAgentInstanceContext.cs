@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
 
         public FilterValueSetParam[][] GetFilterAddendumForContextPath(FilterSpecActivatable filterSpec)
         {
-            return contextAddendumFunction == null ? null : contextAddendumFunction.Invoke(filterSpec);
+            return contextAddendumFunction?.Invoke(filterSpec);
         }
 
         public AgentInstanceContext GetAgentInstanceContext()

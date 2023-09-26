@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             StreamNum = streamNum;
             Getter = getter;
             EvaluationType = returnType;
-            this._fragmentType = fragmentType;
+            _fragmentType = fragmentType;
         }
 
         public EventPropertyGetterSPI Getter { get; }
@@ -68,7 +68,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {

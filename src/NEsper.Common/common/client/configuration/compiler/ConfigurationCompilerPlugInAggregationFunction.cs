@@ -58,9 +58,9 @@ namespace com.espertech.esper.common.client.configuration.compiler
                 return false;
             }
 
-            var that = (ConfigurationCompilerPlugInAggregationFunction) o;
+            var that = (ConfigurationCompilerPlugInAggregationFunction)o;
 
-            if (ForgeClassName != null ? !ForgeClassName.Equals(that.ForgeClassName) : that.ForgeClassName != null) {
+            if (!ForgeClassName?.Equals(that.ForgeClassName) ?? that.ForgeClassName != null) {
                 return false;
             }
 

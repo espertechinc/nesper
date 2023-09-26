@@ -35,12 +35,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             double height,
             MXCIFQuadTreeNode node)
         {
-            if (node is MXCIFQuadTreeNodeLeaf) {
-                var leaf = (MXCIFQuadTreeNodeLeaf) node;
+            if (node is MXCIFQuadTreeNodeLeaf leaf) {
                 return GetFromData(x, y, width, height, leaf.Data);
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch) node;
+            var branch = (MXCIFQuadTreeNodeBranch)node;
             var q = node.Bb.GetQuadrantApplies(x, y, width, height);
             switch (q) {
                 case QuadrantAppliesEnum.NW:
@@ -73,8 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 return null;
             }
 
-            if (data is XYWHRectangleWValue) {
-                var value = (XYWHRectangleWValue) data;
+            if (data is XYWHRectangleWValue value) {
                 if (value.CoordinateEquals(x, y, width, height)) {
                     return value.Value;
                 }
@@ -82,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 return null;
             }
 
-            foreach (var rectangle in (ICollection<XYWHRectangleWValue>) data) {
+            foreach (var rectangle in (ICollection<XYWHRectangleWValue>)data) {
                 if (rectangle.CoordinateEquals(x, y, width, height)) {
                     return rectangle.Value;
                 }

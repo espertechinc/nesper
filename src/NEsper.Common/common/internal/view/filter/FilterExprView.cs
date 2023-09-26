@@ -41,9 +41,7 @@ namespace com.espertech.esper.common.@internal.view.filter
             this.whereClauseEvaluatorTextForAudit = whereClauseEvaluatorTextForAudit;
         }
 
-        public override EventType EventType {
-            get => parent.EventType;
-        }
+        public override EventType EventType => parent.EventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
@@ -54,15 +52,15 @@ namespace com.espertech.esper.common.@internal.view.filter
             EventBean[] newData,
             EventBean[] oldData)
         {
-            InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
+            var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
             instrumentationCommon.QWhereClauseFilter(whereClauseEvaluatorTextForAudit, newData, oldData);
 
-            EventBean[] filteredNewData = FilterEvents(exprEvaluator, newData, true, exprEvaluatorContext);
-            EventBean[] filteredOldData = FilterEvents(exprEvaluator, oldData, false, exprEvaluatorContext);
+            var filteredNewData = FilterEvents(exprEvaluator, newData, true, exprEvaluatorContext);
+            var filteredOldData = FilterEvents(exprEvaluator, oldData, false, exprEvaluatorContext);
 
             instrumentationCommon.AWhereClauseFilter(filteredNewData, filteredOldData);
 
-            if ((filteredNewData != null) || (filteredOldData != null)) {
+            if (filteredNewData != null || filteredOldData != null) {
                 instrumentationCommon.QWhereClauseIR(filteredNewData, filteredOldData);
                 child.Update(filteredNewData, filteredOldData);
                 instrumentationCommon.AWhereClauseIR();
@@ -87,18 +85,18 @@ namespace com.espertech.esper.common.@internal.view.filter
                 return null;
             }
 
-            InstrumentationCommon instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
+            var instrumentationCommon = exprEvaluatorContext.InstrumentationProvider;
 
-            EventBean[] evalEventArr = new EventBean[1];
-            bool[] passResult = new bool[events.Length];
-            int passCount = 0;
+            var evalEventArr = new EventBean[1];
+            var passResult = new bool[events.Length];
+            var passCount = 0;
 
-            for (int i = 0; i < events.Length; i++) {
+            for (var i = 0; i < events.Length; i++) {
                 evalEventArr[0] = events[i];
                 instrumentationCommon.QWhereClauseFilterEval(i, events[i], isNewData);
                 var pass = exprEvaluator.Evaluate(evalEventArr, isNewData, exprEvaluatorContext).AsBoxedBoolean();
                 instrumentationCommon.AWhereClauseFilterEval(pass);
-                if ((pass != null) && true.Equals(pass)) {
+                if (pass != null && true.Equals(pass)) {
                     passResult[i] = true;
                     passCount++;
                 }
@@ -112,9 +110,9 @@ namespace com.espertech.esper.common.@internal.view.filter
                 return events;
             }
 
-            EventBean[] resultArray = new EventBean[passCount];
-            int count = 0;
-            for (int i = 0; i < passResult.Length; i++) {
+            var resultArray = new EventBean[passCount];
+            var count = 0;
+            for (var i = 0; i < passResult.Length; i++) {
                 if (passResult[i]) {
                     resultArray[count] = events[i];
                     count++;

@@ -41,11 +41,10 @@ namespace com.espertech.esper.common.@internal.@event.wrap
 
         public object Get(EventBean theEvent)
         {
-            if (!(theEvent is DecoratingEventBean)) {
+            if (!(theEvent is DecoratingEventBean wrapperEvent)) {
                 throw new PropertyAccessException("Mismatched property getter to EventBean type");
             }
 
-            var wrapperEvent = (DecoratingEventBean) theEvent;
             var map = wrapperEvent.DecoratingProperties;
             return mapGetter.Get(eventBeanTypedEventFactory.AdapterForTypedMap(map, underlyingMapType));
         }
@@ -57,11 +56,10 @@ namespace com.espertech.esper.common.@internal.@event.wrap
 
         public object GetFragment(EventBean theEvent)
         {
-            if (!(theEvent is DecoratingEventBean)) {
+            if (!(theEvent is DecoratingEventBean wrapperEvent)) {
                 throw new PropertyAccessException("Mismatched property getter to EventBean type");
             }
 
-            var wrapperEvent = (DecoratingEventBean) theEvent;
             var map = wrapperEvent.DecoratingProperties;
             return mapGetter.GetFragment(eventBeanTypedEventFactory.AdapterForTypedMap(map, underlyingMapType));
         }
@@ -95,19 +93,22 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod method = codegenMethodScope
+            var method = codegenMethodScope
                 .MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object), "und");
+                .AddParam<object>("und");
             // TBD - fix this, this type is not right... below
             if (wrapperEventType.UnderlyingType == typeof(Pair<object, object>)) {
                 method
                     .Block
                     .DeclareVarWCast(typeof(Pair<object, object>), "pair", "und")
                     .DeclareVar<IDictionary<string, object>>("wrapped", ExprDotName(Ref("pair"), "Second"))
-                    .MethodReturn(mapGetter.UnderlyingGetCodegen(Ref("wrapped"), codegenMethodScope, codegenClassScope));
-            } else {
+                    .MethodReturn(
+                        mapGetter.UnderlyingGetCodegen(Ref("wrapped"), codegenMethodScope, codegenClassScope));
+            }
+            else {
                 method.Block.MethodReturn(ConstantNull());
             }
+
             return LocalMethod(method, Ref("und"));
         }
 
@@ -132,7 +133,7 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(EventBean), "theEvent")
+                .AddParam<EventBean>("theEvent")
                 .Block
                 .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
                 .DeclareVar<IDictionary<string, object>>(
@@ -146,7 +147,7 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(EventBean), "theEvent")
+                .AddParam<EventBean>("theEvent")
                 .Block
                 .DeclareVarWCast(typeof(DecoratingEventBean), "wrapperEvent", "theEvent")
                 .DeclareVar<IDictionary<object, object>>(

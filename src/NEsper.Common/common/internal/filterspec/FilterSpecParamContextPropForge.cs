@@ -40,14 +40,14 @@ namespace com.espertech.esper.common.@internal.filterspec
             _propertyName = propertyName;
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
         {
             var method = parent.MakeChild(typeof(FilterSpecParam), GetType(), classScope);
             var lookupableExpr = LocalMethod(lookupable.MakeCodegen(method, symbols, classScope));
-            
+
             method.Block
                 .DeclareVar<ExprFilterSpecLookupable>("lookupable", lookupableExpr)
                 .DeclareVar<FilterOperator>("filterOperator", EnumValue(filterOperator));
@@ -88,10 +88,12 @@ namespace com.espertech.esper.common.@internal.filterspec
             getFilterValue.Block.BlockReturn(returnExpr);
 
             method.Block.MethodReturn(param);
-            return method;
+            return LocalMethod(method);
         }
-        
-        public override void ValueExprToString(StringBuilder @out, int i)
+
+        public override void ValueExprToString(
+            StringBuilder @out,
+            int i)
         {
             @out.Append("context property '")
                 .Append(_propertyName)

@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.view.union
             ViewFactoryContext viewFactoryContext,
             EPStatementInitServices services)
         {
-            foreach (ViewFactory factory in unioned) {
+            foreach (var factory in unioned) {
                 factory.Init(viewFactoryContext, services);
             }
         }
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.view.union
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
             IList<View> views = new List<View>();
-            foreach (ViewFactory viewFactory in unioned) {
+            foreach (var viewFactory in unioned) {
                 views.Add(viewFactory.MakeView(agentInstanceViewFactoryContext));
             }
 
@@ -49,21 +49,19 @@ namespace com.espertech.esper.common.@internal.view.union
 
         public EventType EventType {
             get => eventType;
-            set { this.eventType = value; }
+            set => eventType = value;
         }
 
         public ViewFactory[] Unioned {
             get => unioned;
-            set { this.unioned = value; }
+            set => unioned = value;
         }
 
         public bool HasAsymetric {
             get => hasAsymetric;
-            set { this.hasAsymetric = value; }
+            set => hasAsymetric = value;
         }
 
-        public string ViewName {
-            get => "union";
-        }
+        public string ViewName => "union";
     }
 } // end of namespace

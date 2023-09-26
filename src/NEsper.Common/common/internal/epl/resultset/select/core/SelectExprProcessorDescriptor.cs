@@ -27,8 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         public SelectSubscriberDescriptor SubscriberDescriptor { get; }
 
         public SelectExprProcessorForge Forge { get; }
-        
-        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
 
+        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
     }
 } // end of namespace

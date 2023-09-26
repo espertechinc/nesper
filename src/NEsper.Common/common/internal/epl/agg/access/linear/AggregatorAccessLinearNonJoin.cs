@@ -15,10 +15,12 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.access.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.sharable;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
+    CodegenRelational;
 using static com.espertech.esper.common.@internal.epl.agg.method.core.AggregatorCodegenUtil;
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.linear
@@ -30,19 +32,22 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         AggregatorAccessLinear
     {
         private readonly AggregationStateLinearForge _forge;
-        private readonly CodegenExpressionMember _events;
+        private CodegenExpressionMember _events;
 
         public AggregatorAccessLinearNonJoin(
             AggregationStateLinearForge forge,
+            ExprNode optionalFilter)
+            : base(optionalFilter)
+        {
+            _forge = forge;
+        }
+
+        public override void InitAccessForge(
             int col,
             CodegenCtor rowCtor,
             CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope,
-            ExprNode optionalFilter)
-            : base(optionalFilter)
-
+            CodegenClassScope classScope)
         {
-            _forge = forge;
             _events = membersColumnized.AddMember(col, typeof(IList<EventBean>), "events");
             rowCtor.Block.AssignRef(_events, NewInstance(typeof(List<EventBean>)));
         }
@@ -53,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            CodegenExpressionRef eps = symbols.GetAddEPS(method);
+            var eps = symbols.GetAddEPS(method);
             method.Block
                 .DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(_forge.StreamNum)))
                 .IfRefNull("theEvent")
@@ -67,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            CodegenExpressionRef eps = symbols.GetAddEPS(method);
+            var eps = symbols.GetAddEPS(method);
             method.Block
                 .DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(_forge.StreamNum)))
                 .IfRefNull("theEvent")
@@ -88,19 +93,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            CodegenMethod method = parentMethod.MakeChildWithScope(
+            var method = parentMethod.MakeChildWithScope(
                     typeof(EventBean),
                     typeof(AggregatorAccessLinearNonJoin),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(int), "index");
+                .AddParam<int>("index");
             method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
                 .BlockReturn(ConstantNull())
                 .IfCondition(Relational(Ref("index"), GE, ExprDotName(_events, "Count")))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(
-                    Cast(typeof(EventBean),
-                    ArrayAtIndex(_events, Ref("index"))));
+                    Cast(
+                        typeof(EventBean),
+                        ArrayAtIndex(_events, Ref("index"))));
             return LocalMethod(method, index);
         }
 
@@ -110,12 +116,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            CodegenMethod method = parentMethod.MakeChildWithScope(
+            var method = parentMethod.MakeChildWithScope(
                     typeof(EventBean),
                     typeof(AggregatorAccessLinearNonJoin),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
-                .AddParam(typeof(int), "index");
+                .AddParam<int>("index");
             method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
                 .BlockReturn(ConstantNull())
                 .IfCondition(Relational(Ref("index"), GE, ExprDotName(_events, "Count")))
@@ -133,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenClassScope classScope,
             CodegenMethod parentMethod)
         {
-            CodegenMethod method = parentMethod.MakeChildWithScope(
+            var method = parentMethod.MakeChildWithScope(
                 typeof(EventBean),
                 typeof(AggregatorAccessLinearNonJoin),
                 CodegenSymbolProviderEmpty.INSTANCE,
@@ -149,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod parentMethod,
             CodegenNamedMethods namedMethods)
         {
-            CodegenMethod method = parentMethod.MakeChildWithScope(
+            var method = parentMethod.MakeChildWithScope(
                 typeof(EventBean),
                 typeof(AggregatorAccessLinearNonJoin),
                 CodegenSymbolProviderEmpty.INSTANCE,
@@ -193,7 +199,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(GetSerde(classScope), "Write", RowDotMember(row, _events), output, unitKey, writer);
+            method.Block.ExprDotMethod(
+                GetSerde(classScope),
+                "Write",
+                RowDotMember(row, _events),
+                output,
+                unitKey,
+                writer);
         }
 
         public override void ReadCodegen(
@@ -207,6 +219,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             method.Block.AssignRef(
                 RowDotMember(row, _events),
                 Cast(typeof(IList<EventBean>), ExprDotMethod(GetSerde(classScope), "Read", input, unitKey)));
+        }
+
+        public override void CollectFabricType(FabricTypeCollector collector)
+        {
+            collector.ListEvents(_forge.EventType);
         }
 
         private CodegenExpressionInstanceField GetSerde(CodegenClassScope classScope)

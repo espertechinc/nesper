@@ -9,24 +9,34 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.fabric;
+
 
 namespace com.espertech.esper.common.@internal.epl.output.core
 {
     /// <summary>
-    ///     Factory for factories for output processing views.
+    /// Factory for factories for output processing views.
     /// </summary>
     public class OutputProcessViewFactoryForgeDesc
     {
+        private readonly OutputProcessViewFactoryForge forge;
+        private readonly IList<StmtClassForgeableFactory> additionalForgeables;
+        private readonly FabricCharge fabricCharge;
+
         public OutputProcessViewFactoryForgeDesc(
             OutputProcessViewFactoryForge forge,
-            IList<StmtClassForgeableFactory> additionalForgeables)
+            IList<StmtClassForgeableFactory> additionalForgeables,
+            FabricCharge fabricCharge)
         {
-            Forge = forge;
-            AdditionalForgeables = additionalForgeables;
+            this.forge = forge;
+            this.additionalForgeables = additionalForgeables;
+            this.fabricCharge = fabricCharge;
         }
 
-        public OutputProcessViewFactoryForge Forge { get; }
+        public OutputProcessViewFactoryForge Forge => forge;
 
-        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
+        public IList<StmtClassForgeableFactory> AdditionalForgeables => additionalForgeables;
+
+        public FabricCharge FabricCharge => fabricCharge;
     }
 } // end of namespace

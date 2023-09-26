@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 bool newData,
                 ExprEvaluatorContext context)
             {
-                long threshold = thresholdExpr.Evaluate(
+                var threshold = thresholdExpr.Evaluate(
                     Math.Min(leftStart, rightEnd),
                     eventsPerStream,
                     newData,

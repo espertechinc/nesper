@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.client.serde
             byte[] unitKey,
             EventBeanCollatedWriter writer)
         {
-            Write((T) @object, output, unitKey, writer);
+            Write((T)@object, output, unitKey, writer);
         }
 
         public object Read(

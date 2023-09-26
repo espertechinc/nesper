@@ -23,8 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
             bool optional,
             string name,
             string nameUnescaped,
-            IList<ExprNode> parameters)
-            : base(distinct, optional)
+            IList<ExprNode> parameters) : base(distinct, optional)
         {
             Name = name;
             NameUnescaped = nameUnescaped;
@@ -41,11 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
         }
 
         public string Name { get; set; }
-
         public IList<ExprNode> Parameters { get; set; }
-
         public string NameUnescaped { get; }
-
 
         public override void AddParametersTo(ICollection<ExprNode> result)
         {
@@ -69,16 +65,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
             AcceptParams(visitor, Parameters, parent);
         }
 
-        public override string GetRootNameOrEmptyString()
-        {
-            return Name;
-        }
-
-        public override IList<ExprNode> GetParametersOrEmpty()
-        {
-            return Parameters;
-        }
-
         public override void ValidateExpressions(
             ExprNodeOrigin origin,
             ExprValidationContext validationContext)
@@ -88,13 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
 
         public override string ToString()
         {
-            return "ChainableCall{" +
-                   "name='" +
-                   Name +
-                   '\'' +
-                   ", parameters=" +
-                   Parameters +
-                   '}';
+            return "ChainableCall{" + "name='" + Name + '\'' + ", parameters=" + Parameters + '}';
         }
 
         public override bool Equals(object o)
@@ -107,15 +87,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
                 return false;
             }
 
-            var that = (ChainableCall) o;
-            return EqualsChainable(that) 
-                   && Name.Equals(that.Name)
-                   && ExprNodeUtilityCompare.DeepEquals(Parameters, that.Parameters);
+            var that = (ChainableCall)o;
+            return EqualsChainable(that) &&
+                   Name.Equals(that.Name) &&
+                   ExprNodeUtilityCompare.DeepEquals(Parameters, that.Parameters);
         }
 
         public override int GetHashCode()
         {
             return Name != null ? Name.GetHashCode() : 0;
         }
+
+        public string RootNameOrEmptyString => Name;
+
+        public IList<ExprNode> ParametersOrEmpty => Parameters;
     }
 } // end of namespace

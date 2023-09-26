@@ -37,8 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.join.exec.composite
                 _events = new EventBean[numStreams + 1];
             }
 
-            this._lookupStream = lookupStream;
-            this._isNwOnTrigger = isNWOnTrigger;
+            _lookupStream = lookupStream;
+            _isNwOnTrigger = isNWOnTrigger;
         }
 
         public object EvaluateLookup(

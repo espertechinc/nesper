@@ -8,10 +8,13 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.annotation;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
-using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.fabric;
+using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -30,10 +33,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         {
         }
 
+        public StateMgmtSetting StateMgmtSetting {
+            set {
+                // not applicable
+            }
+        }
+
+        public void AppendRowFabricType(FabricTypeCollector fabricTypeCollector)
+        {
+        }
+
+        public AppliesTo? AppliesTo()
+        {
+            throw new IllegalStateException();
+        }
+
         public AggregationService MakeService(
-            AgentInstanceContext agentInstanceContext,
-            ImportServiceRuntime importService,
-            bool isSubquery,
+            ExprEvaluatorContext exprEvaluatorContext,
+            int? streamNum,
             int? subqueryNumber,
             int[] groupId)
         {
@@ -116,10 +133,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         {
         }
 
-        public void SetRemovedCallbackCodegen(CodegenMethod method)
-        {
-        }
-
         public void SetCurrentAccessCodegen(
             CodegenMethod method,
             CodegenClassScope classScope,
@@ -192,6 +205,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenNamedMethods namedMethods)
         {
             method.Block.MethodThrowUnsupported();
+        }
+
+        public T Accept<T>(AggregationServiceFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
+
+        public void SetRemovedCallbackCodegen(CodegenMethod method)
+        {
         }
     }
 } // end of namespace

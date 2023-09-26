@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object array = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var array = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             return CollectionUtil.ArrayToCollectionAllowNull<object>(array);
         }
 
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            Type evaluationType = forge.rootForge.EvaluationType;
+            var evaluationType = forge.rootForge.EvaluationType;
             return CollectionUtil.ArrayToCollectionAllowNullCodegen(
                 codegenMethodScope,
                 evaluationType,

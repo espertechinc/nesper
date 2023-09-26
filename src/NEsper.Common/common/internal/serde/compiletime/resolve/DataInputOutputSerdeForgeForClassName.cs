@@ -19,7 +19,8 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
         }
 
         public string ClassName { get; }
-        public string ForgeClassName() => ClassName;
+
+        public string ForgeClassName => ClassName;
 
         public CodegenExpression Codegen(
             CodegenMethod method,

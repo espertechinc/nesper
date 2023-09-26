@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 }
 
                 ISet<int> indexedPropertyStreams = new HashSet<int>();
-                foreach (ExprNodePropOrStreamDesc @ref in visitor.Refs) {
+                foreach (var @ref in visitor.Refs) {
                     indexedPropertyStreams.Add(@ref.StreamNum);
                 }
 
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                     visitor.Reset();
                     dependencies.Clear();
                     node.Accept(visitor);
-                    foreach (ExprNodePropOrStreamDesc @ref in visitor.Refs) {
+                    foreach (var @ref in visitor.Refs) {
                         dependencies.Add(@ref.StreamNum);
                     }
 
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                         return null;
                     }
 
-                    Pair<ExprNode, int[]> pair = new Pair<ExprNode, int[]>(node, CollectionUtil.IntArray(dependencies));
+                    var pair = new Pair<ExprNode, int[]>(node, CollectionUtil.IntArray(dependencies));
                     keyExpressions.Add(pair);
                 }
 
@@ -159,18 +159,17 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 throw GetIndexNameMessage("requires an expression name");
             }
 
-            var node = (ExprDeclaredNode) indexNamedParameter[0];
-            if (!(node.Body is ExprDotNode)) {
+            var node = (ExprDeclaredNode)indexNamedParameter[0];
+            if (!(node.Body is ExprDotNode dotNode)) {
                 throw GetIndexNameMessage("requires an index expression");
             }
 
-            var dotNode = (ExprDotNode) node.Body;
             if (dotNode.ChainSpec.Count > 1) {
                 throw GetIndexNameMessage("invalid chained index expression");
             }
 
-            IList<ExprNode> @params = dotNode.ChainSpec[0].GetParametersOrEmpty();
-            string indexTypeName = dotNode.ChainSpec[0].GetRootNameOrEmptyString();
+            IList<ExprNode> @params = dotNode.ChainSpec[0].ParametersOrEmpty;
+            string indexTypeName = dotNode.ChainSpec[0].RootNameOrEmptyString;
             optionalIndexName = node.Prototype.Name;
 
             AdvancedIndexFactoryProvider provider = null;

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.vdw;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.join.exec.@base;
 using com.espertech.esper.common.@internal.epl.join.exec.util;
@@ -28,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         SubordTableLookupStrategy GetSubordinateLookupStrategy(
             SubordTableLookupStrategyFactoryVDW subordTableFactory,
-            AgentInstanceContext agentInstanceContext);
+            ExprEvaluatorContext exprEvaluatorContext);
 
         JoinExecTableLookupStrategy GetJoinLookupStrategy(
             TableLookupPlan tableLookupPlan,

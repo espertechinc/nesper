@@ -19,7 +19,8 @@ using com.espertech.esper.common.@internal.@event.core;
 
 namespace com.espertech.esper.common.@internal.epl.table.core
 {
-    public abstract class TableInstanceGroupedBase : TableInstanceBase, TableInstanceGrouped
+    public abstract class TableInstanceGroupedBase : TableInstanceBase,
+        TableInstanceGrouped
     {
         protected TableInstanceGroupedBase(
             Table table,
@@ -33,12 +34,12 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             agentInstanceContext.InstrumentationProvider.QTableAddEvent(@event);
 
             try {
-                foreach (EventTable table in indexRepository.Tables) {
+                foreach (var table in indexRepository.Tables) {
                     table.Add(@event, agentInstanceContext);
                 }
             }
             catch (EPException) {
-                foreach (EventTable table in indexRepository.Tables) {
+                foreach (var table in indexRepository.Tables) {
                     table.Remove(@event, agentInstanceContext);
                 }
 
@@ -51,27 +52,28 @@ namespace com.espertech.esper.common.@internal.epl.table.core
 
         protected ObjectArrayBackedEventBean CreateRowIntoTable(object groupKeys)
         {
-            EventType eventType = table.MetaData.InternalEventType;
-            AggregationRow aggregationRow = table.AggregationRowFactory.Make();
+            var eventType = table.MetaData.InternalEventType;
+            var aggregationRow = table.AggregationRowFactory.Make();
             var data = new object[eventType.PropertyDescriptors.Count];
             data[0] = aggregationRow;
 
-            int[] groupKeyColNums = table.MetaData.KeyColNums;
+            var groupKeyColNums = table.MetaData.KeyColNums;
             if (groupKeyColNums.Length == 1) {
                 if (groupKeys is MultiKeyArrayWrap multiKeyArrayWrap) {
                     data[groupKeyColNums[0]] = multiKeyArrayWrap.Array;
-                } else {
+                }
+                else {
                     data[groupKeyColNums[0]] = groupKeys;
                 }
             }
             else {
-                var mk = (MultiKey) groupKeys;
+                var mk = (MultiKey)groupKeys;
                 for (var i = 0; i < groupKeyColNums.Length; i++) {
                     data[groupKeyColNums[i]] = mk.GetKey(i);
                 }
             }
 
-            ObjectArrayBackedEventBean row =
+            var row =
                 agentInstanceContext.EventBeanTypedEventFactory.AdapterForTypedObjectArray(data, eventType);
             AddEvent(row);
             return row;

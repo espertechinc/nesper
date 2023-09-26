@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return false;
             }
 
-            var o = (IntSeqKeyFour) other;
+            var o = (IntSeqKeyFour)other;
             return One == o.One && Two == o.Two && Three == o.Three;
         }
 
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.collection
 
         public int[] AsIntArray()
         {
-            return new[] {One, Two, Three};
+            return new[] { One, Two, Three };
         }
 
         protected bool Equals(IntSeqKeyThree other)
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return false;
             }
 
-            return Equals((IntSeqKeyThree) obj);
+            return Equals((IntSeqKeyThree)obj);
         }
 
         public override int GetHashCode()

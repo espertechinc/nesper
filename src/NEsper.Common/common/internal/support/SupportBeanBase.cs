@@ -25,10 +25,15 @@ namespace com.espertech.esper.common.@internal.support
 
         public override bool Equals(object obj)
         {
-            if (this == obj) return true;
-            if (obj == null || GetType() != obj.GetType()) return false;
+            if (this == obj) {
+                return true;
+            }
 
-            var that = (SupportBeanBase) obj;
+            if (obj == null || GetType() != obj.GetType()) {
+                return false;
+            }
+
+            var that = (SupportBeanBase)obj;
 
             return Equals(Id, that.Id);
         }

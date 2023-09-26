@@ -23,12 +23,8 @@ namespace com.espertech.esper.common.@internal.view.expression
             this.theEvent = theEvent;
         }
 
-        public long Timestamp {
-            get => timestamp;
-        }
+        public long Timestamp => timestamp;
 
-        public EventBean TheEvent {
-            get => theEvent;
-        }
+        public EventBean TheEvent => theEvent;
     }
 } // end of namespace

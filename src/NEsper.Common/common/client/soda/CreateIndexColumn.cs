@@ -67,29 +67,25 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="writer">The writer.</param>
         public virtual void ToEPL(TextWriter writer)
         {
-            if (columns.Count > 1)
-            {
+            if (columns.Count > 1) {
                 writer.Write("(");
             }
 
             ExpressionBase.ToPrecedenceFreeEPL(columns, writer);
-            if (columns.Count > 1)
-            {
+            if (columns.Count > 1) {
                 writer.Write(")");
             }
 
-            if ((indexType != null) &&
+            if (indexType != null &&
                 !string.Equals(
                     indexType,
                     CreateIndexColumnType.HASH.GetName(),
-                    StringComparison.InvariantCultureIgnoreCase))
-            {
+                    StringComparison.InvariantCultureIgnoreCase)) {
                 writer.Write(' ');
                 writer.Write(indexType.ToLowerInvariant());
             }
 
-            if (!parameters.IsEmpty())
-            {
+            if (!parameters.IsEmpty()) {
                 writer.Write("(");
                 ExpressionBase.ToPrecedenceFreeEPL(parameters, writer);
                 writer.Write(")");
@@ -99,8 +95,7 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Returns index column expressions
         /// </summary>
-        public IList<Expression> Columns
-        {
+        public IList<Expression> Columns {
             get => columns;
             set => columns = value;
         }
@@ -111,8 +106,7 @@ namespace com.espertech.esper.common.client.soda
         /// <value>
         /// The type of the index.
         /// </value>
-        public string IndexType
-        {
+        public string IndexType {
             get => indexType;
             set => indexType = value;
         }
@@ -123,8 +117,7 @@ namespace com.espertech.esper.common.client.soda
         /// <value>
         /// The parameters.
         /// </value>
-        public IList<Expression> Parameters
-        {
+        public IList<Expression> Parameters {
             get => parameters;
             set => parameters = value;
         }

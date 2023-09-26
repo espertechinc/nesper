@@ -36,7 +36,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			IContainer container, 
 			CommonTokenStream tokenStream)
 		{
-			return MakeWalker(tokenStream, SupportClasspathImport.GetInstance(container));
+			return MakeWalker(tokenStream, SupportImport.GetInstance(container));
 		}
 	}
 } // end of namespace

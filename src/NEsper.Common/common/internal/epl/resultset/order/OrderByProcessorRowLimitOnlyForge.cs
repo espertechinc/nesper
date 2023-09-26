@@ -43,9 +43,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 rowLimitProcessorFactoryForge.Make(classScope.NamespaceScope.InitMethod, classScope));
             method.Block.DeclareVar<RowLimitProcessor>(
                     REF_ROWLIMITPROCESSOR.Ref,
-                    ExprDotMethod(rowLimitFactory, "Instantiate", MEMBER_AGENTINSTANCECONTEXT))
+                    ExprDotMethod(rowLimitFactory, "Instantiate", MEMBER_EXPREVALCONTEXT))
                 .MethodReturn(
-                    CodegenExpressionBuilder.NewInstanceInner(CLASSNAME_ORDERBYPROCESSOR, Ref("o"), REF_ROWLIMITPROCESSOR));
+                    NewInstanceInner(CLASSNAME_ORDERBYPROCESSOR, Ref("o"), REF_ROWLIMITPROCESSOR));
         }
 
         public void CtorCodegen(

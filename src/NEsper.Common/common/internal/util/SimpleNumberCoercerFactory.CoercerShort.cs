@@ -44,8 +44,8 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return ((valueType != typeof(short)) &&
-                        (valueType != typeof(short?)))
+                return valueType != typeof(short) &&
+                       valueType != typeof(short?)
                     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedInt16")
                     : value;
 
@@ -64,8 +64,8 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression input,
                 Type inputType)
             {
-                return ((inputType != typeof(short)) &&
-                        (inputType != typeof(short?)))
+                return inputType != typeof(short) &&
+                       inputType != typeof(short?)
                     ? CodegenExpressionBuilder.ExprDotMethod(input, "AsInt16")
                     : input;
                 //return CodegenCoerceNonNull(typeof(short), typeof(short?), "AsInt16", input, inputType);

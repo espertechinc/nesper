@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,13 +16,14 @@ using com.espertech.esper.common.@internal.epl.pattern.core;
 using com.espertech.esper.common.@internal.epl.pattern.filter;
 using com.espertech.esper.common.@internal.epl.pattern.observer;
 
+
 namespace com.espertech.esper.common.@internal.epl.util
 {
     public class StatementSpecRawWalkerSubselectAndDeclaredDot
     {
         public static ExprNodeSubselectDeclaredDotVisitor WalkSubselectAndDeclaredDotExpr(StatementSpecRaw spec)
         {
-            ExprNodeSubselectDeclaredDotVisitor visitor = new ExprNodeSubselectDeclaredDotVisitor();
+            var visitor = new ExprNodeSubselectDeclaredDotVisitor();
             WalkSubselectAndDeclaredDotExpr(spec, visitor);
             return visitor;
         }
@@ -35,14 +36,20 @@ namespace com.espertech.esper.common.@internal.epl.util
             // Recursively compile the statement within the statement.
             WalkSubselectSelectClause(spec.SelectClauseSpec.SelectExprList, visitor);
 
-            spec.WhereClause?.Accept(visitor);
+            if (spec.WhereClause != null) {
+                spec.WhereClause.Accept(visitor);
+            }
 
-            spec.HavingClause?.Accept(visitor);
+            if (spec.HavingClause != null) {
+                spec.HavingClause.Accept(visitor);
+            }
 
             if (spec.UpdateDesc != null) {
-                spec.UpdateDesc.OptionalWhereClause?.Accept(visitor);
+                if (spec.UpdateDesc.OptionalWhereClause != null) {
+                    spec.UpdateDesc.OptionalWhereClause.Accept(visitor);
+                }
 
-                foreach (OnTriggerSetAssignment assignment in spec.UpdateDesc.Assignments) {
+                foreach (var assignment in spec.UpdateDesc.Assignments) {
                     assignment.Expression.Accept(visitor);
                 }
             }
@@ -54,8 +61,24 @@ namespace com.espertech.esper.common.@internal.epl.util
             // walk streams
             WalkStreamSpecs(spec, visitor);
 
+            if (spec.InsertIntoDesc != null) {
+                if (spec.InsertIntoDesc.EventPrecedence != null) {
+                    spec.InsertIntoDesc.EventPrecedence.Accept(visitor);
+                }
+            }
+
             // walk FAF
             WalkFAFSpec(spec.FireAndForgetSpec, visitor);
+
+            // walk SQL-parameters
+            var sqlParams = spec.SqlParameters;
+            if (sqlParams != null) {
+                foreach (var entry in sqlParams) {
+                    foreach (var node in entry.Value) {
+                        node.Accept(visitor);
+                    }
+                }
+            }
         }
 
         private static void WalkFAFSpec(
@@ -67,8 +90,16 @@ namespace com.espertech.esper.common.@internal.epl.util
             }
 
             if (fireAndForgetSpec is FireAndForgetSpecUpdate update) {
-                foreach (OnTriggerSetAssignment assignment in update.Assignments) {
+                foreach (var assignment in update.Assignments) {
                     assignment.Expression.Accept(visitor);
+                }
+            }
+
+            if (fireAndForgetSpec is FireAndForgetSpecInsert insert) {
+                foreach (var row in insert.Multirow) {
+                    foreach (var col in row) {
+                        col.Accept(visitor);
+                    }
                 }
             }
         }
@@ -78,22 +109,18 @@ namespace com.espertech.esper.common.@internal.epl.util
             ExprNodeSubselectDeclaredDotVisitor visitor)
         {
             // determine pattern-filter subqueries
-            foreach (StreamSpecRaw streamSpecRaw in spec.StreamSpecs) {
-                if (streamSpecRaw is PatternStreamSpecRaw) {
-                    PatternStreamSpecRaw patternStreamSpecRaw = (PatternStreamSpecRaw) streamSpecRaw;
-                    EvalNodeAnalysisResult analysisResult =
-                        EvalNodeUtil.RecursiveAnalyzeChildNodes(patternStreamSpecRaw.EvalForgeNode);
-                    foreach (EvalForgeNode evalNode in analysisResult.ActiveNodes) {
-                        if (evalNode is EvalFilterForgeNode) {
-                            EvalFilterForgeNode filterNode = (EvalFilterForgeNode) evalNode;
-                            foreach (ExprNode filterExpr in filterNode.RawFilterSpec.FilterExpressions) {
+            foreach (var streamSpecRaw in spec.StreamSpecs) {
+                if (streamSpecRaw is PatternStreamSpecRaw patternStreamSpecRaw) {
+                    var analysisResult = EvalNodeUtil.RecursiveAnalyzeChildNodes(patternStreamSpecRaw.EvalForgeNode);
+                    foreach (var evalNode in analysisResult.ActiveNodes) {
+                        if (evalNode is EvalFilterForgeNode filterNode) {
+                            foreach (var filterExpr in filterNode.RawFilterSpec.FilterExpressions) {
                                 filterExpr.Accept(visitor);
                             }
                         }
-                        else if (evalNode is EvalObserverForgeNode) {
-                            int beforeCount = visitor.Subselects.Count;
-                            EvalObserverForgeNode observerNode = (EvalObserverForgeNode) evalNode;
-                            foreach (ExprNode param in observerNode.PatternObserverSpec.ObjectParameters) {
+                        else if (evalNode is EvalObserverForgeNode observerNode) {
+                            var beforeCount = visitor.Subselects.Count;
+                            foreach (var param in observerNode.PatternObserverSpec.ObjectParameters) {
                                 param.Accept(visitor);
                             }
 
@@ -107,10 +134,9 @@ namespace com.espertech.esper.common.@internal.epl.util
             }
 
             // determine filter streams
-            foreach (StreamSpecRaw rawSpec in spec.StreamSpecs) {
-                if (rawSpec is FilterStreamSpecRaw) {
-                    FilterStreamSpecRaw raw = (FilterStreamSpecRaw) rawSpec;
-                    foreach (ExprNode filterExpr in raw.RawFilterSpec.FilterExpressions) {
+            foreach (var rawSpec in spec.StreamSpecs) {
+                if (rawSpec is FilterStreamSpecRaw raw) {
+                    foreach (var filterExpr in raw.RawFilterSpec.FilterExpressions) {
                         filterExpr.Accept(visitor);
                     }
                 }
@@ -121,53 +147,69 @@ namespace com.espertech.esper.common.@internal.epl.util
             OnTriggerDesc onTriggerDesc,
             ExprNodeSubselectDeclaredDotVisitor visitor)
         {
-            if (onTriggerDesc is OnTriggerWindowUpdateDesc) {
-                OnTriggerWindowUpdateDesc updates = (OnTriggerWindowUpdateDesc) onTriggerDesc;
-                foreach (OnTriggerSetAssignment assignment in updates.Assignments) {
+            if (onTriggerDesc is OnTriggerWindowUpdateDesc updates) {
+                foreach (var assignment in updates.Assignments) {
                     assignment.Expression.Accept(visitor);
                 }
             }
-            else if (onTriggerDesc is OnTriggerSetDesc) {
-                OnTriggerSetDesc sets = (OnTriggerSetDesc) onTriggerDesc;
-                foreach (OnTriggerSetAssignment assignment in sets.Assignments) {
+            else if (onTriggerDesc is OnTriggerSetDesc sets) {
+                foreach (var assignment in sets.Assignments) {
                     assignment.Expression.Accept(visitor);
                 }
             }
-            else if (onTriggerDesc is OnTriggerSplitStreamDesc) {
-                OnTriggerSplitStreamDesc splits = (OnTriggerSplitStreamDesc) onTriggerDesc;
-                foreach (OnTriggerSplitStream split in splits.SplitStreams) {
-                    split.WhereClause?.Accept(visitor);
+            else if (onTriggerDesc is OnTriggerSplitStreamDesc splits) {
+                foreach (var split in splits.SplitStreams) {
+                    if (split.WhereClause != null) {
+                        split.WhereClause.Accept(visitor);
+                    }
 
                     if (split.SelectClause.SelectExprList != null) {
                         WalkSubselectSelectClause(split.SelectClause.SelectExprList, visitor);
                     }
+
+                    if (split.InsertInto != null) {
+                        if (split.InsertInto.EventPrecedence != null) {
+                            split.InsertInto.EventPrecedence.Accept(visitor);
+                        }
+                    }
                 }
             }
-            else if (onTriggerDesc is OnTriggerMergeDesc) {
-                OnTriggerMergeDesc merge = (OnTriggerMergeDesc) onTriggerDesc;
-                foreach (OnTriggerMergeMatched matched in merge.Items) {
-                    matched.OptionalMatchCond?.Accept(visitor);
+            else if (onTriggerDesc is OnTriggerMergeDesc merge) {
+                foreach (var matched in merge.Items) {
+                    if (matched.OptionalMatchCond != null) {
+                        matched.OptionalMatchCond.Accept(visitor);
+                    }
 
-                    foreach (OnTriggerMergeAction action in matched.Actions) {
-                        action.OptionalWhereClause?.Accept(visitor);
+                    foreach (var action in matched.Actions) {
+                        if (action.OptionalWhereClause != null) {
+                            action.OptionalWhereClause.Accept(visitor);
+                        }
 
-                        if (action is OnTriggerMergeActionUpdate) {
-                            OnTriggerMergeActionUpdate update = (OnTriggerMergeActionUpdate) action;
-                            foreach (OnTriggerSetAssignment assignment in update.Assignments) {
+                        if (action is OnTriggerMergeActionUpdate update) {
+                            foreach (var assignment in update.Assignments) {
                                 assignment.Expression.Accept(visitor);
                             }
                         }
 
-                        if (action is OnTriggerMergeActionInsert) {
-                            OnTriggerMergeActionInsert insert = (OnTriggerMergeActionInsert) action;
-                            WalkSubselectSelectClause(insert.SelectClause, visitor);
+                        if (action is OnTriggerMergeActionInsert insert) {
+                            WalkOnMergeActionInsert(insert, visitor);
                         }
                     }
                 }
 
                 if (merge.OptionalInsertNoMatch != null) {
-                    WalkSubselectSelectClause(merge.OptionalInsertNoMatch.SelectClause, visitor);
+                    WalkOnMergeActionInsert(merge.OptionalInsertNoMatch, visitor);
                 }
+            }
+        }
+
+        private static void WalkOnMergeActionInsert(
+            OnTriggerMergeActionInsert action,
+            ExprNodeSubselectDeclaredDotVisitor visitor)
+        {
+            WalkSubselectSelectClause(action.SelectClause, visitor);
+            if (action.EventPrecedence != null) {
+                action.EventPrecedence.Accept(visitor);
             }
         }
 
@@ -175,9 +217,8 @@ namespace com.espertech.esper.common.@internal.epl.util
             IList<SelectClauseElementRaw> selectClause,
             ExprNodeSubselectDeclaredDotVisitor visitor)
         {
-            foreach (SelectClauseElementRaw element in selectClause) {
-                if (element is SelectClauseExprRawSpec) {
-                    SelectClauseExprRawSpec selectExpr = (SelectClauseExprRawSpec) element;
+            foreach (var element in selectClause) {
+                if (element is SelectClauseExprRawSpec selectExpr) {
                     selectExpr.SelectExpression.Accept(visitor);
                 }
             }

@@ -10,7 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.compat.collections;
 
@@ -54,14 +54,14 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             EventTableOrganizationType.HASH);
 
         public EventTable[] MakeEventTables(
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             int? subqueryNumber)
         {
             if (Unique) {
-                return new EventTable[] {new PropertyHashedEventTableUnique(this)};
+                return new EventTable[] { new PropertyHashedEventTableUnique(this) };
             }
 
-            return new EventTable[] {new PropertyHashedEventTableUnadorned(this)};
+            return new EventTable[] { new PropertyHashedEventTableUnadorned(this) };
         }
 
         public string ToQueryPlan()

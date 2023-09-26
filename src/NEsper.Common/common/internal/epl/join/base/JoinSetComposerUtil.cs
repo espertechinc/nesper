@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
 {
     public class JoinSetComposerUtil
     {
-        private static readonly EventTable[] EMPTY = new EventTable[0];
+        private static readonly EventTable[] EMPTY = Array.Empty<EventTable>();
 
         public static bool IsNonUnidirectionalNonSelf(
             bool isOuterJoins,

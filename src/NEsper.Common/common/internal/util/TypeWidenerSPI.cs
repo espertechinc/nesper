@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.util
     public interface TypeWidenerSPI : TypeWidener
     {
         Type WidenResultType { get; }
-        
+
         CodegenExpression WidenCodegen(
             CodegenExpression expression,
             CodegenMethodScope codegenMethodScope,
@@ -33,11 +33,18 @@ namespace com.espertech.esper.common.@internal.util
         public Func<CodegenExpression, CodegenMethodScope, CodegenClassScope, CodegenExpression> ProcWidenCodegen;
 
         public Type WidenResultType => ProcWidenResultType.Invoke();
-        public object Widen(object input) => ProcWiden(input);
+
+        public object Widen(object input)
+        {
+            return ProcWiden(input);
+        }
 
         public CodegenExpression WidenCodegen(
             CodegenExpression expression,
             CodegenMethodScope codegenMethodScope,
-            CodegenClassScope codegenClassScope) => ProcWidenCodegen(expression, codegenMethodScope, codegenClassScope);
+            CodegenClassScope codegenClassScope)
+        {
+            return ProcWidenCodegen(expression, codegenMethodScope, codegenClassScope);
+        }
     }
 } // end of namespace

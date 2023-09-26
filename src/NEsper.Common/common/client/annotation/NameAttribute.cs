@@ -42,11 +42,11 @@ namespace com.espertech.esper.common.client.annotation
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
-            return Equals((NameAttribute) obj);
+            return Equals((NameAttribute)obj);
         }
 
         public override string ToString()

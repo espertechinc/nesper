@@ -35,24 +35,24 @@ namespace com.espertech.esper.common.client.context
         /// <summary>Returns the partition keys. </summary>
         /// <value>keys</value>
         public object[] Keys {
-            get { return _keys; }
-            set { _keys = value; }
+            get => _keys;
+            set => _keys = value;
         }
 
         public override bool CompareTo(ContextPartitionIdentifier other)
         {
-            if (!(other is ContextPartitionIdentifierPartitioned)) {
+            if (!(other is ContextPartitionIdentifierPartitioned partitioned)) {
                 return false;
             }
 
-            return Collections.AreEqual(_keys, ((ContextPartitionIdentifierPartitioned) other)._keys);
+            return Collections.AreEqual(_keys, partitioned._keys);
         }
 
         public override string ToString()
         {
             return "ContextPartitionIdentifierPartitioned{" +
                    "keys=" +
-                   (_keys) +
+                   _keys +
                    '}';
         }
     }

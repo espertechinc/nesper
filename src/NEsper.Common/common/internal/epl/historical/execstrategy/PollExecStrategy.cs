@@ -9,7 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.historical.execstrategy
 {
@@ -29,11 +29,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.execstrategy
         ///     Poll events using the keys provided.
         /// </summary>
         /// <param name="lookupValues">is keys for exeuting a query or such</param>
-        /// <param name="agentInstanceContext">context</param>
+        /// <param name="exprEvaluatorContext"></param>
         /// <returns>a list of events for the keys</returns>
         IList<EventBean> Poll(
             object lookupValues,
-            AgentInstanceContext agentInstanceContext);
+            ExprEvaluatorContext exprEvaluatorContext);
 
         /// <summary>
         ///     Indicate we are done polling and can release resources.
@@ -43,6 +43,6 @@ namespace com.espertech.esper.common.@internal.epl.historical.execstrategy
         /// <summary>
         ///     Indicate we are no going to use this object again.
         /// </summary>
-        void Destroy();
+        void Dispose();
     }
 } // end of namespace

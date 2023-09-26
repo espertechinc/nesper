@@ -31,8 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 return true;
             }
 
-            object result = optionalFilter.Evaluate(eventsPerStream, true, context);
-            return result != null && (bool) result;
+            var result = optionalFilter.Evaluate(eventsPerStream, true, context);
+            return result != null && (bool)result;
         }
 
         public abstract void Apply(

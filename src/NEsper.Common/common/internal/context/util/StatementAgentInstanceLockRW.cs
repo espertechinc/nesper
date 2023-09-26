@@ -10,6 +10,7 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
 
 using static com.espertech.esper.common.@internal.context.util.StatementAgentInstanceLockConstants;
@@ -23,8 +24,6 @@ namespace com.espertech.esper.common.@internal.context.util
     public class StatementAgentInstanceLockRW : StatementAgentInstanceLock
     {
         private readonly IReaderWriterLock _lock;
-        private IDisposable _readLock;
-        private IDisposable _writeLock;
 
         /// <summary>
         ///     Ctor.
@@ -33,106 +32,111 @@ namespace com.espertech.esper.common.@internal.context.util
         public StatementAgentInstanceLockRW(bool isFair)
         {
             if (isFair) {
-                _lock = new SlimReaderWriterLock();
-            }
-            else {
                 _lock = new FairReaderWriterLock();
             }
+            else {
+                _lock = new SlimReaderWriterLock();
+            }
         }
 
-        /// <summary>
-        ///     Lock write @lock.
-        /// </summary>
-        public void AcquireWriteLock()
+        public bool IsWriterLockHeld {
+            get => _lock.IsWriterLockHeld;
+        }
+
+        public bool Trace {
+            get => _lock.Trace;
+            set => _lock.Trace = value;
+        }
+
+        public IDisposable AcquireReadLock()
+        {
+            var lockDisposable = _lock.AcquireReadLock();
+            return new TrackedDisposable(
+                () => {
+                    if (ThreadLogUtil.ENABLED_TRACE) {
+                        ThreadLogUtil.TraceLock(RELEASE_TEXT + " read ", _lock);
+                    }
+
+                    lockDisposable.Dispose();
+                    lockDisposable = null;
+                    
+                    if (ThreadLogUtil.ENABLED_TRACE) {
+                        ThreadLogUtil.TraceLock(RELEASED_TEXT + " read ", _lock);
+                    }
+                }
+            );
+        }
+        
+        public IDisposable AcquireWriteLock()
         {
             if (ThreadLogUtil.ENABLED_TRACE) {
                 ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " write ", _lock);
             }
 
-            _writeLock = _lock.WriteLock.Acquire();
+            var lockDisposable = _lock.AcquireWriteLock();
 
             if (ThreadLogUtil.ENABLED_TRACE) {
                 ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " write ", _lock);
             }
+            
+            return new TrackedDisposable(
+                () => {
+                    if (ThreadLogUtil.ENABLED_TRACE) {
+                        ThreadLogUtil.TraceLock(RELEASE_TEXT + " write ", _lock);
+                    }
+
+                    lockDisposable.Dispose();
+                    lockDisposable = null;
+
+                    if (ThreadLogUtil.ENABLED_TRACE) {
+                        ThreadLogUtil.TraceLock(RELEASED_TEXT + " write ", _lock);
+                    }
+                }
+            );
         }
 
-        public bool AcquireWriteLock(long msecTimeout)
+        public IDisposable AcquireWriteLock(TimeSpan lockWaitDuration)
         {
             if (ThreadLogUtil.ENABLED_TRACE) {
                 ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " write ", _lock);
             }
 
-            _writeLock = _lock.WriteLock.Acquire(msecTimeout);
+            var lockDisposable = _lock.AcquireWriteLock(lockWaitDuration);
 
             if (ThreadLogUtil.ENABLED_TRACE) {
                 ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " write ", _lock);
             }
+            
+            return new TrackedDisposable(
+                () => {
+                    if (ThreadLogUtil.ENABLED_TRACE) {
+                        ThreadLogUtil.TraceLock(RELEASE_TEXT + " write ", _lock);
+                    }
 
-            return true;
+                    lockDisposable.Dispose();
+                    lockDisposable = null;
+
+                    if (ThreadLogUtil.ENABLED_TRACE) {
+                        ThreadLogUtil.TraceLock(RELEASED_TEXT + " write ", _lock);
+                    }
+                }
+            );
         }
 
-        /// <summary>
-        ///     Unlock write @lock.
-        /// </summary>
         public void ReleaseWriteLock()
         {
             if (ThreadLogUtil.ENABLED_TRACE) {
                 ThreadLogUtil.TraceLock(RELEASE_TEXT + " write ", _lock);
             }
 
-            if (_writeLock == null) {
-                throw new EPLockException("writeLock was not acquired");
-            }
-
-            _writeLock.Dispose();
-            _writeLock = null;
+            _lock.ReleaseWriteLock();
 
             if (ThreadLogUtil.ENABLED_TRACE) {
                 ThreadLogUtil.TraceLock(RELEASED_TEXT + " write ", _lock);
             }
         }
 
-        /// <summary>
-        ///     Lock read @lock.
-        /// </summary>
-        public void AcquireReadLock()
-        {
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(ACQUIRE_TEXT + " read ", _lock);
-            }
-
-            _readLock = _lock.ReadLock.Acquire();
-
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(ACQUIRED_TEXT + " read ", _lock);
-            }
-        }
-
-        /// <summary>
-        ///     Unlock read @lock.
-        /// </summary>
-        public void ReleaseReadLock()
-        {
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(RELEASE_TEXT + " read ", _lock);
-            }
-
-            if (_readLock == null)
-            {
-                throw new EPLockException("readLock was not acquired");
-            }
-
-            _readLock.Dispose();
-            _readLock = null;
-
-            if (ThreadLogUtil.ENABLED_TRACE) {
-                ThreadLogUtil.TraceLock(RELEASED_TEXT + " read ", _lock);
-            }
-        }
-
-        public override string ToString()
-        {
-            return GetType().Name;
-        }
+        public ILockable ReadLock => throw new NotSupportedException();
+        public ILockable WriteLock => throw new NotSupportedException();
     }
 } // end of namespace

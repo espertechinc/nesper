@@ -41,11 +41,11 @@ namespace com.espertech.esper.common.@internal.view.util
         {
             var isForceUpdate = false;
             var isStartEager = false;
-            if (!(keywords is string)) {
+            if (!(keywords is string s)) {
                 throw new ViewParameterException(errorMessage);
             }
 
-            var keyword = ((string) keywords).SplitCsv();
+            var keyword = s.SplitCsv();
             for (var i = 0; i < keyword.Length; i++) {
                 var keywordText = keyword[i].ToLowerInvariant().Trim();
                 if (keywordText.Length == 0) {

@@ -15,7 +15,8 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
-    public class ArrayWrappingCollection : ICollection<EventBean>, ICollection<object>
+    public class ArrayWrappingCollection : ICollection<EventBean>,
+        ICollection<object>
     {
         public ArrayWrappingCollection(Array array)
         {
@@ -39,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         IEnumerator<EventBean> IEnumerable<EventBean>.GetEnumerator()
         {
             for (var ii = 0; ii < Array.Length; ii++) {
-                yield return (EventBean) Array.GetValue(ii);
+                yield return (EventBean)Array.GetValue(ii);
             }
         }
 
@@ -71,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             throw new UnsupportedOperationException("Read-only implementation");
         }
-        
+
         public bool Remove(object item)
         {
             throw new UnsupportedOperationException("Read-only implementation");
@@ -131,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public object[] ToArray()
         {
-            return (object[]) Array;
+            return (object[])Array;
         }
     }
 } // end of namespace

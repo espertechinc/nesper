@@ -24,7 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         {
         }
 
-        public VariableDeclarationException(string message,
+        public VariableDeclarationException(
+            string message,
             Exception innerException) : base(message, innerException)
         {
         }

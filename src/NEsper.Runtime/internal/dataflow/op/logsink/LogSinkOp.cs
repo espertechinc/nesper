@@ -121,7 +121,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.logsink
         private void GetEventOut(
             int port,
             object theEvent,
-            StringWriter writer)
+            TextWriter writer)
         {
             if (theEvent is EventBean) {
                 renderer.Render((EventBean) theEvent, writer);

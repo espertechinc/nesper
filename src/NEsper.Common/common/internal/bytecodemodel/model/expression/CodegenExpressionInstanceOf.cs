@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             _lhs.MergeClasses(classes);
             classes.AddToSet(_clazz);
         }
-        
+
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             consumer.Invoke(_lhs);

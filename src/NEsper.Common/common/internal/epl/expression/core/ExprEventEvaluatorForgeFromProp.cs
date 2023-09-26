@@ -12,22 +12,22 @@ using com.espertech.esper.common.@internal.@event.core;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-	public class ExprEventEvaluatorForgeFromProp : ExprEventEvaluatorForge
-	{
-		private readonly EventPropertyValueGetterForge _getter;
+    public class ExprEventEvaluatorForgeFromProp : ExprEventEvaluatorForge
+    {
+        private readonly EventPropertyValueGetterForge _getter;
 
-		public ExprEventEvaluatorForgeFromProp(EventPropertyValueGetterForge getter)
-		{
-			_getter = getter;
-		}
+        public ExprEventEvaluatorForgeFromProp(EventPropertyValueGetterForge getter)
+        {
+            _getter = getter;
+        }
 
-		public CodegenExpression EventBeanWithCtxGet(
-			CodegenExpression beanExpression,
-			CodegenExpression ctxExpression,
-			CodegenMethodScope parent,
-			CodegenClassScope classScope)
-		{
-			return _getter.EventBeanGetCodegen(beanExpression, parent, classScope);
-		}
-	}
+        public CodegenExpression EventBeanWithCtxGet(
+            CodegenExpression beanExpression,
+            CodegenExpression ctxExpression,
+            CodegenMethodScope parent,
+            CodegenClassScope classScope)
+        {
+            return _getter.EventBeanGetCodegen(beanExpression, parent, classScope);
+        }
+    }
 } // end of namespace

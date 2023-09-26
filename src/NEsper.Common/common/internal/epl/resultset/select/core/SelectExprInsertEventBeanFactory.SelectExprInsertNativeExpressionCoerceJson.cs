@@ -36,13 +36,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                CodegenMethod methodNode = codegenMethodScope
+                var methodNode = codegenMethodScope
                     .MakeChild(typeof(EventBean), GetType(), codegenClassScope);
                 methodNode
                     .Block
-                    .DeclareVar<string>("result", exprForge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
+                    .DeclareVar<string>(
+                        "result",
+                        exprForge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("result")
-                    .DeclareVar<object>("und", ExprDotMethod(Cast(typeof(JsonEventType), resultEventType), "Parse", Ref("result")))
+                    .DeclareVar<object>(
+                        "und",
+                        ExprDotMethod(Cast(typeof(JsonEventType), resultEventType), "Parse", Ref("result")))
                     .MethodReturn(ExprDotMethod(eventBeanFactory, "AdapterForTypedJson", Ref("und"), resultEventType));
                 return methodNode;
             }

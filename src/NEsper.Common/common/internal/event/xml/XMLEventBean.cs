@@ -50,12 +50,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         public object UnderlyingSpi {
             get => _theEvent;
-            set => _theEvent = (XmlNode) value;
+            set => _theEvent = (XmlNode)value;
         }
 
         public object Underlying {
             get => _theEvent;
-            set => _theEvent = (XmlNode) value;
+            set => _theEvent = (XmlNode)value;
         }
 
         public object GetFragment(string propertyExpression)

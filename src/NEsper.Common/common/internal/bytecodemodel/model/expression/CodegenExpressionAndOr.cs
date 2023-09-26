@@ -70,8 +70,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 }
             }
         }
-        
-        public void TraverseExpressions(Consumer<CodegenExpression> consumer) {
+
+        public void TraverseExpressions(Consumer<CodegenExpression> consumer)
+        {
             consumer.Invoke(_first);
             consumer.Invoke(_second);
             CodegenExpressionBuilder.TraverseMultiple(_optionalMore, consumer);

@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.view.expression
             var builtinBean = new ObjectArrayEventBean(
                 ExpressionViewOAFieldEnumExtensions.GetPrototypeOA(),
                 BuiltinMapType);
-            ViewUpdatedCollection viewUpdatedCollection =
+            var viewUpdatedCollection =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprRelativeAccess(agentInstanceViewFactoryContext);
             return new ExpressionBatchView(this, viewUpdatedCollection, builtinBean, agentInstanceViewFactoryContext);

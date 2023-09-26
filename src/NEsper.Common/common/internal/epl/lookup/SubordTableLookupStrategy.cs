@@ -51,6 +51,10 @@ namespace com.espertech.esper.common.@internal.epl.lookup
         }
 
         public Func<string> ProcToQueryPlan;
-        public string ToQueryPlan() => ProcToQueryPlan.Invoke();
+
+        public string ToQueryPlan()
+        {
+            return ProcToQueryPlan.Invoke();
+        }
     }
 } // end of namespace

@@ -73,11 +73,9 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return true;
             }
 
-            if (!(other is DoubleRange)) {
+            if (!(other is DoubleRange otherRange)) {
                 return false;
             }
-
-            var otherRange = (DoubleRange) other;
 
             return otherRange.Max.AsDouble() == Max && otherRange.Min.AsDouble() == Min;
         }

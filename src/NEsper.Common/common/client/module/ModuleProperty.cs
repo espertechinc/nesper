@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.client.module
         /// The module uses
         /// </summary>
         USES,
-        
+
         /// <summary>
         /// The module imports
         /// </summary>

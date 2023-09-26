@@ -28,7 +28,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
             if (dimensions.IsEmpty())
             {
-                return new ClassIdentifierWArray(name);
+                return new ClassDescriptor(name);
             }
 
             var first = dimensions[0].IDENT();
@@ -38,7 +38,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 throw ASTWalkException.From("Invalid array keyword '" + keyword + "', expected '" + ClassIdentifierWArray.PRIMITIVE_KEYWORD + "'");
             }
 
-            return new ClassIdentifierWArray(name, dimensions.Count, keyword != null);
+            return new ClassDescriptor(name, dimensions.Count, keyword != null);
         }
     }
 } // end of namespace

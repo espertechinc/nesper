@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             : base(factory, pollExecStrategy, agentInstanceContext)
         {
             try {
-                DataCache = agentInstanceContext.DatabaseConfigService.GetDataCache(
+                dataCache = agentInstanceContext.DatabaseConfigService.GetDataCache(
                     factory.DatabaseName,
                     agentInstanceContext,
                     factory.StreamNumber,

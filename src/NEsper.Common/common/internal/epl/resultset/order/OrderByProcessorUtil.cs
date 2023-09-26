@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             IComparer<object> comparator)
         {
             // Map the sort values to the corresponding outgoing events
-            IDictionary<object, IList<EventBean>> sortToOutgoing = new Dictionary<object, IList<EventBean>>()
+            var sortToOutgoing = new Dictionary<object, IList<EventBean>>()
                 .WithNullKeySupport();
             var countOne = 0;
             foreach (var sortValues in sortValuesMultiKeys) {
@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             }
 
             // Sort the sort values
-            Collections.SortInPlace(sortValuesMultiKeys, comparator);
+            sortValuesMultiKeys.SortInPlace(comparator);
 
             // Sort the outgoing events in the same order
             ISet<object> sortSet = new LinkedHashSet<object>(sortValuesMultiKeys);
@@ -81,28 +81,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 if (entry == null) {
                     sort.Put(orderKeys[i], outgoingEvents[i]);
                 }
-                else if (entry is EventBean) {
+                else if (entry is EventBean bean) {
                     IList<EventBean> list = new List<EventBean>();
-                    list.Add((EventBean) entry);
+                    list.Add(bean);
                     list.Add(outgoingEvents[i]);
                     sort.Put(orderKeys[i], list);
                 }
                 else {
-                    var list = (IList<EventBean>) entry;
+                    var list = (IList<EventBean>)entry;
                     list.Add(outgoingEvents[i]);
                 }
             }
 
             var result = new EventBean[outgoingEvents.Length];
             var count = 0;
-            foreach (object entry in sort.Values) {
+            foreach (var entry in sort.Values) {
                 if (entry is IList<EventBean> output) {
                     foreach (var theEvent in output) {
                         result[count++] = theEvent;
                     }
                 }
                 else {
-                    result[count++] = (EventBean) entry;
+                    result[count++] = (EventBean)entry;
                 }
             }
 
@@ -156,7 +156,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 outgoingEvents != null &&
                 outgoingEvents.Length > 1) {
                 var minmax = DetermineLocalMinMaxWOrderKeys(outgoingEvents, orderKeys, comparator);
-                return new[] {minmax};
+                return new[] { minmax };
             }
 
             var sorted = SortWOrderKeys(outgoingEvents, orderKeys, comparator);

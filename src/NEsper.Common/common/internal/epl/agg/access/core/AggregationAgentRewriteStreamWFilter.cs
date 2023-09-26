@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         {
             var pass = filterEval.Evaluate(eventsPerStream, true, exprEvaluatorContext);
             if (pass != null && true.Equals(pass)) {
-                EventBean[] rewrite = new EventBean[] {eventsPerStream[streamNum]};
+                var rewrite = new EventBean[] { eventsPerStream[streamNum] };
                 row.EnterAccess(column, rewrite, exprEvaluatorContext);
             }
         }
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
         {
             var pass = filterEval.Evaluate(eventsPerStream, false, exprEvaluatorContext);
             if (pass != null && true.Equals(pass)) {
-                EventBean[] rewrite = new EventBean[] {eventsPerStream[streamNum]};
+                var rewrite = new EventBean[] { eventsPerStream[streamNum] };
                 row.LeaveAccess(column, rewrite, exprEvaluatorContext);
             }
         }

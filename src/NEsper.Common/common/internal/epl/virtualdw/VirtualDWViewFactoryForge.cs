@@ -82,7 +82,6 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         public void Attach(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             EventType = parentEventType;
@@ -92,8 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                 parentEventType,
                 _parameters,
                 true,
-                viewForgeEnv,
-                streamNumber);
+                viewForgeEnv);
             _parameterValues = new object[_validatedParameterExpressions.Length];
             for (var i = 0; i < _validatedParameterExpressions.Length; i++) {
                 try {
@@ -133,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             CodegenSymbolProvider symbols,
             CodegenClassScope classScope)
         {
-            return Make(parent, (SAIFFInitializeSymbol) symbols, classScope);
+            return Make(parent, (SAIFFInitializeSymbol)symbols, classScope);
         }
 
         public CodegenExpression Make(
@@ -142,12 +140,11 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             CodegenClassScope classScope)
         {
             var mode = _forge.FactoryMode;
-            if (!(mode is VirtualDataWindowFactoryModeManaged)) {
+            if (!(mode is VirtualDataWindowFactoryModeManaged managed)) {
                 throw new ArgumentException("Unexpected factory mode " + mode);
             }
 
-            var managed = (VirtualDataWindowFactoryModeManaged) mode;
-            var injectionStrategy = (InjectionStrategyClassNewInstance) managed.InjectionStrategyFactoryFactory;
+            var injectionStrategy = (InjectionStrategyClassNewInstance)managed.InjectionStrategyFactoryFactory;
             var factoryField = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(VirtualDataWindowFactoryFactory),
@@ -183,10 +180,9 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             return builder.Build();
         }
 
-
-        public void Accept(ViewForgeVisitor visitor)
+        public T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
         {
-            visitor.Visit(this);
+            return visitor.Visit(this);
         }
     }
 } // end of namespace

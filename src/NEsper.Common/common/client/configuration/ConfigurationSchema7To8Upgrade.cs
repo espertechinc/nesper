@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.client.configuration
         {
             foreach (var list in nodes) {
                 foreach (var node in list) {
-                    var element = (XmlElement) node;
+                    var element = (XmlElement)node;
                     var value = element.GetAttribute(oldName);
                     if (value == null) {
                         continue;
@@ -235,8 +235,8 @@ namespace com.espertech.esper.common.client.configuration
             string allowedCSV,
             XmlElement target)
         {
-            var clone = (XmlElement) cloned.CloneNode(true);
-            var appended = (XmlElement) target.AppendChild(clone);
+            var clone = (XmlElement)cloned.CloneNode(true);
+            var appended = (XmlElement)target.AppendChild(clone);
             RemoveNodesBut(allowedCSV, appended);
             return clone;
         }
@@ -340,11 +340,11 @@ namespace com.espertech.esper.common.client.configuration
             for (var i = 0; i < nodes.Count; i++) {
                 var node = nodes.Item(i);
                 if (node.Name.Equals(name)) {
-                    if (!(node is XmlElement)) {
+                    if (!(node is XmlElement element)) {
                         throw new ConfigurationException("Unexpected non-element for name '" + name + "'");
                     }
 
-                    return (XmlElement) node;
+                    return element;
                 }
             }
 

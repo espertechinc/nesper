@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
         {
             ConsumerCallback.Stopped(this);
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
             // no action required

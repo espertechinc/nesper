@@ -20,9 +20,11 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.compile;
 using com.espertech.esper.common.@internal.epl.join.lookup;
+using com.espertech.esper.common.@internal.epl.join.queryplan;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.epl.util;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
@@ -39,7 +41,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
 
         public StmtForgeMethodCreateIndex(StatementBaseInfo @base)
         {
-            this._base = @base;
+            _base = @base;
         }
 
         public StmtForgeMethodResult Make(
@@ -97,9 +99,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
                 indexedEventType,
                 _base.StatementRawInfo,
                 services);
-            var advancedIndexDesc = explicitIndexDesc.AdvancedIndexProvisionDesc == null
-                ? null
-                : explicitIndexDesc.AdvancedIndexProvisionDesc.IndexDesc.AdvancedIndexDescRuntime;
+            var advancedIndexDesc = explicitIndexDesc.AdvancedIndexProvisionDesc?.IndexDesc.AdvancedIndexDescRuntime;
             var imk = new IndexMultiKey(
                 spec.IsUnique,
                 explicitIndexDesc.HashPropsAsList,
@@ -125,22 +125,41 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             }
 
             // determine multikey plan
-            MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKey(
-                explicitIndexDesc.HashTypes, false, _base.StatementRawInfo, services.SerdeResolver);
+            var multiKeyPlan = MultiKeyPlanner.PlanMultiKey(
+                explicitIndexDesc.HashTypes,
+                false,
+                _base.StatementRawInfo,
+                services.SerdeResolver);
             explicitIndexDesc.HashMultiKeyClasses = multiKeyPlan.ClassRef;
-            DataInputOutputSerdeForge[] rangeSerdes = new DataInputOutputSerdeForge[explicitIndexDesc.RangeProps.Length];
-            for (int i = 0; i < explicitIndexDesc.RangeProps.Length; i++) {
+            var rangeSerdes = new DataInputOutputSerdeForge[explicitIndexDesc.RangeProps.Length];
+            for (var i = 0; i < explicitIndexDesc.RangeProps.Length; i++) {
                 rangeSerdes[i] = services.SerdeResolver.SerdeForIndexBtree(
-                    explicitIndexDesc.RangeTypes[i], _base.StatementRawInfo);
+                    explicitIndexDesc.RangeTypes[i],
+                    _base.StatementRawInfo);
             }
+
             explicitIndexDesc.RangeSerdes = rangeSerdes;
 
-            
+            // plan state management
+            var fabricCharge = services.StateMgmtSettingsProvider.NewCharge();
+            explicitIndexDesc.PlanStateMgmtSettings(
+                fabricCharge,
+                QueryPlanAttributionKeyStatement.INSTANCE,
+                spec.IndexName,
+                explicitIndexDesc,
+                _base.StatementRawInfo,
+                services);
+
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                typeof(StatementFields), classPostfix);
+                typeof(StatementFields),
+                classPostfix);
             var namespaceScope = new CodegenNamespaceScope(
-                @namespace, statementFieldsClassName, services.IsInstrumented);
-            var fieldsForgeable = new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope, 0);
+                @namespace,
+                statementFieldsClassName,
+                services.IsInstrumented,
+                services.Configuration.Compiler.ByteCode);
+
+            var fieldsForgeable = new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope);
 
             var aiFactoryProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementAIFactoryProvider),
@@ -161,8 +180,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             var selectSubscriberDescriptor = new SelectSubscriberDescriptor();
             var informationals = StatementInformationalsUtil.GetInformationals(
                 _base,
-                EmptyList<FilterSpecCompiled>.Instance,
-                EmptyList<ScheduleHandleCallbackProvider>.Instance,
+                EmptyList<FilterSpecTracked>.Instance, 
+                EmptyList<ScheduleHandleTracked>.Instance, 
                 EmptyList<NamedWindowConsumerStreamSpec>.Instance,
                 true,
                 selectSubscriberDescriptor,
@@ -182,15 +201,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
             foreach (var additional in multiKeyPlan.MultiKeyForgeables) {
                 forgeables.Add(additional.Make(namespaceScope, classPostfix));
             }
+
             forgeables.Add(fieldsForgeable);
             forgeables.Add(aiFactoryForgeable);
             forgeables.Add(stmtProvider);
             return new StmtForgeMethodResult(
                 forgeables,
-                EmptyList<FilterSpecCompiled>.Instance,
-                EmptyList<ScheduleHandleCallbackProvider>.Instance,
+                EmptyList<FilterSpecTracked>.Instance,
+                EmptyList<ScheduleHandleTracked>.Instance, 
                 EmptyList<NamedWindowConsumerStreamSpec>.Instance,
-                EmptyList<FilterSpecParamExprNodeForge>.Instance);
+                EmptyList<FilterSpecParamExprNodeForge>.Instance,
+                namespaceScope,
+                fabricCharge);
         }
     }
 } // end of namespace

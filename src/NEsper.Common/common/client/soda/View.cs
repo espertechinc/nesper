@@ -91,12 +91,10 @@ namespace com.espertech.esper.common.client.soda
             string name,
             params Expression[] parameters)
         {
-            if (parameters != null)
-            {
+            if (parameters != null) {
                 return new View(@namespace, name, parameters);
             }
-            else
-            {
+            else {
                 return new View(@namespace, name, new List<Expression>());
             }
         }
@@ -111,12 +109,10 @@ namespace com.espertech.esper.common.client.soda
             string name,
             params Expression[] parameters)
         {
-            if (parameters != null)
-            {
+            if (parameters != null) {
                 return new View(null, name, parameters);
             }
-            else
-            {
+            else {
                 return new View(null, name, new List<Expression>());
             }
         }
@@ -142,8 +138,7 @@ namespace com.espertech.esper.common.client.soda
         public void ToEPLWithHash(TextWriter writer)
         {
             writer.Write(Name);
-            if (!Parameters.IsEmpty())
-            {
+            if (!Parameters.IsEmpty()) {
                 writer.Write('(');
                 ExpressionBase.ToPrecedenceFreeEPL(Parameters, writer);
                 writer.Write(')');

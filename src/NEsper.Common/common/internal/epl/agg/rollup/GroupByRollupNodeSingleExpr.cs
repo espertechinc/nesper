@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
 
         public override IList<int[]> Evaluate(GroupByRollupEvalContext context)
         {
-            int index = context.GetIndex(expression);
-            return Collections.SingletonList(new[] {index});
+            var index = context.GetIndex(expression);
+            return Collections.SingletonList(new[] { index });
         }
     }
 } // end of namespace

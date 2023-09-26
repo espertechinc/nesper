@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
 
         public ReformatToDateTimeExForge(TimeAbacus timeAbacus)
         {
-            this._timeAbacus = timeAbacus;
+            _timeAbacus = timeAbacus;
         }
 
         public ReformatOp Op => this;
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             var timeZoneField = codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(DateTimeEx), typeof(ReformatToDateTimeExForge), codegenClassScope)
-                .AddParam(typeof(long), "ts");
+                .AddParam<long>("ts");
 
             methodNode
                 .Block
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var method = codegenMethodScope
                 .MakeChild(typeof(DateTimeEx), typeof(ReformatToDateTimeExForge), codegenClassScope)
-                .AddParam(typeof(DateTime), "d")
+                .AddParam<DateTime>("d")
                 .Block
                 .DeclareVar<DateTimeEx>(
                     "dateTimeEx",
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
                 codegenClassScope.AddOrGetDefaultFieldSharable(RuntimeSettingsTimeZoneField.INSTANCE);
             var method = codegenMethodScope
                 .MakeChild(typeof(DateTimeEx), typeof(ReformatToDateTimeExForge), codegenClassScope)
-                .AddParam(typeof(DateTimeOffset), "d")
+                .AddParam<DateTimeOffset>("d")
                 .Block
                 .DeclareVar<DateTimeEx>(
                     "dateTimeEx",

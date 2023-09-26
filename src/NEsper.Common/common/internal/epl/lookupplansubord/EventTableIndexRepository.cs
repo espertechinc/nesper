@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.join.hint;
 using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.lookupplansubord
@@ -25,31 +26,29 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
     /// <summary>
     /// A repository of index tables for use with anything that
     /// may use the indexes to correlate triggering events with indexed events.
-    /// <para />Maintains index tables and keeps a reference count for user. Allows reuse of indexes for multiple
+    /// <para/>Maintains index tables and keeps a reference count for user. Allows reuse of indexes for multiple
     /// deleting statements.
     /// </summary>
     public class EventTableIndexRepository
     {
         private readonly IList<EventTable> tables;
         private readonly IDictionary<IndexMultiKey, EventTableIndexRepositoryEntry> tableIndexesRefCount;
-        private readonly IDictionary<string, EventTable> explicitIndexes;
+        private readonly IDictionary<NameAndModule, EventTable> explicitIndexes;
         private readonly EventTableIndexMetadata eventTableIndexMetadata;
 
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="eventTableIndexMetadata">metadata for index</param>
+        /// <param name = "eventTableIndexMetadata">metadata for index</param>
         public EventTableIndexRepository(EventTableIndexMetadata eventTableIndexMetadata)
         {
             tables = new List<EventTable>();
             tableIndexesRefCount = new Dictionary<IndexMultiKey, EventTableIndexRepositoryEntry>();
-            explicitIndexes = new Dictionary<string, EventTable>();
+            explicitIndexes = new Dictionary<NameAndModule, EventTable>();
             this.eventTableIndexMetadata = eventTableIndexMetadata;
         }
 
-        public EventTableIndexMetadata EventTableIndexMetadata {
-            get => eventTableIndexMetadata;
-        }
+        public EventTableIndexMetadata EventTableIndexMetadata => eventTableIndexMetadata;
 
         public Pair<IndexMultiKey, EventTableAndNamePair> AddExplicitIndexOrReuse(
             QueryPlanIndexItem desc,
@@ -60,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             AgentInstanceContext agentInstanceContext,
             DataInputOutputSerde optionalValueSerde)
         {
-            IndexMultiKey indexMultiKey = desc.ToIndexMultiKey();
+            var indexMultiKey = desc.ToIndexMultiKey();
             if (desc.HashPropsAsList.IsEmpty() &&
                 desc.BtreePropsAsList.IsEmpty() &&
                 desc.AdvancedIndexProvisionDesc == null) {
@@ -68,10 +67,10 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             }
 
             // Get an existing table, if any, matching the exact requirement
-            IndexMultiKey indexPropKeyMatch =
+            var indexPropKeyMatch =
                 EventTableIndexUtil.FindExactMatchNameAndType(tableIndexesRefCount.Keys, indexMultiKey);
             if (indexPropKeyMatch != null) {
-                EventTableIndexRepositoryEntry refTablePair = tableIndexesRefCount.Get(indexPropKeyMatch);
+                var refTablePair = tableIndexesRefCount.Get(indexPropKeyMatch);
                 return new Pair<IndexMultiKey, EventTableAndNamePair>(
                     indexPropKeyMatch,
                     new EventTableAndNamePair(refTablePair.Table, refTablePair.OptionalIndexName));
@@ -83,7 +82,6 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 indexedType,
                 indexName,
                 indexModuleName,
-                false,
                 agentInstanceContext,
                 optionalValueSerde);
         }
@@ -99,17 +97,15 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
         /// <summary>
         /// Returns a list of current index tables in the repository.
         /// </summary>
-        /// <returns>index tables</returns>
-        public IList<EventTable> Tables {
-            get => tables;
-        }
+        /// <value>index tables</value>
+        public IList<EventTable> Tables => tables;
 
         /// <summary>
         /// Destroy indexes.
         /// </summary>
         public void Destroy()
         {
-            foreach (EventTable table in tables) {
+            foreach (var table in tables) {
                 table.Destroy();
             }
 
@@ -122,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             ISet<string> rangePropertyNames,
             IList<IndexHintInstruction> optionalIndexHintInstructions)
         {
-            Pair<IndexMultiKey, EventTableIndexEntryBase> pair = EventTableIndexUtil.FindIndexBestAvailable(
+            var pair = EventTableIndexUtil.FindIndexBestAvailable(
                 tableIndexesRefCount,
                 keyPropertyNames,
                 rangePropertyNames,
@@ -131,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 return null;
             }
 
-            EventTable tableFound = ((EventTableIndexRepositoryEntry) pair.Second).Table;
+            var tableFound = ((EventTableIndexRepositoryEntry)pair.Second).Table;
             return new Pair<IndexMultiKey, EventTableAndNamePair>(
                 pair.First,
                 new EventTableAndNamePair(tableFound, pair.Second.OptionalIndexName));
@@ -139,14 +135,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 
         public IndexMultiKey[] IndexDescriptors {
             get {
-                ICollection<IndexMultiKey> keySet = tableIndexesRefCount.Keys;
+                var keySet = tableIndexesRefCount.Keys;
                 return keySet.ToArray();
             }
         }
 
-        public IDictionary<IndexMultiKey, EventTableIndexRepositoryEntry> TableIndexesRefCount {
-            get { return tableIndexesRefCount; }
-        }
+        public IDictionary<IndexMultiKey, EventTableIndexRepositoryEntry> TableIndexesRefCount => tableIndexesRefCount;
 
         public void ValidateAddExplicitIndex(
             string explicitIndexName,
@@ -158,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             bool allowIndexExists,
             DataInputOutputSerde optionalValueSerde)
         {
-            if (explicitIndexes.ContainsKey(explicitIndexName)) {
+            if (explicitIndexes.ContainsKey(new NameAndModule(explicitIndexName, explicitIndexModuleName))) {
                 if (allowIndexExists) {
                     return;
                 }
@@ -183,29 +177,34 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             EventType eventType,
             IEnumerable<EventBean> dataWindowContents,
             AgentInstanceContext agentInstanceContext,
-            DataInputOutputSerde optionalValueSerde)
+            DataInputOutputSerde optionalSerde)
         {
-            Pair<IndexMultiKey, EventTableAndNamePair> pair = AddExplicitIndexOrReuse(
+            var pair = AddExplicitIndexOrReuse(
                 desc,
                 dataWindowContents,
                 eventType,
                 explicitIndexName,
                 explicitIndexModuleName,
                 agentInstanceContext,
-                optionalValueSerde);
-            explicitIndexes.Put(explicitIndexName, pair.Second.EventTable);
+                optionalSerde);
+            explicitIndexes.Put(new NameAndModule(explicitIndexName, explicitIndexModuleName), pair.Second.EventTable);
         }
 
-        public EventTable GetExplicitIndexByName(string indexName)
+        public EventTable GetExplicitIndexByName(
+            string indexName,
+            string moduleName)
         {
-            return explicitIndexes.Get(indexName);
+            return explicitIndexes.Get(new NameAndModule(indexName, moduleName));
         }
 
         public EventTable GetIndexByDesc(IndexMultiKey indexKey)
         {
-            EventTableIndexRepositoryEntry entry = tableIndexesRefCount.Get(indexKey);
+            var entry = tableIndexesRefCount.Get(indexKey);
+            if (entry == null) {
+                return null;
+            }
 
-            return entry?.Table;
+            return entry.Table;
         }
 
         private Pair<IndexMultiKey, EventTableAndNamePair> AddIndex(
@@ -214,28 +213,24 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             EventType indexedType,
             string indexName,
             string indexModuleName,
-            bool mustCoerce,
             AgentInstanceContext agentInstanceContext,
             DataInputOutputSerde optionalValueSerde)
         {
             // not resolved as full match and not resolved as unique index match, allocate
-            IndexMultiKey indexPropKey = indexItem.ToIndexMultiKey();
-
-            EventTable table = EventTableUtil.BuildIndex(
+            var indexPropKey = indexItem.ToIndexMultiKey();
+            var table = EventTableUtil.BuildIndex(
                 agentInstanceContext,
                 0,
                 indexItem,
                 indexedType,
-                true,
                 indexItem.IsUnique,
                 indexName,
                 optionalValueSerde,
                 false);
-
             try {
                 // fill table since its new
-                EventBean[] events = new EventBean[1];
-                foreach (EventBean prefilledEvent in prefilledEvents) {
+                var events = new EventBean[1];
+                foreach (var prefilledEvent in prefilledEvents) {
                     events[0] = prefilledEvent;
                     table.Add(events, agentInstanceContext);
                 }
@@ -247,22 +242,13 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 
             // add table
             tables.Add(table);
-
             // add index, reference counted
             tableIndexesRefCount.Put(
                 indexPropKey,
                 new EventTableIndexRepositoryEntry(indexName, indexModuleName, table));
-
             return new Pair<IndexMultiKey, EventTableAndNamePair>(
                 indexPropKey,
                 new EventTableAndNamePair(table, indexName));
-        }
-
-        public string[] ExplicitIndexNames {
-            get {
-                var names = explicitIndexes.Keys;
-                return names.ToArray();
-            }
         }
 
         public void RemoveIndex(IndexMultiKey index)
@@ -271,28 +257,23 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             if (entry != null) {
                 tables.Remove(entry.Table);
                 if (entry.OptionalIndexName != null) {
-                    explicitIndexes.Remove(entry.OptionalIndexName);
+                    explicitIndexes.Remove(new NameAndModule(entry.OptionalIndexName, entry.OptionalIndexModuleName));
                 }
 
                 entry.Table.Destroy();
             }
         }
 
-        public IndexMultiKey GetIndexByName(string indexName)
+        public void RemoveExplicitIndex(
+            string indexName,
+            string moduleName)
         {
-            foreach (KeyValuePair<IndexMultiKey, EventTableIndexRepositoryEntry> entry in tableIndexesRefCount) {
-                if (entry.Value.OptionalIndexName.Equals(indexName)) {
-                    return entry.Key;
-                }
+            EventTable eventTable = explicitIndexes.Delete(new NameAndModule(indexName, moduleName));
+            if (eventTable != null) {
+                eventTable.Destroy();
             }
-
-            return null;
         }
 
-        public void RemoveExplicitIndex(string indexName)
-        {
-            EventTable eventTable = explicitIndexes.Delete(indexName);
-            eventTable?.Destroy();
-        }
+        public NameAndModule[] ExplicitIndexNames => explicitIndexes.Keys.ToArray();
     }
 } // end of namespace

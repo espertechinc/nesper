@@ -11,6 +11,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
     public class CodegenExpressionConcat : CodegenExpression
     {
         private readonly CodegenExpression[] stringExpressions;
+
         public CodegenExpressionConcat(CodegenExpression[] stringExpressions)
         {
             this.stringExpressions = stringExpressions;
@@ -27,6 +28,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 if (!first) {
                     builder.Append("+");
                 }
+
                 first = false;
                 expression.Render(builder, isInnerClass, level, indent);
             }

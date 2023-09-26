@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
-        public bool FilterLookupEligible => true;
+        public bool IsFilterLookupEligible => true;
 
         public ExprFilterSpecLookupableForge FilterLookupable {
             get {
@@ -52,14 +52,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         beanExpression,
                         parent,
                         classScope) => {
-                        CodegenMethod method = parent.MakeChild(typeof(string), GetType(), classScope)
-                            .AddParam(typeof(EventBean), "bean");
+                        var method = parent.MakeChild(typeof(string), GetType(), classScope)
+                            .AddParam<EventBean>("bean");
                         method.Block.MethodReturn(ExprDotMethodChain(Ref("bean")).Get("EventType").Get("Name"));
                         return LocalMethod(method, beanExpression);
                     }
                 };
-                
-                var serde = exprValidationContext.SerdeResolver.SerdeForFilter(typeof(string), exprValidationContext.StatementRawInfo);
+
+                var serde = exprValidationContext.SerdeResolver.SerdeForFilter(
+                    typeof(string),
+                    exprValidationContext.StatementRawInfo);
                 var eval = new ExprEventEvaluatorForgeFromProp(eventPropertyForge);
                 return new ExprFilterSpecLookupableForge(
                     ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(this),
@@ -73,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            this.exprValidationContext = validationContext;
+            exprValidationContext = validationContext;
 
             if (ChildNodes.Length != 1) {
                 throw new ExprValidationException(
@@ -81,13 +83,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             if (ChildNodes[0] is ExprStreamUnderlyingNode) {
-                var stream = (ExprStreamUnderlyingNode) ChildNodes[0];
+                var stream = (ExprStreamUnderlyingNode)ChildNodes[0];
                 forge = new ExprTypeofNodeForgeStreamEvent(this, stream.StreamId);
                 return null;
             }
 
             if (ChildNodes[0] is ExprIdentNode) {
-                var ident = (ExprIdentNode) ChildNodes[0];
+                var ident = (ExprIdentNode)ChildNodes[0];
                 var streamNum = validationContext.StreamTypeService.GetStreamNumForStreamName(ident.FullUnresolvedName);
                 if (streamNum != -1) {
                     forge = new ExprTypeofNodeForgeStreamEvent(this, streamNum);
@@ -97,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 var eventType = validationContext.StreamTypeService.EventTypes[ident.StreamId];
                 var fragmentEventType = eventType.GetFragmentType(ident.ResolvedPropertyName);
                 if (fragmentEventType != null) {
-                    var getter = ((EventTypeSPI) eventType).GetGetterSPI(ident.ResolvedPropertyName);
+                    var getter = ((EventTypeSPI)eventType).GetGetterSPI(ident.ResolvedPropertyName);
                     forge = new ExprTypeofNodeForgeFragmentType(
                         this,
                         ident.StreamId,
@@ -111,7 +113,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer,
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
             writer.Write("typeof(");

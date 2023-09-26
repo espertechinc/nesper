@@ -65,15 +65,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             var isNumericCoercion = new bool[ChildNodes.Length];
             for (var i = 0; i < ChildNodes.Length; i++) {
                 var node = ChildNodes[i];
-                if (node.Forge.EvaluationType.GetBoxedType() != resultType &&
-                    node.Forge.EvaluationType != null &&
+                var forgeEvaluationType = node.Forge.EvaluationType;
+                if (forgeEvaluationType != null &&
+                    forgeEvaluationType.GetBoxedType() != resultType &&
                     resultType != null) {
-                    if (!resultType.IsNumeric()) {
+                    if (!resultType.IsTypeNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
                             resultType.CleanName() +
                             "' to " +
-                            node.Forge.EvaluationType.CleanName() +
+                            forgeEvaluationType.CleanName() +
                             " is not allowed");
                     }
 
@@ -85,7 +86,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             return null;
         }
 
-        public override void ToPrecedenceFreeEPL(TextWriter writer,
+        public override void ToPrecedenceFreeEPL(
+            TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
             ExprNodeUtilityPrint.ToExpressionStringWFunctionName("coalesce", ChildNodes, writer);

@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
             AdvancedIndexConfigContextPartition configCP,
             EventTableOrganization organization)
         {
-            var qt = (AdvancedIndexConfigContextPartitionQuadTree) configCP;
+            var qt = (AdvancedIndexConfigContextPartitionQuadTree)configCP;
             var quadTree = MXCIFQuadTreeFactory.Make(
                 qt.X,
                 qt.Y,
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 qt.MaxTreeHeight);
             return new EventTableQuadTreeMXCIFImpl(
                 organization,
-                (AdvancedIndexConfigStatementMXCIFQuadtree) configStatement,
+                (AdvancedIndexConfigStatementMXCIFQuadtree)configStatement,
                 quadTree);
         }
 

@@ -10,8 +10,6 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.aggmultifunc;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
@@ -36,15 +34,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             throw new IllegalStateException("Not applicable for access-aggregations");
         }
 
-        public virtual void InitMethodForge(
-            int col,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope)
-        {
-            throw new IllegalStateException("Not applicable for access-aggregations");
-        }
-
         public abstract Type ResultType { get; }
         public abstract AggregationAccessorForge AccessorForge { get; }
         public abstract ExprAggregateNodeBase AggregationExpression { get; }
@@ -52,7 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
 
         public abstract AggregationMultiFunctionStateKey GetAggregationStateKey(bool isMatchRecognize);
 
-        public abstract AggregationStateFactoryForge GetAggregationStateFactory(bool isMatchRecognize);
+        public abstract AggregationStateFactoryForge GetAggregationStateFactory(
+            bool isMatchRecognize,
+            bool isJoin);
 
         public abstract AggregationAgentForge GetAggregationStateAgent(
             ImportService importService,

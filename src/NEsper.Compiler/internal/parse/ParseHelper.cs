@@ -550,7 +550,7 @@ namespace com.espertech.esper.compiler.@internal.parse
         }
 
         private static void WriteCommentEscapeSingleQuote(
-            StringWriter writer,
+            TextWriter writer,
             IToken t)
         {
             var text = t.Text;

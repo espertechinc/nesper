@@ -23,12 +23,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
 
         private static int Count(MXCIFQuadTreeNode node)
         {
-            if (node is MXCIFQuadTreeNodeLeaf) {
-                var leaf = (MXCIFQuadTreeNodeLeaf) node;
+            if (node is MXCIFQuadTreeNodeLeaf leaf) {
                 return CountData(leaf.Data);
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch) node;
+            var branch = (MXCIFQuadTreeNodeBranch)node;
             return Count(branch.Nw) + Count(branch.Ne) + Count(branch.Sw) + Count(branch.Se) + CountData(branch.Data);
         }
 
@@ -42,8 +41,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 return CountCallbacks(data);
             }
             else if (data is ICollection<XYWHRectangleWValue> collection) {
-                int count = 0;
-                foreach (XYWHRectangleWValue p in collection) {
+                var count = 0;
+                foreach (var p in collection) {
                     count += CountCallbacks(p.Value);
                 }
 
@@ -57,8 +56,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
 
         private static int CountCallbacks(object points)
         {
-            if (points is FilterHandleSize) {
-                return ((FilterHandleSize) points).FilterCallbackCount;
+            if (points is FilterHandleSize size) {
+                return size.FilterCallbackCount;
             }
 
             return 1;

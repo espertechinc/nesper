@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -22,7 +23,6 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
     {
         internal readonly CountMinSketchState state;
         private readonly CountMinSketchAgent agent;
-
         private readonly CountMinSketchAgentContextAdd add;
         private readonly CountMinSketchAgentContextEstimate estimate;
         private readonly CountMinSketchAgentContextFromBytes fromBytes;
@@ -69,31 +69,28 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             throw new UnsupportedOperationException();
         }
 
+        public CountMinSketchState State => state;
+
         public CountMinSketchTopK[] GetFromBytes()
         {
-            ICollection<ByteBuffer> bytes = state.TopKValues;
+            var bytes = state.TopKValues;
             if (bytes.IsEmpty()) {
-                return new CountMinSketchTopK[0];
+                return Array.Empty<CountMinSketchTopK>();
             }
 
-            CountMinSketchTopK[] arr = new CountMinSketchTopK[bytes.Count];
-            int index = 0;
-            foreach (ByteBuffer buf in bytes) {
-                long frequency = state.Frequency(buf.Array);
+            var arr = new CountMinSketchTopK[bytes.Count];
+            var index = 0;
+            foreach (var buf in bytes) {
+                var frequency = state.Frequency(buf.Array);
                 fromBytes.Bytes = buf.Array;
-                object value = agent.FromBytes(fromBytes);
+                var value = agent.FromBytes(fromBytes);
                 //if (frequency == null) {
                 //    continue;
                 //}
-
                 arr[index++] = new CountMinSketchTopK(frequency, value);
             }
 
             return arr;
-        }
-
-        public CountMinSketchState State {
-            get => state;
         }
     }
 } // end of namespace

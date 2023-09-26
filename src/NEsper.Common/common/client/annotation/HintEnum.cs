@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.client.annotation
         ///     For use when filter expression optimization may widen the filter expression
         /// </summary>
         MAX_FILTER_WIDTH,
-        
+
         /// <summary>
         /// For use when filter expression optimization may filter index composite lookupable expressions (typically LHS, i.e. left hand side).
         /// Such as "select * from MyEvent(a+b=0)" wherein "a+b" is a composite lookupable expression, i.e. provides lookup values for filter index
@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.client.annotation
         ///     For use with output rate limiting.
         /// </summary>
         DISABLE_OUTPUTLIMIT_OPT,
-        
+
         /// <summary>
         /// For use with named window to silent-delete.
         /// </summary>

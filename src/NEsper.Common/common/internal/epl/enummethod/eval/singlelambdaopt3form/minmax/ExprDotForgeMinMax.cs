@@ -17,60 +17,67 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmax
 {
-	public class ExprDotForgeMinMax : ExprDotForgeLambdaThreeForm
-	{
-		protected override EPType InitAndNoParamsReturnType(
-			EventType inputEventType,
-			Type collectionComponentType)
-		{
-			var returnType = collectionComponentType.GetBoxedType();
-			return EPTypeHelper.SingleValue(returnType);
-		}
+    public class ExprDotForgeMinMax : ExprDotForgeLambdaThreeForm
+    {
+        protected override EPChainableType InitAndNoParamsReturnType(
+            EventType inputEventType,
+            Type collectionComponentType)
+        {
+            var returnType = collectionComponentType.GetBoxedType();
+            return new EPChainableTypeClass(returnType);
+        }
 
-		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
-			EnumMethodEnum enumMethod,
-			EPType type,
-			StatementCompileTimeServices services)
-		{
-			return streamCountIncoming => new EnumMinMaxScalarNoParam(streamCountIncoming, enumMethod == EnumMethodEnum.MAX, type);
-		}
+        protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
+            EnumMethodEnum enumMethod,
+            EPChainableType type,
+            StatementCompileTimeServices services)
+        {
+            return streamCountIncoming => new EnumMinMaxScalarNoParam(
+                streamCountIncoming,
+                enumMethod == EnumMethodEnum.MAX,
+                type);
+        }
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
-			EventType inputEventType,
-			Type collectionComponentType)
-		{
-			return lambda => {
-				var returnType = lambda.BodyForge.EvaluationType.GetBoxedType();
-				return EPTypeHelper.SingleValue(returnType);
-			};
-		}
+        protected override ThreeFormInitFunction InitAndSingleParamReturnType(
+            EventType inputEventType,
+            Type collectionComponentType)
+        {
+            return lambda => {
+                var returnType = ValidateNonNull(lambda.BodyForge.EvaluationType).GetBoxedType();
+                return EPChainableTypeHelper.SingleValue(returnType);
+            };
+        }
 
-		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				typeInfo,
-				services) => new EnumMinMaxEvent(lambda, enumMethod == EnumMethodEnum.MAX);
-		}
+        protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                typeInfo,
+                services) => new EnumMinMaxEvent(lambda, enumMethod == EnumMethodEnum.MAX);
+        }
 
-		protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				fieldType,
-				numParameters,
-				typeInfo,
-				services) => new EnumMinMaxEventPlus(lambda, fieldType, numParameters, enumMethod == EnumMethodEnum.MAX);
-		}
+        protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                fieldType,
+                numParameters,
+                typeInfo,
+                services) => new EnumMinMaxEventPlus(
+                lambda,
+                fieldType,
+                numParameters,
+                enumMethod == EnumMethodEnum.MAX);
+        }
 
-		protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				eventType,
-				numParams,
-				typeInfo,
-				services) => new EnumMinMaxScalar(lambda, eventType, numParams, enumMethod == EnumMethodEnum.MAX);
-		}
-	}
+        protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                eventType,
+                numParams,
+                typeInfo,
+                services) => new EnumMinMaxScalar(lambda, eventType, numParams, enumMethod == EnumMethodEnum.MAX);
+        }
+    }
 } // end of namespace

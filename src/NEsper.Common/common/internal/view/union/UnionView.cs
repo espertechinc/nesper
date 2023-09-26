@@ -28,7 +28,8 @@ namespace com.espertech.esper.common.@internal.view.union
         LastPostObserver,
         AgentInstanceMgmtCallback,
         DataWindowView,
-        ViewDataVisitableContainer
+        ViewDataVisitableContainer,
+        RelatedView
     {
         protected internal readonly AgentInstanceContext agentInstanceContext;
         private readonly EventBean[][] oldEventsPerView;
@@ -61,7 +62,7 @@ namespace com.espertech.esper.common.@internal.view.union
             for (var i = 0; i < views.Length; i++) {
                 var viewSnapshot = views[i].GetEnumerator();
                 while (viewSnapshot.MoveNext()) {
-                    EventBean theEvent = viewSnapshot.Current;
+                    var theEvent = viewSnapshot.Current;
                     unionWindow.Add(theEvent);
                 }
             }
@@ -172,7 +173,7 @@ namespace com.espertech.esper.common.@internal.view.union
 
             if (child != null) {
                 // indicate new and, possibly, old data
-                var oldEvents = oldDataColl != null ? oldDataColl.ToArray() : null;
+                var oldEvents = oldDataColl?.ToArray();
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newData, oldEvents);
                 child.Update(newData, oldEvents);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
@@ -236,9 +237,11 @@ namespace com.espertech.esper.common.@internal.view.union
         {
             IntersectDefaultView.VisitViewContained(viewDataVisitor, ViewFactory, views);
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }
+
+        public View[] RelatedViews => views;
     }
 } // end of namespace

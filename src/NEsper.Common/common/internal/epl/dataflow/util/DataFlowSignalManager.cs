@@ -22,12 +22,12 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             int operatorNum,
             EPDataFlowSignal signal)
         {
-            IList<DataFlowSignalListener> listeners = listenersPerOp.Get(operatorNum);
+            var listeners = listenersPerOp.Get(operatorNum);
             if (listeners == null || listeners.IsEmpty()) {
                 return;
             }
 
-            foreach (DataFlowSignalListener listener in listeners) {
+            foreach (var listener in listeners) {
                 listener.ProcessSignal(signal);
             }
         }
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             int producerOpNum,
             DataFlowSignalListener listener)
         {
-            IList<DataFlowSignalListener> listeners = listenersPerOp.Get(producerOpNum);
+            var listeners = listenersPerOp.Get(producerOpNum);
             if (listeners == null) {
                 listeners = new List<DataFlowSignalListener>();
                 listenersPerOp.Put(producerOpNum, listeners);

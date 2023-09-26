@@ -44,7 +44,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return new InstrumentationBuilderExpr(GetType(), this, "ExprNewInstance", requiredType, codegenMethodScope, exprSymbol, codegenClassScope).Build();
+            return new InstrumentationBuilderExpr(
+                GetType(),
+                this,
+                "ExprNewInstance",
+                requiredType,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope).Build();
         }
 
         public CodegenExpression EvaluateCodegenUninstrumented(
@@ -53,7 +60,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ExprNewInstanceNodeArrayForgeEval.EvaluateCodegen(requiredType, this, codegenMethodScope, exprSymbol, codegenClassScope);
+            return ExprNewInstanceNodeArrayForgeEval.EvaluateCodegen(
+                requiredType,
+                this,
+                codegenMethodScope,
+                exprSymbol,
+                codegenClassScope);
         }
 
         public Type EvaluationType => TargetClassArrayed;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,38 +10,39 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.serde;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.epl.index.@base;
+
 
 namespace com.espertech.esper.common.@internal.epl.index.hash
 {
     public class PropertyHashedFactoryFactory : EventTableFactoryFactoryBase
     {
         private readonly string[] indexProps;
-        private readonly Type[] indexTypes;
         private readonly bool unique;
         private readonly EventPropertyValueGetter valueGetter;
         private readonly MultiKeyFromObjectArray transformFireAndForget;
         private readonly DataInputOutputSerde keySerde;
+        private readonly StateMgmtSetting stateMgmtSettings;
 
         public PropertyHashedFactoryFactory(
             int indexedStreamNum,
             int? subqueryNum,
             bool isFireAndForget,
-            String[] indexProps,
-            Type[] indexTypes,
+            string[] indexProps,
             bool unique,
             EventPropertyValueGetter valueGetter,
             MultiKeyFromObjectArray transformFireAndForget,
-            DataInputOutputSerde keySerde)
-            : base(indexedStreamNum, subqueryNum, isFireAndForget)
+            DataInputOutputSerde keySerde,
+            StateMgmtSetting stateMgmtSettings) : base(indexedStreamNum, subqueryNum, isFireAndForget)
         {
             this.indexProps = indexProps;
-            this.indexTypes = indexTypes;
             this.unique = unique;
             this.valueGetter = valueGetter;
             this.transformFireAndForget = transformFireAndForget;
             this.keySerde = keySerde;
+            this.stateMgmtSettings = stateMgmtSettings;
         }
 
         public override EventTableFactory Create(
@@ -52,7 +53,6 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
                 indexedStreamNum,
                 eventType,
                 indexProps,
-                indexTypes,
                 transformFireAndForget,
                 keySerde,
                 unique,
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
                 valueGetter,
                 null,
                 isFireAndForget,
-                eventTableFactoryContext);
+                stateMgmtSettings);
         }
     }
 } // end of namespace

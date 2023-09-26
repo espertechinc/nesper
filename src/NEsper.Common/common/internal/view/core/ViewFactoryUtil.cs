@@ -58,8 +58,8 @@ namespace com.espertech.esper.common.@internal.view.core
 
             foreach (var viewFactory in factories) {
                 var view = viewFactory.MakeView(viewFactoryChainContext);
-                if (view is AgentInstanceMgmtCallback) {
-                    stopCallbacks.Add((AgentInstanceMgmtCallback) view);
+                if (view is AgentInstanceMgmtCallback callback) {
+                    stopCallbacks.Add(callback);
                 }
 
                 current.Child = view;

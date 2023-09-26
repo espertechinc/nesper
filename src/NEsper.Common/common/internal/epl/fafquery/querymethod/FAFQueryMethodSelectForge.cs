@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.faf;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -26,22 +27,25 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
     /// <summary>
-    ///     Starts and provides the stop method for EPL statements.
+    /// Starts and provides the stop method for EPL statements.
     /// </summary>
     public class FAFQueryMethodSelectForge : FAFQueryMethodForge
     {
-        private readonly string _classNameResultSetProcessor;
-        private readonly FAFQueryMethodSelectDesc _desc;
-        private readonly StatementRawInfo _statementRawInfo;
+        private readonly FAFQueryMethodSelectDesc desc;
+        private readonly string classNameResultSetProcessor;
+        private readonly StatementRawInfo statementRawInfo;
+        private readonly ModuleCompileTimeServices services;
 
         public FAFQueryMethodSelectForge(
             FAFQueryMethodSelectDesc desc,
             string classNameResultSetProcessor,
-            StatementRawInfo statementRawInfo)
+            StatementRawInfo statementRawInfo,
+            ModuleCompileTimeServices services)
         {
-            _desc = desc;
-            _classNameResultSetProcessor = classNameResultSetProcessor;
-            _statementRawInfo = statementRawInfo;
+            this.desc = desc;
+            this.classNameResultSetProcessor = classNameResultSetProcessor;
+            this.statementRawInfo = statementRawInfo;
+            this.services = services;
         }
 
         public IList<StmtClassForgeable> MakeForgeables(
@@ -50,20 +54,22 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             CodegenNamespaceScope namespaceScope)
         {
             IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
-            foreach (StmtClassForgeableFactory additional in _desc.AdditionalForgeables) {
+            foreach (var additional in desc.AdditionalForgeables) {
                 forgeables.Add(additional.Make(namespaceScope, classPostfix));
             }
 
-            //namespaceScopeP
+            // generate RSP
             forgeables.Add(
                 new StmtClassForgeableRSPFactoryProvider(
-                    _classNameResultSetProcessor,
-                    _desc.ResultSetProcessor,
+                    classNameResultSetProcessor,
+                    desc.ResultSetProcessor,
                     namespaceScope,
-                    _statementRawInfo));
+                    statementRawInfo,
+                    false));
 
             // generate faf-select
-            forgeables.Add(new StmtClassForgeableQueryMethodProvider(queryMethodProviderClassName, namespaceScope, this));
+            forgeables.Add(
+                new StmtClassForgeableQueryMethodProvider(queryMethodProviderClassName, namespaceScope, this));
 
             return forgeables;
         }
@@ -75,20 +81,23 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         {
             var select = Ref("select");
             method.Block
-                .DeclareVar<FAFQueryMethodSelect>(select.Ref, NewInstance(typeof(FAFQueryMethodSelect)))
+                .DeclareVarNewInstance(typeof(FAFQueryMethodSelect), select.Ref)
                 .SetProperty(
                     select,
                     "Annotations",
-                    LocalMethod(
-                        AnnotationUtil.MakeAnnotations(typeof(Attribute[]), _desc.Annotations, method, classScope)))
+                    AnnotationUtil.MakeAnnotations(
+                        typeof(Attribute[]),
+                        desc.Annotations,
+                        method,
+                        classScope))
                 .SetProperty(
                     select,
                     "Processors",
-                    FireAndForgetProcessorForgeExtensions.MakeArray(_desc.Processors, method, symbols, classScope))
+                    FireAndForgetProcessorForgeExtensions.MakeArray(desc.Processors, method, symbols, classScope))
                 .DeclareVar(
-                    _classNameResultSetProcessor,
+                    classNameResultSetProcessor,
                     "rsp",
-                    NewInstanceInner(_classNameResultSetProcessor, symbols.GetAddInitSvc(method), Ref("statementFields")))
+                    NewInstanceInner(classNameResultSetProcessor, symbols.GetAddInitSvc(method)))
                 .SetProperty(
                     select,
                     "ResultSetProcessorFactoryProvider",
@@ -96,38 +105,38 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 .SetProperty(
                     select,
                     "QueryGraph",
-                    _desc.QueryGraph.Make(method, symbols, classScope))
+                    desc.QueryGraph.Make(method, symbols, classScope))
                 .SetProperty(
                     select,
                     "WhereClause",
-                    _desc.WhereClause == null
+                    desc.WhereClause == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
-                            _desc.WhereClause.Forge,
+                            desc.WhereClause.Forge,
                             method,
                             GetType(),
                             classScope))
                 .SetProperty(
                     select,
                     "JoinSetComposerPrototype",
-                    _desc.Joins == null ? ConstantNull() : _desc.Joins.Make(method, symbols, classScope))
+                    desc.Joins == null ? ConstantNull() : desc.Joins.Make(method, symbols, classScope))
                 .SetProperty(
                     select,
                     "ConsumerFilters",
-                    ExprNodeUtilityCodegen.CodegenEvaluators(
-                        _desc.ConsumerFilters,
-                        method,
-                        GetType(),
-                        classScope))
+                    ExprNodeUtilityCodegen.CodegenEvaluators(desc.ConsumerFilters, method, GetType(), classScope))
                 .SetProperty(
                     select,
                     "ContextName",
-                    Constant(_desc.ContextName))
+                    Constant(desc.ContextName))
+                .SetProperty(
+                    select,
+                    "ContextModuleName",
+                    Constant(desc.ContextModuleName))
                 .SetProperty(
                     select,
                     "TableAccesses",
                     ExprTableEvalStrategyUtil.CodegenInitMap(
-                        _desc.TableAccessForges,
+                        desc.TableAccessForges,
                         GetType(),
                         method,
                         symbols,
@@ -135,25 +144,21 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 .SetProperty(
                     select,
                     "HasTableAccess",
-                    Constant(_desc.HasTableAccess))
-                .SetProperty(
-                    select,
-                    "IsDistinct",
-                    Constant(_desc.IsDistinct))
+                    Constant(desc.HasTableAccess))
                 .SetProperty(
                     select,
                     "DistinctKeyGetter",
                     MultiKeyCodegen.CodegenGetterEventDistinct(
-                        _desc.IsDistinct,
-                        _desc.ResultSetProcessor.ResultEventType,
-                        _desc.DistinctMultiKey,
+                        desc.IsDistinct,
+                        desc.ResultSetProcessor.ResultEventType,
+                        desc.DistinctMultiKey,
                         method,
                         classScope))
                 .SetProperty(
                     select,
                     "Subselects",
                     SubSelectFactoryForge.CodegenInitMap(
-                        _desc.SubselectForges,
+                        desc.SubselectForges,
                         GetType(),
                         method,
                         symbols,

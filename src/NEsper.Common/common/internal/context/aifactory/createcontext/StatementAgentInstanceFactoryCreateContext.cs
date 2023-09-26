@@ -52,18 +52,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 realization);
         }
 
-        public void StatementCreate(StatementContext statementContext)
-        {
-            var listeners = statementContext.ContextManagementService.Listeners;
-            ContextStateEventUtil.DispatchContext(
-                listeners,
-                () => new ContextStateEventContextCreated(
-                    statementContext.RuntimeURI,
-                    statementContext.DeploymentId,
-                    ContextName),
-                (
-                    listener,
-                    @event) => listener.OnContextCreated(@event));
+        public StatementContext StatementCreate {
+            set {
+                var listeners = value.ContextManagementService.Listeners;
+                ContextStateEventUtil.DispatchContext(
+                    listeners,
+                    () => new ContextStateEventContextCreated(
+                        value.RuntimeURI,
+                        value.DeploymentId,
+                        ContextName),
+                    (
+                        listener,
+                        @event) => listener.OnContextCreated(@event));
+            }
         }
 
         public void StatementDestroyPreconditions(StatementContext statementContext)
@@ -91,7 +92,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             StatementContext statementContext,
             int agentInstanceId)
         {
-            return AgentInstanceUtil.NewLock(statementContext);
+            return AgentInstanceUtil.NewLock(statementContext, agentInstanceId);
         }
 
         public void Ready(
@@ -101,7 +102,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
         {
             var contextManager =
                 statementContext.ContextManagementService.GetContextManager(statementContext.DeploymentId, ContextName);
-            contextManager.SetStatementContext(statementContext);
+            contextManager.StatementContext = statementContext;
         }
     }
 } // end of namespace

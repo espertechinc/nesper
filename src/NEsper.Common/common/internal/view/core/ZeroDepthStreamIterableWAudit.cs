@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.view.core
             : base(eventType)
         {
             _agentInstanceContext = agentInstanceContext;
-            _filterSpecText = filterSpec.GetFilterText();
+            _filterSpecText = filterSpec.FilterText;
             _streamNumber = streamNumber;
             _subselect = subselect;
             _subselectNumber = subselectNumber;

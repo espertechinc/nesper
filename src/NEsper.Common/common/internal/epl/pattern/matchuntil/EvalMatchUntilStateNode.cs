@@ -47,14 +47,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
 
         public override void RemoveMatch(ISet<EventBean> matchEvent)
         {
-            bool quit = PatternConsumptionUtil.ContainsEvent(matchEvent, beginState);
+            var quit = PatternConsumptionUtil.ContainsEvent(matchEvent, beginState);
             if (!quit) {
-                foreach (List<EventBean> list in matchedEventArrays) {
+                foreach (var list in matchedEventArrays) {
                     if (list == null) {
                         continue;
                     }
 
-                    foreach (EventBean @event in list) {
+                    foreach (var @event in list) {
                         if (matchEvent.Contains(@event)) {
                             quit = true;
                             break;
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
 
             if (quit) {
                 Quit();
-                AgentInstanceContext agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
+                var agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
                 agentInstanceContext.AuditProvider.PatternFalse(
                     evalMatchUntilNode.FactoryNode,
                     this,
@@ -82,13 +82,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             }
         }
 
-        public override EvalNode FactoryNode {
-            get => evalMatchUntilNode;
-        }
+        public override EvalNode FactoryNode => evalMatchUntilNode;
 
         public override void Start(MatchedEventMap beginState)
         {
-            AgentInstanceContext agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternMatchUntilStart(
                 evalMatchUntilNode.factoryNode,
                 beginState);
@@ -99,11 +97,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
 
             this.beginState = beginState;
 
-            EvalNode childMatcher = evalMatchUntilNode.ChildNodeSub;
+            var childMatcher = evalMatchUntilNode.ChildNodeSub;
             stateMatcher = childMatcher.NewState(this);
 
             if (evalMatchUntilNode.ChildNodeUntil != null) {
-                EvalNode childUntil = evalMatchUntilNode.ChildNodeUntil;
+                var childUntil = evalMatchUntilNode.ChildNodeUntil;
                 stateUntil = childUntil.NewState(this);
             }
 
@@ -111,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             // if the same event fires both match and until, the match should not count
             stateUntil?.Start(beginState);
 
-            EvalMatchUntilStateBounds bounds = EvalMatchUntilStateBounds.InitBounds(
+            var bounds = EvalMatchUntilStateBounds.InitBounds(
                 evalMatchUntilNode.FactoryNode,
                 beginState,
                 evalMatchUntilNode.Context);
@@ -129,30 +127,30 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             bool isQuitted,
             EventBean optionalTriggeringEvent)
         {
-            AgentInstanceContext agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternMatchUntilEvaluateTrue(
                 evalMatchUntilNode.factoryNode,
                 matchEvent,
                 fromNode == stateUntil);
 
-            bool isMatcher = false;
+            var isMatcher = false;
             if (fromNode == stateMatcher) {
                 // Add the additional tagged events to the list for later posting
                 isMatcher = true;
                 numMatches++;
-                int[] tags = evalMatchUntilNode.FactoryNode.TagsArrayed;
-                for (int i = 0; i < tags.Length; i++) {
-                    object theEvent = matchEvent.GetMatchingEventAsObject(tags[i]);
+                var tags = evalMatchUntilNode.FactoryNode.TagsArrayed;
+                for (var i = 0; i < tags.Length; i++) {
+                    var theEvent = matchEvent.GetMatchingEventAsObject(tags[i]);
                     if (theEvent != null) {
                         if (matchedEventArrays[i] == null) {
                             matchedEventArrays[i] = new List<EventBean>();
                         }
 
-                        if (theEvent is EventBean) {
-                            matchedEventArrays[i].Add((EventBean) theEvent);
+                        if (theEvent is EventBean bean) {
+                            matchedEventArrays[i].Add(bean);
                         }
                         else {
-                            EventBean[] arrayEvents = (EventBean[]) theEvent;
+                            var arrayEvents = (EventBean[])theEvent;
                             matchedEventArrays[i].AddAll(arrayEvents);
                         }
                     }
@@ -170,9 +168,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
 
             // handle matcher evaluating true
             if (isMatcher) {
-                if ((IsTightlyBound) && (numMatches == lowerbounds)) {
+                if (IsTightlyBound && numMatches == lowerbounds) {
                     QuitInternal();
-                    MatchedEventMap consolidated = Consolidate(
+                    var consolidated = Consolidate(
                         matchEvent,
                         matchedEventArrays,
                         evalMatchUntilNode.FactoryNode.TagsArrayed);
@@ -190,12 +188,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
                 }
                 else {
                     // restart or keep started if not bounded, or not upper bounds, or upper bounds not reached
-                    bool restart = (!IsBounded) ||
-                                   (upperbounds == null) ||
-                                   (upperbounds > numMatches);
+                    var restart = !IsBounded ||
+                                  upperbounds == null ||
+                                  upperbounds > numMatches;
                     if (stateMatcher == null) {
                         if (restart) {
-                            EvalNode childMatcher = evalMatchUntilNode.ChildNodeSub;
+                            var childMatcher = evalMatchUntilNode.ChildNodeSub;
                             stateMatcher = childMatcher.NewState(this);
                             stateMatcher.Start(beginState);
                         }
@@ -213,12 +211,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
                 QuitInternal();
 
                 // consolidate multiple matched events into a single event
-                MatchedEventMap consolidated = Consolidate(
+                var consolidated = Consolidate(
                     matchEvent,
                     matchedEventArrays,
                     evalMatchUntilNode.FactoryNode.TagsArrayed);
 
-                if ((lowerbounds != null) && (numMatches < lowerbounds)) {
+                if (lowerbounds != null && numMatches < lowerbounds) {
                     agentInstanceContext.AuditProvider.PatternFalse(
                         evalMatchUntilNode.FactoryNode,
                         this,
@@ -257,12 +255,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
                 return beginState;
             }
 
-            for (int i = 0; i < tagsArrayed.Length; i++) {
+            for (var i = 0; i < tagsArrayed.Length; i++) {
                 if (matchedEventList[i] == null) {
                     continue;
                 }
 
-                EventBean[] eventsForTag = matchedEventList[i].ToArray();
+                var eventsForTag = matchedEventList[i].ToArray();
                 beginState.Add(tagsArrayed[i], eventsForTag);
             }
 
@@ -273,12 +271,12 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             EvalStateNode fromNode,
             bool restartable)
         {
-            AgentInstanceContext agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternMatchUntilEvalFalse(
                 evalMatchUntilNode.factoryNode,
                 fromNode == stateUntil);
 
-            bool isMatcher = fromNode == stateMatcher;
+            var isMatcher = fromNode == stateMatcher;
 
             if (isMatcher) {
                 stateMatcher.Quit();
@@ -304,7 +302,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
                 return;
             }
 
-            AgentInstanceContext agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
+            var agentInstanceContext = evalMatchUntilNode.Context.AgentInstanceContext;
             agentInstanceContext.InstrumentationProvider.QPatternMatchUntilQuit(evalMatchUntilNode.factoryNode);
             agentInstanceContext.AuditProvider.PatternInstance(
                 false,
@@ -328,29 +326,17 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             return "EvalMatchUntilStateNode";
         }
 
-        public override bool IsNotOperator {
-            get => false;
-        }
+        public override bool IsNotOperator => false;
 
-        public override bool IsFilterStateNode {
-            get => false;
-        }
+        public override bool IsFilterStateNode => false;
 
-        public bool IsFilterChildNonQuitting {
-            get => true;
-        }
+        public bool IsFilterChildNonQuitting => true;
 
-        public override bool IsObserverStateNodeNonRestarting {
-            get => false;
-        }
+        public override bool IsObserverStateNodeNonRestarting => false;
 
-        private bool IsTightlyBound {
-            get { return lowerbounds != null && upperbounds != null && upperbounds.Equals(lowerbounds); }
-        }
+        private bool IsTightlyBound => lowerbounds != null && upperbounds != null && upperbounds.Equals(lowerbounds);
 
-        private bool IsBounded {
-            get { return lowerbounds != null || upperbounds != null; }
-        }
+        private bool IsBounded => lowerbounds != null || upperbounds != null;
 
         private void QuitInternal()
         {

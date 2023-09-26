@@ -47,9 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.lookupstrategy
             var method = parent.MakeChild(typeof(HistoricalIndexLookupStrategySorted), GetType(), classScope);
 
             method.Block
-                .DeclareVar<HistoricalIndexLookupStrategySorted>(
-                    "strat",
-                    NewInstance(typeof(HistoricalIndexLookupStrategySorted)))
+                .DeclareVarNewInstance<HistoricalIndexLookupStrategySorted>("strat")
                 .SetProperty(Ref("strat"), "LookupStream", Constant(lookupStream))
                 .SetProperty(Ref("strat"), "EvalRange", range.Make(coercionType, method, symbols, classScope))
                 .ExprDotMethod(Ref("strat"), "Init")

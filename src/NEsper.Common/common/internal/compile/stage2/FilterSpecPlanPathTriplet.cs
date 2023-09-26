@@ -11,25 +11,28 @@ using com.espertech.esper.common.@internal.filterspec;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
-	public class FilterSpecPlanPathTriplet {
-	    private FilterSpecParam param;
-	    private ExprEvaluator tripletConfirm;
+    public class FilterSpecPlanPathTriplet
+    {
+        private FilterSpecParam param;
+        private ExprEvaluator tripletConfirm;
 
-	    public FilterSpecPlanPathTriplet() {
-	    }
+        public FilterSpecPlanPathTriplet()
+        {
+        }
 
-	    public FilterSpecPlanPathTriplet(FilterSpecParam param) {
-	        this.param = param;
-	    }
+        public FilterSpecPlanPathTriplet(FilterSpecParam param)
+        {
+            this.param = param;
+        }
 
-	    public FilterSpecParam Param {
-		    get => param;
-		    set => param = value;
-	    }
+        public FilterSpecParam Param {
+            get => param;
+            set => param = value;
+        }
 
-	    public ExprEvaluator TripletConfirm {
-		    get => tripletConfirm;
-		    set => tripletConfirm = value;
-	    }
-	}
+        public ExprEvaluator TripletConfirm {
+            get => tripletConfirm;
+            set => tripletConfirm = value;
+        }
+    }
 } // end of namespace

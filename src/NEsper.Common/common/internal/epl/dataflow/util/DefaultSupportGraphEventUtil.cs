@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             configuration.Common.AddEventType("MyMapEvent", propertyTypes);
             configuration.Common.AddEventType(
                 "MyOAEvent",
-                new string[] {"MyDouble", "MyInt", "MyString"},
-                new object[] {typeof(double?), typeof(int?), typeof(string)}
+                new string[] { "MyDouble", "MyInt", "MyString" },
+                new object[] { typeof(double?), typeof(int?), typeof(string) }
             );
             configuration.Common.AddEventType(typeof(MyDefaultSupportGraphEvent));
             configuration.Common.AddEventType("MyXMLEvent", GetConfig(container.ResourceManager()));
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             var xmlEvents = GetXMLEvents();
             var xmls = new SendableEvent[xmlEvents.Length];
             for (var i = 0; i < xmlEvents.Length; i++) {
-                xmls[i] = new SendableEventXML((XmlNode) xmlEvents[i], "MyXMLEvent");
+                xmls[i] = new SendableEventXML((XmlNode)xmlEvents[i], "MyXMLEvent");
             }
 
             return xmls;
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             var oaEvents = GetOAEvents();
             var oas = new SendableEvent[oaEvents.Length];
             for (var i = 0; i < oaEvents.Length; i++) {
-                oas[i] = new SendableEventObjectArray((object[]) oaEvents[i], "MyOAEvent");
+                oas[i] = new SendableEventObjectArray((object[])oaEvents[i], "MyOAEvent");
             }
 
             return oas;
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             var mapEvents = GetMapEvents();
             var sendables = new SendableEvent[mapEvents.Length];
             for (var i = 0; i < mapEvents.Length; i++) {
-                sendables[i] = new SendableEventMap((IDictionary<string, object>) mapEvents[i], "MyMapEvent");
+                sendables[i] = new SendableEventMap((IDictionary<string, object>)mapEvents[i], "MyMapEvent");
             }
 
             return sendables;
@@ -104,23 +104,23 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public static object[] GetOAEvents()
         {
-            return new object[] {new object[] {1.1d, 1, "one"}, new object[] {2.2d, 2, "two"}};
+            return new object[] { new object[] { 1.1d, 1, "one" }, new object[] { 2.2d, 2, "two" } };
         }
 
         public static object[] GetMapEvents()
         {
-            return new object[] {MakeMapEvent(1.1, 1, "one"), MakeMapEvent(2.2d, 2, "two")};
+            return new object[] { MakeMapEvent(1.1, 1, "one"), MakeMapEvent(2.2d, 2, "two") };
         }
 
         public static object[] GetPONOEvents()
         {
             return new object[]
-                {new MyDefaultSupportGraphEvent(1.1d, 1, "one"), new MyDefaultSupportGraphEvent(2.2d, 2, "two")};
+                { new MyDefaultSupportGraphEvent(1.1d, 1, "one"), new MyDefaultSupportGraphEvent(2.2d, 2, "two") };
         }
 
         public static object[] GetJsonEvents()
         {
-            return new object[] {MakeJsonEvent(1.1, 1, "one"), MakeJsonEvent(2.2d, 2, "two")};
+            return new object[] { MakeJsonEvent(1.1, 1, "one"), MakeJsonEvent(2.2d, 2, "two") };
         }
 
         private static ConfigurationCommonEventTypeXMLDOM GetConfig(IResourceManager resourceManager)
@@ -173,7 +173,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         private static string MakeJsonEvent(
             double myDouble,
             int myInt,
-            String myString)
+            string myString)
         {
             return JsonSerializer.Serialize<object>(
                 new {

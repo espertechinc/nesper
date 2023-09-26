@@ -10,12 +10,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.compat.function;
-
-using static com.espertech.esper.common.@internal.bytecodemodel.core.CodeGenerationHelper;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
 {
@@ -41,7 +38,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
                 classes.AddToSet(_type);
             }
         }
-        
+
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
         }

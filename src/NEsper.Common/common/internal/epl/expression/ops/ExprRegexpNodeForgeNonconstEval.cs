@@ -31,9 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEvaluator lhsEval,
             ExprEvaluator patternEval)
         {
-            this._forge = forge;
-            this._lhsEval = lhsEval;
-            this._patternEval = patternEval;
+            _forge = forge;
+            _lhsEval = lhsEval;
+            _patternEval = patternEval;
         }
 
         public object Evaluate(
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var patternText = (string) _patternEval.Evaluate(eventsPerStream, isNewData, context);
+            var patternText = (string)_patternEval.Evaluate(eventsPerStream, isNewData, context);
             if (patternText == null) {
                 return null;
             }
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             // Revisit: Did we previously have an issue where this was using search instead of match?  Revisit the
             // previous version to see if we handled the matching differently.
-            return _forge.ForgeRenderable.IsNot ^ pattern.IsMatch((string) evalValue);
+            return _forge.ForgeRenderable.IsNot ^ pattern.IsMatch((string)evalValue);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public static Regex ExprRegexNodeCompilePattern(string text)
         {
             try {
-                return RegexExtensions.Compile(text, out string patternText);
+                return RegexExtensions.Compile(text, out var patternText);
             }
             catch (ArgumentException ex) {
                 throw new EPException("Failed to compile regex pattern '" + text + "': " + ex.Message, ex);

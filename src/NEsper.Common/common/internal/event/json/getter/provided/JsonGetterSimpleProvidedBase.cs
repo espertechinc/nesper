@@ -64,7 +64,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(Field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(Field.DeclaringType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public CodegenExpression UnderlyingGetCodegen(

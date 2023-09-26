@@ -11,49 +11,70 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOBoxedShortArray2DimNullableSerde : DataInputOutputSerdeBase<short?[][]> {
-	    public static readonly DIOBoxedShortArray2DimNullableSerde INSTANCE = new DIOBoxedShortArray2DimNullableSerde();
+    public class DIOBoxedShortArray2DimNullableSerde : DataInputOutputSerdeBase<short?[][]>
+    {
+        public static readonly DIOBoxedShortArray2DimNullableSerde INSTANCE = new DIOBoxedShortArray2DimNullableSerde();
 
-	    private DIOBoxedShortArray2DimNullableSerde() {
-	    }
+        private DIOBoxedShortArray2DimNullableSerde()
+        {
+        }
 
-	    public void Write(short?[][] @object, DataOutput output) {
-	        WriteInternal(@object, output);
-	    }
+        public void Write(
+            short?[][] @object,
+            DataOutput output)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public short?[][] Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+        public short?[][] Read(DataInput input)
+        {
+            return ReadInternal(input);
+        }
 
-	    public override void Write(short?[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
-	        WriteInternal(@object, output);
-	    }
+        public override void Write(
+            short?[][] @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public override short?[][] ReadValue(DataInput input, byte[] unitKey) {
-	        return ReadInternal(input);
-	    }
+        public override short?[][] ReadValue(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadInternal(input);
+        }
 
-	    private void WriteInternal(short?[][] @object, DataOutput output) {
-	        if (@object == null) {
-	            output.WriteInt(-1);
-	            return;
-	        }
-	        output.WriteInt(@object.Length);
-	        foreach (short?[] i in @object) {
-	            DIOBoxedShortArrayNullableSerde.INSTANCE.Write(i, output);
-	        }
-	    }
+        private void WriteInternal(
+            short?[][] @object,
+            DataOutput output)
+        {
+            if (@object == null) {
+                output.WriteInt(-1);
+                return;
+            }
 
-	    private short?[][] ReadInternal(DataInput input) {
-	        int len = input.ReadInt();
-	        if (len == -1) {
-	            return null;
-	        }
-	        short?[][] array = new short?[len][];
-	        for (int i = 0; i < len; i++) {
-	            array[i] = DIOBoxedShortArrayNullableSerde.INSTANCE.Read(input);
-	        }
-	        return array;
-	    }
-	}
+            output.WriteInt(@object.Length);
+            foreach (var i in @object) {
+                DIOBoxedShortArrayNullableSerde.INSTANCE.Write(i, output);
+            }
+        }
+
+        private short?[][] ReadInternal(DataInput input)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
+
+            var array = new short?[len][];
+            for (var i = 0; i < len; i++) {
+                array[i] = DIOBoxedShortArrayNullableSerde.INSTANCE.Read(input);
+            }
+
+            return array;
+        }
+    }
 } // end of namespace

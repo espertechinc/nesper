@@ -38,31 +38,40 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
                 var removed = DeleteFromPoints(x, y, leaf.Points);
                 if (removed) {
                     leaf.DecCount();
-                    if (leaf.Count == 0) leaf.Points = null;
+                    if (leaf.Count == 0) {
+                        leaf.Points = null;
+                    }
                 }
 
                 return leaf;
             }
 
-            var branch = (PointRegionQuadTreeNodeBranch) node;
+            var branch = (PointRegionQuadTreeNodeBranch)node;
             var quadrant = node.Bb.GetQuadrant(x, y);
-            if (quadrant == QuadrantEnum.NW)
+            if (quadrant == QuadrantEnum.NW) {
                 branch.Nw = DeleteFromNode(x, y, branch.Nw, tree);
-            else if (quadrant == QuadrantEnum.NE)
+            }
+            else if (quadrant == QuadrantEnum.NE) {
                 branch.Ne = DeleteFromNode(x, y, branch.Ne, tree);
-            else if (quadrant == QuadrantEnum.SW)
+            }
+            else if (quadrant == QuadrantEnum.SW) {
                 branch.Sw = DeleteFromNode(x, y, branch.Sw, tree);
-            else
+            }
+            else {
                 branch.Se = DeleteFromNode(x, y, branch.Se, tree);
+            }
 
             if (!(branch.Nw is PointRegionQuadTreeNodeLeaf<object> nwLeaf) ||
                 !(branch.Ne is PointRegionQuadTreeNodeLeaf<object> neLeaf) ||
                 !(branch.Sw is PointRegionQuadTreeNodeLeaf<object> swLeaf) ||
-                !(branch.Se is PointRegionQuadTreeNodeLeaf<object> seLeaf))
+                !(branch.Se is PointRegionQuadTreeNodeLeaf<object> seLeaf)) {
                 return branch;
+            }
 
             var total = nwLeaf.Count + neLeaf.Count + swLeaf.Count + seLeaf.Count;
-            if (total >= tree.LeafCapacity) return branch;
+            if (total >= tree.LeafCapacity) {
+                return branch;
+            }
 
             var collection = new List<XYPointWValue<TL>>();
             var count = MergeChildNodes(collection, nwLeaf.Points);
@@ -79,7 +88,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
         {
             XYPointWValue<TL> point;
 
-            if (points == null) return false;
+            if (points == null) {
+                return false;
+            }
+
             if (points is ICollection<XYPointWValue<TL>> collection) {
                 var enumerator = collection.GetEnumerator();
                 while (enumerator.MoveNext()) {
@@ -93,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
                 return false;
             }
 
-            point = (XYPointWValue<TL>) points;
+            point = (XYPointWValue<TL>)points;
             return point.X == x && point.Y == y;
         }
 
@@ -101,15 +113,20 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdfilterin
             ICollection<XYPointWValue<TL>> target,
             object points)
         {
-            if (points == null) return 0;
-            if (points is XYPointWValue<TL>) {
-                var p = (XYPointWValue<TL>) points;
-                target.Add(p);
+            if (points == null) {
+                return 0;
+            }
+
+            if (points is XYPointWValue<TL> item) {
+                target.Add(item);
                 return 1;
             }
 
-            var coll = (ICollection<XYPointWValue<TL>>) points;
-            foreach (var p in coll) target.Add(p);
+            var coll = (ICollection<XYPointWValue<TL>>)points;
+            foreach (var p in coll) {
+                target.Add(p);
+            }
+
             return coll.Count;
         }
     }

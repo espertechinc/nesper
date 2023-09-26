@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         {
             _nodesToAddTo = nodesToAddTo;
         }
-        
+
         public bool IsWalkDeclExprParam => true;
 
         public bool IsVisit(ExprNode exprNode)

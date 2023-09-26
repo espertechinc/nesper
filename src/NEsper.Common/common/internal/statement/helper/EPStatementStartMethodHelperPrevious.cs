@@ -23,8 +23,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                     break;
                 }
 
-                if (factory is GroupByViewFactory) {
-                    var grouped = (GroupByViewFactory) factory;
+                if (factory is GroupByViewFactory grouped) {
                     return FindPreviousViewFactory(grouped.Groupeds);
                 }
             }
@@ -34,7 +33,7 @@ namespace com.espertech.esper.common.@internal.statement.helper
                     "Failed to find 'previous'-handling view factory"); // was verified earlier, should not occur
             }
 
-            return (DataWindowViewWithPrevious) factoryFound;
+            return (DataWindowViewWithPrevious)factoryFound;
         }
     }
 } // end of namespace

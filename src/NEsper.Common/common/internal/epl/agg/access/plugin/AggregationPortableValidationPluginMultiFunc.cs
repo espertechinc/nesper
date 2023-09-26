@@ -45,68 +45,90 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
         {
             var method = parent.MakeChild(typeof(AggregationPortableValidationPluginMultiFunc), GetType(), classScope);
             method.Block
-                .DeclareVar<AggregationPortableValidationPluginMultiFunc>("portable", NewInstance(typeof(AggregationPortableValidationPluginMultiFunc)))
+                .DeclareVar<AggregationPortableValidationPluginMultiFunc>(
+                    "portable",
+                    NewInstance(typeof(AggregationPortableValidationPluginMultiFunc)))
                 .SetProperty(Ref("portable"), "AggregationFunctionName", Constant(AggregationFunctionName))
                 .SetProperty(Ref("portable"), "Config", Config == null ? ConstantNull() : Config.ToExpression())
                 .MethodReturn(Ref("portable"));
             return LocalMethod(method);
         }
 
-        
-    public bool IsAggregationMethod(string name, ExprNode[] parameters, ExprValidationContext validationContext){
-        // always obtain a new handler since the name may have changes
-        var configPair = validationContext.ImportService.ResolveAggregationMultiFunction(
-            AggregationFunctionName, validationContext.ClassProvidedExtension);
-        if (configPair == null) {
-            return false;
+
+        public bool IsAggregationMethod(
+            string name,
+            ExprNode[] parameters,
+            ExprValidationContext validationContext)
+        {
+            // always obtain a new handler since the name may have changes
+            var configPair = validationContext.ImportService.ResolveAggregationMultiFunction(
+                AggregationFunctionName,
+                validationContext.ClassProvidedExtension);
+            if (configPair == null) {
+                return false;
+            }
+
+            AggregationMultiFunctionForge forge;
+            if (configPair.Second != null) {
+                forge = TypeHelper.Instantiate<AggregationMultiFunctionForge>(configPair.Second);
+            }
+            else {
+                forge = TypeHelper.Instantiate<AggregationMultiFunctionForge>(
+                    configPair.First.MultiFunctionForgeClassName,
+                    validationContext.ImportService.TypeResolver);
+            }
+
+            ValidateParamsUnless(validationContext, parameters);
+
+            var ctx = new AggregationMultiFunctionValidationContext(
+                name,
+                validationContext.StreamTypeService.EventTypes,
+                parameters,
+                validationContext.StatementName,
+                validationContext,
+                Config,
+                parameters,
+                null);
+
+            Handler = forge.ValidateGetHandler(ctx);
+            return Handler.GetAggregationMethodMode(
+                       new AggregationMultiFunctionAggregationMethodContext(name, parameters, validationContext)) !=
+                   null;
         }
-        AggregationMultiFunctionForge forge;
-        if (configPair.Second != null) {
-            forge = TypeHelper.Instantiate<AggregationMultiFunctionForge>(configPair.Second);
-        } else {
-            forge = TypeHelper.Instantiate<AggregationMultiFunctionForge>(
-                configPair.First.MultiFunctionForgeClassName,
-                validationContext.ImportService.TypeResolver);
+
+        public AggregationMultiFunctionMethodDesc ValidateAggregationMethod(
+            ExprValidationContext validationContext,
+            string aggMethodName,
+            ExprNode[] @params)
+        {
+            ValidateParamsUnless(validationContext, @params);
+
+            // set of reader
+            var epType = Handler.ReturnType;
+            var returnType = epType.GetNormalizedType();
+            if (returnType == null) {
+                throw new ExprValidationException(
+                    "Null-type value returned by aggregation function '" + aggMethodName + "' is not allowed");
+            }
+
+            var forge = new AggregationMethodForgePlugIn(
+                returnType,
+                (AggregationMultiFunctionAggregationMethodModeManaged)Handler.GetAggregationMethodMode(
+                    new AggregationMultiFunctionAggregationMethodContext(aggMethodName, @params, validationContext)));
+            var eventTypeCollection = epType.OptionalIsEventTypeColl();
+            var eventTypeSingle = epType.OptionalIsEventTypeSingle();
+            var componentTypeCollection = EPChainableTypeHelper.GetCollectionOrArrayComponentTypeOrNull(epType);
+            //var componentTypeCollection = epType.OptionalIsComponentTypeColl();
+
+            return new AggregationMultiFunctionMethodDesc(
+                forge,
+                eventTypeCollection,
+                componentTypeCollection,
+                eventTypeSingle);
         }
 
-        ValidateParamsUnless(validationContext, parameters);
 
-        var ctx = new AggregationMultiFunctionValidationContext(
-            name,
-            validationContext.StreamTypeService.EventTypes,
-            parameters,
-            validationContext.StatementName,
-            validationContext,
-            Config,
-            parameters,
-            null);
-
-        Handler = forge.ValidateGetHandler(ctx);
-        return Handler.GetAggregationMethodMode(new AggregationMultiFunctionAggregationMethodContext(name, parameters, validationContext)) != null;
-    }
-
-    public AggregationMultiFunctionMethodDesc ValidateAggregationMethod(
-        ExprValidationContext validationContext,
-        String aggMethodName,
-        ExprNode[] @params)
-    {
-        ValidateParamsUnless(validationContext, @params);
-
-        // set of reader
-        var epType = Handler.ReturnType;
-        var returnType = epType.GetNormalizedClass();
-        AggregationMethodForgePlugIn forge = new AggregationMethodForgePlugIn(
-            returnType,
-            (AggregationMultiFunctionAggregationMethodModeManaged) Handler.GetAggregationMethodMode(
-                new AggregationMultiFunctionAggregationMethodContext(aggMethodName, @params, validationContext)));
-        var eventTypeCollection = epType.OptionalIsEventTypeColl();
-        var eventTypeSingle = epType.OptionalIsEventTypeSingle();
-        var componentTypeCollection = epType.OptionalIsComponentTypeColl();
-        return new AggregationMultiFunctionMethodDesc(forge, eventTypeCollection, componentTypeCollection, eventTypeSingle);
-    }
-
-
-    private void ValidateParamsUnless(
+        private void ValidateParamsUnless(
             ExprValidationContext validationContext,
             ExprNode[] parameters)
         {

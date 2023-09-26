@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
                 return null;
             }
 
-            return Arrays.AsList((object[]) array);
+            return Arrays.AsList((object[])array);
         }
 
         public ICollection<EventBean> EvaluateGetROCollectionEvents(

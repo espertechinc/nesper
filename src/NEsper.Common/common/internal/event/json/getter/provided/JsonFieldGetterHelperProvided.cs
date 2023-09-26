@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             int index)
         {
             var result = GetJsonProvidedSimpleProp(underlying, field);
-            return CollectionUtil.ArrayValueAtIndex((Array) result, index);
+            return CollectionUtil.ArrayValueAtIndex((Array)result, index);
         }
 
         public static object HandleJsonProvidedCreateFragmentSimple(
@@ -63,7 +63,13 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             }
             catch (MemberAccessException ex) {
                 throw new PropertyAccessException(
-                    "Failed to access field '" + field.Name + "' of class '" + field.DeclaringType.Name + "': " + ex.Message, ex);
+                    "Failed to access field '" +
+                    field.Name +
+                    "' of class '" +
+                    field.DeclaringType.Name +
+                    "': " +
+                    ex.Message,
+                    ex);
             }
         }
 
@@ -81,13 +87,13 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             var events = new EventBean[len];
             if (fragmentType is JsonEventType) {
                 for (var i = 0; i < len; i++) {
-                    object item = array.GetValue(i);
+                    var item = array.GetValue(i);
                     events[i] = factory.AdapterForTypedJson(item, fragmentType);
                 }
             }
             else {
                 for (var i = 0; i < len; i++) {
-                    object item = array.GetValue(i);
+                    var item = array.GetValue(i);
                     events[i] = factory.AdapterForTypedObject(item, fragmentType);
                 }
             }
@@ -110,7 +116,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             int index)
         {
             var array = GetJsonProvidedSimpleProp(@object, field);
-            return CollectionUtil.ArrayExistsAtIndex((Array) array, index);
+            return CollectionUtil.ArrayExistsAtIndex((Array)array, index);
         }
 
         /// <summary>
@@ -127,7 +133,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             EventType fragmentType,
             EventBeanTypedEventFactory factory)
         {
-            prop = CollectionUtil.ArrayValueAtIndex((Array) prop, index);
+            prop = CollectionUtil.ArrayValueAtIndex((Array)prop, index);
             if (prop == null) {
                 return null;
             }

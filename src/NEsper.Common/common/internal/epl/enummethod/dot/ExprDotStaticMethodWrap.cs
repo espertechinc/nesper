@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
     public interface ExprDotStaticMethodWrap
     {
-        EPType TypeInfo { get; }
+        EPChainableType TypeInfo { get; }
 
         ICollection<EventBean> ConvertNonNull(object result);
 

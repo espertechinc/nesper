@@ -62,11 +62,10 @@ namespace com.espertech.esper.common.client.context
 
         public override bool CompareTo(ContextPartitionIdentifier other)
         {
-            if (!(other is ContextPartitionIdentifierInitiatedTerminated)) {
+            if (!(other is ContextPartitionIdentifierInitiatedTerminated ito)) {
                 return false;
             }
 
-            var ito = (ContextPartitionIdentifierInitiatedTerminated) other;
             return Compare(StartTime, Properties, EndTime, ito.StartTime, ito.Properties, ito.EndTime);
         }
 
@@ -113,8 +112,8 @@ namespace com.espertech.esper.common.client.context
                     continue;
                 }
 
-                if (existingValue is EventBean && savedValue is EventBean) {
-                    if (((EventBean) existingValue).Underlying.Equals(((EventBean) savedValue).Underlying)) {
+                if (existingValue is EventBean bean && savedValue is EventBean eventBean) {
+                    if (bean.Underlying.Equals(eventBean.Underlying)) {
                         continue;
                     }
                 }

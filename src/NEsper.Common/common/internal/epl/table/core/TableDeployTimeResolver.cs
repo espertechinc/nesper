@@ -28,9 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             Type generator)
         {
             var symbols = new SAIFFInitializeSymbol();
-            CodegenMethod tableInit = classScope.NamespaceScope.InitMethod
+            var tableInit = classScope.NamespaceScope.InitMethod
                 .MakeChildWithScope(typeof(TableMetadataInternalEventToPublic), generator, symbols, classScope)
-                .AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
+                .AddParam<EPStatementInitServices>(EPStatementInitServicesConstants.REF.Ref);
             var tableResolve = MakeResolveTable(table, EPStatementInitServicesConstants.REF);
             tableInit.Block.MethodReturn(ExprDotName(tableResolve, "EventToPublic"));
             return classScope.NamespaceScope.AddDefaultFieldUnshared(
@@ -58,8 +58,8 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             string optionalModuleName,
             EPStatementInitServices services)
         {
-            string deploymentId = ResolveDeploymentId(tableName, visibility, optionalModuleName, services);
-            Table table = services.TableManagementService.GetTable(deploymentId, tableName);
+            var deploymentId = ResolveDeploymentId(tableName, visibility, optionalModuleName, services);
+            var table = services.TableManagementService.GetTable(deploymentId, tableName);
             if (table == null) {
                 throw new EPException("Failed to resolve table '" + tableName + "'");
             }

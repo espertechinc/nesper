@@ -36,6 +36,10 @@ namespace com.espertech.esper.common.@internal.view.expression
 
         public Variable[] Variables { get; set; }
 
+        public int? SubqueryNumber { get; set; }
+
+        public int StreamNumber { get; set; }
+
         public void Init(
             ViewFactoryContext viewFactoryContext,
             EPStatementInitServices services)

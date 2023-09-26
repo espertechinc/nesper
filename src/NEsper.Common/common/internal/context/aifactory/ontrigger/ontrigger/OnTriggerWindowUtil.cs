@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -15,20 +16,29 @@ using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.context.activator;
 using com.espertech.esper.common.@internal.context.aifactory.ontrigger.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.subquery;
+using com.espertech.esper.common.@internal.epl.expression.table;
+using com.espertech.esper.common.@internal.epl.join.hint;
 using com.espertech.esper.common.@internal.epl.lookupplansubord;
 using com.espertech.esper.common.@internal.epl.namedwindow.path;
 using com.espertech.esper.common.@internal.epl.ontrigger;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.streamtype;
+using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
+using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.epl.updatehelper;
+using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
+
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontrigger
 {
@@ -57,8 +67,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 ? namedWindow.EventType.Metadata.AccessModifier
                 : table.TableVisibility;
             ValidateOnExpressionContext(planDesc.ContextName, infraContextName, infraTitle);
-
-            List<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>();
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(1);
+            var fabricCharge = services.StateMgmtSettingsProvider.NewCharge();
 
             // validate expressions and plan subselects
             var validationResult = OnTriggerPlanValidator.ValidateOnTriggerPlan(
@@ -70,6 +80,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 @base,
                 services);
             additionalForgeables.AddAll(validationResult.AdditionalForgeables);
+            fabricCharge.Add(validationResult.FabricCharge);
 
             var validatedJoin = validationResult.ValidatedJoin;
             var activatorResultEventType = planDesc.ActivatorResult.ActivatorResultEventType;
@@ -89,7 +100,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
 
             // query plan
             var onlyUseExistingIndexes = table != null;
-            SubordinateWMatchExprQueryPlanResult planResult = SubordinateQueryPlanner.PlanOnExpression(
+            var planResult = SubordinateQueryPlanner.PlanOnExpression(
                 validatedJoin,
                 activatorResultEventType,
                 indexHint,
@@ -103,9 +114,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 onlyUseExistingIndexes,
                 @base.StatementRawInfo,
                 services);
-            SubordinateWMatchExprQueryPlanForge queryPlan = planResult.Forge;
+            var queryPlan = planResult.Forge;
             additionalForgeables.AddAll(planResult.AdditionalForgeables);
-            
+            fabricCharge.Add(planResult.FabricCharge);
+
             // indicate index dependencies
             if (queryPlan.Indexes != null && infraVisibility == NameAccessModifier.PUBLIC) {
                 foreach (var index in queryPlan.Indexes) {
@@ -140,17 +152,26 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 TableMetaData optionalInsertIntoTable = null;
                 var insertIntoDesc = @base.StatementSpec.Raw.InsertIntoDesc;
                 var addToFront = false;
+                ExprNode eventPrecedence = null;
                 if (insertIntoDesc != null) {
                     insertInto = true;
                     optionalInsertIntoTable = services.TableCompileTimeResolver.Resolve(insertIntoDesc.EventTypeName);
                     var optionalInsertIntoNamedWindow =
                         services.NamedWindowCompileTimeResolver.Resolve(insertIntoDesc.EventTypeName);
                     addToFront = optionalInsertIntoNamedWindow != null || optionalInsertIntoTable != null;
+                    if (insertIntoDesc.EventPrecedence != null) {
+                        eventPrecedence = EPLValidationUtil.ValidateEventPrecedence(
+                            optionalInsertIntoTable != null,
+                            insertIntoDesc.EventPrecedence,
+                            resultSetProcessor.ResultEventType,
+                            @base.StatementRawInfo,
+                            services);
+                    }
                 }
 
                 var selectAndDelete = planDesc.OnTriggerDesc.IsDeleteAndSelect;
                 var distinct = @base.StatementSpec.SelectClauseCompiled.IsDistinct;
-                MultiKeyPlan distinctMultiKeyPlan = MultiKeyPlanner.PlanMultiKeyDistinct(
+                var distinctMultiKeyPlan = MultiKeyPlanner.PlanMultiKeyDistinct(
                     distinct,
                     outputEventType,
                     @base.StatementRawInfo,
@@ -170,19 +191,21 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                     optionalInsertIntoTable,
                     selectAndDelete,
                     distinct,
-                    distinctMultiKeyPlan.ClassRef);
+                    distinctMultiKeyPlan.ClassRef,
+                    eventPrecedence);
             }
             else {
                 var defaultSelectAllSpec = new StatementSpecCompiled();
-                defaultSelectAllSpec.SelectClauseCompiled.WithSelectExprList(new SelectClauseElementWildcard());
+                defaultSelectAllSpec.SelectClauseCompiled.SelectExprList = new[] { new SelectClauseElementWildcard() };
                 defaultSelectAllSpec.Raw.SelectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
                 StreamTypeService typeService = new StreamTypeServiceImpl(
-                    new[] {resultEventType},
-                    new[] {infraName},
-                    new[] {false},
+                    new EventType[] { resultEventType },
+                    new string[] { infraName },
+                    new bool[] { false },
                     false,
                     false);
                 resultSetProcessor = ResultSetProcessorFactoryFactory.GetProcessorPrototype(
+                    ResultSetProcessorAttributionKeyStatement.INSTANCE,
                     new ResultSetSpec(defaultSelectAllSpec),
                     typeService,
                     null,
@@ -206,10 +229,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                         queryPlan);
                 }
                 else if (onTriggerType == OnTriggerType.ON_UPDATE) {
-                    var updateDesc = (OnTriggerWindowUpdateDesc) planDesc.OnTriggerDesc;
-                    EventBeanUpdateHelperForge updateHelper = EventBeanUpdateHelperForgeFactory.Make(
+                    var updateDesc = (OnTriggerWindowUpdateDesc)planDesc.OnTriggerDesc;
+                    var updateHelper = EventBeanUpdateHelperForgeFactory.Make(
                         infraName,
-                        (EventTypeSPI) infraEventType,
+                        (EventTypeSPI)infraEventType,
                         updateDesc.Assignments,
                         validationResult.ZeroStreamAliasName,
                         activatorResultEventType,
@@ -228,13 +251,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                         updateHelper);
                 }
                 else if (onTriggerType == OnTriggerType.ON_MERGE) {
-                    var onMergeTriggerDesc = (OnTriggerMergeDesc) planDesc.OnTriggerDesc;
+                    var onMergeTriggerDesc = (OnTriggerMergeDesc)planDesc.OnTriggerDesc;
                     var onMergeHelper = new InfraOnMergeHelperForge(
                         onMergeTriggerDesc,
                         activatorResultEventType,
                         planDesc.StreamSpec.OptionalStreamName,
                         infraName,
-                        (EventTypeSPI) infraEventType,
+                        (EventTypeSPI)infraEventType,
                         @base.StatementRawInfo,
                         services,
                         table);
@@ -259,7 +282,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                     classNameRSP,
                     resultSetProcessor,
                     namespaceScope,
-                    @base.StatementRawInfo));
+                    @base.StatementRawInfo,
+                    services.SerdeResolver.IsTargetHA));
 
             var queryPlanLogging = services.Configuration.Common.Logging.IsEnableQueryPlan;
             SubordinateQueryPlannerUtil.QueryPlanLogOnExpr(
@@ -269,8 +293,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 @base.StatementSpec.Annotations,
                 services.ImportServiceCompileTime);
 
-            StmtClassForgeableAIFactoryProviderOnTrigger onTrigger = new StmtClassForgeableAIFactoryProviderOnTrigger(className, namespaceScope, forge);
-            return new OnTriggerPlan(onTrigger, forgeables, resultSetProcessor.SelectSubscriberDescriptor, additionalForgeables);
+            var onTrigger = new StmtClassForgeableAIFactoryProviderOnTrigger(className, namespaceScope, forge);
+            return new OnTriggerPlan(
+                onTrigger,
+                forgeables,
+                resultSetProcessor.SelectSubscriberDescriptor,
+                additionalForgeables,
+                fabricCharge);
         }
 
         internal static void ValidateOnExpressionContext(
@@ -283,19 +312,20 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                     throw new ExprValidationException(
                         "Cannot create on-trigger expression: " +
                         title +
-                        " was declared with context " +
-                        desiredContextName.RenderAny() +
-                        ", please declare the same context name");
+                        " was declared with context '" +
+                        desiredContextName +
+                        "', please declare the same context name");
                 }
 
                 return;
             }
 
             if (!onExprContextName.Equals(desiredContextName)) {
-                string text = desiredContextName == null ?
-                    "without a context" :
-                    "with context \"" + desiredContextName + "\", please use the same context instead";
-                throw new ExprValidationException($"Cannot create on-trigger expression: {title} was declared {text}");
+                var text = desiredContextName == null
+                    ? "without a context"
+                    : "with context '" + desiredContextName + "', please use the same context instead";
+                throw new ExprValidationException(
+                    "Cannot create on-trigger expression: " + title + " was declared " + text);
             }
         }
     }

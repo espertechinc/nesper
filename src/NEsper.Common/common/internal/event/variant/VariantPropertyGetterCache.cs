@@ -109,8 +109,8 @@ namespace com.espertech.esper.common.@internal.@event.variant
 
         private VariantPropertyGetterRow AddType(EventType eventType)
         {
-            var newKnownTypes = (EventType[]) ResizeArray(knownTypes, knownTypes.Length + 1);
-            newKnownTypes[newKnownTypes.Length - 1] = eventType;
+            var newKnownTypes = (EventType[])ResizeArray(knownTypes, knownTypes.Length + 1);
+            newKnownTypes[^1] = eventType;
 
             // create getters
             IDictionary<string, EventPropertyGetter> getters = new Dictionary<string, EventPropertyGetter>();

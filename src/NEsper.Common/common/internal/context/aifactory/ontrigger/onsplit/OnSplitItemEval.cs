@@ -24,5 +24,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
         public ResultSetProcessorFactoryProvider RspFactoryProvider { get; set; }
 
         public PropertyEvaluator PropertyEvaluator { get; set; }
+
+        public ExprEvaluator EventPrecedence { get; set; }
     }
 } // end of namespace

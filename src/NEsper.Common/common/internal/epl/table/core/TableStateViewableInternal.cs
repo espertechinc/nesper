@@ -42,7 +42,10 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         {
             using (var enumerator = tableInstance.EventCollection.GetEnumerator()) {
                 if (optionalTableFilter != null) {
-                    return FilteredEventEnumerator.For(optionalTableFilter, enumerator, tableInstance.AgentInstanceContext);
+                    return FilteredEventEnumerator.For(
+                        optionalTableFilter,
+                        enumerator,
+                        tableInstance.AgentInstanceContext);
                 }
             }
 

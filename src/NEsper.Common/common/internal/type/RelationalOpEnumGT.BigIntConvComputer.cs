@@ -41,9 +41,9 @@ namespace com.espertech.esper.common.@internal.type
                 object objOne,
                 object objTwo)
             {
-                BigInteger s1 = convOne.CoerceBoxedBigInt((object) objOne);
-                BigInteger s2 = convTwo.CoerceBoxedBigInt((object) objTwo);
-                int result = s1.CompareTo(s2);
+                var s1 = convOne.CoerceBoxedBigInt(objOne);
+                var s2 = convTwo.CoerceBoxedBigInt(objTwo);
+                var result = s1.CompareTo(s2);
                 return result > 0;
             }
 

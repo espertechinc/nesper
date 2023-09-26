@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.collection;
@@ -18,7 +19,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
     public class ContextControllerKeyedSvcLevelOne : ContextControllerKeyedSvc
     {
-        private static readonly object[] EMPTY_PARTITION_KEYS = new object[0];
+        private static readonly object[] EMPTY_PARTITION_KEYS = Array.Empty<object>();
 
         private readonly IDictionary<object, ContextControllerKeyedSvcEntry> _keys =
             new NullableDictionary<object, ContextControllerKeyedSvcEntry>(
@@ -50,7 +51,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             IntSeqKey controllerPath,
             ContextControllerFilterEntry[] filterEntries)
         {
-            this._filterEntries = filterEntries;
+            _filterEntries = filterEntries;
         }
 
         public ContextControllerFilterEntry[] MgmtGetFilters(IntSeqKey controllerPath)
@@ -108,13 +109,13 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 consumer.Invoke(entry.Value);
             }
         }
-        
+
         public int KeyGetSubpathOrCPId(
             IntSeqKey controllerPath,
             object key)
         {
             var entry = _keys.Get(key);
-            return entry == null ? -1 : entry.SubpathOrCPId;
+            return entry?.SubpathOrCPId ?? -1;
         }
 
         public ICollection<int> Deactivate(IntSeqKey controllerPath)

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -14,47 +14,46 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
+
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     /// <summary>
-    ///     Represents the bit-wise operators in an expression tree.
+    /// Represents the bit-wise operators in an expression tree.
     /// </summary>
     public class ExprBitWiseNode : ExprNodeBase
     {
-        [NonSerialized] private ExprBitWiseNodeForge _forge;
+        private readonly BitWiseOpEnum bitWiseOpEnum;
+
+        [NonSerialized] private ExprBitWiseNodeForge forge;
 
         /// <summary>
-        ///     Ctor.
+        /// Ctor.
         /// </summary>
         /// <param name="bitWiseOpEnum">type of math</param>
         public ExprBitWiseNode(BitWiseOpEnum bitWiseOpEnum)
         {
-            BitWiseOpEnum = bitWiseOpEnum;
+            this.bitWiseOpEnum = bitWiseOpEnum;
         }
-
-        /// <summary>
-        ///     Returns the bitwise operator.
-        /// </summary>
-        /// <returns>operator</returns>
-        public BitWiseOpEnum BitWiseOpEnum { get; }
-
-        public bool IsConstantResult => false;
-
-        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.BITWISE;
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(_forge);
-                return _forge.ExprEvaluator;
+                CheckValidated(forge);
+                return forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(_forge);
-                return _forge;
+                CheckValidated(forge);
+                return forge;
             }
         }
+
+        /// <summary>
+        /// Returns the bitwise operator.
+        /// </summary>
+        /// <value>operator</value>
+        public BitWiseOpEnum BitWiseOpEnum => bitWiseOpEnum;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
@@ -62,39 +61,42 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 throw new ExprValidationException("BitWise node must have 2 parameters");
             }
 
-            var typeOne = ChildNodes[0].Forge.EvaluationType.GetBoxedType();
-            var typeTwo = ChildNodes[1].Forge.EvaluationType.GetBoxedType();
-            CheckNumericOrBoolean(typeOne);
-            CheckNumericOrBoolean(typeTwo);
+            var lhsType = ChildNodes[0].Forge.EvaluationType;
+            var rhsType = ChildNodes[1].Forge.EvaluationType;
+            CheckNumericOrBoolean(lhsType);
+            CheckNumericOrBoolean(rhsType);
 
-            if (typeOne.IsFloatingPointClass() || typeTwo.IsFloatingPointClass()) {
+            var lhsTypeClass = lhsType.GetBoxedType();
+            var rhsTypeClass = rhsType.GetBoxedType();
+
+            if (lhsTypeClass.IsFloatingPointClass() || rhsTypeClass.IsFloatingPointClass()) {
                 throw new ExprValidationException(
-                    "Invalid type for bitwise " + BitWiseOpEnum.ComputeDescription + " operator");
+                    "Invalid type for bitwise " + bitWiseOpEnum.ComputeDescription + " operator");
             }
 
-            if (typeOne != typeTwo) {
+            if (!lhsTypeClass.Equals(rhsTypeClass)) {
                 throw new ExprValidationException(
                     "Bitwise expressions must be of the same type for bitwise " +
-                    BitWiseOpEnum.ComputeDescription +
+                    bitWiseOpEnum.ComputeDescription +
                     " operator");
             }
 
-            var computer = BitWiseOpEnum.GetComputer(typeOne);
-            _forge = new ExprBitWiseNodeForge(this, typeOne, computer);
+            var computer = bitWiseOpEnum.GetComputer(lhsTypeClass);
+            forge = new ExprBitWiseNodeForge(this, lhsTypeClass, computer);
             return null;
         }
+
+        public bool IsConstantResult => false;
 
         public override bool EqualsNode(
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprBitWiseNode)) {
+            if (!(node is ExprBitWiseNode other)) {
                 return false;
             }
 
-            var other = (ExprBitWiseNode) node;
-
-            if (other.BitWiseOpEnum != BitWiseOpEnum) {
+            if (other.bitWiseOpEnum != bitWiseOpEnum) {
                 return false;
             }
 
@@ -106,17 +108,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNodeRenderableFlags flags)
         {
             ChildNodes[0].ToEPL(writer, Precedence, flags);
-            writer.Write(BitWiseOpEnum.ComputeDescription);
+            writer.Write(bitWiseOpEnum.ComputeDescription);
             ChildNodes[1].ToEPL(writer, Precedence, flags);
         }
 
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.BITWISE;
+
         private void CheckNumericOrBoolean(Type childType)
         {
-            if (!childType.IsBoolean() && !childType.IsNumeric()) {
+            if (childType == null || (!childType.IsTypeBoolean() && !childType.IsTypeNumeric())) {
                 throw new ExprValidationException(
-                    "Invalid datatype for binary operator, " +
-                    childType.CleanName() +
-                    " is not allowed");
+                    $"Invalid datatype for binary operator, {childType.CleanName()} is not allowed");
             }
         }
     }

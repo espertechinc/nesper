@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 return false;
             }
 
-            return Equals((NamespaceNamePair) obj);
+            return Equals((NamespaceNamePair)obj);
         }
 
         public override int GetHashCode()

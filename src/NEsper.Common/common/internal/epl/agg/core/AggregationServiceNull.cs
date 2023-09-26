@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         {
             // not applicable
         }
-
+        
         public void Accept(AggregationServiceVisitor visitor)
         {
         }

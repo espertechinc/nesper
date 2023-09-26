@@ -159,7 +159,7 @@ namespace com.espertech.esper.common.@internal.view.rank
                     }
                 }
                 else {
-                    var lastSortedEvent = (EventBean) existing;
+                    var lastSortedEvent = (EventBean)existing;
                     var uniqueKey = GetUniqueKey(lastSortedEvent);
                     _uniqueKeySortKeys.Remove(uniqueKey);
                     _numberOfEvents--;
@@ -266,7 +266,7 @@ namespace com.espertech.esper.common.@internal.view.rank
             EventBean removedOldEvent = null;
             if (existing != null) {
                 if (existing is IList<EventBean> existingList) {
-                    for (int ii = 0; ii < existingList.Count; ii++) {
+                    for (var ii = 0; ii < existingList.Count; ii++) {
                         var eventForRank = existingList[ii];
                         if (GetUniqueKey(eventForRank).Equals(uniqueKeyToRemove)) {
                             existingList.RemoveAt(ii--);
@@ -280,7 +280,7 @@ namespace com.espertech.esper.common.@internal.view.rank
                     }
                 }
                 else {
-                    removedOldEvent = (EventBean) existing;
+                    removedOldEvent = (EventBean)existing;
                     _sortedEvents.Remove(sortKey);
                 }
             }
@@ -298,7 +298,7 @@ namespace com.espertech.esper.common.@internal.view.rank
             EventBean replaced = null;
             if (existing != null) {
                 if (existing is IList<EventBean> existingList) {
-                    for (int ii = 0; ii < existingList.Count; ii++) {
+                    for (var ii = 0; ii < existingList.Count; ii++) {
                         var eventForRank = existingList[ii];
                         if (GetUniqueKey(eventForRank).Equals(uniqueKeyToReplace)) {
                             existingList.RemoveAt(ii--);
@@ -310,7 +310,7 @@ namespace com.espertech.esper.common.@internal.view.rank
                     existingList.Add(newData); // add to back as this is now the newest event
                 }
                 else {
-                    replaced = (EventBean) existing;
+                    replaced = (EventBean)existing;
                     _sortedEvents.Put(sortKey, newData);
                 }
             }
@@ -320,11 +320,8 @@ namespace com.espertech.esper.common.@internal.view.rank
 
         public override string ToString()
         {
-            return GetType().Name +
-                   " isDescending=" +
-                   _rankWindowViewFactory.IsDescendingValues.RenderAny() +
-                   " sortWindowSize=" +
-                   _sortWindowSize;
+            return
+                $"{GetType().Name} isDescending={_rankWindowViewFactory.IsDescendingValues.RenderAny()} sortWindowSize={_sortWindowSize}";
         }
 
         public object GetUniqueKey(EventBean theEvent)

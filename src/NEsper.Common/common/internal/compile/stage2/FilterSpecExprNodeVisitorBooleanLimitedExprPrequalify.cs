@@ -34,9 +34,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         public void Visit(ExprNode exprNode)
         {
-            if (exprNode is ExprVariableNode) {
-                var node = (ExprVariableNode) exprNode;
-                if (!node.VariableMetadata.IsConstant) {
+            if (exprNode is ExprVariableNode variableNode) {
+                if (!variableNode.VariableMetadata.IsConstant) {
                     IsLimited = false;
                 }
             }
@@ -47,9 +46,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                      exprNode is ExprDeclaredNode) {
                 IsLimited = false;
             }
-            else if (exprNode is ExprPlugInSingleRowNode) {
-                var plugIn = (ExprPlugInSingleRowNode) exprNode;
-                if (plugIn.Config != null && plugIn.Config.FilterOptimizable == ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED) {
+            else if (exprNode is ExprPlugInSingleRowNode plugIn) {
+                if (plugIn.Config != null &&
+                    plugIn.Config.FilterOptimizable ==
+                    ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED) {
                     IsLimited = false;
                 }
 
@@ -57,16 +57,15 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     IsLimited = false;
                 }
             }
-            else if (exprNode is ExprDotNode) {
-                var node = (ExprDotNode) exprNode;
+            else if (exprNode is ExprDotNode node) {
                 if (node.IsLocalInlinedClass) {
                     IsLimited = false;
                 }
             }
 
             // we don't process enumeration methods
-            if (exprNode is ExprNodeWithChainSpec) {
-                if (!((ExprNodeWithChainSpec) exprNode).ChainSpec.IsEmpty()) {
+            if (exprNode is ExprNodeWithChainSpec spec) {
+                if (!spec.ChainSpec.IsEmpty()) {
                     IsLimited = false;
                 }
             }

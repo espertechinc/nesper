@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -22,12 +23,17 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 {
     public class ContextControllerCategoryValidation : ContextControllerPortableInfo
     {
+        private readonly EventType categoryEventType;
+
+        public EventType CategoryEventType {
+            get => categoryEventType;
+            set => throw new System.NotImplementedException();
+        }
+
         public ContextControllerCategoryValidation(EventType categoryEventType)
         {
             CategoryEventType = categoryEventType;
         }
-
-        public EventType CategoryEventType { get; }
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
@@ -78,6 +84,11 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 
                 throw new ExprValidationException(message);
             }
+        }
+
+        public void VisitFilterAddendumEventTypes(Consumer<EventType> consumer)
+        {
+            consumer.Invoke(CategoryEventType);
         }
     }
 } // end of namespace

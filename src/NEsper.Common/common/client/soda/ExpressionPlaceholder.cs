@@ -21,8 +21,7 @@ namespace com.espertech.esper.common.client.soda
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            if (Children == null || Children.Count == 0)
-            {
+            if (Children == null || Children.Count == 0) {
                 return;
             }
 

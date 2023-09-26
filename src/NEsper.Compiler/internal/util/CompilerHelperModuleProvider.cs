@@ -214,7 +214,8 @@ namespace com.espertech.esper.compiler.@internal.util
             var namespaceScope = new CodegenNamespaceScope(
                 compileTimeServices.Namespace,
                 statementFieldsClassName,
-                compileTimeServices.IsInstrumented());
+                compileTimeServices.IsInstrumented,
+                TODO);
             var moduleClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(ModuleProvider),
                 moduleIdentPostfix);
@@ -269,7 +270,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var symbolsTableInit = new ModuleTableInitializeSymbol();
             var initializeTablesMethod = CodegenMethod
                 .MakeMethod(typeof(void), typeof(EPCompilerImpl), symbolsTableInit, classScope)
-                .AddParam(typeof(EPModuleTableInitServices), ModuleTableInitializeSymbol.REF_INITSVC.Ref);
+                .AddParam<EPModuleTableInitServices>(ModuleTableInitializeSymbol.REF_INITSVC.Ref);
             foreach (var table in compileTimeServices.TableCompileTimeRegistry.Tables) {
                 var addTable = RegisterTableCodegen(table, initializeTablesMethod, classScope, symbolsTableInit);
                 initializeTablesMethod.Block.Expression(LocalMethod(addTable));
@@ -279,7 +280,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var symbolsIndexInit = new ModuleIndexesInitializeSymbol();
             var initializeIndexesMethod = CodegenMethod
                 .MakeMethod(typeof(void), typeof(EPCompilerImpl), symbolsIndexInit, classScope)
-                .AddParam(typeof(EPModuleIndexInitServices), EPModuleIndexInitServicesConstants.REF.Ref);
+                .AddParam<EPModuleIndexInitServices>(EPModuleIndexInitServicesConstants.REF.Ref);
             foreach (KeyValuePair<IndexCompileTimeKey, IndexDetailForge> index in compileTimeServices
                 .IndexCompileTimeRegistry.Indexes) {
                 var addIndex = RegisterIndexCodegen(index, initializeIndexesMethod, classScope, symbolsIndexInit);
@@ -338,7 +339,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var symbolsScriptInit = new ModuleScriptInitializeSymbol();
             var initializeScriptsMethod = CodegenMethod
                 .MakeMethod(typeof(void), typeof(EPCompilerImpl), symbolsScriptInit, classScope)
-                .AddParam(typeof(EPModuleScriptInitServices), ModuleScriptInitializeSymbol.REF_INITSVC.Ref);
+                .AddParam<EPModuleScriptInitServices>(ModuleScriptInitializeSymbol.REF_INITSVC.Ref);
             foreach (var expression in compileTimeServices.ScriptCompileTimeRegistry.Scripts) {
                 var addScript = RegisterScriptCodegen(
                     expression,
@@ -352,7 +353,7 @@ namespace com.espertech.esper.compiler.@internal.util
             var symbolsClassProvidedInit = new ModuleClassProvidedInitializeSymbol();
             var initializeClassProvidedMethod = CodegenMethod
                 .MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbolsClassProvidedInit, classScope)
-                .AddParam(typeof(EPModuleClassProvidedInitServices), ModuleClassProvidedInitializeSymbol.REF_INITSVC.Ref);
+                .AddParam<EPModuleClassProvidedInitServices>(ModuleClassProvidedInitializeSymbol.REF_INITSVC.Ref);
             foreach (var currClazz in compileTimeServices.ClassProvidedCompileTimeRegistry.Classes) {
                 var addClassProvided = RegisterClassProvidedCodegen(
                     currClazz,

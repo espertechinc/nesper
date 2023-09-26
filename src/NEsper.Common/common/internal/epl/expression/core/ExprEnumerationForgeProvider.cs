@@ -13,13 +13,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public interface ExprEnumerationForgeProvider
     {
-	    /// <summary>
-	    ///     Returns the enumeration forge provider, or null if not applicable
-	    /// </summary>
-	    /// <returns>forge provider</returns>
-	    /// <param name="streamTypeService">stream type service</param>
-	    /// <param name="contextDescriptor">context descriptor</param>
-	    ExprEnumerationForgeDesc GetEnumerationForge(
+        /// <summary>
+        ///     Returns the enumeration forge provider, or null if not applicable
+        /// </summary>
+        /// <returns>forge provider</returns>
+        /// <param name="streamTypeService">stream type service</param>
+        /// <param name="contextDescriptor">context descriptor</param>
+        ExprEnumerationForgeDesc GetEnumerationForge(
             StreamTypeService streamTypeService,
             ContextCompileTimeDescriptor contextDescriptor);
     }

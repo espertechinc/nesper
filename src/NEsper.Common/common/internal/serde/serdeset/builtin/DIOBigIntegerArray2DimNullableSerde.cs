@@ -14,49 +14,70 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOBigIntegerArray2DimNullableSerde : DataInputOutputSerdeBase<BigInteger[][]> {
-	    public static readonly DIOBigIntegerArray2DimNullableSerde INSTANCE = new DIOBigIntegerArray2DimNullableSerde();
+    public class DIOBigIntegerArray2DimNullableSerde : DataInputOutputSerdeBase<BigInteger[][]>
+    {
+        public static readonly DIOBigIntegerArray2DimNullableSerde INSTANCE = new DIOBigIntegerArray2DimNullableSerde();
 
-	    private DIOBigIntegerArray2DimNullableSerde() {
-	    }
-	    
-	    public void Write(BigInteger[][] @object, DataOutput output) {
-	        WriteInternal(@object, output);
-	    }
+        private DIOBigIntegerArray2DimNullableSerde()
+        {
+        }
 
-	    public BigInteger[][] Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+        public void Write(
+            BigInteger[][] @object,
+            DataOutput output)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public override void Write(BigInteger[][] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
-	        WriteInternal(@object, output);
-	    }
+        public BigInteger[][] Read(DataInput input)
+        {
+            return ReadInternal(input);
+        }
 
-	    public override BigInteger[][] ReadValue(DataInput input, byte[] unitKey) {
-	        return ReadInternal(input);
-	    }
+        public override void Write(
+            BigInteger[][] @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    private void WriteInternal(BigInteger[][] @object, DataOutput output) {
-	        if (@object == null) {
-	            output.WriteInt(-1);
-	            return;
-	        }
-	        output.WriteInt(@object.Length);
-	        foreach (BigInteger[] i in @object) {
-	            DIOBigIntegerArrayNullableSerde.INSTANCE.Write(i, output);
-	        }
-	    }
+        public override BigInteger[][] ReadValue(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadInternal(input);
+        }
 
-	    private BigInteger[][] ReadInternal(DataInput input) {
-	        int len = input.ReadInt();
-	        if (len == -1) {
-	            return null;
-	        }
-	        BigInteger[][] array = new BigInteger[len][];
-	        for (int i = 0; i < len; i++) {
-	            array[i] = DIOBigIntegerArrayNullableSerde.INSTANCE.Read(input);
-	        }
-	        return array;
-	    }
-	}
+        private void WriteInternal(
+            BigInteger[][] @object,
+            DataOutput output)
+        {
+            if (@object == null) {
+                output.WriteInt(-1);
+                return;
+            }
+
+            output.WriteInt(@object.Length);
+            foreach (var i in @object) {
+                DIOBigIntegerArrayNullableSerde.INSTANCE.Write(i, output);
+            }
+        }
+
+        private BigInteger[][] ReadInternal(DataInput input)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
+
+            var array = new BigInteger[len][];
+            for (var i = 0; i < len; i++) {
+                array[i] = DIOBigIntegerArrayNullableSerde.INSTANCE.Read(input);
+            }
+
+            return array;
+        }
+    }
 } // end of namespace

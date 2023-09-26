@@ -192,7 +192,7 @@ namespace NEsper.Avro.Writer
             }
 
             public SelectExprProcessor GetSelectExprProcessor(
-                ImportService classpathImportService,
+                ImportService importService,
                 bool isFireAndForget,
                 string statementName)
             {

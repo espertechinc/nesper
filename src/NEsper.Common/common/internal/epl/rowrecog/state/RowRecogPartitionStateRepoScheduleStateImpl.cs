@@ -26,9 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
             this.terminationStateCompare = terminationStateCompare;
         }
 
-        public bool IsEmpty {
-            get => schedule.IsEmpty();
-        }
+        public bool IsEmpty => schedule.IsEmpty();
 
         public bool PutOrAdd(
             long matchBeginTime,
@@ -40,15 +38,14 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
                 return true;
             }
 
-            if (value is RowRecogNFAStateEntry) {
-                var valueEntry = (RowRecogNFAStateEntry) value;
+            if (value is RowRecogNFAStateEntry valueEntry) {
                 IList<RowRecogNFAStateEntry> list = new List<RowRecogNFAStateEntry>();
                 list.Add(valueEntry);
                 list.Add(state);
                 schedule.Put(matchBeginTime, list);
             }
             else {
-                var list = (IList<RowRecogNFAStateEntry>) value;
+                var list = (IList<RowRecogNFAStateEntry>)value;
                 list.Add(state);
             }
 
@@ -78,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
                 foundStates.Add(rowRecogNFAStateEntry);
             }
             else {
-                foundStates.AddAll((IList<RowRecogNFAStateEntry>) found);
+                foundStates.AddAll((IList<RowRecogNFAStateEntry>)found);
             }
         }
 
@@ -97,8 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
                 return false;
             }
 
-            if (entry is RowRecogNFAStateEntry) {
-                var single = (RowRecogNFAStateEntry) entry;
+            if (entry is RowRecogNFAStateEntry single) {
                 if (terminationStateCompare.CompareTerminationStateToEndState(state, single)) {
                     schedule.Remove(matchBeginTime);
                     foundStates.Add(single);
@@ -108,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
                 return false;
             }
 
-            var entries = (IList<RowRecogNFAStateEntry>) entry;
+            var entries = (IList<RowRecogNFAStateEntry>)entry;
             var removed = false;
 
             for (var ii = 0; ii < entries.Count; ii++) {

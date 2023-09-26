@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.client.dataflow.util
                 return null;
             }
 
-            ExprNode validated = EPLValidationUtil.ValidateSimpleGetSubtree(
+            var validated = EPLValidationUtil.ValidateSimpleGetSubtree(
                 ExprNodeOrigin.DATAFLOWFILTER,
                 expr,
                 eventType,
@@ -80,17 +80,29 @@ namespace com.espertech.esper.common.client.dataflow.util
             ExprNode validated,
             Type expectedReturnType)
         {
-            Type returnType = validated.Forge.EvaluationType;
-            if (!returnType.GetBoxedType().IsAssignmentCompatible(expectedReturnType)) {
-                string message = "Failed to validate return type of parameter '" +
-                                 name +
-                                 "', expected '" +
-                                 expectedReturnType.CleanName() +
-                                 "' but received '" +
-                                 returnType.CleanName() +
-                                 "'";
-                throw new ExprValidationException(message);
+            var returnType = validated.Forge.EvaluationType;
+            if (returnType == null) {
+                throw MakeValidateReturnTypeEx(name, "null", expectedReturnType);
             }
+
+            if (!returnType.GetBoxedType().IsAssignmentCompatible(expectedReturnType)) {
+                throw MakeValidateReturnTypeEx(name, returnType.CleanName(), expectedReturnType);
+            }
+        }
+
+        private static ExprValidationException MakeValidateReturnTypeEx(
+            string name,
+            string received,
+            Type expected)
+        {
+            var message = "Failed to validate return type of parameter '" +
+                          name +
+                          "', expected '" +
+                          expected.CleanName() +
+                          "' but received '" +
+                          received +
+                          "'";
+            return new ExprValidationException(message);
         }
     }
 } // end of namespace

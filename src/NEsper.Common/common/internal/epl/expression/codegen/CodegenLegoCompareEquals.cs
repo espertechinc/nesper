@@ -25,8 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         {
             if (lhsType.IsValueType &&
                 rhsType.IsValueType &&
-                !TypeHelper.IsFloatingPointClass(lhsType) &&
-                !TypeHelper.IsFloatingPointClass(rhsType)) {
+                !lhsType.IsFloatingPointClass() &&
+                !rhsType.IsFloatingPointClass()) {
                 return EqualsIdentity(lhs, rhs);
             }
 

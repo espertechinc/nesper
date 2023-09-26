@@ -34,13 +34,11 @@ namespace com.espertech.esper.common.@internal.@event.arr
             BeanEventPropertyGetter entryGetter,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
-            Type returnType,
-            Type nestedComponentType)
+            Type returnType)
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                returnType,
-                nestedComponentType)
+                returnType)
         {
             this.propertyIndex = propertyIndex;
             this.entryGetter = entryGetter;
@@ -48,7 +46,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
 
         public override Type TargetType => typeof(object[]);
 
-        public override Type BeanPropType => typeof(object);
+        //public override Type BeanPropType => typeof(object);
 
         public object GetObjectArray(object[] array)
         {
@@ -60,8 +58,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             // Object within the map
-            if (value is EventBean) {
-                return entryGetter.Get((EventBean) value);
+            if (value is EventBean bean) {
+                return entryGetter.Get(bean);
             }
 
             return entryGetter.GetBeanProp(value);
@@ -127,7 +125,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array")
+                .AddParam<object[]>("array")
                 .Block
                 .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
                 .IfRefNullReturnNull("value")
@@ -153,8 +151,8 @@ namespace com.espertech.esper.common.@internal.@event.arr
             }
 
             // Object within the map
-            if (value is EventBean) {
-                return entryGetter.IsExistsProperty((EventBean) value);
+            if (value is EventBean bean) {
+                return entryGetter.IsExistsProperty(bean);
             }
 
             return entryGetter.IsBeanExistsProperty(value);
@@ -165,7 +163,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(bool), GetType(), codegenClassScope)
-                .AddParam(typeof(object[]), "array")
+                .AddParam<object[]>("array")
                 .Block
                 .DeclareVar<object>("value", ArrayAtIndex(Ref("array"), Constant(propertyIndex)))
                 .IfRefNullReturnFalse("value")

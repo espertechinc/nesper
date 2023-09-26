@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 {
     public abstract class EnumForgeBasePlain : EnumForge
     {
-        public EnumForgeBasePlain(ExprDotEvalParamLambda lambda) 
+        public EnumForgeBasePlain(ExprDotEvalParamLambda lambda)
             : this(lambda.BodyForge, lambda.StreamCountIncoming)
         {
         }

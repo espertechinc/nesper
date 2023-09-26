@@ -51,9 +51,7 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary> Returns list of parameters.</summary>
         /// <returns> list of parameters
         /// </returns>
-        public IList<NumberSetParameter> Parameters {
-            get { return _parameters; }
-        }
+        public IList<NumberSetParameter> Parameters => _parameters;
 
         /// <summary>
         /// Returns true if all values between and including min and max are supplied by the parameter.
@@ -67,7 +65,7 @@ namespace com.espertech.esper.common.@internal.type
             int min,
             int max)
         {
-            foreach (NumberSetParameter param in _parameters) {
+            foreach (var param in _parameters) {
                 if (param.IsWildcard(min, max)) {
                     return true;
                 }
@@ -88,7 +86,7 @@ namespace com.espertech.esper.common.@internal.type
         {
             ICollection<int> result = new HashSet<int>();
 
-            foreach (NumberSetParameter param in _parameters) {
+            foreach (var param in _parameters) {
                 result.AddAll(param.GetValuesInRange(min, max));
             }
 

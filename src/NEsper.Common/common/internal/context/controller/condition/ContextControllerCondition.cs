@@ -15,7 +15,7 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         long? ExpectedEndTime { get; }
         ContextConditionDescriptor Descriptor { get; }
         bool IsImmediate { get; }
-        
+
         void Transfer(AgentInstanceTransferServices xfer);
     }
 } // end of namespace

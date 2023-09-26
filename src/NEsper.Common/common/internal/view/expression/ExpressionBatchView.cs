@@ -94,12 +94,12 @@ namespace com.espertech.esper.common.@internal.view.expression
 
                 foreach (var newEvent in newData) {
                     window.Add(newEvent);
-                    aggregationService?.ApplyEnter(new[] {newEvent}, null, agentInstanceContext);
+                    aggregationService?.ApplyEnter(new[] { newEvent }, null, agentInstanceContext);
 
                     newestEvent = newEvent;
                     if (!fireBatch) {
                         fireBatch = EvaluateExpression(newEvent, window.Count);
-                        if (fireBatch && !((ExpressionBatchViewFactory) factory).IsIncludeTriggeringEvent) {
+                        if (fireBatch && !((ExpressionBatchViewFactory)factory).IsIncludeTriggeringEvent) {
                             numEventsInBatch = window.Count - 1;
                         }
                     }

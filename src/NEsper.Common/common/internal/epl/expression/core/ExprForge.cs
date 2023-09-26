@@ -49,7 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
-            => ProcEvaluateCodegen?.Invoke(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
+        {
+            return ProcEvaluateCodegen?.Invoke(requiredType, codegenMethodScope, exprSymbol, codegenClassScope);
+        }
 
         public Type EvaluationType
             => ProcEvaluationType?.Invoke();

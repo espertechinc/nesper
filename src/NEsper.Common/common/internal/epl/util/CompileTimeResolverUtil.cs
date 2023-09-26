@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.util
             T path,
             T preconfigured,
             PathRegistryObjectType objectType,
-            String name)
+            string name)
         {
             if (path != null && preconfigured != null) {
                 throw new EPException(
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.util
 
         public static EPException MakePathAmbiguous(
             PathRegistryObjectType objectType,
-            String name,
+            string name,
             PathException e)
         {
             return new EPException(

@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             }
 
             var rootStateNode = NewState(null);
-            var rootState = (EvalRootState) rootStateNode;
+            var rootState = (EvalRootState)rootStateNode;
             rootState.Callback = callback;
             rootState.StartRecoverable(isRecoveringResilient, beginState);
             return rootState;

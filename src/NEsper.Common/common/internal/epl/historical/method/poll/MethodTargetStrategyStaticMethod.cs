@@ -13,6 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
@@ -46,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
 
         public object Invoke(
             object lookupValues,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
             try {
                 switch (_invokeType) {
@@ -54,10 +55,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
                         return _method.Invoke(null, null);
 
                     case MethodTargetStrategyStaticMethodInvokeType.SINGLE:
-                        return _method.Invoke(null, new[] {lookupValues});
+                        return _method.Invoke(null, new[] { lookupValues });
 
                     case MethodTargetStrategyStaticMethodInvokeType.MULTIKEY:
-                        return _method.Invoke(null, (object[]) lookupValues);
+                        return _method.Invoke(null, (object[])lookupValues);
 
                     default:
                         throw new IllegalStateException("Unrecognized value for " + _invokeType);

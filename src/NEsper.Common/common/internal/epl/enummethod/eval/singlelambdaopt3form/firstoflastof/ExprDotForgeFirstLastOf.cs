@@ -16,87 +16,86 @@ using com.espertech.esper.common.@internal.rettype;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.firstoflastof
 {
-	public class ExprDotForgeFirstLastOf : ExprDotForgeLambdaThreeForm
-	{
+    public class ExprDotForgeFirstLastOf : ExprDotForgeLambdaThreeForm
+    {
+        protected override EPChainableType InitAndNoParamsReturnType(
+            EventType inputEventType,
+            Type collectionComponentType)
+        {
+            if (inputEventType != null) {
+                return EPChainableTypeHelper.SingleEvent(inputEventType);
+            }
 
-		protected override EPType InitAndNoParamsReturnType(
-			EventType inputEventType,
-			Type collectionComponentType)
-		{
-			if (inputEventType != null) {
-				return EPTypeHelper.SingleEvent(inputEventType);
-			}
+            return new EPChainableTypeClass(collectionComponentType);
+        }
 
-			return EPTypeHelper.SingleValue(collectionComponentType);
-		}
+        protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
+            EnumMethodEnum enumMethod,
+            EPChainableType type,
+            StatementCompileTimeServices services)
+        {
+            if (enumMethod == EnumMethodEnum.FIRSTOF) {
+                return streamCountIncoming => new EnumFirstOf(streamCountIncoming, type);
+            }
+            else {
+                return streamCountIncoming => new EnumLastOf(streamCountIncoming, type);
+            }
+        }
 
-		protected override ThreeFormNoParamFactory.ForgeFunction NoParamsForge(
-			EnumMethodEnum enumMethod,
-			EPType type,
-			StatementCompileTimeServices services)
-		{
-			if (enumMethod == EnumMethodEnum.FIRSTOF) {
-				return streamCountIncoming => new EnumFirstOf(streamCountIncoming, type);
-			}
-			else {
-				return streamCountIncoming => new EnumLastOf(streamCountIncoming, type);
-			}
-		}
+        protected override ThreeFormInitFunction InitAndSingleParamReturnType(
+            EventType inputEventType,
+            Type collectionComponentType)
+        {
+            return lambda => InitAndNoParamsReturnType(inputEventType, collectionComponentType);
+        }
 
-		protected override Func<ExprDotEvalParamLambda, EPType> InitAndSingleParamReturnType(
-			EventType inputEventType,
-			Type collectionComponentType)
-		{
-			return lambda => InitAndNoParamsReturnType(inputEventType, collectionComponentType);
-		}
+        protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                typeInfo,
+                services) => {
+                if (enumMethod == EnumMethodEnum.FIRSTOF) {
+                    return new EnumFirstOfEvent(lambda);
+                }
+                else {
+                    return new EnumLastOfEvent(lambda);
+                }
+            };
+        }
 
-		protected override ThreeFormEventPlainFactory.ForgeFunction SingleParamEventPlain(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				typeInfo,
-				services) => {
-				if (enumMethod == EnumMethodEnum.FIRSTOF) {
-					return new EnumFirstOfEvent(lambda);
-				}
-				else {
-					return new EnumLastOfEvent(lambda);
-				}
-			};
-		}
+        protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                fieldType,
+                numParameters,
+                typeInfo,
+                services) => {
+                if (enumMethod == EnumMethodEnum.FIRSTOF) {
+                    return new EnumFirstOfEventPlus(lambda, fieldType, numParameters);
+                }
+                else {
+                    return new EnumLastOfEventPlus(lambda, fieldType, numParameters);
+                }
+            };
+        }
 
-		protected override ThreeFormEventPlusFactory.ForgeFunction SingleParamEventPlus(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				fieldType,
-				numParameters,
-				typeInfo,
-				services) => {
-				if (enumMethod == EnumMethodEnum.FIRSTOF) {
-					return new EnumFirstOfEventPlus(lambda, fieldType, numParameters);
-				}
-				else {
-					return new EnumLastOfEventPlus(lambda, fieldType, numParameters);
-				}
-			};
-		}
-
-		protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
-		{
-			return (
-				lambda,
-				eventType,
-				numParams,
-				typeInfo,
-				services) => {
-				if (enumMethod == EnumMethodEnum.FIRSTOF) {
-					return new EnumFirstOfScalar(lambda, eventType, numParams, typeInfo);
-				}
-				else {
-					return new EnumLastOfScalar(lambda, eventType, numParams, typeInfo);
-				}
-			};
-		}
-	}
+        protected override ThreeFormScalarFactory.ForgeFunction SingleParamScalar(EnumMethodEnum enumMethod)
+        {
+            return (
+                lambda,
+                eventType,
+                numParams,
+                typeInfo,
+                services) => {
+                if (enumMethod == EnumMethodEnum.FIRSTOF) {
+                    return new EnumFirstOfScalar(lambda, eventType, numParams, typeInfo);
+                }
+                else {
+                    return new EnumLastOfScalar(lambda, eventType, numParams, typeInfo);
+                }
+            };
+        }
+    }
 } // end of namespace

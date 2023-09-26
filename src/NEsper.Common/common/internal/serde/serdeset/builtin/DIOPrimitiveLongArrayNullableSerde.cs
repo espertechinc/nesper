@@ -11,49 +11,70 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOPrimitiveLongArrayNullableSerde : DataInputOutputSerdeBase<long[]> {
-	    public static readonly DIOPrimitiveLongArrayNullableSerde INSTANCE = new DIOPrimitiveLongArrayNullableSerde();
+    public class DIOPrimitiveLongArrayNullableSerde : DataInputOutputSerdeBase<long[]>
+    {
+        public static readonly DIOPrimitiveLongArrayNullableSerde INSTANCE = new DIOPrimitiveLongArrayNullableSerde();
 
-	    private DIOPrimitiveLongArrayNullableSerde() {
-	    }
+        private DIOPrimitiveLongArrayNullableSerde()
+        {
+        }
 
-	    public void Write(long[] @object, DataOutput output) {
-	        WriteInternal(@object, output);
-	    }
+        public void Write(
+            long[] @object,
+            DataOutput output)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public long[] Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+        public long[] Read(DataInput input)
+        {
+            return ReadInternal(input);
+        }
 
-	    public override void Write(long[] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
-	        WriteInternal(@object, output);
-	    }
+        public override void Write(
+            long[] @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public override long[] ReadValue(DataInput input, byte[] unitKey) {
-	        return ReadInternal(input);
-	    }
+        public override long[] ReadValue(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadInternal(input);
+        }
 
-	    private void WriteInternal(long[] @object, DataOutput output) {
-	        if (@object == null) {
-	            output.WriteInt(-1);
-	            return;
-	        }
-	        output.WriteInt(@object.Length);
-	        foreach (long i in @object) {
-	            output.WriteLong(i);
-	        }
-	    }
+        private void WriteInternal(
+            long[] @object,
+            DataOutput output)
+        {
+            if (@object == null) {
+                output.WriteInt(-1);
+                return;
+            }
 
-	    private long[] ReadInternal(DataInput input) {
-	        int len = input.ReadInt();
-	        if (len == -1) {
-	            return null;
-	        }
-	        long[] array = new long[len];
-	        for (int i = 0; i < len; i++) {
-	            array[i] = input.ReadLong();
-	        }
-	        return array;
-	    }
-	}
+            output.WriteInt(@object.Length);
+            foreach (var i in @object) {
+                output.WriteLong(i);
+            }
+        }
+
+        private long[] ReadInternal(DataInput input)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
+
+            var array = new long[len];
+            for (var i = 0; i < len; i++) {
+                array[i] = input.ReadLong();
+            }
+
+            return array;
+        }
+    }
 } // end of namespace

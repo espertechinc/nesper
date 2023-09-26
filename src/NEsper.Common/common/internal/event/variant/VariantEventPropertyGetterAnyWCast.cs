@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.@event.variant
             var cache = codegenClassScope.AddOrGetDefaultFieldSharable(
                 new VariantPropertyGetterCacheCodegenField(variantEventType));
             var method = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
-                .AddParam(typeof(EventBean), "eventBean");
+                .AddParam<EventBean>("eventBean");
             method.Block
                 .DeclareVar<object>(
                     "value",

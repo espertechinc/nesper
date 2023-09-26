@@ -19,7 +19,9 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.getter.core;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.@event.json.getter.provided.JsonFieldGetterHelperProvided; // getJsonProvidedSimpleProp
+using static
+    com.espertech.esper.common.@internal.@event.json.getter.provided.
+    JsonFieldGetterHelperProvided; // getJsonProvidedSimpleProp
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 {
@@ -35,7 +37,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             Type returnType,
             Type genericType,
             FieldInfo field,
-            BeanEventPropertyGetter nestedGetter) : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, genericType)
+            BeanEventPropertyGetter nestedGetter) : base(
+            eventBeanTypedEventFactory,
+            beanEventTypeFactory,
+            returnType)
         {
             this.field = field;
             this.nestedGetter = nestedGetter;
@@ -43,14 +48,17 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 
         public override Type TargetType => field.DeclaringType;
 
-        public override Type BeanPropType => typeof(object);
+        //public override Type BeanPropType => typeof(object);
 
         public override CodegenExpression EventBeanGetCodegen(
             CodegenExpression beanExpression,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(field.DeclaringType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
@@ -66,7 +74,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CastUnderlying(field.DeclaringType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(
@@ -121,7 +132,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
                 .Block
                 .DeclareVar<object>("value", Ref("und." + field.Name))
                 .IfRefNullReturnNull("value")
-                .MethodReturn(nestedGetter.UnderlyingGetCodegen(CastRef(nestedGetter.TargetType, "value"), codegenMethodScope, codegenClassScope));
+                .MethodReturn(
+                    nestedGetter.UnderlyingGetCodegen(
+                        CastRef(nestedGetter.TargetType, "value"),
+                        codegenMethodScope,
+                        codegenClassScope));
         }
 
         private CodegenMethod GetFieldExistsCodegen(
@@ -133,7 +148,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
                 .Block
                 .DeclareVar<object>("value", Ref("und." + field.Name))
                 .IfRefNullReturnFalse("value")
-                .MethodReturn(nestedGetter.UnderlyingExistsCodegen(CastRef(nestedGetter.TargetType, "value"), codegenMethodScope, codegenClassScope));
+                .MethodReturn(
+                    nestedGetter.UnderlyingExistsCodegen(
+                        CastRef(nestedGetter.TargetType, "value"),
+                        codegenMethodScope,
+                        codegenClassScope));
         }
     }
 } // end of namespace

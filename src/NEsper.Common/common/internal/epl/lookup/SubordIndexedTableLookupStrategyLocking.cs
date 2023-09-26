@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             SubordTableLookupStrategy inner,
             IReaderWriterLock statementLock)
         {
-            this._inner = inner;
-            this._statementLock = statementLock;
+            _inner = inner;
+            _statementLock = statementLock;
         }
 
         public ICollection<EventBean> Lookup(
@@ -56,15 +56,12 @@ namespace com.espertech.esper.common.@internal.epl.lookup
             EventBean[] events,
             ExprEvaluatorContext context)
         {
-            using (_statementLock.AcquireReadLock())
-            {
+            using (_statementLock.AcquireReadLock()) {
                 var result = _inner.Lookup(events, context);
-                if (result != null)
-                {
+                if (result != null) {
                     return new ArrayDeque<EventBean>(result);
                 }
-                else
-                {
+                else {
                     return EmptyList<EventBean>.Instance;
                 }
             }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
@@ -26,7 +27,7 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.view.timebatch
 {
     /// <summary>
-    ///     Factory for <seealso cref="TimeBatchView" />.
+    /// Factory for <seealso cref = "TimeBatchView"/>.
     /// </summary>
     public class TimeBatchViewForge : ViewFactoryForgeBase,
         DataWindowViewForge,
@@ -34,25 +35,15 @@ namespace com.espertech.esper.common.@internal.view.timebatch
         ScheduleHandleCallbackProvider,
         DataWindowBatchingViewForge
     {
-        internal bool isForceUpdate;
-        internal bool isStartEager;
-
         /// <summary>
-        ///     The reference point, or null if none supplied.
+        /// The reference point, or null if none supplied.
         /// </summary>
-        internal long? optionalReferencePoint;
+        protected long? optionalReferencePoint;
 
-        internal int scheduleCallbackId;
-        internal TimePeriodComputeForge timePeriodCompute;
-
-        private string ViewParamMessage => ViewName +
-                                           " view requires a single numeric or time period parameter, and an optional long-typed reference point in msec, and an optional list of control keywords as a string parameter (please see the documentation)";
-
-        public override string ViewName => "Time-Batch";
-
-        public int ScheduleCallbackId {
-            set => scheduleCallbackId = value;
-        }
+        protected bool isForceUpdate;
+        protected bool isStartEager;
+        protected TimePeriodComputeForge timePeriodCompute;
+        protected int scheduleCallbackId;
 
         public override void SetViewParameters(
             IList<ExprNode> parameters,
@@ -65,11 +56,7 @@ namespace com.espertech.esper.common.@internal.view.timebatch
 
             var viewParamValues = new object[parameters.Count];
             for (var i = 1; i < viewParamValues.Length; i++) {
-                viewParamValues[i] = ViewForgeSupport.ValidateAndEvaluate(
-                    ViewName,
-                    parameters[i],
-                    viewForgeEnv,
-                    streamNumber);
+                viewParamValues[i] = ViewForgeSupport.ValidateAndEvaluate(ViewName, parameters[i], viewForgeEnv);
             }
 
             timePeriodCompute = ViewFactoryTimePeriodHelper.ValidateAndEvaluateTimeDeltaFactory(
@@ -77,9 +64,7 @@ namespace com.espertech.esper.common.@internal.view.timebatch
                 parameters[0],
                 ViewParamMessage,
                 0,
-                viewForgeEnv,
-                streamNumber);
-
+                viewForgeEnv);
             var timeBatchFlags = new TimeBatchFlags(false, false);
             if (viewParamValues.Length == 2 && viewParamValues[1] is string) {
                 timeBatchFlags = TimeBatchFlags.ProcessKeywords(viewParamValues[1], ViewParamMessage);
@@ -87,7 +72,7 @@ namespace com.espertech.esper.common.@internal.view.timebatch
             else {
                 if (viewParamValues.Length >= 2) {
                     var paramRef = viewParamValues[1];
-                    if (!paramRef.IsNumber() || paramRef.IsFloatingPointNumber()) {
+                    if (!(paramRef.IsNumber()) || paramRef.IsFloatingPointNumber()) {
                         throw new ViewParameterException(
                             ViewName + " view requires a Long-typed reference point in msec as a second parameter");
                     }
@@ -104,23 +89,15 @@ namespace com.espertech.esper.common.@internal.view.timebatch
             isStartEager = timeBatchFlags.IsStartEager;
         }
 
-        public override void Attach(
+        public override void AttachValidate(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             eventType = parentEventType;
         }
 
-        internal override Type TypeOfFactory()
-        {
-            return typeof(TimeBatchViewFactory);
-        }
-
-        internal override string FactoryMethod()
-        {
-            return "Timebatch";
-        }
+        internal override Type TypeOfFactory => typeof(TimeBatchViewFactory);
+        internal override string FactoryMethod => "timebatch";
 
         internal override void Assign(
             CodegenMethod method,
@@ -132,13 +109,33 @@ namespace com.espertech.esper.common.@internal.view.timebatch
                 throw new IllegalStateException("No schedule callback id");
             }
 
-            method.Block
-                .DeclareVar<TimePeriodCompute>("eval", timePeriodCompute.MakeEvaluator(method, classScope))
-                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
-                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))
-                .SetProperty(factory, "IsForceUpdate", Constant(isForceUpdate))
-                .SetProperty(factory, "IsStartEager", Constant(isStartEager))
-                .SetProperty(factory, "OptionalReferencePoint", Constant(optionalReferencePoint));
+            method.Block.DeclareVar<TimePeriodCompute>("eval", timePeriodCompute.MakeEvaluator(method, classScope))
+                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
+                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId))
+                .ExprDotMethod(factory, "setForceUpdate", Constant(isForceUpdate))
+                .ExprDotMethod(factory, "setStartEager", Constant(isStartEager))
+                .ExprDotMethod(factory, "setOptionalReferencePoint", Constant(optionalReferencePoint));
+        }
+
+        public override AppliesTo AppliesTo()
+        {
+            return client.annotation.AppliesTo.WINDOW_TIMEBATCH;
+        }
+
+        public override T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.Visit(this);
+        }
+
+        public string ViewParamMessage => ViewName +
+                                          " view requires a single numeric or time period parameter, and an optional long-typed reference point in msec, and an optional list of control keywords as a string parameter (please see the documentation)";
+
+        public override string ViewName => "Time-Batch";
+
+        public int ScheduleCallbackId {
+            get => scheduleCallbackId;
+
+            set => scheduleCallbackId = value;
         }
     }
 } // end of namespace

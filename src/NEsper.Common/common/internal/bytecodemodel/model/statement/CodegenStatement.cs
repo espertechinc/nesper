@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
             CodegenIndent indent);
 
         void MergeClasses(ISet<Type> classes);
-        
+
         void TraverseExpressions(Consumer<CodegenExpression> consumer);
     }
 } // end of namespace

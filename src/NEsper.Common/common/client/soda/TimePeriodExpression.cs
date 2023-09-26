@@ -37,15 +37,15 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="hasYears">flag to indicate that a year-part expression exists</param>
-        /// <param name="hasMonths">flag to indicate that a month-part expression exists</param>
-        /// <param name="hasWeeks">flag to indicate that a week-part expression exists</param>
-        /// <param name="hasDays">flag to indicate that a day-part expression exists</param>
-        /// <param name="hasHours">flag to indicate that a hour-part expression exists</param>
-        /// <param name="hasMinutes">flag to indicate that a minute-part expression exists</param>
-        /// <param name="hasSeconds">flag to indicate that a seconds-part expression exists</param>
-        /// <param name="hasMilliseconds">flag to indicate that a millisec-part expression exists</param>
-        /// <param name="hasMicroseconds">flag to indicate that a microsecond-part expression exists</param>
+        /// <param name = "hasYears">flag to indicate that a year-part expression exists</param>
+        /// <param name = "hasMonths">flag to indicate that a month-part expression exists</param>
+        /// <param name = "hasWeeks">flag to indicate that a week-part expression exists</param>
+        /// <param name = "hasDays">flag to indicate that a day-part expression exists</param>
+        /// <param name = "hasHours">flag to indicate that a hour-part expression exists</param>
+        /// <param name = "hasMinutes">flag to indicate that a minute-part expression exists</param>
+        /// <param name = "hasSeconds">flag to indicate that a seconds-part expression exists</param>
+        /// <param name = "hasMilliseconds">flag to indicate that a millisec-part expression exists</param>
+        /// <param name = "hasMicroseconds">flag to indicate that a microsecond-part expression exists</param>
         public TimePeriodExpression(
             bool hasYears,
             bool hasMonths,
@@ -71,15 +71,15 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="yearsExpr">expression returning years value, or null if no such part</param>
-        /// <param name="monthsExpr">expression returning months value, or null if no such part</param>
-        /// <param name="weeksExpr">expression returning weeks value, or null if no such part</param>
-        /// <param name="daysExpr">expression returning days value, or null if no such part</param>
-        /// <param name="hoursExpr">expression returning hours value, or null if no such part</param>
-        /// <param name="minutesExpr">expression returning minutes value, or null if no such part</param>
-        /// <param name="secondsExpr">expression returning seconds value, or null if no such part</param>
-        /// <param name="millisecondsExpr">expression returning millisec value, or null if no such part</param>
-        /// <param name="microsecondsExpr">expression returning microsecond value, or null if no such part</param>
+        /// <param name = "yearsExpr">expression returning years value, or null if no such part</param>
+        /// <param name = "monthsExpr">expression returning months value, or null if no such part</param>
+        /// <param name = "weeksExpr">expression returning weeks value, or null if no such part</param>
+        /// <param name = "daysExpr">expression returning days value, or null if no such part</param>
+        /// <param name = "hoursExpr">expression returning hours value, or null if no such part</param>
+        /// <param name = "minutesExpr">expression returning minutes value, or null if no such part</param>
+        /// <param name = "secondsExpr">expression returning seconds value, or null if no such part</param>
+        /// <param name = "millisecondsExpr">expression returning millisec value, or null if no such part</param>
+        /// <param name = "microsecondsExpr">expression returning microsecond value, or null if no such part</param>
         public TimePeriodExpression(
             Expression yearsExpr,
             Expression monthsExpr,
@@ -106,14 +106,14 @@ namespace com.espertech.esper.common.client.soda
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="hasYears">flag to indicate that a year-part expression exists</param>
-        /// <param name="hasMonths">flag to indicate that a month-part expression exists</param>
-        /// <param name="hasWeeks">flag to indicate that a week-part expression exists</param>
-        /// <param name="hasDays">flag to indicate that a day-part expression exists</param>
-        /// <param name="hasHours">flag to indicate that a hour-part expression exists</param>
-        /// <param name="hasMinutes">flag to indicate that a minute-part expression exists</param>
-        /// <param name="hasSeconds">flag to indicate that a seconds-part expression exists</param>
-        /// <param name="hasMilliseconds">flag to indicate that a millisec-part expression exists</param>
+        /// <param name = "hasYears">flag to indicate that a year-part expression exists</param>
+        /// <param name = "hasMonths">flag to indicate that a month-part expression exists</param>
+        /// <param name = "hasWeeks">flag to indicate that a week-part expression exists</param>
+        /// <param name = "hasDays">flag to indicate that a day-part expression exists</param>
+        /// <param name = "hasHours">flag to indicate that a hour-part expression exists</param>
+        /// <param name = "hasMinutes">flag to indicate that a minute-part expression exists</param>
+        /// <param name = "hasSeconds">flag to indicate that a seconds-part expression exists</param>
+        /// <param name = "hasMilliseconds">flag to indicate that a millisec-part expression exists</param>
         public TimePeriodExpression(
             bool hasYears,
             bool hasMonths,
@@ -122,40 +122,56 @@ namespace com.espertech.esper.common.client.soda
             bool hasHours,
             bool hasMinutes,
             bool hasSeconds,
-            bool hasMilliseconds)
-            : this(hasYears, hasMonths, hasWeeks, hasDays, hasHours, hasMinutes, hasSeconds, hasMilliseconds, false)
+            bool hasMilliseconds) : this(
+            hasYears,
+            hasMonths,
+            hasWeeks,
+            hasDays,
+            hasHours,
+            hasMinutes,
+            hasSeconds,
+            hasMilliseconds,
+            false)
         {
         }
 
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="hasDays">flag to indicate that a day-part expression exists</param>
-        /// <param name="hasHours">flag to indicate that a hour-part expression exists</param>
-        /// <param name="hasMinutes">flag to indicate that a minute-part expression exists</param>
-        /// <param name="hasSeconds">flag to indicate that a seconds-part expression exists</param>
-        /// <param name="hasMilliseconds">flag to indicate that a millisec-part expression exists</param>
+        /// <param name = "hasDays">flag to indicate that a day-part expression exists</param>
+        /// <param name = "hasHours">flag to indicate that a hour-part expression exists</param>
+        /// <param name = "hasMinutes">flag to indicate that a minute-part expression exists</param>
+        /// <param name = "hasSeconds">flag to indicate that a seconds-part expression exists</param>
+        /// <param name = "hasMilliseconds">flag to indicate that a millisec-part expression exists</param>
         public TimePeriodExpression(
             bool hasDays,
             bool hasHours,
             bool hasMinutes,
             bool hasSeconds,
-            bool hasMilliseconds)
-            : this(false, false, false, hasDays, hasHours, hasMinutes, hasSeconds, hasMilliseconds, false)
+            bool hasMilliseconds) : this(
+            false,
+            false,
+            false,
+            hasDays,
+            hasHours,
+            hasMinutes,
+            hasSeconds,
+            hasMilliseconds,
+            false)
         {
         }
 
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="yearsExpr">expression returning years value, or null if no such part</param>
-        /// <param name="monthsExpr">expression returning months value, or null if no such part</param>
-        /// <param name="weeksExpr">expression returning weeks value, or null if no such part</param>
-        /// <param name="daysExpr">expression returning days value, or null if no such part</param>
-        /// <param name="hoursExpr">expression returning hours value, or null if no such part</param>
-        /// <param name="minutesExpr">expression returning minutes value, or null if no such part</param>
-        /// <param name="secondsExpr">expression returning seconds value, or null if no such part</param>
-        /// <param name="millisecondsExpr">expression returning millisec value, or null if no such part</param>
+        /// <param name = "yearsExpr">expression returning years value, or null if no such part</param>
+        /// <param name = "monthsExpr">expression returning months value, or null if no such part</param>
+        /// <param name = "weeksExpr">expression returning weeks value, or null if no such part</param>
+        /// <param name = "daysExpr">expression returning days value, or null if no such part</param>
+        /// <param name = "hoursExpr">expression returning hours value, or null if no such part</param>
+        /// <param name = "minutesExpr">expression returning minutes value, or null if no such part</param>
+        /// <param name = "secondsExpr">expression returning seconds value, or null if no such part</param>
+        /// <param name = "millisecondsExpr">expression returning millisec value, or null if no such part</param>
         public TimePeriodExpression(
             Expression yearsExpr,
             Expression monthsExpr,
@@ -164,35 +180,42 @@ namespace com.espertech.esper.common.client.soda
             Expression hoursExpr,
             Expression minutesExpr,
             Expression secondsExpr,
-            Expression millisecondsExpr)
-            : this(
-                yearsExpr,
-                monthsExpr,
-                weeksExpr,
-                daysExpr,
-                hoursExpr,
-                minutesExpr,
-                secondsExpr,
-                millisecondsExpr,
-                null)
+            Expression millisecondsExpr) : this(
+            yearsExpr,
+            monthsExpr,
+            weeksExpr,
+            daysExpr,
+            hoursExpr,
+            minutesExpr,
+            secondsExpr,
+            millisecondsExpr,
+            null)
         {
         }
 
         /// <summary>
         /// Ctor.
         /// </summary>
-        /// <param name="daysExpr">expression returning days value, or null if no such part</param>
-        /// <param name="hoursExpr">expression returning hours value, or null if no such part</param>
-        /// <param name="minutesExpr">expression returning minutes value, or null if no such part</param>
-        /// <param name="secondsExpr">expression returning seconds value, or null if no such part</param>
-        /// <param name="millisecondsExpr">expression returning millisec value, or null if no such part</param>
+        /// <param name = "daysExpr">expression returning days value, or null if no such part</param>
+        /// <param name = "hoursExpr">expression returning hours value, or null if no such part</param>
+        /// <param name = "minutesExpr">expression returning minutes value, or null if no such part</param>
+        /// <param name = "secondsExpr">expression returning seconds value, or null if no such part</param>
+        /// <param name = "millisecondsExpr">expression returning millisec value, or null if no such part</param>
         public TimePeriodExpression(
             Expression daysExpr,
             Expression hoursExpr,
             Expression minutesExpr,
             Expression secondsExpr,
-            Expression millisecondsExpr)
-            : this(null, null, null, daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr, null)
+            Expression millisecondsExpr) : this(
+            null,
+            null,
+            null,
+            daysExpr,
+            hoursExpr,
+            minutesExpr,
+            secondsExpr,
+            millisecondsExpr,
+            null)
         {
         }
 
@@ -207,56 +230,47 @@ namespace com.espertech.esper.common.client.soda
             Expression millisecondsExpr,
             Expression microsecondsExpr)
         {
-            if (yearsExpr != null)
-            {
+            if (yearsExpr != null) {
                 hasYears = true;
                 AddChild(yearsExpr);
             }
 
-            if (monthExpr != null)
-            {
+            if (monthExpr != null) {
                 hasMonths = true;
                 AddChild(monthExpr);
             }
 
-            if (weeksExpr != null)
-            {
+            if (weeksExpr != null) {
                 hasWeeks = true;
                 AddChild(weeksExpr);
             }
 
-            if (daysExpr != null)
-            {
+            if (daysExpr != null) {
                 hasDays = true;
                 AddChild(daysExpr);
             }
 
-            if (hoursExpr != null)
-            {
+            if (hoursExpr != null) {
                 hasHours = true;
                 AddChild(hoursExpr);
             }
 
-            if (minutesExpr != null)
-            {
+            if (minutesExpr != null) {
                 hasMinutes = true;
                 AddChild(minutesExpr);
             }
 
-            if (secondsExpr != null)
-            {
+            if (secondsExpr != null) {
                 hasSeconds = true;
                 AddChild(secondsExpr);
             }
 
-            if (millisecondsExpr != null)
-            {
+            if (millisecondsExpr != null) {
                 hasMilliseconds = true;
                 AddChild(millisecondsExpr);
             }
 
-            if (microsecondsExpr != null)
-            {
+            if (microsecondsExpr != null) {
                 hasMicroseconds = true;
                 AddChild(microsecondsExpr);
             }
@@ -272,32 +286,12 @@ namespace com.espertech.esper.common.client.soda
         }
 
         /// <summary>
-        /// Set to true if a subexpression exists that is a day-part.
-        /// </summary>
-        /// <param name="hasDays">for presence of part</param>
-        public TimePeriodExpression SetHasDays(bool hasDays)
-        {
-            this.hasDays = hasDays;
-            return this;
-        }
-
-        /// <summary>
         /// Returns true if a subexpression exists that is a hour-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
         public bool IsHours {
             get => hasHours;
             set => hasHours = value;
-        }
-
-        /// <summary>
-        /// Set to true if a subexpression exists that is a hour-part.
-        /// </summary>
-        /// <param name="hasHours">for presence of part</param>
-        public TimePeriodExpression SetHasHours(bool hasHours)
-        {
-            this.hasHours = hasHours;
-            return this;
         }
 
         /// <summary>
@@ -310,32 +304,12 @@ namespace com.espertech.esper.common.client.soda
         }
 
         /// <summary>
-        /// Set to true if a subexpression exists that is a minutes-part.
-        /// </summary>
-        /// <param name="hasMinutes">for presence of part</param>
-        public TimePeriodExpression SetHasMinutes(bool hasMinutes)
-        {
-            this.hasMinutes = hasMinutes;
-            return this;
-        }
-
-        /// <summary>
         /// Returns true if a subexpression exists that is a seconds-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
         public bool IsSeconds {
             get => hasSeconds;
             set => hasSeconds = value;
-        }
-
-        /// <summary>
-        /// Set to true if a subexpression exists that is a seconds-part.
-        /// </summary>
-        /// <param name="hasSeconds">for presence of part</param>
-        public TimePeriodExpression SetHasSeconds(bool hasSeconds)
-        {
-            this.hasSeconds = hasSeconds;
-            return this;
         }
 
         /// <summary>
@@ -348,32 +322,12 @@ namespace com.espertech.esper.common.client.soda
         }
 
         /// <summary>
-        /// Set to true if a subexpression exists that is a msec-part.
-        /// </summary>
-        /// <param name="hasMilliseconds">for presence of part</param>
-        public TimePeriodExpression SetHasMilliseconds(bool hasMilliseconds)
-        {
-            this.hasMilliseconds = hasMilliseconds;
-            return this;
-        }
-
-        /// <summary>
         /// Returns true if a subexpression exists that is a year-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
         public bool IsYears {
             get => hasYears;
             set => hasYears = value;
-        }
-
-        /// <summary>
-        /// Set to true if a subexpression exists that is a year-part.
-        /// </summary>
-        /// <param name="hasYears">for presence of part</param>
-        public TimePeriodExpression SetHasYears(bool hasYears)
-        {
-            this.hasYears = hasYears;
-            return this;
         }
 
         /// <summary>
@@ -386,32 +340,12 @@ namespace com.espertech.esper.common.client.soda
         }
 
         /// <summary>
-        /// Set to true if a subexpression exists that is a month-part.
-        /// </summary>
-        /// <param name="hasMonths">for presence of part</param>
-        public TimePeriodExpression SetHasMonths(bool hasMonths)
-        {
-            this.hasMonths = hasMonths;
-            return this;
-        }
-
-        /// <summary>
         /// Returns true if a subexpression exists that is a weeks-part.
         /// </summary>
         /// <returns>indicator for presence of part</returns>
         public bool IsWeeks {
             get => hasWeeks;
             set => hasWeeks = value;
-        }
-
-        /// <summary>
-        /// Set to true if a subexpression exists that is a weeks-part.
-        /// </summary>
-        /// <param name="hasWeeks">for presence of part</param>
-        public TimePeriodExpression SetHasWeeks(bool hasWeeks)
-        {
-            this.hasWeeks = hasWeeks;
-            return this;
         }
 
         /// <summary>
@@ -423,35 +357,20 @@ namespace com.espertech.esper.common.client.soda
             set => hasMicroseconds = value;
         }
 
-        /// <summary>
-        /// Set to true if a subexpression exists that is a microsecond-part.
-        /// </summary>
-        /// <param name="hasMicroseconds">indicator for presence of part</param>
-        public TimePeriodExpression SetHasMicroseconds(bool hasMicroseconds)
-        {
-            this.hasMicroseconds = hasMicroseconds;
-            return this;
-        }
-
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            string delimiter = "";
-            int countExpr = 0;
-            if (hasYears)
-            {
+            var delimiter = "";
+            var countExpr = 0;
+            if (hasYears) {
                 Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" years");
                 delimiter = " ";
                 countExpr++;
             }
 
-            if (hasMonths)
-            {
+            if (hasMonths) {
                 writer.Write(delimiter);
                 Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" months");
@@ -459,8 +378,7 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasWeeks)
-            {
+            if (hasWeeks) {
                 writer.Write(delimiter);
                 Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" weeks");
@@ -468,8 +386,7 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasDays)
-            {
+            if (hasDays) {
                 writer.Write(delimiter);
                 Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" days");
@@ -477,8 +394,7 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasHours)
-            {
+            if (hasHours) {
                 writer.Write(delimiter);
                 Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" hours");
@@ -486,8 +402,7 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasMinutes)
-            {
+            if (hasMinutes) {
                 writer.Write(delimiter);
                 Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" minutes");
@@ -495,8 +410,7 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasSeconds)
-            {
+            if (hasSeconds) {
                 writer.Write(delimiter);
                 Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" seconds");
@@ -504,8 +418,7 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasMilliseconds)
-            {
+            if (hasMilliseconds) {
                 writer.Write(delimiter);
                 Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" milliseconds");
@@ -513,12 +426,83 @@ namespace com.espertech.esper.common.client.soda
                 countExpr++;
             }
 
-            if (hasMicroseconds)
-            {
+            if (hasMicroseconds) {
                 writer.Write(delimiter);
                 Children[countExpr].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 writer.Write(" microseconds");
             }
+        }
+
+        public bool HasYears => hasYears;
+
+        public bool HasMonths => hasMonths;
+
+        public bool HasWeeks => hasWeeks;
+
+        public bool HasDays => hasDays;
+
+        public bool HasHours => hasHours;
+
+        public bool HasMinutes => hasMinutes;
+
+        public bool HasSeconds => hasSeconds;
+
+        public bool HasMilliseconds => hasMilliseconds;
+
+        public bool HasMicroseconds => hasMicroseconds;
+
+        public TimePeriodExpression SetHasDays(bool value)
+        {
+            hasDays = value;
+            return this;
+        }
+
+        public TimePeriodExpression SetHasHours(bool value)
+        {
+            hasHours = value;
+            return this;
+        }
+
+        public TimePeriodExpression SetHasMinutes(bool value)
+        {
+            hasMinutes = value;
+            return this;
+        }
+
+        public TimePeriodExpression SetHasSeconds(bool value)
+        {
+            hasSeconds = value;
+            return this;
+        }
+
+        public TimePeriodExpression SetHasMilliseconds(bool value)
+        {
+            hasMilliseconds = value;
+            return this;
+        }
+
+        public TimePeriodExpression SetHasYears(bool value)
+        {
+            hasYears = value;
+            return this;
+        }
+
+        public TimePeriodExpression SetHasMonths(bool value)
+        {
+            hasMonths = value;
+            return this;
+        }
+
+        public TimePeriodExpression SetHasWeeks(bool value)
+        {
+            hasWeeks = value;
+            return this;
+        }
+
+        public TimePeriodExpression SetHasMicroseconds(bool value)
+        {
+            hasMicroseconds = value;
+            return this;
         }
     }
 } // end of namespace

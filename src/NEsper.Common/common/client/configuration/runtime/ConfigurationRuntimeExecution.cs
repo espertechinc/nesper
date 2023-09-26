@@ -24,6 +24,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         internal ConfigurationRuntimeExecution()
         {
             IsPrioritized = false;
+            IsPrecedenceEnabled = false;
             FilterServiceProfile = FilterServiceProfile.READMOSTLY;
         }
 
@@ -38,6 +39,13 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// </summary>
         /// <returns>value</returns>
         public int DeclaredExprValueCacheSize { get; set; } = 1;
+
+        /// <summary>
+        /// Returns false (the default) if the runtime does not consider insert-into event-precedence,
+        /// or true to enable insert-into event-precedence execution order of inserted events.
+        /// </summary>
+        /// <value>false by default to indicate insert-into-event no-precedence execution</value>
+        public bool IsPrecedenceEnabled { get; set; }
 
         /// <summary>
         ///     Returns false (the default) if the runtime does not consider statement priority and preemptive instructions,

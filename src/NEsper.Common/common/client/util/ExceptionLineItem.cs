@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.client.util
         /// Returns the expression.
         /// </summary>
         public string Expression { get; set; }
-        
+
         /// <summary>
         /// Returns the line number (if available).
         /// </summary>

@@ -20,10 +20,8 @@ namespace com.espertech.esper.common.@internal.util
     public class SerializerFactory
     {
         public static SerializerFactory Instance = new SerializerFactory();
-        
         private readonly List<Serializer> _serializers;
         private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
-        
         public readonly Serializer NULL_SERIALIZER;
         public readonly Serializer OBJECT_SERIALIZER;
 
@@ -36,7 +34,6 @@ namespace com.espertech.esper.common.@internal.util
                 },
                 ProcDeserialize = stream => null
             };
-            
             OBJECT_SERIALIZER = new StreamSerializer {
                 ProcSerialize = (
                     obj,
@@ -50,7 +47,6 @@ namespace com.espertech.esper.common.@internal.util
                     }
                 }
             };
-            
             _serializers = new List<Serializer>();
             _serializers.Add(
                 new SmartSerializer<bool> {
@@ -124,15 +120,6 @@ namespace com.espertech.esper.common.@internal.util
                 });
         }
 
-        public Serializer[] GetDefaultSerializers()
-        {
-            List<Serializer> serializer = new List<Serializer>();
-            serializer.Add(NULL_SERIALIZER);
-            serializer.AddRange(_serializers);
-            serializer.Add(OBJECT_SERIALIZER);
-            return serializer.ToArray();
-        }
-
         public Serializer[] GetSerializers(IEnumerable<Type> types)
         {
             return types.Select(GetSerializer).ToArray();
@@ -157,9 +144,8 @@ namespace com.espertech.esper.common.@internal.util
             object[] objects)
         {
             Debug.Assert(serializers.Length == objects.Length);
-
             using (var binaryStream = new MemoryStream()) {
-                for (int ii = 0; ii < objects.Length; ii++) {
+                for (var ii = 0; ii < objects.Length; ii++) {
                     serializers[ii].SerializeAny(objects[ii], binaryStream);
                 }
 
@@ -183,13 +169,19 @@ namespace com.espertech.esper.common.@internal.util
             Serializer[] serializers)
         {
             Debug.Assert(serializers.Length == numObjects);
-
             using (var binaryStream = new MemoryStream(bytes)) {
-                var result = serializers.Select(
-                        serializer =>
-                            serializer.DeserializeAny(binaryStream))
-                    .ToArray();
+                var result = serializers.Select(serializer => serializer.DeserializeAny(binaryStream)).ToArray();
                 return result;
+            }
+        }
+
+        public Serializer[] DefaultSerializers {
+            get {
+                var serializer = new List<Serializer>();
+                serializer.Add(NULL_SERIALIZER);
+                serializer.AddRange(_serializers);
+                serializer.Add(OBJECT_SERIALIZER);
+                return serializer.ToArray();
             }
         }
     }

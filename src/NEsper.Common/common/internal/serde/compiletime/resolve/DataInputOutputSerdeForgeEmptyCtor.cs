@@ -11,7 +11,8 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // newInstance;
+using static
+    com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // newInstance;
 
 namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 {
@@ -32,9 +33,6 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
             return NewInstance(serdeClass);
         }
 
-        public string ForgeClassName()
-        {
-            return serdeClass.Name;
-        }
+        public string ForgeClassName => serdeClass.Name;
     }
 } // end of namespace

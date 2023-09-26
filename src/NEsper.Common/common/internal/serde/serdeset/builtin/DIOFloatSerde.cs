@@ -11,29 +11,43 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	/// <summary>
-	/// Binding for non-null float values.
-	/// </summary>
-	public class DIOFloatSerde : DataInputOutputSerdeBase<float> {
-	    public static readonly DIOFloatSerde INSTANCE = new DIOFloatSerde();
+    /// <summary>
+    /// Binding for non-null float values.
+    /// </summary>
+    public class DIOFloatSerde : DataInputOutputSerdeBase<float>
+    {
+        public static readonly DIOFloatSerde INSTANCE = new DIOFloatSerde();
 
-	    private DIOFloatSerde() {
-	    }
+        private DIOFloatSerde()
+        {
+        }
 
-	    public override void Write(float @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
-	        output.WriteFloat(@object);
-	    }
+        public override void Write(
+            float @object,
+            DataOutput output,
+            byte[] pageFullKey,
+            EventBeanCollatedWriter writer)
+        {
+            output.WriteFloat(@object);
+        }
 
-	    public void Write(float @object, DataOutput stream) {
-	        stream.WriteFloat(@object);
-	    }
+        public void Write(
+            float @object,
+            DataOutput stream)
+        {
+            stream.WriteFloat(@object);
+        }
 
-	    public float Read(DataInput input) {
-	        return input.ReadFloat();
-	    }
+        public float Read(DataInput input)
+        {
+            return input.ReadFloat();
+        }
 
-	    public override float ReadValue(DataInput input, byte[] resourceKey) {
-	        return input.ReadFloat();
-	    }
-	}
+        public override float ReadValue(
+            DataInput input,
+            byte[] resourceKey)
+        {
+            return input.ReadFloat();
+        }
+    }
 } // end of namespace

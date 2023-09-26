@@ -61,11 +61,9 @@ namespace com.espertech.esper.common.client.soda
             string nspace,
             string name)
         {
-            foreach (var value in EnumHelper.GetValues<GuardEnum>())
-            {
+            foreach (var value in EnumHelper.GetValues<GuardEnum>()) {
                 if (value.GetNamespace() == nspace &&
-                    value.GetName() == name)
-                {
+                    value.GetName() == name) {
                     return value;
                 }
             }

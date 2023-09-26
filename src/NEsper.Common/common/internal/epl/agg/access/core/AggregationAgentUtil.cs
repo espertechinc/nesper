@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression[] inits = new CodegenExpression[accessAgents.Length];
-            for (int i = 0; i < inits.Length; i++) {
+            var inits = new CodegenExpression[accessAgents.Length];
+            for (var i = 0; i < inits.Length; i++) {
                 inits[i] = accessAgents[i].Make(method, symbols, classScope);
             }
 

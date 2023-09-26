@@ -110,10 +110,7 @@ namespace com.espertech.esperio.support.util
             return _oldDataList;
         }
     
-        public bool IsInvoked()
-        {
-            return _isInvoked;
-        }
+        public bool IsInvoked => _isInvoked;
     
         public bool GetAndClearIsInvoked()
         {

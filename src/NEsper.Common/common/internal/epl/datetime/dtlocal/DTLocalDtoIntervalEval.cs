@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            long time = DatetimeLongCoercerDateTimeOffset.CoerceToMillis((DateTimeOffset) target);
+            var time = DatetimeLongCoercerDateTimeOffset.CoerceToMillis((DateTimeOffset)target);
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -49,9 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope
+            var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtoIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTimeOffset), "target");
+                .AddParam<DateTimeOffset>("target");
 
             methodNode.Block
                 .DeclareVar<long>(
@@ -72,8 +72,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            long start = DatetimeLongCoercerDateTimeOffset.CoerceToMillis((DateTimeOffset) startTimestamp);
-            long end = DatetimeLongCoercerDateTimeOffset.CoerceToMillis((DateTimeOffset) endTimestamp);
+            var start = DatetimeLongCoercerDateTimeOffset.CoerceToMillis((DateTimeOffset)startTimestamp);
+            var end = DatetimeLongCoercerDateTimeOffset.CoerceToMillis((DateTimeOffset)endTimestamp);
             return intervalOp.Evaluate(start, end, eventsPerStream, isNewData, exprEvaluatorContext);
         }
 
@@ -85,10 +85,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope
+            var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtoIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTimeOffset), "startTimestamp")
-                .AddParam(typeof(DateTimeOffset), "endTimestamp");
+                .AddParam<DateTimeOffset>("startTimestamp")
+                .AddParam<DateTimeOffset>("endTimestamp");
 
             methodNode.Block
                 .DeclareVar<long>(

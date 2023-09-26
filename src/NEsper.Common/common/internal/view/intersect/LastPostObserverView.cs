@@ -36,13 +36,11 @@ namespace com.espertech.esper.common.@internal.view.intersect
         /// </summary>
         /// <value>to be called when results are available</value>
         public LastPostObserver Observer {
-            get => this.observer;
-            set => this.observer = value;
+            get => observer;
+            set => observer = value;
         }
 
-        public override EventType EventType {
-            get => parent.EventType;
-        }
+        public override EventType EventType => parent.EventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {

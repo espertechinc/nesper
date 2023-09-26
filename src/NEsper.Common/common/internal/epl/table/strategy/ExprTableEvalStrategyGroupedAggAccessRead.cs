@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            AggregationRow aggs = GetAggregationRow(eventsPerStream, isNewData, exprEvaluatorContext);
+            var aggs = GetAggregationRow(eventsPerStream, isNewData, exprEvaluatorContext);
             if (aggs == null) {
                 return null;
             }
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            AggregationRow aggs = GetAggregationRow(eventsPerStream, isNewData, context);
+            var aggs = GetAggregationRow(eventsPerStream, isNewData, context);
             if (aggs == null) {
                 return null;
             }
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            AggregationRow aggs = GetAggregationRow(eventsPerStream, isNewData, context);
+            var aggs = GetAggregationRow(eventsPerStream, isNewData, context);
             if (aggs == null) {
                 return null;
             }
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            AggregationRow aggs = GetAggregationRow(eventsPerStream, isNewData, context);
+            var aggs = GetAggregationRow(eventsPerStream, isNewData, context);
             if (aggs == null) {
                 return null;
             }

@@ -7,20 +7,28 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.compile.stage1.spec;
-using com.espertech.esper.common.@internal.epl.namedwindow.path;
+using com.espertech.esper.common.@internal.compile.stage2;
+using com.espertech.esper.common.@internal.compile.stage3;
 
 namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 {
     public class FireAndForgetProcessorForgeFactory
     {
-        public static FireAndForgetProcessorForge ValidateResolveProcessor(StreamSpecCompiled streamSpec)
+        public static FireAndForgetProcessorForge ValidateResolveProcessor(
+            StreamSpecCompiled streamSpec,
+            StatementSpecCompiled statementSpec,
+            StatementRawInfo raw,
+            StatementCompileTimeServices services)
         {
-            if (streamSpec is NamedWindowConsumerStreamSpec) {
-                NamedWindowMetaData nwdetail = ((NamedWindowConsumerStreamSpec) streamSpec).NamedWindow;
-                return new FireAndForgetProcessorNamedWindowForge(nwdetail);
+            if (streamSpec is NamedWindowConsumerStreamSpec namedWindowConsumerStreamSpec) {
+                return new FireAndForgetProcessorNamedWindowForge(namedWindowConsumerStreamSpec.NamedWindow);
             }
 
-            TableQueryStreamSpec tableSpec = (TableQueryStreamSpec) streamSpec;
+            if (streamSpec is DBStatementStreamSpec dbStatementStreamSpec) {
+                return new FireAndForgetProcessorDBForge(dbStatementStreamSpec, statementSpec, raw, services);
+            }
+
+            var tableSpec = (TableQueryStreamSpec)streamSpec;
             return new FireAndForgetProcessorTableForge(tableSpec.Table);
         }
     }

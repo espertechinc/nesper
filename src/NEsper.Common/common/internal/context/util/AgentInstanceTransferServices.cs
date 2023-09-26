@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.context.util
             AgentInstanceContext agentInstanceContext,
             FilterService targetFilterService,
             SchedulingService targetSchedulingService,
-            InternalEventRouter targetInternalEventRouter) 
+            InternalEventRouter targetInternalEventRouter)
         {
             this.agentInstanceContext = agentInstanceContext;
             this.targetFilterService = targetFilterService;

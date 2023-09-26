@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
             return ExprDotMethod(
                 eventBeanFactory,
                 "AdapterForTypedWrapper",

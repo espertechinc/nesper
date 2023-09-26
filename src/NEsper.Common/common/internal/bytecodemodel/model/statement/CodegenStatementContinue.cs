@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         public override void MergeClasses(ISet<Type> classes)
         {
         }
-        
+
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
         }

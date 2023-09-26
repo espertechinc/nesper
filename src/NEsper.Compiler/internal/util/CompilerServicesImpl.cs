@@ -63,7 +63,7 @@ namespace com.espertech.esper.compiler.@internal.util
             string classNameSimple,
             ModuleCompileTimeServices services)
         {
-            var namespaceScope = new CodegenNamespaceScope(services.Namespace, null, false);
+            var namespaceScope = new CodegenNamespaceScope(services.Namespace, null, false, TODO);
             var classScope = new CodegenClassScope(true, namespaceScope, null);
             var clazz = new CodegenClass(
                 classType,
@@ -80,7 +80,7 @@ namespace com.espertech.esper.compiler.@internal.util
             // included as the "Underlying" type for the JsonEventType.  This method is called during the
             // portion of the sequence where we are attempting to build the forgeables, so the real type
             // doesnt exist yet.  Esper builds the stand-in but expects that the real type will be used
-            // at runtime.  In Java, type erasure allows this to happen because there is no real type in
+            // at runtime.  In Java, Type erasure allows this to happen because there is no real type in
             // backing arrays and collections.  In .NET we need the types to match.
             //
             // We are creating a "capsule" class which will act as a placeholder.  When we detect that

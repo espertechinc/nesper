@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -11,8 +11,6 @@ using System;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-
-using static com.espertech.esper.common.@internal.util.TypeHelper;
 
 namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
 {
@@ -77,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
             string name)
         {
             var receivedType = expr.Forge.EvaluationType;
-            if (!receivedType.IsNumeric()) {
+            if (!receivedType.IsTypeNumeric()) {
                 throw MakeEx(indexTypeName, true, colnum, name, typeof(object), receivedType);
             }
         }
@@ -89,8 +87,8 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
             ExprNode expr,
             string name)
         {
-            Type receivedType = expr.Forge.EvaluationType.GetBoxedType();
-            if (!IsSubclassOrImplementsInterface(receivedType, expectedReturnType)) {
+            var receivedType = expr.Forge.EvaluationType.GetBoxedType();
+            if (receivedType == null || !TypeHelper.IsSubclassOrImplementsInterface(receivedType, expectedReturnType)) {
                 throw MakeEx(indexTypeName, false, paramnum, name, expectedReturnType, receivedType);
             }
         }
@@ -102,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.service
             string name)
         {
             var receivedType = expr.Forge.EvaluationType;
-            if (!receivedType.IsNumeric()) {
+            if (!receivedType.IsTypeNumeric()) {
                 throw MakeEx(indexTypeName, false, paramnum, name, typeof(object), receivedType);
             }
         }

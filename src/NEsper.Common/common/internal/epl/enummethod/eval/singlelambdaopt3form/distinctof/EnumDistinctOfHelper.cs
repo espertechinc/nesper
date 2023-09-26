@@ -16,24 +16,29 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.distinctof
 {
-	public class EnumDistinctOfHelper
-	{
-		public static void ForEachBlock(
-			CodegenBlock block,
-			CodegenExpression eval,
-			Type innerType)
-		{
-			if (!innerType.IsArray) {
-				block.DeclareVar(innerType, "comparable", eval);
-			}
-			else {
-				Type arrayMK = MultiKeyPlanner.GetMKClassForComponentType(innerType.GetElementType());
-				block.DeclareVar(arrayMK, "comparable", NewInstance(arrayMK, eval));
-			}
+    public class EnumDistinctOfHelper
+    {
+        public static void ForEachBlock(
+            CodegenBlock block,
+            CodegenExpression eval,
+            Type innerType)
+        {
+            if (innerType == null) {
+                block.DeclareVar<object>("comparable", ConstantNull());
+            }
+            else {
+                if (!innerType.IsArray) {
+                    block.DeclareVar(innerType, "comparable", eval);
+                }
+                else {
+                    var arrayMK = MultiKeyPlanner.GetMKClassForComponentType(innerType.GetElementType());
+                    block.DeclareVar(arrayMK, "comparable", NewInstance(arrayMK, eval));
+                }
+            }
 
-			block.IfCondition(Not(ExprDotMethod(Ref("distinct"), "ContainsKey", Ref("comparable"))))
-				.Expression(ExprDotMethod(Ref("distinct"), "Put", Ref("comparable"), Ref("next")))
-				.BlockEnd();
-		}
-	}
+            block.IfCondition(Not(ExprDotMethod(Ref("distinct"), "ContainsKey", Ref("comparable"))))
+                .Expression(ExprDotMethod(Ref("distinct"), "Put", Ref("comparable"), Ref("next")))
+                .BlockEnd();
+        }
+    }
 } // end of namespace

@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                if (inputType.CanNotBeNull() || inputType.IsNumeric()) {
+                if (inputType.CanNotBeNull() || inputType.IsTypeNumeric()) {
                     return numericTypeCaster.Codegen(input, inputType, codegenMethodScope, codegenClassScope);
                 }
 

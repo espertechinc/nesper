@@ -22,6 +22,22 @@ namespace com.espertech.esper.common.@internal.epl.util
 {
     public class EPCompilerPathableImpl : EPCompilerPathable
     {
+        public EPCompilerPathableImpl(string optionalModuleName)
+        {
+            VariablePathRegistry = new PathRegistry<string, VariableMetaData>(PathRegistryObjectType.VARIABLE);
+            EventTypePathRegistry = new PathRegistry<string, EventType>(PathRegistryObjectType.EVENTTYPE);
+            ExprDeclaredPathRegistry = new PathRegistry<string, ExpressionDeclItem>(PathRegistryObjectType.EXPRDECL);
+            NamedWindowPathRegistry = new PathRegistry<string, NamedWindowMetaData>(PathRegistryObjectType.NAMEDWINDOW);
+            TablePathRegistry = new PathRegistry<string, TableMetaData>(PathRegistryObjectType.TABLE);
+            ContextPathRegistry = new PathRegistry<string, ContextMetaData>(PathRegistryObjectType.CONTEXT);
+            ScriptPathRegistry =
+                new PathRegistry<NameAndParamNum, ExpressionScriptProvided>(PathRegistryObjectType.SCRIPT);
+            ClassProvidedPathRegistry = new PathRegistry<string, ClassProvided>(PathRegistryObjectType.CLASSPROVIDED);
+            EventTypePreconfigured = new EventTypeRepositoryImpl(true);
+            VariablePreconfigured = new VariableRepositoryPreconfigured();
+            OptionalModuleName = optionalModuleName;
+        }
+
         public EPCompilerPathableImpl(
             PathRegistry<string, VariableMetaData> variablePathRegistry,
             PathRegistry<string, EventType> eventTypePathRegistry,
@@ -44,6 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.util
             ClassProvidedPathRegistry = classProvidedPathRegistry;
             EventTypePreconfigured = eventTypePreconfigured;
             VariablePreconfigured = variablePreconfigured;
+            OptionalModuleName = null;
         }
 
         public PathRegistry<string, VariableMetaData> VariablePathRegistry { get; }
@@ -65,5 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.util
         public EventTypeRepositoryImpl EventTypePreconfigured { get; }
 
         public VariableRepositoryPreconfigured VariablePreconfigured { get; }
+
+        public string OptionalModuleName { get; }
     }
 } // end of namespace

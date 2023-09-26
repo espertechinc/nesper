@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Threading;
 
 using com.espertech.esper.common.client;
@@ -27,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
 
         public DefaultSupportSourceOp()
         {
-            instructions = new object[0];
+            instructions = Array.Empty<object>();
         }
 
         public DefaultSupportSourceOp(object[] instructions)
@@ -46,16 +47,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             }
 
             var next = instructions[CurrentCount];
-            if (next is CountDownLatch) {
-                var latch = (CountDownLatch) next;
+            if (next is CountDownLatch latch) {
                 latch.Await();
             }
             else if (next.IsInt64() || next.IsInt32()) {
                 Thread.Sleep(next.AsInt32());
             }
-            else if (next is EPRuntimeException) {
-                var ex = (EPRuntimeException) next;
-                throw new EPRuntimeException("Support-graph-source generated exception: " + ex.Message, ex);
+            else if (next is EPRuntimeException cause) {
+                throw new EPRuntimeException("Support-graph-source generated exception: " + cause.Message, cause);
             }
             else {
                 graphContext.Submit(next);

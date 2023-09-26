@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 return false;
             }
 
-            var that = (CodegenExpressionMember) obj;
+            var that = (CodegenExpressionMember)obj;
 
             return _name.Equals(that._name);
         }

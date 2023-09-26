@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public object Underlying {
             get => Properties;
-            set => Properties = (IDictionary<string, object>) value;
+            set => Properties = (IDictionary<string, object>)value;
         }
 
         public object UnderlyingSpi {

@@ -23,8 +23,8 @@ namespace com.espertech.esper.common.@internal.type
                 object objOne,
                 object objTwo)
             {
-                string s1 = (string) objOne;
-                string s2 = (string) objTwo;
+                var s1 = (string)objOne;
+                var s2 = (string)objTwo;
                 return s1.CompareTo(s2) >= 0;
             }
 

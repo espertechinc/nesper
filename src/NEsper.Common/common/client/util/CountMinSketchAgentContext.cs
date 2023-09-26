@@ -30,8 +30,6 @@ namespace com.espertech.esper.common.client.util
         /// Returns state
         /// </summary>
         /// <returns>state</returns>
-        public CountMinSketchState State {
-            get => state;
-        }
+        public CountMinSketchState State => state;
     }
 } // end of namespace

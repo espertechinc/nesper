@@ -181,7 +181,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 
 	    void AExprPlugInSingleRow(object result);
 
-	    void QExprDotChain(EPType targetTypeInfo, object target, int numUnpacking);
+	    void QExprDotChain(EPChainableType targetTypeInfo, object target, int numUnpacking);
 
 	    void AExprDotChain();
 
@@ -195,7 +195,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 
 	    void QExprDotChainElement(int num, string methodType, string methodName);
 
-	    void AExprDotChainElement(EPType typeInfo, object result);
+	    void AExprDotChainElement(EPChainableType typeInfo, object result);
 
 	    void QExprPrev(string text, bool newData);
 

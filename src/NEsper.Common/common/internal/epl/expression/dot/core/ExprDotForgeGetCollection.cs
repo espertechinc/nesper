@@ -23,12 +23,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             Type componentType)
         {
             IndexExpression = index;
-            TypeInfo = EPTypeHelper.SingleValue(componentType);
+            TypeInfo = EPChainableTypeHelper.SingleValue(componentType);
         }
 
         public ExprForge IndexExpression { get; }
 
-        public EPType TypeInfo { get; }
+        public EPChainableType TypeInfo { get; }
 
         public void Visit(ExprDotEvalVisitor visitor)
         {

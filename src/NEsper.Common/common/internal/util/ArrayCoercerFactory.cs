@@ -35,19 +35,22 @@ namespace com.espertech.esper.common.@internal.util
         {
             var fromElement = fromType.GetElementType();
             var toElement = resultType.GetElementType();
-            
+
             if (fromElement == toElement) {
                 return new CoercerNull(resultType);
             }
+
             if (fromElement.GetBoxedType() == toElement) {
                 // Widening
                 return new CoercerWiden(fromElement);
-            } else if (fromElement == toElement.GetBoxedType()) {
+            }
+            else if (fromElement == toElement.GetBoxedType()) {
                 // Narrowing
                 return new CoercerNarrow(toElement);
             }
 
-            throw new ArgumentException($"Cannot coerce array of type '{fromElement.CleanName()}' to array type '{resultType.CleanName()}'");
+            throw new ArgumentException(
+                $"Cannot coerce array of type '{fromElement.CleanName()}' to array type '{resultType.CleanName()}'");
         }
 
         public static Array WidenArray(object source)
@@ -61,13 +64,13 @@ namespace com.espertech.esper.common.@internal.util
                 var sourceArrayType = sourceArray.GetType().GetElementType();
                 var targetArrayType = sourceArrayType.GetBoxedType().MakeArrayType();
                 var targetArray = Arrays.CreateInstanceChecked(targetArrayType, sourceArrayLength);
-                for (int ii = 0; ii < sourceArrayLength; ii++) {
+                for (var ii = 0; ii < sourceArrayLength; ii++) {
                     targetArray.SetValue(sourceArray.GetValue(ii), ii);
                 }
 
                 return targetArray;
             }
-            
+
             throw new EPException($"Invalid value presented for \"{nameof(source)}\" for array widening");
         }
 
@@ -82,7 +85,7 @@ namespace com.espertech.esper.common.@internal.util
                 var sourceArrayType = sourceArray.GetType().GetElementType();
                 var targetArrayType = sourceArrayType.GetUnboxedType().MakeArrayType();
                 var targetArray = Arrays.CreateInstanceChecked(targetArrayType, sourceArrayLength);
-                for (int ii = 0; ii < sourceArrayLength; ii++) {
+                for (var ii = 0; ii < sourceArrayLength; ii++) {
                     var sourceValue = sourceArray.GetValue(ii);
                     if (sourceValue != null) {
                         targetArray.SetValue(sourceValue, ii);
@@ -91,10 +94,10 @@ namespace com.espertech.esper.common.@internal.util
 
                 return targetArray;
             }
-            
+
             throw new EPException($"Invalid value presented for \"{nameof(source)}\" for array widening");
         }
-        
+
         private class CoercerNull : Coercer
         {
             public CoercerNull(Type returnType)
@@ -125,7 +128,7 @@ namespace com.espertech.esper.common.@internal.util
                 return value;
             }
         }
-        
+
         private class CoercerWiden : Coercer
         {
             public CoercerWiden(Type returnType)
@@ -156,7 +159,7 @@ namespace com.espertech.esper.common.@internal.util
                 return StaticMethod(typeof(ArrayCoercerFactory), "WidenArray", value);
             }
         }
-        
+
         private class CoercerNarrow : Coercer
         {
             public CoercerNarrow(Type returnType)

@@ -26,13 +26,13 @@ namespace com.espertech.esper.common.@internal.filterspec
                 ICollection<object> constants,
                 object value)
             {
-                var array = (Array) value;
+                var array = (Array)value;
                 var len = array.Length;
                 for (var i = 0; i < len; i++) {
                     constants.Add(array.GetValue(i));
                 }
             }
-            
+
             public void ValueToString(StringBuilder @out)
             {
                 @out.Append("collection");

@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             object value,
             MXCIFQuadTree tree)
         {
-            MXCIFQuadTreeNode root = tree.Root;
+            var root = tree.Root;
             MXCIFQuadTreeFilterIndexCheckBB.CheckBB(root.Bb, x, y, width, height);
             tree.Root = SetOnNode(x, y, width, height, value, root, tree);
         }
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 node = Subdivide(leaf, tree);
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch) node;
+            var branch = (MXCIFQuadTreeNodeBranch)node;
             AddToBranchWithRect(branch, x, y, width, height, value, tree);
             return node;
         }
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 node = Subdivide(leaf, tree);
             }
 
-            var branch = (MXCIFQuadTreeNodeBranch) node;
+            var branch = (MXCIFQuadTreeNodeBranch)node;
             AddToBranch(branch, x, y, width, height, value, tree);
             return node;
         }
@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 Subdivide(asRectangle, branch, tree);
             }
             else {
-                var collection = (ICollection<XYWHRectangleWValue>) rectangles;
+                var collection = (ICollection<XYWHRectangleWValue>)rectangles;
                 foreach (var rectangle in collection) {
                     Subdivide(rectangle, branch, tree);
                 }
@@ -258,7 +258,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 return 1;
             }
 
-            var collection = (ICollection<XYWHRectangleWValue>) currentValue;
+            var collection = (ICollection<XYWHRectangleWValue>)currentValue;
             foreach (var other in collection) {
                 if (other.CoordinateEquals(x, y, width, height)) {
                     other.Value = value;

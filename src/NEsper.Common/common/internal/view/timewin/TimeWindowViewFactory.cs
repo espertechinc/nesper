@@ -55,9 +55,9 @@ namespace com.espertech.esper.common.@internal.view.timewin
 
         public View MakeView(AgentInstanceViewFactoryChainContext agentInstanceViewFactoryContext)
         {
-            TimePeriodProvide timePeriodProvide =
+            var timePeriodProvide =
                 timePeriodCompute.GetNonVariableProvide(agentInstanceViewFactoryContext.AgentInstanceContext);
-            ViewUpdatedCollection randomAccess =
+            var randomAccess =
                 agentInstanceViewFactoryContext.StatementContext.ViewServicePreviousFactory
                     .GetOptPreviousExprRandomAccess(agentInstanceViewFactoryContext);
             return new TimeWindowView(agentInstanceViewFactoryContext, this, randomAccess, timePeriodProvide);

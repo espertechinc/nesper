@@ -6,18 +6,20 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using com.espertech.esper.compat.threading.locks;
+
 namespace com.espertech.esper.common.@internal.context.util
 {
-    public interface StatementAgentInstanceLock
+    public interface StatementAgentInstanceLock : IReaderWriterLock
     {
-        void AcquireWriteLock();
-
-        bool AcquireWriteLock(long msecTimeout);
-
-        void ReleaseWriteLock();
-
-        void AcquireReadLock();
-
-        void ReleaseReadLock();
+        // void AcquireWriteLock();
+        //
+        // bool AcquireWriteLock(long msecTimeout);
+        //
+        // void ReleaseWriteLock();
+        //
+        // void AcquireReadLock();
+        //
+        // void ReleaseReadLock();
     }
 } // end of namespace

@@ -29,13 +29,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
         }
 
-        public Type EvaluationType {
-            get => typeof(bool?);
-        }
+        public Type EvaluationType => typeof(bool?);
 
-        public ExprEvaluator ExprEvaluator {
-            get => new ExprAndNodeEval(this, ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ChildNodes));
-        }
+        public ExprEvaluator ExprEvaluator => new ExprAndNodeEval(
+            this,
+            ExprNodeUtilityQuery.GetEvaluatorsNoCompile(ChildNodes));
 
         public CodegenExpression EvaluateCodegenUninstrumented(
             Type requiredType,
@@ -63,24 +61,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 .Build();
         }
 
-        public ExprForgeConstantType ForgeConstantType {
-            get => ExprForgeConstantType.NONCONST;
-        }
+        public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public override ExprForge Forge {
-            get => this;
-        }
+        public override ExprForge Forge => this;
 
-        public ExprNodeRenderable ExprForgeRenderable {
-            get => this;
-        }
+        public ExprNodeRenderable ExprForgeRenderable => this;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             // Sub-nodes must be returning boolean
-            foreach (ExprNode child in ChildNodes) {
-                Type childType = child.Forge.EvaluationType;
-                if (!TypeHelper.IsBoolean(childType)) {
+            foreach (var child in ChildNodes) {
+                var childType = child.Forge.EvaluationType;
+                if (!childType.IsTypeBoolean()) {
                     throw new ExprValidationException(
                         "Incorrect use of AND clause, sub-expressions do not return boolean");
                 }
@@ -93,25 +85,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return null;
         }
 
-        public bool IsConstantResult {
-            get => false;
-        }
+        public bool IsConstantResult => false;
 
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            string appendStr = "";
-            foreach (ExprNode child in ChildNodes) {
+            var appendStr = "";
+            foreach (var child in ChildNodes) {
                 writer.Write(appendStr);
                 child.ToEPL(writer, Precedence, flags);
                 appendStr = " and ";
             }
         }
 
-        public override ExprPrecedenceEnum Precedence {
-            get => ExprPrecedenceEnum.AND;
-        }
+        public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.AND;
 
         public override bool EqualsNode(
             ExprNode node,

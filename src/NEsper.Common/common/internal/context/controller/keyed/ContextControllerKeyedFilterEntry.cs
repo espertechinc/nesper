@@ -98,7 +98,10 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             FilterSpecActivatable activatable,
             AgentInstanceTransferServices xfer)
         {
-            xfer.AgentInstanceContext.FilterService.Remove(filterHandle, activatable.FilterForEventType, filterValueSet);
+            xfer.AgentInstanceContext.FilterService.Remove(
+                filterHandle,
+                activatable.FilterForEventType,
+                filterValueSet);
             xfer.TargetFilterService.Add(activatable.FilterForEventType, filterValueSet, filterHandle);
         }
     }

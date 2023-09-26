@@ -11,7 +11,7 @@ using System.Linq;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
-using com.espertech.esper.compat;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
@@ -30,14 +30,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                     count++;
                 }
                 else {
-                    var namedParameterNode = (ExprNamedParameterNode) node;
+                    var namedParameterNode = (ExprNamedParameterNode)node;
                     var paramNameLower = namedParameterNode.ParameterName.ToLowerInvariant();
                     if (paramNameLower.Equals("group_by")) {
                         optionalLocalGroupBy = new ExprAggregateLocalGroupByDesc(namedParameterNode.ChildNodes);
                     }
                     else if (paramNameLower.Equals("filter")) {
                         if ((namedParameterNode.ChildNodes.Length != 1) |
-                            (namedParameterNode.ChildNodes[0].Forge.EvaluationType.GetBoxedType() != typeof(bool?))) {
+                            namedParameterNode.ChildNodes[0].Forge.EvaluationType.IsTypeBoolean()) {
                             throw new ExprValidationException(
                                 "Filter named parameter requires a single expression returning a boolean-typed value");
                         }
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             }
 
             // From the deepest (highest) level to the lowest, add aggregates to list
-            int deepLevel = aggregateExprPerLevel.Last().Key;
+            var deepLevel = aggregateExprPerLevel.Last().Key;
             for (var i = deepLevel; i >= 1; i--) {
                 var list = aggregateExprPerLevel.Get(i);
                 if (list == null) {
@@ -148,16 +148,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
             IDictionary<int, IList<ExprAggregateNode>> aggregateExprPerLevel,
             int level)
         {
-            if (topNode is ExprNodeInnerNodeProvider) {
-                var parameterized = (ExprNodeInnerNodeProvider) topNode;
+            if (topNode is ExprNodeInnerNodeProvider parameterized) {
                 var additionalNodes = parameterized.AdditionalNodes;
                 foreach (var additionalNode in additionalNodes) {
                     RecursiveAggregate(additionalNode, aggregateExprPerLevel, level);
                 }
             }
 
-            if (topNode is ExprDeclaredNode) {
-                var declared = (ExprDeclaredNode) topNode;
+            if (topNode is ExprDeclaredNode declared) {
                 RecursiveAggregate(declared.Body, aggregateExprPerLevel, level);
             }
         }
@@ -172,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                 RecursiveAggregate(node, aggregateExprPerLevel, currentLevel + 1);
             }
 
-            if (!(currentNode is ExprAggregateNode)) {
+            if (!(currentNode is ExprAggregateNode aggregateNode)) {
                 return;
             }
 
@@ -183,7 +181,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                 aggregateExprPerLevel.Put(currentLevel, aggregates);
             }
 
-            aggregates.Add((ExprAggregateNode) currentNode);
+            aggregates.Add(aggregateNode);
         }
 
         public static int CountPositionalArgs(IList<ExprNode> args)

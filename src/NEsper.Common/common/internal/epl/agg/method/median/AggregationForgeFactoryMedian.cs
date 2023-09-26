@@ -9,8 +9,6 @@
 using System;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.agg.method.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.@base;
@@ -18,58 +16,44 @@ using com.espertech.esper.common.@internal.epl.expression.agg.method;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 
+
 namespace com.espertech.esper.common.@internal.epl.agg.method.median
 {
-	public class AggregationForgeFactoryMedian : AggregationForgeFactoryBase
-	{
-		private readonly ExprMedianNode _parent;
-		private readonly Type _aggregatedValueType;
-		private readonly DataInputOutputSerdeForge _distinctSerde;
-		private AggregatorMethod _aggregator;
+    public class AggregationForgeFactoryMedian : AggregationForgeFactoryBase
+    {
+        protected readonly ExprMedianNode parent;
+        protected readonly Type aggregatedValueType;
+        protected readonly DataInputOutputSerdeForge distinctSerde;
+        private readonly AggregatorMethod aggregator;
 
-		public AggregationForgeFactoryMedian(
-			ExprMedianNode parent,
-			Type aggregatedValueType,
-			DataInputOutputSerdeForge distinctSerde)
-		{
-			_parent = parent;
-			_aggregatedValueType = aggregatedValueType;
-			_distinctSerde = distinctSerde;
-		}
+        public AggregationForgeFactoryMedian(
+            ExprMedianNode parent,
+            Type aggregatedValueType,
+            DataInputOutputSerdeForge distinctSerde)
+        {
+            this.parent = parent;
+            this.aggregatedValueType = aggregatedValueType;
+            this.distinctSerde = distinctSerde;
+            var distinctType = !parent.IsDistinct ? null : aggregatedValueType;
+            aggregator = new AggregatorMedian(distinctType, distinctSerde, parent.HasFilter, parent.OptionalFilter);
+        }
 
-		public override Type ResultType => typeof(double?);
+        public override ExprForge[] GetMethodAggregationForge(
+            bool join,
+            EventType[] typesPerStream)
+        {
+            return ExprMethodAggUtil.GetDefaultForges(parent.PositionalParams, join, typesPerStream);
+        }
 
-		public override void InitMethodForge(
-			int col,
-			CodegenCtor rowCtor,
-			CodegenMemberCol membersColumnized,
-			CodegenClassScope classScope)
-		{
-			Type distinctType = !_parent.IsDistinct ? null : _aggregatedValueType;
-			_aggregator = new AggregatorMedian(
-				this,
-				col,
-				rowCtor,
-				membersColumnized,
-				classScope,
-				distinctType,
-				_distinctSerde,
-				_parent.HasFilter,
-				_parent.OptionalFilter);
-		}
+        public override Type ResultType => typeof(double?);
 
-		public override AggregatorMethod Aggregator => _aggregator;
+        public override AggregatorMethod Aggregator => aggregator;
 
-		public override ExprAggregateNodeBase AggregationExpression => _parent;
+        public override ExprAggregateNodeBase AggregationExpression => parent;
 
-		public override ExprForge[] GetMethodAggregationForge(
-			bool join,
-			EventType[] typesPerStream)
-		{
-			return ExprMethodAggUtil.GetDefaultForges(_parent.PositionalParams, join, typesPerStream);
-		}
-
-		public override AggregationPortableValidation AggregationPortableValidation =>
-			new AggregationPortableValidationMedian(_parent.IsDistinct, _parent.HasFilter, _aggregatedValueType);
-	}
+        public override AggregationPortableValidation AggregationPortableValidation => new AggregationPortableValidationMedian(
+            parent.IsDistinct,
+            parent.HasFilter,
+            aggregatedValueType);
+    }
 } // end of namespace

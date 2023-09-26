@@ -102,21 +102,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
             else {
                 if (typeOne != typeof(string) || typeTwo != typeof(string) || typeThree != typeof(string)) {
-                    if (!typeOne.IsNumeric()) {
+                    if (!typeOne.IsTypeNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
                             typeOne.CleanName() +
                             "' to numeric is not allowed");
                     }
 
-                    if (!typeTwo.IsNumeric()) {
+                    if (!typeTwo.IsTypeNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
                             typeTwo.CleanName() +
                             "' to numeric is not allowed");
                     }
 
-                    if (!typeThree.IsNumeric()) {
+                    if (!typeThree.IsTypeNumeric()) {
                         throw new ExprValidationException(
                             "Implicit conversion from datatype '" +
                             typeThree.CleanName() +
@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNodeRenderableFlags flags)
         {
             IList<ExprNode> children = ChildNodes;
-            using (IEnumerator<ExprNode> enumerator = children.GetEnumerator()) {
+            using (var enumerator = children.GetEnumerator()) {
                 if (IsLowEndpointIncluded && IsHighEndpointIncluded) {
                     enumerator.Advance().ToEPL(writer, Precedence, flags);
                     if (IsNotBetween) {
@@ -203,7 +203,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             if (compareType == typeof(string)) {
                 computer = new ExprBetweenCompString(IsLowEndpointIncluded, IsHighEndpointIncluded);
             }
-            else if (compareType.IsDecimal()) {
+            else if (compareType.IsTypeDecimal()) {
                 computer = new ExprBetweenCompDecimal(
                     IsLowEndpointIncluded,
                     IsHighEndpointIncluded,
@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     lowType,
                     highType);
             }
-            else if (compareType.IsBigInteger()) {
+            else if (compareType.IsTypeBigInteger()) {
                 computer = new ExprBetweenCompBigInteger(
                     IsLowEndpointIncluded,
                     IsHighEndpointIncluded,
@@ -733,9 +733,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     method = block.MethodReturn(ConstantFalse());
                 }
 
-                CodegenExpression valueCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(value, valueType);
-                CodegenExpression lowerCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(lower, lowerType);
-                CodegenExpression higherCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(higher, higherType);
+                var valueCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(value, valueType);
+                var lowerCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(lower, lowerType);
+                var higherCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(higher, higherType);
                 return LocalMethod(method, valueCoerced, lowerCoerced, higherCoerced);
             }
         }

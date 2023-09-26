@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.type
             int max)
         {
             ICollection<int> result = new HashSet<int>();
-            for (int i = min; i <= max; i++) {
+            for (var i = min; i <= max; i++) {
                 result.Add(i);
             }
 

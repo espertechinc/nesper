@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,22 +21,23 @@ namespace com.espertech.esper.common.client.soda
     ///         Applications can create an object model by instantiating this class and then setting the various clauses.
     ///         When done, use the administrative interface to deploy from the model.
     ///     </para>
-    ///     Use the toEPL method to generate a textual EPL from an object model.
     ///     <para>
-    ///         Minimally, and EPL statement consists of the select-clause and the where-clause.These are represented by
-    ///         <seealso cref="SelectClause" /> and <seealso cref="FromClause" /> respectively.
+    ///         Use the toEPL method to generate a textual EPL from an object model.
+    ///     </para>
+    ///     <para>
+    ///         Minimally, and EPL statement consists of the select-clause and the where-clause. These are represented by
+    ///         <seealso cref="SelectClause(com.espertech.esper.common.client.soda.SelectClause)" />and
+    ///         <seealso cref="FromClause(com.espertech.esper.common.client.soda.FromClause)" /> respectively.
     ///     </para>
     ///     <para>
     ///         Here is a short example that create a simple EPL statement such as "select page, responseTime from PageLoad" :
-    ///         <pre>
-    ///             EPStatementObjectModel model = new EPStatementObjectModel();
-    ///             model.setSelectClause(SelectClause.create("page", "responseTime"));
-    ///             model.setPropertyEvalSpec(FromClause.create(FilterStream.create("PageLoad")));
-    ///         </pre>
+    ///         EPStatementObjectModel model = new EPStatementObjectModel();
+    ///         model.setSelectClause(SelectClause.create("page", "responseTime"));
+    ///         model.setPropertyEvalSpec(FromClause.create(FilterStream.create("PageLoad")));
     ///     </para>
     ///     <para>
-    ///         The select-clause and from-clause must be set for the statement object model to be usable by the
-    ///         administrative API.All other clauses a optional.
+    ///         The select-clause and from-clause must be set for the statement object model to be useable by the
+    ///         administrative API. All other clauses a optional.
     ///     </para>
     ///     <para>
     ///         Please see the documentation set for further examples.
@@ -45,186 +46,322 @@ namespace com.espertech.esper.common.client.soda
     [Serializable]
     public class EPStatementObjectModel
     {
+        private IList<AnnotationPart> annotations;
+        private IList<ClassProvidedExpression> classProvidedExpressions;
+        private string contextName;
+        private CreateClassClause createClass;
+        private CreateContextClause createContext;
+        private CreateDataFlowClause createDataFlow;
+        private CreateExpressionClause createExpression;
+        private CreateIndexClause createIndex;
+        private CreateSchemaClause createSchema;
+        private CreateTableClause createTable;
+        private CreateVariableClause createVariable;
+        private CreateWindowClause createWindow;
+        private IList<ExpressionDeclaration> expressionDeclarations;
+        private FireAndForgetClause fireAndForgetClause;
+        private ForClause forClause;
+        private FromClause fromClause;
+        private GroupByClause groupByClause;
+        private Expression havingClause;
+        private InsertIntoClause insertInto;
+        private IntoTableClause intoTableClause;
+        private MatchRecognizeClause matchRecognizeClause;
+        private OnClause onExpr;
+        private OrderByClause orderByClause;
+        private OutputLimitClause outputLimitClause;
+        private RowLimitClause rowLimitClause;
+        private IList<ScriptExpression> scriptExpressions;
+        private SelectClause selectClause;
+        private string treeObjectName;
+        private UpdateClause updateClause;
+        private Expression whereClause;
+
+        /// <summary>
+        ///     Ctor.
+        /// </summary>
+        public EPStatementObjectModel()
+        {
+        }
+
         /// <summary>
         ///     Return the insert-into-clause, or null to indicate that the clause is absent.
         /// </summary>
         /// <value>specification of the insert-into-clause, or null if none present</value>
-        public InsertIntoClause InsertInto { get; set; }
+        public InsertIntoClause InsertInto {
+            get => insertInto;
+            set => insertInto = value;
+        }
 
         /// <summary>
-        ///     Return the select-clause.
+        ///     Specify a select-clause.
         /// </summary>
-        /// <value>specification of the select-clause</value>
-        public SelectClause SelectClause { get; set; }
+        /// <value>specifies the select-clause, the select-clause cannot be null and must be set</value>
+        public SelectClause SelectClause {
+            set => selectClause = value;
+            get => selectClause;
+        }
 
         /// <summary>
         ///     Specify a from-clause.
         /// </summary>
         /// <value>specifies the from-clause, the from-clause cannot be null and must be set</value>
-        public FromClause FromClause { get; set; }
+        public FromClause FromClause {
+            set => fromClause = value;
+            get => fromClause;
+        }
 
         /// <summary>
         ///     Return the where-clause, or null to indicate that the clause is absent.
         /// </summary>
         /// <value>specification of the where-clause, or null if none present</value>
-        public Expression WhereClause { get; set; }
+        public Expression WhereClause {
+            get => whereClause;
+            set => whereClause = value;
+        }
 
         /// <summary>
         ///     Return the group-by-clause, or null to indicate that the clause is absent.
         /// </summary>
         /// <value>specification of the group-by-clause, or null if none present</value>
-        public GroupByClause GroupByClause { get; set; }
+        public GroupByClause GroupByClause {
+            get => groupByClause;
+            set => groupByClause = value;
+        }
 
         /// <summary>
         ///     Return the having-clause, or null to indicate that the clause is absent.
         /// </summary>
         /// <value>specification of the having-clause, or null if none present</value>
-        public Expression HavingClause { get; set; }
+        public Expression HavingClause {
+            get => havingClause;
+            set => havingClause = value;
+        }
 
         /// <summary>
         ///     Return the order-by-clause, or null to indicate that the clause is absent.
         /// </summary>
         /// <value>specification of the order-by-clause, or null if none present</value>
-        public OrderByClause OrderByClause { get; set; }
+        public OrderByClause OrderByClause {
+            get => orderByClause;
+            set => orderByClause = value;
+        }
 
         /// <summary>
         ///     Return the output-rate-limiting-clause, or null to indicate that the clause is absent.
         /// </summary>
         /// <value>specification of the output-rate-limiting-clause, or null if none present</value>
-        public OutputLimitClause OutputLimitClause { get; set; }
+        public OutputLimitClause OutputLimitClause {
+            get => outputLimitClause;
+            set => outputLimitClause = value;
+        }
+
+        /// <summary>
+        ///     Returns the row limit specification, or null if none supplied.
+        /// </summary>
+        /// <value>row limit spec if any</value>
+        public RowLimitClause RowLimitClause {
+            get => rowLimitClause;
+            set => rowLimitClause = value;
+        }
+
+        /// <summary>
+        ///     Returns the update specification.
+        /// </summary>
+        /// <value>update spec if defined</value>
+        public UpdateClause UpdateClause {
+            get => updateClause;
+            set => updateClause = value;
+        }
+
+        /// <summary>
+        ///     Returns annotations.
+        /// </summary>
+        /// <value>annotations</value>
+        public IList<AnnotationPart> Annotations {
+            get => annotations;
+            set => annotations = value;
+        }
+
+        /// <summary>
+        ///     Match-recognize clause.
+        /// </summary>
+        /// <value>clause</value>
+        public MatchRecognizeClause MatchRecognizeClause {
+            get => matchRecognizeClause;
+            set => matchRecognizeClause = value;
+        }
+
+        /// <summary>
+        ///     Returns create-index clause.
+        /// </summary>
+        /// <value>clause</value>
+        public CreateIndexClause CreateIndex {
+            get => createIndex;
+            set => createIndex = value;
+        }
+
+        /// <summary>
+        ///     Returns the create-schema clause.
+        /// </summary>
+        /// <value>clause</value>
+        public CreateSchemaClause CreateSchema {
+            get => createSchema;
+            set => createSchema = value;
+        }
+
+        /// <summary>
+        ///     Returns the create-context clause.
+        /// </summary>
+        /// <value>clause</value>
+        public CreateContextClause CreateContext {
+            get => createContext;
+            set => createContext = value;
+        }
+
+        /// <summary>
+        ///     Returns the for-clause.
+        /// </summary>
+        /// <value>for-clause</value>
+        public ForClause ForClause {
+            get => forClause;
+            set => forClause = value;
+        }
+
+        /// <summary>
+        ///     Returns the expression declarations, if any.
+        /// </summary>
+        /// <value>expression declarations</value>
+        public IList<ExpressionDeclaration> ExpressionDeclarations {
+            get => expressionDeclarations;
+            set => expressionDeclarations = value;
+        }
+
+        /// <summary>
+        ///     Returns the context name if context dimensions apply to statement.
+        /// </summary>
+        /// <value>context name</value>
+        public string ContextName {
+            get => contextName;
+            set => contextName = value;
+        }
+
+        /// <summary>
+        ///     Returns the scripts defined.
+        /// </summary>
+        /// <value>scripts</value>
+        public IList<ScriptExpression> ScriptExpressions {
+            get => scriptExpressions;
+            set => scriptExpressions = value;
+        }
+
+        /// <summary>
+        ///     Returns the inlined-classes provided as part of the EPL statement
+        /// </summary>
+        /// <value>inlined-classes</value>
+        public IList<ClassProvidedExpression> ClassProvidedExpressions {
+            get => classProvidedExpressions;
+            set => classProvidedExpressions = value;
+        }
+
+        /// <summary>
+        ///     Returns the "create dataflow" part, if present.
+        /// </summary>
+        /// <value>create dataflow clause</value>
+        public CreateDataFlowClause CreateDataFlow {
+            get => createDataFlow;
+            set => createDataFlow = value;
+        }
+
+        /// <summary>
+        ///     Returns the internal expression id assigned for tools to identify the expression.
+        /// </summary>
+        /// <value>object name</value>
+        public string TreeObjectName {
+            get => treeObjectName;
+            set => treeObjectName = value;
+        }
+
+        /// <summary>
+        ///     Returns the create-expression clause, if any
+        /// </summary>
+        /// <value>clause</value>
+        public CreateExpressionClause CreateExpression {
+            get => createExpression;
+            set => createExpression = value;
+        }
+
+        /// <summary>
+        ///     Returns the create-class clause or null if not present.
+        /// </summary>
+        /// <value>create-class clause</value>
+        public CreateClassClause CreateClass {
+            get => createClass;
+            set => createClass = value;
+        }
+
+        /// <summary>
+        ///     Returns fire-and-forget (on-demand) query information for FAF select, insert, update and delete.
+        /// </summary>
+        /// <value>fire and forget query information</value>
+        public FireAndForgetClause FireAndForgetClause {
+            get => fireAndForgetClause;
+            set => fireAndForgetClause = value;
+        }
+
+        /// <summary>
+        ///     Returns the into-table clause, or null if none found.
+        /// </summary>
+        /// <value>into-table clause</value>
+        public IntoTableClause IntoTableClause {
+            get => intoTableClause;
+            set => intoTableClause = value;
+        }
+
+        /// <summary>
+        ///     Returns the create-table clause if present or null if not present
+        /// </summary>
+        /// <value>create-table clause</value>
+        public CreateTableClause CreateTable {
+            get => createTable;
+            set => createTable = value;
+        }
 
         /// <summary>
         ///     Returns the create-window clause for creating named windows, or null if this statement does not
         ///     create a named window.
         /// </summary>
         /// <value>named window creation clause</value>
-        public CreateWindowClause CreateWindow { get; set; }
+        public CreateWindowClause CreateWindow {
+            get => createWindow;
+            set => createWindow = value;
+        }
 
         /// <summary>
         ///     Returns the on-delete clause for deleting from named windows, or null if this statement
         ///     does not delete from a named window
         /// </summary>
         /// <value>on delete clause</value>
-        public OnClause OnExpr { get; set; }
+        public OnClause OnExpr {
+            get => onExpr;
+            set => onExpr = value;
+        }
 
         /// <summary>
         ///     Returns the create-variable clause if this is a statement creating a variable, or null if not.
         /// </summary>
         /// <value>create-variable clause</value>
-        public CreateVariableClause CreateVariable { get; set; }
-
-        /// <summary>
-        ///     Returns the row limit specification, or null if none supplied.
-        /// </summary>
-        /// <value>row limit spec if any</value>
-        public RowLimitClause RowLimitClause { get; set; }
-
-        /// <summary>
-        ///     Returns the update specification.
-        /// </summary>
-        /// <value>update spec if defined</value>
-        public UpdateClause UpdateClause { get; set; }
-
-        /// <summary>
-        ///     Returns annotations.
-        /// </summary>
-        /// <value>annotations</value>
-        public IList<AnnotationPart> Annotations { get; set; }
-
-        /// <summary>
-        ///     Match-recognize clause.
-        /// </summary>
-        /// <value>clause</value>
-        public MatchRecognizeClause MatchRecognizeClause { get; set; }
-
-        /// <summary>
-        ///     Returns create-index clause.
-        /// </summary>
-        /// <value>clause</value>
-        public CreateIndexClause CreateIndex { get; set; }
-
-        /// <summary>
-        ///     Returns the create-schema clause.
-        /// </summary>
-        /// <value>clause</value>
-        public CreateSchemaClause CreateSchema { get; set; }
-
-        /// <summary>
-        ///     Returns the create-context clause.
-        /// </summary>
-        /// <value>clause</value>
-        public CreateContextClause CreateContext { get; set; }
-
-        /// <summary>
-        ///     Returns the for-clause.
-        /// </summary>
-        /// <value>for-clause</value>
-        public ForClause ForClause { get; set; }
-
-        /// <summary>
-        ///     Returns the expression declarations, if any.
-        /// </summary>
-        /// <value>expression declarations</value>
-        public IList<ExpressionDeclaration> ExpressionDeclarations { get; set; }
-
-        /// <summary>
-        ///     Returns the context name if context dimensions apply to statement.
-        /// </summary>
-        /// <value>context name</value>
-        public string ContextName { get; set; }
-
-        /// <summary>
-        ///     Returns the scripts defined.
-        /// </summary>
-        /// <value>scripts</value>
-        public IList<ScriptExpression> ScriptExpressions { get; set; }
-        
-        public IList<ClassProvidedExpression> ClassProvidedExpressions { get; set; }
-
-        /// <summary>
-        ///     Returns the "create dataflow" part, if present.
-        /// </summary>
-        /// <value>create dataflow clause</value>
-        public CreateDataFlowClause CreateDataFlow { get; set; }
-
-        /// <summary>
-        ///     Returns the internal expression id assigned for tools to identify the expression.
-        /// </summary>
-        /// <value>object name</value>
-        public string TreeObjectName { get; set; }
-
-        /// <summary>
-        ///     Returns the create-expression clause, if any
-        /// </summary>
-        /// <value>clause</value>
-        public CreateExpressionClause CreateExpression { get; set; }
-        
-        public CreateClassClause CreateClass { get; set; }
-
-        /// <summary>
-        ///     Returns fire-and-forget (on-demand) query information for FAF select, insert, update and delete.
-        /// </summary>
-        /// <value>fire and forget query information</value>
-        public FireAndForgetClause FireAndForgetClause { get; set; }
-
-        /// <summary>
-        ///     Returns the into-table clause, or null if none found.
-        /// </summary>
-        /// <value>into-table clause</value>
-        public IntoTableClause IntoTableClause { get; set; }
-
-        /// <summary>
-        ///     Returns the create-table clause if present or null if not present
-        /// </summary>
-        /// <value>create-table clause</value>
-        public CreateTableClause CreateTable { get; set; }
+        public CreateVariableClause CreateVariable {
+            get => createVariable;
+            set => createVariable = value;
+        }
 
         /// <summary>
         ///     Specify an insert-into-clause.
         /// </summary>
         /// <param name="insertInto">specifies the insert-into-clause, or null to indicate that the clause is absent</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel SetInsertInto(InsertIntoClause insertInto)
+        public EPStatementObjectModel WithInsertInto(InsertIntoClause insertInto)
         {
             InsertInto = insertInto;
             return this;
@@ -235,9 +372,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="selectClause">specifies the select-clause, the select-clause cannot be null and must be set</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel SetSelect(SelectClause selectClause)
+        public EPStatementObjectModel WithSelectClause(SelectClause selectClause)
         {
-            SelectClause = selectClause;
+            this.selectClause = selectClause;
             return this;
         }
 
@@ -246,9 +383,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="fromClause">specifies the from-clause, the from-clause cannot be null and must be set</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel SetFrom(FromClause fromClause)
+        public EPStatementObjectModel WithFromClause(FromClause fromClause)
         {
-            FromClause = fromClause;
+            this.fromClause = fromClause;
             return this;
         }
 
@@ -257,9 +394,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="whereClause">specifies the where-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel SetWhere(Expression whereClause)
+        public EPStatementObjectModel WithWhereClause(Expression whereClause)
         {
-            WhereClause = whereClause;
+            this.whereClause = whereClause;
             return this;
         }
 
@@ -268,9 +405,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="groupByClause">specifies the group-by-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel SetGroupBy(GroupByClause groupByClause)
+        public EPStatementObjectModel WithGroupByClause(GroupByClause groupByClause)
         {
-            GroupByClause = groupByClause;
+            this.groupByClause = groupByClause;
             return this;
         }
 
@@ -279,9 +416,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="havingClause">specifies the having-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel SetHaving(Expression havingClause)
+        public EPStatementObjectModel WithHavingClause(Expression havingClause)
         {
-            HavingClause = havingClause;
+            this.havingClause = havingClause;
             return this;
         }
 
@@ -290,9 +427,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="orderByClause">specifies the order-by-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel SetOrderBy(OrderByClause orderByClause)
+        public EPStatementObjectModel WithOrderByClause(OrderByClause orderByClause)
         {
-            OrderByClause = orderByClause;
+            this.orderByClause = orderByClause;
             return this;
         }
 
@@ -301,9 +438,9 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <param name="outputLimitClause">specifies the output-rate-limiting-clause, which is optional and can be null</param>
         /// <returns>model</returns>
-        public EPStatementObjectModel SetOutputLimit(OutputLimitClause outputLimitClause)
+        public EPStatementObjectModel WithOutputLimitClause(OutputLimitClause outputLimitClause)
         {
-            OutputLimitClause = outputLimitClause;
+            this.outputLimitClause = outputLimitClause;
             return this;
         }
 
@@ -350,127 +487,129 @@ namespace com.espertech.esper.common.client.soda
             EPStatementFormatter formatter,
             TextWriter writer)
         {
-            AnnotationPart.ToEPL(writer, Annotations, formatter);
-            ExpressionDeclaration.ToEPL(writer, ExpressionDeclarations, formatter);
-            ScriptExpression.ToEPL(writer, ScriptExpressions, formatter);
-            ClassProvidedExpression.ToEPL(writer, ClassProvidedExpressions, formatter);
+            AnnotationPart.ToEPL(writer, annotations, formatter);
+            ExpressionDeclaration.ToEPL(writer, expressionDeclarations, formatter);
+            ScriptExpression.ToEPL(writer, scriptExpressions, formatter);
+            ClassProvidedExpression.ToEPL(writer, classProvidedExpressions, formatter);
 
-            if (ContextName != null) {
+            if (contextName != null) {
                 formatter.BeginContext(writer);
                 writer.Write("context ");
-                writer.Write(ContextName);
+                writer.Write(contextName);
             }
 
-            if (CreateIndex != null) {
+            if (createIndex != null) {
                 formatter.BeginCreateIndex(writer);
-                CreateIndex.ToEPL(writer);
+                createIndex.ToEPL(writer);
                 return;
             }
 
-            if (CreateSchema != null) {
+            if (createSchema != null) {
                 formatter.BeginCreateSchema(writer);
-                CreateSchema.ToEPL(writer);
+                createSchema.ToEPL(writer);
                 return;
             }
 
-            if (CreateExpression != null) {
+            if (createExpression != null) {
                 formatter.BeginCreateExpression(writer);
-                CreateExpression.ToEPL(writer);
-                return;
-            }
-                
-            if (CreateClass != null) {
-                formatter.BeginCreateExpression(writer);
-                CreateClass.ToEPL(writer);
+                createExpression.ToEPL(writer);
                 return;
             }
 
-            if (CreateContext != null) {
+            if (createClass != null) {
+                formatter.BeginCreateExpression(writer);
+                createClass.ToEPL(writer);
+                return;
+            }
+
+            if (createContext != null) {
                 formatter.BeginCreateContext(writer);
-                CreateContext.ToEPL(writer, formatter);
+                createContext.ToEPL(writer, formatter);
                 return;
             }
 
-            if (CreateWindow != null) {
+            if (createWindow != null) {
                 formatter.BeginCreateWindow(writer);
-                CreateWindow.ToEPL(writer);
+                createWindow.ToEPL(writer);
 
                 writer.Write(" as ");
-
-                if (SelectClause == null || SelectClause.SelectList.IsEmpty() && !CreateWindow.Columns.IsEmpty()) {
-                    CreateWindow.ToEPLCreateTablePart(writer);
+                if (selectClause == null || (selectClause.SelectList.IsEmpty() && !createWindow.Columns.IsEmpty())) {
+                    createWindow.ToEPLCreateTablePart(writer);
                 }
                 else {
-                    SelectClause.ToEPL(writer, formatter, false, false);
-                    if (CreateWindow.AsEventTypeName != null) {
+                    selectClause.ToEPL(writer, formatter, false, false);
+                    if (createWindow.AsEventTypeName != null) {
                         writer.Write(" from ");
-                        writer.Write(CreateWindow.AsEventTypeName);
+                        writer.Write(createWindow.AsEventTypeName);
                     }
 
-                    CreateWindow.ToEPLInsertPart(writer);
+                    createWindow.ToEPLInsertPart(writer);
                 }
 
                 return;
             }
 
-            if (CreateVariable != null) {
+            if (createVariable != null) {
                 formatter.BeginCreateVariable(writer);
-                CreateVariable.ToEPL(writer);
+                createVariable.ToEPL(writer);
                 return;
             }
 
-            if (CreateTable != null) {
+            if (createTable != null) {
                 formatter.BeginCreateTable(writer);
-                CreateTable.ToEPL(writer);
+                createTable.ToEPL(writer);
                 return;
             }
 
-            if (CreateDataFlow != null) {
+            if (createDataFlow != null) {
                 formatter.BeginCreateDataFlow(writer);
-                CreateDataFlow.ToEPL(writer, formatter);
+                createDataFlow.ToEPL(writer, formatter);
                 return;
             }
 
             var displayWhereClause = true;
-            if (UpdateClause != null) {
+            if (updateClause != null) {
                 formatter.BeginUpdate(writer);
-                UpdateClause.ToEPL(writer);
+                updateClause.ToEPL(writer);
             }
-            else if (OnExpr != null) {
+            else if (onExpr != null) {
                 formatter.BeginOnTrigger(writer);
                 writer.Write("on ");
-                FromClause.Streams[0].ToEPL(writer, formatter);
+                fromClause.Streams[0].ToEPL(writer, formatter);
 
-                if (OnExpr is OnDeleteClause onDeleteClause) {
+                if (onExpr is OnDeleteClause clause) {
                     formatter.BeginOnDelete(writer);
                     writer.Write("delete from ");
-                    onDeleteClause.ToEPL(writer);
+                    clause.ToEPL(writer);
                 }
-                else if (OnExpr is OnUpdateClause onUpdateClause) {
+                else if (onExpr is OnUpdateClause onUpdateClause) {
                     formatter.BeginOnUpdate(writer);
                     writer.Write("update ");
                     onUpdateClause.ToEPL(writer);
                 }
-                else if (OnExpr is OnSelectClause onSelectClause) {
-                    InsertInto?.ToEPL(writer, formatter, true);
-                    SelectClause.ToEPL(writer, formatter, true, onSelectClause.IsDeleteAndSelect);
+                else if (onExpr is OnSelectClause onSelect) {
+                    if (InsertInto != null) {
+                        InsertInto.ToEPL(writer, formatter, true);
+                    }
+
+                    selectClause.ToEPL(writer, formatter, InsertInto == null, onSelect.IsDeleteAndSelect);
                     writer.Write(" from ");
-                    onSelectClause.ToEPL(writer);
+                    onSelect.ToEPL(writer);
                 }
-                else if (OnExpr is OnSetClause onSetClause) {
-                    onSetClause.ToEPL(writer, formatter);
+                else if (onExpr is OnSetClause onSet) {
+                    onSet.ToEPL(writer, formatter);
                 }
-                else if (OnExpr is OnMergeClause onMergeClause) {
-                    onMergeClause.ToEPL(writer, WhereClause, formatter);
+                else if (onExpr is OnMergeClause merge) {
+                    merge.ToEPL(writer, whereClause, formatter);
                     displayWhereClause = false;
                 }
                 else {
-                    var split = (OnInsertSplitStreamClause) OnExpr;
+                    var split = (OnInsertSplitStreamClause)onExpr;
                     InsertInto.ToEPL(writer, formatter, true);
-                    SelectClause.ToEPL(writer, formatter, true, false);
-                    if (WhereClause != null) {
+                    selectClause.ToEPL(writer, formatter, false, false);
+                    if (whereClause != null) {
                         writer.Write(" where ");
-                        WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                        whereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                     }
 
                     split.ToEPL(writer, formatter);
@@ -478,92 +617,91 @@ namespace com.espertech.esper.common.client.soda
                 }
             }
             else {
-                IntoTableClause?.ToEPL(writer);
+                if (intoTableClause != null) {
+                    intoTableClause.ToEPL(writer, formatter);
+                }
 
-                if (SelectClause == null) {
+                if (selectClause == null) {
                     throw new IllegalStateException("Select-clause has not been defined");
                 }
 
-                if (FromClause == null) {
+                if (fromClause == null) {
                     throw new IllegalStateException("From-clause has not been defined");
                 }
 
-                if (FireAndForgetClause is FireAndForgetUpdate fireAndForgetUpdate) {
+                if (fireAndForgetClause is FireAndForgetUpdate update) {
                     writer.Write("update ");
-                    FromClause.ToEPLOptions(writer, formatter, false);
+                    fromClause.ToEPLOptions(writer, formatter, false);
                     writer.Write(" ");
-                    UpdateClause.RenderEPLAssignments(writer, fireAndForgetUpdate.Assignments);
+                    UpdateClause.RenderEPLAssignments(writer, update.Assignments);
                 }
-                else if (FireAndForgetClause is FireAndForgetInsert fireAndForgetInsert) {
+                else if (fireAndForgetClause is FireAndForgetInsert insert) {
                     InsertInto.ToEPL(writer, formatter, true);
-                    if (fireAndForgetInsert.IsUseValuesKeyword) {
-                        writer.Write(" values (");
-                        var delimiter = "";
-                        foreach (var element in SelectClause.SelectList) {
-                            writer.Write(delimiter);
-                            element.ToEPLElement(writer);
-                            delimiter = ", ";
-                        }
-
-                        writer.Write(")");
+                    if (insert.IsUseValuesKeyword) {
+                        insert.ToEPL(writer);
                     }
                     else {
-                        SelectClause.ToEPL(writer, formatter, true, false);
+                        selectClause.ToEPL(writer, formatter, false, false);
                     }
                 }
-                else if (FireAndForgetClause is FireAndForgetDelete) {
+                else if (fireAndForgetClause is FireAndForgetDelete) {
                     writer.Write("delete ");
-                    FromClause.ToEPLOptions(writer, formatter, true);
+                    fromClause.ToEPLOptions(writer, formatter, true);
                 }
                 else {
-                    InsertInto?.ToEPL(writer, formatter, true);
-                    SelectClause.ToEPL(writer, formatter, true, false);
-                    FromClause.ToEPLOptions(writer, formatter, true);
+                    if (InsertInto != null) {
+                        InsertInto.ToEPL(writer, formatter, intoTableClause == null);
+                    }
+
+                    selectClause.ToEPL(writer, formatter, intoTableClause == null && InsertInto == null, false);
+                    fromClause.ToEPLOptions(writer, formatter, true);
                 }
             }
 
-            MatchRecognizeClause?.ToEPL(writer);
+            if (matchRecognizeClause != null) {
+                matchRecognizeClause.ToEPL(writer);
+            }
 
-            if (WhereClause != null && displayWhereClause) {
+            if (whereClause != null && displayWhereClause) {
                 formatter.BeginWhere(writer);
                 writer.Write("where ");
-                WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                whereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
 
-            if (GroupByClause != null) {
+            if (groupByClause != null) {
                 formatter.BeginGroupBy(writer);
                 writer.Write("group by ");
-                GroupByClause.ToEPL(writer);
+                groupByClause.ToEPL(writer);
             }
 
-            if (HavingClause != null) {
+            if (havingClause != null) {
                 formatter.BeginHaving(writer);
                 writer.Write("having ");
-                HavingClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
+                havingClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }
 
-            if (OutputLimitClause != null) {
+            if (outputLimitClause != null) {
                 formatter.BeginOutput(writer);
                 writer.Write("output ");
-                OutputLimitClause.ToEPL(writer);
+                outputLimitClause.ToEPL(writer);
             }
 
-            if (OrderByClause != null) {
+            if (orderByClause != null) {
                 formatter.BeginOrderBy(writer);
                 writer.Write("order by ");
-                OrderByClause.ToEPL(writer);
+                orderByClause.ToEPL(writer);
             }
 
-            if (RowLimitClause != null) {
+            if (rowLimitClause != null) {
                 formatter.BeginLimit(writer);
                 writer.Write("limit ");
-                RowLimitClause.ToEPL(writer);
+                rowLimitClause.ToEPL(writer);
             }
 
-            if (ForClause != null) {
+            if (forClause != null) {
                 formatter.BeginFor(writer);
-                ForClause.ToEPL(writer);
+                forClause.ToEPL(writer);
             }
         }
     }
-}
+} // end of namespace

@@ -57,22 +57,22 @@ namespace com.espertech.esper.common.client.soda
             if (now) {
                 writer.Write("@now and ");
             }
-            String delimiter = "";
-            foreach (IList<Expression> crontab in crontabs) {
+
+            var delimiter = "";
+            foreach (var crontab in crontabs) {
                 writer.Write(delimiter);
                 Write(writer, crontab);
                 delimiter = ", ";
             }
         }
-        
+
         private static void Write(
             TextWriter writer,
             IList<Expression> expressions)
         {
             writer.Write("(");
-            string delimiter = "";
-            foreach (Expression e in expressions)
-            {
+            var delimiter = "";
+            foreach (var e in expressions) {
                 writer.Write(delimiter);
                 e.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ", ";

@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
         {
             _expression.MergeClasses(classes);
         }
-        
+
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             consumer.Invoke(_expression);

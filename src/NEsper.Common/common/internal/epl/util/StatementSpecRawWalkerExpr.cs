@@ -24,17 +24,16 @@ namespace com.espertech.esper.common.@internal.epl.util
             IList<ExprNode> expressions = new List<ExprNode>();
 
             if (raw.CreateContextDesc != null) {
-                ContextSpec detail = raw.CreateContextDesc.ContextDetail;
-                if (detail is ContextSpecKeyed) {
-                    var ks = (ContextSpecKeyed) detail;
-                    foreach (ContextSpecKeyedItem item in ks.Items) {
+                var detail = raw.CreateContextDesc.ContextDetail;
+                if (detail is ContextSpecKeyed ks) {
+                    foreach (var item in ks.Items) {
                         if (item.FilterSpecRaw.FilterExpressions != null) {
                             expressions.AddAll(item.FilterSpecRaw.FilterExpressions);
                         }
                     }
 
                     if (ks.OptionalInit != null) {
-                        foreach (ContextSpecConditionFilter filter in ks.OptionalInit) {
+                        foreach (var filter in ks.OptionalInit) {
                             CollectExpressions(expressions, filter);
                         }
                     }
@@ -43,8 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                         CollectExpressions(expressions, ks.OptionalTermination);
                     }
                 }
-                else if (detail is ContextSpecCategory) {
-                    var cat = (ContextSpecCategory) detail;
+                else if (detail is ContextSpecCategory cat) {
                     foreach (var item in cat.Items) {
                         if (item.Expression != null) {
                             expressions.Add(item.Expression);
@@ -55,8 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                         expressions.AddAll(cat.FilterSpecRaw.FilterExpressions);
                     }
                 }
-                else if (detail is ContextSpecInitiatedTerminated) {
-                    var ts = (ContextSpecInitiatedTerminated) detail;
+                else if (detail is ContextSpecInitiatedTerminated ts) {
                     CollectExpressions(expressions, ts.StartCondition);
                     CollectExpressions(expressions, ts.EndCondition);
                 }
@@ -97,8 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.util
 
             // on-expr
             if (raw.OnTriggerDesc != null) {
-                if (raw.OnTriggerDesc is OnTriggerSplitStreamDesc) {
-                    var onSplit = (OnTriggerSplitStreamDesc) raw.OnTriggerDesc;
+                if (raw.OnTriggerDesc is OnTriggerSplitStreamDesc onSplit) {
                     foreach (var item in onSplit.SplitStreams) {
                         if (item.SelectClause != null) {
                             AddSelectClause(expressions, item.SelectClause.SelectExprList);
@@ -124,8 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                     }
                 }
 
-                if (raw.OnTriggerDesc is OnTriggerMergeDesc) {
-                    var onMerge = (OnTriggerMergeDesc) raw.OnTriggerDesc;
+                if (raw.OnTriggerDesc is OnTriggerMergeDesc onMerge) {
                     foreach (var item in onMerge.Items) {
                         if (item.OptionalMatchCond != null) {
                             expressions.Add(item.OptionalMatchCond);
@@ -136,14 +131,12 @@ namespace com.espertech.esper.common.@internal.epl.util
                                 expressions.Add(action.OptionalWhereClause);
                             }
 
-                            if (action is OnTriggerMergeActionUpdate) {
-                                var update = (OnTriggerMergeActionUpdate) action;
+                            if (action is OnTriggerMergeActionUpdate update) {
                                 foreach (var assignment in update.Assignments) {
                                     expressions.Add(assignment.Expression);
                                 }
                             }
-                            else if (action is OnTriggerMergeActionInsert) {
-                                var insert = (OnTriggerMergeActionInsert) action;
+                            else if (action is OnTriggerMergeActionInsert insert) {
                                 AddSelectClause(expressions, insert.SelectClause);
                             }
                         }
@@ -164,8 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.util
             if (raw.StreamSpecs != null) {
                 foreach (var stream in raw.StreamSpecs) {
                     // filter stream
-                    if (stream is FilterStreamSpecRaw) {
-                        var filterStream = (FilterStreamSpecRaw) stream;
+                    if (stream is FilterStreamSpecRaw filterStream) {
                         var filter = filterStream.RawFilterSpec;
                         if (filter != null && filter.FilterExpressions != null) {
                             expressions.AddAll(filter.FilterExpressions);
@@ -175,9 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                             foreach (var contained in filter.OptionalPropertyEvalSpec.Atoms) {
                                 AddSelectClause(
                                     expressions,
-                                    contained.OptionalSelectClause == null
-                                        ? null
-                                        : contained.OptionalSelectClause.SelectExprList);
+                                    contained.OptionalSelectClause?.SelectExprList);
                                 if (contained.OptionalWhereClause != null) {
                                     expressions.Add(contained.OptionalWhereClause);
                                 }
@@ -186,8 +176,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                     }
 
                     // pattern stream
-                    if (stream is PatternStreamSpecRaw) {
-                        var patternStream = (PatternStreamSpecRaw) stream;
+                    if (stream is PatternStreamSpecRaw patternStream) {
                         CollectPatternExpressions(expressions, patternStream.EvalForgeNode);
                     }
 
@@ -209,11 +198,11 @@ namespace com.espertech.esper.common.@internal.epl.util
                         if (q.OptLeftNode != null) {
                             expressions.Add(q.OptLeftNode);
                             expressions.Add(q.OptRightNode);
-                            foreach (ExprIdentNode ident in q.AdditionalLeftNodes) {
+                            foreach (var ident in q.AdditionalLeftNodes) {
                                 expressions.Add(ident);
                             }
 
-                            foreach (ExprIdentNode ident in q.AdditionalRightNodes) {
+                            foreach (var ident in q.AdditionalRightNodes) {
                                 expressions.Add(ident);
                             }
                         }
@@ -227,24 +216,23 @@ namespace com.espertech.esper.common.@internal.epl.util
 
             if (raw.GroupByExpressions != null) {
                 foreach (var element in raw.GroupByExpressions) {
-                    if (element is GroupByClauseElementExpr) {
-                        expressions.Add(((GroupByClauseElementExpr) element).Expr);
+                    if (element is GroupByClauseElementExpr expr) {
+                        expressions.Add(expr.Expr);
                     }
-                    else if (element is GroupByClauseElementRollupOrCube) {
-                        var rollup = (GroupByClauseElementRollupOrCube) element;
+                    else if (element is GroupByClauseElementRollupOrCube rollup) {
                         AnalyzeRollup(rollup, expressions);
                     }
                     else {
-                        var set = (GroupByClauseElementGroupingSet) element;
+                        var set = (GroupByClauseElementGroupingSet)element;
                         foreach (var inner in set.Elements) {
-                            if (inner is GroupByClauseElementExpr) {
-                                expressions.Add(((GroupByClauseElementExpr) inner).Expr);
+                            if (inner is GroupByClauseElementExpr elementExpr) {
+                                expressions.Add(elementExpr.Expr);
                             }
-                            else if (inner is GroupByClauseElementCombinedExpr) {
-                                expressions.AddAll(((GroupByClauseElementCombinedExpr) inner).Expressions);
+                            else if (inner is GroupByClauseElementCombinedExpr combinedExpr) {
+                                expressions.AddAll(combinedExpr.Expressions);
                             }
                             else {
-                                AnalyzeRollup((GroupByClauseElementRollupOrCube) inner, expressions);
+                                AnalyzeRollup((GroupByClauseElementRollupOrCube)inner, expressions);
                             }
                         }
                     }
@@ -319,11 +307,11 @@ namespace com.espertech.esper.common.@internal.epl.util
             IList<ExprNode> expressions)
         {
             foreach (var ex in rollup.RollupExpressions) {
-                if (ex is GroupByClauseElementExpr) {
-                    expressions.Add(((GroupByClauseElementExpr) ex).Expr);
+                if (ex is GroupByClauseElementExpr expr) {
+                    expressions.Add(expr.Expr);
                 }
                 else {
-                    var combined = (GroupByClauseElementCombinedExpr) ex;
+                    var combined = (GroupByClauseElementCombinedExpr)ex;
                     expressions.AddAll(combined.Expressions);
                 }
             }
@@ -338,11 +326,10 @@ namespace com.espertech.esper.common.@internal.epl.util
             }
 
             foreach (var selement in selectClause) {
-                if (!(selement is SelectClauseExprRawSpec)) {
+                if (!(selement is SelectClauseExprRawSpec sexpr)) {
                     continue;
                 }
 
-                var sexpr = (SelectClauseExprRawSpec) selement;
                 expressions.Add(sexpr.SelectExpression);
             }
         }
@@ -356,7 +343,7 @@ namespace com.espertech.esper.common.@internal.epl.util
                 expressions.AddAll(filter.RawFilterSpec.FilterExpressions);
             }
 
-            foreach (EvalForgeNode child in patternExpression.ChildNodes) {
+            foreach (var child in patternExpression.ChildNodes) {
                 CollectPatternExpressions(expressions, child);
             }
         }

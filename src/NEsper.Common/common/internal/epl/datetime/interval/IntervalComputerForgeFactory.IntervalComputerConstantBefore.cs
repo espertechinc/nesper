@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 var delta = right - leftEnd;
                 return start <= delta && delta <= end;
             }
-            
+
             /// <summary>
             ///     NOTE: Code-generation-invoked method, method name and parameter order matters
             /// </summary>

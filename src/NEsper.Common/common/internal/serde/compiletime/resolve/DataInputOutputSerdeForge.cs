@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -22,7 +20,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
     /// </summary>
     public interface DataInputOutputSerdeForge
     {
-        String ForgeClassName();
+        string ForgeClassName { get; }
 
         CodegenExpression Codegen(
             CodegenMethod method,
@@ -43,7 +41,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
             }
 
             var expressions = new CodegenExpression[serdes.Length];
-            for (int i = 0; i < serdes.Length; i++) {
+            for (var i = 0; i < serdes.Length; i++) {
                 expressions[i] = serdes[i].Codegen(method, classScope, optionalEventTypeResolver);
             }
 

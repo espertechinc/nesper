@@ -23,79 +23,80 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.selectfrom
 {
-	public class EnumSelectFromEvent : ThreeFormEventPlain
-	{
+    public class EnumSelectFromEvent : ThreeFormEventPlain
+    {
+        public EnumSelectFromEvent(ExprDotEvalParamLambda lambda) : base(lambda)
+        {
+        }
 
-		public EnumSelectFromEvent(ExprDotEvalParamLambda lambda) : base(lambda)
-		{
-		}
+        public override EnumEval EnumEvaluator {
+            get {
+                var inner = InnerExpression.ExprEvaluator;
+                return new ProxyEnumEval() {
+                    ProcEvaluateEnumMethod = (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        if (enumcoll.IsEmpty()) {
+                            return enumcoll;
+                        }
 
-		public override EnumEval EnumEvaluator {
-			get {
-				var inner = InnerExpression.ExprEvaluator;
-				return new ProxyEnumEval() {
-					ProcEvaluateEnumMethod = (
-						eventsLambda,
-						enumcoll,
-						isNewData,
-						context) => {
-						if (enumcoll.IsEmpty()) {
-							return enumcoll;
-						}
+                        var beans = (ICollection<EventBean>)enumcoll;
+                        var result = new ArrayDeque<object>(enumcoll.Count);
+                        foreach (var next in beans) {
+                            eventsLambda[StreamNumLambda] = next;
 
-						var beans = (ICollection<EventBean>) enumcoll;
-						var result = new ArrayDeque<object>(enumcoll.Count);
-						foreach (var next in beans) {
-							eventsLambda[StreamNumLambda] = next;
+                            var item = inner.Evaluate(eventsLambda, isNewData, context);
+                            if (item != null) {
+                                result.Add(item);
+                            }
+                        }
 
-							var item = inner.Evaluate(eventsLambda, isNewData, context);
-							if (item != null) {
-								result.Add(item);
-							}
-						}
+                        return result;
+                    }
+                };
+            }
+        }
 
-						return result;
-					},
-				};
-			}
-		}
+        public override Type ReturnTypeOfMethod()
+        {
+            return typeof(FlexCollection);
+        }
 
-		public override Type ReturnType()
-		{
-			return typeof(FlexCollection);
-		}
+        public override CodegenExpression ReturnIfEmptyOptional()
+        {
+            return EnumForgeCodegenNames.REF_ENUMCOLL;
+        }
 
-		public override CodegenExpression ReturnIfEmptyOptional()
-		{
-			return EnumForgeCodegenNames.REF_ENUMCOLL;
-		}
+        public override void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            block.DeclareVar(
+                typeof(ArrayDeque<object>),
+                "result",
+                NewInstance<ArrayDeque<object>>(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")));
+        }
 
-		public override void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			block.DeclareVar(
-				typeof(ArrayDeque<object>),
-				"result",
-				NewInstance<ArrayDeque<object>>(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")));
-		}
+        public override void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            block.DeclareVar<object>(
+                    "item",
+                    InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                .IfCondition(NotEqualsNull(Ref("item")))
+                .Expression(ExprDotMethod(Ref("result"), "Add", Ref("item")));
+        }
 
-		public override void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			block.DeclareVar<object>("item", InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-				.IfCondition(NotEqualsNull(Ref("item")))
-				.Expression(ExprDotMethod(Ref("result"), "Add", Ref("item")));
-		}
-
-		public override void ReturnResult(CodegenBlock block)
-		{
-			block.MethodReturn(FlexWrap(Ref("result")));
-		}
-	}
+        public override void ReturnResult(CodegenBlock block)
+        {
+            block.MethodReturn(FlexWrap(Ref("result")));
+        }
+    }
 } // end of namespace

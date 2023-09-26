@@ -15,16 +15,17 @@ namespace com.espertech.esper.common.client.util
             _container = container;
         }
 
-        public TypeResolver GetTypeResolver()
-        {
-            lock (this) {
-                if (typeResolver == null) {
-                    var parentClassLoader = TypeResolverDefault.INSTANCE;
-                    var defaultArtifactRepository = _container.ArtifactRepositoryManager().DefaultRepository;
-                    typeResolver = new ArtifactTypeResolver(defaultArtifactRepository, parentClassLoader);
-                }
+        public TypeResolver TypeResolver {
+            get {
+                lock (this) {
+                    if (typeResolver == null) {
+                        var parentClassLoader = TypeResolverDefault.INSTANCE;
+                        var defaultArtifactRepository = _container.ArtifactRepositoryManager().DefaultRepository;
+                        typeResolver = new ArtifactTypeResolver(defaultArtifactRepository, parentClassLoader);
+                    }
 
-                return typeResolver;
+                    return typeResolver;
+                }
             }
         }
     }

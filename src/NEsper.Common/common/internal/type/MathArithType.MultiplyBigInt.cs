@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.type
                 object d1,
                 object d2)
             {
-                var b1 = (BigInteger) d1;
-                var b2 = (BigInteger) d2;
+                var b1 = (BigInteger)d1;
+                var b2 = (BigInteger)d2;
                 return b1 * b2;
             }
 

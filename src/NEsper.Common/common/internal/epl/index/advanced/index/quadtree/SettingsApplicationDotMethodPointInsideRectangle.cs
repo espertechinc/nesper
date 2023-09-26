@@ -50,21 +50,17 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
                 RHS_VALIDATION_NAME,
                 EPLExpressionParamType.NUMERIC);
 
-            ExprForge pxEval = lhs[0].Forge;
-            ExprForge pyEval = lhs[1].Forge;
-            ExprForge xEval = rhs[0].Forge;
-            ExprForge yEval = rhs[1].Forge;
-            ExprForge widthEval = rhs[2].Forge;
-            ExprForge heightEval = rhs[3].Forge;
+            var pxEval = lhs[0].Forge;
+            var pyEval = lhs[1].Forge;
+            var xEval = rhs[0].Forge;
+            var yEval = rhs[1].Forge;
+            var widthEval = rhs[2].Forge;
+            var heightEval = rhs[3].Forge;
             return new PointIntersectsRectangleForge(parent, pxEval, pyEval, xEval, yEval, widthEval, heightEval);
         }
 
-        protected override string OperationName {
-            get { return LOOKUP_OPERATION_NAME; }
-        }
+        protected override string OperationName => LOOKUP_OPERATION_NAME;
 
-        protected override string IndexTypeName {
-            get { return INDEXTYPE_NAME; }
-        }
+        protected override string IndexTypeName => INDEXTYPE_NAME;
     }
 } // end of namespace

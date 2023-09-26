@@ -46,10 +46,7 @@ namespace com.espertech.esper.common.client.soda
         /// <value>filter</value>
         public Filter Filter { get; set; }
 
-        public override PatternExprPrecedenceEnum Precedence
-        {
-            get { return PatternExprPrecedenceEnum.ATOM; }
-        }
+        public override PatternExprPrecedenceEnum Precedence => PatternExprPrecedenceEnum.ATOM;
 
         /// <summary>Returns the consume level, if assigned. </summary>
         /// <value>consume level</value>
@@ -59,18 +56,15 @@ namespace com.espertech.esper.common.client.soda
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            if (TagName != null)
-            {
+            if (TagName != null) {
                 writer.Write(TagName);
                 writer.Write('=');
             }
 
             Filter.ToEPL(writer, formatter);
-            if (OptionalConsumptionLevel != null)
-            {
+            if (OptionalConsumptionLevel != null) {
                 writer.Write("@consume");
-                if (OptionalConsumptionLevel != 1)
-                {
+                if (OptionalConsumptionLevel != 1) {
                     writer.Write("(");
                     writer.Write(Convert.ToString(OptionalConsumptionLevel));
                     writer.Write(")");

@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -25,26 +26,25 @@ using com.espertech.esper.common.@internal.epl.expression.prev;
 using com.espertech.esper.common.@internal.epl.expression.time.eval;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.common.@internal.epl.expression.visitor;
-using com.espertech.esper.common.@internal.epl.rowrecog.expr;
 using com.espertech.esper.common.@internal.epl.rowrecog.nfa;
 using com.espertech.esper.common.@internal.epl.streamtype;
+using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
-using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 {
     /// <summary>
-    ///     Plan match-recognize.
+    /// Plan match-recognize.
     /// </summary>
     public class RowRecogNFAViewPlanUtil
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static RowRecogPlan ValidateAndPlan(
-            IContainer container,
             EventType parentEventType,
             bool unbound,
             StatementBaseInfo @base,
@@ -54,19 +54,20 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var matchRecognizeSpec = @base.StatementSpec.Raw.MatchRecognizeSpec;
             var annotations = statementRawInfo.Annotations;
             var iterateOnly = HintEnum.ITERATE_ONLY.GetHint(annotations) != null;
-            var additionalForgeables = new List<StmtClassForgeableFactory>();
+            IList<StmtClassForgeableFactory> additionalForgeables = new List<StmtClassForgeableFactory>(2);
+            var fabricCharge = services.StateMgmtSettingsProvider.NewCharge();
 
             // Expanded pattern already there
-            RowRecogExprNode expandedPatternNode = matchRecognizeSpec.Pattern;
+            var expandedPatternNode = matchRecognizeSpec.Pattern;
 
             // Determine single-row and multiple-row variables
             var variablesSingle = new LinkedHashSet<string>();
-            var variablesMultiple = new LinkedHashSet<string>();
+            ISet<string> variablesMultiple = new LinkedHashSet<string>();
             RowRecogHelper.RecursiveInspectVariables(expandedPatternNode, false, variablesSingle, variablesMultiple);
 
             // each variable gets associated with a stream number (multiple-row variables as well to hold the current event for the expression).
             var streamNum = 0;
-            var variableStreams = new LinkedHashMap<string, Pair<int, bool>>();
+            IDictionary<string, Pair<int, bool>> variableStreams = new LinkedHashMap<string, Pair<int, bool>>();
             foreach (var variableSingle in variablesSingle) {
                 variableStreams.Put(variableSingle, new Pair<int, bool>(streamNum, false));
                 streamNum++;
@@ -78,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
 
             // mapping of stream to variable
-            var streamVariables = new OrderedListDictionary<int, string>();
+            var streamVariables = new SortedDictionary<int, string>();
             foreach (var entry in variableStreams) {
                 streamVariables.Put(entry.Value.First, entry.Key);
             }
@@ -108,10 +109,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             ISet<string> definedVariables = new HashSet<string>();
             IList<ExprAggregateNode> aggregateNodes = new List<ExprAggregateNode>();
             var isExprRequiresMultimatchState = new bool[variableStreams.Count];
-            var previousNodes = new OrderedListDictionary<int, IList<ExprPreviousMatchRecognizeNode>>();
+            var previousNodes = new SortedDictionary<int, IList<ExprPreviousMatchRecognizeNode>>();
 
             for (var defineIndex = 0; defineIndex < matchRecognizeSpec.Defines.Count; defineIndex++) {
-                MatchRecognizeDefineItem defineItem = matchRecognizeSpec.Defines[defineIndex];
+                var defineItem = matchRecognizeSpec.Defines[defineIndex];
                 if (definedVariables.Contains(defineItem.Identifier)) {
                     throw new ExprValidationException(
                         "Variable '" + defineItem.Identifier + "' has already been defined");
@@ -181,7 +182,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
 
             foreach (var variableMultiple in variablesMultiple) {
-                measureTypeDef.Put(variableMultiple, new[] {parentEventType});
+                measureTypeDef.Put(variableMultiple, new EventType[] { parentEventType });
             }
 
             var compositeTypeName = services.EventTypeNameGeneratorStatement.AnonymousRowrecogCompositeName;
@@ -225,7 +226,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     variablesMultiple,
                     @base,
                     services);
-                foreach (AggregationServiceForgeDesc svc in aggregationServices) {
+                foreach (var svc in aggregationServices) {
                     if (svc != null) {
                         additionalForgeables.AddAll(svc.AdditionalForgeables);
                     }
@@ -323,7 +324,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
                 matchRecognizeSpec.PartitionByExpressions = validated;
                 partitionBy = ExprNodeUtilityQuery.ToArray(validated);
-                MultiKeyPlan multiKeyPlan = MultiKeyPlanner.PlanMultiKey(partitionBy, false, @base.StatementRawInfo, services.SerdeResolver);
+                var multiKeyPlan = MultiKeyPlanner.PlanMultiKey(
+                    partitionBy,
+                    false,
+                    @base.StatementRawInfo,
+                    services.SerdeResolver);
                 partitionMultiKey = multiKeyPlan.ClassRef;
                 additionalForgeables.AddAll(multiKeyPlan.MultiKeyForgeables);
             }
@@ -338,7 +343,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     new ExprValidationContextBuilder(new StreamTypeServiceImpl(false), statementRawInfo, services)
                         .WithAllowBindingConsumption(true)
                         .Build();
-                var validated = (ExprTimePeriod) ExprNodeUtilityValidate.GetValidatedSubtree(
+                var validated = (ExprTimePeriod)ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.MATCHRECOGINTERVAL,
                     matchRecognizeSpec.Interval.TimePeriodExpr,
                     validationContext);
@@ -370,8 +375,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var startStates = strand.StartStates.ToArray();
             RowRecogNFAStateForge[] allStates = strand.AllStates.ToArray();
 
-            if (Log.IsInfoEnabled) {
-                Log.Info("NFA tree:\n" + RowRecogNFAViewUtil.Print(startStates));
+            if (Log.IsDebugEnabled) {
+                Log.Debug("NFA tree:\n" + RowRecogNFAViewUtil.Print(startStates));
             }
 
             // determine names of multimatching variables
@@ -387,7 +392,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 multimatchVariablesArray = new string[variableStreams.Count - variablesSingle.Count];
                 multimatchVariableToStreamNum = new int[multimatchVariablesArray.Length];
                 multimatchStreamNumToVariable = new int[variableStreams.Count];
-                CompatExtensions.Fill(multimatchStreamNumToVariable, -1);
+                multimatchStreamNumToVariable.Fill(-1);
                 count = 0;
                 foreach (var entry in variableStreams) {
                     if (entry.Value.Second) {
@@ -432,7 +437,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 }
             }
 
-            RowRecogDescForge forge = new RowRecogDescForge(
+            var forge = new RowRecogDescForge(
                 parentEventType,
                 rowEventType,
                 compositeEventType,
@@ -458,9 +463,25 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 columnNames,
                 intervalCompute,
                 previousRandomAccessIndexes,
-                aggregationServices);
-            
-            return new RowRecogPlan(forge, additionalForgeables);
+                aggregationServices,
+                services.SerdeResolver.IsTargetHA
+            );
+
+            var partitionMgmtStateMgmtDesc = services.StateMgmtSettingsProvider.RowRecogPartitionState(
+                fabricCharge,
+                statementRawInfo,
+                forge,
+                matchRecognizeSpec);
+            forge.PartitionMgmtStateMgmtSettings = partitionMgmtStateMgmtDesc;
+
+            var scheduleMgmtStateMgmtDesc = services.StateMgmtSettingsProvider.RowRecogScheduleState(
+                fabricCharge,
+                statementRawInfo,
+                forge,
+                matchRecognizeSpec);
+            forge.ScheduleMgmtStateMgmtSettings = scheduleMgmtStateMgmtDesc;
+
+            return new RowRecogPlan(forge, additionalForgeables, fabricCharge);
         }
 
         private static AggregationServiceForgeDesc[] PlanAggregations(
@@ -468,17 +489,16 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             StreamTypeService compositeTypeServiceMeasure,
             string[] allStreamNames,
             EventType[] allTypes,
-            IOrderedDictionary<int, string> streamVariables,
+            SortedDictionary<int, string> streamVariables,
             ISet<string> variablesMultiple,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
-            IDictionary<int, IList<ExprAggregateNode>> measureExprAggNodesPerStream =
-                new Dictionary<int, IList<ExprAggregateNode>>();
+            IDictionary<int, IList<ExprAggregateNode>> measureExprAggNodesPerStream = new LinkedHashMap<int, IList<ExprAggregateNode>>();
 
             foreach (var aggregateNode in measureAggregateExprNodes) {
                 // validate node and params
-                var count = 0;
+                var countX = 0;
                 var visitor = new ExprNodeIdentifierVisitor(true);
                 var isIStreamOnly = new bool[allStreamNames.Length];
                 var typeServiceAggregateMeasure = new StreamTypeServiceImpl(
@@ -505,7 +525,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         child,
                         validationContext);
                     validated.Accept(visitor);
-                    aggregateNode.SetChildNode(count++, new ExprNodeValidated(validated));
+                    aggregateNode.SetChildNode(countX++, new ExprNodeValidated(validated));
                 }
 
                 // verify properties used within the aggregation
@@ -533,10 +553,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         "Aggregation functions in the measure-clause must refer to one or more properties of exactly one group variable returning multiple events");
                 }
 
-                var aggNodesForStream = measureExprAggNodesPerStream.Get(multipleVarStream.Value);
-                if (aggNodesForStream == null) {
+                if (!measureExprAggNodesPerStream.TryGetValue(multipleVarStream.Value, out var aggNodesForStream)) {
                     aggNodesForStream = new List<ExprAggregateNode>();
-                    measureExprAggNodesPerStream.Put(multipleVarStream.Value, aggNodesForStream);
+                    measureExprAggNodesPerStream[multipleVarStream.Value] = aggNodesForStream;
                 }
 
                 aggNodesForStream.Add(aggregateNode);
@@ -559,17 +578,19 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             // get aggregation service per variable
             var aggServices = new AggregationServiceForgeDesc[allStreamNames.Length];
             var declareds = Arrays.AsList(@base.StatementSpec.DeclaredExpressions);
+            var count = 0;
             foreach (var entry in measureExprAggNodesPerStream) {
-                EventType[] typesPerStream = {allTypes[entry.Key]};
-                AggregationServiceForgeDesc desc = AggregationServiceFactoryFactory.GetService(
+                var typesPerStream = new EventType[] { allTypes[entry.Key] };
+                var desc = AggregationServiceFactoryFactory.GetService(
+                    new AggregationAttributionKeyRowRecog(count++),
                     entry.Value,
                     EmptyDictionary<ExprNode, string>.Instance, 
                     declareds,
-                    new ExprNode[0],
+                    Array.Empty<ExprNode>(),
                     null,
+                    EmptyList<ExprAggregateNode>.Instance, 
                     EmptyList<ExprAggregateNode>.Instance,
-                    EmptyList<ExprAggregateNode>.Instance,
-                    EmptyList<ExprAggregateNodeGroupKey>.Instance,
+                    EmptyList<ExprAggregateNodeGroupKey>.Instance, 
                     false,
                     @base.StatementRawInfo.Annotations,
                     services.VariableCompileTimeResolver,
@@ -586,8 +607,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     false,
                     services.ImportServiceCompileTime,
                     @base.StatementRawInfo,
-                    services.SerdeResolver);
-
+                    services.SerdeResolver,
+                    services.StateMgmtSettingsProvider);
                 aggServices[entry.Key] = desc;
             }
 
@@ -595,7 +616,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         }
 
         private static EventType GetDefineMultimatchEventType(
-            LinkedHashMap<string, Pair<int, bool>> variableStreams,
+            IDictionary<string, Pair<int, bool>> variableStreams,
             EventType parentEventType,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
@@ -603,7 +624,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             IDictionary<string, object> multievent = new LinkedHashMap<string, object>();
             foreach (var entry in variableStreams) {
                 if (entry.Value.Second) {
-                    multievent.Put(entry.Key, new[] {parentEventType});
+                    multievent.Put(entry.Key, new EventType[] { parentEventType });
                 }
             }
 
@@ -671,7 +692,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
         private static ExprNode HandlePreviousFunctions(
             ExprNode defineItemExpression,
-            IOrderedDictionary<int, IList<ExprPreviousMatchRecognizeNode>> previousNodes)
+            IDictionary<int, IList<ExprPreviousMatchRecognizeNode>> previousNodes)
         {
             var previousVisitor = new ExprNodePreviousVisitorWParent();
             defineItemExpression.Accept(previousVisitor);
@@ -715,7 +736,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 }
 
                 // store in a list per index such that we can consolidate this into a single buffer
-                var index = matchRecogPrevNode.ConstantIndexNumber;
+                var index = matchRecogPrevNode.ConstantIndexNumber!.Value;
                 var callbackList = previousNodes.Get(index);
                 if (callbackList == null) {
                     callbackList = new List<ExprPreviousMatchRecognizeNode>();
@@ -730,7 +751,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
         private static StreamTypeService BuildDefineStreamTypeServiceDefine(
             int defineNum,
-            LinkedHashMap<string, Pair<int, bool>> variableStreams,
+            IDictionary<string, Pair<int, bool>> variableStreams,
             MatchRecognizeDefineItem defineItem,
             IDictionary<string, ISet<string>> visibilityByIdentifier,
             EventType parentViewType,
@@ -744,7 +765,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var streamNamesDefine = new string[variableStreams.Count + 1];
             var typesDefine = new EventType[variableStreams.Count + 1];
             var isIStreamOnly = new bool[variableStreams.Count + 1];
-            CompatExtensions.Fill(isIStreamOnly, true);
+            isIStreamOnly.Fill(true);
 
             var streamNumDefine = variableStreams.Get(defineItem.Identifier).First;
             streamNamesDefine[streamNumDefine] = defineItem.Identifier;
@@ -773,7 +794,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     var identifier = entry.Key;
                     if (entry.Value.Second) {
                         if (visibles.Contains(identifier)) {
-                            multievent.Put(identifier, new[] {parentViewType});
+                            multievent.Put(identifier, new EventType[] { parentViewType });
                         }
                         else {
                             multievent.Put("esper_matchrecog_internal", null);
@@ -802,8 +823,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     services.BeanEventTypeFactoryPrivate,
                     services.EventTypeCompileTimeResolver);
 
-                typesDefine[typesDefine.Length - 1] = multimatchEventType;
-                streamNamesDefine[streamNamesDefine.Length - 1] = multimatchEventType.Name;
+                typesDefine[^1] = multimatchEventType;
+                streamNamesDefine[^1] = multimatchEventType.Name;
             }
 
             return new StreamTypeServiceImpl(typesDefine, streamNamesDefine, isIStreamOnly, false, true);

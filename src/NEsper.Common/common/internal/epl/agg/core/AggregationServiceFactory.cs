@@ -6,8 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.context.util;
-using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
@@ -21,9 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public interface AggregationServiceFactory
     {
         AggregationService MakeService(
-            AgentInstanceContext agentInstanceContext,
-            ImportServiceRuntime importService,
-            bool isSubquery,
+            ExprEvaluatorContext exprEvaluatorContext,
+            int? streamNum,
             int? subqueryNumber,
             int[] groupId);
     }

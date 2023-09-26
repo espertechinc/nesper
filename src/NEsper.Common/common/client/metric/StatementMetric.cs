@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.client.metric
         {
             DeploymentId = deploymentId;
             StatementName = statementName;
-            _performanceMetrics = default(PerformanceMetrics);
+            _performanceMetrics = default;
             _numOutputIStream = 0L;
             _numOutputRStream = 0L;
             _numInput = 0L;

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -29,17 +29,17 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
     {
         private const string NAME_UNBOUNDHELPER = "unboundHelper";
 
-        protected internal static void StopMethodUnboundCodegen(
+        internal static void StopMethodUnboundCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            StopMethodCodegenBound(method, instance);
+            ResultSetProcessorRowPerGroupRollupImpl.StopMethodCodegenBound(method, instance);
             method.Block.ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "Destroy");
         }
 
-        protected internal static void ApplyViewResultUnboundCodegen(
+        internal static void ApplyViewResultUnboundCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
@@ -48,26 +48,28 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             var generateGroupKeysView = GenerateGroupKeysViewCodegen(forge, classScope, instance);
 
             method.Block
-                .DeclareVar<object[][]>(
+                .DeclareVar(
+                    typeof(object[][]),
                     "newDataMultiKey",
                     LocalMethod(
                         generateGroupKeysView,
                         REF_NEWDATA,
-                        ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
+                        ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "getBuffer"),
                         ConstantTrue()))
-                .DeclareVar<object[][]>(
+                .DeclareVar(
+                    typeof(object[][]),
                     "oldDataMultiKey",
                     LocalMethod(
                         generateGroupKeysView,
                         REF_OLDDATA,
-                        ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
+                        ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "getBuffer"),
                         ConstantFalse()))
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .StaticMethod(
                     typeof(ResultSetProcessorGroupedUtil),
                     METHOD_APPLYAGGVIEWRESULTKEYEDVIEW,
                     MEMBER_AGGREGATIONSVC,
-                    MEMBER_AGENTINSTANCECONTEXT,
+                    MEMBER_EXPREVALCONTEXT,
                     REF_NEWDATA,
                     Ref("newDataMultiKey"),
                     REF_OLDDATA,
@@ -75,14 +77,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     Ref("eventsPerStream"));
         }
 
-        protected internal static void ProcessViewResultUnboundCodegen(
+        internal static void ProcessViewResultUnboundCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            var factory = classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
-            CodegenExpression eventTypes = classScope.AddDefaultFieldUnshared(
+            var factory =
+                classScope.AddOrGetDefaultFieldSharable(ResultSetProcessorHelperFactoryField.INSTANCE);
+            var eventTypes = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType[]),
                 EventTypeUtility.ResolveTypeArrayCodegen(forge.EventTypes, EPStatementInitServicesConstants.REF));
@@ -92,24 +95,27 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 ExprDotMethod(
                     factory,
                     "MakeRSRowPerGroupRollupSnapshotUnbound",
-                    MEMBER_AGENTINSTANCECONTEXT,
+                    MEMBER_EXPREVALCONTEXT,
                     Ref("this"),
                     Constant(forge.GroupKeyTypes),
                     Constant(forge.NumStreams),
-                    eventTypes));
+                    eventTypes,
+                    forge.OutputSnapshotSettings.ToExpression()));
 
             var generateGroupKeysView = GenerateGroupKeysViewCodegen(forge, classScope, instance);
             var generateOutputEventsView = GenerateOutputEventsViewCodegen(forge, classScope, instance);
 
             method.Block
-                .DeclareVar<object[][]>(
+                .DeclareVar(
+                    typeof(object[][]),
                     "newDataMultiKey",
                     LocalMethod(
                         generateGroupKeysView,
                         REF_NEWDATA,
                         ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                         ConstantTrue()))
-                .DeclareVar<object[][]>(
+                .DeclareVar(
+                    typeof(object[][]),
                     "oldDataMultiKey",
                     LocalMethod(
                         generateGroupKeysView,
@@ -130,7 +136,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     typeof(ResultSetProcessorGroupedUtil),
                     METHOD_APPLYAGGVIEWRESULTKEYEDVIEW,
                     MEMBER_AGGREGATIONSVC,
-                    MEMBER_AGENTINSTANCECONTEXT,
+                    MEMBER_EXPREVALCONTEXT,
                     REF_NEWDATA,
                     Ref("newDataMultiKey"),
                     REF_OLDDATA,
@@ -151,7 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                         Ref("selectOldEvents")));
         }
 
-        public static void GetEnumeratorViewUnboundCodegen(
+        internal static void GetEnumeratorViewUnboundCodegen(
             ResultSetProcessorRowPerGroupRollupForge forge,
             CodegenClassScope classScope,
             CodegenMethod method,

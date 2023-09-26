@@ -25,9 +25,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
         /// <summary>
         /// Allocates a vanilla json composite object.
         /// </summary>
-        public Func<object> Allocator {
-            get => throw new NotImplementedException();
-        }
+        public Func<object> Allocator => throw new NotImplementedException();
 
         public JsonElement JsonValue { get; set; }
 

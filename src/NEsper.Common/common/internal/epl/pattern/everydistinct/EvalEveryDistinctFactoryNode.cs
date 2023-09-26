@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -21,27 +21,32 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
     /// </summary>
     public class EvalEveryDistinctFactoryNode : EvalFactoryNodeBase
     {
-        public ExprEvaluator DistinctExpression { get; set; }
-
-        public MatchedEventConvertor Convertor { get; set; }
+        protected EvalFactoryNode childNode;
 
         public override bool IsFilterChildNonQuitting => true;
 
         public override bool IsStateful => true;
 
+        public ExprEvaluator DistinctExpression { get; set; }
+
+        public MatchedEventConvertor Convertor { get; set; }
+
         public TimePeriodCompute TimePeriodCompute { get; set; }
 
-        public EvalFactoryNode ChildNode { get; set; }
+        public EvalFactoryNode ChildNode {
+            get => childNode;
+            set => childNode = value;
+        }
 
         public Type[] DistinctTypes { get; set; }
-        
+
         public DataInputOutputSerde DistinctSerde { get; set; }
 
         public override EvalNode MakeEvalNode(
             PatternAgentInstanceContext agentInstanceContext,
             EvalNode parentNode)
         {
-            var child = EvalNodeUtil.MakeEvalNodeSingleChild(ChildNode, agentInstanceContext, parentNode);
+            var child = EvalNodeUtil.MakeEvalNodeSingleChild(childNode, agentInstanceContext, parentNode);
             return new EvalEveryDistinctNode(this, child, agentInstanceContext);
         }
 
@@ -54,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
         public override void Accept(EvalFactoryNodeVisitor visitor)
         {
             visitor.Visit(this);
-            ChildNode.Accept(visitor);
+            childNode.Accept(visitor);
         }
     }
 } // end of namespace

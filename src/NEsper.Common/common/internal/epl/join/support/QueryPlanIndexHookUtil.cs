@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.join.support
             ImportService importService)
         {
             try {
-                return (QueryPlanIndexHook) ImportUtil.GetAnnotationHook(
+                return (QueryPlanIndexHook)ImportUtil.GetAnnotationHook(
                     annotations,
                     HookType.INTERNAL_QUERY_PLAN,
                     typeof(QueryPlanIndexHook),

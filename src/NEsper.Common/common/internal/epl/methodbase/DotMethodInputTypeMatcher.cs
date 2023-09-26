@@ -12,13 +12,13 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
 {
     public interface DotMethodInputTypeMatcher
     {
+        public static readonly DotMethodInputTypeMatcher DEFAULT_ALL = new DotMethodInputTypeMatcherImpl();
+
         bool Matches(DotMethodFP footprint);
     }
 
     public sealed class DotMethodInputTypeMatcherImpl : DotMethodInputTypeMatcher
     {
-        public static readonly DotMethodInputTypeMatcher DEFAULT_ALL = new DotMethodInputTypeMatcherImpl();
-
         #region DotMethodInputTypeMatcher Members
 
         public bool Matches(DotMethodFP footprint)

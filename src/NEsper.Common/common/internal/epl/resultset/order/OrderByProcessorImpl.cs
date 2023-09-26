@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -18,7 +18,6 @@ using com.espertech.esper.common.@internal.epl.agg.rollup;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -28,19 +27,17 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.order.OrderByProcessorCodegenNames;
+using static com.espertech.esper.common.@internal.epl.util.EPTypeCollectionConst;
 using static com.espertech.esper.common.@internal.metrics.instrumentation.InstrumentationCode;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.order
 {
     /// <summary>
-    ///     An order-by processor that sorts events according to the expressions
-    ///     in the order_by clause.
+    /// An order-by processor that sorts events according to the expressions
+    /// in the order_by clause.
     /// </summary>
     public class OrderByProcessorImpl
     {
-        public static readonly CodegenExpressionRef REF_ISNEWDATA = ExprForgeCodegenNames.REF_ISNEWDATA;
-        public static readonly string NAME_ISNEWDATA = ResultSetProcessorCodegenNames.NAME_ISNEWDATA;
-
         public static void GetSortKeyCodegen(
             OrderByProcessorForgeImpl forge,
             CodegenMethod method,
@@ -55,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             }
 
             method.Block.Apply(Instblock(classScope, "qOrderBy", REF_EPS, Constant(expressions), Constant(descending)));
-            var getSortKey = GenerateOrderKeyCodegen("GetSortKeyInternal", forge.OrderBy, classScope, namedMethods);
+            var getSortKey = GenerateOrderKeyCodegen("getSortKeyInternal", forge.OrderBy, classScope, namedMethods);
             method.Block
                 .DeclareVar<object>("key", LocalMethod(getSortKey, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT))
                 .Apply(Instblock(classScope, "aOrderBy", Ref("key")))
@@ -68,11 +65,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            method.Block.DeclareVar<int>("num", ExprDotName(REF_ORDERROLLUPLEVEL, "LevelNumber"));
+            method.Block.DeclareVar(
+                typeof(int),
+                "num",
+                ExprDotMethod(REF_ORDERROLLUPLEVEL, "getLevelNumber"));
             var blocks = method.Block.SwitchBlockOfLength(Ref("num"), forge.OrderByRollup.Length, true);
             for (var i = 0; i < blocks.Length; i++) {
                 var getSortKey = GenerateOrderKeyCodegen(
-                    "GetSortKeyInternal_" + i,
+                    "getSortKeyInternal_" + i,
                     forge.OrderByRollup[i],
                     classScope,
                     namedMethods);
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             }
         }
 
-        protected internal static void SortPlainCodegen(
+        internal static void SortPlainCodegen(
             OrderByProcessorForgeImpl forge,
             CodegenMethod method,
             CodegenClassScope classScope,
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     MEMBER_AGGREGATIONSVC));
         }
 
-        protected internal static void SortRollupCodegen(
+        internal static void SortRollupCodegen(
             OrderByProcessorForgeImpl forge,
             CodegenMethod method,
             CodegenClassScope classScope,
@@ -110,24 +110,25 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         {
             var createSortPropertiesWRollup = CreateSortPropertiesWRollupCodegen(forge, classScope, namedMethods);
             CodegenExpression comparator = classScope.AddOrGetDefaultFieldSharable(forge.IComparer);
-            method.Block.DeclareVar<IList<object>>(
+            method.Block.DeclareVar(
+                    typeof(IList<object>),
                     "sortValuesMultiKeys",
                     LocalMethod(
                         createSortPropertiesWRollup,
                         REF_ORDERCURRENTGENERATORS,
                         REF_ISNEWDATA,
-                        MEMBER_AGENTINSTANCECONTEXT,
+                        MEMBER_EXPREVALCONTEXT,
                         MEMBER_AGGREGATIONSVC))
                 .MethodReturn(
                     StaticMethod(
                         typeof(OrderByProcessorUtil),
-                        "SortGivenOutgoingAndSortKeys",
+                        "sortGivenOutgoingAndSortKeys",
                         REF_OUTGOINGEVENTS,
                         Ref("sortValuesMultiKeys"),
                         comparator));
         }
 
-        protected internal static void SortWGroupKeysCodegen(
+        internal static void SortWGroupKeysCodegen(
             OrderByProcessorForgeImpl forge,
             CodegenMethod method,
             CodegenClassScope classScope,
@@ -148,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         MEMBER_AGGREGATIONSVC));
         }
 
-        protected internal static CodegenMethod SortWGroupKeysInternalCodegen(
+        internal static CodegenMethod SortWGroupKeysInternalCodegen(
             OrderByProcessorForgeImpl forge,
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
@@ -156,7 +157,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             var createSortProperties = CreateSortPropertiesCodegen(forge, classScope, namedMethods);
             CodegenExpression comparator = classScope.AddOrGetDefaultFieldSharable(forge.IComparer);
             Consumer<CodegenMethod> code = method => {
-                method.Block.DeclareVar<IList<object>>(
+                method.Block.DeclareVar(
+                        typeof(IList<object>),
                         "sortValuesMultiKeys",
                         LocalMethod(
                             createSortProperties,
@@ -177,18 +179,24 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 typeof(EventBean[]),
                 "SortWGroupKeysInternal",
                 CodegenNamedParam.From(
-                    typeof(EventBean[]), REF_OUTGOINGEVENTS.Ref,
-                    typeof(EventBean[][]), REF_GENERATINGEVENTS.Ref,
-                    typeof(object[]), "groupByKeys",
-                    typeof(bool), REF_ISNEWDATA.Ref,
-                    typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref,
-                    typeof(AggregationService), MEMBER_AGGREGATIONSVC.Ref),
+                    typeof(EventBean[]),
+                    REF_OUTGOINGEVENTS.Ref,
+                    typeof(EventBean[][]),
+                    REF_GENERATINGEVENTS.Ref,
+                    typeof(object[]),
+                    "groupByKeys",
+                    typeof(bool),
+                    REF_ISNEWDATA.Ref,
+                    typeof(ExprEvaluatorContext),
+                    REF_EXPREVALCONTEXT.Ref,
+                    typeof(AggregationService),
+                    MEMBER_AGGREGATIONSVC.Ref),
                 typeof(OrderByProcessorImpl),
                 classScope,
                 code);
         }
 
-        protected internal static CodegenMethod CreateSortPropertiesCodegen(
+        internal static CodegenMethod CreateSortPropertiesCodegen(
             OrderByProcessorForgeImpl forge,
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
@@ -206,7 +214,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     NewArrayByLength(typeof(object), ArrayLength(REF_GENERATINGEVENTS)));
 
                 var elements = forge.OrderBy;
-                var forEach = method.Block.DeclareVar<int>("count", Constant(0))
+                var forEach = method.Block.DeclareVar(typeof(int), "count", Constant(0))
                     .ForEach(typeof(EventBean[]), "eventsPerStream", REF_GENERATINGEVENTS);
 
                 if (forge.IsNeedsGroupByKeys) {
@@ -233,8 +241,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             CodegenLegoMethodExpression.CodegenExpression(
                                 elements[0].ExprNode.Forge,
                                 method,
-                                classScope,
-                                true),
+                                classScope),
                             Ref("eventsPerStream"),
                             REF_ISNEWDATA,
                             REF_EXPREVALCONTEXT));
@@ -251,8 +258,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                                 CodegenLegoMethodExpression.CodegenExpression(
                                     elements[i].ExprNode.Forge,
                                     method,
-                                    classScope,
-                                    true),
+                                    classScope),
                                 Ref("eventsPerStream"),
                                 REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT));
@@ -261,7 +267,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     forEach.AssignArrayElement(
                         "sortProperties",
                         Ref("count"),
-                        NewInstance<HashableMultiKey>(Ref("values")));
+                        NewInstance(typeof(HashableMultiKey), Ref("values")));
                 }
 
                 forEach.Apply(Instblock(classScope, "aOrderBy", Ref("sortProperties")))
@@ -272,17 +278,22 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 typeof(IList<object>),
                 "CreateSortProperties",
                 CodegenNamedParam.From(
-                    typeof(EventBean[][]), REF_GENERATINGEVENTS.Ref,
-                    typeof(object[]), "groupByKeys",
-                    typeof(bool), REF_ISNEWDATA.Ref,
-                    typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref,
-                    typeof(AggregationService), MEMBER_AGGREGATIONSVC.Ref),
+                    typeof(EventBean[][]),
+                    REF_GENERATINGEVENTS.Ref,
+                    typeof(object[]),
+                    "groupByKeys",
+                    typeof(bool),
+                    REF_ISNEWDATA.Ref,
+                    typeof(ExprEvaluatorContext),
+                    REF_EXPREVALCONTEXT.Ref,
+                    typeof(AggregationService),
+                    MEMBER_AGGREGATIONSVC.Ref),
                 typeof(OrderByProcessorImpl),
                 classScope,
                 code);
         }
 
-        protected internal static void SortWOrderKeysCodegen(
+        internal static void SortWOrderKeysCodegen(
             OrderByProcessorForgeImpl forge,
             CodegenMethod method,
             CodegenClassScope classScope)
@@ -291,26 +302,26 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             method.Block.MethodReturn(
                 StaticMethod(
                     typeof(OrderByProcessorUtil),
-                    "SortWOrderKeys",
+                    "sortWOrderKeys",
                     REF_OUTGOINGEVENTS,
                     REF_ORDERKEYS,
                     comparator));
         }
 
-        protected internal static void SortTwoKeysCodegen(
+        internal static void SortTwoKeysCodegen(
             OrderByProcessorForgeImpl forge,
             CodegenMethod method,
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
             CodegenExpression comparator = classScope.AddOrGetDefaultFieldSharable(forge.IComparer);
-            var compare = ExprDotMethod(comparator, "Compare", REF_ORDERFIRSTSORTKEY, REF_ORDERSECONDSORTKEY);
+            var compare = ExprDotMethod(comparator, "compare", REF_ORDERFIRSTSORTKEY, REF_ORDERSECONDSORTKEY);
             method.Block.IfCondition(Relational(compare, LE, Constant(0)))
                 .BlockReturn(NewArrayWithInit(typeof(EventBean), REF_ORDERFIRSTEVENT, REF_ORDERSECONDEVENT))
                 .MethodReturn(NewArrayWithInit(typeof(EventBean), REF_ORDERSECONDEVENT, REF_ORDERFIRSTEVENT));
         }
 
-        protected internal static CodegenMethod CreateSortPropertiesWRollupCodegen(
+        internal static CodegenMethod CreateSortPropertiesWRollupCodegen(
             OrderByProcessorForgeImpl forge,
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
@@ -332,9 +343,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         ExprDotName(Ref("rollup"), "Level"));
                 }
 
-                forEach.DeclareVar<int>(
-                    "num",
-                    ExprDotMethodChain(Ref("rollup")).Get("Level").Get("LevelNumber"));
+                forEach.DeclareVar<int>("num", ExprDotMethodChain(Ref("rollup")).Add("getLevel").Add("getLevelNumber"));
                 var blocks = forEach.SwitchBlockOfLength(Ref("num"), forge.OrderByRollup.Length, false);
                 for (var i = 0; i < blocks.Length; i++) {
                     var getSortKey = GenerateOrderKeyCodegen(
@@ -360,10 +369,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 typeof(IList<object>),
                 "CreateSortPropertiesWRollup",
                 CodegenNamedParam.From(
-                    typeof(IList<GroupByRollupKey>), REF_ORDERCURRENTGENERATORS.Ref,
-                    typeof(bool), REF_ISNEWDATA.Ref,
-                    typeof(ExprEvaluatorContext), REF_EXPREVALCONTEXT.Ref,
-                    typeof(AggregationService), MEMBER_AGGREGATIONSVC.Ref),
+                    EPTYPE_LIST_GROUPBYROLLUPKEY,
+                    REF_ORDERCURRENTGENERATORS.Ref,
+                    typeof(bool),
+                    REF_ISNEWDATA.Ref,
+                    typeof(ExprEvaluatorContext),
+                    REF_EXPREVALCONTEXT.Ref,
+                    typeof(AggregationService),
+                    MEMBER_AGGREGATIONSVC.Ref),
                 typeof(OrderByProcessorImpl),
                 classScope,
                 code);
@@ -391,8 +404,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                                 CodegenLegoMethodExpression.CodegenExpression(
                                     elements[0].ExprNode.Forge,
                                     method,
-                                    classScope,
-                                    true),
+                                    classScope),
                                 Ref("eventsPerStream"),
                                 REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT))
@@ -400,7 +412,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             Or(
                                 EqualsNull(Ref("localMinMax")),
                                 Relational(
-                                    ExprDotMethod(comparator, "Compare", Ref("localMinMax"), Ref("sortKey")),
+                                    ExprDotMethod(comparator, "compare", Ref("localMinMax"), Ref("sortKey")),
                                     GT,
                                     Constant(0))))
                         .AssignRef("localMinMax", Ref("sortKey"))
@@ -412,9 +424,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     method.Block.DeclareVar<object[]>(
                             "values",
                             NewArrayByLength(typeof(object), Constant(elements.Length)))
-                        .DeclareVar<HashableMultiKey>(
-                            "valuesMk",
-                            NewInstance<HashableMultiKey>(Ref("values")));
+                        .DeclareVar<HashableMultiKey>("valuesMk", NewInstance(typeof(HashableMultiKey), Ref("values")));
 
                     var forEach = method.Block.ForEach(typeof(EventBean[]), "eventsPerStream", REF_GENERATINGEVENTS);
 
@@ -423,7 +433,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             MEMBER_AGGREGATIONSVC,
                             "SetCurrentAccess",
                             ArrayAtIndex(Ref("groupByKeys"), Ref("count")),
-                            ExprDotMethod(REF_EXPREVALCONTEXT, "GetAgentInstanceId", ConstantNull()));
+                            ExprDotMethod(REF_EXPREVALCONTEXT, "getAgentInstanceId", ConstantNull()));
                     }
 
                     for (var i = 0; i < elements.Length; i++) {
@@ -434,8 +444,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                                 CodegenLegoMethodExpression.CodegenExpression(
                                     elements[i].ExprNode.Forge,
                                     method,
-                                    classScope,
-                                    true),
+                                    classScope),
                                 Ref("eventsPerStream"),
                                 REF_ISNEWDATA,
                                 REF_EXPREVALCONTEXT));
@@ -445,12 +454,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             Or(
                                 EqualsNull(Ref("localMinMax")),
                                 Relational(
-                                    ExprDotMethod(comparator, "Compare", Ref("localMinMax"), Ref("valuesMk")),
+                                    ExprDotMethod(comparator, "compare", Ref("localMinMax"), Ref("valuesMk")),
                                     GT,
                                     Constant(0))))
                         .AssignRef("localMinMax", Ref("valuesMk"))
                         .AssignRef("values", NewArrayByLength(typeof(object), Constant(elements.Length)))
-                        .AssignRef("valuesMk", NewInstance<HashableMultiKey>(Ref("values")))
+                        .AssignRef("valuesMk", NewInstance(typeof(HashableMultiKey), Ref("values")))
                         .AssignRef("outgoingMinMaxBean", ArrayAtIndex(REF_OUTGOINGEVENTS, Ref("count")))
                         .BlockEnd()
                         .IncrementRef("count");
@@ -461,19 +470,24 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 
             return namedMethods.AddMethod(
                 typeof(EventBean),
-                "DetermineLocalMinMax",
+                "determineLocalMinMax",
                 CodegenNamedParam.From(
-                    typeof(EventBean[]), REF_OUTGOINGEVENTS.Ref,
-                    typeof(EventBean[][]), REF_GENERATINGEVENTS.Ref,
-                    typeof(bool), NAME_ISNEWDATA,
-                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT,
-                    typeof(AggregationService), MEMBER_AGGREGATIONSVC.Ref),
+                    typeof(EventBean[]),
+                    REF_OUTGOINGEVENTS.Ref,
+                    typeof(EventBean[][]),
+                    REF_GENERATINGEVENTS.Ref,
+                    typeof(bool),
+                    NAME_ISNEWDATA,
+                    typeof(ExprEvaluatorContext),
+                    NAME_EXPREVALCONTEXT,
+                    typeof(AggregationService),
+                    MEMBER_AGGREGATIONSVC.Ref),
                 typeof(OrderByProcessorImpl),
                 classScope,
                 code);
         }
 
-        protected internal static CodegenMethod GenerateOrderKeyCodegen(
+        internal static CodegenMethod GenerateOrderKeyCodegen(
             string methodName,
             OrderByElementForge[] orderBy,
             CodegenClassScope classScope,
@@ -484,14 +498,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     var expression = CodegenLegoMethodExpression.CodegenExpression(
                         orderBy[0].ExprNode.Forge,
                         methodNode,
-                        classScope,
-                        true);
+                        classScope);
                     methodNode.Block.MethodReturn(
-                        LocalMethod(
-                            expression,
-                            EnumForgeCodegenNames.REF_EPS,
-                            ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                            REF_EXPREVALCONTEXT));
+                        LocalMethod(expression, EnumForgeCodegenNames.REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
                     return;
                 }
 
@@ -502,28 +511,26 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     var expression = CodegenLegoMethodExpression.CodegenExpression(
                         orderBy[i].ExprNode.Forge,
                         methodNode,
-                        classScope,
-                        true);
+                        classScope);
                     methodNode.Block.AssignArrayElement(
                         "keys",
                         Constant(i),
-                        LocalMethod(
-                            expression,
-                            EnumForgeCodegenNames.REF_EPS,
-                            ResultSetProcessorCodegenNames.REF_ISNEWDATA,
-                            REF_EXPREVALCONTEXT));
+                        LocalMethod(expression, EnumForgeCodegenNames.REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
                 }
 
-                methodNode.Block.MethodReturn(NewInstance<HashableMultiKey>(Ref("keys")));
+                methodNode.Block.MethodReturn(NewInstance(typeof(HashableMultiKey), Ref("keys")));
             };
 
             return namedMethods.AddMethod(
                 typeof(object),
                 methodName,
                 CodegenNamedParam.From(
-                    typeof(EventBean[]), NAME_EPS,
-                    typeof(bool), NAME_ISNEWDATA,
-                    typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT),
+                    typeof(EventBean[]),
+                    NAME_EPS,
+                    typeof(bool),
+                    NAME_ISNEWDATA,
+                    typeof(ExprEvaluatorContext),
+                    NAME_EXPREVALCONTEXT),
                 typeof(ResultSetProcessorUtil),
                 classScope,
                 code);

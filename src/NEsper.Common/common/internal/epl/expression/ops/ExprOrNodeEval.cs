@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprOrNode parent,
             ExprEvaluator[] evaluators)
         {
-            this._parent = parent;
-            this._evaluators = evaluators;
+            _parent = parent;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(

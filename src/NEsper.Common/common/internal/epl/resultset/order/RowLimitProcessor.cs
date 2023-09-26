@@ -136,10 +136,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             }
 
             if (CurrentRowLimit == 1) {
-                return new[] {first};
+                return new[] { first };
             }
 
-            return new[] {first, second};
+            return new[] { first, second };
         }
     }
 } // end of namespace

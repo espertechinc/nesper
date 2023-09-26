@@ -24,11 +24,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public CodegenExpressionClass(Type target)
         {
-            if (target == null) {
-                throw new ArgumentException("Invalid null target");
-            }
-
-            this.target = target;
+            this.target = target ?? throw new ArgumentException("Invalid null target");
         }
 
         public void Render(
@@ -53,7 +49,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             AppendClassName(builder, clazz);
             builder.Append(")");
         }
-        
+
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
         }

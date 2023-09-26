@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var timestamp = forge.getter.Get((EventBean) target);
+            var timestamp = forge.getter.Get((EventBean)target);
             if (timestamp == null) {
                 return null;
             }
@@ -56,10 +56,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(forge.innerReturnType, typeof(DTLocalBeanCalOpsEval), codegenClassScope)
-                .AddParam(typeof(EventBean), "target");
+                .AddParam<EventBean>("target");
 
             CodegenExpression timestamp = Ref("timestamp");
-            
+
             methodNode.Block.DeclareVar(
                 forge.getterReturnType,
                 "timestamp",

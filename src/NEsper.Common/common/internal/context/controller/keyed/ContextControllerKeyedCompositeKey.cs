@@ -34,13 +34,13 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                 return false;
             }
 
-            var that = (ContextControllerKeyedCompositeKey) o;
+            var that = (ContextControllerKeyedCompositeKey)o;
 
             if (!Path.Equals(that.Path)) {
                 return false;
             }
 
-            return Key != null ? Key.Equals(that.Key) : that.Key == null;
+            return Key?.Equals(that.Key) ?? that.Key == null;
         }
 
         public override int GetHashCode()

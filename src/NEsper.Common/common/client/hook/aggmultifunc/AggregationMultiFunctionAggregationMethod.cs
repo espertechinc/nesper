@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
 
         /// <summary>
         /// Return a collection of events or null when not available.
-        /// The <seealso cref="EPType" /> returned by the handler indicates whether the compiler allows operations on events.
+        /// The <seealso cref="EPChainableType" /> returned by the handler indicates whether the compiler allows operations on events.
         /// </summary>
         /// <param name="aggColNum">column number</param>
         /// <param name="row">aggregation row</param>
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
 
         /// <summary>
         /// Return a collection of values or null when not available.
-        /// The <seealso cref="EPType" /> returned by the handler indicates whether the compiler allows operations on events.
+        /// The <seealso cref="EPChainableType" /> returned by the handler indicates whether the compiler allows operations on events.
         /// </summary>
         /// <param name="aggColNum">column number</param>
         /// <param name="row">aggregation row</param>
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
 
         /// <summary>
         /// Returns a single event or null when not available.
-        /// The <seealso cref="EPType" /> returned by the handler indicates whether the compiler allows operations on events.
+        /// The <seealso cref="EPChainableType" /> returned by the handler indicates whether the compiler allows operations on events.
         /// </summary>
         /// <param name="aggColNum">column number</param>
         /// <param name="row">aggregation row</param>
@@ -126,5 +126,5 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         {
             return null;
         }
-    } 
+    }
 }

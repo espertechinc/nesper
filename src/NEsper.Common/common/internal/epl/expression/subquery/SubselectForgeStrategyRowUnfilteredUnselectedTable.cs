@@ -35,8 +35,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (Subselect.EvaluationType == null) {
+                return ConstantNull();
+            }
+
             var eventToPublic = TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, GetType());
-            var method = parent.MakeChild(subselect.EvaluationType, GetType(), classScope);
+            var method = parent.MakeChild(Subselect.EvaluationType, GetType(), classScope);
             method.Block
                 .IfCondition(
                     Relational(

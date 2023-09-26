@@ -46,26 +46,24 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         public StatViewAdditionalPropsEval AdditionalProps {
             get => additionalProps;
-            set { this.additionalProps = value; }
+            set => additionalProps = value;
         }
 
         public EventType EventType {
             get => eventType;
-            set { this.eventType = value; }
+            set => eventType = value;
         }
 
         public ExprEvaluator ExpressionXEval {
             get => expressionXEval;
-            set { this.expressionXEval = value; }
+            set => expressionXEval = value;
         }
 
         public ExprEvaluator ExpressionYEval {
             get => expressionYEval;
-            set { this.expressionYEval = value; }
+            set => expressionYEval = value;
         }
 
-        public string ViewName {
-            get => ViewEnum.REGRESSION_LINEST.GetViewName();
-        }
+        public string ViewName => ViewEnum.REGRESSION_LINEST.GetViewName();
     }
 } // end of namespace

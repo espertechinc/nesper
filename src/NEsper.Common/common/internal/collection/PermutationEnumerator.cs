@@ -76,15 +76,15 @@ namespace com.espertech.esper.common.@internal.collection
 
             var result = new int[numElements];
             var outList = new List<int>();
-            for (int i = 0; i < numElements; i++) {
+            for (var i = 0; i < numElements; i++) {
                 outList.Add(i);
             }
 
-            int currentVal = permutation;
+            var currentVal = permutation;
 
-            for (int position = 0; position < numElements - 1; position++) {
-                int factor = factors[position];
-                int index = currentVal / factor;
+            for (var position = 0; position < numElements - 1; position++) {
+                var factor = factors[position];
+                var index = currentVal / factor;
                 result[position] = outList[index];
                 outList.RemoveAt(index);
                 currentVal -= index * factor;
@@ -100,9 +100,9 @@ namespace com.espertech.esper.common.@internal.collection
         /// <returns>factors list</returns>
         public static int[] GetFactors(int numElements)
         {
-            int[] facultyFactors = new int[numElements];
+            var facultyFactors = new int[numElements];
 
-            for (int i = 0; i < numElements - 1; i++) {
+            for (var i = 0; i < numElements - 1; i++) {
                 facultyFactors[i] = Faculty(numElements - i - 1);
             }
 
@@ -118,8 +118,8 @@ namespace com.espertech.esper.common.@internal.collection
                 return 0;
             }
 
-            int fac = 1;
-            for (int i = 1; i <= num; i++) {
+            var fac = 1;
+            for (var i = 1; i <= num; i++) {
                 fac *= i;
             }
 

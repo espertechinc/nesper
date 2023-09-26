@@ -46,8 +46,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode newNode,
             IList<Chainable> chainSpec)
         {
-            foreach (Chainable chained in chainSpec) {
-                var parametersOrEmpty = chained.GetParametersOrEmpty();
+            foreach (var chained in chainSpec) {
+                var parametersOrEmpty = chained.ParametersOrEmpty;
                 var index = parametersOrEmpty.IndexOf(nodeToReplace);
                 if (index != -1) {
                     parametersOrEmpty[index] = newNode;

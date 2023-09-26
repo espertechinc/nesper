@@ -156,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context Ctx create window MyInvalidWindow#unique(P00) as SupportBean_S0",
-                "Segmented context 'Ctx' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [context Ctx create window MyInvalidWindow#unique(P00) as SupportBean_S0]");
+                "Segmented context 'Ctx' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, Type 'SupportBean_S0' is not one of the types listed [context Ctx create window MyInvalidWindow#unique(P00) as SupportBean_S0]");
         }
 
         internal class ContextKeyedNamedWindowFAF : RegressionExecution

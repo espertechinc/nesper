@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             }
 
             var deploymentId = ResolveDeploymentId(variableName, visibility, optionalModuleName, services);
-            IDictionary<int, VariableReader> reader =
+            var reader =
                 services.VariableManagementService.GetReadersPerCP(deploymentId, variableName);
             if (reader == null) {
                 throw new EPException("Failed to resolve variable '" + variableName + "'");

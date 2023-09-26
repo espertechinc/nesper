@@ -10,7 +10,8 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.agg.core
 {
-    public interface AggregationResultFutureAssignableWEval : ExprEvaluator, AggregationResultFutureAssignable
+    public interface AggregationResultFutureAssignableWEval : ExprEvaluator,
+        AggregationResultFutureAssignable
     {
     }
 } // end of namespace

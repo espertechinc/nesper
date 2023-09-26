@@ -10,7 +10,6 @@ using System;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
-using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.agg.accessagg;
@@ -26,56 +25,39 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         internal readonly ExprForge optionalFilter;
         internal readonly int streamNum;
 
+        private AggregatorAccessLinear _aggregator;
+
         public AggregationStateLinearForge(
             ExprAggMultiFunctionLinearAccessNode expr,
             int streamNum,
-            ExprForge optionalFilter)
+            ExprForge optionalFilter,
+            bool isJoin)
         {
             this.expr = expr;
             this.streamNum = streamNum;
             this.optionalFilter = optionalFilter;
+
+            if (!isJoin) {
+                _aggregator = new AggregatorAccessLinearNonJoin(this, expr.OptionalFilter);
+            }
+            else {
+                _aggregator = new AggregatorAccessLinearJoin(this, expr.OptionalFilter);
+            }
         }
 
-        public AggregatorAccess Aggregator => AggregatorLinear;
+        public AggregatorAccess Aggregator => _aggregator;
 
         public int StreamNum => streamNum;
 
         public ExprForge OptionalFilter => optionalFilter;
 
-        public AggregatorAccessLinear AggregatorLinear { get; private set; }
+        public AggregatorAccessLinear AggregatorLinear => _aggregator;
 
         public EventType EventType => expr.StreamType;
 
         public Type ClassType => expr.ComponentTypeCollection;
 
         public ExprNode Expression => expr;
-
-        public void InitAccessForge(
-            int col,
-            bool join,
-            CodegenCtor rowCtor,
-            CodegenMemberCol membersColumnized,
-            CodegenClassScope classScope)
-        {
-            if (!join) {
-                AggregatorLinear = new AggregatorAccessLinearNonJoin(
-                    this,
-                    col,
-                    rowCtor,
-                    membersColumnized,
-                    classScope,
-                    expr.OptionalFilter);
-            }
-            else {
-                AggregatorLinear = new AggregatorAccessLinearJoin(
-                    this,
-                    col,
-                    rowCtor,
-                    membersColumnized,
-                    classScope,
-                    expr.OptionalFilter);
-            }
-        }
 
         public CodegenExpression CodegenGetAccessTableState(
             int column,

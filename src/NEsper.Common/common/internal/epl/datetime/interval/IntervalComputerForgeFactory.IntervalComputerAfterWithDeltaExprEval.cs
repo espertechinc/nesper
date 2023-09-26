@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 bool newData,
                 ExprEvaluatorContext context)
             {
-                long rangeStartDelta = start.Evaluate(rightStart, eventsPerStream, newData, context);
-                long rangeEndDelta = finish.Evaluate(rightStart, eventsPerStream, newData, context);
+                var rangeStartDelta = start.Evaluate(rightStart, eventsPerStream, newData, context);
+                var rangeEndDelta = finish.Evaluate(rightStart, eventsPerStream, newData, context);
                 if (rangeStartDelta > rangeEndDelta) {
                     return IntervalComputerConstantAfter.ComputeIntervalAfter(
                         leftStart,

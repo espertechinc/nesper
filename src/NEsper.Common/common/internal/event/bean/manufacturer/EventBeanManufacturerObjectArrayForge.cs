@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.core;
@@ -19,7 +20,7 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 {
     /// <summary>
-    ///     Factory for ObjectArray-underlying events.
+    /// Factory for ObjectArray-underlying events.
     /// </summary>
     public class EventBeanManufacturerObjectArrayForge : EventBeanManufacturerForge
     {
@@ -28,7 +29,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
         private readonly bool oneToOne;
 
         /// <summary>
-        ///     Ctor.
+        /// Ctor.
         /// </summary>
         /// <param name="eventType">type to create</param>
         /// <param name="properties">written properties</param>
@@ -71,28 +72,37 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var factory = codegenClassScope.AddOrGetDefaultFieldSharable(
-                EventBeanTypedEventFactoryCodegenField.INSTANCE);
+            var init = codegenClassScope.NamespaceScope.InitMethod;
+
+            var factory = codegenClassScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             var eventType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(this.eventType, EPStatementInitServicesConstants.REF));
 
-            var makeUndLambda = new CodegenExpressionLambda(codegenBlock)
+            // var makeUndMethod = CodegenMethod.MakeParentNode(typeof(object[]), GetType(), codegenClassScope)
+            //     .AddParam<object[]>("properties");
+            // manufacturer.AddMethod("makeUnderlying", makeUndMethod);
+            // MakeUnderlyingCodegen(makeUndMethod, codegenClassScope);
+
+            var makeUndFunc = new CodegenExpressionLambda(codegenBlock)
                 .WithParam<object[]>("properties")
                 .WithBody(block => MakeUnderlyingCodegen(block, codegenClassScope));
 
-            var manufacturer = NewInstance<ProxyObjectArrayEventBeanManufacturer>(
-                eventType, factory, makeUndLambda);
+            // CodegenExpressionNewAnonymousClass manufacturer = NewAnonymousClass(
+            //     init.Block,
+            //     typeof(EventBeanManufacturer));
 
-            //var makeUndProc = CodegenMethod.MakeMethod(typeof(object[]), GetType(), codegenClassScope)
-            //    .AddParam(typeof(object[]), "properties");
-            //manufacturer.AddMethod("MakeUnderlying", makeUndProc);
-            //MakeUnderlyingCodegen(makeUndProc, codegenClassScope);
+            var manufacturer = NewInstance<ProxyMapEventBeanManufacturer>(eventType, factory, makeUndFunc);
 
-            //var makeProc = CodegenMethod.MakeMethod(typeof(EventBean), GetType(), codegenClassScope)
-            //    .AddParam(typeof(object[]), "properties");
-            //manufacturer.AddMethod("Make", makeProc);
+            // Make(): this is provided by ProxyJsonEventBeanManufacturer
+            // 
+            // var makeMethod = CodegenMethod.MakeParentNode(typeof(EventBean), GetType(), codegenClassScope)
+            //     .AddParam<object[]>("properties");
+            // manufacturer.AddMethod("make", makeMethod);
+            // makeMethod.Block
+            //     .DeclareVar<object[]>("und", LocalMethod(makeUndMethod, Ref("properties")))
+            //     .MethodReturn(ExprDotMethod(factory, "adapterForTypedObjectArray", Ref("und"), eventType));
 
             return codegenClassScope.AddDefaultFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }
@@ -111,7 +121,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 NewArrayByLength(typeof(object), Constant(eventType.PropertyNames.Length)));
             for (var i = 0; i < indexPerWritable.Length; i++) {
                 block.AssignArrayElement(
-                    Ref("cols"),
+                            Ref("cols"),
                     Constant(indexPerWritable[i]),
                     ArrayAtIndex(Ref("properties"), Constant(i)));
             }

@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.filterspec;
 
 namespace com.espertech.esper.common.@internal.context.controller.condition
@@ -19,16 +20,19 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
         void PopulateEndConditionFromTrigger(
             MatchedEventMap map,
             EventBean triggeringEvent);
-        
+
         void PopulateEndConditionFromTrigger(
             MatchedEventMap map,
-            IDictionary<string, object> triggeringPattern);
+            IDictionary<string, object> triggeringPattern,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory);
     }
 
     public class ProxyContextControllerEndConditionMatchEventProvider : ContextControllerEndConditionMatchEventProvider
     {
         public Action<MatchedEventMap, EventBean> ProcPopulateEndConditionFromTriggerWithEventBean;
-        public Action<MatchedEventMap, IDictionary<string, object>> ProcPopulateEndConditionFromTriggerWithPattern;
+
+        public Action<MatchedEventMap, IDictionary<string, object>, EventBeanTypedEventFactory>
+            ProcPopulateEndConditionFromTriggerWithPattern;
 
         public ProxyContextControllerEndConditionMatchEventProvider()
         {
@@ -36,7 +40,8 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
         public ProxyContextControllerEndConditionMatchEventProvider(
             Action<MatchedEventMap, EventBean> procPopulateEndConditionFromTriggerWithEventBean,
-            Action<MatchedEventMap, IDictionary<string, object>> procPopulateEndConditionFromTriggerWithPattern)
+            Action<MatchedEventMap, IDictionary<string, object>, EventBeanTypedEventFactory>
+                procPopulateEndConditionFromTriggerWithPattern)
         {
             ProcPopulateEndConditionFromTriggerWithEventBean = procPopulateEndConditionFromTriggerWithEventBean;
             ProcPopulateEndConditionFromTriggerWithPattern = procPopulateEndConditionFromTriggerWithPattern;
@@ -51,9 +56,10 @@ namespace com.espertech.esper.common.@internal.context.controller.condition
 
         public void PopulateEndConditionFromTrigger(
             MatchedEventMap map,
-            IDictionary<string, object> triggeringPattern)
+            IDictionary<string, object> triggeringPattern,
+            EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            ProcPopulateEndConditionFromTriggerWithPattern?.Invoke(map, triggeringPattern);
+            ProcPopulateEndConditionFromTriggerWithPattern?.Invoke(map, triggeringPattern, eventBeanTypedEventFactory);
         }
     }
 } // end of namespace

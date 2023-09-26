@@ -6,7 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.poll
 {
@@ -16,6 +16,6 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
 
         object Invoke(
             object lookupValues,
-            AgentInstanceContext agentInstanceContext);
+            ExprEvaluatorContext exprEvaluatorContext);
     }
 } // end of namespace

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -31,18 +31,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             ExprForge optionalFilter,
             EventType streamEventType)
         {
-            IsMax = max;
-            ImportService = importService;
-            Criteria = criteria;
-            CriteriaTypes = criteriaTypes;
-            SortDescending = sortDescending;
-            IsEver = ever;
-            StreamNum = streamNum;
-            Parent = parent;
-            OptionalFilter = optionalFilter;
-            StreamEventType = streamEventType;
-            CriteriaSerdes = criteriaSerdes;
+            this.IsMax = max;
+            this.ImportService = importService;
+            this.Criteria = criteria;
+            this.CriteriaTypes = criteriaTypes;
+            this.CriteriaSerdes = criteriaSerdes;
+            this.SortDescending = sortDescending;
+            this.IsEver = ever;
+            this.StreamNum = streamNum;
+            this.Parent = parent;
+            this.OptionalFilter = optionalFilter;
+            this.StreamEventType = streamEventType;
         }
+
+        public bool IsEver { get; }
+
+        public bool IsSortUsingCollator => ImportService.IsSortUsingCollator;
+
+        public bool IsMax { get; }
 
         public ImportServiceCompileTime ImportService { get; }
 
@@ -59,13 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         public EventType StreamEventType { get; }
 
         public Type[] CriteriaTypes { get; }
-        
+
         public DataInputOutputSerdeForge[] CriteriaSerdes { get; }
-
-        public bool IsEver { get; }
-
-        public bool IsSortUsingCollator => ImportService.IsSortUsingCollator;
-
-        public bool IsMax { get; }
     }
 } // end of namespace

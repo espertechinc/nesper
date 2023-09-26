@@ -19,7 +19,11 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
         private static readonly CodegenExpression Isnumber = Ref("isNumber");
         private static readonly CodegenExpression Jsonfieldname = Ref("name");
 
-        public static readonly JsonEndValueRefs INSTANCE = new JsonEndValueRefs(Stringvalue, Isnumber, Objectvalue, Jsonfieldname);
+        public static readonly JsonEndValueRefs INSTANCE = new JsonEndValueRefs(
+            Stringvalue,
+            Isnumber,
+            Objectvalue,
+            Jsonfieldname);
 
         private JsonEndValueRefs(
             CodegenExpression valueString,

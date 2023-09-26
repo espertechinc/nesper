@@ -10,10 +10,10 @@ using System;
 
 namespace com.espertech.esper.common.client.annotation
 {
-	/// <summary>
-	///     Annotation for use with Json to provide an adapter for a given class field.
-	/// </summary>
-	public class JsonEventFieldAttribute : Attribute
+    /// <summary>
+    ///     Annotation for use with Json to provide an adapter for a given class field.
+    /// </summary>
+    public class JsonEventFieldAttribute : Attribute
     {
         public virtual Type Adapter { get; set; }
     }

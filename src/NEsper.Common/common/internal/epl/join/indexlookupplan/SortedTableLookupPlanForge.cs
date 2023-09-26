@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             QueryGraphValueEntryRangeForge rangeKeyPair,
             Type optionalCoercionType)
             :
-            base(lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] {indexNum})
+            base(lookupStream, indexedStream, indexedStreamIsVDW, typesPerStream, new[] { indexNum })
         {
             RangeKeyPair = rangeKeyPair;
             this.optionalCoercionType = optionalCoercionType;

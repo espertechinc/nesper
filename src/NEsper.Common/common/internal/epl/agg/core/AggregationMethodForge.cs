@@ -27,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public class ProxyAggregationMethodForge : AggregationMethodForge
     {
         public Func<Type> ProcResultType { get; set; }
-        public Func<CodegenMethodScope, SAIFFInitializeSymbol, CodegenClassScope, CodegenExpression> ProcCodegenCreateReader { get; set; }
+
+        public Func<CodegenMethodScope, SAIFFInitializeSymbol, CodegenClassScope, CodegenExpression>
+            ProcCodegenCreateReader { get; set; }
 
         public ProxyAggregationMethodForge()
         {
@@ -35,7 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
         public ProxyAggregationMethodForge(
             Func<Type> procResultType,
-            Func<CodegenMethodScope, SAIFFInitializeSymbol, CodegenClassScope, CodegenExpression> procCodegenCreateReader)
+            Func<CodegenMethodScope, SAIFFInitializeSymbol, CodegenClassScope, CodegenExpression>
+                procCodegenCreateReader)
         {
             ProcResultType = procResultType;
             ProcCodegenCreateReader = procCodegenCreateReader;
@@ -46,6 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         public CodegenExpression CodegenCreateReader(
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbols,
-            CodegenClassScope classScope) => ProcCodegenCreateReader(parent, symbols, classScope);
+            CodegenClassScope classScope)
+        {
+            return ProcCodegenCreateReader(parent, symbols, classScope);
+        }
     }
 } // end of namespace

@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            EventBean @event = eventsPerStream[forge.StreamId];
+            var @event = eventsPerStream[forge.StreamId];
             if (@event == null) {
                 return null;
             }
@@ -52,13 +52,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 forge.EvaluationType,
                 typeof(PropertyDotNonLambdaIndexedForgeEval),
                 codegenClassScope);
 
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
-            Type evaluationType = forge.ParamForge.EvaluationType;
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var evaluationType = forge.ParamForge.EvaluationType;
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(forge.StreamId)))
                 .IfRefNullReturnNull("@event")

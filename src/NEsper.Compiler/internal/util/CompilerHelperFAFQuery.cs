@@ -31,18 +31,19 @@ namespace com.espertech.esper.compiler.@internal.util
             var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(StatementFields),
                 classPostfix);
-            var packageScope = new CodegenNamespaceScope(
+            var namespaceScope = new CodegenNamespaceScope(
                 compileTimeServices.Namespace,
                 statementFieldsClassName,
-                compileTimeServices.IsInstrumented());
+                compileTimeServices.IsInstrumented,
+                TODO);
 
             var queryMethodProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
                 typeof(FAFQueryMethodProvider),
                 classPostfix);
-            var forgeablesQueryMethod = query.MakeForgeables(queryMethodProviderClassName, classPostfix, packageScope);
+            var forgeablesQueryMethod = query.MakeForgeables(queryMethodProviderClassName, classPostfix, namespaceScope);
 
             IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>(forgeablesQueryMethod);
-            forgeables.Add(new StmtClassForgeableStmtFields(statementFieldsClassName, packageScope, 0));
+            forgeables.Add(new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope, 0));
 
             // forge with statement-fields last
             var classes = new List<CodegenClass>(forgeables.Count);

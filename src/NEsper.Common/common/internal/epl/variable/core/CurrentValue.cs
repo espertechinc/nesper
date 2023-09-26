@@ -29,14 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
         /// <summary>Returns the current version.</summary>
         /// <returns>current version</returns>
-        public VersionedValue<T> CurrentVersion {
-            get { return currentVersion; }
-        }
+        public VersionedValue<T> CurrentVersion => currentVersion;
 
         /// <summary>Returns the prior version.</summary>
         /// <returns>prior version</returns>
-        public VersionedValue<T> PriorVersion {
-            get { return priorVersion; }
-        }
+        public VersionedValue<T> PriorVersion => priorVersion;
     }
 } // End of namespace

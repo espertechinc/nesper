@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
             var length = events.Count;
             var array = Arrays.CreateInstanceChecked(componentType, length);
             var enumerator = events.GetEnumerator();
-            
+
             for (var ii = 0; ii < length && enumerator.MoveNext(); ii++) {
                 array.SetValue(enumerator.Current, ii);
             }

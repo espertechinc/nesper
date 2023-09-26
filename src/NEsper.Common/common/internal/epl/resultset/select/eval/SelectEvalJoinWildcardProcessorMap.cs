@@ -46,18 +46,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             // NOTE: Maintaining result-event-type as out own field as we may be an "inner" select-expr-processor
-            CodegenExpressionInstanceField mType = codegenClassScope.AddDefaultFieldUnshared(
+            var mType = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(resultEventType, EPStatementInitServicesConstants.REF));
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(EventBean),
-                this.GetType(),
+                GetType(),
                 codegenClassScope);
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block.DeclareVar<IDictionary<string, object>>(
-                "tuple", NewInstance(typeof(HashMap<string, object>)));
-            for (int i = 0; i < streamNames.Length; i++) {
+                "tuple",
+                NewInstance(typeof(HashMap<string, object>)));
+            for (var i = 0; i < streamNames.Length; i++) {
                 methodNode.Block.Expression(
                     ExprDotMethod(Ref("tuple"), "Put", Constant(streamNames[i]), ArrayAtIndex(refEPS, Constant(i))));
             }
@@ -66,8 +67,6 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             return methodNode;
         }
 
-        public EventType ResultEventType {
-            get => resultEventType;
-        }
+        public EventType ResultEventType => resultEventType;
     }
 } // end of namespace

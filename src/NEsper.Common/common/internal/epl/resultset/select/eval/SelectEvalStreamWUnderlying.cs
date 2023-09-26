@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             EventType[] eventTypes)
             : base(selectExprForgeContext, resultEventType, namedStreams, usingWildcard)
         {
-            wrapperEventType = (WrapperEventType) resultEventType;
+            wrapperEventType = (WrapperEventType)resultEventType;
             this.unnamedStreams = unnamedStreams;
             this.singleStreamWrapper = singleStreamWrapper;
             this.underlyingIsFragmentEvent = underlyingIsFragmentEvent;
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             }
 
             if (underlyingIsFragmentEvent) {
-                var fragment = ((EventTypeSPI) eventTypes[underlyingStreamNumber])
+                var fragment = ((EventTypeSPI)eventTypes[underlyingStreamNumber])
                     .GetGetterSPI(unnamedStreams[0].StreamSelected.StreamName)
                     .EventBeanFragmentCodegen(
                         Ref("eventBean"),

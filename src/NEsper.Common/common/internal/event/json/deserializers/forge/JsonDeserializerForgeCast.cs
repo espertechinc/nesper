@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.forge
 
         public JsonDeserializerForgeCast(Type target)
         {
-            this._target = target;
+            _target = target;
             _targetClassName = null;
         }
 

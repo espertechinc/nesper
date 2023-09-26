@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
         {
         }
 
-        public double Compute(Double value)
+        public double Compute(double value)
         {
             return value * MULTIPLIER;
         }
@@ -35,9 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.adder
             dtx.AddDays(7 * value);
         }
 
-        public bool IsMicroseconds {
-            get => false;
-        }
+        public bool IsMicroseconds => false;
 
         public CodegenExpression ComputeCodegen(CodegenExpression doubleValue)
         {

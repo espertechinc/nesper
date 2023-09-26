@@ -29,20 +29,33 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             var lhsType = lhs.EvaluationType;
             var rhsType = rhs.EvaluationType;
-            var methodNode = codegenMethodScope.MakeChild(typeof(bool), typeof(ExprEqualsNodeForgeNCForgeIs), codegenClassScope);
+            var methodNode = codegenMethodScope.MakeChild(
+                typeof(bool),
+                typeof(ExprEqualsNodeForgeNCForgeIs),
+                codegenClassScope);
 
             CodegenExpression compare;
             if (rhsType != null && lhsType != null) {
                 if (!lhsType.IsArray) {
                     methodNode.Block
-                        .DeclareVar<object>("left", lhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
-                        .DeclareVar<object>("right", rhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope));
+                        .DeclareVar<object>(
+                            "left",
+                            lhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
+                        .DeclareVar<object>(
+                            "right",
+                            rhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope));
                     compare = StaticMethod<object>("Equals", Ref("left"), Ref("right"));
                 }
                 else {
                     methodNode.Block
-                        .DeclareVar(lhsType, "left", lhs.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope))
-                        .DeclareVar(rhsType, "right", rhs.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
+                        .DeclareVar(
+                            lhsType,
+                            "left",
+                            lhs.EvaluateCodegen(lhsType, methodNode, exprSymbol, codegenClassScope))
+                        .DeclareVar(
+                            rhsType,
+                            "right",
+                            rhs.EvaluateCodegen(rhsType, methodNode, exprSymbol, codegenClassScope));
                     if (!MultiKeyPlanner.RequiresDeepEquals(lhsType.GetElementType())) {
                         compare = StaticMethod(typeof(Arrays), "AreEqual", Ref("left"), Ref("right"));
                     }
@@ -64,12 +77,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
                 else if (lhsType == null) {
                     methodNode.Block
-                        .DeclareVar<object>("right", rhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
+                        .DeclareVar<object>(
+                            "right",
+                            rhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                         .DeclareVar<bool>("result", EqualsNull(Ref("right")));
                 }
                 else {
                     methodNode.Block
-                        .DeclareVar<object>("left", lhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
+                        .DeclareVar<object>(
+                            "left",
+                            lhs.EvaluateCodegen(typeof(object), methodNode, exprSymbol, codegenClassScope))
                         .DeclareVar<bool>("result", EqualsNull(Ref("left")));
                 }
             }

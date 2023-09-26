@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 
             writer.Write(")");
         }
-        
+
         public override RowRecogExprNode CheckedCopySelf(ExpressionCopier expressionCopier)
         {
             return new RowRecogExprNodePermute();

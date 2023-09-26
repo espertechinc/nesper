@@ -43,16 +43,20 @@ namespace com.espertech.esper.common.@internal.util
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
+            if (ReferenceEquals(null, obj)) {
                 return false;
-            if (ReferenceEquals(this, obj))
+            }
+
+            if (ReferenceEquals(this, obj)) {
                 return true;
-            return obj is ProxyStopCallback && Equals((ProxyStopCallback) obj);
+            }
+
+            return obj is ProxyStopCallback callback && Equals(callback);
         }
 
         public override int GetHashCode()
         {
-            return (ProcStop != null ? ProcStop.GetHashCode() : 0);
+            return ProcStop != null ? ProcStop.GetHashCode() : 0;
         }
     }
 }

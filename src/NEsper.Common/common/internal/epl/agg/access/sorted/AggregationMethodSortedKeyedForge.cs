@@ -20,43 +20,45 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 {
-	public class AggregationMethodSortedKeyedForge : AggregationMethodForge
-	{
-		private readonly ExprNode _key;
-		private readonly Type _underlyingClass;
-		private readonly AggregationMethodSortedEnum _aggMethod;
-		private readonly Type _resultType;
+    public class AggregationMethodSortedKeyedForge : AggregationMethodForge
+    {
+        private readonly ExprNode key;
+        private readonly Type underlyingClass;
+        private readonly AggregationMethodSortedEnum aggMethod;
+        private readonly Type resultType;
 
-		public AggregationMethodSortedKeyedForge(
-			ExprNode key,
-			Type underlyingClass,
-			AggregationMethodSortedEnum aggMethod,
-			Type resultType)
-		{
-			_key = key;
-			_underlyingClass = underlyingClass;
-			_aggMethod = aggMethod;
-			_resultType = resultType;
-		}
+        public AggregationMethodSortedKeyedForge(
+            ExprNode key,
+            Type underlyingClass,
+            AggregationMethodSortedEnum aggMethod,
+            Type resultType)
+        {
+            this.key = key;
+            this.underlyingClass = underlyingClass;
+            this.aggMethod = aggMethod;
+            this.resultType = resultType;
+        }
 
-		public CodegenExpression CodegenCreateReader(
-			CodegenMethodScope parent,
-			SAIFFInitializeSymbol symbols,
-			CodegenClassScope classScope)
-		{
-			CodegenMethod method = parent.MakeChild(typeof(AggregationMultiFunctionAggregationMethod), GetType(), classScope);
-			method.Block
-				.DeclareVar<ExprEvaluator>("keyEval", ExprNodeUtilityCodegen.CodegenEvaluator(_key.Forge, method, GetType(), classScope))
-				.MethodReturn(
-					StaticMethod(
-						typeof(AggregationMethodSortedKeyedFactory),
-						"MakeSortedAggregationWithKey",
-						Ref("keyEval"),
-						EnumValue(typeof(AggregationMethodSortedEnum), _aggMethod.GetName()),
-						Constant(_underlyingClass)));
-			return LocalMethod(method);
-		}
+        public CodegenExpression CodegenCreateReader(
+            CodegenMethodScope parent,
+            SAIFFInitializeSymbol symbols,
+            CodegenClassScope classScope)
+        {
+            var method = parent.MakeChild(typeof(AggregationMultiFunctionAggregationMethod), GetType(), classScope);
+            method.Block
+                .DeclareVar<ExprEvaluator>(
+                    "keyEval",
+                    ExprNodeUtilityCodegen.CodegenEvaluator(key.Forge, method, GetType(), classScope))
+                .MethodReturn(
+                    StaticMethod(
+                        typeof(AggregationMethodSortedKeyedFactory),
+                        "MakeSortedAggregationWithKey",
+                        Ref("keyEval"),
+                        EnumValue(typeof(AggregationMethodSortedEnum), aggMethod.GetName()),
+                        Constant(underlyingClass)));
+            return LocalMethod(method);
+        }
 
-		public Type ResultType => _resultType;
-	}
+        public Type ResultType => resultType;
+    }
 } // end of namespace

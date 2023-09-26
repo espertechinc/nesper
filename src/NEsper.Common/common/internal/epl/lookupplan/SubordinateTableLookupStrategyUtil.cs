@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
             ExprNode inKeywordMultiIdxKey,
             bool isNWOnTrigger)
         {
-            bool isStrictKeys = SubordPropUtil.IsStrictKeyJoin(hashKeys);
+            var isStrictKeys = SubordPropUtil.IsStrictKeyJoin(hashKeys);
             string[] hashStrictKeys = null;
             int[] hashStrictKeyStreams = null;
             if (isStrictKeys) {

@@ -34,8 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             FAFQueryMethodAssignerSetter assignerSetter,
             ContextManagementService contextManagementService)
         {
-            FireAndForgetProcessor processor = select.Processors[0];
-            FireAndForgetInstance processorInstance = processor.ProcessorInstanceNoContext;
+            var processor = select.Processors[0];
+            var processorInstance = processor.ProcessorInstanceNoContext;
 
             ICollection<EventBean> events;
             AgentInstanceContext agentInstanceContext = null;
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             }
 
             // get RSP
-            ResultSetProcessor resultSetProcessor = ProcessorWithAssign(
+            var resultSetProcessor = ProcessorWithAssign(
                 select.ResultSetProcessorFactoryProvider,
                 agentInstanceContext,
                 assignerSetter,
@@ -60,6 +60,11 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             }
 
             return ProcessedNonJoin(resultSetProcessor, events, select.DistinctKeyGetter);
+        }
+
+        public void ReleaseTableLocks(FireAndForgetProcessor[] processors)
+        {
+            FAFQueryMethodSelectExecUtil.ReleaseTableLocks(processors);
         }
     }
 } // end of namespace

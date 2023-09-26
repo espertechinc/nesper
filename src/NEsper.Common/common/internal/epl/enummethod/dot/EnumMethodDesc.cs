@@ -10,31 +10,31 @@ using com.espertech.esper.common.@internal.epl.methodbase;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
-	public class EnumMethodDesc
-	{
-		private readonly string _enumMethodName;
-		private readonly EnumMethodEnum _enumMethod;
-		private readonly ExprDotForgeEnumMethodFactory _factory;
-		private readonly DotMethodFP[] _parameters;
+    public class EnumMethodDesc
+    {
+        private readonly string _enumMethodName;
+        private readonly EnumMethodEnum _enumMethod;
+        private readonly ExprDotForgeEnumMethodFactory _factory;
+        private readonly DotMethodFP[] _parameters;
 
-		public EnumMethodDesc(
-			string methodName,
-			EnumMethodEnum enumMethod,
-			ExprDotForgeEnumMethodFactory factory,
-			DotMethodFP[] parameters)
-		{
-			_enumMethodName = methodName;
-			_enumMethod = enumMethod;
-			_factory = factory;
-			_parameters = parameters;
-		}
+        public EnumMethodDesc(
+            string methodName,
+            EnumMethodEnum enumMethod,
+            ExprDotForgeEnumMethodFactory factory,
+            DotMethodFP[] parameters)
+        {
+            _enumMethodName = methodName;
+            _enumMethod = enumMethod;
+            _factory = factory;
+            _parameters = parameters;
+        }
 
-		public string EnumMethodName => _enumMethodName;
+        public string EnumMethodName => _enumMethodName;
 
-		public EnumMethodEnum EnumMethod => _enumMethod;
+        public EnumMethodEnum EnumMethod => _enumMethod;
 
-		public ExprDotForgeEnumMethodFactory Factory => _factory;
+        public ExprDotForgeEnumMethodFactory Factory => _factory;
 
-		public DotMethodFP[] Footprints => _parameters;
-	}
+        public DotMethodFP[] Footprints => _parameters;
+    }
 } // end of namespace

@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             object[] values,
             EventBean theEvent)
         {
-            var wrappedEvent = (DecoratingEventBean) theEvent;
+            var wrappedEvent = (DecoratingEventBean)theEvent;
             var eventWrapped = wrappedEvent.UnderlyingEvent;
             undWriter.Write(values, eventWrapped);
         }

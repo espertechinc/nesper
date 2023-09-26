@@ -160,9 +160,9 @@ namespace com.espertech.esper.common.client
         ///         Returns unboxed (such as 'int.class') as well as boxed (System.Int32) type.
         ///     </para>
         /// </summary>
-        /// <param name="propertyExpression">is the property name or property expression</param>
+        /// <param name="propertyName">is the property name or property expression</param>
         /// <returns>type of the property, the unboxed or the boxed type.</returns>
-        Type GetPropertyType(string propertyExpression);
+        Type GetPropertyType(string propertyName);
 
         /// <summary>
         ///     Check that the given property name or property expression is valid for this event type, ie. that the property

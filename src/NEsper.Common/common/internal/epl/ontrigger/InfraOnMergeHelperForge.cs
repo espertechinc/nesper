@@ -26,6 +26,7 @@ using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.epl.table.update;
 using com.espertech.esper.common.@internal.epl.updatehelper;
+using com.espertech.esper.common.@internal.epl.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
@@ -64,10 +65,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 
             foreach (var matchedItem in onTriggerDesc.Items) {
                 IList<InfraOnMergeActionForge> actions = new List<InfraOnMergeActionForge>();
-                foreach (OnTriggerMergeAction item in matchedItem.Actions) {
+                foreach (var item in matchedItem.Actions) {
                     try {
-                        if (item is OnTriggerMergeActionInsert) {
-                            var insertDesc = (OnTriggerMergeActionInsert) item;
+                        if (item is OnTriggerMergeActionInsert insertDesc) {
                             var forge = SetupInsert(
                                 infraName,
                                 infraEventType,
@@ -80,9 +80,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                             actions.Add(forge);
                             hasInsertIntoTableAction = forge.InsertIntoTable != null;
                         }
-                        else if (item is OnTriggerMergeActionUpdate) {
-                            var updateDesc = (OnTriggerMergeActionUpdate) item;
-                            EventBeanUpdateHelperForge updateHelper = EventBeanUpdateHelperForgeFactory.Make(
+                        else if (item is OnTriggerMergeActionUpdate updateDesc) {
+                            var updateHelper = EventBeanUpdateHelperForgeFactory.Make(
                                 infraName,
                                 infraEventType,
                                 updateDesc.Assignments,
@@ -91,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                                 true,
                                 statementRawInfo.StatementName,
                                 services.EventTypeAvroHandler);
-                            ExprNode filterEval = updateDesc.OptionalWhereClause;
+                            var filterEval = updateDesc.OptionalWhereClause;
                             if (table != null) {
                                 TableUpdateStrategyFactory.ValidateTableUpdateOnMerge(
                                     table,
@@ -102,9 +101,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                             actions.Add(forge);
                             hasUpdateAction = true;
                         }
-                        else if (item is OnTriggerMergeActionDelete) {
-                            var deleteDesc = (OnTriggerMergeActionDelete) item;
-                            ExprNode filterEval = deleteDesc.OptionalWhereClause;
+                        else if (item is OnTriggerMergeActionDelete deleteDesc) {
+                            var filterEval = deleteDesc.OptionalWhereClause;
                             actions.Add(new InfraOnMergeActionDelForge(filterEval));
                             hasDeleteAction = true;
                         }
@@ -199,8 +197,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
             bool isTable)
         {
             // Compile insert-into info
-            var streamName = desc.OptionalStreamName != null ? desc.OptionalStreamName : infraName;
-            InsertIntoDesc insertIntoDesc = InsertIntoDesc.FromColumns(streamName, desc.Columns);
+            var streamName = desc.OptionalStreamName ?? infraName;
+            var insertIntoDesc = InsertIntoDesc.FromColumns(streamName, desc.Columns);
 
             // rewrite any wildcards to use "stream.wildcard"
             if (triggeringStreamName == null) {
@@ -228,8 +226,8 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 null,
                 services.BeanEventTypeFactoryPrivate,
                 services.EventTypeCompileTimeResolver);
-            var eventTypes = new EventType[] {dummyTypeNoProperties, triggeringEventType};
-            var streamNames = new string[] {UuidGenerator.Generate(), triggeringStreamName};
+            var eventTypes = new EventType[] { dummyTypeNoProperties, triggeringEventType };
+            var streamNames = new string[] { UuidGenerator.Generate(), triggeringStreamName };
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(
                 eventTypes,
                 streamNames,
@@ -255,15 +253,32 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 args.OptionalInsertIntoEventType = infraType;
             }
 
-            SelectExprProcessorForge insertHelperForge =
+            var insertHelperForge =
                 SelectExprProcessorFactory.GetProcessor(args, insertIntoDesc, false).Forge;
-            ExprNode filterEval = desc.OptionalWhereClause;
+            var filterEval = desc.OptionalWhereClause;
 
             var route = !streamName.Equals(infraName);
-            bool audit = AuditEnum.INSERT.GetAudit(statementRawInfo.Annotations) != null;
+            var audit = AuditEnum.INSERT.GetAudit(statementRawInfo.Annotations) != null;
 
-            TableMetaData insertIntoTable = services.TableCompileTimeResolver.Resolve(insertIntoDesc.EventTypeName);
-            return new InfraOnMergeActionInsForge(filterEval, insertHelperForge, insertIntoTable, audit, route);
+            var insertIntoTable = services.TableCompileTimeResolver.Resolve(insertIntoDesc.EventTypeName);
+
+            ExprNode eventPrecedence = null;
+            if (desc.EventPrecedence != null) {
+                eventPrecedence = EPLValidationUtil.ValidateEventPrecedence(
+                    insertIntoTable != null,
+                    desc.EventPrecedence,
+                    insertHelperForge.ResultEventType,
+                    statementRawInfo,
+                    services);
+            }
+
+            return new InfraOnMergeActionInsForge(
+                filterEval,
+                insertHelperForge,
+                insertIntoTable,
+                audit,
+                route,
+                eventPrecedence);
         }
 
         public static IList<SelectClauseElementCompiled> CompileSelectNoWildcard(

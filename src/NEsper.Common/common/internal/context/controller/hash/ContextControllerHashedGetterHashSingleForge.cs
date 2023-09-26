@@ -60,9 +60,9 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(typeof(object), this.GetType(), classScope)
-                .AddParam(typeof(EventBean), "eventBean");
-            CodegenMethod methodExpr = CodegenLegoMethodExpression.CodegenExpression(eval.Forge, method, classScope, true);
+            var method = parent.MakeChild(typeof(object), GetType(), classScope)
+                .AddParam<EventBean>("eventBean");
+            var methodExpr = CodegenLegoMethodExpression.CodegenExpression(eval.Forge, method, classScope);
             method.Block
                 .DeclareVar<EventBean[]>("events", NewArrayWithInit(typeof(EventBean), Ref("eventBean")))
                 .DeclareVar<object>("code", LocalMethod(methodExpr, Ref("events"), ConstantTrue(), ConstantNull()))

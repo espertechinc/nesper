@@ -10,7 +10,12 @@ namespace com.espertech.esper.common.@internal.context.util
 {
     public interface AgentInstanceMgmtCallback
     {
-        void Stop(AgentInstanceStopServices services);
-        void Transfer(AgentInstanceTransferServices services);
+        void Stop(AgentInstanceStopServices services)
+        {
+        }
+
+        void Transfer(AgentInstanceTransferServices services)
+        {
+        }
     }
 } // end of namespace

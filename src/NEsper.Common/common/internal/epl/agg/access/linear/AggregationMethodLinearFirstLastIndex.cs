@@ -28,7 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var events = (IList<EventBean>) row.GetCollectionOfEvents(aggColNum, eventsPerStream, isNewData, exprEvaluatorContext);
+            var events = (IList<EventBean>)row.GetCollectionOfEvents(
+                aggColNum,
+                eventsPerStream,
+                isNewData,
+                exprEvaluatorContext);
             if (events == null) {
                 return null;
             }
@@ -85,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
         private EventBean GetBean(IList<EventBean> events)
         {
             int index;
-            
+
             if (optionalConstIndex != null) {
                 index = optionalConstIndex.Value;
             }

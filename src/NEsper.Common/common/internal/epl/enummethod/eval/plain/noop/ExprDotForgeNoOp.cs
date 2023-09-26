@@ -29,12 +29,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             ExprValidationContext validationContext)
         {
             return new ProxyEnumForgeDescFactory() {
-                ProcGetLambdaStreamTypesForParameter = parameterNum => new EnumForgeLambdaDesc(new EventType[0], new String[0]),
+                ProcGetLambdaStreamTypesForParameter = parameterNum =>
+                    new EnumForgeLambdaDesc(Array.Empty<EventType>(), Array.Empty<string>()),
                 ProcMakeEnumForgeDesc = (
                     bodiesAndParameters,
                     streamCountIncoming,
                     services) => {
-                    var type = EPTypeHelper.CollectionOfEvents(inputEventType);
+                    var type = EPChainableTypeHelper.CollectionOfEvents(inputEventType);
                     return new EnumForgeDesc(type, new EnumForgeNoOp(streamCountIncoming));
                 }
             };

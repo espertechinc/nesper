@@ -107,15 +107,15 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
                     eventTypes[count++] = eventType;
                 }
 
-                string[] arrayTags = ArrayEventTypes.IsEmpty() ? null : ArrayEventTypes.Keys.ToArray();
+                var arrayTags = ArrayEventTypes.IsEmpty() ? null : ArrayEventTypes.Keys.ToArray();
                 return new MatchedEventMapMeta(tags, eventTypes, arrayTags);
             }
         }
 
         private bool IsConsumingFiltersRecursive(EvalForgeNode evalNode)
         {
-            if (evalNode is EvalFilterForgeNode) {
-                return ((EvalFilterForgeNode) evalNode).ConsumptionLevel != null;
+            if (evalNode is EvalFilterForgeNode node) {
+                return node.ConsumptionLevel != null;
             }
 
             var consumption = false;

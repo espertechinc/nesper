@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public ExprCaseNodeForgeEvalTypable(ExprCaseNodeForge forge)
         {
             this.forge = forge;
-            this.evaluator = forge.ExprEvaluator;
+            evaluator = forge.ExprEvaluator;
         }
 
         public object Evaluate(
@@ -43,11 +43,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            IDictionary<string, object> map =
-                (IDictionary<string, object>) evaluator.Evaluate(eventsPerStream, isNewData, context);
-            object[] row = new object[map.Count];
-            int index = -1;
-            foreach (KeyValuePair<string, object> entry in forge.mapResultType) {
+            var map =
+                (IDictionary<string, object>)evaluator.Evaluate(eventsPerStream, isNewData, context);
+            var row = new object[map.Count];
+            var index = -1;
+            foreach (var entry in forge.mapResultType) {
                 index++;
                 row[index] = map.Get(entry.Key);
             }
@@ -61,13 +61,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            CodegenMethod methodNode = codegenMethodScope.MakeChild(
+            var methodNode = codegenMethodScope.MakeChild(
                 typeof(object[]),
                 typeof(ExprCaseNodeForgeEvalTypable),
                 codegenClassScope);
 
 
-            CodegenBlock block = methodNode.Block
+            var block = methodNode.Block
                 .DeclareVar<IDictionary<object, object>>(
                     "map",
                     StaticMethod(
@@ -81,8 +81,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 .DeclareVar<object[]>(
                     "row",
                     NewArrayByLength(typeof(object), ExprDotName(Ref("map"), "Count")));
-            int index = -1;
-            foreach (KeyValuePair<string, object> entry in forge.mapResultType) {
+            var index = -1;
+            foreach (var entry in forge.mapResultType) {
                 index++;
                 block.AssignArrayElement(
                     Ref("row"),

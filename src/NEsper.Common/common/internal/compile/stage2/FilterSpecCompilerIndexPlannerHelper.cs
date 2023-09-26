@@ -26,7 +26,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlanner; //PROPERTY_NAME_BOOLEAN_EXPRESSION;
+using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompilerIndexPlanner;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
@@ -58,15 +58,20 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
                 if (valueOnlyConstituents != null) {
                     constituents.RemoveAll(valueOnlyConstituents);
-                    topLevelControl = ExprNodeUtilityMake.ConnectExpressionsByLogicalAndWhenNeeded(valueOnlyConstituents);
+                    topLevelControl =
+                        ExprNodeUtilityMake.ConnectExpressionsByLogicalAndWhenNeeded(valueOnlyConstituents);
                 }
             }
 
             // Make filter parameter for each expression node, if it can be optimized
+            // Make sure rebool-expressions only are added once per rebool-expression
+            ISet<string> reboolExpressions = new HashSet<string>();
+            Func<string, bool> limitedExprExists = reboolExpression => !reboolExpressions.Add(reboolExpression);
             foreach (var constituent in constituents) {
                 var triplet = FilterSpecCompilerIndexPlannerConstituent.MakeFilterParam(
                     constituent,
                     performConditionPlanning,
+                    limitedExprExists,
                     args.taggedEventTypes,
                     args.arrayEventTypes,
                     args.allTagNamesOrdered,
@@ -74,7 +79,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                     args.streamTypeService,
                     args.statementRawInfo,
                     args.compileTimeServices);
-                filterParamExprMap.Put(constituent, triplet); // accepts null values as the expression may not be optimized
+                filterParamExprMap.Put(
+                    constituent,
+                    triplet); // accepts null values as the expression may not be optimized
             }
 
             // Consolidate entries as possible, i.e. (a != 5 and a != 6) is (a not in (5,6))
@@ -83,16 +90,23 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return topLevelControl;
         }
 
-        internal static Coercer GetNumberCoercer(
+        public static Coercer GetNumberCoercer(
             Type leftType,
             Type rightType,
             string expression)
         {
             var numericCoercionType = leftType.GetBoxedType();
-            if (rightType != leftType) {
-                if (rightType.IsNumeric()) {
-                    if (!rightType.CanCoerce(leftType)) {
-                        ThrowConversionError(rightType, leftType, expression);
+            if (numericCoercionType == null ||
+                rightType == null) {
+                return null;
+            }
+
+            var leftClass = leftType;
+            var rightClass = rightType;
+            if (rightClass != leftClass) {
+                if (rightType.IsTypeNumeric()) {
+                    if (!rightClass.CanCoerce(leftClass)) {
+                        ThrowConversionError(rightClass, leftClass, expression);
                     }
 
                     return SimpleNumberCoercerFactory.GetCoercer(rightType, numericCoercionType);
@@ -102,22 +116,22 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return null;
         }
 
-        internal static void ThrowConversionError(
+        public static void ThrowConversionError(
             Type fromType,
             Type toType,
             string propertyName)
         {
             var text = "Implicit conversion from datatype '" +
-                       fromType.CleanName() +
+                       fromType.Name +
                        "' to '" +
-                       toType.CleanName() +
+                       toType.Name +
                        "' for property '" +
                        propertyName +
                        "' is not allowed (strict filter type coercion)";
             throw new ExprValidationException(text);
         }
 
-        internal static MatchedEventConvertorForge GetMatchEventConvertor(
+        public static MatchedEventConvertorForge GetMatchEventConvertor(
             ExprNode value,
             IDictionary<string, Pair<EventType, string>> taggedEventTypes,
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
@@ -126,7 +140,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var streamUseCollectVisitor = new ExprNodeStreamUseCollectVisitor();
             value.Accept(streamUseCollectVisitor);
 
-            ISet<int> streams = new HashSet<int>();
+            var streams = new HashSet<int>(streamUseCollectVisitor.Referenced.Count);
             foreach (var streamRefNode in streamUseCollectVisitor.Referenced) {
                 if (streamRefNode.StreamReferencedIfAny == null) {
                     continue;
@@ -138,23 +152,27 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return new MatchedEventConvertorForge(taggedEventTypes, arrayEventTypes, allTagNamesOrdered, streams, true);
         }
 
-        internal static Pair<int, string> GetStreamIndex(string resolvedPropertyName)
+        public static Pair<int, string> GetStreamIndex(string resolvedPropertyName)
         {
             var property = PropertyParser.ParseAndWalkLaxToSimple(resolvedPropertyName);
-            if (!(property is NestedProperty)) {
-                throw new IllegalStateException("Expected a nested property providing an index for array match '" + resolvedPropertyName + "'");
+            if (!(property is NestedProperty nested)) {
+                throw new IllegalStateException(
+                    "Expected a nested property providing an index for array match '" + resolvedPropertyName + "'");
             }
 
-            var nested = (NestedProperty) property;
             if (nested.Properties.Count < 2) {
-                throw new IllegalStateException("Expected a nested property name for array match '" + resolvedPropertyName + "', none found");
+                throw new IllegalStateException(
+                    "Expected a nested property name for array match '" + resolvedPropertyName + "', none found");
             }
 
             if (!(nested.Properties[0] is IndexedProperty)) {
-                throw new IllegalStateException("Expected an indexed property for array match '" + resolvedPropertyName + "', please provide an index");
+                throw new IllegalStateException(
+                    "Expected an indexed property for array match '" +
+                    resolvedPropertyName +
+                    "', please provide an index");
             }
 
-            var index = ((IndexedProperty) nested.Properties[0]).Index;
+            var index = ((IndexedProperty)nested.Properties[0]).Index;
             nested.Properties.RemoveAt(0);
             var writer = new StringWriter();
             nested.ToPropertyEPL(writer);
@@ -174,7 +192,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 }
 
                 // Ensure there is no aggregation nodes
-                var aggregateExprNodes = new List<ExprAggregateNode>();
+                IList<ExprAggregateNode> aggregateExprNodes = new List<ExprAggregateNode>();
                 ExprAggregateNodeUtil.GetAggregatesBottomUp(validated, aggregateExprNodes);
                 if (!aggregateExprNodes.IsEmpty()) {
                     throw new ExprValidationException("Aggregation functions not allowed within filters");
@@ -198,30 +216,30 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
         }
 
-        internal static bool IsLimitedValueExpression(ExprNode node)
+        public static bool IsLimitedValueExpression(ExprNode node)
         {
             var visitor = new FilterSpecExprNodeVisitorValueLimitedExpr();
             node.Accept(visitor);
             return visitor.IsLimited;
         }
 
-        internal static EventType GetArrayInnerEventType(
+        public static EventType GetArrayInnerEventType(
             IDictionary<string, Pair<EventType, string>> arrayEventTypes,
             string streamName)
         {
             var arrayEventType = arrayEventTypes.Get(streamName);
-            var prop = ((MapEventType) arrayEventType.First).Types.Get(streamName);
-            return ((EventType[]) prop)[0];
+            var prop = ((MapEventType)arrayEventType.First).Types.Get(streamName);
+            return ((EventType[])prop)[0];
         }
 
         // expressions automatically coerce to the most upwards type
         // filters require the same type
-        internal static object HandleConstantsCoercion(
+        public static object HandleConstantsCoercion(
             ExprFilterSpecLookupableForge lookupable,
             object constant)
         {
             var identNodeType = lookupable.ReturnType;
-            if (!identNodeType.IsNumeric()) {
+            if (!identNodeType.IsTypeNumeric()) {
                 return constant; // no coercion required, other type checking performed by expression this comes from
             }
 
@@ -247,23 +265,33 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 return null;
             }
 
-            if (arrayEventTypes != null && !arrayEventTypes.IsEmpty() && arrayEventTypes.ContainsKey(node.ResolvedStreamName)) {
+            if (arrayEventTypes != null &&
+                !arrayEventTypes.IsEmpty() &&
+                arrayEventTypes.ContainsKey(node.ResolvedStreamName)) {
                 var indexAndProp = GetStreamIndex(node.ResolvedPropertyName);
                 var eventType = GetArrayInnerEventType(arrayEventTypes, node.ResolvedStreamName);
-                return new FilterForEvalEventPropIndexedDoubleForge(node.ResolvedStreamName, indexAndProp.First, indexAndProp.Second, eventType);
+                return new FilterForEvalEventPropIndexedDoubleForge(
+                    node.ResolvedStreamName,
+                    indexAndProp.First,
+                    indexAndProp.Second,
+                    eventType);
             }
-
-            return new FilterForEvalEventPropDoubleForge(node.ResolvedStreamName, node.ResolvedPropertyName, node.ExprEvaluatorIdent);
+            else {
+                return new FilterForEvalEventPropDoubleForge(
+                    node.ResolvedStreamName,
+                    node.ResolvedPropertyName,
+                    node.ExprEvaluatorIdent);
+            }
         }
 
-        internal static bool IsLimitedLookupableExpression(ExprNode node)
+        public static bool IsLimitedLookupableExpression(ExprNode node)
         {
             var visitor = new FilterSpecExprNodeVisitorLookupableLimitedExpr();
             node.Accept(visitor);
             return visitor.IsLimited && visitor.HasStreamZeroReference;
         }
 
-        internal static ExprFilterSpecLookupableForge MakeLimitedLookupableForgeMayNull(
+        public static ExprFilterSpecLookupableForge MakeLimitedLookupableForgeMayNull(
             ExprNode lookupable,
             StatementRawInfo raw,
             StatementCompileTimeServices services)
@@ -305,7 +333,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             FilterSpecCompilerArgs args)
         {
             var andNode = ExprNodeUtilityMake.ConnectExpressionsByLogicalAnd(remainingExprNodes);
-            var validationContext = new ExprValidationContextBuilder(args.streamTypeService, args.statementRawInfo, args.compileTimeServices)
+            var validationContext = new ExprValidationContextBuilder(
+                    args.streamTypeService,
+                    args.statementRawInfo,
+                    args.compileTimeServices)
                 .WithAllowBindingConsumption(true)
                 .WithContextDescriptor(args.contextDescriptor)
                 .Build();
@@ -313,7 +344,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             return andNode;
         }
 
-        internal static bool HasLevelOrHint(
+        public static bool HasLevelOrHint(
             FilterSpecCompilerIndexPlannerHint requiredHint,
             StatementRawInfo raw,
             StatementCompileTimeServices services)
@@ -365,7 +396,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             var evalType = exprNode.Forge.EvaluationType;
             var serdeForge = args.compileTimeServices.SerdeResolver.SerdeForFilter(evalType, args.statementRawInfo);
-            var lookupable = new ExprFilterSpecLookupableForge(PROPERTY_NAME_BOOLEAN_EXPRESSION, null, null, evalType, false, serdeForge);
+            var lookupable = new ExprFilterSpecLookupableForge(
+                PROPERTY_NAME_BOOLEAN_EXPRESSION,
+                null,
+                null,
+                evalType,
+                false,
+                serdeForge);
 
             return new FilterSpecParamExprNodeForge(
                 lookupable,

@@ -51,10 +51,15 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 propertyTypes = ResolveClassesForStringPropertyTypes(propertyTypes, importService);
                 var propertyTypesCompiled = EventTypeUtility.CompileMapTypeProperties(propertyTypes, repo);
 
-                AddNestableObjectArrayType(objectArrayName, propertyTypesCompiled, objectArrayConfig, beanEventTypeFactory, repo);
+                AddNestableObjectArrayType(
+                    objectArrayName,
+                    propertyTypesCompiled,
+                    objectArrayConfig,
+                    beanEventTypeFactory,
+                    repo);
             }
         }
-        
+
         private static void AddNestableObjectArrayType(
             string eventTypeName,
             IDictionary<string, object> propertyTypesMayHavePrimitive,
@@ -86,8 +91,8 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
                 metadata,
                 propertyTypes,
                 superTypes,
-                optionalConfig != null ? optionalConfig.StartTimestampPropertyName : null,
-                optionalConfig != null ? optionalConfig.EndTimestampPropertyName : null,
+                optionalConfig?.StartTimestampPropertyName,
+                optionalConfig?.EndTimestampPropertyName,
                 beanEventTypeFactory,
                 repo);
 
@@ -119,11 +124,10 @@ namespace com.espertech.esper.common.@internal.@event.eventtyperepo
             foreach (var entry in properties) {
                 var property = entry.Key;
                 propertyTypes.Put(property, entry.Value);
-                if (!(entry.Value is string)) {
+                if (!(entry.Value is string className)) {
                     continue;
                 }
 
-                var className = (string) entry.Value;
                 var clazz = ResolveClassForTypeName(className, importService);
                 if (clazz != null) {
                     propertyTypes.Put(property, clazz);

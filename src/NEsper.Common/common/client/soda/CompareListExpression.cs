@@ -55,8 +55,7 @@ namespace com.espertech.esper.common.client.soda
         ///     Returns the operator.
         /// </summary>
         /// <returns>operator</returns>
-        public string Operator
-        {
+        public string Operator {
             get => @operator;
             set => @operator = value;
         }
@@ -77,18 +76,15 @@ namespace com.espertech.esper.common.client.soda
         {
             Children[0].ToEPL(writer, Precedence);
             writer.Write(@operator);
-            if (IsAll)
-            {
+            if (IsAll) {
                 writer.Write("all(");
             }
-            else
-            {
+            else {
                 writer.Write("any(");
             }
 
             var delimiter = "";
-            for (var i = 1; i < Children.Count; i++)
-            {
+            for (var i = 1; i < Children.Count; i++) {
                 writer.Write(delimiter);
                 Children[i].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ",";

@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             andNode.AddChildNode(new SupportExprNode(typeof(bool?)));
             andNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
 
-            // test failure, type mismatch
+            // test failure, Type mismatch
             andNode.AddChildNode(new SupportExprNode(typeof(string)));
             try
             {

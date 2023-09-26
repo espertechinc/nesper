@@ -8,7 +8,7 @@
 
 namespace com.espertech.esper.common.client.json.util
 {
-	public interface JsonFieldAdapter
-	{
-	}
+    public interface JsonFieldAdapter
+    {
+    }
 } // end of namespace

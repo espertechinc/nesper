@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.type
                 }
 
                 var method = block.MethodReturn(
-                    Op(Ref("b1"), "/",  Ref("b2")));
+                    Op(Ref("b1"), "/", Ref("b2")));
                 return LocalMethod(method, left, right);
             }
         }

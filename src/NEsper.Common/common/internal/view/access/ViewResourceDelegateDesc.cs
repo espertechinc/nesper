@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.compat.collections;
@@ -22,11 +23,17 @@ namespace com.espertech.esper.common.@internal.view.access
     /// </summary>
     public class ViewResourceDelegateDesc
     {
+        public static readonly ViewResourceDelegateDesc[] SINGLE_ELEMENT_ARRAY = new[] {
+            new ViewResourceDelegateDesc(false, null, EmptySortedSet<int>.Instance)
+        };
+
         public ViewResourceDelegateDesc(
             bool hasPrevious,
+            StateMgmtSetting previousStateSettingsOpt,
             SortedSet<int> priorRequests)
         {
             HasPrevious = hasPrevious;
+            PreviousStateSettingsOpt = previousStateSettingsOpt;
             PriorRequests = priorRequests;
         }
 
@@ -34,9 +41,29 @@ namespace com.espertech.esper.common.@internal.view.access
 
         public SortedSet<int> PriorRequests { get; }
 
+        public StateMgmtSetting PreviousStateSettingsOpt { get; }
+
+        public static CodegenExpression ToExpression(ViewResourceDelegateDesc[] descs)
+        {
+            if (descs.Length == 1 && !descs[0].HasPrevious && descs[0].PriorRequests.IsEmpty()) {
+                return PublicConstValue(typeof(ViewResourceDelegateDesc), "SINGLE_ELEMENT_ARRAY");
+            }
+
+            var values = new CodegenExpression[descs.Length];
+            for (var ii = 0; ii < descs.Length; ii++) {
+                values[ii] = descs[ii].ToExpression();
+            }
+
+            return NewArrayWithInit(typeof(ViewResourceDelegateDesc), values);
+        }
+
         public CodegenExpression ToExpression()
         {
-            return NewInstance(GetType(), Constant(HasPrevious), CodegenLegoRichConstant.ToExpression(PriorRequests));
+            return NewInstance(
+                GetType(),
+                Constant(HasPrevious),
+                PreviousStateSettingsOpt == null ? ConstantNull() : PreviousStateSettingsOpt.ToExpression(),
+                CodegenLegoRichConstant.ToExpression(PriorRequests));
         }
 
         public static bool HasPrior(ViewResourceDelegateDesc[] delegates)

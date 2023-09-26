@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,52 +7,50 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.output.condition;
 using com.espertech.esper.common.@internal.epl.output.core;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 
+
 namespace com.espertech.esper.common.@internal.epl.output.view
 {
     /// <summary>
-    ///     A view that handles the "output snapshot" keyword in output rate stabilizing.
+    /// A view that handles the "output snapshot" keyword in output rate stabilizing.
     /// </summary>
     public class OutputProcessViewConditionFactory : OutputProcessViewDirectDistinctOrAfterFactory
     {
-        private readonly ResultSetProcessorOutputConditionType _conditionType;
-        private readonly EventType[] _eventTypes;
+        private readonly OutputConditionFactory outputConditionFactory;
+        private readonly int streamCount;
+        private readonly ResultSetProcessorOutputConditionType conditionType;
+        private readonly bool terminable;
+        private readonly bool hasAfter;
+        private readonly bool isUnaggregatedUngrouped;
+        private readonly SelectClauseStreamSelectorEnum selectClauseStreamSelectorEnum;
+        private readonly EventType[] eventTypes;
+        private readonly StateMgmtSetting changeSetStateMgmtSettings;
+        private readonly StateMgmtSetting outputFirstStateMgmtSettings;
 
-        public OutputProcessViewConditionFactory(OutputProcessViewConditionSpec spec)
-            : base(
-                spec.PostProcessFactory,
-                spec.IsDistinct,
-                spec.DistinctKeyGetter,
-                spec.AfterTimePeriod,
-                spec.AfterConditionNumberOfEvents,
-                spec.ResultEventType)
+        public OutputProcessViewConditionFactory(OutputProcessViewConditionSpec spec) : base(
+            spec.PostProcessFactory,
+            spec.IsDistinct,
+            spec.DistinctKeyGetter,
+            spec.AfterTimePeriod,
+            spec.AfterConditionNumberOfEvents)
         {
-            OutputConditionFactory = spec.OutputConditionFactory;
-            StreamCount = spec.StreamCount;
-            _conditionType = spec.ConditionType;
-            IsTerminable = spec.IsTerminable;
-            IsAfter = spec.HasAfter;
-            IsUnaggregatedUngrouped = spec.IsUnaggregatedUngrouped;
-            SelectClauseStreamSelectorEnum = spec.SelectClauseStreamSelector;
-            _eventTypes = spec.EventTypes;
+            outputConditionFactory = spec.OutputConditionFactory;
+            streamCount = spec.StreamCount;
+            conditionType = spec.ConditionType;
+            terminable = spec.IsTerminable;
+            hasAfter = spec.HasAfter;
+            isUnaggregatedUngrouped = spec.IsUnaggregatedUngrouped;
+            selectClauseStreamSelectorEnum = spec.SelectClauseStreamSelector;
+            eventTypes = spec.EventTypes;
+            changeSetStateMgmtSettings = spec.ChangeSetStateMgmtSettings;
+            outputFirstStateMgmtSettings = spec.OutputFirstStateMgmtSettings;
         }
-
-        public OutputConditionFactory OutputConditionFactory { get; }
-
-        public int StreamCount { get; }
-
-        public bool IsTerminable { get; }
-
-        public bool IsAfter { get; }
-
-        public bool IsUnaggregatedUngrouped { get; }
-
-        public SelectClauseStreamSelectorEnum SelectClauseStreamSelectorEnum { get; }
 
         public override OutputProcessView MakeView(
             ResultSetProcessor resultSetProcessor,
@@ -71,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                 afterConditionTime = time + delta;
             }
 
-            if (_conditionType == ResultSetProcessorOutputConditionType.SNAPSHOT) {
+            if (conditionType == ResultSetProcessorOutputConditionType.SNAPSHOT) {
                 if (postProcessFactory == null) {
                     return new OutputProcessViewConditionSnapshot(
                         resultSetProcessor,
@@ -92,8 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     agentInstanceContext,
                     postProcess);
             }
-
-            if (_conditionType == ResultSetProcessorOutputConditionType.POLICY_FIRST) {
+            else if (conditionType == ResultSetProcessorOutputConditionType.POLICY_FIRST) {
                 if (postProcessFactory == null) {
                     return new OutputProcessViewConditionFirst(
                         resultSetProcessor,
@@ -101,7 +98,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                         AfterConditionNumberOfEvents,
                         isAfterConditionSatisfied,
                         this,
-                        agentInstanceContext);
+                        agentInstanceContext,
+                        outputFirstStateMgmtSettings);
                 }
 
                 var postProcess = postProcessFactory.Make(agentInstanceContext);
@@ -112,10 +110,10 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     isAfterConditionSatisfied,
                     this,
                     agentInstanceContext,
-                    postProcess);
+                    postProcess,
+                    outputFirstStateMgmtSettings);
             }
-
-            if (_conditionType == ResultSetProcessorOutputConditionType.POLICY_LASTALL_UNORDERED) {
+            else if (conditionType == ResultSetProcessorOutputConditionType.POLICY_LASTALL_UNORDERED) {
                 if (postProcessFactory == null) {
                     return new OutputProcessViewConditionLastAllUnord(
                         resultSetProcessor,
@@ -145,8 +143,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                         isAfterConditionSatisfied,
                         this,
                         agentInstanceContext,
-                        StreamCount > 1,
-                        _eventTypes);
+                        eventTypes,
+                        changeSetStateMgmtSettings);
                 }
 
                 var postProcess = postProcessFactory.Make(agentInstanceContext);
@@ -159,8 +157,21 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     agentInstanceContext,
                     postProcess,
                     StreamCount > 1,
-                    _eventTypes);
+                    eventTypes,
+                    changeSetStateMgmtSettings);
             }
         }
+
+        public OutputConditionFactory OutputConditionFactory => outputConditionFactory;
+
+        public int StreamCount => streamCount;
+
+        public bool IsTerminable => terminable;
+
+        public bool HasAfter => hasAfter;
+
+        public bool IsUnaggregatedUngrouped => isUnaggregatedUngrouped;
+
+        public SelectClauseStreamSelectorEnum SelectClauseStreamSelectorEnum => selectClauseStreamSelectorEnum;
     }
 } // end of namespace

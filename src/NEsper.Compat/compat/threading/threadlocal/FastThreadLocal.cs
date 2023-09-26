@@ -22,7 +22,7 @@ namespace com.espertech.esper.compat.threading.threadlocal
     /// The CLR provides a solution to this known as LocalDataStoreSlot.  It
     /// has been documented that this method is slower than its ThreadStatic
     /// counterpart, but it allows for instance-based allocation.
-    /// <para/>
+    /// <para>
     /// During recent testing it was determined that the LocalDataStoreSlot was
     /// using an amount of time that seemed a bit excessive.  We took some
     /// snapshots of performance under the profiler.  Using that information we
@@ -34,6 +34,7 @@ namespace com.espertech.esper.compat.threading.threadlocal
     /// when the IThreadLocal item is created.  Under esper this results in roughly
     /// one 'index' per statement.  Changes to this model resulted in good cost
     /// savings in the retrieval and acquisition of local data.
+    /// </para>
     /// </summary>
     /// <typeparam name="T"></typeparam>
 

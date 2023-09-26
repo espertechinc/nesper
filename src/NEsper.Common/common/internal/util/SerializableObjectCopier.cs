@@ -63,13 +63,13 @@ namespace com.espertech.esper.common.@internal.util
             formatter.Binder = new TypeSerializationBinder();
             formatter.SurrogateSelector = new TypeSurrogateSelector();
 
-            using (MemoryStream stream = new MemoryStream()) {
+            using (var stream = new MemoryStream()) {
                 // Serialize the object graph to the stream
                 formatter.Serialize(stream, orig);
                 // Rewind the stream
                 stream.Seek(0, SeekOrigin.Begin);
                 // Deserialize the object graph from the stream
-                return (T) formatter.Deserialize(stream);
+                return (T)formatter.Deserialize(stream);
             }
         }
 
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.util
                 if (simpleResolve != null) {
                     return simpleResolve;
                 }
-                
+
                 var assembly = AppDomain.CurrentDomain
                     .GetAssemblies()
                     .FirstOrDefault(_ => _.FullName == assemblyName);
@@ -156,9 +156,15 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         public class TypeSurrogateSelector : ISurrogateSelector
         {
-            public virtual void ChainSelector(ISurrogateSelector selector) => throw new NotSupportedException();
+            public virtual void ChainSelector(ISurrogateSelector selector)
+            {
+                throw new NotSupportedException();
+            }
 
-            public virtual ISurrogateSelector GetNextSelector() => throw new NotSupportedException();
+            public virtual ISurrogateSelector GetNextSelector()
+            {
+                throw new NotSupportedException();
+            }
 
             public virtual ISerializationSurrogate GetSurrogate(
                 Type type,

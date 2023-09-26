@@ -54,10 +54,10 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// </returns>
         public EventBean OptionalSynthetic { get; }
 
-        public EventBean UnderlyingEvent => ((DecoratingEventBean) OptionalSynthetic).UnderlyingEvent;
+        public EventBean UnderlyingEvent => ((DecoratingEventBean)OptionalSynthetic).UnderlyingEvent;
 
         public IDictionary<string, object> DecoratingProperties =>
-            ((DecoratingEventBean) OptionalSynthetic).DecoratingProperties;
+            ((DecoratingEventBean)OptionalSynthetic).DecoratingProperties;
 
         public EventType EventType { get; }
 

@@ -179,11 +179,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
             var quit = false;
             if (eventsPerChild != null) {
                 foreach (var entry in eventsPerChild) {
-                    if (entry is MatchedEventMap) {
-                        quit = PatternConsumptionUtil.ContainsEvent(matchEvent, (MatchedEventMap) entry);
+                    if (entry is MatchedEventMap eventMap) {
+                        quit = PatternConsumptionUtil.ContainsEvent(matchEvent, eventMap);
                     }
                     else if (entry != null) {
-                        var list = (IList<MatchedEventMap>) entry;
+                        var list = (IList<MatchedEventMap>)entry;
                         foreach (var map in list) {
                             quit = PatternConsumptionUtil.ContainsEvent(matchEvent, map);
                             if (quit) {
@@ -251,11 +251,11 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
             for (var i = 0; i < eventsPerChild.Length; i++) {
                 var eventsChild = eventsPerChild[i];
                 if (indexFrom != i && eventsChild != null) {
-                    if (eventsChild is MatchedEventMap) {
-                        listArray.Insert(index++, Collections.SingletonList((MatchedEventMap) eventsChild));
+                    if (eventsChild is MatchedEventMap map) {
+                        listArray.Insert(index++, Collections.SingletonList(map));
                     }
                     else {
-                        listArray.Insert(index++, (IList<MatchedEventMap>) eventsChild);
+                        listArray.Insert(index++, (IList<MatchedEventMap>)eventsChild);
                     }
                 }
             }
@@ -333,14 +333,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
             if (matchEventHolder == null) {
                 eventsPerChild[indexFrom] = matchEvent;
             }
-            else if (matchEventHolder is MatchedEventMap) {
+            else if (matchEventHolder is MatchedEventMap map) {
                 IList<MatchedEventMap> list = new List<MatchedEventMap>(4);
-                list.Add((MatchedEventMap) matchEventHolder);
+                list.Add(map);
                 list.Add(matchEvent);
                 eventsPerChild[indexFrom] = list;
             }
             else {
-                var list = (IList<MatchedEventMap>) matchEventHolder;
+                var list = (IList<MatchedEventMap>)matchEventHolder;
                 list.Add(matchEvent);
             }
         }
@@ -351,7 +351,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
                 child?.Quit();
             }
 
-            activeChildNodes.Fill((EvalStateNode) null);
+            activeChildNodes.Fill((EvalStateNode)null);
             eventsPerChild = null;
         }
     }

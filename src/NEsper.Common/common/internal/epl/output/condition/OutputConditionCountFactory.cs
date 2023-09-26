@@ -8,6 +8,7 @@
 
 using System;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.variable.core;
 
@@ -17,6 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
     {
         internal readonly long eventRate;
         internal readonly Variable variable;
+        internal StateMgmtSetting stateMgmtSetting;
 
         /// <summary>
         ///     Constructor.
@@ -27,7 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
         /// <param name="variable">varianle</param>
         public OutputConditionCountFactory(
             int eventRate,
-            Variable variable)
+            Variable variable,
+            StateMgmtSetting stateMgmtSetting)
         {
             if (eventRate < 1 && variable == null) {
                 throw new ArgumentException(
@@ -36,6 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
 
             this.eventRate = eventRate;
             this.variable = variable;
+            this.stateMgmtSetting = stateMgmtSetting;
         }
 
         public long EventRate => eventRate;

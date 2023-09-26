@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,11 +25,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         ExprDotForge
     {
         private readonly EventPropertyGetterSPI getter;
-        private readonly EPType returnType;
+        private readonly EPChainableType returnType;
 
         public ExprDotForgeProperty(
             EventPropertyGetterSPI getter,
-            EPType returnType)
+            EPChainableType returnType)
         {
             this.getter = getter;
             this.returnType = returnType;
@@ -41,15 +41,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (!(target is EventBean)) {
+            if (!(target is EventBean bean)) {
                 return null;
             }
 
-            return getter.Get((EventBean) target);
-        }
-
-        public EPType TypeInfo {
-            get => returnType;
+            return getter.Get(bean);
         }
 
         public void Visit(ExprDotEvalVisitor visitor)
@@ -57,32 +53,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             visitor.VisitPropertySource();
         }
 
-        public ExprDotEval DotEvaluator {
-            get => this;
-        }
-
-        public ExprDotForge DotForge {
-            get => this;
-        }
-        
         public CodegenExpression Codegen(
-            CodegenExpression inner, 
+            CodegenExpression inner,
             Type innerType,
             CodegenMethodScope parent,
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            var type = EPTypeHelper.GetCodegenReturnType(returnType);
+            var type = returnType.GetCodegenReturnType();
             if (innerType == typeof(EventBean)) {
-                return CodegenLegoCast.CastSafeFromObjectType(type, getter.EventBeanGetCodegen(inner, parent, classScope));
+                return CodegenLegoCast.CastSafeFromObjectType(
+                    type,
+                    getter.EventBeanGetCodegen(inner, parent, classScope));
             }
 
-            CodegenMethod methodNode = parent
-                .MakeChild(type, typeof(ExprDotForgeProperty), classScope)
+            var methodNode = parent.MakeChild(type, typeof(ExprDotForgeProperty), classScope)
                 .AddParam(innerType, "target");
-
-            methodNode.Block
-                .IfInstanceOf("target", typeof(EventBean))
+            methodNode.Block.IfInstanceOf("target", typeof(EventBean))
                 .BlockReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         type,
@@ -90,5 +77,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 .MethodReturn(ConstantNull());
             return LocalMethod(methodNode, inner);
         }
+
+        public EPChainableType TypeInfo => returnType;
+
+        public ExprDotEval DotEvaluator => this;
+
+        public ExprDotForge DotForge => this;
     }
 } // end of namespace

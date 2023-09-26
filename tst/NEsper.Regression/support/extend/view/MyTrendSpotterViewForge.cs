@@ -42,7 +42,6 @@ namespace com.espertech.esper.regressionlib.support.extend.view
 
         public void Attach(
             EventType parentEventType,
-            int streamNumber,
             ViewForgeEnv viewForgeEnv)
         {
             var validated = ViewForgeSupport.Validate(

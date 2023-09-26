@@ -6,12 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-
 using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.collection;
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.classprovided.core
@@ -26,8 +23,11 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.core
             if (classProvidedPathRegistry.IsEmpty()) {
                 return new ArtifactTypeResolver(artifactRepository, parentTypeResolver);
             }
-            
-            return new ClassProvidedImportTypeResolver(artifactRepository, parentTypeResolver, classProvidedPathRegistry);
+
+            return new ClassProvidedImportTypeResolver(
+                artifactRepository,
+                parentTypeResolver,
+                classProvidedPathRegistry);
         }
     }
 } // end of namespace

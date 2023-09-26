@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 return new CronParameter(CronOperator, null);
             }
 
-            int intValue = value.AsInt32();
+            var intValue = value.AsInt32();
             return new CronParameter(CronOperator, intValue);
         }
 
@@ -146,11 +146,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprNumberSetCronParam)) {
+            if (!(node is ExprNumberSetCronParam other)) {
                 return false;
             }
 
-            var other = (ExprNumberSetCronParam) node;
             return other.CronOperator.Equals(CronOperator);
         }
 
@@ -161,7 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             var forge = ChildNodes[0].Forge;
-            if (!forge.EvaluationType.IsNumericNonFP()) {
+            if (!forge.EvaluationType.IsTypeNumericNonFP()) {
                 throw new ExprValidationException("Frequency operator requires an integer-type parameter");
             }
 

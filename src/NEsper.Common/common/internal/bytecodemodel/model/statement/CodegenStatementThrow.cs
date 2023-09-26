@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.statement
         {
             _expression.MergeClasses(classes);
         }
-        
+
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             consumer.Invoke(_expression);

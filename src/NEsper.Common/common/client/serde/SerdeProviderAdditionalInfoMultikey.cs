@@ -10,16 +10,16 @@ using com.espertech.esper.common.@internal.compile.stage2;
 
 namespace com.espertech.esper.common.client.serde
 {
-	/// <summary>
-	///     Information about the multikey for which to obtain a serde.
-	/// </summary>
-	public class SerdeProviderAdditionalInfoMultikey : SerdeProviderAdditionalInfo
+    /// <summary>
+    ///     Information about the multikey for which to obtain a serde.
+    /// </summary>
+    public class SerdeProviderAdditionalInfoMultikey : SerdeProviderAdditionalInfo
     {
-	    /// <summary>
-	    ///     Ctor
-	    /// </summary>
-	    /// <param name="raw">statement information</param>
-	    public SerdeProviderAdditionalInfoMultikey(StatementRawInfo raw) : base(raw)
+        /// <summary>
+        ///     Ctor
+        /// </summary>
+        /// <param name="raw">statement information</param>
+        public SerdeProviderAdditionalInfoMultikey(StatementRawInfo raw) : base(raw)
         {
         }
 

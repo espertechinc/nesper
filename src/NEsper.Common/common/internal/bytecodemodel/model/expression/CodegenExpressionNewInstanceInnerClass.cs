@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 .Append("new ")
                 .Append(_innerName)
                 .Append("(");
-            
+
             CodegenExpressionBuilder.RenderExpressions(builder, _params, isInnerClass);
 
             builder.Append(")");

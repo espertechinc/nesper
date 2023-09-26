@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.collection
                 return false;
             }
 
-            return Equals((NameParameterCountKey) obj);
+            return Equals((NameParameterCountKey)obj);
         }
 
         /// <summary>

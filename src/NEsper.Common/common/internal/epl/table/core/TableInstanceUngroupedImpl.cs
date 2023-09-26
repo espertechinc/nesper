@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -52,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             }
         }
 
-    public override void AddEvent(EventBean @event)
+        public override void AddEvent(EventBean @event)
         {
             if (@event.EventType != table.MetaData.InternalEventType) {
                 throw new IllegalStateException("Unexpected event type for add: " + @event.EventType.Name);
@@ -67,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             }
 
             agentInstanceContext.InstrumentationProvider.QTableAddEvent(@event);
-            eventReference.Set((ObjectArrayBackedEventBean) @event);
+            eventReference.Set((ObjectArrayBackedEventBean)@event);
             agentInstanceContext.InstrumentationProvider.ATableAddEvent();
         }
 
@@ -103,7 +104,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
             agentInstanceContext.InstrumentationProvider.ATableDeleteEvent();
         }
 
-        public override EventTable GetIndex(string indexName)
+        public override EventTable GetIndex(
+            string indexName,
+            string indexModuleName)
         {
             if (indexName.Equals(table.Name)) {
                 var org = new EventTableOrganization(
@@ -111,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
                     true,
                     false,
                     0,
-                    new string[0],
+                    Array.Empty<string>(),
                     EventTableOrganizationType.UNORGANIZED);
                 return new SingleReferenceEventTable(org, eventReference);
             }

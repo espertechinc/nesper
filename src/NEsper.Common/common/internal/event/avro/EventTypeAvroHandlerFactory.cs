@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.@event.avro
                         importService.TypeResolver);
                 }
                 catch (Exception t) {
-                    Log.Debug(
+                    Log.Warn(
                         "Avro provider {} not instantiated, not enabling Avro support: {}",
                         handlerClass,
                         t.Message);

@@ -34,8 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         public IDisposable AddAcquiredLock(ILockable @lock)
         {
             var table = _threadLocal.GetOrCreate();
-            if (table.ContainsKey(@lock))
+            if (table.ContainsKey(@lock)) {
                 return null;
+            }
 
             var latch = @lock.Acquire();
             return table[@lock] = latch;
@@ -58,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         public int LockHeldCount {
             get {
                 var table = _threadLocal.Value;
-                return table != null ? table.Count : 0;
+                return table?.Count ?? 0;
             }
         }
     }

@@ -176,10 +176,10 @@ namespace com.espertech.esper.common.@internal.context.util
             // evaluate
             object[] values;
             if (entry.IsSubselect) {
-                StatementResourceHolder holder = entry.StatementContext.StatementCPCacheService.MakeOrGetEntryCanNull(
-                    StatementCPCacheService.DEFAULT_AGENT_INSTANCE_ID, entry.StatementContext);
-                using (holder.AgentInstanceContext.AgentInstanceLock.AcquireWriteLock())
-                {
+                var holder = entry.StatementContext.StatementCPCacheService.MakeOrGetEntryCanNull(
+                    StatementCPCacheService.DEFAULT_AGENT_INSTANCE_ID,
+                    entry.StatementContext);
+                using (holder.AgentInstanceContext.AgentInstanceLock.AcquireWriteLock()) {
                     values = ObtainValues(eventsPerStream, entry, exprEvaluatorContext, instrumentation);
                 }
             }
@@ -189,32 +189,43 @@ namespace com.espertech.esper.common.@internal.context.util
 
             // apply
             entry.Writer.Write(values, theEvent);
-            
+
             if (entry.SpecialPropWriters.Length > 0) {
                 foreach (var special in entry.SpecialPropWriters) {
                     if (special is InternalEventRouterWriterArrayElement array) {
                         var value = array.RhsExpression.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                        if ((value != null) && (array.TypeWidener != null)) {
+                        if (value != null && array.TypeWidener != null) {
                             value = array.TypeWidener.Widen(value);
                         }
+
                         var arrayValue = theEvent.Get(array.PropertyName);
                         if (arrayValue is Array asArrayValue) {
-                            var index = array.IndexExpression.Evaluate(eventsPerStream, true, exprEvaluatorContext).AsBoxedInt32();
+                            var index = array.IndexExpression.Evaluate(eventsPerStream, true, exprEvaluatorContext)
+                                .AsBoxedInt32();
                             if (index != null) {
-                                int len = asArrayValue.Length;
+                                var len = asArrayValue.Length;
                                 if (index < len) {
                                     if (value != null || !asArrayValue.GetType().GetElementType().IsPrimitive) {
                                         asArrayValue.SetValue(value, index.Value);
                                     }
-                                } else {
-                                    throw new EPException("Array length " + len + " less than index " + index + " for property '" + array.PropertyName + "'");
+                                }
+                                else {
+                                    throw new EPException(
+                                        "Array length " +
+                                        len +
+                                        " less than index " +
+                                        index +
+                                        " for property '" +
+                                        array.PropertyName +
+                                        "'");
                                 }
                             }
                         }
-                    } else if (special is InternalEventRouterWriterCurly) {
-                        InternalEventRouterWriterCurly curly = (InternalEventRouterWriterCurly) special;
+                    }
+                    else if (special is InternalEventRouterWriterCurly curly) {
                         curly.Expression.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                    } else {
+                    }
+                    else {
                         throw new IllegalStateException("Unrecognized writer " + special);
                     }
                 }

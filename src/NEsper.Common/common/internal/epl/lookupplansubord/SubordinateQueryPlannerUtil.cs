@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             Attribute[] annotations,
             ImportService importService)
         {
-            QueryPlanIndexHook hook = QueryPlanIndexHookUtil.GetHook(annotations, importService);
+            var hook = QueryPlanIndexHookUtil.GetHook(annotations, importService);
             if (queryPlanLogging && (queryPlanLog.IsInfoEnabled || hook != null)) {
                 var prefix = "On-Expr ";
                 queryPlanLog.Info(prefix + "strategy " + strategy.Strategy.ToQueryPlan());
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 }
                 else {
                     for (var i = 0; i < strategy.Indexes.Length; i++) {
-                        string indexName = strategy.Indexes[i].IndexName;
+                        var indexName = strategy.Indexes[i].IndexName;
                         var indexText = indexName != null ? "index " + indexName + " " : "(implicit) (" + i + ")";
                         queryPlanLog.Info(prefix + indexText);
                     }
@@ -69,12 +69,12 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 
                 if (hook != null) {
                     var pairs = GetPairs(strategy.Indexes);
-                    SubordTableLookupStrategyFactoryForge inner = strategy.Strategy.OptionalInnerStrategy;
+                    var inner = strategy.Strategy.OptionalInnerStrategy;
                     hook.InfraOnExpr(
                         new QueryPlanIndexDescOnExpr(
                             pairs,
                             strategy.Strategy.GetType().GetSimpleName(),
-                            inner == null ? null : inner.GetType().GetSimpleName()));
+                            inner?.GetType().GetSimpleName()));
                 }
             }
         }
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             Attribute[] annotations,
             ImportService importService)
         {
-            QueryPlanIndexHook hook = QueryPlanIndexHookUtil.GetHook(annotations, importService);
+            var hook = QueryPlanIndexHookUtil.GetHook(annotations, importService);
             if (queryPlanLogging && (queryPlanLog.IsInfoEnabled || hook != null)) {
                 var prefix = "Subquery " + subqueryNum + " ";
                 var strategy = plan == null || plan.LookupStrategyFactory == null
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 }
 
                 if (hook != null) {
-                    var pairs = plan == null ? new IndexNameAndDescPair[0] : GetPairs(plan.IndexDescs);
+                    var pairs = plan == null ? Array.Empty<IndexNameAndDescPair>() : GetPairs(plan.IndexDescs);
                     var factory = plan?.LookupStrategyFactory.GetType().GetSimpleName();
                     hook.Subquery(new QueryPlanIndexDescSubquery(pairs, subqueryNum, factory));
                 }
@@ -160,7 +160,8 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 hashesDesc[i] = hashJoinedProps[index];
                 hashPropCoercionTypes[i] = indexedKeyProps[i].CoercionType;
                 var keyForge = hashesDesc[i].HashKey.KeyExpr.Forge;
-                if (indexedKeyProps[i].CoercionType.GetBoxedType() != keyForge.EvaluationType.GetBoxedType()) {   // we allow null evaluator
+                if (indexedKeyProps[i].CoercionType.GetBoxedType() != keyForge.EvaluationType.GetBoxedType()) {
+                    // we allow null evaluator
                     isCoerceHash = true;
                 }
             }
@@ -209,7 +210,6 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                         0,
                         desc.QueryPlanIndexItem,
                         eventType,
-                        true,
                         desc.QueryPlanIndexItem.IsUnique,
                         desc.IndexName,
                         null,
@@ -218,7 +218,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                     // fill table since its new
                     if (!isRecoveringResilient) {
                         var events = new EventBean[1];
-                        foreach (EventBean prefilledEvent in contents) {
+                        foreach (var prefilledEvent in contents) {
                             events[0] = prefilledEvent;
                             table.Add(events, agentInstanceContext);
                         }

@@ -67,7 +67,8 @@ namespace com.espertech.esper.common.@internal.@event.eventtypefactory
             string representsOriginalTypeName,
             BeanEventTypeFactory beanEventTypeFactory,
             XMLFragmentEventTypeFactory xmlFragmentEventTypeFactory,
-            EventTypeNameResolver eventTypeNameResolver);
+            EventTypeNameResolver eventTypeNameResolver,
+            EventTypeXMLXSDHandler xmlXsdHandler);
 
         VariantEventType CreateVariant(
             EventTypeMetadata metadata,

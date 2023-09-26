@@ -47,21 +47,21 @@ namespace com.espertech.esper.common.@internal.@event.map
         public object GetMap(IDictionary<string, object> map)
         {
             var valueTopObj = map.Get(propertyMap);
-            if (!(valueTopObj is IDictionary<string, object>)) {
+            if (!(valueTopObj is IDictionary<string, object> obj)) {
                 return null;
             }
 
-            return getter.GetMap((IDictionary<string, object>) valueTopObj);
+            return getter.GetMap(obj);
         }
 
         public bool IsMapExistsProperty(IDictionary<string, object> map)
         {
             var valueTopObj = map.Get(propertyMap);
-            if (!(valueTopObj is IDictionary<string, object>)) {
+            if (!(valueTopObj is IDictionary<string, object> obj)) {
                 return false;
             }
 
-            return getter.IsMapExistsProperty((IDictionary<string, object>) valueTopObj);
+            return getter.IsMapExistsProperty(obj);
         }
 
         public object Get(EventBean eventBean)

@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.collection
             }
         }
 
-        enum State
+        private enum State
         {
             NOT_CONSUMED,
             CONSUMING,

@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         void Add(
             ICollection<object> constants,
             object value);
-        
+
         void ValueToString(StringBuilder @out);
     }
 } // end of namespace

@@ -632,7 +632,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryInvalidCompile(
                     env,
                     "create constant variable SupportBean[] var_beans",
-                    "Cannot create variable 'var_beans', type 'SupportBean' cannot be declared as an array type as it is an event type [create constant variable SupportBean[] var_beans]");
+                    "Cannot create variable 'var_beans', Type 'SupportBean' cannot be declared as an array type as it is an event type [create constant variable SupportBean[] var_beans]");
 
                 // test array of primitives
                 env.CompileDeploy("@Name('s0') create variable byte[] myBytesBoxed");

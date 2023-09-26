@@ -42,16 +42,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public string ModuleName { get; }
 
-        public ContextPropertyRegistry ContextPropertyRegistry {
-            get {
-                return StatementRawInfo.OptionalContextDescriptor?.ContextPropertyRegistry;
-            }
-        }
+        public ContextPropertyRegistry ContextPropertyRegistry =>
+            StatementRawInfo.OptionalContextDescriptor?.ContextPropertyRegistry;
 
-        public string ContextName {
-            get {
-                return StatementRawInfo.OptionalContextDescriptor?.ContextName;
-            }
-        }
+        public string ContextName => StatementRawInfo.OptionalContextDescriptor?.ContextName;
     }
 } // end of namespace

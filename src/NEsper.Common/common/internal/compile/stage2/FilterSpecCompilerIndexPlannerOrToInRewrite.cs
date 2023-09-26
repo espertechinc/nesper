@@ -24,11 +24,10 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             // check eligibility
             var childNodes = constituent.ChildNodes;
             foreach (var child in childNodes) {
-                if (!(child is ExprEqualsNode)) {
+                if (!(child is ExprEqualsNode equalsNode)) {
                     return constituent;
                 }
 
-                var equalsNode = (ExprEqualsNode) child;
                 if (equalsNode.IsIs || equalsNode.IsNotEquals) {
                     return constituent;
                 }
@@ -66,7 +65,12 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             @in.AddChildNode(commonExpressionNode);
             for (var i = 0; i < constituent.ChildNodes.Length; i++) {
                 var child = constituent.ChildNodes[i];
-                var nodeindex = ExprNodeUtilityCompare.DeepEquals(commonExpressionNode, childNodes[i].ChildNodes[0], false) ? 1 : 0;
+                var nodeindex = ExprNodeUtilityCompare.DeepEquals(
+                    commonExpressionNode,
+                    childNodes[i].ChildNodes[0],
+                    false)
+                    ? 1
+                    : 0;
                 @in.AddChildNode(child.ChildNodes[nodeindex]);
             }
 
@@ -88,7 +92,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             foreach (var child in childNodes) {
                 var lhs = child.ChildNodes[0];
                 var rhs = child.ChildNodes[1];
-                if (!ExprNodeUtilityCompare.DeepEquals(lhs, search, false) && !ExprNodeUtilityCompare.DeepEquals(rhs, search, false)) {
+                if (!ExprNodeUtilityCompare.DeepEquals(lhs, search, false) &&
+                    !ExprNodeUtilityCompare.DeepEquals(rhs, search, false)) {
                     return false;
                 }
 

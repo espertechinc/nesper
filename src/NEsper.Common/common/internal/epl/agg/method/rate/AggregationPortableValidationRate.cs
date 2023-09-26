@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             long intervalTime)
             : base(distinct, hasFilter, inputValueType)
         {
-            this.IntervalTime = intervalTime;
+            IntervalTime = intervalTime;
         }
 
         public AggregationPortableValidationRate()
@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             string intoExpression,
             AggregationForgeFactory factory)
         {
-            var that = (AggregationPortableValidationRate) intoTableAgg;
+            var that = (AggregationPortableValidationRate)intoTableAgg;
             if (IntervalTime != that.IntervalTime) {
                 throw new ExprValidationException(
                     "The interval-time is " +

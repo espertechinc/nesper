@@ -312,7 +312,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                             buf.Append("null");
                         }
                         else if (!nestedProp.IsArray) {
-                            if (!(value is EventBean)) {
+                            if (!(value is EventBean nestedEventBean)) {
                                 Log.Warn(
                                     "Property '" +
                                     nestedProp.Name +
@@ -323,7 +323,6 @@ namespace com.espertech.esper.common.@internal.@event.render
                                 return;
                             }
 
-                            var nestedEventBean = (EventBean) value;
                             buf.Append('{');
                             buf.Append(NEWLINE);
 
@@ -333,7 +332,7 @@ namespace com.espertech.esper.common.@internal.@event.render
                             buf.Append('}');
                         }
                         else {
-                            if (!(value is EventBean[])) {
+                            if (!(value is EventBean[] nestedEventArray)) {
                                 Log.Warn(
                                     "Property '" +
                                     nestedProp.Name +
@@ -349,7 +348,6 @@ namespace com.espertech.esper.common.@internal.@event.render
                             arrayDelimiterBuf.Append(NEWLINE);
                             Ident(arrayDelimiterBuf, level + 1);
 
-                            var nestedEventArray = (EventBean[]) value;
                             var arrayDelimiter = "";
                             buf.Append('[');
 

@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
         private static readonly AggregationMultiFunctionStateKey AGGREGATION_STATE_KEY =
             new InertAggregationMultiFunctionStateKey();
 
-        public EPType ReturnType => EPTypeHelper.CollectionOfSingleValue(typeof(SupportBean), null);
+        public EPChainableType ReturnType => EPChainableTypeHelper.CollectionOfSingleValue(typeof(SupportBean));
 
         public AggregationMultiFunctionStateKey AggregationStateUniqueKey => AGGREGATION_STATE_KEY;
 

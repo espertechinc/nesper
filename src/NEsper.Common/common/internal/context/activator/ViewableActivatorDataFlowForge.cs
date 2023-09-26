@@ -32,9 +32,7 @@ namespace com.espertech.esper.common.@internal.context.activator
         {
             var method = parent.MakeChild(typeof(ViewableActivatorDataFlow), GetType(), classScope);
             method.Block
-                .DeclareVar<ViewableActivatorDataFlow>(
-                    "activator",
-                    NewInstance(typeof(ViewableActivatorDataFlow)))
+                .DeclareVarNewInstance<ViewableActivatorDataFlow>("activator")
                 .SetProperty(
                     Ref("activator"),
                     "EventType",

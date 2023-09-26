@@ -19,8 +19,8 @@ namespace com.espertech.esper.common.@internal.type
                 object objOne,
                 object objTwo)
             {
-                var b1 = (bool) objOne;
-                var b2 = (bool) objTwo;
+                var b1 = (bool)objOne;
+                var b2 = (bool)objTwo;
                 return b1 | b2;
             }
         }

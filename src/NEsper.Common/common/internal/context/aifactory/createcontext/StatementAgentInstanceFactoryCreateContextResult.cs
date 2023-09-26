@@ -54,8 +54,6 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             this.contextManagerRealization = contextManagerRealization;
         }
 
-        public ContextManagerRealization ContextManagerRealization {
-            get => contextManagerRealization;
-        }
+        public ContextManagerRealization ContextManagerRealization => contextManagerRealization;
     }
 } // end of namespace

@@ -166,21 +166,27 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var stemPropName = baseStem.PropertyName;
 
             if (mergeStem.AccessorProp != null) {
-                if (accessorProp != null)
+                if (accessorProp != null) {
                     throw new ArgumentException($"base stem already defines {nameof(baseStem.AccessorProp)}");
+                }
+
                 accessorProp = mergeStem.AccessorProp;
             }
 
             if (mergeStem.AccessorField != null) {
-                if (accessorField != null)
+                if (accessorField != null) {
                     throw new ArgumentException($"base stem already defines {nameof(baseStem.AccessorField)}");
+                }
+
                 accessorField = mergeStem.AccessorField;
             }
 
 
             if (mergeStem.ReadMethod != null) {
-                if (accessorMethod != null)
+                if (accessorMethod != null) {
                     throw new ArgumentException($"base stem already defines {nameof(baseStem.ReadMethod)}");
+                }
+
                 accessorMethod = mergeStem.ReadMethod;
             }
 
@@ -313,7 +319,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                     continue;
                 }
 
-                Type[] parameterTypes = methods[i].GetParameterTypes();
+                var parameterTypes = methods[i].GetParameterTypes();
                 if (parameterTypes.Length != 1) {
                     continue;
                 }

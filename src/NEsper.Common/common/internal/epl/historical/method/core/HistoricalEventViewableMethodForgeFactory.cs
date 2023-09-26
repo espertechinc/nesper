@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
@@ -24,14 +26,13 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.core
 {
-    public class HistoricalEventViewableMethodForgeFactory
+    public partial class HistoricalEventViewableMethodForgeFactory
     {
-        public static HistoricalEventViewableMethodForge CreateMethodStatementView(
+        public static HistoricalEventViewableMethodForgeDesc CreateMethodStatementView(
             int stream,
             MethodStreamSpec methodStreamSpec,
             StatementBaseInfo @base,
@@ -42,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             MethodInfo methodReflection = null;
             string eventTypeNameProvidedUDFOrScript = null;
             var contextName = @base.StatementSpec.Raw.OptionalContextName;
-            var classpathImportService = services.ImportServiceCompileTime;
+            var importService = services.ImportServiceCompileTime;
 
             // see if this is a script in the from-clause
             ExprNodeScript scriptExpression = null;
@@ -93,14 +94,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                         }
                     }
 
-                    methodReflection = classpathImportService.ResolveNonStaticMethodOverloadChecked(
+                    methodReflection = importService.ResolveNonStaticMethodOverloadChecked(
                         variableMetaData.Type,
                         methodStreamSpec.MethodName);
                 }
                 else if (methodStreamSpec.ClassName == null) { // must be either UDF or script
                     Pair<Type, ImportSingleRowDesc> udf;
                     try {
-                        udf = classpathImportService.ResolveSingleRow(
+                        udf = importService.ResolveSingleRow(
                             methodStreamSpec.MethodName,
                             services.ClassProvidedExtension);
                     }
@@ -110,14 +111,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                             ex);
                     }
 
-                    methodReflection = classpathImportService.ResolveMethodOverloadChecked(
+                    methodReflection = importService.ResolveMethodOverloadChecked(
                         udf.First,
                         methodStreamSpec.MethodName);
                     eventTypeNameProvidedUDFOrScript = udf.Second.OptionalEventTypeName;
                     strategy = MethodPollingExecStrategyEnum.TARGET_CONST;
                 }
                 else {
-                    methodReflection = classpathImportService.ResolveMethodOverloadChecked(
+                    methodReflection = importService.ResolveMethodOverloadChecked(
                         methodStreamSpec.ClassName,
                         methodStreamSpec.MethodName,
                         services.ClassProvidedExtension);
@@ -146,8 +147,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 isStaticMethod = variableMetaData == null;
 
                 // Determine object type returned by method
-                beanClass = methodReflection.ReturnType;
-                if (beanClass == typeof(void) || beanClass == typeof(void) || beanClass.IsBuiltinDataType()) {
+                var methodReturnClass= beanClass = methodReflection.ReturnType;
+                if (beanClass == typeof(void) || beanClass.IsBuiltinDataType()) {
                     throw new ExprValidationException(
                         "Invalid return type for static method '" +
                         methodReflection.Name +
@@ -157,8 +158,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 }
 
                 if (methodReflection.ReturnType.IsArray &&
-                    methodReflection.ReturnType.GetElementType() != typeof(EventBean)) {
-                    beanClass = methodReflection.ReturnType.GetElementType();
+                    methodReflection.ReturnType.GetComponentType() != typeof(EventBean)) {
+                    beanClass = beanClass.GetComponentType();
                 }
 
                 isCollection = beanClass.IsGenericCollection() && !beanClass.IsGenericDictionary();
@@ -169,62 +170,58 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 }
 
                 isEnumerator = beanClass.IsGenericEnumerator();
-                Type enumerator = null;
+                Type enumeratorClass = null;
                 if (isEnumerator) {
-                    enumerator = TypeHelper.GetGenericReturnType(methodReflection, true);
-                    beanClass = enumerator;
+                    enumeratorClass = TypeHelper.GetGenericReturnType(methodReflection, true);
+                    beanClass = enumeratorClass;
                 }
 
                 // If the method returns a Map, look up the map type
-                string mapTypeName = null;
-                if (methodReflection.ReturnType.IsGenericDictionary() ||
-                    methodReflection.ReturnType.IsArray &&
-                    methodReflection.ReturnType.GetElementType().IsGenericDictionary() ||
-                    isCollection && collectionClass.IsGenericDictionary() ||
-                    isEnumerator && enumerator.IsGenericDictionary()) {
+                if (methodReturnClass.IsGenericDictionary() ||
+                    (methodReturnClass.IsArray &&
+                     methodReturnClass.GetComponentType().IsGenericDictionary()) ||
+                    (isCollection && collectionClass.IsGenericDictionary()) ||
+                    (isEnumerator && enumeratorClass.IsGenericDictionary())) {
                     MethodMetadataDesc metadata;
                     if (variableMetaData != null) {
                         metadata = GetCheckMetadataVariable(
                             methodStreamSpec.MethodName,
                             variableMetaData,
-                            classpathImportService,
+                            importService,
                             typeof(IDictionary<string, object>));
                     }
                     else {
                         metadata = GetCheckMetadataNonVariable(
                             methodStreamSpec.MethodName,
                             methodStreamSpec.ClassName,
-                            classpathImportService,
+                            importService,
                             typeof(IDictionary<string, object>));
                     }
 
-                    mapTypeName = metadata.TypeName;
                     mapType = (IDictionary<string, object>) metadata.TypeMetadata;
                 }
 
                 // If the method returns an Object[] or Object[][], look up the type information
-                string oaTypeName = null;
-                if (methodReflection.ReturnType == typeof(object[]) ||
-                    methodReflection.ReturnType == typeof(object[][]) ||
-                    isCollection && collectionClass == typeof(object[]) ||
-                    isEnumerator && enumerator == typeof(object[])) {
+                if (methodReturnClass == typeof(object[]) ||
+                    methodReturnClass == typeof(object[][]) ||
+                    (isCollection && collectionClass == typeof(object[])) ||
+                    (isEnumerator && enumeratorClass == typeof(object[]))) {
                     MethodMetadataDesc metadata;
                     if (variableMetaData != null) {
                         metadata = GetCheckMetadataVariable(
                             methodStreamSpec.MethodName,
                             variableMetaData,
-                            classpathImportService,
+                            importService,
                             typeof(IDictionary<string, object>));
                     }
                     else {
                         metadata = GetCheckMetadataNonVariable(
                             methodStreamSpec.MethodName,
                             methodStreamSpec.ClassName,
-                            classpathImportService,
+                            importService,
                             typeof(IDictionary<string, object>));
                     }
 
-                    oaTypeName = metadata.TypeName;
                     oaType = (IDictionary<string, object>) metadata.TypeMetadata;
                 }
 
@@ -242,13 +239,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                         false,
                         EventTypeIdPair.Unassigned());
                 };
-                if (methodReflection.ReturnType.IsArray &&
-                    methodReflection.ReturnType.GetElementType() == typeof(EventBean) ||
-                    isCollection && collectionClass == typeof(EventBean) ||
-                    isEnumerator && enumerator == typeof(EventBean)) {
-                    var typeName = methodStreamSpec.EventTypeName == null
-                        ? eventTypeNameProvidedUDFOrScript
-                        : methodStreamSpec.EventTypeName;
+                if ((methodReturnClass.IsArray && 
+                     methodReturnClass.GetComponentType() == typeof(EventBean)) ||
+                    (isCollection && collectionClass == typeof(EventBean)) ||
+                    (isEnumerator && enumeratorClass == typeof(EventBean))) {
+                    var typeName = methodStreamSpec.EventTypeName ?? eventTypeNameProvidedUDFOrScript;
                     eventType = EventTypeUtility.RequireEventType(
                         "Method",
                         methodReflection.Name,
@@ -300,9 +295,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 }
             }
             else {
-                var eventTypeName = methodStreamSpec.EventTypeName == null
-                    ? scriptExpression.EventTypeNameAnnotation
-                    : methodStreamSpec.EventTypeName;
+                var eventTypeName = methodStreamSpec.EventTypeName ?? scriptExpression.EventTypeNameAnnotation;
                 eventType = EventTypeUtility.RequireEventType(
                     "Script",
                     scriptExpression.Script.Name,
@@ -322,7 +315,18 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 variableMetaData,
                 eventTypeWhenMethodReturnsEventBeans,
                 scriptExpression);
-            return new HistoricalEventViewableMethodForge(stream, eventType, methodStreamSpec, meta);
+
+            // an expiry-time configuration has state
+            var fabricCharge = services.StateMgmtSettingsProvider.NewCharge();
+            var configName = meta.GetConfigurationName(methodStreamSpec);
+            var configCache = services.Configuration.Common.MethodInvocationReferences.Get(configName);
+            var dataCacheDesc = configCache?.DataCacheDesc;
+            if (dataCacheDesc is ConfigurationCommonCacheExpiryTime) {
+                services.StateMgmtSettingsProvider.HistoricalExpiryTime(fabricCharge, stream);
+            }
+
+            var forge = new HistoricalEventViewableMethodForge(stream, eventType, methodStreamSpec, meta);
+            return new HistoricalEventViewableMethodForgeDesc(forge, fabricCharge);
         }
 
         private static MethodMetadataDesc GetCheckMetadataVariable(
@@ -350,11 +354,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     messagePrefix + "The variable value is null and the metadata method is an instance method");
             }
 
-            if (value is EventBean) {
-                value = ((EventBean) value).Underlying;
+            if (value is EventBean bean) {
+                value = bean.Underlying;
             }
 
-            return InvokeMetadataMethod(value, variableMetaData.GetType().GetSimpleName(), typeGetterMethod);
+            return InvokeMetadataMethod(value, variableMetaData.GetType().Name, typeGetterMethod);
         }
 
         private static MethodMetadataDesc GetCheckMetadataNonVariable(
@@ -386,16 +390,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     typeGetterMethod = importService.ResolveMethod(
                         clazzWhenAvailable,
                         getterMethodName,
-                        new Type[0],
-                        new bool[0]);
+                        Type.EmptyTypes,
+                        Array.Empty<bool>());
                 }
                 else {
                     typeGetterMethod = importService.ResolveMethodOverloadChecked(
                         classNameWhenNoClass,
                         getterMethodName,
-                        new Type[0],
-                        new bool[0],
-                        new bool[0],
+                        Type.EmptyTypes,
+                        Array.Empty<bool>(),
+                        Array.Empty<bool>(),
                         ExtensionClassEmpty.INSTANCE);
                 }
             }
@@ -408,7 +412,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
             bool fail;
             if (metadataClass.IsInterface) {
-                fail = !TypeHelper.IsImplementsInterface(typeGetterMethod.ReturnType, metadataClass);
+                fail = !typeGetterMethod.ReturnType.IsImplementsInterface(metadataClass);
             }
             else {
                 fail = typeGetterMethod.ReturnType != metadataClass;
@@ -416,7 +420,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
             if (fail) {
                 throw new ExprValidationException(
-                    "Getter method '" + typeGetterMethod.Name + "' does not return " + metadataClass.CleanName());
+                    "Getter method '" +
+                    typeGetterMethod.Name +
+                    "' does not return " +
+                    compat.TypeExtensions.CleanName(metadataClass));
             }
 
             return typeGetterMethod;
@@ -446,21 +453,6 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             }
 
             return new MethodMetadataDesc(className + "." + typeGetterMethod.Name, resultType);
-        }
-
-        public class MethodMetadataDesc
-        {
-            public MethodMetadataDesc(
-                string typeName,
-                object typeMetadata)
-            {
-                TypeName = typeName;
-                TypeMetadata = typeMetadata;
-            }
-
-            public string TypeName { get; }
-
-            public object TypeMetadata { get; }
         }
     }
 } // end of namespace

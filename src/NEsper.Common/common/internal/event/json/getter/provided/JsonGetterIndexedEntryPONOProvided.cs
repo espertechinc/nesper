@@ -19,7 +19,9 @@ using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.json.getter.core;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.@event.json.getter.provided.JsonFieldGetterHelperProvided; // getJsonProvidedIndexedProp
+using static
+    com.espertech.esper.common.@internal.@event.json.getter.provided.
+    JsonFieldGetterHelperProvided; // getJsonProvidedIndexedProp
 
 namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 {
@@ -40,7 +42,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
             Type returnType)
-            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, null)
+            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType)
         {
             this.field = field;
             this.index = index;
@@ -49,14 +51,17 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 
         public override Type TargetType => field.DeclaringType;
 
-        public override Type BeanPropType => typeof(object);
+        // public override Type BeanPropType => typeof(object);
 
         public override CodegenExpression EventBeanGetCodegen(
             CodegenExpression beanExpression,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingGetCodegen(CastUnderlying(field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingGetCodegen(
+                CastUnderlying(field.DeclaringType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingGetCodegen(
@@ -72,7 +77,10 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return UnderlyingExistsCodegen(CastUnderlying(field.DeclaringType, beanExpression), codegenMethodScope, codegenClassScope);
+            return UnderlyingExistsCodegen(
+                CastUnderlying(field.DeclaringType, beanExpression),
+                codegenMethodScope,
+                codegenClassScope);
         }
 
         public override CodegenExpression UnderlyingExistsCodegen(

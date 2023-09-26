@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         public IList<IList<T>> GetAndReset()
         {
             using (_iLock.Acquire()) {
-                IList<IList<T>> resultEvents = _received;
+                var resultEvents = _received;
                 _received = new List<IList<T>>();
                 _current.Clear();
                 return resultEvents;
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
         public object[] GetCurrentAndReset()
         {
             using (_iLock.Acquire()) {
-                object[] currentArray = _current.UnwrapIntoArray<object>();
+                var currentArray = _current.UnwrapIntoArray<object>();
                 _current.Clear();
                 return currentArray;
             }
@@ -174,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.util
             long msecWait,
             int numberOfNewEvents)
         {
-            long startTime = DateTimeHelper.CurrentTimeMillis;
+            var startTime = DateTimeHelper.CurrentTimeMillis;
             while (true) {
                 using (_iLock.Acquire()) {
                     if ((DateTimeHelper.CurrentTimeMillis - startTime) > msecWait) {

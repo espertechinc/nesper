@@ -39,7 +39,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             CodegenClassScope codegenClassScope)
         {
             var field = Constant(_field);
-            return ExprDotMethod(dateTimeEx, "SetFieldValue", field, ExprDotMethod(dateTimeEx, "GetActualMinimum", field));
+            return ExprDotMethod(
+                dateTimeEx,
+                "SetFieldValue",
+                field,
+                ExprDotMethod(dateTimeEx, "GetActualMinimum", field));
         }
 
         public CodegenExpression CodegenDateTimeOffset(
@@ -75,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ValueRange<int> range = dateTimeOffset.Range(_field);
+            var range = dateTimeOffset.Range(_field);
             return dateTimeOffset.With(_field, range.Minimum);
         }
 
@@ -85,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            ValueRange<int> range = dateTime.Range(_field);
+            var range = dateTime.Range(_field);
             return dateTime.With(_field, range.Minimum);
         }
     }

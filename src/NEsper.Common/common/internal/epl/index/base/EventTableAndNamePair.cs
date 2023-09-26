@@ -14,7 +14,7 @@ namespace com.espertech.esper.common.@internal.epl.index.@base
     {
         public EventTableAndNamePair(
             EventTable eventTable,
-            String indexName)
+            string indexName)
         {
             EventTable = eventTable;
             IndexName = indexName;

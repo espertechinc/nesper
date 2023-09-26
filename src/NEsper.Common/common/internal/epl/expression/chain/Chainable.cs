@@ -31,22 +31,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
         }
 
         public bool IsDistinct { get; }
-
         public bool IsOptional { get; }
 
         public abstract void AddParametersTo(ICollection<ExprNode> result);
-
         public abstract void Accept(ExprNodeVisitor visitor);
-
         public abstract void Accept(ExprNodeVisitorWithParent visitor);
 
         public abstract void Accept(
             ExprNodeVisitorWithParent visitor,
             ExprNode parent);
-
-        public abstract string GetRootNameOrEmptyString();
-
-        public abstract IList<ExprNode> GetParametersOrEmpty();
 
         public abstract void ValidateExpressions(
             ExprNodeOrigin origin,
@@ -54,14 +47,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
 
         public static bool IsPlainPropertyChain(Chainable chainable)
         {
-            return chainable is ChainableName && chainable.GetRootNameOrEmptyString().Contains(".");
+            return chainable is ChainableName && chainable.RootNameOrEmptyString.Contains(".");
         }
 
         public void Validate(
             ExprNodeOrigin origin,
             ExprValidationContext validationContext)
         {
-            foreach (var node in GetParametersOrEmpty()) {
+            foreach (var node in ParametersOrEmpty) {
                 if (node is ExprNamedParameterNode) {
                     throw new ExprValidationException("Named parameters are not allowed");
                 }
@@ -76,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
                 return new List<Chainable>(Collections.SingletonList(chainable));
             }
 
-            var values = chainable.GetRootNameOrEmptyString().Split('.');
+            var values = chainable.RootNameOrEmptyString.Split('.');
             var chain = new List<Chainable>(values.Length + 1);
             foreach (var value in values) {
                 chain.Add(new ChainableName(value));
@@ -103,5 +96,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.chain
         {
             return that.IsDistinct == IsDistinct && that.IsOptional == IsOptional;
         }
+
+        public string RootNameOrEmptyString { get; }
+        public IList<ExprNode> ParametersOrEmpty { get; }
     }
 } // end of namespace

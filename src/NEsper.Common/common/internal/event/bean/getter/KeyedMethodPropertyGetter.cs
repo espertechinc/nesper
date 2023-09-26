@@ -41,8 +41,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                method.ReturnType,
-                null)
+                method.ReturnType)
         {
             _key = key;
             _method = method;
@@ -69,7 +68,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => _method.ReturnType;
+        //public override Type BeanPropType => _method.ReturnType;
 
         public override Type TargetType => _method.DeclaringType;
 
@@ -142,7 +141,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             object key)
         {
             try {
-                return _method.Invoke(@object, new[] {key});
+                return _method.Invoke(@object, new[] { key });
             }
             catch (InvalidCastException e) {
                 throw PropertyUtility.GetMismatchException(_method, @object, e);
@@ -173,7 +172,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 .AddParam(targetType, "@object")
                 .AddParam(parameterTypes[0], "key")
                 .Block
-                .DebugStack()
                 .MethodReturn(ExprDotMethod(Ref("@object"), method.Name, Ref("key")));
         }
 

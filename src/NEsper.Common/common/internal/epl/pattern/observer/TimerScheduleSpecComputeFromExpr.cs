@@ -29,15 +29,15 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         private TimePeriodEval timePeriod;
 
         public ExprEvaluator Date {
-            set { this.date = value; }
+            set => date = value;
         }
 
         public ExprEvaluator Repetitions {
-            set { this.repetitions = value; }
+            set => repetitions = value;
         }
 
         public TimePeriodEval TimePeriod {
-            set { this.timePeriod = value; }
+            set => timePeriod = value;
         }
 
         public TimerScheduleSpec Compute(
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             TimeZoneInfo timeZone,
             TimeAbacus timeAbacus)
         {
-            EventBean[] eventsPerStream = optionalConvertor == null ? null : optionalConvertor.Invoke(beginState);
+            var eventsPerStream = optionalConvertor?.Invoke(beginState);
             return Compute(date, repetitions, timePeriod, eventsPerStream, exprEvaluatorContext, timeZone, timeAbacus);
         }
 
@@ -63,16 +63,16 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             DateTimeEx optionalDate = null;
             long? optionalRemainder = null;
             if (date != null) {
-                object param = PatternExpressionUtil.EvaluateChecked(
-                    TimerScheduleObserverForge.NAME_OBSERVER,
+                var param = PatternExpressionUtil.EvaluateChecked(
+                    NAME_OBSERVER,
                     date,
                     eventsPerStream,
                     exprEvaluatorContext);
-                if (param is string) {
-                    optionalDate = TimerScheduleISO8601Parser.ParseDate((string) param);
+                if (param is string s) {
+                    optionalDate = TimerScheduleISO8601Parser.ParseDate(s);
                 }
-                else if (TypeHelper.IsNumber(param)) {
-                    long msec = param.AsInt64();
+                else if (param.IsNumber()) {
+                    var msec = param.AsInt64();
                     optionalDate = DateTimeEx.GetInstance(timeZone);
                     optionalRemainder = timeAbacus.DateTimeSet(msec, optionalDate);
                 }
@@ -108,13 +108,13 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
 
             long? optionalRepeatCount = null;
             if (repetitions != null) {
-                object param = PatternExpressionUtil.EvaluateChecked(
+                var param = PatternExpressionUtil.EvaluateChecked(
                     NAME_OBSERVER,
                     repetitions,
                     eventsPerStream,
                     exprEvaluatorContext);
                 if (param != null) {
-                    optionalRepeatCount = (param).AsInt64();
+                    optionalRepeatCount = param.AsInt64();
                 }
             }
 

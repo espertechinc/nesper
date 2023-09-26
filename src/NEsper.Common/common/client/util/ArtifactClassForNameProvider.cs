@@ -6,13 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using com.espertech.esper.common.client.artifact;
-using com.espertech.esper.common.@internal.util;
-using com.espertech.esper.compat;
-using com.espertech.esper.container;
-
 namespace com.espertech.esper.common.client.util
 {
 #if DEPRECATED

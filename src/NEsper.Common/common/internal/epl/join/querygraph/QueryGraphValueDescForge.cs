@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
         private string GetSingleIdentNodeProp(ExprNode indexExpr)
         {
-            var identNode = (ExprIdentNode) indexExpr;
+            var identNode = (ExprIdentNode)indexExpr;
             return identNode.ResolvedPropertyName;
         }
     }

@@ -11,49 +11,70 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOBoxedCharacterArrayNullableSerde : DataInputOutputSerdeBase<char?[]> {
-	    public static readonly DIOBoxedCharacterArrayNullableSerde INSTANCE = new DIOBoxedCharacterArrayNullableSerde();
+    public class DIOBoxedCharacterArrayNullableSerde : DataInputOutputSerdeBase<char?[]>
+    {
+        public static readonly DIOBoxedCharacterArrayNullableSerde INSTANCE = new DIOBoxedCharacterArrayNullableSerde();
 
-	    private DIOBoxedCharacterArrayNullableSerde() {
-	    }
+        private DIOBoxedCharacterArrayNullableSerde()
+        {
+        }
 
-	    public void Write(char?[] @object, DataOutput output) {
-	        WriteInternal(@object, output);
-	    }
+        public void Write(
+            char?[] @object,
+            DataOutput output)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public char?[] Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+        public char?[] Read(DataInput input)
+        {
+            return ReadInternal(input);
+        }
 
-	    public override void Write(char?[] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
-	        WriteInternal(@object, output);
-	    }
+        public override void Write(
+            char?[] @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public override char?[] ReadValue(DataInput input, byte[] unitKey) {
-	        return ReadInternal(input);
-	    }
+        public override char?[] ReadValue(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadInternal(input);
+        }
 
-	    private void WriteInternal(char?[] @object, DataOutput output) {
-	        if (@object == null) {
-	            output.WriteInt(-1);
-	            return;
-	        }
-	        output.WriteInt(@object.Length);
-	        foreach (char? i in @object) {
-	            DIONullableCharacterSerde.INSTANCE.Write(i, output);
-	        }
-	    }
+        private void WriteInternal(
+            char?[] @object,
+            DataOutput output)
+        {
+            if (@object == null) {
+                output.WriteInt(-1);
+                return;
+            }
 
-	    private char?[] ReadInternal(DataInput input) {
-	        int len = input.ReadInt();
-	        if (len == -1) {
-	            return null;
-	        }
-	        char?[] array = new char?[len];
-	        for (int i = 0; i < len; i++) {
-	            array[i] = DIONullableCharacterSerde.INSTANCE.Read(input);
-	        }
-	        return array;
-	    }
-	}
+            output.WriteInt(@object.Length);
+            foreach (var i in @object) {
+                DIONullableCharacterSerde.INSTANCE.Write(i, output);
+            }
+        }
+
+        private char?[] ReadInternal(DataInput input)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
+
+            var array = new char?[len];
+            for (var i = 0; i < len; i++) {
+                array[i] = DIONullableCharacterSerde.INSTANCE.Read(input);
+            }
+
+            return array;
+        }
+    }
 } // end of namespace

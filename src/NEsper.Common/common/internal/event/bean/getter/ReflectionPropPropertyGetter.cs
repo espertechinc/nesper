@@ -37,8 +37,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                property.PropertyType,
-                TypeHelper.GetGenericPropertyType(property, true))
+                property.PropertyType)
         {
             _property = property;
         }
@@ -75,7 +74,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => _property.PropertyType;
+        // public override Type BeanPropType => _property.PropertyType;
 
         public override Type TargetType => _property.DeclaringType;
 

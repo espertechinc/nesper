@@ -75,7 +75,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
             public ExprNodeRenderable ExprForgeRenderable => this;
 
-            public void ToEPL(TextWriter writer,
+            public void ToEPL(
+                TextWriter writer,
                 ExprPrecedenceEnum parentPrecedence,
                 ExprNodeRenderableFlags flags)
             {

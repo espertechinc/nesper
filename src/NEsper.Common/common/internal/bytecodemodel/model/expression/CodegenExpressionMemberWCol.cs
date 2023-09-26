@@ -28,6 +28,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public override string Ref => _name + _col;
 
+        public int Col => _col;
+
         public override void Render(
             StringBuilder builder,
             bool isInnerClass,
@@ -56,7 +58,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 return false;
             }
 
-            var that = (CodegenExpressionMemberWCol) o;
+            var that = (CodegenExpressionMemberWCol)o;
 
             return _col == that._col;
         }

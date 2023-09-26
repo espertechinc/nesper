@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             IsMustCoerce = mustCoerce;
             Coercer = coercer;
             CoercionTypeBoxed = coercionTypeBoxed;
-            this._hasCollectionOrArray = hasCollectionOrArray;
+            _hasCollectionOrArray = hasCollectionOrArray;
         }
 
         public ExprEqualsAllAnyNode ForgeRenderable { get; }

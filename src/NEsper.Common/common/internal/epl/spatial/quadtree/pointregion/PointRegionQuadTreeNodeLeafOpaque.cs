@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.pointregion
             int level) : base(bb, level)
         {
         }
-        
-        public abstract object OpaquePoints { get; } 
+
+        public abstract object OpaquePoints { get; }
     }
 }

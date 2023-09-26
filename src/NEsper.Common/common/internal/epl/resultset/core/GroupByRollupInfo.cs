@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         public AggregationGroupByRollupDescForge RollupDesc { get; }
 
         public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
-        
+
         public MultiKeyClassRef OptionalMultiKey { get; }
     }
 } // end of namespace

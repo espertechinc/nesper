@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,7 +19,7 @@ namespace com.espertech.esper.common.@internal.type
 {
     public class NameAndModule
     {
-        public static readonly NameAndModule[] EMPTY_ARRAY = new NameAndModule[0];
+        public static readonly NameAndModule[] EMPTY_ARRAY = Array.Empty<NameAndModule>();
 
         private readonly string name;
         private readonly string moduleName;
@@ -31,41 +32,45 @@ namespace com.espertech.esper.common.@internal.type
             this.moduleName = moduleName;
         }
 
-        public string Name {
-            get => name;
-        }
+        public string Name => name;
 
-        public string ModuleName {
-            get => moduleName;
-        }
+        public string ModuleName => moduleName;
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o) {
+                return true;
+            }
 
-            NameAndModule that = (NameAndModule) o;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
 
-            if (!name.Equals(that.name)) return false;
-            return moduleName != null ? moduleName.Equals(that.moduleName) : that.moduleName == null;
+            var that = (NameAndModule)o;
+
+            if (!name.Equals(that.name)) {
+                return false;
+            }
+
+            return moduleName?.Equals(that.moduleName) ?? that.moduleName == null;
         }
 
         public override int GetHashCode()
         {
-            int result = name.GetHashCode();
+            var result = name.GetHashCode();
             result = 31 * result + (moduleName != null ? moduleName.GetHashCode() : 0);
             return result;
         }
 
-        public static CodegenExpression MakeArray(ICollection<NameAndModule> names)
+        public static CodegenExpression MakeArrayNullIfEmpty(ICollection<NameAndModule> names)
         {
             if (names.IsEmpty()) {
-                return EnumValue(typeof(NameAndModule), "EMPTY_ARRAY");
+                return ConstantNull();
             }
 
-            CodegenExpression[] expressions = new CodegenExpression[names.Count];
-            int count = 0;
-            foreach (NameAndModule entry in names) {
+            var expressions = new CodegenExpression[names.Count];
+            var count = 0;
+            foreach (var entry in names) {
                 expressions[count++] = entry.Make();
             }
 
@@ -82,7 +87,7 @@ namespace com.espertech.esper.common.@internal.type
             NameAndModule[] names)
         {
             NameAndModule found = null;
-            foreach (NameAndModule item in names) {
+            foreach (var item in names) {
                 if (item.Name.Equals(searchForName)) {
                     if (found != null) {
                         throw new IllegalStateException("Found multiple entries for name '" + searchForName + "'");

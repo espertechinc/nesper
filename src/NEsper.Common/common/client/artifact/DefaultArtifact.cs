@@ -11,22 +11,23 @@ namespace com.espertech.esper.common.client.artifact
     /// <summary>
     /// The artifact produced by a compilation.
     /// </summary>
-    public class DefaultArtifact : ICompileArtifact, IRuntimeArtifact
+    public class DefaultArtifact : ICompileArtifact,
+        IRuntimeArtifact
     {
-        private ISet<String> _typeNames;
+        private ISet<string> _typeNames;
         private Assembly _assembly;
-        
+
         public DefaultArtifact(string id)
         {
             Id = id;
             _typeNames = new HashSet<string>();
         }
-        
+
         /// <summary>
         /// A unique identifier for the artifact (within a given repository).
         /// </summary>
         public string Id { get; }
-        
+
         /// <summary>
         /// The byte array of the image for the assembly
         /// </summary>
@@ -65,7 +66,7 @@ namespace com.espertech.esper.common.client.artifact
             }
         }
 
-        public Supplier<Assembly> AssemblySupplier { get; set; } 
+        public Supplier<Assembly> AssemblySupplier { get; set; }
 
         /// <summary>
         /// Internal use only
@@ -77,11 +78,11 @@ namespace com.espertech.esper.common.client.artifact
         /// </summary>
         public ICollection<Type> ExportedTypes => Assembly.GetExportedTypes();
 
-        public IEnumerable<String> TypeNames {
+        public IEnumerable<string> TypeNames {
             get => _typeNames;
             set => _typeNames = new HashSet<string>(value);
         }
-        
+
         /// <summary>
         /// Returns true if the artifact contains the given type name.
         /// </summary>
@@ -107,7 +108,7 @@ namespace com.espertech.esper.common.client.artifact
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
@@ -116,7 +117,7 @@ namespace com.espertech.esper.common.client.artifact
 
         public override int GetHashCode()
         {
-            return (Id != null ? Id.GetHashCode() : 0);
+            return Id != null ? Id.GetHashCode() : 0;
         }
     }
 }

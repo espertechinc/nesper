@@ -22,90 +22,90 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.where
 {
-	public class EnumWhereScalar : ThreeFormScalar
-	{
-		public EnumWhereScalar(
-			ExprDotEvalParamLambda lambda,
-			ObjectArrayEventType fieldEventType,
-			int numParameters)
-			: base(lambda, fieldEventType, numParameters)
-		{
-		}
+    public class EnumWhereScalar : ThreeFormScalar
+    {
+        public EnumWhereScalar(
+            ExprDotEvalParamLambda lambda,
+            ObjectArrayEventType fieldEventType,
+            int numParameters)
+            : base(lambda, fieldEventType, numParameters)
+        {
+        }
 
-		public override EnumEval EnumEvaluator {
-			get {
-				var inner = InnerExpression.ExprEvaluator;
+        public override EnumEval EnumEvaluator {
+            get {
+                var inner = InnerExpression.ExprEvaluator;
 
-				return new ProxyEnumEval(
-					(
-						eventsLambda,
-						enumcoll,
-						isNewData,
-						context) => {
-						if (enumcoll.IsEmpty()) {
-							return enumcoll;
-						}
+                return new ProxyEnumEval(
+                    (
+                        eventsLambda,
+                        enumcoll,
+                        isNewData,
+                        context) => {
+                        if (enumcoll.IsEmpty()) {
+                            return enumcoll;
+                        }
 
-						var result = new ArrayDeque<object>();
-						var evalEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
-						eventsLambda[StreamNumLambda] = evalEvent;
-						var props = evalEvent.Properties;
-						props[2] = enumcoll.Count;
+                        var result = new ArrayDeque<object>();
+                        var evalEvent = new ObjectArrayEventBean(new object[3], fieldEventType);
+                        eventsLambda[StreamNumLambda] = evalEvent;
+                        var props = evalEvent.Properties;
+                        props[2] = enumcoll.Count;
 
-						var count = -1;
-						foreach (var next in enumcoll) {
-							count++;
-							props[1] = count;
-							props[0] = next;
+                        var count = -1;
+                        foreach (var next in enumcoll) {
+                            count++;
+                            props[1] = count;
+                            props[0] = next;
 
-							var pass = inner.Evaluate(eventsLambda, isNewData, context);
-							if (pass == null || false.Equals(pass)) {
-								continue;
-							}
+                            var pass = inner.Evaluate(eventsLambda, isNewData, context);
+                            if (pass == null || false.Equals(pass)) {
+                                continue;
+                            }
 
-							result.Add(next);
-						}
+                            result.Add(next);
+                        }
 
-						return FlexCollection.Of(result);
-					});
-			}
-		}
+                        return FlexCollection.Of(result);
+                    });
+            }
+        }
 
-		public override Type ReturnType()
-		{
-			return typeof(FlexCollection);
-		}
+        public override Type ReturnTypeOfMethod()
+        {
+            return typeof(FlexCollection);
+        }
 
-		public override CodegenExpression ReturnIfEmptyOptional()
-		{
-			return EnumForgeCodegenNames.REF_ENUMCOLL;
-		}
+        public override CodegenExpression ReturnIfEmptyOptional()
+        {
+            return EnumForgeCodegenNames.REF_ENUMCOLL;
+        }
 
-		public override void InitBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)));
-		}
+        public override void InitBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)));
+        }
 
-		public override void ForEachBlock(
-			CodegenBlock block,
-			CodegenMethod methodNode,
-			ExprForgeCodegenSymbol scope,
-			CodegenClassScope codegenClassScope)
-		{
-			CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
-				block,
-				InnerExpression.EvaluationType,
-				InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
-			block.Expression(ExprDotMethod(Ref("result"), "Add", Ref("next")));
-		}
+        public override void ForEachBlock(
+            CodegenBlock block,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
+            CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
+                block,
+                InnerExpression.EvaluationType,
+                InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope));
+            block.Expression(ExprDotMethod(Ref("result"), "Add", Ref("next")));
+        }
 
-		public override void ReturnResult(CodegenBlock block)
-		{
-			block.MethodReturn(FlexWrap(Ref("result")));
-		}
-	}
+        public override void ReturnResult(CodegenBlock block)
+        {
+            block.MethodReturn(FlexWrap(Ref("result")));
+        }
+    }
 } // end of namespace

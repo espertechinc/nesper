@@ -11,11 +11,11 @@ using com.espertech.esper.common.@internal.epl.index.@base;
 
 namespace com.espertech.esper.common.@internal.epl.subselect
 {
-	/// <summary>
-	///     Implements a stop callback for use with subqueries to clear their indexes
-	///     when a statement is stopped.
-	/// </summary>
-	public class SubqueryIndexMgmtCallback : AgentInstanceMgmtCallback
+    /// <summary>
+    ///     Implements a stop callback for use with subqueries to clear their indexes
+    ///     when a statement is stopped.
+    /// </summary>
+    public class SubqueryIndexMgmtCallback : AgentInstanceMgmtCallback
     {
         private readonly EventTable[] _eventIndex;
 

@@ -6,7 +6,7 @@ namespace com.espertech.esper.compat.threading.locks
 	/// <summary>
 	/// Description of CommonWriteLock.
 	/// </summary>
-	internal class CommonWriteLock : ILockable
+	public class CommonWriteLock : ILockable
 	{
 	    private readonly int _lockTimeout;
         private readonly IReaderWriterLockCommon _lockObj;
@@ -42,7 +42,7 @@ namespace com.espertech.esper.compat.threading.locks
             _lockObj.ReleaseWriterLock();
         }
 
-        internal CommonWriteLock(IReaderWriterLockCommon lockObj, int lockTimeout)
+        public CommonWriteLock(IReaderWriterLockCommon lockObj, int lockTimeout)
         {
             _lockObj = lockObj;
             _lockTimeout = lockTimeout;
@@ -52,7 +52,7 @@ namespace com.espertech.esper.compat.threading.locks
 	/// <summary>
 	/// Description of CommonWriteLock.
 	/// </summary>
-	internal class CommonWriteLock<T> : ILockable
+	public class CommonWriteLock<T> : ILockable
 	{
 	    private readonly int _lockTimeout;
         private readonly IReaderWriterLockCommon<T> _lockObj;
@@ -91,7 +91,7 @@ namespace com.espertech.esper.compat.threading.locks
             _lockValue = default(T);
         }
 
-        internal CommonWriteLock(IReaderWriterLockCommon<T> lockObj, int lockTimeout)
+        public CommonWriteLock(IReaderWriterLockCommon<T> lockObj, int lockTimeout)
         {
             _lockObj = lockObj;
             _lockTimeout = lockTimeout;

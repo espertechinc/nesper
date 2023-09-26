@@ -35,7 +35,8 @@ namespace com.espertech.esper.common.client.soda
         {
         }
 
-        public DotExpressionItemCall(string name,
+        public DotExpressionItemCall(
+            string name,
             IList<Expression> parameters)
         {
             _name = name;
@@ -46,8 +47,8 @@ namespace com.espertech.esper.common.client.soda
         {
             writer.Write(_name);
             writer.Write("(");
-            String delimiter = "";
-            foreach (Expression param in _parameters) {
+            var delimiter = "";
+            foreach (var param in _parameters) {
                 writer.Write(delimiter);
                 delimiter = ",";
                 param.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);

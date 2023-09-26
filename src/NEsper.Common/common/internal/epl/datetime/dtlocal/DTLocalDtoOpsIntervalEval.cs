@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var dto = (DateTimeOffset) target;
+            var dto = (DateTimeOffset)target;
             dto = EvaluateCalOpsDto(calendarOps, dto, eventsPerStream, isNewData, exprEvaluatorContext);
             var time = DatetimeLongCoercerDateTimeOffset.CoerceToMillis(dto);
             return intervalOp.Evaluate(time, time, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtxOpsIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTimeOffset), "target");
+                .AddParam<DateTimeOffset>("target");
 
             var block = methodNode.Block;
             EvaluateCalOpsDtoCodegen(block, "target", forge.calendarForges, methodNode, exprSymbol, codegenClassScope);
@@ -75,8 +75,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var start = (DateTimeOffset) startTimestamp;
-            var end = (DateTimeOffset) endTimestamp;
+            var start = (DateTimeOffset)startTimestamp;
+            var end = (DateTimeOffset)endTimestamp;
             var deltaMSec = DatetimeLongCoercerDateTimeOffset.CoerceToMillis(end) -
                             DatetimeLongCoercerDateTimeOffset.CoerceToMillis(start);
             var result = EvaluateCalOpsDto(calendarOps, start, eventsPerStream, isNewData, exprEvaluatorContext);
@@ -95,8 +95,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
         {
             var methodNode = codegenMethodScope
                 .MakeChild(typeof(bool?), typeof(DTLocalDtxOpsIntervalEval), codegenClassScope)
-                .AddParam(typeof(DateTimeOffset), "start")
-                .AddParam(typeof(DateTimeOffset), "end");
+                .AddParam<DateTimeOffset>("start")
+                .AddParam<DateTimeOffset>("end");
 
             var block = methodNode
                 .Block
@@ -129,7 +129,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                     "CoerceToMillis",
                     Ref("result")));
             block.DeclareVar<long>(
-                "endTime", Op(Ref("startLong"), "+", Ref("deltaMSec")));
+                "endTime",
+                Op(Ref("startLong"), "+", Ref("deltaMSec")));
             block.MethodReturn(
                 forge.intervalForge.Codegen(
                     Ref("startLong"),

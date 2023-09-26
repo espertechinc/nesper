@@ -48,8 +48,7 @@ namespace com.espertech.esper.common.client.soda
             this CreateSchemaClauseTypeDef typeDef,
             TextWriter writer)
         {
-            switch (typeDef)
-            {
+            switch (typeDef) {
                 case CreateSchemaClauseTypeDef.VARIANT:
                     writer.Write(" variant");
                     break;

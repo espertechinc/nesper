@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
         {
             var results = new object[parameters.Length];
             var count = 0;
-            var eventsPerStream = optionalConvertor == null ? null : optionalConvertor.Invoke(beginState);
+            var eventsPerStream = optionalConvertor?.Invoke(beginState);
             foreach (var expr in parameters) {
                 try {
                     var result = expr.Evaluate(eventsPerStream, true, exprEvaluatorContext);

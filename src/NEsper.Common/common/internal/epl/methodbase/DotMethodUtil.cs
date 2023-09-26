@@ -22,13 +22,12 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
         public static DotMethodFPProvided GetProvidedFootprint(IList<ExprNode> parameters)
         {
             var @params = new List<DotMethodFPProvidedParam>();
-            foreach (ExprNode node in parameters) {
-                if (!(node is ExprLambdaGoesNode)) {
+            foreach (var node in parameters) {
+                if (!(node is ExprLambdaGoesNode goesNode)) {
                     @params.Add(new DotMethodFPProvidedParam(0, node.Forge.EvaluationType, node));
                     continue;
                 }
 
-                var goesNode = (ExprLambdaGoesNode) node;
                 @params.Add(new DotMethodFPProvidedParam(goesNode.GoesToNames.Count, null, goesNode));
             }
 
@@ -42,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
             DotMethodFPProvided providedFootprint,
             DotMethodInputTypeMatcher inputTypeMatcher)
         {
-            bool isLambdaApplies = DotMethodTypeEnum.ENUM == methodType;
+            var isLambdaApplies = DotMethodTypeEnum.ENUM == methodType;
 
             // determine footprint candidates strictly based on parameters
             List<DotMethodFP> candidates = null;
@@ -86,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
 
             // handle single remaining candidate
             if (candidates != null && candidates.Count == 1) {
-                DotMethodFP found = candidates[0];
+                var found = candidates[0];
                 ValidateSpecificTypes(methodUsedName, methodType, found.Parameters, providedFootprint.Parameters);
                 return found;
             }
@@ -97,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
                 var candidateIt = candidates.GetEnumerator();
                 ExprValidationException firstException = null;
                 while (candidateIt.MoveNext()) {
-                    DotMethodFP fp = candidateIt.Current;
+                    var fp = candidateIt.Current;
                     try {
                         ValidateSpecificTypes(methodUsedName, methodType, fp.Parameters, providedFootprint.Parameters);
                         return fp;
@@ -131,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
             else {
                 var buf = new StringWriter();
                 var delimiter = "";
-                foreach (DotMethodFP footprint in footprints) {
+                foreach (var footprint in footprints) {
                     buf.Write(delimiter);
                     buf.Write(footprint.ToStringFootprint(isLambdaApplies));
                     delimiter = ", or ";
@@ -152,9 +151,9 @@ namespace com.espertech.esper.common.@internal.epl.methodbase
             DotMethodFPParam[] foundParams,
             DotMethodFPProvidedParam[] @params)
         {
-            for (int i = 0; i < foundParams.Length; i++) {
-                DotMethodFPParam found = foundParams[i];
-                DotMethodFPProvidedParam provided = @params[i];
+            for (var i = 0; i < foundParams.Length; i++) {
+                var found = foundParams[i];
+                var provided = @params[i];
 
                 // Lambda-type expressions not validated here
                 if (found.LambdaParamNum > 0) {

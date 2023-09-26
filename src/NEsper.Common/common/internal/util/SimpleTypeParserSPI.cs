@@ -24,6 +24,10 @@ namespace com.espertech.esper.common.@internal.util
         SimpleTypeParserSPI
     {
         public Func<CodegenExpression, CodegenExpression> ProcCodegen;
-        public CodegenExpression Codegen(CodegenExpression input) => ProcCodegen?.Invoke(input);
+
+        public CodegenExpression Codegen(CodegenExpression input)
+        {
+            return ProcCodegen?.Invoke(input);
+        }
     }
 } // end of namespace

@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -25,11 +26,10 @@ using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSe
 namespace com.espertech.esper.common.@internal.epl.agg.groupby
 {
     /// <summary>
-    ///     Implementation for handling aggregation with grouping by group-keys.
+    /// Implementation for handling aggregation with grouping by group-keys.
     /// </summary>
     public class AggSvcGroupByReclaimAgedImpl
     {
-        public const long DEFAULT_MAX_AGE_MSEC = 60000L;
         private static readonly CodegenExpressionRef REF_NEXTSWEEPTIME = Ref("nextSweepTime");
         private static readonly CodegenExpressionRef REF_REMOVEDCALLBACK = Ref("removedCallback");
         private static readonly CodegenExpressionRef REF_CURRENTMAXAGE = Ref("currentMaxAge");
@@ -39,6 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         private static readonly CodegenExpressionRef REF_EVALUATIONFUNCTIONFREQUENCY =
             Ref("evaluationFunctionFrequency");
 
+        public const long DEFAULT_MAX_AGE_MSEC = 60000L;
+
         public static void RowCtorCodegen(
             CodegenNamedMethods namedMethods,
             CodegenClassScope classScope,
@@ -47,15 +49,15 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             rowMembers.Add(new CodegenTypedParam(typeof(long), "lastUpdateTime"));
             namedMethods.AddMethod(
                 typeof(void),
-                "SetLastUpdateTime",
+                "setLastUpdateTime",
                 CodegenNamedParam.From(typeof(long), "time"),
                 typeof(AggSvcGroupByReclaimAgedImpl),
                 classScope,
                 method => method.Block.AssignRef("lastUpdateTime", Ref("time")));
             namedMethods.AddMethod(
                 typeof(long),
-                "GetLastUpdateTime",
-                Collections.GetEmptyList<CodegenNamedParam>(),
+                "getLastUpdateTime",
+                EmptyList<CodegenNamedParam>.Instance, 
                 typeof(AggSvcGroupByReclaimAgedImpl),
                 classScope,
                 method => method.Block.MethodReturn(Ref("lastUpdateTime")));
@@ -68,20 +70,24 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenExpression maxAgeFactory,
             CodegenExpression frequencyFactory)
         {
-            explicitMembers.Add(new CodegenTypedParam(typeof(long?), REF_NEXTSWEEPTIME.Ref));
-            explicitMembers.Add(new CodegenTypedParam(typeof(AggregationRowRemovedCallback), REF_REMOVEDCALLBACK.Ref));
-            explicitMembers.Add(new CodegenTypedParam(typeof(long), REF_CURRENTMAXAGE.Ref));
-            explicitMembers.Add(new CodegenTypedParam(typeof(long), REF_CURRENTRECLAIMFREQUENCY.Ref));
+            explicitMembers.Add(
+                new CodegenTypedParam(typeof(long?), REF_NEXTSWEEPTIME.Ref).WithFinal(false));
+            explicitMembers.Add(
+                new CodegenTypedParam(typeof(AggregationRowRemovedCallback), REF_REMOVEDCALLBACK.Ref).WithFinal(false));
+            explicitMembers.Add(
+                new CodegenTypedParam(typeof(long), REF_CURRENTMAXAGE.Ref).WithFinal(false));
+            explicitMembers.Add(
+                new CodegenTypedParam(typeof(long), REF_CURRENTRECLAIMFREQUENCY.Ref).WithFinal(false));
             explicitMembers.Add(
                 new CodegenTypedParam(typeof(AggSvcGroupByReclaimAgedEvalFunc), REF_EVALUATORFUNCTIONMAXAGE.Ref));
             explicitMembers.Add(
                 new CodegenTypedParam(typeof(AggSvcGroupByReclaimAgedEvalFunc), REF_EVALUATIONFUNCTIONFREQUENCY.Ref));
             ctor.Block.AssignRef(REF_CURRENTMAXAGE, Constant(DEFAULT_MAX_AGE_MSEC))
                 .AssignRef(REF_CURRENTRECLAIMFREQUENCY, Constant(DEFAULT_MAX_AGE_MSEC))
-                .AssignRef(REF_EVALUATORFUNCTIONMAXAGE, ExprDotMethod(maxAgeFactory, "Make", MEMBER_AGENTINSTANCECONTEXT))
+                .AssignRef(REF_EVALUATORFUNCTIONMAXAGE, ExprDotMethod(maxAgeFactory, "make", MEMBER_EXPREVALCONTEXT))
                 .AssignRef(
                     REF_EVALUATIONFUNCTIONFREQUENCY,
-                    ExprDotMethod(frequencyFactory, "Make", MEMBER_AGENTINSTANCECONTEXT));
+                    ExprDotMethod(frequencyFactory, "make", MEMBER_EXPREVALCONTEXT));
         }
 
         public static void ApplyEnterCodegenSweep(
@@ -90,7 +96,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             AggregationClassNames classNames)
         {
             var timeAbacus = classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE);
-            method.Block.DeclareVar<long>(
+            method.Block.DeclareVar(
+                    typeof(long),
                     "currentTime",
                     ExprDotMethodChain(REF_EXPREVALCONTEXT).Get("TimeProvider").Get("Time"))
                 .IfCondition(Or(EqualsNull(REF_NEXTSWEEPTIME), Relational(REF_NEXTSWEEPTIME, LE, Ref("currentTime"))))
@@ -115,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         }
 
         /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
+        /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
         /// <param name="current">current</param>
         /// <param name="func">func</param>
@@ -139,17 +146,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenClassScope classScope,
             AggregationClassNames classNames)
         {
-            var method = parent
-                .MakeChild(typeof(void), typeof(AggSvcGroupByReclaimAgedImpl), classScope)
+            var method = parent.MakeChild(typeof(void), typeof(AggSvcGroupByReclaimAgedImpl), classScope)
                 .AddParam(typeof(long), "currentTime")
                 .AddParam(typeof(long), REF_CURRENTMAXAGE.Ref);
-
-            method.Block.DeclareVar<ArrayDeque<object>>("removed", NewInstance(typeof(ArrayDeque<object>)))
-                .ForEach(
-                    typeof(KeyValuePair<object, object>),
-                    "entry",
-                    MEMBER_AGGREGATORSPERGROUP)
-                .DeclareVar<long>(
+            method.Block.DeclareVar(
+                    typeof(ArrayDeque<object>),
+                    "removed",
+                    NewInstance(typeof(ArrayDeque<object>)))
+                .ForEach(typeof(KeyValuePair<object, object>), "entry", MEMBER_AGGREGATORSPERGROUP)
+                .DeclareVar(
+                    typeof(long),
                     "age",
                     Op(
                         Ref("currentTime"),
@@ -164,7 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 .ForEach(typeof(object), "key", Ref("removed"))
                 .ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Remove", Ref("key"))
                 .ExprDotMethod(REF_REMOVEDCALLBACK, "RemovedAggregationGroupKey", Ref("key"));
-
+            
             return method;
         }
     }

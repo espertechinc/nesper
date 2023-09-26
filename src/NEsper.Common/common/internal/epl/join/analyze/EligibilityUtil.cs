@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.join.analyze
     {
         public static EligibilityDesc VerifyInputStream(
             ExprNode expression,
-            int indexedStream)
+            int? indexedStream)
         {
             var visitor = new ExprNodeIdentifierCollectVisitor();
             expression.Accept(visitor);

@@ -37,15 +37,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
         {
             var method = parent.MakeChild(typeof(StatementAgentInstanceFactoryCreateVariable), GetType(), classScope);
             method.Block
-                .DeclareVar<StatementAgentInstanceFactoryCreateVariable>(
-                    "saiff",
-                    NewInstance(typeof(StatementAgentInstanceFactoryCreateVariable)))
+                .DeclareVarNewInstance<StatementAgentInstanceFactoryCreateVariable>("saiff")
                 .SetProperty(
-                    Ref("saiff"), "VariableName", Constant(variableName))
+                    Ref("saiff"),
+                    "VariableName",
+                    Constant(variableName))
                 .SetProperty(
                     Ref("saiff"),
                     "ResultSetProcessorFactoryProvider",
-                    NewInstanceInner(resultSetProcessorProviderClassName, symbols.GetAddInitSvc(method), Ref("statementFields")));
+                    NewInstanceInner(
+                        resultSetProcessorProviderClassName,
+                        symbols.GetAddInitSvc(method),
+                        Ref("statementFields")));
 
             if (optionalInitialValue != null) {
                 method.Block

@@ -71,10 +71,7 @@ namespace com.espertech.esper.runtime.client.scopetest
         /// Returns true if the subscriber was invoked at least once.
         /// </summary>
         /// <returns>invoked flag</returns>
-        public bool IsInvoked()
-        {
-            return _isInvoked;
-        }
+        public bool IsInvoked => _isInvoked;
 
         /// <summary>
         /// Returns true if the subscriber  was invoked at least once and clears the invocation flag.

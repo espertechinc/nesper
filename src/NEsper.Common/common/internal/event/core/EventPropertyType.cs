@@ -8,24 +8,24 @@
 
 namespace com.espertech.esper.common.@internal.@event.core
 {
-	/// <summary>
-	///     Enumeration of property types.
-	/// </summary>
-	public enum EventPropertyType
+    /// <summary>
+    ///     Enumeration of property types.
+    /// </summary>
+    public enum EventPropertyType
     {
-	    /// <summary>
-	    ///     Simple property.
-	    /// </summary>
-	    SIMPLE,
+        /// <summary>
+        ///     Simple property.
+        /// </summary>
+        SIMPLE,
 
-	    /// <summary>
-	    ///     Indexed property.
-	    /// </summary>
-	    INDEXED,
+        /// <summary>
+        ///     Indexed property.
+        /// </summary>
+        INDEXED,
 
-	    /// <summary>
-	    ///     Mapped property.
-	    /// </summary>
-	    MAPPED
+        /// <summary>
+        ///     Mapped property.
+        /// </summary>
+        MAPPED
     }
 } // end of namespace

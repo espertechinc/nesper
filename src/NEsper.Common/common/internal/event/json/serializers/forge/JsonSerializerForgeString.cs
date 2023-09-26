@@ -14,25 +14,24 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.serializers.forge
 {
-	public class JsonSerializerForgeString : JsonSerializerForge
-	{
+    public class JsonSerializerForgeString : JsonSerializerForge
+    {
+        public static readonly JsonSerializerForgeString INSTANCE = new JsonSerializerForgeString();
 
-		public static readonly JsonSerializerForgeString INSTANCE = new JsonSerializerForgeString();
+        private JsonSerializerForgeString()
+        {
+        }
 
-		private JsonSerializerForgeString()
-		{
-		}
-
-		public CodegenExpression CodegenSerialize(
-			JsonSerializerForgeRefs refs,
-			CodegenMethod method,
-			CodegenClassScope classScope)
-		{
-			return StaticMethod(
-				typeof(JsonSerializerUtil),
-				"WriteNullableString",
-				refs.Context,
-				refs.Field);
-		}
-	}
+        public CodegenExpression CodegenSerialize(
+            JsonSerializerForgeRefs refs,
+            CodegenMethod method,
+            CodegenClassScope classScope)
+        {
+            return StaticMethod(
+                typeof(JsonSerializerUtil),
+                "WriteNullableString",
+                refs.Context,
+                refs.Field);
+        }
+    }
 } // end of namespace

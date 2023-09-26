@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.view.sort
         public ViewFactory ViewFactory => factory;
 
         public override EventType EventType => parent.EventType;
-        
+
         public override void Update(
             EventBean[] newData,
             EventBean[] oldData)
@@ -108,8 +108,7 @@ namespace com.espertech.esper.common.@internal.view.sort
                     // Remove the last element of the last key - sort order is key and then natural order of arrival
                     var lastKey = sortedEvents.Keys.Last();
                     var lastEntry = sortedEvents.Get(lastKey);
-                    if (lastEntry is IList<EventBean>) {
-                        var events = (IList<EventBean>) lastEntry;
+                    if (lastEntry is IList<EventBean> events) {
                         var theEvent =
                             events.DeleteAt(events.Count - 1); // remove oldest event, newest events are first in list
                         eventCount--;
@@ -125,7 +124,7 @@ namespace com.espertech.esper.common.@internal.view.sort
                         InternalHandleRemoved(lastKey, theEvent);
                     }
                     else {
-                        var theEvent = (EventBean) lastEntry;
+                        var theEvent = (EventBean)lastEntry;
                         eventCount--;
                         sortedEvents.Remove(lastKey);
                         if (removedEvents == null) {

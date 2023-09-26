@@ -500,7 +500,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                 var stateClass = typeof(MyLocalEnumMethodMedianState); // the class providing state
                 var serviceClass = typeof(MyLocalEnumMethodMedianService); // the class providing the processing method
                 var methodName = "Next"; // the name of the method for processing an item of input values
-                EPType returnType = new ClassEPType(typeof(double?)); // indicate that we are returning a Double-type value
+                EPChainableType returnType = new EPChainableTypeClass(typeof(double?)); // indicate that we are returning a Double-type value
                 var earlyExit = false;
 
                 var mode = new EnumMethodModeStaticMethod(stateClass, serviceClass, methodName, returnType, earlyExit);
@@ -598,7 +598,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeOneState),
                     typeof(MyLocalEnumMethodForgeOneState),
                     "Next",
-                    new ClassEPType(typeof(int?)),
+                    new EPChainableTypeClass(typeof(int?)),
                     false);
             }
         }
@@ -658,7 +658,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeEarlyExitState),
                     typeof(MyLocalEnumMethodForgeEarlyExitState),
                     "Next",
-                    new ClassEPType(typeof(int?)),
+                    new EPChainableTypeClass(typeof(int?)),
                     true);
             }
         }
@@ -697,7 +697,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
 
             public EnumMethodMode Validate(EnumMethodValidateContext context)
             {
-                var type = EPTypeHelper.CollectionOfEvents(context.InputEventType);
+                var type = EPChainableTypeHelper.CollectionOfEvents(context.InputEventType);
                 return new EnumMethodModeStaticMethod(
                     typeof(MyLocalEnumMethodForgePredicateReturnEventsState),
                     typeof(MyLocalEnumMethodForgePredicateReturnEvents),
@@ -749,7 +749,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
 
             public EnumMethodMode Validate(EnumMethodValidateContext context)
             {
-                var type = new EventEPType(context.InputEventType);
+                var type = new EPChainableTypeEventSingle(context.InputEventType);
                 return new EnumMethodModeStaticMethod(
                     typeof(MyLocalEnumMethodForgePredicateReturnSingleEventState),
                     typeof(MyLocalEnumMethodForgePredicateReturnSingleEvent),
@@ -808,7 +808,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeTwoLambdaState),
                     typeof(MyLocalEnumMethodForgeTwoLambdaState),
                     "Next",
-                    new ClassEPType(typeof(int?)),
+                    new EPChainableTypeClass(typeof(int?)),
                     false);
             }
         }
@@ -866,7 +866,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeThreeState),
                     typeof(MyLocalEnumMethodForgeThree),
                     "Next",
-                    new ClassEPType(typeof(int?)),
+                    new EPChainableTypeClass(typeof(int?)),
                     false);
                 mode.LambdaParameters =
                     descriptor => {
@@ -939,7 +939,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension {
                     typeof(MyLocalEnumMethodForgeStateWValueState),
                     typeof(MyLocalEnumMethodForgeStateWValueState),
                     "Next",
-                    new ClassEPType(typeof(string)),
+                    new EPChainableTypeClass(typeof(string)),
                     false);
                 mode.LambdaParameters =
                     descriptor => {

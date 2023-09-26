@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 
@@ -27,6 +29,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
 
     public static class PriorEvalStrategyConstants
     {
-        public static readonly PriorEvalStrategy[] EMPTY_ARRAY = new PriorEvalStrategy[0];
+        public static readonly PriorEvalStrategy[] EMPTY_ARRAY = Array.Empty<PriorEvalStrategy>();
     }
 } // end of namespace

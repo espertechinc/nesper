@@ -20,6 +20,9 @@ namespace com.espertech.esper.common.@internal.type
         {
         }
 
-        public Type AnnotationType() => typeof(AvroSchemaFieldAttribute);
+        public Type AnnotationType()
+        {
+            return typeof(AvroSchemaFieldAttribute);
+        }
     }
 } // end of namespace

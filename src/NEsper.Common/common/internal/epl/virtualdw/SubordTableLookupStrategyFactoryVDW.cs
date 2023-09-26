@@ -8,7 +8,6 @@
 
 using System;
 
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.join.lookup;
@@ -41,10 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
 
         public SubordTableLookupStrategy MakeStrategy(
             EventTable[] eventTable,
-            AgentInstanceContext agentInstanceContext,
+            ExprEvaluatorContext exprEvaluatorContext,
             VirtualDWView vdw)
         {
-            return vdw.GetSubordinateLookupStrategy(this, agentInstanceContext);
+            return vdw.GetSubordinateLookupStrategy(this, exprEvaluatorContext);
         }
 
         public LookupStrategyDesc LookupStrategyDesc => new LookupStrategyDesc(LookupStrategyType.VDW);

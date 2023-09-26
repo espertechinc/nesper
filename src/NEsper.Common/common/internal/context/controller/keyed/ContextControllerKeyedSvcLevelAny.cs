@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             object key)
         {
             var entry = _keys.Get(new ContextControllerKeyedCompositeKey(controllerPath, key));
-            return entry == null ? -1 : entry.SubpathOrCPId;
+            return entry?.SubpathOrCPId ?? -1;
         }
 
         public ICollection<int> Deactivate(IntSeqKey controllerPath)

@@ -18,8 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
 {
     public class ExpressionResultCacheForPropUnwrapImpl : ExpressionResultCacheForPropUnwrap
     {
-        private readonly Dictionary<string, SoftReference<ExpressionResultCacheEntryBeanAndCollBean>> collPropertyCache =
-            new Dictionary<string, SoftReference<ExpressionResultCacheEntryBeanAndCollBean>>();
+        private readonly Dictionary<string, SoftReference<ExpressionResultCacheEntryBeanAndCollBean>>
+            collPropertyCache =
+                new Dictionary<string, SoftReference<ExpressionResultCacheEntryBeanAndCollBean>>();
 
         public ExpressionResultCacheEntryBeanAndCollBean GetPropertyColl(
             string propertyNameFullyQualified,

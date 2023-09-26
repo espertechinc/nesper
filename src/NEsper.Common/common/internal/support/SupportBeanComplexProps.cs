@@ -108,12 +108,12 @@ namespace com.espertech.esper.common.@internal.support
             mapProp.Put("xOne", "yOne");
             mapProp.Put("xTwo", "yTwo");
 
-            int[] arrayProp = {10, 20, 30};
+            int[] arrayProp = { 10, 20, 30 };
 
             return new SupportBeanComplexProps(
                 "simple",
                 properties,
-                new[] {1, 2},
+                new[] { 1, 2 },
                 mapProp,
                 arrayProp,
                 "NestedValue",
@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.support
             {
                 return NestedNested;
             }
-            
+
             public override bool Equals(object o)
             {
                 if (this == o) {
@@ -182,7 +182,7 @@ namespace com.espertech.esper.common.@internal.support
                     return false;
                 }
 
-                var that = (SupportBeanSpecialGetterNested) o;
+                var that = (SupportBeanSpecialGetterNested)o;
 
                 if (!_nestedValue.Equals(that._nestedValue)) {
                     return false;

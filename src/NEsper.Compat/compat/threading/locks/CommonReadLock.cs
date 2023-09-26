@@ -6,7 +6,7 @@ namespace com.espertech.esper.compat.threading.locks
 	/// <summary>
 	/// Description of CommonReadLock.
 	/// </summary>
-	internal sealed class CommonReadLock 
+	public sealed class CommonReadLock 
         : ILockable
 	{
 	    private readonly int _lockTimeout;
@@ -44,7 +44,7 @@ namespace com.espertech.esper.compat.threading.locks
 	        _lockObj.ReleaseReaderLock();
 	    }
 
-	    internal CommonReadLock(IReaderWriterLockCommon lockObj, int lockTimeout)
+	    public CommonReadLock(IReaderWriterLockCommon lockObj, int lockTimeout)
         {
             _lockObj = lockObj;
             _lockTimeout = lockTimeout;
@@ -94,7 +94,7 @@ namespace com.espertech.esper.compat.threading.locks
             _lockValue = default(T);
         }
 
-        internal CommonReadLock(IReaderWriterLockCommon<T> lockObj, int lockTimeout)
+        public CommonReadLock(IReaderWriterLockCommon<T> lockObj, int lockTimeout)
         {
             _lockObj = lockObj;
             _lockTimeout = lockTimeout;

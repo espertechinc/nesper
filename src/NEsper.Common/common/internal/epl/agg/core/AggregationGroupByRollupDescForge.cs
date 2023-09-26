@@ -44,7 +44,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 level[i] = Levels[i].Codegen(parent, classScope);
             }
 
-            return NewInstance(typeof(AggregationGroupByRollupDesc), NewArrayWithInit(typeof(AggregationGroupByRollupLevel), level));
+            return NewInstance(
+                typeof(AggregationGroupByRollupDesc),
+                NewArrayWithInit(typeof(AggregationGroupByRollupLevel), level));
         }
     }
 } // end of namespace

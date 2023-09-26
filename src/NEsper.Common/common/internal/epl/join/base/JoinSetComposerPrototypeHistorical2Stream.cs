@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
         {
             var queryStrategies = new QueryStrategy[streamTypes.Length];
 
-            var viewable = (HistoricalEventViewable) streamViews[polledNum];
+            var viewable = (HistoricalEventViewable)streamViews[polledNum];
             queryStrategies[streamNum] = new HistoricalDataQueryStrategy(
                 streamNum,
                 polledNum,
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.join.@base
 
             // for strictly historical joins, create a query strategy for the non-subordinate historical view
             if (isAllHistoricalNoSubordinate) {
-                viewable = (HistoricalEventViewable) streamViews[streamNum];
+                viewable = (HistoricalEventViewable)streamViews[streamNum];
                 queryStrategies[polledNum] = new HistoricalDataQueryStrategy(
                     polledNum,
                     streamNum,

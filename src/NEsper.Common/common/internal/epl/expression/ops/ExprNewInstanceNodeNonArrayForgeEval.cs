@@ -12,10 +12,10 @@ using com.espertech.esper.common.@internal.@event.bean.manufacturer;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
-	/// <summary>
-	///     Represents the "new Class(...)" operator in an expression tree.
-	/// </summary>
-	public class ExprNewInstanceNodeNonArrayForgeEval : ExprEvaluator
+    /// <summary>
+    ///     Represents the "new Class(...)" operator in an expression tree.
+    /// </summary>
+    public class ExprNewInstanceNodeNonArrayForgeEval : ExprEvaluator
     {
         private readonly InstanceManufacturer _manufacturer;
 

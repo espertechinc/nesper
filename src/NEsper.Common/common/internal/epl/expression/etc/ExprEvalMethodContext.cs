@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprEvalMethodContext(string functionName)
         {
-            this._functionName = functionName;
+            _functionName = functionName;
         }
 
         public object Evaluate(
@@ -101,7 +101,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
 
         public ExprNodeRenderable ExprForgeRenderable => this;
 
-        public void ToEPL(TextWriter writer,
+        public void ToEPL(
+            TextWriter writer,
             ExprPrecedenceEnum parentPrecedence,
             ExprNodeRenderableFlags flags)
         {

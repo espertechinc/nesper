@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode[] setOne,
             ExprNode[] setTwo)
         {
-            if (setOne.Length == 0 && setTwo.Length != 0 || setOne.Length != 0 && setTwo.Length == 0) {
+            if ((setOne.Length == 0 && setTwo.Length != 0) || (setOne.Length != 0 && setTwo.Length == 0)) {
                 return false;
             }
 

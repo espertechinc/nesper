@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         public bool IsReclaimAged { get; set; }
 
         public ExprNode[] GroupByNodes { get; }
-        
+
         public MultiKeyClassRef GroupByMultiKey { get; }
 
         public void SetReclaimEvaluationFunctionMaxAge(

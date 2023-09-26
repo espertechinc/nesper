@@ -44,7 +44,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
-            
             throw new NotImplementedException();
         }
     }

@@ -11,41 +11,57 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	/// <summary>
-	/// Binding for nullable boolean values.
-	/// </summary>
-	public class DIONullableBooleanSerde : DataInputOutputSerdeBase<bool?> {
-	    public static readonly DIONullableBooleanSerde INSTANCE = new DIONullableBooleanSerde();
+    /// <summary>
+    /// Binding for nullable boolean values.
+    /// </summary>
+    public class DIONullableBooleanSerde : DataInputOutputSerdeBase<bool?>
+    {
+        public static readonly DIONullableBooleanSerde INSTANCE = new DIONullableBooleanSerde();
 
-	    private DIONullableBooleanSerde() {
-	    }
+        private DIONullableBooleanSerde()
+        {
+        }
 
-	    public override void Write(bool? @object, DataOutput output, byte[] pageFullKey, EventBeanCollatedWriter writer) {
-	        Write(@object, output);
-	    }
+        public override void Write(
+            bool? @object,
+            DataOutput output,
+            byte[] pageFullKey,
+            EventBeanCollatedWriter writer)
+        {
+            Write(@object, output);
+        }
 
-	    public void Write(bool? value, DataOutput stream) {
-	        bool isNull = value == null;
-	        stream.WriteBoolean(isNull);
-	        if (!isNull) {
-	            stream.WriteBoolean(value.Value);
-	        }
-	    }
+        public void Write(
+            bool? value,
+            DataOutput stream)
+        {
+            var isNull = value == null;
+            stream.WriteBoolean(isNull);
+            if (!isNull) {
+                stream.WriteBoolean(value.Value);
+            }
+        }
 
-	    public bool? Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+        public bool? Read(DataInput input)
+        {
+            return ReadInternal(input);
+        }
 
-	    public override bool? ReadValue(DataInput input, byte[] resourceKey) {
-	        return ReadInternal(input);
-	    }
+        public override bool? ReadValue(
+            DataInput input,
+            byte[] resourceKey)
+        {
+            return ReadInternal(input);
+        }
 
-	    private bool? ReadInternal(DataInput input) {
-	        bool isNull = input.ReadBoolean();
-	        if (isNull) {
-	            return null;
-	        }
-	        return input.ReadBoolean();
-	    }
-	}
+        private bool? ReadInternal(DataInput input)
+        {
+            var isNull = input.ReadBoolean();
+            if (isNull) {
+                return null;
+            }
+
+            return input.ReadBoolean();
+        }
+    }
 } // end of namespace

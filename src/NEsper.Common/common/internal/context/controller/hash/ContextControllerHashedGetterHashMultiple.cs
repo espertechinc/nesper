@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(object), GetType(), classScope)
-                .AddParam(typeof(EventBean), "eventBean");
+                .AddParam<EventBean>("eventBean");
             method.Block.DeclareVar<EventBean[]>(
                 "events",
                 NewArrayWithInit(typeof(EventBean), Ref("eventBean")));
@@ -70,6 +70,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                     .AssignRef(hashCode, Op(Op(Constant(31), "*", hashCode), "+", ExprDotMethod(result, "GetHashCode")))
                     .BlockEnd();
             }
+
             exprMethod.Block
                 .IfCondition(Relational(hashCode, CodegenExpressionRelational.CodegenRelational.GE, Constant(0)))
                 .BlockReturn(Op(hashCode, "%", Constant(granularity)))

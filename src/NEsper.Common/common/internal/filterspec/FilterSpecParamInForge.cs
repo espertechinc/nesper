@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -22,24 +22,23 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompiler; // NEWLINE
+using static com.espertech.esper.common.@internal.compile.stage2.FilterSpecCompiler;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
     /// <summary>
-    ///     This class represents a 'in' filter parameter in an <seealso cref="FilterSpecActivatable" /> filter specification.
-    ///     <para />
-    ///     The 'in' checks for a list of values.
+    /// This class represents a 'in' filter parameter in an <seealso cref="FilterSpecActivatable" /> filter specification.
+    /// <para />The 'in' checks for a list of values.
     /// </summary>
-    public sealed partial class FilterSpecParamInForge : FilterSpecParamForge
+    public partial class FilterSpecParamInForge : FilterSpecParamForge
     {
         private readonly FilterSpecParamInAdder[] _adders;
         private readonly bool _hasCollMapOrArray;
-        private readonly object[] _inListConstantsOnly;
         private readonly IList<FilterSpecParamInValueForge> _listOfValues;
+        private readonly object[] _inListConstantsOnly;
 
         /// <summary>
-        ///     Ctor.
+        /// Ctor.
         /// </summary>
         /// <param name="lookupable">is the event property or function</param>
         /// <param name="filterOperator">is expected to be the IN-list operator</param>
@@ -130,11 +129,10 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return true;
             }
 
-            if (!(obj is FilterSpecParamInForge)) {
+            if (!(obj is FilterSpecParamInForge other)) {
                 return false;
             }
 
-            var other = (FilterSpecParamInForge) obj;
             if (!base.Equals(other)) {
                 return false;
             }
@@ -157,7 +155,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             return result;
         }
 
-        public override CodegenMethod MakeCodegen(
+        public override CodegenExpression MakeCodegen(
             CodegenClassScope classScope,
             CodegenMethodScope parent,
             SAIFFInitializeSymbolWEventType symbols)
@@ -168,66 +166,67 @@ namespace com.espertech.esper.common.@internal.filterspec
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar<FilterOperator>(
-                    "filterOperator",
+                    "op",
                     EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
-            var getFilterValue = new CodegenExpressionLambda(method.Block)
+            // var param = NewAnonymousClass(method.Block, typeof(FilterSpecParam), Arrays.AsList(Ref("lookupable"), Ref("op")));
+            // var getFilterValue = CodegenMethod
+            //     .MakeParentNode(typeof(FilterValueSetParam), GetType(), classScope)
+            //     .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
+            // param.AddMethod("getFilterValue", getFilterValue);
+
+            var getFilterValueLambda = new CodegenExpressionLambda(method.Block)
                 .WithParams(FilterSpecParam.GET_FILTER_VALUE_FP);
-            var param = NewInstance<ProxyFilterSpecParam>(
+            var getFilterValueProxy = NewInstance<ProxyFilterSpecParam>(
                 Ref("lookupable"),
                 Ref("filterOperator"),
-                getFilterValue);
-
-            //var param = NewAnonymousClass(
-            //    method.Block,
-            //    typeof(FilterSpecParam),
-            //    +++Arrays.AsList<CodegenExpression>(Ref("lookupable"), Ref("filterOperator")));
-            //var getFilterValue = CodegenMethod.MakeParentNode(typeof(object), GetType(), classScope)
-            //    .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
-            //param.AddMethod("GetFilterValue", getFilterValue);
-
+                getFilterValueLambda);
+            
             CodegenExpression filterForValue;
             if (_inListConstantsOnly != null) {
-                filterForValue = NewInstance<HashableMultiKey>(Constant(_inListConstantsOnly));
+                filterForValue = NewInstance(typeof(HashableMultiKey), Constant(_inListConstantsOnly));
             }
             else if (!_hasCollMapOrArray) {
-                getFilterValue.Block.DeclareVar<object[]>(
+                getFilterValueLambda.Block.DeclareVar(
+                    typeof(object[]),
                     "values",
                     NewArrayByLength(typeof(object), Constant(_listOfValues.Count)));
                 for (var i = 0; i < _listOfValues.Count; i++) {
                     var forge = _listOfValues[i];
-                    getFilterValue.Block.AssignArrayElement(
+                    getFilterValueLambda.Block.AssignArrayElement(
                         Ref("values"),
                         Constant(i),
                         forge.MakeCodegen(classScope, method));
                 }
 
-                filterForValue = NewInstance<HashableMultiKey>(Ref("values"));
+                filterForValue = NewInstance(typeof(HashableMultiKey), Ref("values"));
             }
             else {
-                getFilterValue.Block.DeclareVar<ArrayDeque<object>>(
+                getFilterValueLambda.Block.DeclareVar(
+                    typeof(ArrayDeque<object>),
                     "values",
-                    NewInstance<ArrayDeque<object>>(Constant(_listOfValues.Count)));
+                    NewInstance(typeof(ArrayDeque<object>), Constant(_listOfValues.Count)));
                 for (var i = 0; i < _listOfValues.Count; i++) {
                     var valueName = "value" + i;
                     var adderName = "adder" + i;
-                    getFilterValue.Block
+                    var adderType = _adders[i].GetType();
+                    getFilterValueLambda.Block
                         .DeclareVar<object>(valueName, _listOfValues[i].MakeCodegen(classScope, parent))
                         .IfRefNotNull(valueName)
-                        .DeclareVar(_adders[i].GetType(), adderName, EnumValue(_adders[i].GetType(), "INSTANCE"))
+                        .DeclareVar(adderType, adderName, EnumValue(adderType, "INSTANCE"))
                         .ExprDotMethod(Ref(adderName), "Add", Ref("values"), Ref(valueName))
                         .BlockEnd();
                 }
 
-                filterForValue = NewInstance<HashableMultiKey>(ExprDotMethod(Ref("values"), "ToArray"));
+                filterForValue = NewInstance(typeof(HashableMultiKey), ExprDotMethod(Ref("values"), "toArray"));
             }
 
-            getFilterValue.Block
+            getFilterValueLambda.Block
                 .DeclareVar<object>("val", filterForValue)
-                .BlockReturn(FilterValueSetParamImpl.CodegenNew(Ref("val")));
+                .MethodReturn(FilterValueSetParamImpl.CodegenNew(Ref("val")));
 
-            method.Block.MethodReturn(param);
-            return method;
+            method.Block.MethodReturn(getFilterValueProxy);
+            return LocalMethod(method);
         }
 
         private object[] GetFilterValues(
@@ -258,13 +257,17 @@ namespace com.espertech.esper.common.@internal.filterspec
             return constants.ToArray();
         }
 
-        public override void ValueExprToString(StringBuilder @out, int indent) {
+        public override void ValueExprToString(
+            StringBuilder @out,
+            int indent)
+        {
             if (_inListConstantsOnly != null) {
                 @out.Append("constant values, ")
                     .Append(_inListConstantsOnly.Length)
                     .Append(" entries")
                     .Append(NEWLINE);
-                for (int i = 0; i < _inListConstantsOnly.Length; i++) {
+                
+                for (var i = 0; i < _inListConstantsOnly.Length; i++) {
                     @out.Append(Indent.CreateIndent(indent))
                         .Append("value #")
                         .Append(i)
@@ -279,8 +282,8 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .Append(" entries")
                 .Append(NEWLINE);
             
-            int valueIndex = 0;
-            foreach (FilterSpecParamInValueForge forge in _listOfValues) {
+            var valueIndex = 0;
+            foreach (var forge in _listOfValues) {
                 @out.Append(Indent.CreateIndent(indent))
                     .Append("value #")
                     .Append(valueIndex)

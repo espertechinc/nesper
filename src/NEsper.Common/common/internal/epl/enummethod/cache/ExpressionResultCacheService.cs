@@ -25,16 +25,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
         }
 
         public ExpressionResultCacheForPropUnwrap AllocateUnwrapProp =>
-            _threadCache.GetOrCreate().GetAllocateUnwrapProp();
+            _threadCache.GetOrCreate().AllocateUnwrapProp;
 
         public ExpressionResultCacheForDeclaredExprLastValue AllocateDeclaredExprLastValue =>
-            _threadCache.GetOrCreate().GetAllocateDeclaredExprLastValue();
+            _threadCache.GetOrCreate().AllocateDeclaredExprLastValue;
 
         public ExpressionResultCacheForDeclaredExprLastColl AllocateDeclaredExprLastColl =>
-            _threadCache.GetOrCreate().GetAllocateDeclaredExprLastColl();
+            _threadCache.GetOrCreate().AllocateDeclaredExprLastColl;
 
         public ExpressionResultCacheForEnumerationMethod AllocateEnumerationMethod =>
-            _threadCache.GetOrCreate().GetAllocateEnumerationMethod();
+            _threadCache.GetOrCreate().AllocateEnumerationMethod;
 
         public bool IsDeclaredExprCacheEnabled => _declareExprCacheSize > 0;
     }

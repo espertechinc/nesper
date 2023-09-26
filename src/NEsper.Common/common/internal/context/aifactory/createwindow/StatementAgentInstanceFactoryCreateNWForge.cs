@@ -56,14 +56,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenMethod method = parent.MakeChild(
+            var method = parent.MakeChild(
                 typeof(StatementAgentInstanceFactoryCreateNW),
-                this.GetType(),
+                GetType(),
                 classScope);
             method.Block
-                .DeclareVar<StatementAgentInstanceFactoryCreateNW>(
-                    "saiff",
-                    NewInstance(typeof(StatementAgentInstanceFactoryCreateNW)));
+                .DeclareVarNewInstance<StatementAgentInstanceFactoryCreateNW>("saiff");
 
             method.Block
                 .SetProperty(Ref("saiff"), "Activator", activator.MakeCodegen(method, symbols, classScope))
@@ -88,7 +86,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
                             insertFromFilter.Forge,
                             method,
-                            this.GetType(),
+                            GetType(),
                             classScope))
                 .SetProperty(
                     Ref("saiff"),

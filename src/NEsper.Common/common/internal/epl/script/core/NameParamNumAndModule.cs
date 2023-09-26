@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,7 +18,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
 {
     public class NameParamNumAndModule
     {
-        public static readonly NameParamNumAndModule[] EMPTY_ARRAY = new NameParamNumAndModule[0];
+        public static readonly NameParamNumAndModule[] EMPTY_ARRAY = Array.Empty<NameParamNumAndModule>();
 
         private readonly string name;
         private readonly int paramNum;
@@ -33,47 +34,52 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             this.moduleName = moduleName;
         }
 
-        public string Name {
-            get => name;
-        }
+        public string Name => name;
 
-        public int ParamNum {
-            get => paramNum;
-        }
+        public int ParamNum => paramNum;
 
-        public string ModuleName {
-            get => moduleName;
-        }
+        public string ModuleName => moduleName;
 
         public override bool Equals(object o)
         {
-            if (this == o) return true;
-            if (o == null || GetType() != o.GetType()) return false;
+            if (this == o) {
+                return true;
+            }
 
-            NameParamNumAndModule that = (NameParamNumAndModule) o;
+            if (o == null || GetType() != o.GetType()) {
+                return false;
+            }
 
-            if (paramNum != that.paramNum) return false;
-            if (!name.Equals(that.name)) return false;
-            return moduleName != null ? moduleName.Equals(that.moduleName) : that.moduleName == null;
+            var that = (NameParamNumAndModule)o;
+
+            if (paramNum != that.paramNum) {
+                return false;
+            }
+
+            if (!name.Equals(that.name)) {
+                return false;
+            }
+
+            return moduleName?.Equals(that.moduleName) ?? that.moduleName == null;
         }
 
         public override int GetHashCode()
         {
-            int result = name.GetHashCode();
+            var result = name.GetHashCode();
             result = 31 * result + paramNum;
             result = 31 * result + (moduleName != null ? moduleName.GetHashCode() : 0);
             return result;
         }
 
-        public static CodegenExpression MakeArray(ICollection<NameParamNumAndModule> names)
+        public static CodegenExpression MakeArrayNullIfEmpty(ICollection<NameParamNumAndModule> names)
         {
             if (names.IsEmpty()) {
-                return EnumValue(typeof(NameParamNumAndModule), "EMPTY_ARRAY");
+                return ConstantNull();
             }
 
-            CodegenExpression[] expressions = new CodegenExpression[names.Count];
-            int count = 0;
-            foreach (NameParamNumAndModule entry in names) {
+            var expressions = new CodegenExpression[names.Count];
+            var count = 0;
+            foreach (var entry in names) {
                 expressions[count++] = entry.Make();
             }
 

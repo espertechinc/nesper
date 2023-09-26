@@ -71,8 +71,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     analysisResult.SetHasChildViews(i);
                 }
 
-                if (streamSpec is NamedWindowConsumerStreamSpec) {
-                    var nwSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+                if (streamSpec is NamedWindowConsumerStreamSpec nwSpec) {
                     if (nwSpec.OptPropertyEvaluator != null && !streamSpec.Options.IsUnidirectional) {
                         throw new ExprValidationException(
                             "Failed to validate named window use in join, Contained-event is only allowed for named windows when marked as unidirectional");
@@ -103,17 +102,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             // if there is only one stream providing data, the analysis is done
             if (countProviderNonpolling == 1) {
                 // set the non-polling stream as unidirectional if there is no data window
-                int nonPolling = 0;
-                for (int i = 0; i < statementSpec.StreamSpecs.Length; i++) {
+                var nonPolling = 0;
+                for (var i = 0; i < statementSpec.StreamSpecs.Length; i++) {
                     if (!IsPolling(statementSpec.StreamSpecs[i])) {
                         nonPolling = i;
                         break;
                     }
                 }
+
                 if (statementSpec.StreamSpecs[nonPolling].ViewSpecs.Length == 0) {
                     analysisResult.SetUnidirectionalInd(nonPolling);
                 }
-                
+
                 return analysisResult;
             }
             // there are multiple driving streams, verify the presence of a view for insert/remove stream
@@ -124,12 +124,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             FilterSpecCompiled lastFilterSpec = null;
             var pureSelfJoin = true;
             foreach (var streamSpec in statementSpec.StreamSpecs) {
-                if (!(streamSpec is FilterStreamSpecCompiled)) {
+                if (!(streamSpec is FilterStreamSpecCompiled compiled)) {
                     pureSelfJoin = false;
                     continue;
                 }
 
-                var filterSpec = ((FilterStreamSpecCompiled) streamSpec).FilterSpecCompiled;
+                var filterSpec = compiled.FilterSpecCompiled;
                 if (lastFilterSpec != null && !lastFilterSpec.EqualsTypeAndFilter(filterSpec)) {
                     pureSelfJoin = false;
                 }
@@ -159,8 +159,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 }
 
                 var name = streamSpec.OptionalStreamName;
-                if (name == null && streamSpec is FilterStreamSpecCompiled) {
-                    name = ((FilterStreamSpecCompiled) streamSpec).FilterSpecCompiled.FilterForEventTypeName;
+                if (name == null && streamSpec is FilterStreamSpecCompiled compiled) {
+                    name = compiled.FilterSpecCompiled.FilterForEventTypeName;
                 }
 
                 if (name == null && streamSpec is PatternStreamSpecCompiled) {
@@ -173,8 +173,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
                 // allow a self-join without a child view, in that the filter spec is the same as the unidirection's stream filter
                 if (unidirectionalFilterSpec != null &&
-                    streamSpec is FilterStreamSpecCompiled &&
-                    ((FilterStreamSpecCompiled) streamSpec).FilterSpecCompiled.EqualsTypeAndFilter(
+                    streamSpec is FilterStreamSpecCompiled specCompiled &&
+                    specCompiled.FilterSpecCompiled.EqualsTypeAndFilter(
                         unidirectionalFilterSpec)) {
                     analysisResult.SetUnidirectionalNonDriving(i);
                     continue;

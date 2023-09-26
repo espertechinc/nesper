@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            object result = evaluator.Evaluate(eventsPerStream, isNewData, context);
+            var result = evaluator.Evaluate(eventsPerStream, isNewData, context);
             if (result != null) {
                 result = casterParserComputer.Compute(result, eventsPerStream, isNewData, context);
             }

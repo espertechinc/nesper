@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
                     forge.reformatForge.ReturnType,
                     typeof(DTLocalLongOpsReformatEval),
                     codegenClassScope)
-                .AddParam(typeof(long), "target");
+                .AddParam<long>("target");
 
             var block = methodNode.Block
                 .DeclareVar<DateTimeEx>("dtx", StaticMethod(typeof(DateTimeEx), "GetInstance", timeZoneField))

@@ -53,16 +53,12 @@ namespace com.espertech.esper.common.client.soda
         {
             this.functionName = functionName;
             this.isDistinct = isDistinct;
-            for (int i = 0; i < moreExpressions.Length; i++)
-            {
+            for (var i = 0; i < moreExpressions.Length; i++) {
                 Children.Add(moreExpressions[i]);
             }
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {

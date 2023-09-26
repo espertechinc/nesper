@@ -23,12 +23,8 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             this.optExpression = optExpression;
         }
 
-        public string Name {
-            get => name;
-        }
+        public string Name => name;
 
-        public ExprNode OptExpression {
-            get => optExpression;
-        }
+        public ExprNode OptExpression => optExpression;
     }
 } // end of namespace

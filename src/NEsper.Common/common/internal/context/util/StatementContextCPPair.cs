@@ -33,13 +33,19 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public override bool Equals(object obj)
         {
-            if (ReferenceEquals(null, obj))
+            if (ReferenceEquals(null, obj)) {
                 return false;
-            if (ReferenceEquals(this, obj))
+            }
+
+            if (ReferenceEquals(this, obj)) {
                 return true;
-            if (obj.GetType() != this.GetType())
+            }
+
+            if (obj.GetType() != GetType()) {
                 return false;
-            return Equals((StatementContextCPPair) obj);
+            }
+
+            return Equals((StatementContextCPPair)obj);
         }
 
         public override int GetHashCode()

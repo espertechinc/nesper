@@ -14,57 +14,57 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIODateTimeOffsetSerde : DataInputOutputSerdeBase<DateTimeOffset>
-	{
-		public static readonly DIODateTimeOffsetSerde INSTANCE = new DIODateTimeOffsetSerde();
+    public class DIODateTimeOffsetSerde : DataInputOutputSerdeBase<DateTimeOffset>
+    {
+        public static readonly DIODateTimeOffsetSerde INSTANCE = new DIODateTimeOffsetSerde();
 
-		private DIODateTimeOffsetSerde()
-		{
-		}
+        private DIODateTimeOffsetSerde()
+        {
+        }
 
-		public void Write(
-			DateTimeOffset @object,
-			DataOutput output)
-		{
-			WriteInternal(@object, output);
-		}
+        public void Write(
+            DateTimeOffset @object,
+            DataOutput output)
+        {
+            WriteInternal(@object, output);
+        }
 
-		public DateTimeOffset Read(DataInput input)
-		{
-			return ReadInternal(input);
-		}
+        public DateTimeOffset Read(DataInput input)
+        {
+            return ReadInternal(input);
+        }
 
-		public override void Write(
-			DateTimeOffset @object,
-			DataOutput output,
-			byte[] unitKey,
-			EventBeanCollatedWriter writer)
-		{
-			WriteInternal(@object, output);
-		}
+        public override void Write(
+            DateTimeOffset @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteInternal(@object, output);
+        }
 
-		public override DateTimeOffset ReadValue(
-			DataInput input,
-			byte[] unitKey)
-		{
-			return ReadInternal(input);
-		}
+        public override DateTimeOffset ReadValue(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadInternal(input);
+        }
 
-		internal static void WriteInternal(
-			DateTimeOffset @object,
-			DataOutput output)
-		{
-			var nanos = DateTimeOffsetHelper.UtcNanos(@object);
-			var offset = @object.Offset.Ticks;
-			output.WriteLong(nanos);
-			output.WriteLong(offset);
-		}
+        internal static void WriteInternal(
+            DateTimeOffset @object,
+            DataOutput output)
+        {
+            var nanos = @object.UtcNanos();
+            var offset = @object.Offset.Ticks;
+            output.WriteLong(nanos);
+            output.WriteLong(offset);
+        }
 
-		internal static DateTimeOffset ReadInternal(DataInput input)
-		{
-			var nanos = input.ReadLong();
-			var offset = TimeSpan.FromTicks(input.ReadLong());
-			return DateTimeOffsetHelper.TimeFromNanos(nanos, offset);
-		}
-	}
+        internal static DateTimeOffset ReadInternal(DataInput input)
+        {
+            var nanos = input.ReadLong();
+            var offset = TimeSpan.FromTicks(input.ReadLong());
+            return nanos.TimeFromNanos(offset);
+        }
+    }
 } // end of namespace

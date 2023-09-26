@@ -23,13 +23,17 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers.forge
 
     public class ProxyJsonSerializerForge : JsonSerializerForge
     {
-        public Func<JsonSerializerForgeRefs, CodegenMethod, CodegenClassScope, CodegenExpression> ProcCodegenWrite { get; set; }
+        public Func<JsonSerializerForgeRefs, CodegenMethod, CodegenClassScope, CodegenExpression> ProcCodegenWrite {
+            get;
+            set;
+        }
 
         public ProxyJsonSerializerForge()
         {
         }
 
-        public ProxyJsonSerializerForge(Func<JsonSerializerForgeRefs, CodegenMethod, CodegenClassScope, CodegenExpression> procCodegenWrite)
+        public ProxyJsonSerializerForge(
+            Func<JsonSerializerForgeRefs, CodegenMethod, CodegenClassScope, CodegenExpression> procCodegenWrite)
         {
             ProcCodegenWrite = procCodegenWrite;
         }
@@ -37,6 +41,9 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers.forge
         public CodegenExpression CodegenSerialize(
             JsonSerializerForgeRefs refs,
             CodegenMethod method,
-            CodegenClassScope classScope) => ProcCodegenWrite(refs, method, classScope);
+            CodegenClassScope classScope)
+        {
+            return ProcCodegenWrite(refs, method, classScope);
+        }
     }
 } // end of namespace

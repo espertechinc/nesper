@@ -11,7 +11,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
-using com.espertech.esper.common.@internal.filterspec;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -48,19 +47,42 @@ namespace com.espertech.esper.common.@internal.context.activator
             var method = parent.MakeChild(typeof(ViewableActivatorFilter), GetType(), classScope);
 
             var makeFilter = filterSpecCompiled.MakeCodegen(method, symbols, classScope);
-            method.Block.DeclareVar<FilterSpecActivatable>("filterSpecCompiled", LocalMethod(makeFilter))
-                .DeclareVar<ViewableActivatorFilter>(
-                    "activator",
-                    ExprDotMethodChain(symbols.GetAddInitSvc(method))
-                        .Get(EPStatementInitServicesConstants.VIEWABLEACTIVATORFACTORY)
-                        .Add("CreateFilter"))
-                .SetProperty(Ref("activator"), "Container", ExprDotName(Ref("stmtInitSvc"), "Container"))
-                .SetProperty(Ref("activator"), "FilterSpec", Ref("filterSpecCompiled"))
-                .SetProperty(Ref("activator"), "CanIterate", Constant(canIterate))
-                .SetProperty(Ref("activator"), "StreamNumFromClause", Constant(streamNumFromClause))
-                .SetProperty(Ref("activator"), "IsSubSelect", Constant(isSubSelect))
-                .SetProperty(Ref("activator"), "SubselectNumber", Constant(subselectNumber))
-                .MethodReturn(Ref("activator"));
+
+            CodegenExpression initializer = ExprDotMethodChain(symbols.GetAddInitSvc(method))
+                .Get(EPStatementInitServicesConstants.VIEWABLEACTIVATORFACTORY)
+                .Add("CreateFilter");
+
+            var builder = new CodegenSetterBuilder(
+                typeof(ViewableActivatorFilter),
+                typeof(ViewableActivatorFilterForge),
+                "activator",
+                classScope,
+                method,
+                initializer);
+
+            builder
+                .Expression("filterSpec", Ref("filterSpecCompiled"))
+                .ConstantDefaultChecked("CanIterate", canIterate)
+                .ConstantDefaultChecked("StreamNumFromClause", streamNumFromClause)
+                .ConstantDefaultChecked("IsSubSelect", isSubSelect)
+                .ConstantDefaultChecked("SubselectNumber", subselectNumber);
+
+            // method.Block.DeclareVar<FilterSpecActivatable>("filterSpecCompiled", LocalMethod(makeFilter))
+            //     .DeclareVar<ViewableActivatorFilter>(
+            //         "activator",
+            //         ExprDotMethodChain(symbols.GetAddInitSvc(method))
+            //             .Get(EPStatementInitServicesConstants.VIEWABLEACTIVATORFACTORY)
+            //             .Add("CreateFilter"))
+            //     .SetProperty(Ref("activator"), "Container", ExprDotName(Ref("stmtInitSvc"), "Container"))
+            //     .SetProperty(Ref("activator"), "FilterSpec", Ref("filterSpecCompiled"))
+            //     .SetProperty(Ref("activator"), "CanIterate", Constant(canIterate))
+            //     .SetProperty(Ref("activator"), "StreamNumFromClause", Constant(streamNumFromClause))
+            //     .SetProperty(Ref("activator"), "IsSubSelect", Constant(isSubSelect))
+            //     .SetProperty(Ref("activator"), "SubselectNumber", Constant(subselectNumber))
+            //     .MethodReturn(Ref("activator"));
+
+            method.Block.MethodReturn(builder.RefName);
+
             return LocalMethod(method);
         }
     }

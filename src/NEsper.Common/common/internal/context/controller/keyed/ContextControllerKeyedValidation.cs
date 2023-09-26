@@ -1,11 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Linq;
 
 using com.espertech.esper.common.client;
@@ -21,21 +22,22 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 {
     public class ContextControllerKeyedValidation : ContextControllerPortableInfo
     {
+        private readonly ContextControllerKeyedValidationItem[] items;
+
         public ContextControllerKeyedValidation(ContextControllerKeyedValidationItem[] items)
         {
-            Items = items;
+            this.items = items;
         }
-
-        public ContextControllerKeyedValidationItem[] Items { get; }
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)
         {
-            var init = new CodegenExpression[Items.Length];
+            var init = new CodegenExpression[items.Length];
             for (var i = 0; i < init.Length; i++) {
-                init[i] = Items[i].Make(addInitSvc);
+                init[i] = items[i].Make(addInitSvc);
             }
 
-            return NewInstance<ContextControllerKeyedValidation>(
+            return NewInstance(
+                typeof(ContextControllerKeyedValidation),
                 NewArrayWithInit(typeof(ContextControllerKeyedValidationItem), init));
         }
 
@@ -44,11 +46,21 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
             StatementSpecCompiled spec,
             StatementCompileTimeServices compileTimeServices)
         {
+            var typeProvider = items
+                .Select(_ => (Supplier<EventType>) _.Get)
+                .ToArray();
+            
             ContextControllerForgeUtil.ValidateStatementKeyAndHash(
-                Items.Select(i => (Supplier<EventType>) i.Get).ToArray(),
-                contextName,
-                spec,
-                compileTimeServices);
+                typeProvider, contextName, spec, compileTimeServices);
         }
+
+        public void VisitFilterAddendumEventTypes(Consumer<EventType> consumer)
+        {
+            foreach (var item in items) {
+                item.VisitFilterAddendumEventTypes(consumer);
+            }
+        }
+
+        public ContextControllerKeyedValidationItem[] Items => items;
     }
 } // end of namespace

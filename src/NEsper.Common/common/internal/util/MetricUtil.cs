@@ -46,13 +46,13 @@ namespace com.espertech.esper.common.@internal.util
         /// </summary>
         /// <value>The user processor time.</value>
         public static TimeSpan UserProcessorTime =>
-            CurrentProcessThread != null ? CurrentProcessThread.UserProcessorTime : TimeSpan.Zero;
+            CurrentProcessThread?.UserProcessorTime ?? TimeSpan.Zero;
 
         /// <summary>
         ///     Gets the total processor time for the current thread.
         /// </summary>
         /// <value>The total processor time.</value>
         public static TimeSpan TotalProcessorTime =>
-            CurrentProcessThread != null ? CurrentProcessThread.TotalProcessorTime : TimeSpan.Zero;
+            CurrentProcessThread?.TotalProcessorTime ?? TimeSpan.Zero;
     }
 }

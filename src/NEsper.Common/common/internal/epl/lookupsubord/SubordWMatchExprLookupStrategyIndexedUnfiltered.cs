@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupsubord
                 removeEvents.AddAll(matches);
             }
 
-            EventBean[] result = removeEvents?.ToArray();
+            var result = removeEvents?.ToArray();
 
             return result;
         }

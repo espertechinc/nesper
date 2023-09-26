@@ -22,7 +22,10 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
     public class ProxyFAFQueryMethodAssignerSetter : FAFQueryMethodAssignerSetter
     {
         public delegate void AssignFunc(StatementAIFactoryAssignments assignments);
-        public delegate void SetValueFunc(int number, object value);
+
+        public delegate void SetValueFunc(
+            int number,
+            object value);
 
         public AssignFunc ProcAssign { get; set; }
         public SetValueFunc ProcSetValue { get; set; }

@@ -87,7 +87,7 @@ namespace NEsper.Avro.Core
                 var allNumeric = true;
                 foreach (var unioned in unionTypes)
                 {
-                    if (!TypeHelper.IsNumeric(unioned))
+                    if (!TypeHelper.IsTypeNumeric(unioned))
                     {
                         allNumeric = false;
                     }

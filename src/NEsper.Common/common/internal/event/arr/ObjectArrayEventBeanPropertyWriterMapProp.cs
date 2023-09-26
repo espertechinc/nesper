@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             int index,
             string key)
         {
-            var mapEntry = (IDictionary<string, object>) array[index];
+            var mapEntry = (IDictionary<string, object>)array[index];
             mapEntry?.Put(key, value);
         }
     }

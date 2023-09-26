@@ -42,25 +42,21 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
             NamedWindowDeltaData deltaOne,
             NamedWindowDeltaData deltaTwo)
         {
-            this.newData = Aggregate(deltaOne.NewData, deltaTwo.NewData);
-            this.oldData = Aggregate(deltaOne.OldData, deltaTwo.OldData);
+            newData = Aggregate(deltaOne.NewData, deltaTwo.NewData);
+            oldData = Aggregate(deltaOne.OldData, deltaTwo.OldData);
         }
 
         /// <summary>
         /// Returns the insert stream events.
         /// </summary>
         /// <returns>insert stream</returns>
-        public EventBean[] NewData {
-            get => newData;
-        }
+        public EventBean[] NewData => newData;
 
         /// <summary>
         /// Returns the remove stream events.
         /// </summary>
         /// <returns>remove stream</returns>
-        public EventBean[] OldData {
-            get => oldData;
-        }
+        public EventBean[] OldData => oldData;
 
         private static EventBean[] Aggregate(
             EventBean[] arrOne,
@@ -74,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.consume
                 return arrOne;
             }
 
-            EventBean[] arr = new EventBean[arrOne.Length + arrTwo.Length];
+            var arr = new EventBean[arrOne.Length + arrTwo.Length];
             Array.Copy(arrOne, 0, arr, 0, arrOne.Length);
             Array.Copy(arrTwo, 0, arr, arrOne.Length, arrTwo.Length);
             return arr;

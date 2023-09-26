@@ -9,7 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.execstrategy;
 using com.espertech.esper.common.@internal.epl.historical.method.poll;
 
@@ -35,11 +35,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
         public IList<EventBean> Poll(
             object lookupValues,
-            AgentInstanceContext agentInstanceContext)
+            ExprEvaluatorContext exprEvaluatorContext)
         {
-            var result = methodTargetStrategy.Invoke(lookupValues, agentInstanceContext);
+            var result = methodTargetStrategy.Invoke(lookupValues, exprEvaluatorContext);
             if (result != null) {
-                return methodConversionStrategy.Convert(result, methodTargetStrategy, agentInstanceContext);
+                return methodConversionStrategy.Convert(result, methodTargetStrategy, exprEvaluatorContext);
             }
 
             return null;
@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             // no action
         }
 
-        public void Destroy()
+        public void Dispose()
         {
             // no action
         }

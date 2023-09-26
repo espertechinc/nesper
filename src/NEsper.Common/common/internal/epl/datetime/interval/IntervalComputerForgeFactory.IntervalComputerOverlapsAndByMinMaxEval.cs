@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 ExprEvaluatorContext context)
             {
                 if (overlaps) {
-                    long minThreshold = minEval.Evaluate(leftStart, eventsPerStream, newData, context);
-                    long maxThreshold = maxEval.Evaluate(leftEnd, eventsPerStream, newData, context);
+                    var minThreshold = minEval.Evaluate(leftStart, eventsPerStream, newData, context);
+                    var maxThreshold = maxEval.Evaluate(leftEnd, eventsPerStream, newData, context);
                     return IntervalComputerOverlapsAndByThresholdEval.ComputeIntervalOverlaps(
                         leftStart,
                         leftEnd,
@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                         maxThreshold);
                 }
                 else {
-                    long minThreshold = minEval.Evaluate(rightStart, eventsPerStream, newData, context);
-                    long maxThreshold = maxEval.Evaluate(rightEnd, eventsPerStream, newData, context);
+                    var minThreshold = minEval.Evaluate(rightStart, eventsPerStream, newData, context);
+                    var maxThreshold = maxEval.Evaluate(rightEnd, eventsPerStream, newData, context);
                     return IntervalComputerOverlapsAndByThresholdEval.ComputeIntervalOverlaps(
                         rightStart,
                         rightEnd,

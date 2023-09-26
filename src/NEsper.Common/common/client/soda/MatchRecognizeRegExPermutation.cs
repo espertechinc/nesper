@@ -19,10 +19,9 @@ namespace com.espertech.esper.common.client.soda
     {
         public override void WriteEPL(TextWriter writer)
         {
-            string delimiter = "";
+            var delimiter = "";
             writer.Write("match_recognize_permute(");
-            foreach (MatchRecognizeRegEx node in Children)
-            {
+            foreach (var node in Children) {
                 writer.Write(delimiter);
                 node.WriteEPL(writer);
                 delimiter = ",";

@@ -15,7 +15,6 @@ using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.support
 {
@@ -36,7 +35,7 @@ namespace com.espertech.esper.common.@internal.support
             return EnumHelper.GetValues<EventRepresentationChoice>()
                 .Where(_ => _ != EventRepresentationChoice.DEFAULT);
         }
-        
+
         public static string GetPublicName(this EventRepresentationChoice enumValue)
         {
             if (enumValue == EventRepresentationChoice.DEFAULT) {
@@ -54,7 +53,8 @@ namespace com.espertech.esper.common.@internal.support
                 EventRepresentationChoice.MAP => "@EventRepresentation('map')",
                 EventRepresentationChoice.AVRO => "@EventRepresentation('avro')",
                 EventRepresentationChoice.JSON => "@EventRepresentation('json')",
-                EventRepresentationChoice.JSONCLASSPROVIDED => throw new UnsupportedOperationException("For Json-Provided please use getAnnotationTextWJsonProvided(class)"),
+                EventRepresentationChoice.JSONCLASSPROVIDED => throw new UnsupportedOperationException(
+                    "For Json-Provided please use getAnnotationTextWJsonProvided(class)"),
                 EventRepresentationChoice.DEFAULT => "",
                 _ => throw new ArgumentException("invalid value for EnumValue", nameof(enumValue))
             };
@@ -65,9 +65,14 @@ namespace com.espertech.esper.common.@internal.support
             return GetAnnotationTextWJsonProvided(enumValue, typeof(T));
         }
 
-        public static string GetAnnotationTextWJsonProvided(this EventRepresentationChoice enumValue, Type jsonProvidedClass) {
+        public static string GetAnnotationTextWJsonProvided(
+            this EventRepresentationChoice enumValue,
+            Type jsonProvidedClass)
+        {
             if (enumValue == EventRepresentationChoice.JSONCLASSPROVIDED) {
-                return "@JsonSchema(ClassName='" + jsonProvidedClass.FullName + "') " + 
+                return "@JsonSchema(ClassName='" +
+                       jsonProvidedClass.FullName +
+                       "') " +
                        "@EventRepresentation('json')";
             }
 
@@ -107,8 +112,8 @@ namespace com.espertech.esper.common.@internal.support
             var supers = new HashSet<Type>();
             TypeHelper.GetBase(representationType, supers);
             supers.Add(representationType);
-            foreach (Type clazz in supers) {
-                if ((clazz.FullName == outputTypeClassName) ||
+            foreach (var clazz in supers) {
+                if (clazz.FullName == outputTypeClassName ||
                     (outputTypeClass != null && TypeHelper.IsSubclassOrImplementsInterface(clazz, outputTypeClass))) {
                     return true;
                 }
@@ -175,10 +180,10 @@ namespace com.espertech.esper.common.@internal.support
                 case EventRepresentationChoice.JSONCLASSPROVIDED:
                     part.AddValue("json");
                     break;
-
             }
 
-            model.Annotations = Collections.SingletonList(part);
+            model.Annotations ??= new List<AnnotationPart>();
+            model.Annotations.Add(part);
         }
 
         public static bool IsAvroOrJsonEvent(this EventRepresentationChoice enumValue)
@@ -188,6 +193,7 @@ namespace com.espertech.esper.common.@internal.support
                 case EventRepresentationChoice.JSON:
                 case EventRepresentationChoice.JSONCLASSPROVIDED:
                     return true;
+
                 default:
                     return false;
             }

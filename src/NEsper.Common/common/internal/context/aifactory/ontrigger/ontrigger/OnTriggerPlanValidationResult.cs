@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -15,37 +15,52 @@ using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.subselect;
 using com.espertech.esper.common.@internal.epl.table.strategy;
+using com.espertech.esper.common.@internal.fabric;
+
 
 namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontrigger
 {
     public class OnTriggerPlanValidationResult
     {
+        private readonly IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselectForges;
+        private readonly IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccessForges;
+        private readonly ResultSetProcessorDesc resultSetProcessorPrototype;
+        private readonly ExprNode validatedJoin;
+        private readonly string zeroStreamAliasName;
+        private readonly IList<StmtClassForgeableFactory> additionalForgeables;
+        private readonly FabricCharge fabricCharge;
+
         public OnTriggerPlanValidationResult(
             IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselectForges,
             IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccessForges,
             ResultSetProcessorDesc resultSetProcessorPrototype,
             ExprNode validatedJoin,
             string zeroStreamAliasName,
-            IList<StmtClassForgeableFactory> additionalForgeables)
+            IList<StmtClassForgeableFactory> additionalForgeables,
+            FabricCharge fabricCharge)
         {
-            SubselectForges = subselectForges;
-            TableAccessForges = tableAccessForges;
-            ResultSetProcessorPrototype = resultSetProcessorPrototype;
-            ValidatedJoin = validatedJoin;
-            ZeroStreamAliasName = zeroStreamAliasName;
-            AdditionalForgeables = additionalForgeables;
+            this.subselectForges = subselectForges;
+            this.tableAccessForges = tableAccessForges;
+            this.resultSetProcessorPrototype = resultSetProcessorPrototype;
+            this.validatedJoin = validatedJoin;
+            this.zeroStreamAliasName = zeroStreamAliasName;
+            this.additionalForgeables = additionalForgeables;
+            this.fabricCharge = fabricCharge;
         }
 
-        public IDictionary<ExprSubselectNode, SubSelectFactoryForge> SubselectForges { get; }
+        public IDictionary<ExprSubselectNode, SubSelectFactoryForge> SubselectForges => subselectForges;
 
-        public IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> TableAccessForges { get; }
+        public IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> TableAccessForges =>
+            tableAccessForges;
 
-        public ResultSetProcessorDesc ResultSetProcessorPrototype { get; }
+        public ResultSetProcessorDesc ResultSetProcessorPrototype => resultSetProcessorPrototype;
 
-        public ExprNode ValidatedJoin { get; }
+        public ExprNode ValidatedJoin => validatedJoin;
 
-        public string ZeroStreamAliasName { get; }
-        
-        public IList<StmtClassForgeableFactory> AdditionalForgeables { get; }
+        public string ZeroStreamAliasName => zeroStreamAliasName;
+
+        public IList<StmtClassForgeableFactory> AdditionalForgeables => additionalForgeables;
+
+        public FabricCharge FabricCharge => fabricCharge;
     }
 } // end of namespace

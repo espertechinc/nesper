@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public EventBean Wrap(object underlying)
         {
-            return eventBeanTypedEventFactory.AdapterForTypedMap((IDictionary<string, object>) underlying, type);
+            return eventBeanTypedEventFactory.AdapterForTypedMap((IDictionary<string, object>)underlying, type);
         }
     }
 } // end of namespace

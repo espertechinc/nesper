@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             }
 
             var property = CodegenProperty.MakePropertyNode(
-                returnType, 
+                returnType,
                 generator,
                 symbolProvider,
                 classScope);

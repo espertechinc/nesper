@@ -158,7 +158,7 @@ namespace com.espertech.esper.common.@internal.view.timebatch
             // there have been any events in this or the last interval do we schedule a callback,
             // such as to not waste resources when no events arrive.
             if (!currentBatch.IsEmpty() ||
-                lastBatch != null && !lastBatch.IsEmpty() ||
+                (lastBatch != null && !lastBatch.IsEmpty()) ||
                 factory.isForceUpdate) {
                 ScheduleCallback();
                 isCallbackScheduled = true;
@@ -193,13 +193,13 @@ namespace com.espertech.esper.common.@internal.view.timebatch
         protected void ScheduleCallback()
         {
             var current = agentInstanceContext.StatementContext.SchedulingService.Time;
-            TimePeriodDeltaResult deltaWReference = timePeriodProvide.DeltaAddWReference(
+            var deltaWReference = timePeriodProvide.DeltaAddWReference(
                 current,
                 currentReferencePoint.Value,
                 null,
                 true,
                 agentInstanceContext);
-            long afterTime = deltaWReference.Delta;
+            var afterTime = deltaWReference.Delta;
             currentReferencePoint = deltaWReference.LastReference;
 
             ScheduleHandleCallback callback = new ProxyScheduleHandleCallback {
@@ -224,10 +224,9 @@ namespace com.espertech.esper.common.@internal.view.timebatch
                 factory.ViewName);
             agentInstanceContext.StatementContext.SchedulingService.Add(afterTime, handle, scheduleSlot);
         }
-        
+
         public void Transfer(AgentInstanceTransferServices services)
         {
         }
-
     }
 } // end of namespace

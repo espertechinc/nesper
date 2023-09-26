@@ -32,9 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             return new AggregationForgeFactoryLeaving(this);
         }
 
-        public override string AggregationFunctionName {
-            get => "leaving";
-        }
+        public override string AggregationFunctionName => "leaving";
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {

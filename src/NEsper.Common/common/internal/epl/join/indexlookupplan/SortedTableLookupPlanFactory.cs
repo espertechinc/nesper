@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.join.indexlookupplan
             EventTable[] eventTables,
             EventType[] eventTypes)
         {
-            var index = (PropertySortedEventTable) eventTables[0];
+            var index = (PropertySortedEventTable)eventTables[0];
             return new SortedTableLookupStrategy(lookupStream, -1, rangeKeyPair, index);
         }
     }

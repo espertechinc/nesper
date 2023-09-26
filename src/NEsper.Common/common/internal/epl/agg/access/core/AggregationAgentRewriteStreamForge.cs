@@ -24,9 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.core
             this.streamNum = streamNum;
         }
 
-        public ExprForge OptionalFilter {
-            get => null;
-        }
+        public ExprForge OptionalFilter => null;
 
         public CodegenExpression Make(
             CodegenMethod method,

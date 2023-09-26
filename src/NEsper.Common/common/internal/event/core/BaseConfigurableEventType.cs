@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -16,28 +17,36 @@ using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
+//using static com.espertech.esper.common.@internal.@event.core;
+
 namespace com.espertech.esper.common.@internal.@event.core
 {
     /// <summary>
-    ///     EventType than can be supplied with a preconfigured list of properties getters (aka. explicit properties).
+    ///     EventType than can be supplied with a preconfigured list of properties getters (aka. @explicit properties).
     /// </summary>
     /// <author>pablo</author>
     public abstract class BaseConfigurableEventType : EventTypeSPI
     {
-        private static readonly ILog Log = LogManager.GetLogger(typeof(BaseConfigurableEventType));
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
+        private readonly EventTypeNameResolver eventTypeResolver;
 
         /// <summary>
         ///     Descriptors for each known property.
         /// </summary>
-        private IDictionary<string, EventPropertyDescriptor> propertyDescriptorMap;
+        protected IDictionary<string, EventPropertyDescriptor> propertyDescriptorMap;
 
+        private EventPropertyDescriptor[] propertyDescriptors;
         private IDictionary<string, Pair<ExplicitPropertyDescriptor, FragmentEventType>> propertyFragmentTypes;
         private IDictionary<string, EventPropertyGetter> propertyGetterCodegeneratedCache;
 
         /// <summary>
         ///     Getters for each known property.
         /// </summary>
-        internal IDictionary<string, EventPropertyGetterSPI> propertyGetters;
+        protected IDictionary<string, EventPropertyGetterSPI> propertyGetters;
+
+        private readonly XMLFragmentEventTypeFactory xmlEventTypeFactory;
 
         protected BaseConfigurableEventType(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -46,26 +55,12 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventTypeNameResolver eventTypeResolver,
             XMLFragmentEventTypeFactory xmlEventTypeFactory)
         {
-            EventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             Metadata = metadata;
             UnderlyingType = underlyingType;
-            EventTypeResolver = eventTypeResolver;
-            XmlEventTypeFactory = xmlEventTypeFactory;
+            this.eventTypeResolver = eventTypeResolver;
+            this.xmlEventTypeFactory = xmlEventTypeFactory;
         }
-
-        /// <summary>
-        ///     Returns the event adapter service.
-        /// </summary>
-        /// <returns>event adapter service</returns>
-        public EventBeanTypedEventFactory EventBeanTypedEventFactory { get; }
-
-        public EventTypeNameResolver EventTypeResolver { get; }
-
-        public XMLFragmentEventTypeFactory XmlEventTypeFactory { get; }
-
-        public IDictionary<string, EventPropertyDescriptor> PropertyDescriptorMap => propertyDescriptorMap;
-
-        public string Name => Metadata.Name;
 
         public void SetMetadataId(
             long publicId,
@@ -74,14 +69,14 @@ namespace com.espertech.esper.common.@internal.@event.core
             Metadata = Metadata.WithIds(publicId, protectedId);
         }
 
-        public Type GetPropertyType(string propertyExpression)
+        public Type GetPropertyType(string propertyName)
         {
-            var desc = propertyDescriptorMap.Get(propertyExpression);
+            var desc = propertyDescriptorMap.Get(propertyName);
             if (desc != null) {
                 return desc.PropertyType;
             }
 
-            return DoResolvePropertyType(propertyExpression);
+            return DoResolvePropertyType(propertyName);
         }
 
         public Type UnderlyingType { get; }
@@ -135,7 +130,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 // resolve event type
-                var existingType = EventTypeResolver.GetTypeByName(pair.First.OptionalFragmentTypeName);
+                var existingType = eventTypeResolver.GetTypeByName(pair.First.OptionalFragmentTypeName);
                 if (!(existingType is BaseConfigurableEventType)) {
                     Log.Warn(
                         "Type configured for fragment event property '" +
@@ -146,7 +141,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     return null;
                 }
 
-                var fragmentType = new FragmentEventType(existingType, pair.First.IsFragmentArray, false);
+                var fragmentType = new FragmentEventType(existingType, pair.First.IsFragmentArray, false, false);
                 pair.Second = fragmentType;
                 return fragmentType;
             }
@@ -159,8 +154,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             return GetGetter(property) != null;
         }
 
-        public IList<EventPropertyDescriptor> PropertyDescriptors { get; private set; }
-
+        public IList<EventPropertyDescriptor> PropertyDescriptors => propertyDescriptors;
         public EventTypeMetadata Metadata { get; private set; }
 
         public EventPropertyDescriptor GetPropertyDescriptor(string propertyName)
@@ -168,65 +162,45 @@ namespace com.espertech.esper.common.@internal.@event.core
             return propertyDescriptorMap.Get(propertyName);
         }
 
-        EventPropertyGetterIndexed EventType.GetGetterIndexed(string indexedPropertyName)
-        {
-            return GetGetterIndexed(indexedPropertyName);
-        }
-
-        public abstract IList<EventType> SuperTypes { get; }
-        public abstract IEnumerable<EventType> DeepSuperTypes { get; }
-        public abstract ICollection<EventType> DeepSuperTypesCollection { get; }
-        public abstract string StartTimestampPropertyName { get; }
-        public abstract string EndTimestampPropertyName { get; }
-        public abstract EventPropertyDescriptor[] WriteableProperties { get; }
-        public abstract EventPropertyWriterSPI GetWriter(string propertyName);
-        public abstract EventPropertyDescriptor GetWritableProperty(string propertyName);
-        public abstract EventBeanCopyMethodForge GetCopyMethodForge(string[] properties);
-        public abstract EventBeanWriter GetWriter(string[] properties);
-        public abstract ExprValidationException EqualsCompareType(EventType eventType);
-
         /// <summary>
         ///     Subclasses must implement this and supply a getter to a given property.
         /// </summary>
-        /// <param name="property">is the property expression</param>
+        /// <param name = "property">is the property expression</param>
         /// <returns>getter for property</returns>
         protected abstract EventPropertyGetterSPI DoResolvePropertyGetter(string property);
 
         /// <summary>
         ///     Subclasses must implement this and return a type for a property.
         /// </summary>
-        /// <param name="property">is the property expression</param>
+        /// <param name = "property">is the property expression</param>
         /// <returns>property type</returns>
         protected abstract Type DoResolvePropertyType(string property);
 
         /// <summary>
         ///     Subclasses must implement this and return a fragment type for a property.
         /// </summary>
-        /// <param name="property">is the property expression</param>
+        /// <param name = "property">is the property expression</param>
         /// <returns>fragment property type</returns>
         protected abstract FragmentEventType DoResolveFragmentType(string property);
 
         /// <summary>
-        ///     Sets explicit properties using a map of event property name and getter instance for each property.
+        ///     Sets @explicit properties using a map of event property name and getter instance for each property.
         /// </summary>
-        /// <param name="explicitProperties">property descriptors for explicit properties</param>
+        /// <param name = "explicitProperties">property descriptors for @explicit properties</param>
         protected void Initialize(IList<ExplicitPropertyDescriptor> explicitProperties)
         {
             propertyGetters = new Dictionary<string, EventPropertyGetterSPI>();
-            PropertyDescriptors = new EventPropertyDescriptor[explicitProperties.Count];
+            propertyDescriptors = new EventPropertyDescriptor[explicitProperties.Count];
             PropertyNames = new string[explicitProperties.Count];
             propertyDescriptorMap = new Dictionary<string, EventPropertyDescriptor>();
             propertyFragmentTypes = new Dictionary<string, Pair<ExplicitPropertyDescriptor, FragmentEventType>>();
-
             var count = 0;
             foreach (var @explicit in explicitProperties) {
                 PropertyNames[count] = @explicit.Descriptor.PropertyName;
                 propertyGetters.Put(@explicit.Descriptor.PropertyName, @explicit.Getter);
-                
                 var desc = @explicit.Descriptor;
-                PropertyDescriptors[count] = desc;
+                propertyDescriptors[count] = desc;
                 propertyDescriptorMap.Put(desc.PropertyName, desc);
-
                 if (@explicit.OptionalFragmentTypeName != null) {
                     propertyFragmentTypes.Put(
                         @explicit.Descriptor.PropertyName,
@@ -234,16 +208,37 @@ namespace com.espertech.esper.common.@internal.@event.core
                 }
 
                 if (!desc.IsFragment) {
-                    propertyFragmentTypes.Put(@explicit.Descriptor.PropertyName, null);
+                    propertyFragmentTypes.Put(@explicit.Descriptor.PropertyName);
                 }
 
                 count++;
             }
         }
 
-        public EventPropertyGetterIndexedSPI GetGetterIndexed(string indexedProperty)
+        public EventPropertyGetterIndexed GetGetterIndexed(string indexedProperty)
         {
             return null;
         }
+
+        public string Name => Metadata.Name;
+
+        public EventBeanTypedEventFactory EventBeanTypedEventFactory => eventBeanTypedEventFactory;
+
+        public EventTypeNameResolver EventTypeResolver => eventTypeResolver;
+
+        public XMLFragmentEventTypeFactory XmlEventTypeFactory => xmlEventTypeFactory;
+
+        public abstract IList<EventType> SuperTypes { get; }
+        public abstract IEnumerable<EventType> DeepSuperTypes { get; }
+        public abstract ICollection<EventType> DeepSuperTypesCollection { get; }
+        public abstract string StartTimestampPropertyName { get; }
+        public abstract string EndTimestampPropertyName { get; }
+        public abstract EventPropertyDescriptor[] WriteableProperties { get; }
+
+        public abstract EventPropertyWriterSPI GetWriter(string propertyName);
+        public abstract EventPropertyDescriptor GetWritableProperty(string propertyName);
+        public abstract EventBeanCopyMethodForge GetCopyMethodForge(string[] properties);
+        public abstract EventBeanWriter GetWriter(string[] properties);
+        public abstract ExprValidationException EqualsCompareType(EventType eventType);
     }
 } // end of namespace

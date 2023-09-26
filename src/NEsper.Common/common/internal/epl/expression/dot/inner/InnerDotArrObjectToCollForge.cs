@@ -29,9 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             this.rootForge = rootForge;
         }
 
-        public ExprDotEvalRootChildInnerEval InnerEvaluator {
-            get => new InnerDotArrObjectToCollEval(rootForge.ExprEvaluator);
-        }
+        public ExprDotEvalRootChildInnerEval InnerEvaluator => new InnerDotArrObjectToCollEval(rootForge.ExprEvaluator);
 
         public CodegenExpression CodegenEvaluate(
             CodegenMethod parentMethod,
@@ -65,22 +63,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             return ConstantNull();
         }
 
-        public EventType EventTypeCollection {
-            get => null;
-        }
+        public EventType EventTypeCollection => null;
 
-        public Type ComponentTypeCollection {
-            get => null;
-        }
+        public Type ComponentTypeCollection => null;
 
-        public EventType EventTypeSingle {
-            get => null;
-        }
+        public EventType EventTypeSingle => null;
 
-        public EPType TypeInfo {
-            get => EPTypeHelper.CollectionOfSingleValue(
-                rootForge.EvaluationType.GetElementType(),
-                rootForge.EvaluationType);
-        }
+        public EPChainableType TypeInfo =>
+            EPChainableTypeHelper.CollectionOfSingleValue(
+                rootForge.EvaluationType.GetElementType());
     }
 } // end of namespace

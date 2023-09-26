@@ -43,10 +43,12 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
             ChildNodes[0].ToEPL(writer, Precedence);
             writer.Write(Type.GetOptionalPostfix());
         }
-        
+
         public override RowRecogExprNode CheckedCopySelf(ExpressionCopier expressionCopier)
         {
-            return new RowRecogExprNodeNested(Type, OptionalRepeat == null ? null : OptionalRepeat.CheckedCopy(expressionCopier));
+            return new RowRecogExprNodeNested(
+                Type,
+                OptionalRepeat?.CheckedCopy(expressionCopier));
         }
     }
 } // end of namespace

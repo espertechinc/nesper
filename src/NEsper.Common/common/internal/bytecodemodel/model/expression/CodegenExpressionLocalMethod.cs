@@ -46,11 +46,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             if (_methodNode.AssignedMethod == null) {
                 throw new IllegalStateException("Method has no assignment for " + _methodNode.AdditionalDebugInfo);
             }
+
             if (_methodNode.AssignedProviderClassName != null) {
                 builder.Append(_methodNode.AssignedProviderClassName);
                 builder.Append(".");
             }
-            
+
             builder.Append(_methodNode.AssignedMethod.Name).Append("(");
             var delimiter = "";
 
@@ -78,7 +79,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             _methodNode.MergeClasses(classes);
             _parameters.For(p => p.MergeClasses(classes));
         }
-        
+
         public void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
             CodegenExpressionBuilder.TraverseMultiple(_parameters, consumer);

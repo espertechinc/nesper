@@ -85,11 +85,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprOrderedExpr)) {
+            if (!(node is ExprOrderedExpr other)) {
                 return false;
             }
 
-            var other = (ExprOrderedExpr) node;
             return other.IsDescending == IsDescending;
         }
 

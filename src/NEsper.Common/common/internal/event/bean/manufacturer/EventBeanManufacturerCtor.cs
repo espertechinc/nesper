@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             this.constructor = constructor;
-            this.beanEventType = (BeanEventType) beanEventType;
+            this.beanEventType = (BeanEventType)beanEventType;
             this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
         }
 

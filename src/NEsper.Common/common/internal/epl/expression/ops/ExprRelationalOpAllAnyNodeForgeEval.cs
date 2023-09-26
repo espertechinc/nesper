@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -25,9 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
     public class ExprRelationalOpAllAnyNodeForgeEval : ExprEvaluator
     {
-        private readonly ExprEvaluator[] _evaluators;
-
         private readonly ExprRelationalOpAllAnyNodeForge _forge;
+        private readonly ExprEvaluator[] _evaluators;
 
         public ExprRelationalOpAllAnyNodeForgeEval(
             ExprRelationalOpAllAnyNodeForge forge,
@@ -55,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var isAll = _forge.ForgeRenderable.IsAll;
-            RelationalOpEnumComputer computer = _forge.Computer;
+            var computer = _forge.Computer;
             var valueLeft = _evaluators[0].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             var len = _evaluators.Length - 1;
 
@@ -97,10 +96,35 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             }
                         }
                     }
-                    else if (valueRight is IDictionary<object, object>) {
-                        var coll = (IDictionary<object, object>) valueRight;
+                    else if (valueRight is IDictionary<object, object> valueRightDictionary) {
                         hasRows = true;
-                        foreach (object item in coll.Keys) {
+                        foreach (object item in valueRightDictionary.Keys) {
+                            if (!item.IsNumber()) {
+                                if (isAll && item == null) {
+                                    return null;
+                                }
+
+                                continue;
+                            }
+
+                            hasNonNullRow = true;
+                            if (valueLeft != null) {
+                                if (isAll) {
+                                    if (!computer.Compare(valueLeft, item)) {
+                                        return false;
+                                    }
+                                }
+                                else {
+                                    if (computer.Compare(valueLeft, item)) {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else if (valueRight is ICollection<object> valueRightCollection) {
+                        hasRows = true;
+                        foreach (var item in valueRightCollection) {
                             if (!(item.IsNumber())) {
                                 if (isAll && item == null) {
                                     return null;
@@ -124,34 +148,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                             }
                         }
                     }
-                    else if (valueRight is ICollection<object>) {
-                        var coll = (ICollection<object>) valueRight;
-                        hasRows = true;
-                        foreach (object item in coll) {
-                            if (!(item.IsNumber())) {
-                                if (isAll && item == null) {
-                                    return null;
-                                }
-
-                                continue;
-                            }
-
-                            hasNonNullRow = true;
-                            if (valueLeft != null) {
-                                if (isAll) {
-                                    if (!computer.Compare(valueLeft, item)) {
-                                        return false;
-                                    }
-                                }
-                                else {
-                                    if (computer.Compare(valueLeft, item)) {
-                                        return true;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (!(valueRight.IsNumber())) {
+                    else if (!valueRight.IsNumber()) {
                         if (isAll) {
                             return null;
                         }
@@ -182,16 +179,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
                     return true;
                 }
+                else {
+                    if (!hasRows) {
+                        return false;
+                    }
 
-                if (!hasRows) {
+                    if (!hasNonNullRow || valueLeft == null) {
+                        return null;
+                    }
+
                     return false;
                 }
-
-                if (!hasNonNullRow || valueLeft == null) {
-                    return null;
-                }
-
-                return false;
             }
             else {
                 var hasNonNullRow = false;
@@ -234,16 +232,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
                     return true;
                 }
+                else {
+                    if (!hasRows) {
+                        return false;
+                    }
 
-                if (!hasRows) {
+                    if (!hasNonNullRow || valueLeft == null) {
+                        return null;
+                    }
+
                     return false;
                 }
-
-                if (!hasNonNullRow || valueLeft == null) {
-                    return null;
-                }
-
-                return false;
             }
         }
 
@@ -265,29 +264,45 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 typeof(ExprRelationalOpAllAnyNodeForgeEval),
                 codegenClassScope);
 
+            // when null-type value and "all" the result is always null
+            if (isAll) {
+                for (var i = 1; i < forges.Length; i++) {
+                    var refType = forges[i].EvaluationType;
+                    if (refType == null) {
+                        methodNode.Block.MethodReturn(ConstantNull());
+                        return LocalMethod(methodNode);
+                    }
+                }
+            }
+
             var block = methodNode.Block
-                .DeclareVar<bool>("hasNonNullRow", ConstantFalse())
-                .DeclareVar(
-                    valueLeftType,
-                    "valueLeft",
-                    forges[0].EvaluateCodegen(valueLeftType, methodNode, exprSymbol, codegenClassScope));
+                .DeclareVar(typeof(bool?), "hasNonNullRow", ConstantFalse());
+            block.DeclareVar(
+                valueLeftType,
+                "valueLeft",
+                forges[0].EvaluateCodegen(valueLeftType, methodNode, exprSymbol, codegenClassScope));
 
             for (var i = 1; i < forges.Length; i++) {
                 var refforge = forges[i];
                 var refname = "r" + i;
                 var reftype = refforge.EvaluationType;
+
+                if ((reftype == null) && !isAll) {
+                    continue;
+                }
+
                 block.DeclareVar(
                     reftype,
                     refname,
                     refforge.EvaluateCodegen(reftype, methodNode, exprSymbol, codegenClassScope));
-
+                
                 if (reftype.IsArray) {
                     var blockIfNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
                         var forLoopArray = blockIfNotNull.ForLoopIntSimple("index", ArrayLength(Ref(refname)));
                         {
                             forLoopArray.DeclareVar(
-                                Boxing.GetBoxedType(reftype.GetElementType()),
+                                reftype.GetElementType().GetBoxedType(),
                                 "item",
                                 ArrayAtIndex(Ref(refname), Ref("index")));
                             var ifItemNull = forLoopArray.IfCondition(EqualsNull(Ref("item")));
@@ -340,7 +355,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                                 forge.Computer.Codegen(
                                                     Ref("valueLeft"),
                                                     valueLeftType,
-                                                    Cast(typeof(object), Ref("item")),
+                                                    Ref("item"),
                                                     typeof(object))))
                                         .BlockReturn(isAll ? ConstantFalse() : ConstantTrue());
                                 }
@@ -379,7 +394,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     }
                 }
                 else if (!TypeHelper.IsSubclassOrImplementsInterface(
-                    Boxing.GetBoxedType(reftype),
+                    reftype.GetBoxedType(),
                     typeof(object))) {
                     if (reftype.CanBeNull()) {
                         block.IfRefNullReturnNull(refname);

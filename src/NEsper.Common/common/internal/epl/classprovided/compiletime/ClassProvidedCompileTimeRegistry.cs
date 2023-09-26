@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.artifact;
@@ -31,7 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             var key = detail.ClassName;
             var existing = Classes.Get(key);
             if (existing != null) {
-                throw new IllegalStateException("Duplicate class-provided-by-application has been encountered for name '" + key + "'");
+                throw new IllegalStateException(
+                    "Duplicate class-provided-by-application has been encountered for name '" + key + "'");
             }
 
             Classes[key] = detail;
@@ -41,6 +41,13 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
         {
             foreach (var entry in Classes) {
                 additionalClasses.Add(entry.Value.Artifact);
+            }
+        }
+
+        public void AddTo(ClassProvidedClassesAdd add)
+        {
+            foreach (var entry in Classes) {
+                add.Add(entry.Value.Artifact);
             }
         }
     }

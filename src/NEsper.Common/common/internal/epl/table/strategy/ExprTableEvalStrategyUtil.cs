@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
 
         public static AggregationRow GetRow(object[] underlying)
         {
-            return (AggregationRow) underlying[0];
+            return (AggregationRow)underlying[0];
         }
 
         public static CodegenExpression CodegenInitMap(
@@ -44,11 +44,15 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             CodegenClassScope classScope)
         {
             // int, ExprTableEvalStrategyFactory
-            CodegenMethod method = parent.MakeChild(typeof(IDictionary<int, ExprTableEvalStrategyFactory>), generator, classScope);
+            var method = parent.MakeChild(
+                typeof(IDictionary<int, ExprTableEvalStrategyFactory>),
+                generator,
+                classScope);
             method.Block
                 .DeclareVar<IDictionary<int, ExprTableEvalStrategyFactory>>(
-                    "ta", NewInstance(typeof(LinkedHashMap<int, ExprTableEvalStrategyFactory>)));
-            foreach (KeyValuePair<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> entry in tableAccesses) {
+                    "ta",
+                    NewInstance(typeof(LinkedHashMap<int, ExprTableEvalStrategyFactory>)));
+            foreach (var entry in tableAccesses) {
                 method.Block.AssignArrayElement(
                     Ref("ta"),
                     Constant(entry.Key.TableAccessNumber),
@@ -73,14 +77,13 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            Dictionary<string, object> cols = new Dictionary<string, object>();
-            foreach (KeyValuePair<string, TableMetadataColumn> entry in items) {
-                if (entry.Value is TableMetadataColumnPlain) {
-                    TableMetadataColumnPlain plain = (TableMetadataColumnPlain) entry.Value;
+            var cols = new Dictionary<string, object>();
+            foreach (var entry in items) {
+                if (entry.Value is TableMetadataColumnPlain plain) {
                     cols.Put(entry.Key, @event.Properties[plain.IndexPlain]);
                 }
                 else {
-                    TableMetadataColumnAggregation aggcol = (TableMetadataColumnAggregation) entry.Value;
+                    var aggcol = (TableMetadataColumnAggregation)entry.Value;
                     cols.Put(entry.Key, row.GetValue(aggcol.Column, eventsPerStream, isNewData, exprEvaluatorContext));
                 }
             }
@@ -96,15 +99,14 @@ namespace com.espertech.esper.common.@internal.epl.table.strategy
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            object[] values = new object[items.Count];
-            int count = 0;
-            foreach (KeyValuePair<string, TableMetadataColumn> entry in items) {
-                if (entry.Value is TableMetadataColumnPlain) {
-                    TableMetadataColumnPlain plain = (TableMetadataColumnPlain) entry.Value;
+            var values = new object[items.Count];
+            var count = 0;
+            foreach (var entry in items) {
+                if (entry.Value is TableMetadataColumnPlain plain) {
                     values[count] = @event.Properties[plain.IndexPlain];
                 }
                 else {
-                    TableMetadataColumnAggregation aggcol = (TableMetadataColumnAggregation) entry.Value;
+                    var aggcol = (TableMetadataColumnAggregation)entry.Value;
                     values[count] = row.GetValue(aggcol.Column, eventsPerStream, isNewData, exprEvaluatorContext);
                 }
 

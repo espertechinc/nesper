@@ -409,7 +409,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryInvalidCompile(
                     env,
                     stmt,
-                    "Cannot create variable 'myvar', type 'somedummy' is not a recognized type [create variable somedummy myvar = 10]");
+                    "Cannot create variable 'myvar', Type 'somedummy' is not a recognized type [create variable somedummy myvar = 10]");
 
                 stmt = "create variable string myvar = 5";
                 TryInvalidCompile(

@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
         public static DatetimeLongCoercer GetCoercer(Type clazz)
         {
             clazz = clazz.GetBoxedType();
-            
+
             if (clazz == typeof(DateTime?)) {
                 return DATETIME_LONG_COERCER_DATETIME;
             }

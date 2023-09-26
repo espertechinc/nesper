@@ -47,8 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 bool newData,
                 ExprEvaluatorContext context)
             {
-                long startValue = start.Evaluate(Math.Min(leftStart, rightStart), eventsPerStream, newData, context);
-                long endValue = finish.Evaluate(Math.Min(leftEnd, rightEnd), eventsPerStream, newData, context);
+                var startValue = start.Evaluate(Math.Min(leftStart, rightStart), eventsPerStream, newData, context);
+                var endValue = finish.Evaluate(Math.Min(leftEnd, rightEnd), eventsPerStream, newData, context);
 
                 if (startValue < 0 || endValue < 0) {
                     Log.Warn("The coincides date-time method does not allow negative start and end values");

@@ -65,17 +65,13 @@ namespace com.espertech.esper.common.client.soda
             AddChild(expression);
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         /// <summary>
         /// Returns the type of the previous expression (tail, first, window, count)
         /// </summary>
         /// <returns>type</returns>
-        public PreviousExpressionType Type
-        {
+        public PreviousExpressionType Type {
             get => type;
             set => type = value;
         }
@@ -85,8 +81,7 @@ namespace com.espertech.esper.common.client.soda
             writer.Write(type.ToString().ToLowerInvariant());
             writer.Write("(");
             Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
-            if (Children.Count > 1)
-            {
+            if (Children.Count > 1) {
                 writer.Write(",");
                 Children[1].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             }

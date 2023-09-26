@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             var needsUnwind = false;
             foreach (var child in node.ChildNodes) {
-                if (child is ExprOrNode && isOr || child is ExprAndNode && isAnd) {
+                if ((child is ExprOrNode && isOr) || (child is ExprAndNode && isAnd)) {
                     needsUnwind = true;
                     break;
                 }

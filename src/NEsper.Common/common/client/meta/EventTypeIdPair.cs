@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.client.meta
                 return false;
             }
 
-            var that = (EventTypeIdPair) o;
+            var that = (EventTypeIdPair)o;
 
             if (PublicId != that.PublicId) {
                 return false;

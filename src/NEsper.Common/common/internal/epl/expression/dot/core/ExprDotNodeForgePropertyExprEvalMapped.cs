@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 return null;
             }
 
-            return forge.MappedGetter.Get(@event, (string) result);
+            return forge.MappedGetter.Get(@event, (string)result);
         }
 
         public static CodegenExpression Codegen(
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     forge.ExprForge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("result")
                 .DebugStack();
-                
+
             methodNode.Block
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(

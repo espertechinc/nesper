@@ -46,8 +46,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             : base(
                 eventBeanTypedEventFactory,
                 beanEventTypeFactory,
-                TypeHelper.GetGenericFieldType(field, false),
-                null)
+                TypeHelper.GetGenericFieldType(field, false))
         {
             _index = index;
             _field = field;
@@ -78,7 +77,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return true; // Property exists as the property is not dynamic (unchecked)
         }
 
-        public override Type BeanPropType => TypeHelper.GetGenericFieldType(_field, false);
+        //public override Type BeanPropType => TypeHelper.GetGenericFieldType(_field, false);
 
         public override Type TargetType => _field.DeclaringType;
 
@@ -155,7 +154,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             return codegenMethodScope.MakeChild(BeanPropType, GetType(), codegenClassScope)
                 .AddParam(TargetType, "@object")
-                .AddParam(typeof(int), "index")
+                .AddParam<int>("index")
                 .Block
                 .DeclareVar<object>("value", ExprDotName(Ref("@object"), _field.Name))
                 .DeclareVar<IList<object>>(

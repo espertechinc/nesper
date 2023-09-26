@@ -17,10 +17,10 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
 {
-	/// <summary>
-	///     Copy method for bean events utilizing serializable.
-	/// </summary>
-	public class BeanEventBeanSerializableCopyMethodForge : EventBeanCopyMethodForge
+    /// <summary>
+    ///     Copy method for bean events utilizing serializable.
+    /// </summary>
+    public class BeanEventBeanSerializableCopyMethodForge : EventBeanCopyMethodForge
     {
         private readonly IContainer _container;
         private readonly BeanEventType _beanEventType;
@@ -38,7 +38,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             var factory = classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
             return NewInstance(
                 typeof(BeanEventBeanSerializableCopyMethod),
-                Cast(typeof(BeanEventType), EventTypeUtility.ResolveTypeCodegen(_beanEventType, EPStatementInitServicesConstants.REF)),
+                Cast(
+                    typeof(BeanEventType),
+                    EventTypeUtility.ResolveTypeCodegen(_beanEventType, EPStatementInitServicesConstants.REF)),
                 factory);
         }
 

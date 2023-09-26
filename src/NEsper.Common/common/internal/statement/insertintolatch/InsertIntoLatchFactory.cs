@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.statement.insertintolatch
                 return nextLatch;
             }
             else {
-                var nextLatch = new InsertIntoLatchWait(currentLatchWait, msecWait, payload);
+                var nextLatch = new InsertIntoLatchWait(this, currentLatchWait, msecWait, payload);
                 currentLatchWait.Later = nextLatch;
                 currentLatchWait = nextLatch;
                 return nextLatch;

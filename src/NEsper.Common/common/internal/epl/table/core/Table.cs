@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.table.core
         MultiKeyFromObjectArray PrimaryKeyObjectArrayTransform { get; set; }
 
         MultiKeyFromMultiKey PrimaryKeyIntoTableTransform { get; set; }
-        
+
         AggregationRowFactory AggregationRowFactory { get; set; }
 
         StatementContext StatementContextCreateTable { get; set; }

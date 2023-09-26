@@ -49,26 +49,20 @@ namespace com.espertech.esper.common.client.soda
             set => optionalName = value;
         }
 
-        public override ExpressionPrecedenceEnum Precedence
-        {
-            get => ExpressionPrecedenceEnum.UNARY;
-        }
+        public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             writer.Write("?");
-            if (optionalName != null)
-            {
+            if (optionalName != null) {
                 writer.Write(":");
                 writer.Write(optionalName);
-                if (optionalType != null)
-                {
+                if (optionalType != null) {
                     writer.Write(":");
                     writer.Write(optionalType);
                 }
             }
-            else if (optionalType != null)
-            {
+            else if (optionalType != null) {
                 writer.Write("::");
                 writer.Write(optionalType);
             }
@@ -82,7 +76,6 @@ namespace com.espertech.esper.common.client.soda
         {
             this.optionalName = optionalName;
             return this;
-
         }
 
         /// <summary>
@@ -102,7 +95,6 @@ namespace com.espertech.esper.common.client.soda
         {
             this.optionalType = optionalType;
             return this;
-
         }
     }
 } // end of namespace

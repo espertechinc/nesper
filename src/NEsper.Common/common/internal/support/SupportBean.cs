@@ -292,11 +292,11 @@ namespace com.espertech.esper.common.@internal.support
                 return true;
             }
 
-            if (obj.GetType() != this.GetType()) {
+            if (obj.GetType() != GetType()) {
                 return false;
             }
 
-            return Equals((SupportBean) obj);
+            return Equals((SupportBean)obj);
         }
 
         public override int GetHashCode()
@@ -310,7 +310,7 @@ namespace com.espertech.esper.common.@internal.support
                 hashCode = (hashCode * 397) ^ _charPrimitive.GetHashCode();
                 hashCode = (hashCode * 397) ^ _doubleBoxed.GetHashCode();
                 hashCode = (hashCode * 397) ^ _doublePrimitive.GetHashCode();
-                hashCode = (hashCode * 397) ^ (int) _enumValue;
+                hashCode = (hashCode * 397) ^ (int)_enumValue;
                 hashCode = (hashCode * 397) ^ _floatBoxed.GetHashCode();
                 hashCode = (hashCode * 397) ^ _floatPrimitive.GetHashCode();
                 hashCode = (hashCode * 397) ^ _decimalPrimitive.GetHashCode();
@@ -339,14 +339,14 @@ namespace com.espertech.esper.common.@internal.support
             SupportBean[] beans,
             int[] indexes)
         {
-            SupportBean[] arr = GetBeansPerIndex(beans, indexes);
+            var arr = GetBeansPerIndex(beans, indexes);
             return arr == null ? null : ToOAStringAndInt(arr);
         }
 
         private static object[] ToOAStringAndInt(SupportBean[] arr)
         {
             return arr
-                .Select(v => new object[] {v.TheString, v.IntPrimitive})
+                .Select(v => new object[] { v.TheString, v.IntPrimitive })
                 .ToArray();
         }
 
@@ -374,7 +374,7 @@ namespace com.espertech.esper.common.@internal.support
             double doublePrimitive,
             bool boolPrimitive)
         {
-            SupportBean @event = new SupportBean(@string, intPrimitive);
+            var @event = new SupportBean(@string, intPrimitive);
             @event.LongPrimitive = longPrimitive;
             @event.DoublePrimitive = doublePrimitive;
             @event.BoolPrimitive = boolPrimitive;
@@ -399,7 +399,7 @@ namespace com.espertech.esper.common.@internal.support
             double? doubleBoxed,
             long? longBoxed)
         {
-            SupportBean @event = new SupportBean(@string, intPrimitive);
+            var @event = new SupportBean(@string, intPrimitive);
             @event.DoubleBoxed = doubleBoxed;
             @event.LongBoxed = longBoxed;
             return @event;
@@ -411,8 +411,8 @@ namespace com.espertech.esper.common.@internal.support
             object[][] objects)
         {
             ScopeTestHelper.AssertEquals(others.Length, objects.Length);
-            for (int i = 0; i < others.Length; i++) {
-                Compare((SupportBean) others[i], split, objects[i]);
+            for (var i = 0; i < others.Length; i++) {
+                Compare((SupportBean)others[i], split, objects[i]);
             }
         }
 
@@ -421,7 +421,7 @@ namespace com.espertech.esper.common.@internal.support
             string theString,
             int intPrimitive)
         {
-            SupportBean that = (SupportBean) other;
+            var that = (SupportBean)other;
             ScopeTestHelper.AssertEquals(that.TheString, theString);
             ScopeTestHelper.AssertEquals(that.IntPrimitive, intPrimitive);
         }
@@ -432,7 +432,7 @@ namespace com.espertech.esper.common.@internal.support
             object[] objects)
         {
             ScopeTestHelper.AssertEquals(split.Length, objects.Length);
-            for (int i = 0; i < split.Length; i++) {
+            for (var i = 0; i < split.Length; i++) {
                 Compare(received, split[i], objects[i]);
             }
         }

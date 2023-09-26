@@ -47,8 +47,8 @@ namespace com.espertech.esper.common.@internal.type
                 object d1,
                 object d2)
             {
-                decimal s1 = _convOne.CoerceBoxed(d1).AsDecimal();
-                decimal s2 = _convTwo.CoerceBoxed(d2).AsDecimal();
+                var s1 = _convOne.CoerceBoxed(d1).AsDecimal();
+                var s2 = _convTwo.CoerceBoxed(d2).AsDecimal();
                 if (s2 == 0.0m) {
                     if (_divisionByZeroReturnsNull) {
                         return null;
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.type
                 if (ltype.IsNullable() || rtype.IsNullable() || _divisionByZeroReturnsNull) {
                     resultType = typeof(decimal?);
                 }
-                
+
                 var block = codegenMethodScope
                     .MakeChild(resultType, typeof(DivideDecimalConvComputerBase), codegenClassScope)
                     .AddParam(ltype, "d1")

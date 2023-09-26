@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventTypeFactory beanEventTypeFactory,
             Type returnType)
-            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType, null)
+            : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType)
         {
             this.propertyIndex = propertyIndex;
             this.index = index;
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
         public override bool IsExistsProperty(EventBean eventBean)
         {
             var array = BaseNestableEventUtil.CheckedCastUnderlyingObjectArray(eventBean);
-            return CollectionUtil.ArrayExistsAtIndex((Array) array[propertyIndex], index);
+            return CollectionUtil.ArrayExistsAtIndex((Array)array[propertyIndex], index);
         }
 
         public override CodegenExpression EventBeanGetCodegen(

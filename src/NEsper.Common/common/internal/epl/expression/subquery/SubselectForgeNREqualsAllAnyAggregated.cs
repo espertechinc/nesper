@@ -1,10 +1,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
+
+using System;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,7 +20,7 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     /// <summary>
-    ///     Strategy for subselects with "=/!=/&gt;&lt; ALL".
+    /// Strategy for subselects with "=/!=/&gt;&lt; ALL".
     /// </summary>
     public class SubselectForgeNREqualsAllAnyAggregated : SubselectForgeNREqualsBase
     {
@@ -31,14 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             bool resultWhenNoMatchingEvents,
             bool isNot,
             Coercer coercer,
-            ExprForge havingEval)
-            : base(
-                subselect,
-                valueEval,
-                selectEval,
-                resultWhenNoMatchingEvents,
-                isNot,
-                coercer)
+            ExprForge havingEval) : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNot, coercer)
         {
             this.havingEval = havingEval;
         }
@@ -48,6 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             SubselectForgeNRSymbol symbols,
             CodegenClassScope classScope)
         {
+            if (selectEval.EvaluationType == null) {
+                return ConstantNull();
+            }
+
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             var eps = symbols.GetAddEPS(method);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
@@ -56,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block.IfNullReturnNull(symbols.GetAddLeftResult(method));
             if (havingEval != null) {
                 CodegenExpression having = LocalMethod(
-                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope, true),
+                    CodegenLegoMethodExpression.CodegenExpression(havingEval, method, classScope),
                     eps,
                     ConstantTrue(),
                     evalCtx);
@@ -68,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             CodegenExpression select = LocalMethod(
-                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope, true),
+                CodegenLegoMethodExpression.CodegenExpression(selectEval, method, classScope),
                 eps,
                 ConstantTrue(),
                 evalCtx);
@@ -78,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .IfRefNullReturnNull("rhs");
 
             if (coercer == null) {
-                method.Block.DeclareVar<bool>("eq", ExprDotMethod(left, "Equals", Ref("rhs")));
+                method.Block.DeclareVar(typeof(bool?), "eq", ExprDotMethod(left, "equals", Ref("rhs")));
                 if (isNot) {
                     method.Block.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());
                 }
@@ -87,10 +86,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 }
             }
             else {
-                method.Block
-                    .DeclareVar<object>("left", coercer.CoerceCodegen(left, symbols.LeftResultType))
-                    .DeclareVar<object>("right", coercer.CoerceCodegen(Ref("rhs"), rightEvalType))
-                    .DeclareVar<bool>("eq", StaticMethod<object>("Equals", Ref("left"), Ref("right")));
+                method.Block.DeclareVar(
+                        typeof(object),
+                        "left",
+                        coercer.CoerceCodegen(left, symbols.LeftResultType))
+                    .DeclareVar(
+                        typeof(object),
+                        "right",
+                        coercer.CoerceCodegen(Ref("rhs"), rightEvalType))
+                    .DeclareVar(typeof(bool?), "eq", ExprDotMethod(Ref("left"), "equals", Ref("right")));
                 if (isNot) {
                     method.Block.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());
                 }

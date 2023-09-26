@@ -83,8 +83,6 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
                    eventRate;
         }
 
-        private bool IsSatisfied {
-            get { return NewEventsCount >= eventRate || OldEventsCount >= eventRate; }
-        }
+        private bool IsSatisfied => NewEventsCount >= eventRate || OldEventsCount >= eventRate;
     }
 } // end of namespace

@@ -26,7 +26,8 @@ namespace com.espertech.esper.common.client.module
         {
         }
 
-        protected ModuleOrderException(SerializationInfo info,
+        protected ModuleOrderException(
+            SerializationInfo info,
             StreamingContext context) : base(info, context)
         {
         }

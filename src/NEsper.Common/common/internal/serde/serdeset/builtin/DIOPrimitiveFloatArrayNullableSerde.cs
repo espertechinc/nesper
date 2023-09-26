@@ -11,49 +11,70 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-	public class DIOPrimitiveFloatArrayNullableSerde : DataInputOutputSerdeBase<float[]> {
-	    public static readonly DIOPrimitiveFloatArrayNullableSerde INSTANCE = new DIOPrimitiveFloatArrayNullableSerde();
+    public class DIOPrimitiveFloatArrayNullableSerde : DataInputOutputSerdeBase<float[]>
+    {
+        public static readonly DIOPrimitiveFloatArrayNullableSerde INSTANCE = new DIOPrimitiveFloatArrayNullableSerde();
 
-	    private DIOPrimitiveFloatArrayNullableSerde() {
-	    }
+        private DIOPrimitiveFloatArrayNullableSerde()
+        {
+        }
 
-	    public void Write(float[] @object, DataOutput output) {
-	        WriteInternal(@object, output);
-	    }
+        public void Write(
+            float[] @object,
+            DataOutput output)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public float[] Read(DataInput input) {
-	        return ReadInternal(input);
-	    }
+        public float[] Read(DataInput input)
+        {
+            return ReadInternal(input);
+        }
 
-	    public override void Write(float[] @object, DataOutput output, byte[] unitKey, EventBeanCollatedWriter writer) {
-	        WriteInternal(@object, output);
-	    }
+        public override void Write(
+            float[] @object,
+            DataOutput output,
+            byte[] unitKey,
+            EventBeanCollatedWriter writer)
+        {
+            WriteInternal(@object, output);
+        }
 
-	    public override float[] ReadValue(DataInput input, byte[] unitKey) {
-	        return ReadInternal(input);
-	    }
+        public override float[] ReadValue(
+            DataInput input,
+            byte[] unitKey)
+        {
+            return ReadInternal(input);
+        }
 
-	    private void WriteInternal(float[] @object, DataOutput output) {
-	        if (@object == null) {
-	            output.WriteInt(-1);
-	            return;
-	        }
-	        output.WriteInt(@object.Length);
-	        foreach (float i in @object) {
-	            output.WriteFloat(i);
-	        }
-	    }
+        private void WriteInternal(
+            float[] @object,
+            DataOutput output)
+        {
+            if (@object == null) {
+                output.WriteInt(-1);
+                return;
+            }
 
-	    private float[] ReadInternal(DataInput input) {
-	        int len = input.ReadInt();
-	        if (len == -1) {
-	            return null;
-	        }
-	        float[] array = new float[len];
-	        for (int i = 0; i < len; i++) {
-	            array[i] = input.ReadFloat();
-	        }
-	        return array;
-	    }
-	}
+            output.WriteInt(@object.Length);
+            foreach (var i in @object) {
+                output.WriteFloat(i);
+            }
+        }
+
+        private float[] ReadInternal(DataInput input)
+        {
+            var len = input.ReadInt();
+            if (len == -1) {
+                return null;
+            }
+
+            var array = new float[len];
+            for (var i = 0; i < len; i++) {
+                array[i] = input.ReadFloat();
+            }
+
+            return array;
+        }
+    }
 } // end of namespace

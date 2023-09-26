@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Type arrayReturnType,
             object constantResult)
         {
-            _constantResult = (Array) constantResult;
+            _constantResult = (Array)constantResult;
             Parent = parent;
             ArrayReturnType = arrayReturnType;
             IsMustCoerce = false;
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Coercer coercer,
             object constantResult)
         {
-            _constantResult = (Array) constantResult;
+            _constantResult = (Array)constantResult;
             Parent = parent;
             ArrayReturnType = arrayReturnType;
             IsMustCoerce = mustCoerce;
@@ -55,6 +55,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         }
 
         public ExprArrayNode ForgeRenderableArray => Parent;
+
+        public ExprNodeRenderable ForgeRenderable => Parent;
 
         public ExprNodeRenderable ExprForgeRenderable => Parent;
 
@@ -89,9 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             return null;
         }
 
-        public Type ComponentTypeCollection {
-            get => Parent.ComponentTypeCollection;
-        }
+        public Type ComponentTypeCollection => Parent.ComponentTypeCollection;
 
         public EventType GetEventTypeSingle(
             StatementRawInfo statementRawInfo,

@@ -75,7 +75,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenExpression assignScopedPackageInitMethod)
         {
             return NamespaceScope.AddInstanceFieldUnshared(
-                instance, isFinal, type, assignScopedPackageInitMethod);
+                instance,
+                isFinal,
+                type,
+                assignScopedPackageInitMethod);
         }
 
         public CodegenExpressionInstanceField AddDefaultFieldUnshared(
@@ -90,23 +93,6 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 assignScopedPackageInitMethod);
         }
 
-#if DEPRECATED
-        public CodegenExpressionField AddFieldUnshared<T>(
-            bool isFinal,
-            CodegenExpression assignScopedPackageInitMethod)
-        {
-            return AddFieldUnshared(isFinal, typeof(T), assignScopedPackageInitMethod);
-        }
-
-        public CodegenExpressionField AddFieldUnshared(
-            bool isFinal,
-            Type type,
-            CodegenExpression assignScopedPackageInitMethod)
-        {
-            return NamespaceScope.AddFieldUnshared(isFinal, type, assignScopedPackageInitMethod);
-        }
-#endif
-
         public CodegenExpressionInstanceField AddOrGetInstanceFieldSharable(
             CodegenExpression instance,
             CodegenFieldSharable sharable)
@@ -118,24 +104,9 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenFieldSharable sharable)
         {
             return NamespaceScope.AddOrGetInstanceFieldSharable(
-                InstanceRef, sharable);
+                InstanceRef,
+                sharable);
         }
-
-#if DEPRECATED
-        public CodegenExpressionField AddOrGetFieldSharable(CodegenFieldSharable sharable)
-        {
-            return NamespaceScope.AddOrGetFieldSharable(sharable);
-        }
-#endif
-
-#if DEPRECATED
-        public CodegenExpressionField AddOrGetFieldWellKnown(
-            CodegenFieldName fieldName,
-            Type type)
-        {
-            return NamespaceScope.AddOrGetFieldWellKnown(fieldName, type);
-        }
-#endif
 
         public void AddInnerClass(CodegenInnerClass innerClass)
         {
@@ -156,7 +127,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public override string ToString()
         {
-            return $"{nameof(Id)}: {Id}, {nameof(ClassName)}: {ClassName}, {nameof(NamespaceScope)}: {NamespaceScope}, {nameof(OutermostClassName)}: {OutermostClassName}";
+            return
+                $"{nameof(Id)}: {Id}, {nameof(ClassName)}: {ClassName}, {nameof(NamespaceScope)}: {NamespaceScope}, {nameof(OutermostClassName)}: {OutermostClassName}";
         }
     }
 } // end of namespace

@@ -16,38 +16,41 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.@event.json.serializers.forge
 {
-	public class JsonSerializerForgeArray : JsonSerializerForge
-	{
-		private readonly JsonSerializerForge _subForge;
-		private readonly Type _componentType;
-		public JsonSerializerForgeArray(JsonSerializerForge subForge, Type componentType)
-		{
-			_subForge = subForge;
-			_componentType = componentType;
-		}
+    public class JsonSerializerForgeArray : JsonSerializerForge
+    {
+        private readonly JsonSerializerForge _subForge;
+        private readonly Type _componentType;
 
-		public CodegenExpression CodegenSerialize(
-			JsonSerializerForgeRefs refs,
-			CodegenMethod method,
-			CodegenClassScope classScope)
-		{
-			var subRefs = new JsonSerializerForgeRefs(
-				Ref("_context"),
-				Ref("_arrayItem"),
-				Ref("_name"));
-			
-			var serializationExpr = _subForge.CodegenSerialize(subRefs, method, classScope);
-			var itemSerializer = new CodegenExpressionLambda(method.Block)
-				.WithParam(typeof(JsonSerializationContext), "_context")
-				.WithParam(_componentType, "_arrayItem")
-				.WithBody(block => block.Expression(serializationExpr));
+        public JsonSerializerForgeArray(
+            JsonSerializerForge subForge,
+            Type componentType)
+        {
+            _subForge = subForge;
+            _componentType = componentType;
+        }
 
-			return StaticMethod(
-				typeof(JsonSerializerUtil),
-				"WriteNestedArray",
-				refs.Context,
-				refs.Field,
-				itemSerializer);
-		}
-	}
+        public CodegenExpression CodegenSerialize(
+            JsonSerializerForgeRefs refs,
+            CodegenMethod method,
+            CodegenClassScope classScope)
+        {
+            var subRefs = new JsonSerializerForgeRefs(
+                Ref("_context"),
+                Ref("_arrayItem"),
+                Ref("_name"));
+
+            var serializationExpr = _subForge.CodegenSerialize(subRefs, method, classScope);
+            var itemSerializer = new CodegenExpressionLambda(method.Block)
+                .WithParam<JsonSerializationContext>("_context")
+                .WithParam(_componentType, "_arrayItem")
+                .WithBody(block => block.Expression(serializationExpr));
+
+            return StaticMethod(
+                typeof(JsonSerializerUtil),
+                "WriteNestedArray",
+                refs.Context,
+                refs.Field,
+                itemSerializer);
+        }
+    }
 } // end of namespace

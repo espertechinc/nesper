@@ -1111,6 +1111,27 @@ namespace com.espertech.esper.common.@internal.metrics.instrumentation
         {
         }
 
+
+        public void QOutputProcessNonBuffered(
+            EventBean[] newData,
+            EventBean[] oldData)
+        {
+        }
+
+        public void AOutputProcessNonBuffered()
+        {
+        }
+
+        public void QOutputProcessNonBufferedJoin(
+            ISet<MultiKeyArrayOfKeys<EventBean>> newEvents,
+            ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents)
+        {
+        }
+
+        public void AOutputProcessNonBufferedJoin()
+        {
+        }
+
         public void QPatternObserverScheduledEval(EvalObserverFactoryNode node)
         {
         }

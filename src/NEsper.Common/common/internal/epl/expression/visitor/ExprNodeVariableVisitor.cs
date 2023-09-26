@@ -40,30 +40,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
         /// Returns true if the visitor finds a variable value.
         /// </summary>
         /// <returns>true for variable present in expression</returns>
-        public bool IsVariables {
-            get => variableNames != null && !variableNames.IsEmpty();
-        }
+        public bool IsVariables => variableNames != null && !variableNames.IsEmpty();
 
         public void Visit(ExprNode exprNode)
         {
-            if (exprNode is ExprDotNode) {
-                ExprDotNode exprDotNode = (ExprDotNode) exprNode;
-                VariableMetaData metadata = exprDotNode.IsVariableOpGetName(variableCompileTimeResolver);
+            if (exprNode is ExprDotNode exprDotNode) {
+                var metadata = exprDotNode.IsVariableOpGetName(variableCompileTimeResolver);
                 if (metadata != null) {
                     AddVariableName(metadata);
                 }
             }
 
-            if (exprNode is ExprVariableNode) {
-                ExprVariableNode variableNode = (ExprVariableNode) exprNode;
-                VariableMetaData metadata = variableNode.VariableMetadata;
+            if (exprNode is ExprVariableNode variableNode) {
+                var metadata = variableNode.VariableMetadata;
                 AddVariableName(metadata);
             }
         }
 
-        public IDictionary<string, VariableMetaData> VariableNames {
-            get { return variableNames; }
-        }
+        public IDictionary<string, VariableMetaData> VariableNames => variableNames;
 
         /// <summary>
         /// Returns the set of variable names encoountered.

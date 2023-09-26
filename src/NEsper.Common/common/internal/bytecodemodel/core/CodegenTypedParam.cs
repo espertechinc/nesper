@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -102,6 +103,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public bool IsStatic { get; set; }
 
+        public CodegenExpression Initializer { get; set; } = null;
+
         public CodegenTypedParam WithFinal(bool aFinal)
         {
             IsReadonly = aFinal;
@@ -111,6 +114,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
         public CodegenTypedParam WithStatic(bool aStatic)
         {
             IsStatic = aStatic;
+            return this;
+        }
+
+        public CodegenTypedParam WithInitializer(CodegenExpression initializer)
+        {
+            Initializer = initializer;
             return this;
         }
 
@@ -131,6 +140,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             if (Type != null) {
                 classes.AddToSet(Type);
             }
+
+            Initializer?.MergeClasses(classes);
         }
 
         public void RenderAsMember(
@@ -170,6 +181,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                    '\'' +
                    ", memberWhenCtorParam=" +
                    IsMemberWhenCtorParam +
+                   ", isPublic=" +
+                   IsPublic +
+                   ", isReadonly=" +
+                   IsReadonly +
+                   ", isStatic=" +
+                   IsStatic +
+                   ", initializer=" +
+                   Initializer +
                    '}';
         }
 

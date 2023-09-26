@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             }
 
             Type childType = null;
-            bool ignoreNulls = false;
+            var ignoreNulls = false;
 
             if (positionalParams.Length == 1 && positionalParams[0] is ExprWildcard) {
                 ValidateNotDistinct();
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                 childType = positionalParams[0].Forge.EvaluationType;
                 ignoreNulls = true;
             }
-            else if (positionalParams.Length == 2) {
+            else {
                 hasFilter = true;
                 if (!(positionalParams[0] is ExprWildcard)) {
                     childType = positionalParams[0].Forge.EvaluationType;
@@ -58,21 +58,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
                     ValidateNotDistinct();
                 }
 
-                base.ValidateFilter(positionalParams[1]);
+                ValidateFilter(positionalParams[1]);
                 optionalFilter = positionalParams[1];
             }
 
-            var distinctValueSerde = isDistinct ? validationContext.SerdeResolver.SerdeForAggregationDistinct(childType, validationContext.StatementRawInfo) : null;
+            var distinctValueSerde = isDistinct
+                ? validationContext.SerdeResolver.SerdeForAggregationDistinct(
+                    childType,
+                    validationContext.StatementRawInfo)
+                : null;
             return new AggregationForgeFactoryCount(this, ignoreNulls, childType, distinctValueSerde);
         }
 
-        public override string AggregationFunctionName {
-            get => "count";
-        }
+        public override string AggregationFunctionName => "count";
 
-        public bool HasFilter {
-            get => hasFilter;
-        }
+        public bool HasFilter => hasFilter;
 
         public override bool EqualsNodeAggregateMethodOnly(ExprAggregateNode node)
         {
@@ -83,13 +83,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             return true;
         }
 
-        public override bool IsFilterExpressionAsLastParameter {
-            get => true;
-        }
+        public override bool IsFilterExpressionAsLastParameter => true;
 
         private void ValidateNotDistinct()
         {
-            if (base.IsDistinct) {
+            if (IsDistinct) {
                 throw new ExprValidationException("Invalid use of the 'distinct' keyword with count and wildcard");
             }
         }

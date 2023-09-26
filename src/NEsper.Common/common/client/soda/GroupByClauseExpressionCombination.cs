@@ -41,18 +41,16 @@ namespace com.espertech.esper.common.client.soda
         /// Returns the combined expressions.
         /// </summary>
         /// <value>expressions</value>
-        public IList<Expression> Expressions
-        {
-            get { return _expressions; }
-            set { _expressions = value; }
+        public IList<Expression> Expressions {
+            get => _expressions;
+            set => _expressions = value;
         }
 
         public void ToEPL(TextWriter writer)
         {
             writer.Write("(");
-            string delimiter = "";
-            foreach (Expression e in _expressions)
-            {
+            var delimiter = "";
+            foreach (var e in _expressions) {
                 writer.Write(delimiter);
                 e.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
                 delimiter = ", ";

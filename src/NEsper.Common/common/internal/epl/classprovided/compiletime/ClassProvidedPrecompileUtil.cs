@@ -10,13 +10,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
-using com.espertech.esper.common.@internal.compile;
+using com.espertech.esper.common.@internal.compile.compiler;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.function;
 
 namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 {
@@ -24,10 +26,24 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
     {
         public static ClassProvidedPrecompileResult CompileClassProvided(
             IList<string> classTexts,
+            Consumer<object> compileResultConsumer,
             StatementCompileTimeServices compileTimeServices,
             ClassProvidedPrecompileResult optionalPrior)
         {
             if (classTexts == null || classTexts.IsEmpty()) {
+                return ClassProvidedPrecompileResult.EMPTY;
+            }
+
+            IList<string> classWithText = new List<string>(classTexts.Count);
+            foreach (var classText in classTexts) {
+                if (string.IsNullOrWhiteSpace(classText)) {
+                    continue;
+                }
+
+                classWithText.Add(classText);
+            }
+
+            if (classWithText.IsEmpty()) {
                 return ClassProvidedPrecompileResult.EMPTY;
             }
 
@@ -59,8 +75,8 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             try {
                 artifact = compileTimeServices.CompilerServices.Compile(
                     new CompileRequest(compilables, compileTimeServices.Services));
-            } 
-            catch(CompilerServicesCompileException ex) {
+            }
+            catch (CompilerServicesCompileException ex) {
                 throw HandleException(ex, "Failed to compile class");
             }
 
@@ -69,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
                     throw new ExprValidationException("Duplicate class by name '" + exportedTypeName + "'");
                 }
             }
-            
+
             // it's not entirely clear to me why we are loading the classes into the
             // current context as this is a compile time context.  These classes will
             // be materialized in the default load context

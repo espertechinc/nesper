@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         typeof(DateTimeOffset),
                         typeof(StringToDateTimeOffsetWExprFormatComputerEval),
                         codegenClassScope)
-                    .AddParam(typeof(string), "input");
+                    .AddParam<string>("input");
                 CodegenExpression formatter;
                 if (dateFormatForge.ForgeConstantType.IsConstant) {
                     formatter = FormatFieldExpr(typeof(DateFormat), dateFormatForge, codegenClassScope);

@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprRegexpNodeForgeConst forge,
             ExprEvaluator lhsEval)
         {
-            this._forge = forge;
-            this._lhsEval = lhsEval;
+            _forge = forge;
+            _lhsEval = lhsEval;
         }
 
         public object Evaluate(
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 value = value.RenderAny();
             }
 
-            var stringValue = (string) value;
+            var stringValue = (string)value;
             var result = _forge.ForgeRenderable.IsNot ^ _forge.Pattern.IsMatch(stringValue); //Matches();
             return result;
         }

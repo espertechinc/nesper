@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2006-2019 Esper Team. All rights reserved.                           /
+// Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
 // The software in this package is published under the terms of the GPL license       /
@@ -16,9 +16,11 @@ using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.expression.etc;
+using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -43,9 +45,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             var allowEventBeanCollType = new bool[parameters.Count];
             var childEvalsEventBeanReturnTypesForges = new ExprForge[parameters.Count];
             var allConstants = true;
-            
             foreach (var childNode in parameters) {
-                if (!EnumMethodResolver.IsEnumerationMethod(methodName, services.ImportServiceCompileTime) && childNode is ExprLambdaGoesNode) {
+                if (!EnumMethodResolver.IsEnumerationMethod(methodName, services.ImportServiceCompileTime) &&
+                    childNode is ExprLambdaGoesNode) {
                     throw new ExprValidationException(
                         "Unrecognized lambda-expression encountered as parameter to UDF or static method '" +
                         methodName +
@@ -66,11 +68,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     continue;
                 }
 
-                if (childNode is ExprStreamUnderlyingNode) {
-                    var und = (ExprStreamUnderlyingNode) childNode;
+                if (childNode is ExprStreamUnderlyingNode und) {
                     var tableMetadata = services.TableCompileTimeResolver.ResolveTableFromEventType(und.EventType);
                     if (tableMetadata == null) {
-                        childForges[count] = childNode.Forge;
+                        childForges[count] = und.Forge;
                         childEvalsEventBeanReturnTypesForges[count] = new ExprEvalStreamNumEvent(und.StreamId);
                     }
                     else {
@@ -89,10 +90,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     continue;
                 }
 
-                if (childNode.Forge is ExprEnumerationForge) {
-                    var enumeration = (ExprEnumerationForge) childNode.Forge;
+                if (childNode.Forge is ExprEnumerationForge enumeration) {
                     var eventType = enumeration.GetEventTypeSingle(statementRawInfo, services);
-                    childForges[count] = childNode.Forge;
+                    childForges[count] = (ExprForge) enumeration;
                     paramTypes[count] = childForges[count].EvaluationType;
                     allConstants = false;
                     if (eventType != null) {
@@ -104,7 +104,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                     var eventTypeColl = enumeration.GetEventTypeCollection(statementRawInfo, services);
                     if (eventTypeColl != null) {
-                        childEvalsEventBeanReturnTypesForges[count] = new ExprEvalStreamNumEnumCollForge(enumeration);
+                        childEvalsEventBeanReturnTypesForges[count] =
+                            new ExprEvalStreamNumEnumCollEventForge(enumeration);
                         allowEventBeanCollType[count] = true;
                         count++;
                         continue;
@@ -148,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             // rewrite those evaluator that should return the event itself
             if (CollectionUtil.IsAnySet(allowEventBeanType)) {
                 for (var i = 0; i < parameters.Count; i++) {
-                    if (allowEventBeanType[i] && parameterTypes[i] == typeof(EventBean)) {
+                    if (allowEventBeanType[i] && CheckMethodEnumerableParameter(method, i, typeof(EventBean))) {
                         childForges[i] = childEvalsEventBeanReturnTypesForges[i];
                     }
                 }
@@ -157,7 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             // rewrite those evaluators that should return the event collection
             if (CollectionUtil.IsAnySet(allowEventBeanCollType)) {
                 for (var i = 0; i < parameters.Count; i++) {
-                    if (allowEventBeanCollType[i] && (parameterTypes[i] == typeof(ICollection<EventBean>))) {
+                    if (allowEventBeanCollType[i] && CheckMethodEnumerableParameter(method, i, typeof(ICollection<EventBean>))) {
                         childForges[i] = childEvalsEventBeanReturnTypesForges[i];
                     }
                 }
@@ -166,19 +167,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             // add an evaluator if the method expects a context object
             if (!method.IsVarArgs() &&
                 parameterTypes.Length > 0 &&
-                parameterTypes[parameterTypes.Length - 1] == typeof(EPLMethodInvocationContext)) {
+                parameterTypes[^1] == typeof(EPLMethodInvocationContext)) {
                 var node = new ExprEvalMethodContext(functionName);
-                childForges = (ExprForge[]) CollectionUtil.ArrayExpandAddSingle(childForges, node);
+                childForges = (ExprForge[])CollectionUtil.ArrayExpandAddSingle(childForges, node);
             }
 
             // handle varargs
             if (method.IsVarArgs()) {
                 // handle context parameter
-                var numMethodParams = parameterTypes.Length;
-                if (numMethodParams > 1 && parameterTypes[numMethodParams - 2] == typeof(EPLMethodInvocationContext)) {
+                int numMethodParams = parameterTypes.Length;
+                if (numMethodParams > 1 &&
+                    parameterTypes[numMethodParams - 2] == typeof(EPLMethodInvocationContext)) {
                     var rewrittenForges = new ExprForge[childForges.Length + 1];
                     Array.Copy(childForges, 0, rewrittenForges, 0, numMethodParams - 2);
-                    rewrittenForges[numMethodParams - 2] = new ExprEvalMethodContext(functionName);
+                    var node = new ExprEvalMethodContext(functionName);
+                    rewrittenForges[numMethodParams - 2] = node;
                     Array.Copy(
                         childForges,
                         numMethodParams - 2,
@@ -192,7 +195,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             var localInlinedClass = services.ClassProvidedExtension.IsLocalInlinedClass(method.DeclaringType);
-            return new ExprNodeUtilMethodDesc(allConstants, childForges, method, localInlinedClass);
+            return new ExprNodeUtilMethodDesc(allConstants, childForges, method, optionalClass, localInlinedClass);
+        }
+
+        private static bool CheckMethodEnumerableParameter(
+            MethodInfo method,
+            int parameterNumber,
+            Type expected)
+        {
+            var parameterTypes = method.GetParameterTypes();
+            var numParameters = parameterTypes.Length;
+            if (!method.IsVarArgs() || numParameters - 1 >= parameterNumber) {
+                return parameterTypes[parameterNumber] == expected;
+            }
+
+            return parameterTypes[numParameters - 1] == expected;
         }
     }
 } // end of namespace

@@ -37,7 +37,8 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             EventBean optionalTriggeringEvent,
             IDictionary<string, object> optionalTriggeringPattern,
             EventBean optionalTriggeringEventPattern,
-            IDictionary<string, object> optionalPatternForInclusiveEval);
+            IDictionary<string, object> optionalPatternForInclusiveEval,
+            IDictionary<string, object> terminationProperties);
 
         public override void Deactivate(
             IntSeqKey path,
@@ -88,10 +89,9 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             var endCondition = ContextControllerConditionFactory.GetEndpoint(
                 endConditionPath,
                 partitionKeys,
-                factory.initTermSpec.EndCondition,
+                _factory.initTermSpec.EndCondition,
                 this,
-                this,
-                false);
+                this);
             endCondition.Activate(optionalTriggeringEvent, this, optionalTriggeringPattern);
 
             var partitionKey = ContextControllerInitTermUtil.BuildPartitionKey(
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             bool transferChildContexts,
             AgentInstanceTransferServices xfer)
         {
-            ContextControllerCondition start = initTermSvc.MgmtGetStartCondition(path);
+            var start = initTermSvc.MgmtGetStartCondition(path);
             start?.Transfer(xfer);
 
             initTermSvc.EndVisitConditions(

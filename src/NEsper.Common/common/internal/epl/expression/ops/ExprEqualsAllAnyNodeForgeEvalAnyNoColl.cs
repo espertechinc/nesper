@@ -20,8 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprEqualsAllAnyNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this._forge = forge;
-            this._evaluators = evaluators;
+            _forge = forge;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -71,13 +71,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
                 hasNonNullRow = true;
                 if (!_forge.IsMustCoerce) {
-                    if (!isNot && leftResult.Equals(rightResult) || isNot && !leftResult.Equals(rightResult)) {
+                    if ((!isNot && leftResult.Equals(rightResult)) || (isNot && !leftResult.Equals(rightResult))) {
                         return true;
                     }
                 }
                 else {
                     var right = _forge.Coercer.CoerceBoxed(rightResult);
-                    if (!isNot && leftResult.Equals(right) || isNot && !leftResult.Equals(right)) {
+                    if ((!isNot && leftResult.Equals(right)) || (isNot && !leftResult.Equals(right))) {
                         return true;
                     }
                 }

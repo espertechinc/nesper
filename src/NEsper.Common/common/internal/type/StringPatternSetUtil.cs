@@ -30,12 +30,12 @@ namespace com.espertech.esper.common.@internal.type
             IEnumerable<Pair<StringPatternSet, bool>> patterns,
             string literal)
         {
-            bool result = defaultValue;
+            var result = defaultValue;
 
             foreach (var item in patterns) {
                 if (result) {
                     if (!item.Second) {
-                        bool testResult = item.First.Match(literal);
+                        var testResult = item.First.Match(literal);
                         if (testResult) {
                             result = false;
                         }
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.type
                 }
                 else {
                     if (item.Second) {
-                        bool testResult = item.First.Match(literal);
+                        var testResult = item.First.Match(literal);
                         if (testResult) {
                             result = true;
                         }

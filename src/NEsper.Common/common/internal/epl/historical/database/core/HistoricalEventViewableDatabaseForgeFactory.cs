@@ -18,6 +18,7 @@ using com.espertech.esper.common.client.hook.type;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
+using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.db;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -44,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             DBStatementStreamSpec databaseStreamSpec,
             SQLColumnTypeConversion columnTypeConversionHook,
             SQLOutputRowConversion outputRowConversionHook,
-            StatementBaseInfo statementBaseInfo,
+            StatementRawInfo statementInfoRaw,
             StatementCompileTimeServices services,
             IEnumerable<Attribute> contextAttributes)
         {
@@ -52,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             var sqlFragments = GetSqlFragments(databaseStreamSpec);
             var invocationInputParameters = new List<string>();
             foreach (var fragment in sqlFragments) {
-                if ((fragment.IsParameter) && (fragment.Value != SAMPLE_WHERECLAUSE_PLACEHOLDER)) {
+                if (fragment.IsParameter && fragment.Value != SAMPLE_WHERECLAUSE_PLACEHOLDER) {
                     invocationInputParameters.Add(fragment.Value);
                 }
             }
@@ -89,14 +90,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                 parameterDesc,
                 contextAttributes);
 
-            Func<SQLColumnTypeContext, Type> columnTypeConversionFunc =
+            var columnTypeConversionFunc =
                 columnTypeConversionHook != null
                     ? columnTypeConversionHook.GetColumnType
-                    : (Func<SQLColumnTypeContext, Type>) null;
-            Func<SQLOutputRowTypeContext, Type> outputRowConversionFunc =
+                    : (Func<SQLColumnTypeContext, Type>)null;
+            var outputRowConversionFunc =
                 outputRowConversionHook != null
                     ? outputRowConversionHook.GetOutputRowType
-                    : (Func<SQLOutputRowTypeContext, Type>) null;
+                    : (Func<SQLOutputRowTypeContext, Type>)null;
 
             // Construct an event type from SQL query result metadata
             var eventType = CreateEventType(
@@ -106,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                 databaseStreamSpec,
                 columnTypeConversionHook,
                 outputRowConversionHook,
-                statementBaseInfo);
+                statementInfoRaw);
 
             services.EventTypeCompileTimeRegistry.NewType(eventType);
 
@@ -136,7 +137,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             DBStatementStreamSpec databaseStreamSpec,
             SQLColumnTypeConversion columnTypeConversionHook,
             SQLOutputRowConversion outputRowConversionHook,
-            StatementBaseInfo @base)
+            StatementRawInfo statementInfoRaw)
         {
             var eventTypeFields = CreateEventTypeFields(
                 databaseStreamSpec,
@@ -148,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             EventType eventType;
             Func<EventTypeApplicationType, EventTypeMetadata> metadata = appType => new EventTypeMetadata(
                 eventTypeName,
-                @base.ModuleName,
+                statementInfoRaw.ModuleName,
                 EventTypeTypeClass.DBDERIVED,
                 appType,
                 NameAccessModifier.TRANSIENT,
@@ -371,7 +372,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
         /// <returns></returns>
         private static ColumnSettings GetMetaDataSettings(
             StatementCompileTimeServices services,
-            String databaseName)
+            string databaseName)
         {
             try {
                 return services.DatabaseConfigServiceCompileTime.GetQuerySetting(databaseName);
