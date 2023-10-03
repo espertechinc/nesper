@@ -49,8 +49,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.core
 
         public EventType StatementEventType { get; private set; }
 
-        public StatementContext StatementCreate {
-            set { }
+        public void StatementCreate(StatementContext value)
+        {
         }
 
         public void StatementDestroy(StatementContext statementContext)

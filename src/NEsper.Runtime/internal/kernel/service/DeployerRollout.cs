@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.runtime.client;
 
@@ -154,7 +153,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 						items[i].Compiled,
 						recoveryInformation.StatementUserObjectsRuntime,
 						recoveryInformation.StatementNamesWhenProvidedByAPI,
-						stmtLightweights[i].SubstitutionParameters);
+						stmtLightweights[i].SubstitutionParameters,
+						deployments[i].DeploymentIdDependencies);
 				}
 				catch (Exception t) {
 					RolloutCleanStatements(statements, stmtLightweights, inits, deploymentIds, moduleProviders, runtime.ServicesContext);

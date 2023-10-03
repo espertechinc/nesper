@@ -92,7 +92,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
                 services.XmlFragmentEventTypeFactory,
                 services.EventTypeAvroHandler,
                 services.EventBeanTypedEventFactory,
-                services.ImportServiceRuntime);
+                services.ImportServiceRuntime,
+                services.EventTypeXMLXSDHandler);
 
             fafProvider.InitializeEventTypes(new EPModuleEventTypeInitServicesImpl(eventTypeCollector, eventTypeResolver));
 

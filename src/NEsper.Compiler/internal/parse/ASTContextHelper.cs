@@ -257,7 +257,8 @@ namespace com.espertech.esper.compiler.@internal.parse
                     inclusive = true;
                 }
 
-                return new ContextSpecConditionPattern(evalNode, inclusive, immediate);
+                var streamName = ctx.keywordAllowedIdent()?.GetText();
+                return new ContextSpecConditionPattern(evalNode, inclusive, immediate, streamName);
             }
 
             if (ctx.createContextFilter() != null)

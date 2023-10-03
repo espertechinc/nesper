@@ -23,6 +23,7 @@ using com.espertech.esper.common.@internal.epl.index.@base;
 using com.espertech.esper.common.@internal.epl.namedwindow.consume;
 using com.espertech.esper.common.@internal.epl.namedwindow.core;
 using com.espertech.esper.common.@internal.epl.pattern.core;
+using com.espertech.esper.common.@internal.epl.pattern.pool;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.rowrecog.state;
 using com.espertech.esper.common.@internal.epl.table.core;
@@ -44,6 +45,7 @@ using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.container;
+using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.deploymentlifesvc;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;
 using com.espertech.esper.runtime.@internal.kernel.stage;
@@ -74,7 +76,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             Configuration configurationSnapshot,
             RuntimeEnvContext runtimeEnvContext,
             IReaderWriterLock eventProcessingRWLock,
-            RuntimeSettingsService runtimeSettingsService)
+            RuntimeSettingsService runtimeSettingsService,
+            EPRuntimeOptions options,
+            ParentTypeResolver typeResolverParent)
         {
             return new EPServicesHA(
                 RuntimeExtensionServicesNoHA.INSTANCE,
@@ -302,6 +306,14 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         protected override StageRecoveryService MakeStageRecoveryService(EPServicesHA epServicesHA)
         {
             return StageRecoveryServiceImpl.INSTANCE;
+        }
+
+        protected override PatternSubexpressionPoolRuntimeSvc MakePatternSubexpressionPoolSvc(
+            long maxSubexpressions,
+            bool maxSubexpressionPreventStart,
+            RuntimeExtensionServices runtimeExtensionServices)
+        {
+            return new PatternSubexpressionPoolRuntimeSvcImpl(maxSubexpressions, maxSubexpressionPreventStart);
         }
     }
 } // end of namespace

@@ -12,12 +12,19 @@ namespace com.espertech.esper.compiler.@internal.util
 {
     public class CompilableEPL : Compilable
     {
-        public CompilableEPL(string epl)
+        private readonly int lineNumber;
+
+        public CompilableEPL(
+            string epl,
+            int lineNumber)
         {
             Epl = epl;
+            this.lineNumber = lineNumber;
         }
 
         public string Epl { get; }
+
+        public int LineNumber => lineNumber;
 
         public string ToEPL()
         {

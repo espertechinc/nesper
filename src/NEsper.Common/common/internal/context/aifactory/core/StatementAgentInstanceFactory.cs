@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
             AgentInstanceContext agentInstanceContext,
             bool isRecoveringResilient);
 
-        StatementContext StatementCreate { set; }
+        void StatementCreate(StatementContext value);
 
         void StatementDestroy(StatementContext statementContext);
 

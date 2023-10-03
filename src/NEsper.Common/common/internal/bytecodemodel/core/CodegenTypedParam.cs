@@ -192,6 +192,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
                    '}';
         }
 
+        
+        public void RenderInitializer(
+            StringBuilder builder,
+            bool isInnerClass)
+        {
+            if (Initializer != null) {
+                builder.Append("=");
+                Initializer.Render(builder, isInnerClass, 1, new CodegenIndent(true));
+            }
+        }
+        
         public ParameterSyntax CodegenSyntaxAsParameter()
         {
             var parameterType = ParseTypeName(TypeName);

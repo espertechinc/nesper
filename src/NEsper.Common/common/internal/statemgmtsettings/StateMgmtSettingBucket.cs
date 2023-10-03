@@ -10,7 +10,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.statemgmtsettings
 {
-    internal interface StateMgmtSettingBucket
+    public interface StateMgmtSettingBucket
     {
         CodegenExpression ToExpression();
     }

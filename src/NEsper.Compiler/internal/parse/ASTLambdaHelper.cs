@@ -23,11 +23,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			EsperEPL2GrammarParser.LibFunctionArgsContext ctx,
 			IDictionary<ITree, ExprNode> astExprNodeMap)
 		{
-			if (ctx == null) {
-				return EmptyList<ExprNode>.Instance;
-			}
-
-			IList<EsperEPL2GrammarParser.LibFunctionArgItemContext> args = ctx.libFunctionArgItem();
+			IList<EsperEPL2GrammarParser.LibFunctionArgItemContext> args = ctx?.libFunctionArgItem();
 			if (args == null || args.IsEmpty()) {
 				return EmptyList<ExprNode>.Instance;
 			}

@@ -52,19 +52,18 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                 realization);
         }
 
-        public StatementContext StatementCreate {
-            set {
-                var listeners = value.ContextManagementService.Listeners;
-                ContextStateEventUtil.DispatchContext(
-                    listeners,
-                    () => new ContextStateEventContextCreated(
-                        value.RuntimeURI,
-                        value.DeploymentId,
-                        ContextName),
-                    (
-                        listener,
-                        @event) => listener.OnContextCreated(@event));
-            }
+        public void StatementCreate(StatementContext value)
+        {
+            var listeners = value.ContextManagementService.Listeners;
+            ContextStateEventUtil.DispatchContext(
+                listeners,
+                () => new ContextStateEventContextCreated(
+                    value.RuntimeURI,
+                    value.DeploymentId,
+                    ContextName),
+                (
+                    listener,
+                    @event) => listener.OnContextCreated(@event));
         }
 
         public void StatementDestroyPreconditions(StatementContext statementContext)

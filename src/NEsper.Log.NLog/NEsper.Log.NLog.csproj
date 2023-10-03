@@ -19,6 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="NLog" Version="4.7.12" />
+        <PackageReference Include="NLog" Version="5.2.4" />
     </ItemGroup>
 </Project>

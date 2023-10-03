@@ -40,6 +40,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.previous;
 using com.espertech.esper.compat.directory;
+using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.context.util
@@ -71,7 +72,7 @@ namespace com.espertech.esper.common.@internal.context.util
             PathRegistry<string, EventType> eventTypePathRegistry,
             EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
             EventTypeResolvingBeanFactory eventTypeResolvingBeanFactory,
-            ManagedReadWriteLock eventProcessingRWLock,
+            IReaderWriterLock eventProcessingRWLock,
             ExceptionHandlingService exceptionHandlingService,
             ExpressionResultCacheService expressionResultCacheService,
             FilterBooleanExpressionFactory filterBooleanExpressionFactory,
@@ -144,9 +145,9 @@ namespace com.espertech.esper.common.@internal.context.util
             ViewServicePreviousFactory = viewServicePreviousFactory;
         }
 
-        public StatementContextRuntimeServices()
+        public StatementContextRuntimeServices(IContainer container)
         {
-            Container = null;
+            Container = container;
             ConfigSnapshot = null;
             ContextManagementService = null;
             ContextPathRegistry = null;
@@ -288,6 +289,6 @@ namespace com.espertech.esper.common.@internal.context.util
 
         public PathRegistry<string, ContextMetaData> ContextPathRegistry { get; }
 
-        public ManagedReadWriteLock EventProcessingRWLock { get; }
+        public IReaderWriterLock EventProcessingRWLock { get; }
     }
 } // end of namespace

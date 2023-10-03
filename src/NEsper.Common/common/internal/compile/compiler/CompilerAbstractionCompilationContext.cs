@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.compile.compiler
 {
@@ -32,6 +33,8 @@ namespace com.espertech.esper.common.@internal.compile.compiler
             IList<EPCompiled> path) : this(services, null, path)
         {
         }
+
+        public IContainer Container => Services.Container;
 
         public TypeResolver ParentTypeResolver => Services.ParentTypeResolver;
 

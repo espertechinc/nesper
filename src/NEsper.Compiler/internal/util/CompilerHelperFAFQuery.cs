@@ -6,74 +6,83 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
-using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.compile.compiler;
+using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.fafquery.querymethod;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compiler.client;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
-    public class CompilerHelperFAFQuery
-    {
-        public static string CompileQuery(
-            FAFQueryMethodForge query,
-            string classPostfix,
-            ModuleCompileTimeServices compileTimeServices,
-            out ICompileArtifact artifact)
-        {
-            var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                typeof(StatementFields),
-                classPostfix);
-            var namespaceScope = new CodegenNamespaceScope(
-                compileTimeServices.Namespace,
-                statementFieldsClassName,
-                compileTimeServices.IsInstrumented,
-                TODO);
+	public class CompilerHelperFAFQuery
+	{
+		public static string CompileQuery(
+			FAFQueryMethodForge query,
+			string classPostfix,
+			CompilerAbstractionArtifactCollection compilerState,
+			ModuleCompileTimeServices compileTimeServices,
+			CompilerPath path)
+		{
+			var statementFieldsClassName =
+				CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
+			var namespaceScope = new CodegenNamespaceScope(
+				compileTimeServices.Namespace,
+				statementFieldsClassName,
+				compileTimeServices.IsInstrumented,
+				compileTimeServices.Configuration.Compiler.ByteCode);
 
-            var queryMethodProviderClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
-                typeof(FAFQueryMethodProvider),
-                classPostfix);
-            var forgeablesQueryMethod = query.MakeForgeables(queryMethodProviderClassName, classPostfix, namespaceScope);
+			var queryMethodProviderClassName =
+				CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(FAFQueryMethodProvider), classPostfix);
+			var forgeablesQueryMethod = query.MakeForgeables(
+				queryMethodProviderClassName,
+				classPostfix,
+				namespaceScope);
 
-            IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>(forgeablesQueryMethod);
-            forgeables.Add(new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope, 0));
+			IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>(forgeablesQueryMethod);
+			forgeables.Add(new StmtClassForgeableStmtFields(statementFieldsClassName, namespaceScope));
 
-            // forge with statement-fields last
-            var classes = new List<CodegenClass>(forgeables.Count);
-            foreach (var forgeable in forgeables) {
-                var clazz = forgeable.Forge(true, true);
-                classes.Add(clazz);
-            }
+			// forge with statement-fields last
+			var classes = new List<CodegenClass>(forgeables.Count);
+			foreach (var forgeable in forgeables) {
+				var clazz = forgeable.Forge(true, true);
+				if (clazz == null) {
+					continue;
+				}
 
-            // assign the assembly (required for completeness)
-            artifact = null;
+				classes.Add(clazz);
+			}
 
-            // compile with statement-field first
-            classes = classes
-                .OrderBy(c => c.ClassType.GetSortCode())
-                .ToList();
+			// compile with statement-field first
+			classes = classes
+				.OrderBy(c => c.ClassType.GetSortCode())
+				.ToList();
 
-            var container = compileTimeServices.Container;
-            var repository = container.ArtifactRepositoryManager().DefaultRepository;
-            var compiler = container
-                .RoslynCompiler()
-                .WithMetaDataReferences(repository.AllMetadataReferences)
-                .WithMetaDataReferences(container.MetadataReferenceProvider()?.Invoke())
-                .WithDebugOptimization(compileTimeServices.Configuration.Compiler.IsDebugOptimization)
-                .WithCodeLogging(compileTimeServices.Configuration.Compiler.Logging.IsEnableCode)
-                .WithCodeAuditDirectory(compileTimeServices.Configuration.Compiler.Logging.AuditDirectory)
-                .WithCodegenClasses(classes);
+			// remove statement field initialization when unused
+			namespaceScope.RewriteStatementFieldUse(classes);
 
-            artifact = repository.Register(compiler.Compile());
+#if NOT_DOTNET
+			// add class-provided create-class to classpath
+			compileTimeServices.ClassProvidedCompileTimeResolver.AddTo(_ => compilerState.Add(_));
+#endif
 
-            return queryMethodProviderClassName;
-        }
-    }
+			var ctx = new CompilerAbstractionCompilationContext(compileTimeServices, path.Compileds);
+			compileTimeServices.CompilerAbstraction.CompileClasses(classes, ctx, compilerState);
+
+#if NOT_DOTNET
+			// remove path create-class class-provided byte code
+			compileTimeServices.ClassProvidedCompileTimeResolver.RemoveFrom(_ => compilerState.Remove(_));
+#endif
+			
+			return queryMethodProviderClassName;
+		}
+	}
 } // end of namespace

@@ -9,16 +9,21 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.hook.exception;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.context.util;
+using com.espertech.esper.common.@internal.epl.enummethod.cache;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.expression.time.abacus;
+using com.espertech.esper.common.@internal.epl.variable.core;
 using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.threading.threadlocal;
+using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.metrics.instrumentation;
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
@@ -120,16 +125,24 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		}
 
 		public static IThreadLocal<EPEventServiceThreadLocalEntry> AllocateThreadLocals(
+			IContainer container,
 			bool isPrioritized,
 			string runtimeURI,
+			Configuration configuration,
 			EventBeanService eventBeanService,
 			ExceptionHandlingService exceptionHandlingService,
-			SchedulingService schedulingService)
+			SchedulingService schedulingService,
+			TimeZoneInfo timeZone,
+			TimeAbacus timeAbacus,
+			VariableManagementService variableManagementService)
 		{
+			var expressionResultCacheService = new ExpressionResultCacheService(
+				configuration.Runtime.Execution.DeclaredExprValueCacheSize,
+				container.ThreadLocalManager());
+				
 			//return new SystemThreadLocal<EPEventServiceThreadLocalEntry>(
 			return new FastThreadLocal<EPEventServiceThreadLocalEntry>(
 				() => {
-					DualWorkQueue<object> dualWorkQueue = new DualWorkQueue<object>();
 					ArrayBackedCollection<FilterHandle> filterHandles = new ArrayBackedCollection<FilterHandle>(100);
 					ArrayBackedCollection<ScheduleHandle> scheduleHandles = new ArrayBackedCollection<ScheduleHandle>(100);
 
@@ -148,9 +161,32 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 						runtimeURI,
 						eventBeanService,
 						exceptionHandlingService,
-						schedulingService);
+						expressionResultCacheService,
+						schedulingService,
+						timeZone,
+						timeAbacus,
+						variableManagementService);
+					
+					WorkQueue workQueue;
+					bool eventPrecedence = configuration.Runtime.Execution.IsPrecedenceEnabled;
+					bool insertIntoLatching = configuration.Runtime.Threading.IsInsertIntoDispatchPreserveOrder;
+					if (!eventPrecedence) {
+						if (insertIntoLatching) {
+							// the default work queue may or may not latch depending on statement stateless ascpect and lock-type configuration
+							workQueue = new WorkQueueNoPrecedenceMayLatch();
+						} else {
+							workQueue = new WorkQueueNoPrecedenceNoLatch();
+						}
+					} else {
+						if (!insertIntoLatching) {
+							workQueue = new WorkQueueWPrecedenceNoLatch();
+						} else {
+							workQueue = new WorkQueueWPrecedenceMayLatch();
+						}
+					}
+					
 					return new EPEventServiceThreadLocalEntry(
-						dualWorkQueue,
+						workQueue,
 						filterHandles,
 						scheduleHandles,
 						matchesPerStmt,

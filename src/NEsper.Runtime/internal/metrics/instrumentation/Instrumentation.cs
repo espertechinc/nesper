@@ -53,14 +53,6 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 
 	    void AExprEquals(Boolean result);
 
-	    void QOutputProcessNonBuffered(EventBean[] newData, EventBean[] oldData);
-
-	    void AOutputProcessNonBuffered();
-
-	    void QOutputProcessNonBufferedJoin(ISet<MultiKeyArrayOfKeys<EventBean>> newEvents, ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents);
-
-	    void AOutputProcessNonBufferedJoin();
-
 	    void QSelectClause(EventBean[] eventsPerStream, bool newData, bool synthesize, ExprEvaluatorContext exprEvaluatorContext);
 
 	    void ASelectClause(bool newData, EventBean @event, object[] subscriberParameters);
@@ -328,6 +320,10 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
 	    void QExprTableTop(string text, string tableName);
 
 	    void AExprTableTop(object result);
+	    
+	    void QRuntimeManagementDeploy(string runtimeURI, string deploymentId, int size);
+	    
+	    void ARuntimeManagementDeploy(string runtimeURI);
 
 	    void QaEngineManagementStmtStarted(string runtimeURI, string deploymentId, int statementId, string statementName, string epl, long runtimeTime);
 

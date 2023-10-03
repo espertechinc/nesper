@@ -24,7 +24,8 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         private readonly string _refName;
         private readonly CodegenClassScope _classScope;
         private readonly bool _methodProvided;
-        private CodegenMethod _method;
+        private readonly CodegenMethod _method;
+        private readonly CodegenProperty _property;
         private bool _closed;
 
         public CodegenExpressionRef RefName => Ref(_refName);
@@ -61,6 +62,24 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             _method.Block.DeclareVarNewInstance(returnType, refName);
         }
 
+        public CodegenSetterBuilder(
+            Type returnType,
+            Type originator,
+            string refName,
+            CodegenClassScope classScope,
+            CodegenProperty property)
+        {
+            _originator = originator;
+            _refName = refName;
+            _classScope = classScope;
+
+            _methodProvided = false;
+            _method = null;
+
+            _property = property;
+            _property.GetterBlock.DeclareVarNewInstance(returnType, refName);
+        }
+        
         public CodegenSetterBuilder(
             Type returnType,
             Type originator,
@@ -192,13 +211,14 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             }
 
             _closed = true;
-            _method.Block.MethodReturn(Ref(_refName));
-            return LocalMethod(_method);
-        }
 
-        public CodegenMethod GetMethod()
-        {
-            return _method;
+            if (_method != null) {
+                _method.Block.MethodReturn(Ref(_refName));
+            } else if (_property != null) {
+                _property.GetterBlock.BlockReturn(Ref(_refName));
+            }
+
+            return LocalMethod(_method);
         }
 
         private static CodegenExpression BuildMap<TV>(
@@ -262,7 +282,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             string name,
             CodegenExpression expression)
         {
-            _method.Block.SetProperty(Ref(_refName), GetBeanCap(name), expression);
+            if (_method != null) {
+                _method.Block.SetProperty(Ref(_refName), GetBeanCap(name), expression);
+            } else if (_property != null) {
+                _property.GetterBlock.SetProperty(Ref(_refName), GetBeanCap(name), expression);
+            }
+
             return this;
         }
 

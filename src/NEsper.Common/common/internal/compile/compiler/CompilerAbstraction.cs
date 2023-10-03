@@ -8,22 +8,23 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 
 namespace com.espertech.esper.common.@internal.compile.compiler
 {
     public interface CompilerAbstraction
     {
-        CompilerAbstractionClassCollection NewClassCollection();
+        CompilerAbstractionArtifactCollection NewArtifactCollection();
 
-        void CompileClasses(
+        ICompileArtifact CompileClasses(
             IList<CodegenClass> classes,
             CompilerAbstractionCompilationContext context,
-            CompilerAbstractionClassCollection state);
+            CompilerAbstractionArtifactCollection state);
 
         CompilerAbstractionCompileSourcesResult CompileSources(
             IList<string> sources,
             CompilerAbstractionCompilationContext context,
-            CompilerAbstractionClassCollection state);
+            CompilerAbstractionArtifactCollection state);
     }
 } // end of namespace

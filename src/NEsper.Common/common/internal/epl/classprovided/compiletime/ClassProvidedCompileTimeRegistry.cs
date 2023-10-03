@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
         public void AddTo(ClassProvidedClassesAdd add)
         {
             foreach (var entry in Classes) {
-                add.Add(entry.Value.Artifact);
+                add.Invoke(entry.Value.Artifact);
             }
         }
     }

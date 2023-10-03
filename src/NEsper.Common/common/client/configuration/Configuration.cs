@@ -281,7 +281,7 @@ namespace com.espertech.esper.common.client.configuration
         /// <summary>
         /// For internal use only: returns statement settings provider
         /// </summary>
-        internal StateMgmtSettingsProvider InternalUseGetStmtMgmtProvider(StateMgmtSettingsProxy proxy)
+        public StateMgmtSettingsProvider InternalUseGetStmtMgmtProvider(StateMgmtSettingsProxy proxy)
         {
             return StateMgmtSettingsProviderDefault.INSTANCE;
         }

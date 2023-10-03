@@ -63,7 +63,11 @@ namespace com.espertech.esper.compiler.@internal.util
             string classNameSimple,
             ModuleCompileTimeServices services)
         {
-            var namespaceScope = new CodegenNamespaceScope(services.Namespace, null, false, TODO);
+            var namespaceScope = new CodegenNamespaceScope(
+                services.Namespace,
+                null,
+                false,
+                services.Configuration.Compiler.ByteCode);
             var classScope = new CodegenClassScope(true, namespaceScope, null);
             var clazz = new CodegenClass(
                 classType,

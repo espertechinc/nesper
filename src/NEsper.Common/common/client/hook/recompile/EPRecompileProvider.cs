@@ -11,7 +11,7 @@ namespace com.espertech.esper.common.client.hook.recompile
     /// <summary>
     /// Provider for a re-compiler that acts on existing deployment to either re-compile or re-load from an external source
     /// </summary>
-    internal interface EPRecompileProvider
+    public interface EPRecompileProvider
     {
         /// <summary>
         /// Provide compiler output

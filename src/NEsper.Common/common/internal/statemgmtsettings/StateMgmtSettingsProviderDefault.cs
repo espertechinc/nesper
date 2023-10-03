@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -117,7 +118,7 @@ namespace com.espertech.esper.common.@internal.statemgmtsettings
         public void Spec(
             IList<FabricStatement> formatStatements,
             ModuleCompileTimeServices compileTimeServices,
-            IDictionary<string, byte[]> moduleBytes)
+            ICollection<IArtifact> artifacts)
         {
             throw new IllegalStateException("Not implemented for non-HA compile");
         }

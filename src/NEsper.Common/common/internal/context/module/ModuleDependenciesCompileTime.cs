@@ -136,7 +136,7 @@ namespace com.espertech.esper.common.@internal.context.module
         public ICollection<NameAndModule> PathEventTypes => pathEventTypes;
 
         public void Make(
-            CodegenMethod method,
+            CodegenProperty property,
             CodegenClassScope classScope)
         {
             var builder = new CodegenSetterBuilder(
@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.context.module
                 typeof(ModuleDependenciesCompileTime),
                 "md",
                 classScope,
-                method);
+                property);
 
             builder
                 .ExpressionDefaultChecked("PathEventTypes", NameAndModule.MakeArrayNullIfEmpty(pathEventTypes))
@@ -158,7 +158,8 @@ namespace com.espertech.esper.common.@internal.context.module
                 .ExpressionDefaultChecked("PathClasses", NameAndModule.MakeArrayNullIfEmpty(pathClasses))
                 .ExpressionDefaultChecked("PublicEventTypes", MakeStringArrayNullIfEmpty(publicEventTypes))
                 .ExpressionDefaultChecked("PublicVariables", MakeStringArrayNullIfEmpty(publicVariables));
-            method.Block.MethodReturn(builder.RefName);
+
+            property.GetterBlock.BlockReturn(builder.RefName);
 
             // method.Block
             //     .DeclareVar<ModuleDependenciesRuntime>("md", NewInstance(typeof(ModuleDependenciesRuntime)))

@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <PackageReference Include="System.Threading" Version="4.3.0" />
-    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.8.0" />
     <PackageReference Include="Castle.Core" Version="4.4.1" />
     <PackageReference Include="Castle.Windsor" Version="5.1.2" />
     <PackageReference Include="Common.Logging" Version="3.4.1" />

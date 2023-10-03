@@ -70,7 +70,7 @@ namespace com.espertech.esper.compiler.@internal.util
                     StatementType.INTERNAL_USE_API_COMPILE_EXPR,
                     null,
                     null,
-                    new CompilableEPL(expression),
+                    new CompilableEPL(expression, 1),
                     "API-provided");
                 var validationContext = new ExprValidationContextBuilder(streamTypeService, statementRawInfo, services).Build();
                 node = ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.API, node, validationContext);

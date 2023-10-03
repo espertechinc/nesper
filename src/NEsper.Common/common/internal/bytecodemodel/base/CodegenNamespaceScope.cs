@@ -8,9 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client.configuration.compiler;
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.bytecodemodel.model.statement;
 using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.util;
@@ -288,6 +291,41 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public override string ToString()
         {
             return $"{nameof(Namespace)}: {Namespace}";
+        }
+
+        public void RewriteStatementFieldUse(IList<CodegenClass> classes)
+        {
+            if (FieldsClassNameOptional != null && !HasAnyFields) {
+                RewriteProviderNoFieldInit(classes, FieldsClassNameOptional);
+            }
+        }
+
+        private static void RewriteProviderNoFieldInit(
+            IList<CodegenClass> classes,
+            string fieldClassName)
+        {
+            // Rewrite the constructor of providers to remove calls to field initialization, for when there is no fields-class.
+            // Field initialization cannot be predicted as forging adds fields.
+            // The forge order puts the forging of the fields-class last so that fields can be added during forging.
+            // Since the fields-class is forged last the provider classes cannot predict whether fields are required or not.
+            foreach (CodegenClass clazz in classes) {
+                if (clazz.ClassType == CodegenClassType.FAFQUERYMETHODPROVIDER ||
+                    clazz.ClassType == CodegenClassType.STATEMENTAIFACTORYPROVIDER) {
+
+                    var statements = clazz.OptionalCtor.Block.Statements;
+                    for (var ii = 0; ii < statements.Count; ii++) {
+                        var statement = statements[ii];
+                        if (statement is CodegenStatementExpression expression) {
+                            if (expression.Expression is CodegenExpressionStaticMethod staticMethod) {
+                                if (staticMethod.TargetClassName != null &&
+                                    staticMethod.TargetClassName.Equals(fieldClassName)) {
+                                    statements.RemoveAt(ii--);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 } // end of namespace

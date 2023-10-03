@@ -10,8 +10,5 @@ using com.espertech.esper.common.client.artifact;
 
 namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 {
-    public interface ClassProvidedClassRemove
-    {
-        void Remove(IRuntimeArtifact name);
-    }
+    public delegate void ClassProvidedClassRemove(IRuntimeArtifact name);
 } // end of namespace

@@ -6,27 +6,34 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.compiler
 {
-    public class CompilerAbstractionClassCollectionImpl : CompilerAbstractionClassCollection
+    public class CompilerAbstractionArtifactCollectionImpl : CompilerAbstractionArtifactCollection
     {
-        private readonly IDictionary<string, byte[]> classes = new ConcurrentDictionary<string, byte[]>();
+        private readonly IList<IArtifact> _artifacts = new List<IArtifact>();
 
-        public IDictionary<string, byte[]> Classes => classes;
+        public ICollection<IArtifact> Artifacts => _artifacts;
 
-        public void Add(IDictionary<string, byte[]> bytes)
+        public void Add(IEnumerable<IArtifact> artifacts)
         {
-            classes.PutAll(bytes);
+            _artifacts.AddAll(artifacts);
+        }
+
+        public void Add(IArtifact artifact)
+        {
+            _artifacts.Add(artifact);
         }
 
         public void Remove(string name)
         {
-            classes.Remove(name);
+            throw new NotSupportedException();
         }
     }
 } // end of namespace

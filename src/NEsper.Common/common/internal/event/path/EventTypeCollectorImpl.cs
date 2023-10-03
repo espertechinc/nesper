@@ -26,11 +26,13 @@ using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.common.@internal.settings;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.@event.path
 {
     public class EventTypeCollectorImpl : EventTypeCollector
     {
+        private readonly IContainer container;
         private readonly IDictionary<string, EventType> moduleEventTypes;
         private readonly BeanEventTypeFactory beanEventTypeFactory;
         private readonly TypeResolver typeResolver;
@@ -45,6 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.path
         private readonly EventTypeXMLXSDHandler eventTypeXMLXSDHandler;
 
         public EventTypeCollectorImpl(
+            IContainer container,
             IDictionary<string, EventType> moduleEventTypes,
             BeanEventTypeFactory beanEventTypeFactory,
             TypeResolver typeResolver,
@@ -57,6 +60,7 @@ namespace com.espertech.esper.common.@internal.@event.path
             ImportService importService,
             EventTypeXMLXSDHandler eventTypeXMLXSDHandler)
         {
+            this.container = container;
             this.moduleEventTypes = moduleEventTypes;
             this.beanEventTypeFactory = beanEventTypeFactory;
             this.typeResolver = typeResolver;

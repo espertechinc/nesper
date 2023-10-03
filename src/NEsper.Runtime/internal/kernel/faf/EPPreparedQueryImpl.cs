@@ -23,20 +23,25 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
     public class EPPreparedQueryImpl : EPFireAndForgetPreparedQuery
     {
         private readonly EPServicesContext epServicesContext;
-        private readonly FAFQueryMethod queryMethod;
         private readonly FAFQueryMethodProvider queryMethodProvider;
+        private readonly FAFQueryMethodSessionPrepared prepared;
         private readonly AtomicBoolean serviceStatusProvider;
 
         public EPPreparedQueryImpl(
             AtomicBoolean serviceStatusProvider,
             FAFQueryMethodProvider queryMethodProvider,
-            FAFQueryMethod queryMethod,
+            FAFQueryMethodSessionPrepared prepared,
             EPServicesContext epServicesContext)
         {
             this.serviceStatusProvider = serviceStatusProvider;
             this.queryMethodProvider = queryMethodProvider;
-            this.queryMethod = queryMethod;
+            this.prepared = prepared;
             this.epServicesContext = epServicesContext;
+        }
+
+        public void Close()
+        {
+            prepared.Close();
         }
 
         public EPFireAndForgetQueryResult Execute()
@@ -59,7 +64,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.faf
         {
             try {
                 FAFQueryMethodAssignerSetter setter = queryMethodProvider.SubstitutionFieldSetter;
-                var result = queryMethod.Execute(
+                var result = prepared.Execute(
                     serviceStatusProvider, setter, contextPartitionSelectors, epServicesContext.ContextManagementService);
                 return new EPQueryResultImpl(result);
             }

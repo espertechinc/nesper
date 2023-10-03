@@ -29,8 +29,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createexpressio
             set => _viewable = new ViewableDefaultImpl(value);
         }
 
-        public StatementContext StatementCreate {
-            set { }
+        public void StatementCreate(StatementContext value)
+        {
         }
 
         public void StatementDestroy(StatementContext statementContext)

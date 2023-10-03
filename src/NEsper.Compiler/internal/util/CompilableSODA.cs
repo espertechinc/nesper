@@ -18,13 +18,19 @@ namespace com.espertech.esper.compiler.@internal.util
     public class CompilableSODA : Compilable
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private readonly int lineNumber;
 
-        public CompilableSODA(EPStatementObjectModel soda)
+        public CompilableSODA(
+            EPStatementObjectModel soda,
+            int lineNumber)
         {
             Soda = soda;
+            this.lineNumber = lineNumber;
         }
 
         public EPStatementObjectModel Soda { get; }
+
+        public int LineNumber => lineNumber;
 
         public string ToEPL()
         {

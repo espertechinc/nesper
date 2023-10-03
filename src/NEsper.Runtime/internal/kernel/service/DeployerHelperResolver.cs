@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.epl.script.core;
 using com.espertech.esper.common.@internal.type;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.client;
@@ -51,7 +52,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 		{
 			string deploymentId;
 			if (optionsMayNull == null || optionsMayNull.DeploymentId == null) {
-				deploymentId = Guid.NewGuid().ToString();
+				// the CRC may already exists, however this is very unlikely
+				long crc;
+				do {
+					deploymentId = Guid.NewGuid().ToString();
+					crc = CRC32Util.ComputeCRC32(deploymentId);
+				} while (deploymentLifecycleService.GetDeploymentByCRC(crc) != null);
 			}
 			else {
 				deploymentId = optionsMayNull.DeploymentId;

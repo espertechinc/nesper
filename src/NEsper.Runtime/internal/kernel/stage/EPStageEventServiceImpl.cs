@@ -48,7 +48,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 {
 	public class EPStageEventServiceImpl : EPStageEventServiceSPI,
 		InternalEventRouteDest,
-		EPRuntimeEventProcessWrapped
+		EPRuntimeEventProcessWrapped,
+		EPEventServiceQueueProcessor
 	{
 		private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -59,7 +60,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 		private bool inboundThreading;
 		private bool routeThreading;
 		private bool timerThreading;
-		private bool isLatchStatementInsertStream;
 		private bool isUsingExternalClocking;
 		private bool isPrioritized;
 		private volatile UnmatchedListener unmatchedListener;
@@ -79,7 +79,6 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			this.inboundThreading = specificServices.ThreadingService.IsInboundThreading;
 			this.routeThreading = specificServices.ThreadingService.IsRouteThreading;
 			this.timerThreading = specificServices.ThreadingService.IsTimerThreading;
-			isLatchStatementInsertStream = runtimeServices.RuntimeSettingsService.ConfigurationRuntime.Threading.IsInsertIntoDispatchPreserveOrder;
 			isUsingExternalClocking = true;
 			isPrioritized = runtimeServices.RuntimeSettingsService.ConfigurationRuntime.Execution.IsPrioritized;
 			routedInternal = new AtomicLong();
@@ -329,7 +328,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 
 		public void RouteEventBean(EventBean theEvent)
 		{
-			threadLocals.GetOrCreate().DualWorkQueue.BackQueue.AddLast(theEvent);
+			threadLocals.GetOrCreate().WorkQueue.Add(theEvent);
 		}
 
 		// Internal route of events via insert-into, holds a statement lock
@@ -348,30 +347,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			}
 
 			routedInternal.IncrementAndGet();
-			var threadWorkQueue = threadLocals.GetOrCreate().DualWorkQueue;
-
-			if (isLatchStatementInsertStream) {
-				if (addToFront) {
-					var latch = epStatementHandle.InsertIntoFrontLatchFactory.NewLatch(theEvent);
-					threadWorkQueue.FrontQueue.AddLast(latch);
-				}
-				else {
-					var latch = epStatementHandle.InsertIntoBackLatchFactory.NewLatch(theEvent);
-					threadWorkQueue.BackQueue.AddLast(latch);
-				}
-			}
-			else {
-				if (addToFront) {
-					threadWorkQueue.FrontQueue.AddLast(theEvent);
-				}
-				else {
-					threadWorkQueue.BackQueue.AddLast(theEvent);
-				}
-			}
-
-			if (InstrumentationHelper.ENABLED) {
-				InstrumentationHelper.Get().ARouteBetweenStmt();
-			}
+			var threadWorkQueue = threadLocals.GetOrCreate().WorkQueue;
+			threadWorkQueue.Add(theEvent, epStatementHandle, addToFront, precedence);
 		}
 
 		public void ProcessWrappedEvent(EventBean eventBean)
@@ -425,15 +402,15 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 		/// </summary>
 		public void ProcessThreadWorkQueue()
 		{
-			var queues = threadLocals.GetOrCreate().DualWorkQueue;
+			var queues = threadLocals.GetOrCreate().WorkQueue;
 
-			if (queues.FrontQueue.IsEmpty()) {
+			if (queues.IsFrontEmpty) {
 				var haveDispatched = runtimeServices.NamedWindowDispatchService.Dispatch();
 				if (haveDispatched) {
 					// Dispatch results to listeners
 					Dispatch();
 
-					if (!queues.FrontQueue.IsEmpty()) {
+					if (!queues.IsFrontEmpty) {
 						ProcessThreadWorkQueueFront(queues);
 					}
 				}
@@ -442,43 +419,21 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				ProcessThreadWorkQueueFront(queues);
 			}
 
-			object item;
-			while ((item = queues.BackQueue.Poll()) != null) {
-				if (item is InsertIntoLatchSpin) {
-					ProcessThreadWorkQueueLatchedSpin((InsertIntoLatchSpin) item);
-				}
-				else if (item is InsertIntoLatchWait) {
-					ProcessThreadWorkQueueLatchedWait((InsertIntoLatchWait) item);
-				}
-				else {
-					ProcessThreadWorkQueueUnlatched(item);
-				}
-
+			while (queues.ProcessBack(this)) {
 				var haveDispatched = runtimeServices.NamedWindowDispatchService.Dispatch();
 				if (haveDispatched) {
 					Dispatch();
 				}
 
-				if (!queues.FrontQueue.IsEmpty()) {
+				if (!queues.IsFrontEmpty) {
 					ProcessThreadWorkQueueFront(queues);
 				}
 			}
 		}
 
-		private void ProcessThreadWorkQueueFront(DualWorkQueue<object> queues)
+		private void ProcessThreadWorkQueueFront(WorkQueue queues)
 		{
-			object item;
-			while ((item = queues.FrontQueue.Poll()) != null) {
-				if (item is InsertIntoLatchSpin) {
-					ProcessThreadWorkQueueLatchedSpin((InsertIntoLatchSpin) item);
-				}
-				else if (item is InsertIntoLatchWait) {
-					ProcessThreadWorkQueueLatchedWait((InsertIntoLatchWait) item);
-				}
-				else {
-					ProcessThreadWorkQueueUnlatched(item);
-				}
-
+			while (queues.ProcessFront(this)) {
 				var haveDispatched = runtimeServices.NamedWindowDispatchService.Dispatch();
 				if (haveDispatched) {
 					Dispatch();
@@ -486,7 +441,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			}
 		}
 
-		private void ProcessThreadWorkQueueLatchedWait(InsertIntoLatchWait insertIntoLatch)
+		public void ProcessThreadWorkQueueLatchedWait(InsertIntoLatchWait insertIntoLatch)
 		{
 			// wait for the latch to complete
 			var eventBean = insertIntoLatch.Await();
@@ -514,7 +469,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			Dispatch();
 		}
 
-		private void ProcessThreadWorkQueueLatchedSpin(InsertIntoLatchSpin insertIntoLatch)
+		public void ProcessThreadWorkQueueLatchedSpin(InsertIntoLatchSpin insertIntoLatch)
 		{
 			// wait for the latch to complete
 			var eventBean = insertIntoLatch.Await();
@@ -542,7 +497,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			Dispatch();
 		}
 
-		private void ProcessThreadWorkQueueUnlatched(object item)
+		public void ProcessThreadWorkQueueUnlatched(object item)
 		{
 			EventBean eventBean;
 			if (item is EventBean) {
@@ -936,12 +891,18 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 		private void InitThreadLocals()
 		{
 			RemoveFromThreadLocals();
+
 			threadLocals = AllocateThreadLocals(
+				runtimeServices.Container,
 				isPrioritized,
 				runtimeServices.RuntimeURI,
+				runtimeServices.ConfigSnapshot,
 				runtimeServices.EventBeanService,
 				runtimeServices.ExceptionHandlingService,
-				specificServices.SchedulingService);
+				specificServices.SchedulingService,
+				runtimeServices.ImportServiceRuntime.TimeZone,
+				runtimeServices.ImportServiceRuntime.TimeAbacus,
+				runtimeServices.VariableManagementService);
 		}
 
 		private void ProcessSchedule(long time)
@@ -1279,7 +1240,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				}
 			}
 
-			tlEntry.DualWorkQueue.BackQueue.AddLast(theEvent);
+			tlEntry.WorkQueue.Add(theEvent);
 		}
 	}
 } // end of namespace

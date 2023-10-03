@@ -18,23 +18,27 @@ namespace com.espertech.esper.runtime.@internal.deploymentlifesvc
             EPCompiled compiled,
             IDictionary<int, object> userObjectsRuntime,
             IDictionary<int, string> statementNamesWhenProvidedByAPI,
-            IDictionary<int, IDictionary<int, object>> substitutionParameters)
+            IDictionary<int, IDictionary<int, object>> substitutionParameters,
+            string[] deploymentIdsConsumed)
         {
             StatementIdFirstStatement = statementIdFirstStatement;
             Compiled = compiled;
             UserObjectsRuntime = userObjectsRuntime;
             StatementNamesWhenProvidedByAPI = statementNamesWhenProvidedByAPI;
             SubstitutionParameters = substitutionParameters;
+            DeploymentIdsConsumed = deploymentIdsConsumed;
         }
 
         public int StatementIdFirstStatement { get; }
 
-        public EPCompiled Compiled { get; }
+        public EPCompiled Compiled { get; set; }
 
         public IDictionary<int, object> UserObjectsRuntime { get; }
 
         public IDictionary<int, string> StatementNamesWhenProvidedByAPI { get; }
 
         public IDictionary<int, IDictionary<int, object>> SubstitutionParameters { get; }
+        
+        public string[] DeploymentIdsConsumed { get; }
     }
 } // end of namespace

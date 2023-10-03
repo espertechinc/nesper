@@ -93,8 +93,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 
         public EventType StatementEventType => _publicEventType;
 
-        public StatementContext StatementCreate {
-            set { }
+        public void StatementCreate(StatementContext value)
+        {
         }
 
         public void StatementDestroy(StatementContext statementContext)

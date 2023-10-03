@@ -16,7 +16,7 @@ namespace com.espertech.esper.compiler.@internal.util
 {
 	public class CompilableItemPostCompileLatchDefault : CompilableItemPostCompileLatch
 	{
-		public readonly static CompilableItemPostCompileLatchDefault INSTANCE = new CompilableItemPostCompileLatchDefault();
+		public static readonly CompilableItemPostCompileLatchDefault INSTANCE = new CompilableItemPostCompileLatchDefault();
 
 		private CompilableItemPostCompileLatchDefault()
 		{

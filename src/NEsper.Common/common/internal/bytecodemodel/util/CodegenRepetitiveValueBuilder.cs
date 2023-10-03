@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
     public class CodegenRepetitiveValueBuilder<V> : CodegenRepetitiveBuilderBase
     {
         private readonly ICollection<V> values;
-        private ConsumerByValue<V> consumer;
+        private ConsumerByValue consumer;
 
         public CodegenRepetitiveValueBuilder(
             ICollection<V> values,
@@ -69,15 +69,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             }
         }
 
-        public delegate void ConsumerByValue<V>(
-            V value,
-            int index,
-            CodegenMethod leafMethod);
-
-        public CodegenRepetitiveValueBuilder<V> SetConsumer(ConsumerByValue<V> value)
+        public CodegenRepetitiveValueBuilder<V> SetConsumer(ConsumerByValue value)
         {
             consumer = value;
             return this;
         }
+
+        public delegate void ConsumerByValue(
+            V value,
+            int index,
+            CodegenMethod leafMethod);
     }
 } // end of namespace

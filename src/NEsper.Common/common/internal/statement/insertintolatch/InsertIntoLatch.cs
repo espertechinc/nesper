@@ -10,7 +10,7 @@ using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.statement.insertintolatch
 {
-    internal interface InsertIntoLatch
+    public interface InsertIntoLatch
     {
         InsertIntoLatchFactory Factory { get; }
         EventBean Event { set; get; }

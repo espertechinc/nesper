@@ -130,7 +130,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.logsink
 
             if (shellPerStream[port] != null) {
                 lock (this) {
-                    shellPerStream[port].UnderlyingSpi = theEvent;
+                    shellPerStream[port].Underlying = theEvent;
                     renderer.Render(shellPerStream[port], writer);
                 }
 

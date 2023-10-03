@@ -690,7 +690,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
             string optionalDeploymentId)
         {
             foreach (var eventType in moduleTypes) {
-                AddJsonUnderlyingClassInternal(eventType.Value, typeResolver, optionalDeploymentId);
+                AddJsonUnderlyingClass(eventType.Value, typeResolver, optionalDeploymentId);
             }
         }
 
@@ -698,10 +698,10 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
             PathRegistry<string, EventType> pathEventTypes,
             ParentTypeResolver typeResolver)
         {
-            pathEventTypes.Traverse(type => AddJsonUnderlyingClassInternal(type, typeResolver, null));
+            pathEventTypes.Traverse(type => AddJsonUnderlyingClass(type, typeResolver, null));
         }
 
-        private static void AddJsonUnderlyingClassInternal(
+        public static void AddJsonUnderlyingClass(
             EventType eventType,
             ParentTypeResolver typeResolver,
             string optionalDeploymentId)

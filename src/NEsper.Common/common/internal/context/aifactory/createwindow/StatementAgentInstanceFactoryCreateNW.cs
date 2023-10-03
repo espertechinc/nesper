@@ -77,18 +77,17 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createwindow
 
         public EventType StatementEventType => _activator.EventType;
 
-        public StatementContext StatementCreate {
-            set {
-                // The filter lookupables for the as-type apply to this type, when used with contexts, as contexts generated filters for types
-                if (value.ContextRuntimeDescriptor != null && _asEventType != null) {
-                    var namedWindow = value.NamedWindowManagementService.GetNamedWindow(
-                        value.DeploymentId,
-                        _namedWindowName);
-                    value.FilterSharedLookupableRepository.ApplyLookupableFromType(
-                        _asEventType,
-                        namedWindow.RootView.EventType,
-                        value.StatementId);
-                }
+        public void StatementCreate(StatementContext value)
+        {
+            // The filter lookupables for the as-type apply to this type, when used with contexts, as contexts generated filters for types
+            if (value.ContextRuntimeDescriptor != null && _asEventType != null) {
+                var namedWindow = value.NamedWindowManagementService.GetNamedWindow(
+                    value.DeploymentId,
+                    _namedWindowName);
+                value.FilterSharedLookupableRepository.ApplyLookupableFromType(
+                    _asEventType,
+                    namedWindow.RootView.EventType,
+                    value.StatementId);
             }
         }
 

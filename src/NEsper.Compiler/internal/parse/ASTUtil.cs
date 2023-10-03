@@ -125,7 +125,7 @@ namespace com.espertech.esper.compiler.@internal.parse
             {
                 var writer = new StringWriter();
 
-                RenderNode(new char[0], ast, writer);
+                RenderNode(Array.Empty<char>(), ast, writer);
                 DumpAST(writer, ast, 2);
 
                 Log.Info(".dumpAST ANTLR Tree dump follows...\n" + writer.ToString());

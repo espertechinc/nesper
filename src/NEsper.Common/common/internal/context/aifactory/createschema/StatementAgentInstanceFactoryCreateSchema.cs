@@ -30,11 +30,10 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createschema
 
         public EventType StatementEventType => viewable.EventType;
 
-        public StatementContext StatementCreate {
-            set {
-                if (eventType.Metadata.AccessModifier == NameAccessModifier.PRECONFIGURED) {
-                    throw new EPException("Unexpected visibility of value " + NameAccessModifier.PRECONFIGURED);
-                }
+        public void StatementCreate(StatementContext value)
+        {
+            if (eventType.Metadata.AccessModifier == NameAccessModifier.PRECONFIGURED) {
+                throw new EPException("Unexpected visibility of value " + NameAccessModifier.PRECONFIGURED);
             }
         }
 

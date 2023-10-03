@@ -12,8 +12,5 @@ using com.espertech.esper.common.client.artifact;
 
 namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 {
-    public interface ClassProvidedClassesAdd
-    {
-        void Add(IRuntimeArtifact bytes);
-    }
+    public delegate void ClassProvidedClassesAdd(IRuntimeArtifact bytes);
 } // end of namespace

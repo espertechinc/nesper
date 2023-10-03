@@ -80,7 +80,7 @@ namespace com.espertech.esper.compiler.@internal.parse
                 Log.Debug(".parse Parsing expr=" + expression);
             }
 
-            var input = new CaseInsensitiveInputStream(expression);
+            var input = CaseChangingCharStreamFactory.Make(expression);
             var lex = NewLexer(input);
 
             var tokens = new CommonTokenStream(lex);

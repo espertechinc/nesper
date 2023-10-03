@@ -32,41 +32,40 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createindex
         private Table table;
         private Viewable viewable;
 
-        public StatementContext StatementCreate {
-            set {
-                if (table != null && IndexMultiKey.IsUnique) {
-                    foreach (var callback in table.UpdateStrategyCallbacks) {
-                        if (callback.IsMerge) {
-                            TableUpdateStrategyFactory.ValidateNewUniqueIndex(
-                                callback.TableUpdatedProperties,
-                                IndexMultiKey.HashIndexedProps);
-                        }
+        public void StatementCreate(StatementContext value)
+        {
+            if (table != null && IndexMultiKey.IsUnique) {
+                foreach (var callback in table.UpdateStrategyCallbacks) {
+                    if (callback.IsMerge) {
+                        TableUpdateStrategyFactory.ValidateNewUniqueIndex(
+                            callback.TableUpdatedProperties,
+                            IndexMultiKey.HashIndexedProps);
                     }
                 }
+            }
 
-                try {
-                    if (namedWindow != null) {
-                        namedWindow.ValidateAddIndex(
-                            value.DeploymentId,
-                            value.StatementName,
-                            IndexName,
-                            IndexModuleName,
-                            ExplicitIndexDesc,
-                            IndexMultiKey);
-                    }
-                    else {
-                        table.ValidateAddIndex(
-                            value.DeploymentId,
-                            value.StatementName,
-                            IndexName,
-                            IndexModuleName,
-                            ExplicitIndexDesc,
-                            IndexMultiKey);
-                    }
+            try {
+                if (namedWindow != null) {
+                    namedWindow.ValidateAddIndex(
+                        value.DeploymentId,
+                        value.StatementName,
+                        IndexName,
+                        IndexModuleName,
+                        ExplicitIndexDesc,
+                        IndexMultiKey);
                 }
-                catch (ExprValidationException ex) {
-                    throw new EPException(ex.Message, ex);
+                else {
+                    table.ValidateAddIndex(
+                        value.DeploymentId,
+                        value.StatementName,
+                        IndexName,
+                        IndexModuleName,
+                        ExplicitIndexDesc,
+                        IndexMultiKey);
                 }
+            }
+            catch (ExprValidationException ex) {
+                throw new EPException(ex.Message, ex);
             }
         }
 

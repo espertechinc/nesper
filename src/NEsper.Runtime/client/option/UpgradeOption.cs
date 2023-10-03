@@ -1,4 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////////////
+﻿///////////////////////////////////////////////////////////////////////////////////////
 // Copyright (C) 2006-2015 Esper Team. All rights reserved.                           /
 // http://esper.codehaus.org                                                          /
 // ---------------------------------------------------------------------------------- /
@@ -6,16 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System.Collections.Generic;
-
-namespace com.espertech.esper.common.@internal.compile.compiler
+namespace com.espertech.esper.runtime.client.option
 {
-    public interface CompilerAbstractionClassCollection
+    public interface UpgradeOption
     {
-        IDictionary<string, byte[]> Classes { get; }
-
-        void Add(IDictionary<string, byte[]> bytes);
-
-        void Remove(string name);
     }
-} // end of namespace
+}

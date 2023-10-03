@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             set => dataflow = value;
         }
 
-        public StatementContext StatementCreate {
-            set { }
+        public void StatementCreate(StatementContext value)
+        {
         }
 
         public void StatementDestroy(StatementContext statementContext)

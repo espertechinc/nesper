@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
     public class CodegenMethod : CodegenMethodScope
     {
-        protected CodegenMethod(
+        internal CodegenMethod(
             Type returnType,
             string returnTypeName,
             Type generator,

@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 
         public void AddTo(ClassProvidedClassesAdd additionalClasses)
         {
-            _path.Traverse(cp => additionalClasses.Add(cp.Artifact));
+            _path.Traverse(cp => additionalClasses.Invoke(cp.Artifact));
         }
 
         public void RemoveFrom(ICollection<IArtifact> artifacts)
@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 
         public void RemoveFrom(ClassProvidedClassRemove removeClasses)
         {
-            _path.Traverse(item => removeClasses.Remove(item.Artifact));
+            _path.Traverse(item => removeClasses.Invoke(item.Artifact));
         }
 
         internal static Pair<Type, T> ResolveFromLocalAndPath<T>(

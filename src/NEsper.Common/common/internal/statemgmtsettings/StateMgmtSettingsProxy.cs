@@ -11,7 +11,7 @@ using com.espertech.esper.common.@internal.compile.stage2;
 
 namespace com.espertech.esper.common.@internal.statemgmtsettings
 {
-    internal interface StateMgmtSettingsProxy
+    public interface StateMgmtSettingsProxy
     {
         StateMgmtSettingBucket Configure(
             StatementRawInfo raw,

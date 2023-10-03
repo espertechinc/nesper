@@ -1829,6 +1829,14 @@ namespace com.espertech.esper.runtime.@internal.metrics.instrumentation
         {
         }
 
+        public void QRuntimeManagementDeploy(string runtimeURI, string deploymentId, int size)
+        {
+        }
+
+        public void ARuntimeManagementDeploy(string runtimeURI)
+        {
+        }
+
         public void QaEngineManagementStmtStarted(
             string runtimeURI,
             string deploymentId,

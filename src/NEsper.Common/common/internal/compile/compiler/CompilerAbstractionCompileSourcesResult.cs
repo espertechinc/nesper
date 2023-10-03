@@ -8,14 +8,21 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.artifact;
+
 namespace com.espertech.esper.common.@internal.compile.compiler
 {
     public class CompilerAbstractionCompileSourcesResult
     {
-        public CompilerAbstractionCompileSourcesResult(IDictionary<string, IList<string>> codeToClassNames)
+        public CompilerAbstractionCompileSourcesResult(
+            IDictionary<string, IList<string>> codeToClassNames,
+            ICompileArtifact artifact)
         {
             CodeToClassNames = codeToClassNames;
+            Artifact = artifact;
         }
+
+        public ICompileArtifact Artifact { get; }
 
         public IDictionary<string, IList<string>> CodeToClassNames { get; }
     }

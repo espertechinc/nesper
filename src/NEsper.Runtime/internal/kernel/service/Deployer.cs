@@ -185,7 +185,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					compiled,
 					recoveryInformation.StatementUserObjectsRuntime,
 					recoveryInformation.StatementNamesWhenProvidedByAPI,
-					stmtLightweights.SubstitutionParameters);
+					stmtLightweights.SubstitutionParameters,
+					deployed.DeploymentIdDependencies);
 			}
 
 			return deployed;

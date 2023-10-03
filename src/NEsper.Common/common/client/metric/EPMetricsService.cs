@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.client.metric
         ///     This by itself does not hold a lock but iterating each group may hold locks.
         /// </para>
         /// </summary>
-        void IterateStatementGroups(Consumer<EPMetricsStatementGroup> consumer);
+        void EnumerateStatementGroups(Consumer<EPMetricsStatementGroup> consumer);
 
         /// <summary>
         /// Returns the current runtime metric.

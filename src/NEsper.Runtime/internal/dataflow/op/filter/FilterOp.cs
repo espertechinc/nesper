@@ -50,7 +50,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.filter
 
             if (!(row is EventBeanSPI))
             {
-                theEvent.UnderlyingSpi = row;
+                theEvent.Underlying = row;
             }
             else
             {

@@ -53,8 +53,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var queryMethodProvider = fafProvider.QueryMethodProvider;
             EPRuntimeHelperFAF.ValidateSubstitutionParams(queryMethodProvider);
             var queryMethod = queryMethodProvider.QueryMethod;
-            queryMethod.Ready(_services.StatementContextRuntimeServices);
-            return new EPPreparedQueryImpl(_serviceStatusProvider, queryMethodProvider, queryMethod, _services);
+            var prepared =
+                queryMethod.ReadyPrepared(_services.StatementContextRuntimeServices);
+            return new EPPreparedQueryImpl(_serviceStatusProvider, queryMethodProvider, prepared, _services);
         }
 
         public EPFireAndForgetPreparedQueryParameterized PrepareQueryWithParameters(EPCompiled compiled)
@@ -62,11 +63,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var fafProvider = EPRuntimeHelperFAF.QueryMethod(compiled, _services);
             var queryMethodProvider = fafProvider.QueryMethodProvider;
             var queryMethod = queryMethodProvider.QueryMethod;
-            queryMethod.Ready(_services.StatementContextRuntimeServices);
+            var prepared =
+                queryMethod.ReadyPrepared(_services.StatementContextRuntimeServices);
             return new EPFireAndForgetPreparedQueryParameterizedImpl(
                 _serviceStatusProvider,
                 queryMethodProvider.SubstitutionFieldSetter,
-                queryMethod,
+                prepared,
                 queryMethodProvider.QueryInformationals);
         }
 
@@ -96,7 +98,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 throw new EPException("Service provider has already been destroyed and reallocated");
             }
 
-            return new EPQueryResultImpl(impl.QueryMethod.Execute(_serviceStatusProvider, impl.Fields, selectors, _services.ContextManagementService));
+            return new EPQueryResultImpl(
+                impl.Prepared.Execute(
+                    _serviceStatusProvider,
+                    impl.Fields,
+                    selectors,
+                    _services.ContextManagementService));
         }
 
         private EPFireAndForgetQueryResult ExecuteQueryUnprepared(
@@ -107,8 +114,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             var queryMethodProvider = fafProvider.QueryMethodProvider;
             EPRuntimeHelperFAF.ValidateSubstitutionParams(queryMethodProvider);
             var queryMethod = queryMethodProvider.QueryMethod;
-            queryMethod.Ready(_services.StatementContextRuntimeServices);
-            var result = queryMethod.Execute(
+            var unprepared = queryMethod.ReadyUnprepared(_services.StatementContextRuntimeServices);
+            var result = unprepared.Execute(
                 _serviceStatusProvider,
                 queryMethodProvider.SubstitutionFieldSetter,
                 contextPartitionSelectors,

@@ -17,8 +17,10 @@ using com.espertech.esper.common.@internal.filtersvc;
 using com.espertech.esper.common.@internal.metrics.stmtmetrics;
 using com.espertech.esper.common.@internal.schedule;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.diagnostics;
+using com.espertech.esper.compat.function;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.client;
@@ -286,6 +288,15 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
         public void SetMetricsReportingDisabled()
         {
             schedule.Clear();
+        }
+
+        public void EnumerateMetrics(Consumer<EPMetricsStatementGroup> consumer)
+        {
+            if (stmtMetricRepository == null) {
+                throw new IllegalStateException("Metric reporting is not enabled");
+            }
+
+            stmtMetricRepository.EnumerateMetrics(consumer);
         }
 
         public void Dispose()

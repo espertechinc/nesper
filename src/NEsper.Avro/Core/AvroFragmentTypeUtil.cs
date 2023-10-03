@@ -87,7 +87,7 @@ namespace NEsper.Avro.Core
 
             var cached = fragmentTypeCache.Get(recordSchema.Name);
             if (cached != null) {
-                return new FragmentEventType(cached, indexed, false, TODO);
+                return new FragmentEventType(cached, indexed, false, false);
             }
 
             var metadata = new EventTypeMetadata(
@@ -110,7 +110,7 @@ namespace NEsper.Avro.Core
                 null);
 
             fragmentTypeCache.Add(recordSchema.Name, fragmentType);
-            return new FragmentEventType(fragmentType, indexed, false, TODO);
+            return new FragmentEventType(fragmentType, indexed, false, false);
         }
     }
 } // end of namespace

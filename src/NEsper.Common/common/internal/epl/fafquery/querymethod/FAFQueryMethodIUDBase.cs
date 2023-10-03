@@ -22,6 +22,7 @@ using com.espertech.esper.common.@internal.epl.table.strategy;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.threading.locks;
 
 using static com.espertech.esper.common.@internal.epl.fafquery.querymethod.FAFQueryMethodUtil;
 
@@ -42,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
         private IDictionary<int, ExprTableEvalStrategyFactory> tableAccesses;
         private bool hasTableAccess;
         private IDictionary<int, SubSelectFactory> subselects;
-        private ManagedReadWriteLock eventProcessingRWLock;
+        private IReaderWriterLock eventProcessingRWLock;
 
         public string ContextName {
             set => contextName = value;
@@ -118,88 +119,88 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 throw RuntimeDestroyed();
             }
 
-            eventProcessingRWLock.AcquireReadLock();
             try {
-                if (contextPartitionSelectors != null && contextPartitionSelectors.Length != 1) {
-                    throw new ArgumentException("Number of context partition selectors must be one");
-                }
+                using (eventProcessingRWLock.AcquireReadLock()) {
+                    if (contextPartitionSelectors != null && contextPartitionSelectors.Length != 1) {
+                        throw new ArgumentException("Number of context partition selectors must be one");
+                    }
 
-                var optionalSingleSelector =
-                    contextPartitionSelectors != null && contextPartitionSelectors.Length > 0
-                        ? contextPartitionSelectors[0]
-                        : null;
+                    var optionalSingleSelector =
+                        contextPartitionSelectors != null && contextPartitionSelectors.Length > 0
+                            ? contextPartitionSelectors[0]
+                            : null;
 
-                // validate context
-                if (processor.ContextName != null &&
-                    contextName != null &&
-                    !processor.ContextName.Equals(contextName)) {
-                    throw new EPException(
-                        "Context for named window is '" +
-                        processor.ContextName +
-                        "' and query specifies context '" +
-                        contextName +
-                        "'");
-                }
+                    // validate context
+                    if (processor.ContextName != null &&
+                        contextName != null &&
+                        !processor.ContextName.Equals(contextName)) {
+                        throw new EPException(
+                            "Context for named window is '" +
+                            processor.ContextName +
+                            "' and query specifies context '" +
+                            contextName +
+                            "'");
+                    }
 
-                // handle non-specified context
-                if (contextName == null) {
-                    var processorInstance = processor.ProcessorInstanceNoContext;
-                    if (processorInstance != null) {
+                    // handle non-specified context
+                    if (contextName == null) {
+                        var processorInstance = processor.ProcessorInstanceNoContext;
+                        if (processorInstance != null) {
+                            Assign(processorInstance.AgentInstanceContext, assignerSetter);
+                            var rows = Execute(processorInstance);
+                            if (rows != null && rows.Length > 0) {
+                                Dispatch();
+                            }
+
+                            return new EPPreparedQueryResult(processor.EventTypePublic, rows);
+                        }
+                    }
+
+                    // context partition runtime query
+                    var agentInstanceIds = AgentInstanceIds(
+                        processor,
+                        optionalSingleSelector,
+                        contextManagementService);
+
+                    // collect events and agent instances
+                    if (agentInstanceIds.IsEmpty()) {
+                        return new EPPreparedQueryResult(
+                            processor.EventTypeResultSetProcessor,
+                            CollectionUtil.EVENTBEANARRAY_EMPTY);
+                    }
+
+                    if (agentInstanceIds.Count == 1) {
+                        var agentInstanceId = agentInstanceIds.First();
+                        var processorInstance =
+                            processor.GetProcessorInstanceContextById(agentInstanceId);
                         Assign(processorInstance.AgentInstanceContext, assignerSetter);
                         var rows = Execute(processorInstance);
-                        if (rows != null && rows.Length > 0) {
+                        if (rows.Length > 0) {
                             Dispatch();
                         }
 
-                        return new EPPreparedQueryResult(processor.EventTypePublic, rows);
+                        return new EPPreparedQueryResult(processor.EventTypeResultSetProcessor, rows);
                     }
-                }
 
-                // context partition runtime query
-                var agentInstanceIds = AgentInstanceIds(
-                    processor,
-                    optionalSingleSelector,
-                    contextManagementService);
+                    var allRows = new ArrayDeque<EventBean>();
+                    foreach (var agentInstanceId in agentInstanceIds) {
+                        var processorInstance =
+                            processor.GetProcessorInstanceContextById(agentInstanceId);
+                        if (processorInstance != null) {
+                            Assign(processorInstance.AgentInstanceContext, assignerSetter);
+                            var rows = Execute(processorInstance);
+                            allRows.AddAll(Arrays.AsList(rows));
+                        }
+                    }
 
-                // collect events and agent instances
-                if (agentInstanceIds.IsEmpty()) {
-                    return new EPPreparedQueryResult(
-                        processor.EventTypeResultSetProcessor,
-                        CollectionUtil.EVENTBEANARRAY_EMPTY);
-                }
-
-                if (agentInstanceIds.Count == 1) {
-                    var agentInstanceId = agentInstanceIds.First();
-                    var processorInstance =
-                        processor.GetProcessorInstanceContextById(agentInstanceId);
-                    Assign(processorInstance.AgentInstanceContext, assignerSetter);
-                    var rows = Execute(processorInstance);
-                    if (rows.Length > 0) {
+                    if (allRows.Count > 0) {
                         Dispatch();
                     }
 
-                    return new EPPreparedQueryResult(processor.EventTypeResultSetProcessor, rows);
+                    return new EPPreparedQueryResult(processor.EventTypeResultSetProcessor, allRows.ToArray());
                 }
-
-                var allRows = new ArrayDeque<EventBean>();
-                foreach (var agentInstanceId in agentInstanceIds) {
-                    var processorInstance =
-                        processor.GetProcessorInstanceContextById(agentInstanceId);
-                    if (processorInstance != null) {
-                        Assign(processorInstance.AgentInstanceContext, assignerSetter);
-                        var rows = Execute(processorInstance);
-                        allRows.AddAll(Arrays.AsList(rows));
-                    }
-                }
-
-                if (allRows.Count > 0) {
-                    Dispatch();
-                }
-
-                return new EPPreparedQueryResult(processor.EventTypeResultSetProcessor, allRows.ToArray());
             }
             finally {
-                eventProcessingRWLock.ReleaseReadLock();
                 if (hasTableAccess) {
                     processor.StatementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
                 }

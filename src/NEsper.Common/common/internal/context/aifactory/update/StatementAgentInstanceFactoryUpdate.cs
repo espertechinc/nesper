@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.update
 
         public EventType StatementEventType => desc.EventType;
 
-        public StatementContext StatementCreate {
-            set { }
+        public void StatementCreate(StatementContext value)
+        {
         }
 
         public void StatementDestroy(StatementContext statementContext)

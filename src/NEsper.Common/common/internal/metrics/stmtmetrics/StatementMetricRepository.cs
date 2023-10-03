@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             return _groupMetrics[group].FlushMetrics();
         }
 
-        public void IterateMetrics(Consumer<EPMetricsStatementGroup> consumer)
+        public void EnumerateMetrics(Consumer<EPMetricsStatementGroup> consumer)
         {
             for (var i = 0; i < _groupMetrics.Length; i++) {
                 var array = _groupMetrics[i];

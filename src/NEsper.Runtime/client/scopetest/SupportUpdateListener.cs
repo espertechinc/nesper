@@ -480,7 +480,6 @@ namespace com.espertech.esper.runtime.client.scopetest
             Reset();
             return new UniformPair<EventBean[]>(newData, oldData);
         }
-
     }
 
 #if REVISIT

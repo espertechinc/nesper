@@ -29,10 +29,10 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
             runtime.EventService.AdvanceTime(0);
             Assert.AreEqual(0, runtime.EventService.CurrentTime);
-            Assert.IsTrue(runtime.EventService.IsExternalClockingEnabled());
+            Assert.IsTrue(runtime.EventService.IsExternalClockingEnabled);
 
             runtime.EventService.ClockInternal();
-            Assert.IsFalse(runtime.EventService.IsExternalClockingEnabled());
+            Assert.IsFalse(runtime.EventService.IsExternalClockingEnabled);
             var waitStart = DateTimeHelper.CurrentTimeMillis;
             var waitTarget = waitStart + 10000;
 
@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             Assert.That(currMillis, Is.GreaterThan(runtime.EventService.CurrentTime - 10000));
 
             runtime.EventService.ClockExternal();
-            Assert.IsTrue(runtime.EventService.IsExternalClockingEnabled());
+            Assert.IsTrue(runtime.EventService.IsExternalClockingEnabled);
             runtime.EventService.AdvanceTime(0);
             ThreadSleep(500);
             Assert.AreEqual(0, runtime.EventService.CurrentTime);

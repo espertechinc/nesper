@@ -110,6 +110,6 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 
         bool IsMetricsReportingEnabled { get; }
 
-        void IterateMetrics(Consumer<EPMetricsStatementGroup> consumer);
+        void EnumerateMetrics(Consumer<EPMetricsStatementGroup> consumer);
     }
 } // end of namespace
