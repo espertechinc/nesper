@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
                 collector.BigInteger();
             }
             else {
-                collector.BigDecimal();
+                collector.Decimal();
             }
         }
     }

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.compat;
-using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.service;
 using com.espertech.esper.runtime.@internal.kernel.statement;
@@ -30,9 +29,9 @@ namespace com.espertech.esper.regressionlib.support.util
             return visitor.Count;
         }
 
-        public static int ScheduleCountOverall(RegressionEnvironment env)
+        public static int ScheduleCountOverall(EPRuntime runtime)
         {
-            var spi = (EPRuntimeSPI) env.Runtime;
+            var spi = (EPRuntimeSPI) runtime;
             var visitor = new ScheduleVisitorAll();
             spi.ServicesContext.SchedulingServiceSPI.VisitSchedules(visitor);
             return visitor.Count;

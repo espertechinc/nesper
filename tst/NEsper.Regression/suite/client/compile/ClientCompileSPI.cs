@@ -13,7 +13,6 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.epl.expression.time.node;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compiler.client;
 using com.espertech.esper.compiler.@internal.util;
 using com.espertech.esper.regressionlib.framework;
 
@@ -73,6 +72,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 var timePeriod = (ExprTimePeriod) expressionCompiler.CompileValidate("5 seconds");
                 Assert.AreEqual(5d, timePeriod.EvaluateAsSeconds(null, true, null), 0.0001);
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
     }

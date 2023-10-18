@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
@@ -27,6 +29,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         /// <summary>
         ///     For a given number of seconds:
         ///     Single writer updates the group (round-robin) count, sum and avg.
@@ -47,14 +54,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numSeconds)
         {
             var path = new RegressionPath();
-            var eplCreateVariable = "create table vartotal (cnt count(*), sumint sum(int), avgint avg(int))";
+            var eplCreateVariable = "@public create table vartotal (cnt count(*), sumint sum(int), avgint avg(int))";
             env.CompileDeploy(eplCreateVariable, path);
 
             var eplInto =
                 "into table vartotal select count(*) as cnt, sum(IntPrimitive) as sumint, avg(IntPrimitive) as avgint from SupportBean";
             env.CompileDeploy(eplInto, path);
 
-            env.CompileDeploy("create window MyWindow#lastevent as SupportBean_S0", path);
+            env.CompileDeploy("@public create window MyWindow#lastevent as SupportBean_S0", path);
             env.CompileDeploy("insert into MyWindow select * from SupportBean_S0", path);
             env.SendEventBean(new SupportBean_S0(0));
 

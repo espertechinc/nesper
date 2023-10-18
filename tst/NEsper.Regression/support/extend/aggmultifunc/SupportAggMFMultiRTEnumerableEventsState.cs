@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -57,7 +58,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
                 return array;
             }
 
-            return new SupportBean[0];
+            return Array.Empty<SupportBean>();
         }
     }
 } // end of namespace

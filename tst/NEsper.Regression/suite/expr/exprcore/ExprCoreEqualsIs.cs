@@ -18,57 +18,50 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
 	public class ExprCoreEqualsIs
 	{
-
 		public static ICollection<RegressionExecution> Executions()
 		{
 			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			WithIsCoercion(execs);
-			WithIsCoercionSameType(execs);
-			WithIsMultikeyWArray(execs);
-			WithInvalid(execs);
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprCoreEqualsInvalid());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithIsMultikeyWArray(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprCoreEqualsIsMultikeyWArray());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithIsCoercionSameType(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprCoreEqualsIsCoercionSameType());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithIsCoercion(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ExprCoreEqualsIsCoercion());
+			execs.Add(new ExprCoreEqualsIsCoercionSameType());
+			execs.Add(new ExprCoreEqualsIsMultikeyWArray());
+			execs.Add(new ExprCoreEqualsInvalid());
+			execs.Add(new ExprCoreEqualsNull());
 			return execs;
+		}
+
+		private class ExprCoreEqualsNull : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
+				var builder = new SupportEvalBuilder("SupportBean")
+					.WithExpressions(
+						fields,
+						"theString = null",
+						"theString is null",
+						"null = theString",
+						"null is theString",
+						"null = null",
+						"null is null");
+				builder.WithStatementConsumer(
+					stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
+				builder.WithAssertion(new SupportBean("x", 0)).Expect(fields, null, false, null, false, null, true);
+				builder.WithAssertion(new SupportBean(null, 0)).Expect(fields, null, true, null, true, null, true);
+				builder.Run(env);
+				env.UndeployAll();
+			}
 		}
 
 		private class ExprCoreEqualsInvalid : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				SupportMessageAssertUtil.TryInvalidCompile(
-					env,
+				env.TryInvalidCompile(
 					"select IntOne=BooleanOne from SupportEventWithManyArray",
 					"Failed to validate select-clause expression 'IntOne=BooleanOne': Cannot convert datatype 'System.Array' to a value that fits both type 'System.Int32[]' and type 'System.Boolean[]'");
 					//"Failed to validate select-clause expression 'IntOne=BooleanOne': Implicit conversion from datatype 'System.Boolean[]' to 'System.Int32[]' is not allowed"
 
-				SupportMessageAssertUtil.TryInvalidCompile(
-					env,
+				env.TryInvalidCompile(
 					"select objectOne=BooleanOne from SupportEventWithManyArray",
 					"skip");
 			}

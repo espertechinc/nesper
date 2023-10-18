@@ -6,11 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.epl.dataflow.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -22,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                "@Name('flow') create dataflow MyGraph " +
+                "@name('flow') create dataflow MyGraph " +
                 "DefaultSupportSourceOp -> outstream<SupportBean> {} " +
                 "DefaultSupportCaptureOp(outstream) {}");
             Assert.AreEqual(StatementType.CREATE_DATAFLOW, env.Statement("flow").GetProperty(StatementProperty.STATEMENTTYPE));
@@ -62,6 +65,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             Assert.AreEqual(0, destStat.TimePerPort.Length);
 
             env.UndeployAll();
+        }
+        
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.DATAFLOW);
         }
     }
 } // end of namespace

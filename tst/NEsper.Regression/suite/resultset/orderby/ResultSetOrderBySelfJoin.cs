@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 string[] fields = {"prio", "cnt"};
-                var epl = "@Name('s0') select c1.Event_criteria_id as ecId, " +
+                var epl = "@name('s0') select c1.Event_criteria_id as ecId, " +
                           "c1.Priority as priority, " +
                           "c2.Priority as prio, cast(count(*), int) as cnt from " +
                           "SupportHierarchyEvent#lastevent as c1, " +
@@ -55,10 +55,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
                 SendEvent(env, 3, 2, 2);
                 SendEvent(env, 3, 2, 2);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s0"),
+
+                env.AssertPropsPerRowIterator(
+                    "s0",
                     fields,
-                    new[] {new object[] {1, 2}, new object[] {2, 2}});
+                    new[] { new object[] { 1, 2 }, new object[] { 2, 2 } });
 
                 env.UndeployAll();
             }

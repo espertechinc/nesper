@@ -6,23 +6,27 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 namespace com.espertech.esper.regressionlib.framework
 {
     public interface RegressionExecution
     {
-        void Run(RegressionEnvironment env);
-    }
-
-    public static class RegressionExecutionExtensions
-    {
-        public static string Name(this RegressionExecution execution)
-        {
-            return execution.GetType().Name;
-        }
-
-        public static string[] MilestoneStats(this RegressionExecution execution)
+        public ISet<RegressionFlag> Flags()
         {
             return null;
         }
+
+        string Name()
+        {
+            return GetType().Name;
+        }
+
+        public static string[] MilestoneStats()
+        {
+            return null;
+        }
+
+        void Run(RegressionEnvironment env);
     }
 }

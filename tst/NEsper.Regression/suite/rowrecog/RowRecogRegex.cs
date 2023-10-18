@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             var buf = new StringBuilder();
             buf.Append(
-                "@Name('s0') select * from SupportRecogBean#keepall " +
+                "@name('s0') select * from SupportRecogBean#keepall " +
                 "match_recognize (\n" +
                 "  measures ");
 
@@ -316,12 +316,16 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     env.SendEventBean(new SupportRecogBean(testchar, count++));
                 }
 
-                var iteratorData = EPAssertionUtil.EnumeratorToArray(env.Statement("s0").GetEnumerator());
-                Compare(testcase.Testdata, iteratorData, testDesc.Measures, testcase);
+                env.AssertIterator("s0", enumerator => {
+                    var iteratorData = EPAssertionUtil.EnumeratorToArray(enumerator);
+                    Compare(testcase.Testdata, iteratorData, testDesc.Measures, testcase);
+                });
 
-                var listenerData = env.Listener("s0").NewDataListFlattened;
-                env.Listener("s0").Reset();
-                Compare(testcase.Testdata, listenerData, testDesc.Measures, testcase);
+                env.AssertListener("s0", listener => {
+                    var listenerData = listener.NewDataListFlattened;
+                    listener.Reset();
+                    Compare(testcase.Testdata, listenerData, testDesc.Measures, testcase);
+                });
 
                 env.UndeployModuleContaining("s0");
             }

@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using com.espertech.esper.common.@internal.epl.agg.rollup;
-using com.espertech.esper.compat;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
@@ -17,10 +16,6 @@ namespace com.espertech.esper.regressionlib.support.util
 
         public void Query(GroupByRollupPlanDesc desc)
         {
-            if (plan != null) {
-                throw new IllegalStateException();
-            }
-
             plan = desc;
         }
 

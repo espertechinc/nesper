@@ -142,7 +142,7 @@ namespace com.espertech.esper.runtime.client
         public EPRuntime GetRuntimeInstance(
             string uri,
             Configuration configuration,
-            EPRuntimeOptions options)
+            EPRuntimeOptions options = null)
         {
             var runtimeURINonNull = uri ?? DEFAULT_RUNTIME_URI;
 

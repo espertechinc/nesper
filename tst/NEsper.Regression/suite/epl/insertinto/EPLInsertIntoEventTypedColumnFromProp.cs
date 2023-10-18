@@ -61,17 +61,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "  when matched \n" +
                     "    then delete \n" +
                     "    then insert into CarOutputStream select 'offline' as Status, lastevent as outputevent;\n" +
-                    "@Name('s0') select * from CarOutputStream";
+                    "@name('s0') select * from CarOutputStream";
                 env.AdvanceTime(0);
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
-                AssertReceivedPojo(env.Listener("s0").AssertOneGetNewAndReset(), "online", "E1");
+                env.AssertEventNew("s0", @event => AssertReceivedPono(@event, "online", "E1"));
 
                 env.Milestone(0);
 
                 env.AdvanceTime(60000);
-                AssertReceivedPojo(env.Listener("s0").AssertOneGetNewAndReset(), "offline", "E1");
+                env.AssertEventNew("s0", @event => AssertReceivedPono(@event, "offline", "E1"));
 
                 env.UndeployAll();
             }
@@ -96,17 +96,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "  when matched \n" +
                     "    then delete \n" +
                     "    then insert into CarOutputStream select 'offline' as Status, lastevent as outputevent;\n" +
-                    "@Name('s0') select * from CarOutputStream";
+                    "@name('s0') select * from CarOutputStream";
                 env.AdvanceTime(0);
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendCarMap(env, "C1");
-                AssertReceivedMap(env.Listener("s0").AssertOneGetNewAndReset(), "online", "C1");
+                env.AssertEventNew("s0", @event => AssertReceivedMap(@event, "online", "C1"));
 
                 env.Milestone(0);
 
                 env.AdvanceTime(60000);
-                AssertReceivedMap(env.Listener("s0").AssertOneGetNewAndReset(), "offline", "C1");
+                env.AssertEventNew("s0", @event => AssertReceivedMap(@event, "offline", "C1"));
 
                 env.UndeployAll();
             }
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             Assert.AreEqual(carId, received.Get("outputevent").AsStringDictionary().Get("carId"));
         }
 
-        private static void AssertReceivedPojo(
+        private static void AssertReceivedPono(
             EventBean received,
             string status,
             string carId)

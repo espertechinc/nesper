@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
@@ -73,9 +74,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         /// </summary>
         internal class PatternRouteSingle : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from pattern[every tag=SupportBean]";
+                var epl = "@name('s0') select * from pattern[every tag=SupportBean]";
                 env.CompileDeploy(epl);
 
                 var listener = new SingleRouteUpdateListener(env.Runtime);
@@ -98,9 +104,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         /// </summary>
         internal class PatternRouteCascade : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') select * from pattern[every tag=SupportBean]";
+                var epl = "@name('s0') select * from pattern[every tag=SupportBean]";
                 env.CompileDeploy(epl);
 
                 var listener = new CascadeRouteUpdateListener(env.Runtime);
@@ -124,15 +135,20 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
         internal class PatternRouteTimer : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0') select * from pattern[every tag=SupportBean]";
+                var epl = "@name('s0') select * from pattern[every tag=SupportBean]";
                 var eventListener = new SingleRouteUpdateListener(env.Runtime);
                 env.CompileDeploy(epl).Statement("s0").AddListener(eventListener);
 
-                epl = "@Name('s1') select * from pattern[every timer:at(*,*,*,*,*,*)]";
+                epl = "@name('s1') select * from pattern[every timer:at(*,*,*,*,*,*)]";
                 var timeListener = new SingleRouteUpdateListener(env.Runtime);
                 env.CompileDeploy(epl).Statement("s1").AddListener(timeListener);
 

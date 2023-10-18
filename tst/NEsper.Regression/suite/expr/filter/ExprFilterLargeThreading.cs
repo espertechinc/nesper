@@ -24,15 +24,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         private void RunAssertionNoVariable(RegressionEnvironment env)
         {
             var epl =
-                "@Name('s0') select * from pattern[a=SupportBean -> every event1=SupportTradeEvent(UserId like '123%')]";
+                "@name('s0') select * from pattern[a=SupportBean -> every event1=SupportTradeEvent(UserId like '123%')]";
             env.CompileDeploy(epl).AddListener("s0").Milestone(0);
             env.SendEventBean(new SupportBean());
 
             env.SendEventBean(new SupportTradeEvent(1, null, 1001));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.SendEventBean(new SupportTradeEvent(2, "1234", 1001));
-            Assert.AreEqual(2, env.Listener("s0").AssertOneGetNewAndReset().Get("event1.Id"));
+            env.AssertEqualsNew("s0", "event1.Id", 2);
 
             env.UndeployAll();
         }

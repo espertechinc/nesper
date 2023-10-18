@@ -185,13 +185,34 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0".SplitCsv();
-                var builder = new SupportEvalBuilder("SupportBean").WithExpressions(fields, "IntPrimitive/IntBoxed")
-                    .WithStatementConsumer(stmt => Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));
-                builder.WithAssertion(MakeEvent(100, 3)).Expect(fields, 100 / 3d);
-                builder.WithAssertion(MakeEvent(100, null)).Expect(fields, new object[] {null});
-                builder.WithAssertion(MakeEvent(100, 0)).Expect(fields, double.PositiveInfinity);
-                builder.WithAssertion(MakeEvent(-5, 0)).Expect(fields, double.NegativeInfinity);
+                var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
+                var builder = new SupportEvalBuilder("SupportBean")
+                    .WithExpression(fields[0], "intPrimitive/intBoxed")
+                    .WithExpression(fields[1], "intPrimitive*intBoxed")
+                    .WithExpression(fields[2], "intPrimitive+intBoxed")
+                    .WithExpression(fields[3], "intPrimitive-intBoxed")
+                    .WithExpression(fields[4], "intBoxed/intPrimitive")
+                    .WithExpression(fields[5], "intBoxed*intPrimitive")
+                    .WithExpression(fields[6], "intBoxed+intPrimitive")
+                    .WithExpression(fields[7], "intBoxed-intPrimitive")
+                    .WithStatementConsumer(
+                        stmt => AssertTypes(
+                            stmt,
+                            fields,
+                            typeof(double?),
+                            typeof(int?),
+                            typeof(int?),
+                            typeof(int?),
+                            typeof(double?),
+                            typeof(int?),
+                            typeof(int?),
+                            typeof(int?)));
+
+                builder.WithAssertion(MakeEvent(100, 3)).Expect(fields, 100 / 3d, 300, 103, 97, 3 / 100d, 300, 103, -97);
+                builder.WithAssertion(MakeEvent(100, null)).Expect(fields, null, null, null, null, null, null, null, null);
+                builder.WithAssertion(MakeEvent(100, 0)).Expect(fields, double.PositiveInfinity, 0, 100, 100, 0d, 0, 100, -100);
+                builder.WithAssertion(MakeEvent(-5, 0)).Expect(fields, double.NegativeInfinity, 0, -5, -5, -0d, 0, -5, 5);
+                
                 builder.Run(env);
                 env.UndeployAll();
             }

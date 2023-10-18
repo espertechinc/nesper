@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 IList<object> received = new List<object>();
                 MXCIFQuadTreeFilterIndexCollect<ICollection<object>>
                     .CollectRange(tree, x, y, width, height, null, received, COLLECTION_COLLECTOR, null);
-                // Comment-me-in: System.out.println("// query(tree, " + x + ", " + y + ", " + width + ", " + height + "); -=> " + received);
+                // Comment-me-in: Console.WriteLine("// query(tree, " + x + ", " + y + ", " + width + ", " + height + "); -=> " + received);
                 return received.IsEmpty() ? null : received;
             };
 
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             String value,
             MXCIFQuadTree tree)
         {
-            // Comment-me-in: System.out.println("set(" + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\", tree);");
+            // Comment-me-in: Console.WriteLine("set(" + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\", tree);");
             MXCIFQuadTreeFilterIndexSet.Set(x, y, width, height, value, tree);
         }
 

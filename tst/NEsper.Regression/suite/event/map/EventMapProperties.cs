@@ -8,245 +8,175 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
-
-using NUnit.Framework;
-
-using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
+using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.@event.map
 {
-    public class EventMapProperties
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EventMapArrayProperty());
-            execs.Add(new EventMapMappedProperty());
-            execs.Add(new EventMapMapNamePropertyNested());
-            execs.Add(new EventMapMapNameProperty());
-            return execs;
-        }
+	public class EventMapProperties {
+	    public static IList<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new EventMapArrayProperty());
+	        execs.Add(new EventMapMappedProperty());
+	        execs.Add(new EventMapMapNamePropertyNested());
+	        execs.Add(new EventMapMapNameProperty());
+	        return execs;
+	    }
 
-        internal class EventMapArrayProperty : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.CompileDeploy(
-                    "@Name('s0') select P0[0] as a, P0[1] as b, P1[0].IntPrimitive as c, P1[1] as d, P0 as e from MyArrayMap");
-                env.AddListener("s0");
+	    private class EventMapArrayProperty : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
 
-                int[] p0 = {1, 2, 3};
-                SupportBean[] beans = {new SupportBean("e1", 5), new SupportBean("e2", 6)};
-                var theEvent = EventMapCore.MakeMap(new[] {new object[] { "P0", p0}, new object[] {"P1", beans}});
-                env.SendEventMap(theEvent, "MyArrayMap");
+	            env.CompileDeploy("@name('s0') select p0[0] as a, p0[1] as b, p1[0].intPrimitive as c, p1[1] as d, p0 as e from MyArrayMap");
+	            env.AddListener("s0");
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a","b","c","d","e" },
-                    new object[] {1, 2, 5, beans[1], p0});
-                var eventType = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
-                Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("d"));
-                Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("e"));
-                env.UndeployAll();
+	            var p0 = new int[]{1, 2, 3};
+	            var beans = new SupportBean[]{new SupportBean("e1", 5), new SupportBean("e2", 6)};
+	            var theEvent = EventMapCore.MakeMap(new object[][]{new object[] {"p0", p0}, new object[] {"p1", beans}});
+	            env.SendEventMap(theEvent, "MyArrayMap");
 
-                env.CompileDeploy(
-                    "@Name('s0') select" +
-                    " outer.P0[0] as a," +
-                    " outer.P0[1] as b," +
-                    " outer.P1[0].IntPrimitive as c," +
-                    " outer.P1[1] as d," +
-                    " outer.P0 as e" +
-                    " from MyArrayMapOuter");
-                env.AddListener("s0");
+	            env.AssertPropsNew("s0", "a,b,c,d,e".SplitCsv(), new object[]{1, 2, 5, beans[1], p0});
+	            env.AssertStatement("s0", statement => {
+	                var eventType = statement.EventType;
+	                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
+	                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
+	                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
+	                Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("d"));
+	                Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("e"));
+	            });
+	            env.UndeployAll();
 
-                var eventOuter = EventMapCore.MakeMap(new[] {new object[] {"outer", theEvent}});
-                env.SendEventMap(eventOuter, "MyArrayMapOuter");
+	            env.CompileDeploy("@name('s0') select outer.p0[0] as a, outer.p0[1] as b, outer.p1[0].intPrimitive as c, outer.p1[1] as d, outer.p0 as e from MyArrayMapOuter");
+	            env.AddListener("s0");
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a","b","c","d" },
-                    new object[] {1, 2, 5, beans[1]});
-                eventType = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
-                Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("d"));
-                Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("e"));
+	            var eventOuter = EventMapCore.MakeMap(new object[][]{new object[] {"outer", theEvent}});
+	            env.SendEventMap(eventOuter, "MyArrayMapOuter");
 
-                env.UndeployAll();
-            }
-        }
+	            env.AssertPropsNew("s0", "a,b,c,d".SplitCsv(), new object[]{1, 2, 5, beans[1]});
+	            env.AssertStatement("s0", statement => {
+	                var eventType = statement.EventType;
+	                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
+	                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
+	                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
+	                Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("d"));
+	                Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("e"));
+	            });
 
-        internal class EventMapMappedProperty : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.CompileDeploy("@Name('s0') select P0('k1') as a from MyMappedPropertyMap");
-                env.AddListener("s0");
+	            env.UndeployAll();
+	        }
+	    }
 
-                IDictionary<string, object> eventVal = new Dictionary<string, object>();
-                eventVal.Put("k1", "v1");
-                var theEvent = EventMapCore.MakeMap(
-                    new[] {
-                        new object[] {"P0", eventVal}
-                    });
-                env.SendEventMap(theEvent, "MyMappedPropertyMap");
+	    private class EventMapMappedProperty : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a" },
-                    new object[] {"v1"});
-                Assert.AreEqual(typeof(object), env.Statement("s0").EventType.GetPropertyType("a"));
-                env.UndeployAll();
+	            env.CompileDeploy("@name('s0') select p0('k1') as a from MyMappedPropertyMap");
+	            env.AddListener("s0");
 
-                env.CompileDeploy("@Name('s0') select outer.P0('k1') as a from MyMappedPropertyMapOuter");
-                env.AddListener("s0");
+	            IDictionary<string, object> eventVal = new Dictionary<string, object>();
+	            eventVal.Put("k1", "v1");
+	            var theEvent = EventMapCore.MakeMap(new object[][]{new object[] {"p0", eventVal}});
+	            env.SendEventMap(theEvent, "MyMappedPropertyMap");
 
-                var eventOuter = EventMapCore.MakeMap(
-                    new[] {
-                        new object[] {"outer", theEvent}
-                    });
-                env.SendEventMap(eventOuter, "MyMappedPropertyMapOuter");
+	            env.AssertPropsNew("s0", "a".SplitCsv(), new object[]{"v1"});
+	            env.AssertStatement("s0", statement => Assert.AreEqual(typeof(object), statement.EventType.GetPropertyType("a")));
+	            env.UndeployAll();
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a" },
-                    new object[] {"v1"});
-                Assert.AreEqual(typeof(object), env.Statement("s0").EventType.GetPropertyType("a"));
-                env.UndeployModuleContaining("s0");
+	            env.CompileDeploy("@name('s0') select outer.p0('k1') as a from MyMappedPropertyMapOuter");
+	            env.AddListener("s0");
 
-                // test map that contains a bean which has a map property
-                env.CompileDeploy(
-                    "@Name('s0') select outerTwo.MapProperty('xOne') as a from MyMappedPropertyMapOuterTwo");
-                env.AddListener("s0");
+	            var eventOuter = EventMapCore.MakeMap(new object[][]{new object[] {"outer", theEvent}});
+	            env.SendEventMap(eventOuter, "MyMappedPropertyMapOuter");
 
-                var eventOuterTwo = EventMapCore.MakeMap(
-                    new[] {
-                        new object[] {"outerTwo", SupportBeanComplexProps.MakeDefaultBean()}
-                    });
-                env.SendEventMap(eventOuterTwo, "MyMappedPropertyMapOuterTwo");
+	            env.AssertPropsNew("s0", "a".SplitCsv(), new object[]{"v1"});
+	            env.AssertStatement("s0", statement => Assert.AreEqual(typeof(object), statement.EventType.GetPropertyType("a")));
+	            env.UndeployModuleContaining("s0");
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a" },
-                    new object[] {"yOne"});
-                Assert.AreEqual(typeof(object), env.Statement("s0").EventType.GetPropertyType("a"));
+	            // test map that contains a bean which has a map property
+	            env.CompileDeploy("@name('s0') select outerTwo.mapProperty('xOne') as a from MyMappedPropertyMapOuterTwo");
+	            env.AddListener("s0");
 
-                env.UndeployAll();
-            }
-        }
+	            var eventOuterTwo = EventMapCore.MakeMap(new object[][]{new object[] {"outerTwo", SupportBeanComplexProps.MakeDefaultBean()}});
+	            env.SendEventMap(eventOuterTwo, "MyMappedPropertyMapOuterTwo");
 
-        internal class EventMapMapNamePropertyNested : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.CompileDeploy(
-                    "@Name('s0') select outer.P0.n0 as a, outer.P1[0].n0 as b, outer.P1[1].n0 as c, outer.P0 as d, outer.P1 as e from MyArrayMapTwo");
-                env.AddListener("s0");
+	            env.AssertPropsNew("s0", "a".SplitCsv(), new object[]{"yOne"});
+	            env.AssertStatement("s0", statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a")));
 
-                var n0Bean1 = EventMapCore.MakeMap(
-                    new[] {
-                        new object[] {"n0", 1}
-                    });
-                var n0Bean21 = EventMapCore.MakeMap(
-                    new[] {
-                        new object[] {"n0", 2}
-                    });
-                var n0Bean22 = EventMapCore.MakeMap(
-                    new[] {
-                        new object[] {"n0", 3}
-                    });
-                IDictionary<string, object>[] n0Bean2 = {n0Bean21, n0Bean22};
-                var theEvent = EventMapCore.MakeMap(
-                    new[] {
-                        new object[] {"P0", n0Bean1}, new object[] {"P1", n0Bean2}
-                    });
-                var eventOuter = EventMapCore.MakeMap(
-                    new[] {
-                        new object[] {"outer", theEvent}
-                    });
-                env.SendEventMap(eventOuter, "MyArrayMapTwo");
+	            env.UndeployAll();
+	        }
+	    }
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a","b","c","d","e" },
-                    new object[] {1, 2, 3, n0Bean1, n0Bean2});
-                var eventType = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
-                Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("d"));
-                Assert.AreEqual(typeof(IDictionary<string, object>[]), eventType.GetPropertyType("e"));
+	    private class EventMapMapNamePropertyNested : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            env.CompileDeploy("@name('s0') select outer.p0.n0 as a, outer.p1[0].n0 as b, outer.p1[1].n0 as c, outer.p0 as d, outer.p1 as e from MyArrayMapTwo");
+	            env.AddListener("s0");
 
-                env.UndeployAll();
-                env.CompileDeploy(
-                    "@Name('s0') select outer.P0.n0? as a, outer.P1[0].n0? as b, outer.P1[1]?.n0 as c, outer.P0? as d, outer.P1? as e from MyArrayMapTwo");
-                env.AddListener("s0");
+	            var n0Bean1 = EventMapCore.MakeMap(new object[][]{new object[] {"n0", 1}});
+	            var n0Bean21 = EventMapCore.MakeMap(new object[][]{new object[] {"n0", 2}});
+	            var n0Bean22 = EventMapCore.MakeMap(new object[][]{new object[] {"n0", 3}});
+	            var n0Bean2 = new IDictionary<string, object>[]{n0Bean21, n0Bean22};
+	            var theEvent = EventMapCore.MakeMap(new object[][]{new object[] {"p0", n0Bean1}, new object[] {"p1", n0Bean2}});
+	            var eventOuter = EventMapCore.MakeMap(new object[][]{new object[] {"outer", theEvent}});
+	            env.SendEventMap(eventOuter, "MyArrayMapTwo");
 
-                env.SendEventMap(eventOuter, "MyArrayMapTwo");
+	            env.AssertPropsNew("s0", "a,b,c,d,e".SplitCsv(), new object[]{1, 2, 3, n0Bean1, n0Bean2});
+	            env.AssertStatement("s0", statement => {
+	                var eventType = statement.EventType;
+	                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
+	                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
+	                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
+	                Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("d"));
+	                Assert.AreEqual(typeof(IDictionary<string, object>[]), eventType.GetPropertyType("e"));
+	            });
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new [] { "a","b","c","d","e" },
-                    new object[] {1, 2, 3, n0Bean1, n0Bean2});
-                Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("a"));
+	            env.UndeployAll();
+	            env.CompileDeploy("@name('s0') select outer.p0.n0? as a, outer.p1[0].n0? as b, outer.p1[1]?.n0 as c, outer.p0? as d, outer.p1? as e from MyArrayMapTwo");
+	            env.AddListener("s0");
 
-                env.UndeployAll();
-            }
-        }
+	            env.SendEventMap(eventOuter, "MyArrayMapTwo");
 
-        internal class EventMapMapNameProperty : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.CompileDeploy(
-                    "@Name('s0') select P0.n0 as a, P1[0].n0 as b, P1[1].n0 as c, P0 as d, P1 as e from MyMapWithAMap");
-                env.AddListener("s0");
+	            env.AssertPropsNew("s0", "a,b,c,d,e".SplitCsv(), new object[]{1, 2, 3, n0Bean1, n0Bean2});
+	            env.AssertStatement("s0", statement => {
+	                Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("a"));
+	            });
 
-                var n0Bean1 = EventMapCore.MakeMap(
-                    new[] {
-                        new object[] {"n0", 1}
-                    });
-                var n0Bean21 = EventMapCore.MakeMap(
-                    new[] {
-                        new object[] {"n0", 2}
-                    });
-                var n0Bean22 = EventMapCore.MakeMap(
-                    new[] {
-                        new object[] {"n0", 3}
-                    });
-                IDictionary<string, object>[] n0Bean2 = {n0Bean21, n0Bean22};
-                var theEvent = EventMapCore.MakeMap(
-                    new[] {
-                        new object[] {"P0", n0Bean1}, new object[] {"P1", n0Bean2}
-                    });
-                env.SendEventMap(theEvent, "MyMapWithAMap");
+	            env.UndeployAll();
+	        }
+	    }
 
-                var eventResult = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertProps(
-                    eventResult,
-                    new [] { "a","b","c","d" },
-                    new object[] {1, 2, 3, n0Bean1});
-                var valueE = (IDictionary<string, object>[]) eventResult.Get("e");
-                Assert.AreEqual(valueE[0], n0Bean2[0]);
-                Assert.AreEqual(valueE[1], n0Bean2[1]);
+	    private class EventMapMapNameProperty : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            env.CompileDeploy("@name('s0') select p0.n0 as a, p1[0].n0 as b, p1[1].n0 as c, p0 as d, p1 as e from MyMapWithAMap");
+	            env.AddListener("s0");
 
-                var eventType = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
-                Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("d"));
-                Assert.AreEqual(typeof(IDictionary<string, object>[]), eventType.GetPropertyType("e"));
+	            var n0Bean1 = EventMapCore.MakeMap(new object[][]{new object[] {"n0", 1}});
+	            var n0Bean21 = EventMapCore.MakeMap(new object[][]{new object[] {"n0", 2}});
+	            var n0Bean22 = EventMapCore.MakeMap(new object[][]{new object[] {"n0", 3}});
+	            var n0Bean2 = new IDictionary<string, object>[]{n0Bean21, n0Bean22};
+	            var theEvent = EventMapCore.MakeMap(new object[][]{new object[] {"p0", n0Bean1}, new object[] {"p1", n0Bean2}});
+	            env.SendEventMap(theEvent, "MyMapWithAMap");
 
-                env.UndeployAll();
-            }
-        }
-    }
+	            env.AssertEventNew("s0", eventResult => {
+	                EPAssertionUtil.AssertProps(eventResult, "a,b,c,d".SplitCsv(), new object[]{1, 2, 3, n0Bean1});
+	                var valueE = (IDictionary<string, object>[]) eventResult.Get("e");
+	                Assert.AreEqual(valueE[0], n0Bean2[0]);
+	                Assert.AreEqual(valueE[1], n0Bean2[1]);
+	            });
+
+	            env.AssertStatement("s0", statement => {
+	                var eventType = statement.EventType;
+	                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
+	                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
+	                Assert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
+	                Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("d"));
+	                Assert.AreEqual(typeof(IDictionary<string, object>[]), eventType.GetPropertyType("e"));
+	            });
+
+	            env.UndeployAll();
+	        }
+	    }
+	}
 } // end of namespace

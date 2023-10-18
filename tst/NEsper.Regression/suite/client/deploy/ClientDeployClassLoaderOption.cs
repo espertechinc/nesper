@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select * from SupportBean";
+				var epl = "@name('s0') select * from SupportBean";
 				var compiled = env.Compile(epl);
 				var options = new DeploymentOptions();
 				var mySupportClassloader = new MySupportClassloader();
@@ -44,6 +44,11 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 				Assert.IsFalse(mySupportClassloader.Names.IsEmpty());
 
 				env.UndeployAll();
+			}
+
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.INVALIDITY);
 			}
 		}
 

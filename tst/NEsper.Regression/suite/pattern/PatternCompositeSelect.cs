@@ -7,124 +7,113 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
+using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
+
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
-    public class PatternCompositeSelect
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            WithollowedByFilter(execs);
-            Withragment(execs);
-            return execs;
-        }
+	public class PatternCompositeSelect
+	{
 
-        public static IList<RegressionExecution> Withragment(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new PatternFragment());
-            return execs;
-        }
+		public static ICollection<RegressionExecution> Executions()
+		{
+			IList<RegressionExecution> execs = new List<RegressionExecution>();
+			execs.Add(new PatternFollowedByFilter());
+			execs.Add(new PatternFragment());
+			return execs;
+		}
 
-        public static IList<RegressionExecution> WithollowedByFilter(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new PatternFollowedByFilter());
-            return execs;
-        }
+		private class PatternFollowedByFilter : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var epl =
+					"@name('insert') insert into StreamOne select * from pattern [a=SupportBean_A -> b=SupportBean_B];\n" +
+					"@name('s0') select *, 1 as code from StreamOne;\n";
+				env.CompileDeploy(epl).AddListener("s0");
 
-        internal class PatternFollowedByFilter : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl =
-                    "@Name('insert') insert into StreamOne select * from pattern [a=SupportBean_A -> b=SupportBean_B];\n" +
-                    "@Name('s0') select *, 1 as code from StreamOne;\n";
-                env.CompileDeploy(epl).AddListener("s0");
+				env.SendEventBean(new SupportBean_A("A1"));
+				env.SendEventBean(new SupportBean_B("B1"));
+				env.AssertEventNew(
+					"s0",
+					theEvent => {
+						var values = new object[theEvent.EventType.PropertyNames.Length];
+						var count = 0;
+						foreach (var name in theEvent.EventType.PropertyNames) {
+							values[count++] = theEvent.Get(name);
+						}
 
-                env.SendEventBean(new SupportBean_A("A1"));
-                env.SendEventBean(new SupportBean_B("B1"));
-                var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
+						SupportEventPropUtil.AssertPropsEquals(
+							env.Statement("insert").EventType.PropertyDescriptors.ToArray(),
+							new SupportEventPropDesc("a", typeof(SupportBean_A)).WithFragment(),
+							new SupportEventPropDesc("b", typeof(SupportBean_B)).WithFragment());
+					});
 
-                var values = new object[env.Statement("s0").EventType.PropertyNames.Length];
-                var count = 0;
-                foreach (var name in env.Statement("s0").EventType.PropertyNames) {
-                    values[count++] = theEvent.Get(name);
-                }
+				env.UndeployAll();
+			}
+		}
 
-                EPAssertionUtil.AssertEqualsAnyOrder(
-                    new EventPropertyDescriptor[] {
-                        new EventPropertyDescriptor("a", typeof(SupportBean_A), null, false, false, false, false, true),
-                        new EventPropertyDescriptor("b", typeof(SupportBean_B), null, false, false, false, false, true)
-                    },
-                    env.Statement("insert").EventType.PropertyDescriptors);
+		private class PatternFragment : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var stmtTxtOne = "@name('s0') select * from pattern [[2] a=SupportBean_A -> b=SupportBean_B]";
+				env.CompileDeploy(stmtTxtOne).AddListener("s0");
 
-                env.UndeployAll();
-            }
-        }
+				env.AssertStatement(
+					"s0",
+					statement =>
+						SupportEventPropUtil.AssertPropsEquals(
+							statement.EventType.PropertyDescriptors.ToArray(),
+							new SupportEventPropDesc("a", typeof(SupportBean_A[])).WithIndexed().WithFragment(),
+							new SupportEventPropDesc("b", typeof(SupportBean_B)).WithFragment()));
 
-        internal class PatternFragment : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtTxtOne = "@Name('s0') select * from pattern [[2] a=SupportBean_A -> b=SupportBean_B]";
-                env.CompileDeploy(stmtTxtOne).AddListener("s0");
+				env.SendEventBean(new SupportBean_A("A1"));
+				env.SendEventBean(new SupportBean_A("A2"));
 
-                EPAssertionUtil.AssertEqualsAnyOrder(
-                    new EventPropertyDescriptor[] {
-                        new EventPropertyDescriptor(
-                            "a",
-                            typeof(SupportBean_A[]),
-                            typeof(SupportBean_A),
-                            false,
-                            false,
-                            true,
-                            false,
-                            true),
-                        new EventPropertyDescriptor("b", typeof(SupportBean_B), null, false, false, false, false, true)
-                    },
-                    env.Statement("s0").EventType.PropertyDescriptors);
+				env.Milestone(0);
 
-                env.SendEventBean(new SupportBean_A("A1"));
-                env.SendEventBean(new SupportBean_A("A2"));
-                env.SendEventBean(new SupportBean_B("B1"));
+				env.SendEventBean(new SupportBean_B("B1"));
 
-                var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.That(theEvent.Underlying, Is.InstanceOf<IDictionary<string, object>>());
+				env.AssertEventNew(
+					"s0",
+					theEvent => {
+						Assert.IsInstanceOf<IDictionary<string, object>>(theEvent.Underlying);
 
-                // test fragment B type and event
-                var typeFragB = theEvent.EventType.GetFragmentType("b");
-                Assert.IsFalse(typeFragB.IsIndexed);
-                Assert.AreEqual("SupportBean_B", typeFragB.FragmentType.Name);
-                Assert.AreEqual(typeof(string), typeFragB.FragmentType.GetPropertyType("Id"));
+						// test fragment B type and event
+						var typeFragB = theEvent.EventType.GetFragmentType("b");
+						Assert.IsFalse(typeFragB.IsIndexed);
+						Assert.AreEqual("SupportBean_B", typeFragB.FragmentType.Name);
+						Assert.AreEqual(typeof(string), typeFragB.FragmentType.GetPropertyType("id"));
 
-                var eventFragB = (EventBean) theEvent.GetFragment("b");
-                Assert.AreEqual("SupportBean_B", eventFragB.EventType.Name);
+						var eventFragB = (EventBean)theEvent.GetFragment("b");
+						Assert.AreEqual("SupportBean_B", eventFragB.EventType.Name);
 
-                // test fragment A type and event
-                var typeFragA = theEvent.EventType.GetFragmentType("a");
-                Assert.IsTrue(typeFragA.IsIndexed);
-                Assert.AreEqual("SupportBean_A", typeFragA.FragmentType.Name);
-                Assert.AreEqual(typeof(string), typeFragA.FragmentType.GetPropertyType("Id"));
+						// test fragment A type and event
+						var typeFragA = theEvent.EventType.GetFragmentType("a");
+						Assert.IsTrue(typeFragA.IsIndexed);
+						Assert.AreEqual("SupportBean_A", typeFragA.FragmentType.Name);
+						Assert.AreEqual(typeof(string), typeFragA.FragmentType.GetPropertyType("id"));
 
-                Assert.IsTrue(theEvent.GetFragment("a") is EventBean[]);
-                var eventFragA1 = (EventBean) theEvent.GetFragment("a[0]");
-                Assert.AreEqual("SupportBean_A", eventFragA1.EventType.Name);
-                Assert.AreEqual("A1", eventFragA1.Get("Id"));
-                var eventFragA2 = (EventBean) theEvent.GetFragment("a[1]");
-                Assert.AreEqual("SupportBean_A", eventFragA2.EventType.Name);
-                Assert.AreEqual("A2", eventFragA2.Get("Id"));
+						Assert.IsTrue(theEvent.GetFragment("a") is EventBean[]);
+						var eventFragA1 = (EventBean)theEvent.GetFragment("a[0]");
+						Assert.AreEqual("SupportBean_A", eventFragA1.EventType.Name);
+						Assert.AreEqual("A1", eventFragA1.Get("id"));
+						var eventFragA2 = (EventBean)theEvent.GetFragment("a[1]");
+						Assert.AreEqual("SupportBean_A", eventFragA2.EventType.Name);
+						Assert.AreEqual("A2", eventFragA2.Get("id"));
+					});
 
-                env.UndeployAll();
-            }
-        }
-    }
+				env.UndeployAll();
+			}
+		}
+	}
 } // end of namespace

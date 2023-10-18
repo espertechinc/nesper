@@ -16,8 +16,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
     {
         public void Run(RegressionEnvironment env)
         {
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 "expression abc [10] select * from SupportBean",
                 "Failed to obtain script engine for dialect 'dummy' for script 'abc' [expression abc [10] select * from SupportBean]");
         }

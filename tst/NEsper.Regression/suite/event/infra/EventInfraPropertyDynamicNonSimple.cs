@@ -39,9 +39,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		public static readonly string JSON_TYPENAME = nameof(EventInfraPropertyDynamicNonSimple) + "Json";
 		public static readonly string JSONPROVIDED_TYPENAME = nameof(EventInfraPropertyDynamicNonSimple) + "JsonProvided";
 
-		public bool ExcludeWhenInstrumented()
+		public ISet<RegressionFlag> Flags()
 		{
-			return true;
+			return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED);
 		}
 
 		public void Run(RegressionEnvironment env)
@@ -88,8 +88,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode), path);
 
 			// Avro
-			var schema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME)).AsRecordSchema();
-			var datumOne = new GenericRecord(SchemaBuilder.Record(AVRO_TYPENAME));
+			var schema = env.RuntimeAvroSchemaPreconfigured(AVRO_TYPENAME).AsRecordSchema();
+			var datumOne = new GenericRecord(schema);
 			var datumTwo = new GenericRecord(schema);
 			datumTwo.Put("Indexed", Arrays.AsList(1, 2));
 			datumTwo.Put("Mapped", TwoEntryMap("keyOne", 3, "keyTwo", 4));
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 
 			var stmtText =
-				"@Name('s0') select " +
+				"@name('s0') select " +
 				"Indexed[0]? as Indexed1, " +
 				"exists(Indexed[0]?) as exists_Indexed1, " +
 				"Indexed[1]? as Indexed2, " +
@@ -146,16 +146,25 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			env.CompileDeploy(stmtText, path).AddListener("s0");
 
 			var propertyNames = "Indexed1,Indexed2,Mapped1,Mapped2".SplitCsv();
-			var eventType = env.Statement("s0").EventType;
-			foreach (var propertyName in propertyNames) {
-				Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType(propertyName));
-				Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_" + propertyName));
-			}
+			env.AssertStatement(
+				"s0",
+				statement => {
+					var eventType = statement.EventType;
+					foreach (var propertyName in propertyNames) {
+						Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType(propertyName));
+						Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_" + propertyName));
+					}
+				});
 
 			foreach (var pair in tests) {
 				send.Invoke(env, pair.First, typename);
-				var @event = env.Listener("s0").AssertOneGetNewAndReset();
-				AssertValuesMayConvert(@event, propertyNames, (ValueWithExistsFlag[]) pair.Second, optionalValueConversion);
+				env.AssertEventNew(
+					"s0",
+					@event => SupportEventInfra.AssertValuesMayConvert(
+						@event,
+						propertyNames,
+						(ValueWithExistsFlag[])pair.Second,
+						optionalValueConversion));
 			}
 
 			env.UndeployAll();

@@ -63,10 +63,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         private static void RunAssertion(
             RegressionEnvironment env,
-            String eventTypeName,
+            string eventTypeName,
             RegressionPath path)
         {
-            var stmt = "@Name('s0') select " +
+            var stmt = "@name('s0') select " +
                        "element1, " +
                        "invalidelement, " +
                        "element4.element41 as nestedElement," +

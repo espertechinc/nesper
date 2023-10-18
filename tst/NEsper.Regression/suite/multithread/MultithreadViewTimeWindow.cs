@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
@@ -28,6 +30,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             var numThreads = 2;
@@ -39,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             for (var i = 0; i < numStmt; i++) {
                 listeners[i] = new SupportCountListener();
                 var stmtName = "stmt" + i;
-                var nameAnnotation = "@Name('" + stmtName + "')";
+                var nameAnnotation = "@name('" + stmtName + "')";
                 var epl = $"{nameAnnotation}select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)";
                 env.CompileDeploy(epl).Statement(stmtName).AddListener(listeners[i]);
             }

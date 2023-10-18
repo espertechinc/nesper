@@ -14,7 +14,7 @@ using com.espertech.esper.compat.io;
 
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
-    public class DIOBigIntegerArray2DimNullableSerde : DataInputOutputSerdeBase<BigInteger[][]>
+    public class DIOBigIntegerArray2DimNullableSerde : DataInputOutputSerdeBase<BigInteger?[][]>
     {
         public static readonly DIOBigIntegerArray2DimNullableSerde INSTANCE = new DIOBigIntegerArray2DimNullableSerde();
 
@@ -23,19 +23,19 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
         }
 
         public void Write(
-            BigInteger[][] @object,
+            BigInteger?[][] @object,
             DataOutput output)
         {
             WriteInternal(@object, output);
         }
 
-        public BigInteger[][] Read(DataInput input)
+        public BigInteger?[][] Read(DataInput input)
         {
             return ReadInternal(input);
         }
 
         public override void Write(
-            BigInteger[][] @object,
+            BigInteger?[][] @object,
             DataOutput output,
             byte[] unitKey,
             EventBeanCollatedWriter writer)
@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
             WriteInternal(@object, output);
         }
 
-        public override BigInteger[][] ReadValue(
+        public override BigInteger?[][] ReadValue(
             DataInput input,
             byte[] unitKey)
         {
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
         }
 
         private void WriteInternal(
-            BigInteger[][] @object,
+            BigInteger?[][] @object,
             DataOutput output)
         {
             if (@object == null) {
@@ -65,14 +65,14 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
             }
         }
 
-        private BigInteger[][] ReadInternal(DataInput input)
+        private BigInteger?[][] ReadInternal(DataInput input)
         {
             var len = input.ReadInt();
             if (len == -1) {
                 return null;
             }
 
-            var array = new BigInteger[len][];
+            var array = new BigInteger?[len][];
             for (var i = 0; i < len; i++) {
                 array[i] = DIOBigIntegerArrayNullableSerde.INSTANCE.Read(input);
             }

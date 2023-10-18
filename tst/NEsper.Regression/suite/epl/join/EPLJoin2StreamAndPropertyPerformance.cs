@@ -12,6 +12,7 @@ using System.Threading;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -80,13 +81,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         internal class EPLJoin2StreamAndPropertyPerfRemoveStream : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 MyStaticEval.CountCalled = 0;
                 MyStaticEval.WaitTimeMSec = 0;
                 env.AdvanceTime(0);
 
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           " SupportBean#time(1) as sb, " +
                           " SupportBean_S0#keepall as S0 " +
                           " where myStaticEvaluator(sb.TheString, S0.P00)";
@@ -97,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 env.SendEventBean(new SupportBean("y", 10));
                 Assert.AreEqual(1, MyStaticEval.CountCalled);
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+                env.AssertListenerInvoked("s0");
 
                 // this would be observed as hanging if there was remove-stream evaluation
                 MyStaticEval.WaitTimeMSec = 10000000;
@@ -109,28 +115,33 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         internal class EPLJoin2StreamAndPropertyPerf2Properties : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 var methodName = ".testPerformanceJoinNoResults";
 
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportMarketDataBean#length(1000000)," +
                           "SupportBean#length(1000000)" +
                           " where Symbol=TheString and Volume=LongBoxed";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // Send events for each stream
-                log.Info(methodName + " Preloading events");
+                log.Info($"{methodName} Preloading events");
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
-                    SendEvent(env, MakeMarketEvent("IBM_" + i, 1));
-                    SendEvent(env, MakeSupportEvent("CSCO_" + i, 2));
+                    SendEvent(env, MakeMarketEvent($"IBM_{i}", 1));
+                    SendEvent(env, MakeSupportEvent($"CSCO_{i}", 2));
                 }
 
-                log.Info(methodName + " Done preloading");
+                log.Info($"{methodName} Done preloading");
 
                 var endTime = PerformanceObserver.MilliTime;
-                log.Info(methodName + " delta=" + (endTime - startTime));
+                log.Info($"{methodName} delta={(endTime - startTime)}");
 
                 // Stay at 250, belwo 500ms
                 Assert.IsTrue(endTime - startTime < 500);
@@ -140,11 +151,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         internal class EPLJoin2StreamAndPropertyPerf3Properties : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+            
             public void Run(RegressionEnvironment env)
             {
                 var methodName = ".testPerformanceJoinNoResults";
 
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportMarketDataBean()#length(1000000)," +
                           "SupportBean#length(1000000)" +
                           " where Symbol=TheString and Volume=LongBoxed and DoublePrimitive=Price";
@@ -154,8 +170,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 log.Info("{0} Preloading events", methodName);
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
-                    SendEvent(env, MakeMarketEvent("IBM_" + i, 1));
-                    SendEvent(env, MakeSupportEvent("CSCO_" + i, 2));
+                    SendEvent(env, MakeMarketEvent($"IBM_{i}", 1));
+                    SendEvent(env, MakeSupportEvent($"CSCO_{i}", 2));
                 }
 
                 log.Info("{0} Done preloading", methodName);

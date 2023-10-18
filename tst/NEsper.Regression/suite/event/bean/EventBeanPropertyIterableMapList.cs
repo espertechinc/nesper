@@ -45,13 +45,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             object @event)
         {
             env.CompileDeploy(
-                "@Name('s0') select otherEventsIterable[0] as c0, otherEventsMap('key') as c1, otherEventsList[0] as c2 from " +
+                "@name('s0') select otherEventsIterable[0] as c0, otherEventsMap('key') as c1, otherEventsList[0] as c2 from " +
                 typeClass.Name);
             env.AddListener("s0");
 
             env.SendEventBean(@event);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
+            env.AssertPropsNew(
+                "s0",
                 new [] { "c0.Id","c1.Id","c2.Id" },
                 new object[] {"id1", "id2", "id3"});
 

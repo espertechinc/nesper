@@ -85,8 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				"Unexpected root element name 'xxxx' encountered, expected a root element name of 'Myevent'");
 
 			// Avro
-			var schema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME))
-				.AsRecordSchema();
+			var schema = env.RuntimeAvroSchemaPreconfigured(AVRO_TYPENAME).AsRecordSchema();
 			RunAssertionSendEvent(env, path, AVRO_TYPENAME, new GenericRecord(schema));
 			RunAssertionRouteEvent(env, path, AVRO_TYPENAME, new GenericRecord(schema));
 			RunAssertionInvalid(
@@ -128,6 +127,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			env.UndeployAll();
 		}
 
+		public ISet<RegressionFlag> Flags()
+		{
+			return Collections.Set(RegressionFlag.OBSERVEROPS);
+		}
+
 		private void RunAssertionRouteEvent(
 			RegressionEnvironment env,
 			RegressionPath path,
@@ -135,13 +139,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			object underlying)
 		{
 
-			var stmtText = "@Name('s0') select * from " + typename;
+			var stmtText = "@name('s0') select * from " + typename;
 			env.CompileDeploy(stmtText, path).AddListener("s0");
 
 			var sender = env.EventService.GetEventSender(typename);
 			env.CompileDeploy(
 				"@public @buseventtype create schema TriggerEvent();\n" +
-				"@Name('trigger') select * from TriggerEvent;\n");
+				"@name('trigger') select * from TriggerEvent;\n");
 			env.Statement("trigger").Events += (esender, args) => {
 				sender.RouteEvent(underlying);
 			};
@@ -159,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			params object[] correctUnderlyings)
 		{
 
-			var stmtText = "@Name('s0') select * from " + typename;
+			var stmtText = "@name('s0') select * from " + typename;
 			env.CompileDeploy(stmtText, path).AddListener("s0");
 
 			var sender = env.EventService.GetEventSender(typename);
@@ -177,10 +181,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			object underlying)
 		{
 			if (typename.Equals(JSON_TYPENAME)) {
-				Assert.IsNotNull(env.Listener("s0").AssertOneGetNewAndReset().Underlying);
-			}
-			else {
-				Assert.AreSame(underlying, env.Listener("s0").AssertOneGetNewAndReset().Underlying);
+				env.AssertEventNew("s0", eventBean => Assert.NotNull(eventBean.Underlying));
+			} else {
+				env.AssertEventNew("s0", eventBean => Assert.AreSame(underlying, eventBean.Underlying));
 			}
 		}
 

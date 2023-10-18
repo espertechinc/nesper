@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.filter;
 
@@ -46,9 +47,9 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
                 // test on-merge
                 var moduleString =
-                    "@Name('S0') create window MyWindow#unique(IntPrimitive) as SupportBean;\n" +
-                    "@Name('S1') on MyWindow insert into SecondStream select *;\n" +
-                    "@Name('S2') on SecondStream merge MyWindow when matched then insert into ThirdStream select * then delete\n";
+                    "@name('S0') create window MyWindow#unique(IntPrimitive) as SupportBean;\n" +
+                    "@name('S1') on MyWindow insert into SecondStream select *;\n" +
+                    "@name('S2') on SecondStream merge MyWindow when matched then insert into ThirdStream select * then delete\n";
                 var compiled = env.Compile(moduleString);
                 env.Deploy(compiled).UndeployAll().Deploy(compiled).UndeployAll();
 
@@ -57,6 +58,11 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 env.CompileDeploy(moduleTableOne).UndeployAll();
                 var moduleTableTwo = "create table MyTable(c0 string, c1 string, c2 string)";
                 env.CompileDeploy(moduleTableTwo).UndeployAll();
+            }
+            
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
 

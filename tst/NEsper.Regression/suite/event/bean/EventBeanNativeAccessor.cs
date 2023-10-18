@@ -17,19 +17,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
     {
         public void Run(RegressionEnvironment env)
         {
-            var statementText = "@Name('s0') select IntPrimitive, explicitFInt, explicitMGetInt, explicitMReadInt " +
+            var statementText = "@name('s0') select IntPrimitive, explicitFInt, explicitMGetInt, explicitMReadInt " +
                                 " from MyLegacyTwo#length(5)";
             env.CompileDeploy(statementText).AddListener("s0");
-
-            var eventType = env.Statement("s0").EventType;
 
             var theEvent = new SupportLegacyBeanInt(10);
             env.SendEventBean(theEvent, "MyLegacyTwo");
 
-            foreach (var name in new[] {"IntPrimitive", "explicitFInt", "explicitMGetInt", "explicitMReadInt"}) {
-                Assert.AreEqual(typeof(int?), eventType.GetPropertyType(name));
-                Assert.AreEqual(10, env.Listener("s0").LastNewData[0].Get(name));
-            }
+            env.AssertEventNew("s0", @event => {
+                var eventType = @event.EventType;
+                foreach (var name in new[] { "IntPrimitive", "explicitFInt", "explicitMGetInt", "explicitMReadInt" }) {
+                    Assert.AreEqual(typeof(int?), eventType.GetPropertyType(name));
+                    Assert.AreEqual(10, @event.Get(name));
+                }
+            });
 
             env.UndeployAll();
         }

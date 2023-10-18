@@ -21,14 +21,15 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
 {
     public class CodegenMakeableUtil
     {
-        public static CodegenExpression MakeArray(
+        public static CodegenExpression MakeArray<T>(
             string name,
             Type clazz,
-            CodegenMakeable[] forges,
+            CodegenMakeable<T>[] forges,
             Type generator,
             CodegenMethodScope parent,
-            SAIFFInitializeSymbol symbols,
+            T symbols,
             CodegenClassScope classScope)
+            where T : CodegenSymbolProvider
         {
             var arrayType = TypeHelper.GetArrayType(clazz);
             if (forges == null || forges.Length == 0) {
@@ -48,15 +49,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             return LocalMethod(method);
         }
 
-        public static CodegenExpression MakeMap(
+        public static CodegenExpression MakeMap<T>(
             string name,
             Type clazzKey,
             Type clazzValue,
-            IDictionary<CodegenMakeable, CodegenMakeable> map,
+            IDictionary<CodegenMakeable<T>, CodegenMakeable<T>> map,
             Type generator,
             CodegenMethodScope parent,
-            SAIFFInitializeSymbol symbols,
+            T symbols,
             CodegenClassScope classScope)
+            where T : CodegenSymbolProvider
         {
             if (map.IsEmpty()) {
                 return StaticMethod(typeof(Collections), "GetEmptyMap", new Type[] { clazzKey, clazzValue });

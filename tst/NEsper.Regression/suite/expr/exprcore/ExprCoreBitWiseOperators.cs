@@ -17,7 +17,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.expreval;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil; // TryInvalidCompile
+// TryInvalidCompile
 
 using NUnit.Framework;
 
@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 	    private class ExprCoreBitWiseInvalid : RegressionExecution {
 	        public void Run(RegressionEnvironment env) {
-	            TryInvalidCompile(env, "select * from SupportBean(TheString = 'a' | 'x')",
+	            env.TryInvalidCompile("select * from SupportBean(TheString = 'a' | 'x')",
 	                "Failed to validate filter expression 'TheString=\"a\"|\"x\"': Invalid datatype for binary operator, System.String is not allowed");
 	        }
 	    }
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	            model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
 	            Assert.AreEqual(EPL, model.ToEPL());
 
-	            env.CompileDeploy("@Name('s0')  " + EPL).AddListener("s0");
+	            env.CompileDeploy("@name('s0')  " + EPL).AddListener("s0");
 
 	            RunBitWiseOperators(env);
 
@@ -79,14 +79,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	    {
 		    public void Run(RegressionEnvironment env)
 		    {
-			    env.CompileDeploy("@Name('s0') " + EPL).AddListener("s0");
+			    env.CompileDeploy("@name('s0') " + EPL).AddListener("s0");
 
-			    var type = env.Statement("s0").EventType;
-			    Assert.AreEqual(typeof(byte?), type.GetPropertyType("myFirstProperty"));
-			    Assert.AreEqual(typeof(short?), type.GetPropertyType("mySecondProperty"));
-			    Assert.AreEqual(typeof(int?), type.GetPropertyType("myThirdProperty"));
-			    Assert.AreEqual(typeof(long?), type.GetPropertyType("myFourthProperty"));
-			    Assert.AreEqual(typeof(bool?), type.GetPropertyType("myFifthProperty"));
+			    env.AssertStatement(
+				    "s0",
+				    statement => {
+					    var type = statement.EventType;
+					    Assert.AreEqual(typeof(byte?), type.GetPropertyType("myFirstProperty"));
+					    Assert.AreEqual(typeof(short?), type.GetPropertyType("mySecondProperty"));
+					    Assert.AreEqual(typeof(int?), type.GetPropertyType("myThirdProperty"));
+					    Assert.AreEqual(typeof(long?), type.GetPropertyType("myFourthProperty"));
+					    Assert.AreEqual(typeof(bool?), type.GetPropertyType("myFifthProperty"));
+				    });
 
 			    RunBitWiseOperators(env);
 
@@ -116,12 +120,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 	        var sb = MakeEvent();
 	        env.SendEventBean(sb);
 
-	        var received = env.Listener("s0").GetAndResetLastNewData()[0];
-	        Assert.AreEqual((byte) 1, received.Get("myFirstProperty"));
-	        Assert.IsTrue(((short?) (received.Get("mySecondProperty")) & SECOND_EVENT) == SECOND_EVENT);
-	        Assert.IsTrue(((int?) (received.Get("myThirdProperty")) & FIRST_EVENT) == FIRST_EVENT);
-	        Assert.AreEqual(7L, received.Get("myFourthProperty"));
-	        Assert.AreEqual(false, received.Get("myFifthProperty"));
+	        env.AssertEventNew(
+		        "s0",
+		        received => {
+			        Assert.AreEqual((byte)1, received.Get("myFirstProperty"));
+			        Assert.IsTrue(((short?)(received.Get("mySecondProperty")) & SECOND_EVENT) == SECOND_EVENT);
+			        Assert.IsTrue(((int?)(received.Get("myThirdProperty")) & FIRST_EVENT) == FIRST_EVENT);
+			        Assert.AreEqual(7L, received.Get("myFourthProperty"));
+			        Assert.AreEqual(false, received.Get("myFifthProperty"));
+		        });
 	    }
 
 	    private static SupportBean MakeEvent()
@@ -139,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			    FITH_EVENT);
 	    }
 
-	    protected static SupportBean MakeEvent(
+	    internal static SupportBean MakeEvent(
 		    byte bytePrimitive,
 		    byte? byteBoxed,
 		    short shortPrimitive,

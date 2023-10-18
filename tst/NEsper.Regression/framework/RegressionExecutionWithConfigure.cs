@@ -15,9 +15,9 @@ namespace com.espertech.esper.regressionlib.framework
         // public bool EnableHATest => true;
         // public bool HAWithCOnly => false;
 
-        bool EnableHATest { get; }
+        bool EnableHATest => true;
 
-        bool HAWithCOnly { get; }
+        bool HAWithCOnly => false;
 
         void Configure(Configuration configuration);
     }

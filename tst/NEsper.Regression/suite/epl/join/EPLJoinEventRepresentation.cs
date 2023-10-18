@@ -18,233 +18,158 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NEsper.Avro.Extensions;
-using NEsper.Avro.Util.Support;
 
-using NUnit.Framework;
+// fail
+using NUnit.Framework; // assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
-    public class EPLJoinEventRepresentation
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithEventRepresentations(execs);
-            WithMapEventNotUnique(execs);
-            WithWrapperEventNotUnique(execs);
-            return execs;
-        }
+	public class EPLJoinEventRepresentation {
 
-        public static IList<RegressionExecution> WithWrapperEventNotUnique(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLJoinJoinWrapperEventNotUnique());
-            return execs;
-        }
+	    public static IList<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new EPLJoinJoinEventRepresentations());
+	        execs.Add(new EPLJoinJoinMapEventNotUnique());
+	        execs.Add(new EPLJoinJoinWrapperEventNotUnique());
+	        return execs;
+	    }
 
-        public static IList<RegressionExecution> WithMapEventNotUnique(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLJoinJoinMapEventNotUnique());
-            return execs;
-        }
+	    private class EPLJoinJoinEventRepresentations : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var path = new RegressionPath();
+	            var jsonSchemas =
+		            $"@Public @buseventtype create json schema S0_JSON(id String, p00 int);\n@Public @buseventtype create json schema S1_JSON(id String, p00 int);\n@Public @buseventtype @JsonSchema(className='{typeof(MyLocalJsonProvidedS0).FullName}') create json schema S0_JSONCLASSPROVIDED();\n@Public @buseventtype @JsonSchema(className='{typeof(MyLocalJsonProvidedS1).FullName}') create json schema S1_JSONCLASSPROVIDED();\n";
+	            env.CompileDeploy(jsonSchemas, path);
+	            var milestone = new AtomicLong();
 
-        public static IList<RegressionExecution> WithEventRepresentations(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLJoinJoinEventRepresentations());
-            return execs;
-        }
+	            foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
+	                var s0Type = $"S0_{rep.GetName()}";
+	                var s1Type = $"S1_{rep.GetName()}";
+	                var eplOne =
+		                $"select S0.id as s0id, S1.id as s1id, S0.p00 as s0p00, S1.p00 as s1p00 from {s0Type}#keepall as S0, {s1Type}#keepall as S1 where S0.id = S1.id";
+	                TryJoinAssertion(env, eplOne, rep, "s0id,s1id,s0p00,s1p00", milestone, path, typeof(MyLocalJsonProvidedWFields));
+	            }
 
-        private static void SendMapEvent(
-            RegressionEnvironment env,
-            string name,
-            string id,
-            int p00)
-        {
-            IDictionary<string, object> theEvent = new Dictionary<string, object>();
-            theEvent.Put("Id", id);
-            theEvent.Put("P00", p00);
-            env.SendEventMap(theEvent, name);
-        }
+	            foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
+	                var s0Type = $"S0_{rep.GetName()}";
+	                var s1Type = $"S1_{rep.GetName()}";
+	                var eplTwo = $"select * from {s0Type}#keepall as s0, {s1Type}#keepall as s1 where s0.id = s1.id";
+	                TryJoinAssertion(env, eplTwo, rep, "s0.id,s1.id,s0.p00,s1.p00", milestone, path, typeof(MyLocalJsonProvidedWildcard));
+	            }
 
-        private static void SendRepEvent(
-            RegressionEnvironment env,
-            EventRepresentationChoice rep,
-            string name,
-            string id,
-            int p00)
-        {
-            if (rep.IsMapEvent()) {
-                IDictionary<string, object> theEvent = new Dictionary<string, object>();
-                theEvent.Put("Id", id);
-                theEvent.Put("P00", p00);
-                env.SendEventMap(theEvent, name);
-            }
-            else if (rep.IsObjectArrayEvent()) {
-                env.SendEventObjectArray(new object[] {id, p00}, name);
-            }
-            else if (rep.IsAvroEvent()) {
-                var theEvent = new GenericRecord(
-                    SupportAvroUtil.GetAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(name))
-                        .AsRecordSchema());
-                theEvent.Put("Id", id);
-                theEvent.Put("P00", p00);
-                env.SendEventAvro(theEvent, name);
-            }
-            else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
-                String json = "{\"Id\": \"" + id + "\", \"P00\": " + p00 + "}";
-                env.EventService.SendEventJson(json, name);
-            }
-            else {
-                Assert.Fail();
-            }
-        }
+	            env.UndeployAll();
+	        }
 
-        internal class EPLJoinJoinEventRepresentations : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                var jsonSchemas =
-                    "@public @buseventtype create json schema S0_JSON(Id String, P00 int);\n" +
-                    "@public @buseventtype create json schema S1_JSON(Id String, P00 int);\n" +
-                    "@public @buseventtype @JsonSchema(ClassName='" + typeof(MyLocalJsonProvidedS0).FullName + "') create json schema S0_JSONCLASSPROVIDED();\n" +
-                    "@public @buseventtype @JsonSchema(ClassName='" + typeof(MyLocalJsonProvidedS1).FullName + "') create json schema S1_JSONCLASSPROVIDED();\n";
-                env.CompileDeploy(jsonSchemas, path);
+	        private static void TryJoinAssertion(RegressionEnvironment env, string epl, EventRepresentationChoice rep, string columnNames, AtomicLong milestone, RegressionPath path, Type jsonClass) {
+	            env.CompileDeploy($"@name('s0'){rep.GetAnnotationTextWJsonProvided(jsonClass)}{epl}", path).AddListener("s0").MilestoneInc(milestone);
 
-                var milestone = new AtomicLong();
+	            var s0Name = $"S0_{rep.GetName()}";
+	            var s1Name = $"S1_{rep.GetName()}";
 
-                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    var s0Type = "S0_" + rep.GetName();
-                    var s1Type = "S1_" + rep.GetName();
-                    var eplOne = 
-                        "select S0.Id as s0id, S1.Id as s1id, S0.P00 as s0p00, S1.P00 as s1p00 from "
-                        + s0Type + "#keepall as S0, "
-                        + s1Type + "#keepall as S1 "
-                        + " where S0.Id = S1.Id";
-                    TryJoinAssertion(env, eplOne, rep, "s0id,s1id,s0p00,s1p00", milestone, path, typeof(MyLocalJsonProvidedWFields));
-                }
+	            SendRepEvent(env, rep, s0Name, "a", 1);
+	            env.AssertListenerNotInvoked("s0");
 
-                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    var s0Type = "S0_" + rep.GetName();
-                    var s1Type = "S1_" + rep.GetName();
-                    var eplTwo = "select * from " +
-                                 s0Type +
-                                 "#keepall as s0, " +
-                                 s1Type +
-                                 "#keepall as s1 " +
-                                 " where s0.Id = s1.Id";
-                    TryJoinAssertion(env, eplTwo, rep, "s0.Id,s1.Id,s0.P00,s1.P00", milestone, path, typeof(MyLocalJsonProvidedWildcard));
-                }
+	            SendRepEvent(env, rep, s1Name, "a", 2);
+	            env.AssertEventNew("s0", output => {
+	                EPAssertionUtil.AssertProps(output, columnNames.SplitCsv(), new object[]{"a", "a", 1, 2});
+	                Assert.IsTrue(rep.MatchesClass(output.Underlying.GetType()));
+	            });
 
-                env.UndeployAll();
-            }
+	            SendRepEvent(env, rep, s1Name, "b", 3);
+	            SendRepEvent(env, rep, s0Name, "c", 4);
+	            env.AssertListenerNotInvoked("s0");
 
-            private static void TryJoinAssertion(
-                RegressionEnvironment env,
-                String epl,
-                EventRepresentationChoice rep,
-                String columnNames,
-                AtomicLong milestone,
-                RegressionPath path,
-                Type jsonClass)
-            {
-                env.CompileDeploy("@Name('s0')" + rep.GetAnnotationTextWJsonProvided(jsonClass) + epl, path)
-                    .AddListener("s0")
-                    .MilestoneInc(milestone);
+	            env.UndeployModuleContaining("s0");
+	        }
+	    }
 
-                var s0Name = "S0_" + rep.GetName();
-                var s1Name = "S1_" + rep.GetName();
+	    private class EPLJoinJoinMapEventNotUnique : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            // Test for Esper-122
+	            var joinStatement = "@name('s0') select S0.id, S1.id, S0.p00, S1.p00 from MapS0#keepall as S0, MapS1#keepall as S1" +
+	                                " where S0.id = S1.id";
+	            env.CompileDeployAddListenerMileZero(joinStatement, "s0");
 
-                SendRepEvent(env, rep, s0Name, "a", 1);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            for (var i = 0; i < 100; i++) {
+	                if (i % 2 == 1) {
+	                    SendMapEvent(env, "MapS0", "a", 1);
+	                } else {
+	                    SendMapEvent(env, "MapS1", "a", 1);
+	                }
+	            }
 
-                SendRepEvent(env, rep, s1Name, "a", 2);
-                var output = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertProps(
-                    output,
-                    columnNames.SplitCsv(),
-                    new object[] {"a", "a", 1, 2});
-                Assert.IsTrue(rep.MatchesClass(output.Underlying.GetType()));
+	            env.UndeployAll();
+	        }
+	    }
 
-                SendRepEvent(env, rep, s1Name, "b", 3);
-                SendRepEvent(env, rep, s0Name, "c", 4);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	    private class EPLJoinJoinWrapperEventNotUnique : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            // Test for Esper-122
+	            var epl = "insert into S0Stream select 's0' as streamone, * from SupportBean;\n" +
+	                      "insert into S1Stream select 's1' as streamtwo, * from SupportBean;\n" +
+	                      "@name('s0') select * from S0Stream#keepall as a, S1Stream#keepall as b where a.intBoxed = b.intBoxed";
+	            env.CompileDeployAddListenerMileZero(epl, "s0");
 
-                env.UndeployModuleContaining("s0");
-            }
-        }
+	            for (var i = 0; i < 100; i++) {
+	                env.SendEventBean(new SupportBean());
+	            }
 
-        internal class EPLJoinJoinMapEventNotUnique : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // Test for Esper-122
-                var joinStatement =
-                    "@Name('s0') select S0.Id, S1.Id, S0.P00, S1.P00 from MapS0#keepall as S0, MapS1#keepall as S1" +
-                    " where S0.Id = S1.Id";
-                env.CompileDeployAddListenerMileZero(joinStatement, "s0");
+	            env.UndeployAll();
+	        }
+	    }
 
-                for (var i = 0; i < 100; i++) {
-                    if (i % 2 == 1) {
-                        SendMapEvent(env, "MapS0", "a", 1);
-                    }
-                    else {
-                        SendMapEvent(env, "MapS1", "a", 1);
-                    }
-                }
+	    private static void SendMapEvent(RegressionEnvironment env, string name, string id, int p00) {
+	        IDictionary<string, object> theEvent = new Dictionary<string, object>();
+	        theEvent.Put("id", id);
+	        theEvent.Put("p00", p00);
+	        env.SendEventMap(theEvent, name);
+	    }
 
-                env.UndeployAll();
-            }
-        }
+	    private static void SendRepEvent(RegressionEnvironment env, EventRepresentationChoice rep, string name, string id, int p00) {
+	        if (rep.IsMapEvent()) {
+	            IDictionary<string, object> theEvent = new Dictionary<string, object>();
+	            theEvent.Put("id", id);
+	            theEvent.Put("p00", p00);
+	            env.SendEventMap(theEvent, name);
+	        } else if (rep.IsObjectArrayEvent()) {
+	            env.SendEventObjectArray(new object[]{id, p00}, name);
+	        } else if (rep.IsAvroEvent()) {
+	            var theEvent = new GenericRecord(env.RuntimeAvroSchemaPreconfigured(name).AsRecordSchema());
+	            theEvent.Put("id", id);
+	            theEvent.Put("p00", p00);
+	            env.SendEventAvro(theEvent, name);
+	        } else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+	            var json = $"{{\"id\": \"{id}\", \"p00\": {p00}}}";
+	            env.SendEventJson(json, name);
+	        } else {
+	            Assert.Fail();
+	        }
+	    }
 
-        internal class EPLJoinJoinWrapperEventNotUnique : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // Test for Esper-122
-                var epl = "insert into S0Stream select 's0' as streamone, * from SupportBean;\n" +
-                          "insert into S1Stream select 's1' as streamtwo, * from SupportBean;\n" +
-                          "@Name('s0') select * from S0Stream#keepall as a, S1Stream#keepall as b where a.IntBoxed = b.IntBoxed";
-                env.CompileDeployAddListenerMileZero(epl, "s0");
+	    [Serializable]
+	    public class MyLocalJsonProvidedS0 {
+	        public string id;
+	        public int p00;
+	    }
 
-                for (var i = 0; i < 100; i++) {
-                    env.SendEventBean(new SupportBean());
-                }
+	    [Serializable]
+	    public class MyLocalJsonProvidedS1 {
+	        public string id;
+	        public int p00;
+	    }
 
-                env.UndeployAll();
-            }
-        }
+	    [Serializable]
+	    public class MyLocalJsonProvidedWFields {
+	        public string s0id;
+	        public string s1id;
+	        public int s0p00;
+	        public int s1p00;
+	    }
 
-        [Serializable]
-        public class MyLocalJsonProvidedS0
-        {
-            public string Id;
-            public int P00;
-        }
-
-        [Serializable]
-        public class MyLocalJsonProvidedS1
-        {
-            public string Id;
-            public int P00;
-        }
-
-        [Serializable]
-        public class MyLocalJsonProvidedWFields
-        {
-            public string s0id;
-            public string s1id;
-            public int s0p00;
-            public int s1p00;
-        }
-
-        [Serializable]
-        public class MyLocalJsonProvidedWildcard
-        {
-            public MyLocalJsonProvidedS0 s0;
-            public MyLocalJsonProvidedS1 s1;
-        }
-    }
+	    [Serializable]
+	    public class MyLocalJsonProvidedWildcard {
+	        public MyLocalJsonProvidedS0 s0;
+	        public MyLocalJsonProvidedS1 s1;
+	    }
+	}
 } // end of namespace

@@ -14,6 +14,7 @@ using Avro.Generic;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.@internal.kernel.service;
@@ -28,6 +29,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 	{
 		public static readonly string XML_TYPENAME = nameof(EventInfraManufacturer) + "XML";
 		public static readonly string AVRO_TYPENAME = nameof(EventInfraManufacturer) + "AVRO";
+
+		public ISet<RegressionFlag> Flags()
+		{
+			return Collections.Set(RegressionFlag.STATICHOOK);
+		}
 
 		public void Run(RegressionEnvironment env)
 		{

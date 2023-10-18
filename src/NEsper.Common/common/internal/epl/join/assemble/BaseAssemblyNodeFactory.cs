@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
     ///     <para />
     ///     The tree of factory nodes is double-linked, child nodes know each parent and parent know all child nodes.
     /// </summary>
-    public abstract class BaseAssemblyNodeFactory : CodegenMakeable
+    public abstract class BaseAssemblyNodeFactory : CodegenMakeable<SAIFFInitializeSymbol>
     {
         /// <summary>
         ///     Child nodes.
@@ -90,14 +90,6 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             CodegenMethodScope parent,
             SAIFFInitializeSymbol symbolsArg,
             CodegenClassScope classScope);
-
-        public CodegenExpression Make(
-            CodegenMethodScope parent,
-            CodegenSymbolProvider symbolsArg,
-            CodegenClassScope classScope)
-        {
-            return Make(parent, (SAIFFInitializeSymbol)symbolsArg, classScope);
-        }
 
         public abstract BaseAssemblyNode MakeAssemblerUnassociated();
 

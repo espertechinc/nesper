@@ -27,6 +27,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             var choices = new [] { "A","B","C","D" };
@@ -45,10 +50,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             env.AdvanceTime(0);
             var path = new RegressionPath();
-            env.CompileDeploy("@Name('var') create variable boolean myvar = false", path);
-            env.CompileDeploy("create context SegmentedByString as partition by TheString from SupportBean", path);
+            env.CompileDeploy("@name('var') @public create variable boolean myvar = false", path);
+            env.CompileDeploy("@public create context SegmentedByString as partition by TheString from SupportBean", path);
             env.CompileDeploy(
-                "@Name('s0') context SegmentedByString select TheString, count(*) - 1 as cnt from SupportBean output snapshot when myvar = true",
+                "@name('s0') context SegmentedByString select TheString, count(*) - 1 as cnt from SupportBean output snapshot when myvar = true",
                 path);
             var listener = new SupportUpdateListener();
             env.Statement("s0").AddListener(listener);
@@ -91,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     current += entry.Value;
                     sum += entry.Value;
                     totals.Put(entry.Key, current);
-                    //System.out.println("Thread " + i + " key " + entry.getKey() + " count " + entry.getValue());
+                    //Console.WriteLine("Thread " + i + " key " + entry.getKey() + " count " + entry.getValue());
                 }
             }
 
@@ -104,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             foreach (var item in result) {
                 var theString = (string) item.Get("TheString");
                 var count = item.Get("cnt").AsInt64();
-                //System.out.println("String " + string + " count " + count);
+                //Console.WriteLine("String " + string + " count " + count);
                 Assert.AreEqual(count, totals.Get(theString));
             }
 

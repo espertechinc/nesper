@@ -28,8 +28,12 @@ namespace com.espertech.esper.regressionlib.support.util
             string stmtname,
             bool flag)
         {
-            var stmt = (EPStatementSPI) GetRequireStatement(stmtname, env.Runtime);
-            Assert.AreEqual(flag, stmt.StatementContext.IsStatelessSelect);
+            env.AssertStatement(
+                stmtname,
+                statement => {
+                    var stmt = (EPStatementSPI)statement;
+                    Assert.AreEqual(flag, stmt.StatementContext.IsStatelessSelect);
+                });
         }
 
         public static SupportListener GetRequireStatementListener(
@@ -38,6 +42,19 @@ namespace com.espertech.esper.regressionlib.support.util
         {
             var statement = GetRequireStatement(statementName, runtime);
             return GetRequireListener(statementName, statement);
+        }
+
+        public static SupportSubscriber GetRequireStatementSubscriber(
+            string statementName,
+            EPRuntime runtime)
+        {
+            var statement = GetRequireStatement(statementName, runtime);
+            var subscriber = (SupportSubscriber)statement.Subscriber;
+            if (subscriber == null) {
+                throw new ArgumentException("Subscriber not set for statement '" + statementName + "'");
+            }
+
+            return subscriber;
         }
 
         public static SupportListener GetRequireStatementListener(

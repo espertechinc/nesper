@@ -31,11 +31,11 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
         public AggregationMultiFunctionStateKey AggregationStateUniqueKey { get; }
 
         public AggregationMultiFunctionStateMode StateMode =>
-            new AggregationMultiFunctionStateModeManaged().SetInjectionStrategyAggregationStateFactory(
+            new AggregationMultiFunctionStateModeManaged().WithInjectionStrategyAggregationStateFactory(
                 new InjectionStrategyClassNewInstance(typeof(SupportReferenceCountedMapStateFactory)));
 
         public AggregationMultiFunctionAccessorMode AccessorMode =>
-            new AggregationMultiFunctionAccessorModeManaged().SetInjectionStrategyAggregationAccessorFactory(
+            new AggregationMultiFunctionAccessorModeManaged().WithInjectionStrategyAggregationAccessorFactory(
                 new InjectionStrategyClassNewInstance(typeof(SupportReferenceCountedMapAccessorFactory)));
 
         public AggregationMultiFunctionAgentMode AgentMode =>

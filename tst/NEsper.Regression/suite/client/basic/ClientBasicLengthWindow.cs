@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select irstream * from SupportBean#length(2)";
+            var epl = "@name('s0') select irstream * from SupportBean#length(2)";
             env.CompileDeploy(epl).AddListener("s0");
 
             var sb0 = SendAssertNoRStream(env, "E1");
@@ -41,9 +41,13 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
             SupportBean rstream)
         {
             var sb = SendBean(env, theString);
-            var pair = env.Listener("s0").AssertPairGetIRAndReset();
-            Assert.AreEqual(rstream, pair.Second.Underlying);
-            Assert.AreSame(sb, pair.First.Underlying);
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var pair = listener.AssertPairGetIRAndReset();
+                    Assert.AreEqual(rstream, pair.Second.Underlying);
+                    Assert.AreSame(sb, pair.First.Underlying);
+                });
         }
 
         private SupportBean SendAssertNoRStream(
@@ -51,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
             string theString)
         {
             var sb = SendBean(env, theString);
-            Assert.AreSame(sb, env.Listener("s0").AssertOneGetNewAndReset().Underlying);
+            env.AssertEventNew("s0", @event => Assert.AreEqual(sb, @event.Underlying));
             return sb;
         }
 

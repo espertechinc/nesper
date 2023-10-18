@@ -6,8 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
@@ -24,16 +27,16 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             var statements = new EPStatement[5];
             SendTimer(env, 1000);
 
-            statements[0] = env.CompileDeploy("@Name('stmtmetric') select * from " + typeof(StatementMetric).FullName)
+            statements[0] = env.CompileDeploy("@name('stmtmetric') select * from " + typeof(StatementMetric).FullName)
                 .Statement("stmtmetric");
             statements[0].AddListener(env.ListenerNew());
 
-            statements[1] = env.CompileDeploy("@Name('runtimemetric') select * from " + typeof(RuntimeMetric).FullName)
+            statements[1] = env.CompileDeploy("@name('runtimemetric') select * from " + typeof(RuntimeMetric).FullName)
                 .Statement("runtimemetric");
             statements[1].AddListener(env.ListenerNew());
 
             statements[2] = env.CompileDeploy(
-                    "@Name('stmt-1') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeNanos(LongPrimitive)")
+                    "@name('stmt-1') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeNanos(LongPrimitive)")
                 .Statement("stmt-1");
             SendEvent(env, "E1", 1, CPUGOALONENANO);
 
@@ -51,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             SendEvent(env, "E3", 3, CPUGOALONENANO);
             Assert.IsFalse(env.Listener("stmtmetric").GetAndClearIsInvoked());
             Assert.IsFalse(env.Listener("runtimemetric").GetAndClearIsInvoked());
-
+            
             env.Runtime.MetricsService.SetMetricsReportingEnabled();
             SendEvent(env, "E4", 4, CPUGOALONENANO);
             SendTimer(env, 41000);
@@ -64,6 +67,11 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             Assert.IsTrue(env.Listener("runtimemetric").IsInvoked);
 
             env.UndeployAll();
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.RUNTIMEOPS);
         }
 
         private void SendTimer(

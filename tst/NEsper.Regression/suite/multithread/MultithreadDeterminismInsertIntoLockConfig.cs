@@ -30,16 +30,22 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// <summary>
     ///     Test for multithread-safety and deterministic behavior when using insert-into.
     /// </summary>
-    public class MultithreadDeterminismInsertIntoLockConfig
+    public class MultithreadDeterminismInsertIntoLockConfig : RegressionExecutionPreConfigured
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly EPRuntimeProvider _runtimeProvider = new EPRuntimeProvider();
+        private readonly Configuration _configuration;
 
-        public void Run(Configuration configuration)
+        public MultithreadDeterminismInsertIntoLockConfig(Configuration configuration)
         {
-            TrySendCountFollowedBy(4, 100, Locking.SUSPEND, configuration);
-            TrySendCountFollowedBy(4, 100, Locking.SPIN, configuration);
+            _configuration = configuration;
+        }
+
+        public void Run()
+        {
+            TrySendCountFollowedBy(4, 100, Locking.SUSPEND, _configuration);
+            TrySendCountFollowedBy(4, 100, Locking.SPIN, _configuration);
         }
 
         private void TrySendCountFollowedBy(
@@ -61,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // setup statements
             var path = new RegressionPath();
-            var eplInsert = "insert into MyStream select count(*) as cnt from SupportBean";
+            var eplInsert = "@public insert into MyStream select count(*) as cnt from SupportBean";
             var compiledInsert = Compile(eplInsert, configuration, path);
             path.Add(compiledInsert);
             var deployedInsert = Deploy(compiledInsert, runtime);

@@ -7,354 +7,407 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Reflection;
 
-using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertEquals
+
+// fail
 
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
-    public class ClientDeployUndeploy
-    {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+	public class ClientDeployUndeploy
+	{
+		private static readonly ILog log = LogManager.GetLogger(typeof(ClientDeployUndeploy));
 
-        public static IList<RegressionExecution> Executions()
-        {
-            IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientUndeployInvalid());
-            execs.Add(new ClientUndeployDependencyChain());
-            execs.Add(new ClientUndeployPrecondDepScript());
-            execs.Add(new ClientUndeployPrecondDepNamedWindow());
-            execs.Add(new ClientUndeployPrecondDepVariable());
-            execs.Add(new ClientUndeployPrecondDepContext());
-            execs.Add(new ClientUndeployPrecondDepEventType());
-            execs.Add(new ClientUndeployPrecondDepExprDecl());
-            execs.Add(new ClientUndeployPrecondDepTable());
-            execs.Add(new ClientUndeployPrecondDepIndex());
-            execs.Add(new ClientUndeployPrecondDepClass());
-            return execs;
-        }
+		public static IList<RegressionExecution> Executions()
+		{
+			IList<RegressionExecution> execs = new List<RegressionExecution>();
+			execs.Add(new ClientUndeployInvalid());
+			execs.Add(new ClientUndeployDependencyChain());
+			execs.Add(new ClientUndeployPrecondDepScript());
+			execs.Add(new ClientUndeployPrecondDepNamedWindow());
+			execs.Add(new ClientUndeployPrecondDepVariable());
+			execs.Add(new ClientUndeployPrecondDepContext());
+			execs.Add(new ClientUndeployPrecondDepEventType());
+			execs.Add(new ClientUndeployPrecondDepExprDecl());
+			execs.Add(new ClientUndeployPrecondDepTable());
+			execs.Add(new ClientUndeployPrecondDepIndex());
+			execs.Add(new ClientUndeployPrecondDepClass());
+			return execs;
+		}
 
-        private static void TryDeployInvalidUndeploy(
-            RegressionEnvironment env,
-            RegressionPath path,
-            string thingStatementName,
-            string epl,
-            string dependingStatementName,
-            string text)
-        {
-            env.CompileDeploy(epl, path);
-            log.Info("Deployed as " + env.DeploymentId(dependingStatementName) + ": " + epl);
-            var message = "A precondition is not satisfied: " +
-                          text +
-                          " cannot be un-deployed as it is referenced by deployment '" +
-                          env.DeploymentId(dependingStatementName) +
-                          "'";
-            TryInvalidUndeploy(env, thingStatementName, message);
-            env.UndeployModuleContaining(dependingStatementName);
-        }
+		private class ClientUndeployDependencyChain : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				env.CompileDeploy("@public create variable int A = 10", path);
+				env.CompileDeploy("@public create variable int B = A", path);
+				env.CompileDeploy("@public create variable int C = B", path);
+				env.CompileDeploy("@name('s0') @public create variable int D = C", path);
 
-        private static void TryInvalidUndeploy(
-            RegressionEnvironment env,
-            string statementName,
-            string message)
-        {
-            try {
-                env.Runtime.DeploymentService.Undeploy(env.Statement(statementName).DeploymentId);
-                Assert.Fail();
-            }
-            catch (EPUndeployPreconditionException ex) {
-                if (!message.Equals("skip")) {
-                    SupportMessageAssertUtil.AssertMessage(ex.Message, message);
-                }
-            }
-            catch (EPUndeployException) {
-                Assert.Fail();
-            }
-        }
+				Assert.AreEqual(10, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("s0"), "D"));
 
-        internal class ClientUndeployDependencyChain : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy("create variable int A = 10", path);
-                env.CompileDeploy("create variable int B = A", path);
-                env.CompileDeploy("create variable int C = B", path);
-                env.CompileDeploy("@Name('s0') create variable int D = C", path);
+				env.UndeployAll();
+			}
 
-                Assert.AreEqual(10, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("s0"), "D"));
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.RUNTIMEOPS);
+			}
+		}
 
-                env.UndeployAll();
-            }
-        }
+		private class ClientUndeployInvalid : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				try {
+					env.Deployment.Undeploy("nofound");
+					Assert.Fail();
+				}
+				catch (EPUndeployNotFoundException ex) {
+					SupportMessageAssertUtil.AssertMessage(ex.Message, "Deployment id 'nofound' cannot be found");
+				}
+				catch (EPUndeployException t) {
+					Assert.Fail();
+				}
+			}
 
-        internal class ClientUndeployInvalid : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                try {
-                    env.Deployment.Undeploy("nofound");
-                    Assert.Fail();
-                }
-                catch (EPUndeployNotFoundException ex) {
-                    SupportMessageAssertUtil.AssertMessage(ex.Message, "Deployment id 'nofound' cannot be found");
-                }
-                catch (EPUndeployException) {
-                    Assert.Fail();
-                }
-            }
-        }
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.INVALIDITY);
+			}
+		}
 
-        public class ClientUndeployPrecondDepNamedWindow : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy("@Name('infra') create window SimpleWindow#keepall as SupportBean", path);
+		public class ClientUndeployPrecondDepNamedWindow : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				env.CompileDeploy("@name('infra') @public create window SimpleWindow#keepall as SupportBean", path);
 
-                var text = "Named window 'SimpleWindow'";
-                TryDeployInvalidUndeploy(env, path, "infra", "@Name('A') select * from SimpleWindow", "A", text);
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "infra",
-                    "@Name('B') select (select * from SimpleWindow) from SupportBean",
-                    "B",
-                    text);
+				var text = "Named window 'SimpleWindow'";
+				TryDeployInvalidUndeploy(env, path, "infra", "@name('A') select * from SimpleWindow", "A", text);
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"infra",
+					"@name('B') select (select * from SimpleWindow) from SupportBean",
+					"B",
+					text);
 
-                env.UndeployModuleContaining("infra");
-            }
-        }
+				env.UndeployModuleContaining("infra");
+			}
 
-        public class ClientUndeployPrecondDepTable : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy(
-                    "@Name('infra') create table SimpleTable(col1 string primary key, col2 string)",
-                    path);
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.INVALIDITY);
+			}
+		}
 
-                var text = "Table 'SimpleTable'";
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "infra",
-                    "@Name('A') select SimpleTable['a'] from SupportBean",
-                    "A",
-                    text);
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "infra",
-                    "@Name('B') select (select * from SimpleTable) from SupportBean",
-                    "B",
-                    text);
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "infra",
-                    "@Name('C') create index MyIndex on SimpleTable(col2)",
-                    "C",
-                    text);
+		public class ClientUndeployPrecondDepTable : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				env.CompileDeploy(
+					"@name('infra') @public create table SimpleTable(col1 string primary key, col2 string)",
+					path);
 
-                env.UndeployModuleContaining("infra");
-            }
-        }
+				var text = "Table 'SimpleTable'";
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"infra",
+					"@name('A') select SimpleTable['a'] from SupportBean",
+					"A",
+					text);
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"infra",
+					"@name('B') select (select * from SimpleTable) from SupportBean",
+					"B",
+					text);
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"infra",
+					"@name('C') create index MyIndex on SimpleTable(col2)",
+					"C",
+					text);
 
-        public class ClientUndeployPrecondDepVariable : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy("@Name('variable') create variable string varstring", path);
+				env.UndeployModuleContaining("infra");
+			}
 
-                var text = "Variable 'varstring'";
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "variable",
-                    "@Name('A') select varstring from SupportBean",
-                    "A",
-                    text);
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "variable",
-                    "@Name('B') on SupportBean set varstring='a'",
-                    "B",
-                    text);
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.INVALIDITY);
+			}
+		}
 
-                env.UndeployModuleContaining("variable");
-            }
-        }
+		public class ClientUndeployPrecondDepVariable : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				env.CompileDeploy("@name('variable') @public create variable string varstring", path);
 
-        public class ClientUndeployPrecondDepContext : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy(
-                    "@Name('ctx') create context MyContext partition by TheString from SupportBean",
-                    path);
+				var text = "Variable 'varstring'";
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"variable",
+					"@name('A') select varstring from SupportBean",
+					"A",
+					text);
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"variable",
+					"@name('B') on SupportBean set varstring='a'",
+					"B",
+					text);
 
-                var text = "Context 'MyContext'";
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "ctx",
-                    "@Name('A') context MyContext select count(*) from SupportBean",
-                    "A",
-                    text);
+				env.UndeployModuleContaining("variable");
+			}
 
-                env.UndeployModuleContaining("ctx");
-            }
-        }
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.INVALIDITY);
+			}
+		}
 
-        public class ClientUndeployPrecondDepEventType : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy("@Name('schema') create schema MySchema(col string)", path);
+		public class ClientUndeployPrecondDepContext : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				env.CompileDeploy(
+					"@name('ctx') @public create context MyContext partition by theString from SupportBean",
+					path);
 
-                var text = "Event type 'MySchema'";
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "schema",
-                    "@Name('A') insert into MySchema select 'a' as col from SupportBean",
-                    "A",
-                    text);
-                TryDeployInvalidUndeploy(env, path, "schema", "@Name('B') select count(*) from MySchema", "B", text);
+				var text = "Context 'MyContext'";
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"ctx",
+					"@name('A') context MyContext select count(*) from SupportBean",
+					"A",
+					text);
 
-                env.UndeployModuleContaining("schema");
-            }
-        }
+				env.UndeployModuleContaining("ctx");
+			}
 
-        public class ClientUndeployPrecondDepExprDecl : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy("@Name('expr') create expression myexpression { 0 }", path);
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.INVALIDITY);
+			}
+		}
 
-                var text = "Declared-expression 'myexpression'";
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "expr",
-                    "@Name('A') select myexpression() as col from SupportBean",
-                    "A",
-                    text);
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "expr",
-                    "@Name('B') select (select myexpression from SupportBean#keepall) from SupportBean",
-                    "B",
-                    text);
+		public class ClientUndeployPrecondDepEventType : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				env.CompileDeploy("@name('schema') @public create schema MySchema(col string)", path);
 
-                env.UndeployModuleContaining("expr");
-            }
-        }
+				var text = "Event type 'MySchema'";
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"schema",
+					"@name('A') insert into MySchema select 'a' as col from SupportBean",
+					"A",
+					text);
+				TryDeployInvalidUndeploy(env, path, "schema", "@name('B') select count(*) from MySchema", "B", text);
 
-        public class ClientUndeployPrecondDepScript : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy("@Name('script') create expression double myscript(stringvalue) [0]", path);
+				env.UndeployModuleContaining("schema");
+			}
 
-                var text = "Script 'myscript (1 parameters)'";
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "script",
-                    "@Name('A') select myscript('a') as col from SupportBean",
-                    "A",
-                    text);
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.INVALIDITY);
+			}
+		}
 
-                env.UndeployModuleContaining("script");
-            }
-        }
+		public class ClientUndeployPrecondDepExprDecl : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				env.CompileDeploy("@name('expr') @public create expression myexpression { 0 }", path);
 
-        public class ClientUndeployPrecondDepIndex : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                string text;
+				var text = "Declared-expression 'myexpression'";
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"expr",
+					"@name('A') select myexpression() as col from SupportBean",
+					"A",
+					text);
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"expr",
+					"@name('B') select (select myexpression from SupportBean#keepall) from SupportBean",
+					"B",
+					text);
 
-                // Table
-                env.CompileDeploy("@Name('infra') create table MyTable(k1 string primary key, i1 int)", path);
-                env.CompileDeploy("@Name('index') create index MyIndexOnTable on MyTable(i1)", path);
+				env.UndeployModuleContaining("expr");
+			}
 
-                text = "Index 'MyIndexOnTable'";
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "index",
-                    "@Name('A') select * from SupportBean as sb, MyTable as mt where sb.IntPrimitive = mt.i1",
-                    "A",
-                    text);
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "index",
-                    "@Name('B') select * from SupportBean as sb where exists (select * from MyTable as mt where sb.IntPrimitive = mt.i1)",
-                    "B",
-                    text);
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.INVALIDITY);
+			}
+		}
 
-                env.UndeployModuleContaining("index");
-                env.UndeployModuleContaining("infra");
+		public class ClientUndeployPrecondDepClass : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				env.CompileDeploy(
+					"@name('clazz') @public create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"def\"; } }\"\"\"",
+					path);
 
-                // Named window
-                env.CompileDeploy("@Name('infra') create window MyWindow#keepall as SupportBean", path);
-                env.CompileDeploy("@Name('index') create index MyIndexOnNW on MyWindow(IntPrimitive)", path);
+				var text = "Application-inlined class 'MyClass'";
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"clazz",
+					"@name('A') select MyClass.doIt() as col from SupportBean",
+					"A",
+					text);
 
-                text = "Index 'MyIndexOnNW'";
-                TryDeployInvalidUndeploy(
-                    env,
-                    path,
-                    "index",
-                    "@Name('A') on SupportBean_S0 as S0 delete from MyWindow as mw where mw.IntPrimitive = S0.Id",
-                    "A",
-                    text);
+				env.UndeployModuleContaining("clazz");
+			}
 
-                env.UndeployModuleContaining("index");
-                env.UndeployModuleContaining("infra");
-            }
-        }
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.INVALIDITY);
+			}
+		}
 
+		public class ClientUndeployPrecondDepScript : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				env.CompileDeploy("@name('script') @public create expression double myscript(stringvalue) [0]", path);
 
-        public class ClientUndeployPrecondDepClass : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                var namespc = NamespaceGenerator.Create();
-                env.CompileDeploy(
-                    "@Name('clazz') create inlined_class \"\"\" " +
-                    "namespace " + namespc + " {" +
-                    "  public class MyClass {" +
-                    "    public static string DoIt() {" +
-                    "      return \"def\";" +
-                    "    }" +
-                    "  }" +
-                    "}\"\"\"",
-                    path);
+				var text = "Script 'myscript (1 parameters)'";
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"script",
+					"@name('A') select myscript('a') as col from SupportBean",
+					"A",
+					text);
 
-                var text = "Application-inlined class 'MyClass'";
-                TryDeployInvalidUndeploy(env, path, "clazz", $"@Name('A') select {namespc}.MyClass.DoIt() as col from SupportBean", "A", text);
+				env.UndeployModuleContaining("script");
+			}
 
-                env.UndeployModuleContaining("clazz");
-            }
-        }
-    }
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.INVALIDITY);
+			}
+		}
+
+		public class ClientUndeployPrecondDepIndex : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
+				var path = new RegressionPath();
+				string text;
+
+				// Table
+				env.CompileDeploy("@name('infra') @public create table MyTable(k1 string primary key, i1 int)", path);
+				env.CompileDeploy("@name('index') @public create index MyIndexOnTable on MyTable(i1)", path);
+
+				text = "Index 'MyIndexOnTable'";
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"index",
+					"@name('A') select * from SupportBean as sb, MyTable as mt where sb.intPrimitive = mt.i1",
+					"A",
+					text);
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"index",
+					"@name('B') select * from SupportBean as sb where exists (select * from MyTable as mt where sb.intPrimitive = mt.i1)",
+					"B",
+					text);
+
+				env.UndeployModuleContaining("index");
+				env.UndeployModuleContaining("infra");
+
+				// Named window
+				env.CompileDeploy("@name('infra') @public create window MyWindow#keepall as SupportBean", path);
+				env.CompileDeploy("@name('index') @public create index MyIndexOnNW on MyWindow(intPrimitive)", path);
+
+				text = "Index 'MyIndexOnNW'";
+				TryDeployInvalidUndeploy(
+					env,
+					path,
+					"index",
+					"@name('A') on SupportBean_S0 as s0 delete from MyWindow as mw where mw.intPrimitive = s0.id",
+					"A",
+					text);
+
+				env.UndeployModuleContaining("index");
+				env.UndeployModuleContaining("infra");
+			}
+
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.INVALIDITY);
+			}
+		}
+
+		private static void TryDeployInvalidUndeploy(
+			RegressionEnvironment env,
+			RegressionPath path,
+			string thingStatementName,
+			string epl,
+			string dependingStatementName,
+			string text)
+		{
+			env.CompileDeploy(epl, path);
+			log.Info("Deployed as " + env.DeploymentId(dependingStatementName) + ": " + epl);
+			var message = "A precondition is not satisfied: " +
+			              text +
+			              " cannot be un-deployed as it is referenced by deployment '" +
+			              env.DeploymentId(dependingStatementName) +
+			              "'";
+			TryInvalidUndeploy(env, thingStatementName, message);
+			env.UndeployModuleContaining(dependingStatementName);
+		}
+
+		private static void TryInvalidUndeploy(
+			RegressionEnvironment env,
+			string statementName,
+			string message)
+		{
+			try {
+				env.Runtime.DeploymentService.Undeploy(env.Statement(statementName).DeploymentId);
+				Assert.Fail();
+			}
+			catch (EPUndeployPreconditionException ex) {
+				if (!message.Equals("skip")) {
+					SupportMessageAssertUtil.AssertMessage(ex.Message, message);
+				}
+			}
+			catch (EPUndeployException ex) {
+				Assert.Fail();
+			}
+		}
+	}
 } // end of namespace

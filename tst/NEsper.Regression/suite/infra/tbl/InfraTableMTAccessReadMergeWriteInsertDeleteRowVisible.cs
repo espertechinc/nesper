@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
@@ -14,6 +15,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
@@ -29,6 +31,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         /// <summary>
         ///     Table:
         ///     create table MyTable(key string primary key, p0 int, p1 int, p2, int, p3 int, p4 int)
@@ -57,15 +64,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             bool grouped)
         {
             var path = new RegressionPath();
-            var eplCreateTable = "create table MyTable (key string " +
+            var eplCreateTable = "@public create table MyTable (key string " +
                                  (grouped ? "primary key" : "") +
                                  ", p0 int, p1 int, p2 int, p3 int, p4 int, p5 int)";
             env.CompileDeploy(eplCreateTable, path);
 
             var eplSelect = grouped
-                ? "@Name('s0') select MyTable['K1'].p0 as c0, MyTable['K1'].p1 as c1, MyTable['K1'].p2 as c2, " +
+                ? "@name('s0') select MyTable['K1'].p0 as c0, MyTable['K1'].p1 as c1, MyTable['K1'].p2 as c2, " +
                   "MyTable['K1'].p3 as c3, MyTable['K1'].p4 as c4, MyTable['K1'].p5 as c5 from SupportBean_S0"
-                : "@Name('s0') select MyTable.p0 as c0, MyTable.p1 as c1, MyTable.p2 as c2, " +
+                : "@name('s0') select MyTable.p0 as c0, MyTable.p1 as c1, MyTable.p2 as c2, " +
                   "MyTable.p3 as c3, MyTable.p4 as c4, MyTable.p5 as c5 from SupportBean_S0";
             env.CompileDeploy(eplSelect, path).AddListener("s0");
 

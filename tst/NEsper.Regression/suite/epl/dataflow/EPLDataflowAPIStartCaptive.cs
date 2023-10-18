@@ -6,6 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.dataflow.util;
 using com.espertech.esper.common.client.scopetest;
@@ -24,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             var fields = new [] { "p0","p1" };
 
             env.CompileDeploy(
-                "@Name('flow') create dataflow MyDataFlow " +
+                "@name('flow') create dataflow MyDataFlow " +
                 "Emitter -> outstream<MyOAEventType> {name:'src1'}" +
                 "DefaultSupportCaptureOp(outstream) {}");
 
@@ -58,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.Container,
                 captureOp.Current,
                 fields,
-                new object[0][]);
+                Array.Empty<object[]>());
             EPAssertionUtil.AssertPropsPerRow(
                 env.Container,
                 captureOp.GetAndReset()[0].UnwrapIntoArray<object>(),
@@ -81,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.UndeployAll();
 
             // test doc sample
-            var epl = "@Name('flow') create dataflow HelloWorldDataFlow\n" +
+            var epl = "@name('flow') create dataflow HelloWorldDataFlow\n" +
                       "  create schema SampleSchema(text string),\t// sample type\t\t\n" +
                       "\t\n" +
                       "  Emitter -> helloworld.stream<SampleSchema> { name: 'myemitter' }\n" +
@@ -90,6 +93,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "HelloWorldDataFlow");
 
             env.UndeployAll();
+        }
+        
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.DATAFLOW);
         }
     }
 } // end of namespace

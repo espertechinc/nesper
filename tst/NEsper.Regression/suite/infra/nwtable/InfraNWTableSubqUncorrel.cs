@@ -15,214 +15,152 @@ using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
-using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
+using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
-    public class InfraNWTableSubqUncorrel
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            // named window tests
-            execs.Add(new InfraNWTableSubqUncorrelAssertion(true, false, false)); // testNoShare
-            execs.Add(new InfraNWTableSubqUncorrelAssertion(true, true, false)); // testShare
-            execs.Add(new InfraNWTableSubqUncorrelAssertion(true, true, true)); // testDisableShare
+	public class InfraNWTableSubqUncorrel {
 
-            // table tests
-            execs.Add(new InfraNWTableSubqUncorrelAssertion(false, false, false));
-            return execs;
-        }
+	    public static ICollection<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        // named window tests
+	        execs.Add(new InfraNWTableSubqUncorrelAssertion(true, false, false)); // testNoShare
+	        execs.Add(new InfraNWTableSubqUncorrelAssertion(true, true, false)); // testShare
+	        execs.Add(new InfraNWTableSubqUncorrelAssertion(true, true, true)); // testDisableShare
 
-        private static void SendSupportBean(
-            RegressionEnvironment env,
-            string theString,
-            long longPrimitive,
-            long? longBoxed)
-        {
-            var bean = new SupportBean();
-            bean.TheString = theString;
-            bean.LongPrimitive = longPrimitive;
-            bean.LongBoxed = longBoxed;
-            env.SendEventBean(bean);
-        }
+	        // table tests
+	        execs.Add(new InfraNWTableSubqUncorrelAssertion(false, false, false));
+	        return execs;
+	    }
 
-        private static void SendMarketBean(
-            RegressionEnvironment env,
-            string symbol)
-        {
-            var bean = new SupportMarketDataBean(symbol, 0, 0L, "");
-            env.SendEventBean(bean);
-        }
+	    private class InfraNWTableSubqUncorrelAssertion : RegressionExecution {
+	        private readonly bool namedWindow;
+	        private readonly bool enableIndexShareCreate;
+	        private readonly bool disableIndexShareConsumer;
 
-        internal class InfraNWTableSubqUncorrelAssertion : RegressionExecution
-        {
-            private readonly bool disableIndexShareConsumer;
-            private readonly bool enableIndexShareCreate;
-            private readonly bool namedWindow;
+	        public InfraNWTableSubqUncorrelAssertion(bool namedWindow, bool enableIndexShareCreate, bool disableIndexShareConsumer) {
+	            this.namedWindow = namedWindow;
+	            this.enableIndexShareCreate = enableIndexShareCreate;
+	            this.disableIndexShareConsumer = disableIndexShareConsumer;
+	        }
 
-            public InfraNWTableSubqUncorrelAssertion(
-                bool namedWindow,
-                bool enableIndexShareCreate,
-                bool disableIndexShareConsumer)
-            {
-                this.namedWindow = namedWindow;
-                this.enableIndexShareCreate = enableIndexShareCreate;
-                this.disableIndexShareConsumer = disableIndexShareConsumer;
-            }
+	        public void Run(RegressionEnvironment env) {
+	            var path = new RegressionPath();
+	            var stmtTextCreate = namedWindow ?
+	                "@name('create') @public create window MyInfra#keepall as select theString as a, longPrimitive as b, longBoxed as c from SupportBean" :
+	                "@name('create') @public create table MyInfra(a string primary key, b long, c long)";
+	            if (enableIndexShareCreate) {
+	                stmtTextCreate = "@Hint('enable_window_subquery_indexshare') " + stmtTextCreate;
+	            }
+	            env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                var stmtTextCreate = namedWindow
-                    ? "@Name('create') create window MyInfra#keepall as select TheString as a, LongPrimitive as b, LongBoxed as c from SupportBean"
-                    : "@Name('create') create table MyInfra(a string primary key, b long, c long)";
-                if (enableIndexShareCreate) {
-                    stmtTextCreate = "@Hint('enable_window_subquery_indexshare') " + stmtTextCreate;
-                }
+	            // create insert into
+	            var stmtTextInsertOne = "insert into MyInfra select theString as a, longPrimitive as b, longBoxed as c from SupportBean";
+	            env.CompileDeploy(stmtTextInsertOne, path);
 
-                env.CompileDeploy(stmtTextCreate, path).AddListener("create");
+	            // create consumer
+	            var stmtTextSelectOne = "@name('select') select irstream (select a from MyInfra) as value, symbol from SupportMarketDataBean";
+	            if (disableIndexShareConsumer) {
+	                stmtTextSelectOne = "@Hint('disable_window_subquery_indexshare') " + stmtTextSelectOne;
+	            }
+	            env.CompileDeploy(stmtTextSelectOne, path).AddListener("select");
+	            env.AssertStatement("select", statement => {
+	                EPAssertionUtil.AssertEqualsAnyOrder(statement.EventType.PropertyNames, new string[]{"value", "symbol"});
+	                Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("value"));
+	                Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("symbol"));
+	            });
 
-                // create insert into
-                var stmtTextInsertOne =
-                    "insert into MyInfra select TheString as a, LongPrimitive as b, LongBoxed as c from SupportBean";
-                env.CompileDeploy(stmtTextInsertOne, path);
+	            SendMarketBean(env, "M1");
+	            var fieldsStmt = new string[]{"value", "symbol"};
+	            env.AssertPropsNew("select", fieldsStmt, new object[]{null, "M1"});
 
-                // create consumer
-                var stmtTextSelectOne =
-                    "@Name('select') select irstream (select a from MyInfra) as value, Symbol from SupportMarketDataBean";
-                if (disableIndexShareConsumer) {
-                    stmtTextSelectOne = "@Hint('disable_window_subquery_indexshare') " + stmtTextSelectOne;
-                }
+	            SendSupportBean(env, "S1", 1L, 2L);
+	            env.AssertListenerNotInvoked("select");
+	            var fieldsWin = new string[]{"a", "b", "c"};
+	            if (namedWindow) {
+	                env.AssertPropsNew("create", fieldsWin, new object[]{"S1", 1L, 2L});
+	            } else {
+	                env.AssertListenerNotInvoked("create");
+	            }
 
-                env.CompileDeploy(stmtTextSelectOne, path).AddListener("select");
-                EPAssertionUtil.AssertEqualsAnyOrder(
-                    env.Statement("select").EventType.PropertyNames,
-                    new[] {"value", "Symbol"});
-                Assert.AreEqual(typeof(string), env.Statement("select").EventType.GetPropertyType("value"));
-                Assert.AreEqual(typeof(string), env.Statement("select").EventType.GetPropertyType("Symbol"));
+	            // create consumer 2 -- note that this one should not start empty now
+	            var stmtTextSelectTwo = "@name('selectTwo') select irstream (select a from MyInfra) as value, symbol from SupportMarketDataBean";
+	            if (disableIndexShareConsumer) {
+	                stmtTextSelectTwo = "@Hint('disable_window_subquery_indexshare') " + stmtTextSelectTwo;
+	            }
+	            env.CompileDeploy(stmtTextSelectTwo, path).AddListener("selectTwo");
 
-                SendMarketBean(env, "M1");
-                string[] fieldsStmt = {"value", "Symbol"};
-                EPAssertionUtil.AssertProps(
-                    env.Listener("select").AssertOneGetNewAndReset(),
-                    fieldsStmt,
-                    new object[] {null, "M1"});
+	            SendMarketBean(env, "M1");
+	            env.AssertPropsNew("select", fieldsStmt, new object[]{"S1", "M1"});
+	            env.AssertPropsNew("selectTwo",  fieldsStmt, new object[]{"S1", "M1"});
 
-                SendSupportBean(env, "S1", 1L, 2L);
-                Assert.IsFalse(env.Listener("select").IsInvoked);
-                string[] fieldsWin = {"a", "b", "c"};
-                if (namedWindow) {
-                    EPAssertionUtil.AssertProps(
-                        env.Listener("create").AssertOneGetNewAndReset(),
-                        fieldsWin,
-                        new object[] {"S1", 1L, 2L});
-                }
-                else {
-                    Assert.IsFalse(env.Listener("create").IsInvoked);
-                }
+	            SendSupportBean(env, "S2", 10L, 20L);
+	            env.AssertListenerNotInvoked("select");
+	            if (namedWindow) {
+	                env.AssertPropsNew("create", fieldsWin, new object[]{"S2", 10L, 20L});
+	            }
 
-                // create consumer 2 -- note that this one should not start empty now
-                var stmtTextSelectTwo =
-                    "@Name('selectTwo') select irstream (select a from MyInfra) as value, Symbol from SupportMarketDataBean";
-                if (disableIndexShareConsumer) {
-                    stmtTextSelectTwo = "@Hint('disable_window_subquery_indexshare') " + stmtTextSelectTwo;
-                }
+	            SendMarketBean(env, "M2");
+	            env.AssertPropsNew("select", fieldsStmt, new object[]{null, "M2"});
+	            env.AssertListenerNotInvoked("create");
+	            env.AssertPropsNew("selectTwo",  fieldsStmt, new object[]{null, "M2"});
 
-                env.CompileDeploy(stmtTextSelectTwo, path).AddListener("selectTwo");
+	            // create delete stmt
+	            var stmtTextDelete = "@name('delete') on SupportBean_A delete from MyInfra where id = a";
+	            env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
-                SendMarketBean(env, "M1");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("select").AssertOneGetNewAndReset(),
-                    fieldsStmt,
-                    new object[] {"S1", "M1"});
-                EPAssertionUtil.AssertProps(
-                    env.Listener("selectTwo").AssertOneGetNewAndReset(),
-                    fieldsStmt,
-                    new object[] {"S1", "M1"});
+	            // delete S1
+	            env.SendEventBean(new SupportBean_A("S1"));
+	            if (namedWindow) {
+	                env.AssertPropsOld("create", fieldsWin, new object[]{"S1", 1L, 2L});
+	            }
 
-                SendSupportBean(env, "S2", 10L, 20L);
-                Assert.IsFalse(env.Listener("select").IsInvoked);
-                if (namedWindow) {
-                    EPAssertionUtil.AssertProps(
-                        env.Listener("create").AssertOneGetNewAndReset(),
-                        fieldsWin,
-                        new object[] {"S2", 10L, 20L});
-                }
+	            SendMarketBean(env, "M3");
+	            env.AssertPropsNew("select", fieldsStmt, new object[]{"S2", "M3"});
+	            env.AssertPropsNew("selectTwo",  fieldsStmt, new object[]{"S2", "M3"});
 
-                SendMarketBean(env, "M2");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("select").AssertOneGetNewAndReset(),
-                    fieldsStmt,
-                    new object[] {null, "M2"});
-                Assert.IsFalse(env.Listener("create").IsInvoked);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("selectTwo").AssertOneGetNewAndReset(),
-                    fieldsStmt,
-                    new object[] {null, "M2"});
+	            // delete S2
+	            env.SendEventBean(new SupportBean_A("S2"));
+	            if (namedWindow) {
+	                env.AssertPropsOld("create", fieldsWin, new object[]{"S2", 10L, 20L});
+	            }
 
-                // create delete stmt
-                var stmtTextDelete = "@Name('delete') on SupportBean_A delete from MyInfra where Id = a";
-                env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
+	            SendMarketBean(env, "M4");
+	            env.AssertPropsNew("select", fieldsStmt, new object[]{null, "M4"});
+	            env.AssertPropsNew("selectTwo",  fieldsStmt, new object[]{null, "M4"});
 
-                // delete S1
-                env.SendEventBean(new SupportBean_A("S1"));
-                if (namedWindow) {
-                    EPAssertionUtil.AssertProps(
-                        env.Listener("create").AssertOneGetOldAndReset(),
-                        fieldsWin,
-                        new object[] {"S1", 1L, 2L});
-                }
+	            SendSupportBean(env, "S3", 100L, 200L);
+	            if (namedWindow) {
+	                env.AssertPropsNew("create", fieldsWin, new object[]{"S3", 100L, 200L});
+	            }
 
-                SendMarketBean(env, "M3");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("select").AssertOneGetNewAndReset(),
-                    fieldsStmt,
-                    new object[] {"S2", "M3"});
-                EPAssertionUtil.AssertProps(
-                    env.Listener("selectTwo").AssertOneGetNewAndReset(),
-                    fieldsStmt,
-                    new object[] {"S2", "M3"});
+	            SendMarketBean(env, "M5");
+	            env.AssertPropsNew("select", fieldsStmt, new object[]{"S3", "M5"});
+	            env.AssertPropsNew("selectTwo",  fieldsStmt, new object[]{"S3", "M5"});
 
-                // delete S2
-                env.SendEventBean(new SupportBean_A("S2"));
-                if (namedWindow) {
-                    EPAssertionUtil.AssertProps(
-                        env.Listener("create").AssertOneGetOldAndReset(),
-                        fieldsWin,
-                        new object[] {"S2", 10L, 20L});
-                }
+	            env.UndeployAll();
+	        }
 
-                SendMarketBean(env, "M4");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("select").AssertOneGetNewAndReset(),
-                    fieldsStmt,
-                    new object[] {null, "M4"});
-                EPAssertionUtil.AssertProps(
-                    env.Listener("selectTwo").AssertOneGetNewAndReset(),
-                    fieldsStmt,
-                    new object[] {null, "M4"});
+	        public string Name() {
+	            return this.GetType().Name + "{" +
+	                "namedWindow=" + namedWindow +
+	                ", enableIndexShareCreate=" + enableIndexShareCreate +
+	                ", disableIndexShareConsumer=" + disableIndexShareConsumer +
+	                '}';
+	        }
+	    }
 
-                SendSupportBean(env, "S3", 100L, 200L);
-                if (namedWindow) {
-                    EPAssertionUtil.AssertProps(
-                        env.Listener("create").AssertOneGetNewAndReset(),
-                        fieldsWin,
-                        new object[] {"S3", 100L, 200L});
-                }
+	    private static void SendSupportBean(RegressionEnvironment env, string theString, long longPrimitive, long? longBoxed) {
+	        var bean = new SupportBean();
+	        bean.TheString = theString;
+	        bean.LongPrimitive = longPrimitive;
+	        bean.LongBoxed = longBoxed;
+	        env.SendEventBean(bean);
+	    }
 
-                SendMarketBean(env, "M5");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("select").AssertOneGetNewAndReset(),
-                    fieldsStmt,
-                    new object[] {"S3", "M5"});
-                EPAssertionUtil.AssertProps(
-                    env.Listener("selectTwo").AssertOneGetNewAndReset(),
-                    fieldsStmt,
-                    new object[] {"S3", "M5"});
-
-                env.UndeployAll();
-            }
-        }
-    }
+	    private static void SendMarketBean(RegressionEnvironment env, string symbol) {
+	        var bean = new SupportMarketDataBean(symbol, 0, 0L, "");
+	        env.SendEventBean(bean);
+	    }
+	}
 } // end of namespace

@@ -32,15 +32,15 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			return execs;
 		}
 
-		private class ClientStageUnstagePrecondition : RegressionExecution
+		private class ClientStageUnstagePrecondition : ClientStageRegressionExecution
 		{
-			public void Run(RegressionEnvironment env)
+			public override void Run(RegressionEnvironment env)
 			{
-				RegressionPath path = new RegressionPath();
-				env.CompileDeploy("@Name('context') @public create context MyContext initiated by SupportBean", path);
-				env.CompileDeploy("@Name('stmt') context MyContext select count(*) from SupportBean_S0", path);
-				string idCreate = env.DeploymentId("context");
-				string idStmt = env.DeploymentId("stmt");
+				var path = new RegressionPath();
+				env.CompileDeploy("@name('context') @public create context MyContext initiated by SupportBean", path);
+				env.CompileDeploy("@name('stmt') context MyContext select count(*) from SupportBean_S0", path);
+				var idCreate = env.DeploymentId("context");
+				var idStmt = env.DeploymentId("stmt");
 
 				env.Runtime.StageService.GetStage("ST");
 				StageIt(env, "ST", idCreate, idStmt);
@@ -54,17 +54,17 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			}
 		}
 
-		private class ClientStageStagePreconditionVariable : RegressionExecution
+		private class ClientStageStagePreconditionVariable : ClientStageRegressionExecution
 		{
-			public void Run(RegressionEnvironment env)
+			public override void Run(RegressionEnvironment env)
 			{
-				RegressionPath path = new RegressionPath();
-				env.CompileDeploy("@Name('variable') @public create variable int MyVariable", path);
-				env.CompileDeploy("@Name('stmt') select MyVariable from SupportBean_S0", path);
+				var path = new RegressionPath();
+				env.CompileDeploy("@name('variable') @public create variable int MyVariable", path);
+				env.CompileDeploy("@name('stmt') select MyVariable from SupportBean_S0", path);
 
-				EPStage stage = env.Runtime.StageService.GetStage("S1");
-				string idCreate = env.DeploymentId("variable");
-				string idStmt = env.DeploymentId("stmt");
+				var stage = env.Runtime.StageService.GetStage("S1");
+				var idCreate = env.DeploymentId("variable");
+				var idStmt = env.DeploymentId("stmt");
 
 				TryInvalidStageProvides(env, stage, idCreate, idStmt, "variable 'MyVariable'");
 				TryInvalidStageConsumes(env, stage, idStmt, idCreate, "variable 'MyVariable'");
@@ -73,23 +73,23 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			}
 		}
 
-		private class ClientStageStagePreconditionContext : RegressionExecution
+		private class ClientStageStagePreconditionContext : ClientStageRegressionExecution
 		{
-			public void Run(RegressionEnvironment env)
+			public override void Run(RegressionEnvironment env)
 			{
-				RegressionPath path = new RegressionPath();
-				env.CompileDeploy("@Name('context') @public create context MyContext initiated by SupportBean", path);
-				env.CompileDeploy("@Name('stmt') context MyContext select count(*) from SupportBean_S0", path);
+				var path = new RegressionPath();
+				env.CompileDeploy("@name('context') @public create context MyContext initiated by SupportBean", path);
+				env.CompileDeploy("@name('stmt') context MyContext select count(*) from SupportBean_S0", path);
 
-				EPStage stage = env.Runtime.StageService.GetStage("S1");
-				string idCreate = env.DeploymentId("context");
-				string idStmt = env.DeploymentId("stmt");
+				var stage = env.Runtime.StageService.GetStage("S1");
+				var idCreate = env.DeploymentId("context");
+				var idStmt = env.DeploymentId("stmt");
 
 				TryInvalidStageProvides(env, stage, idCreate, idStmt, "context 'MyContext'");
 				TryInvalidStageConsumes(env, stage, idStmt, idCreate, "context 'MyContext'");
 
-				env.CompileDeploy("@Name('stmt-2') context MyContext select count(*) from SupportBean_S1", path);
-				string idStmt2 = env.DeploymentId("stmt-2");
+				env.CompileDeploy("@name('stmt-2') context MyContext select count(*) from SupportBean_S1", path);
+				var idStmt2 = env.DeploymentId("stmt-2");
 
 				TryInvalidStage(env, stage, new string[] {idCreate, idStmt});
 				TryInvalidStage(env, stage, new string[] {idStmt2, idStmt});
@@ -99,18 +99,18 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			}
 		}
 
-		private class ClientStageStagePreconditionNamedWindow : RegressionExecution
+		private class ClientStageStagePreconditionNamedWindow : ClientStageRegressionExecution
 		{
-			public void Run(RegressionEnvironment env)
+			public override void Run(RegressionEnvironment env)
 			{
-				RegressionPath path = new RegressionPath();
-				env.CompileDeploy("@Name('create') @public create window MyWindow#keepall as SupportBean", path);
-				EPStage stage = env.Runtime.StageService.GetStage("S1");
-				string idCreate = env.DeploymentId("create");
+				var path = new RegressionPath();
+				env.CompileDeploy("@name('create') @public create window MyWindow#keepall as SupportBean", path);
+				var stage = env.Runtime.StageService.GetStage("S1");
+				var idCreate = env.DeploymentId("create");
 
-				string namedWindowObjectName = "named window 'MyWindow'";
-				string eventTypeObjectName = "event type 'MyWindow'";
-				string[][] namedWindowDependencies = new string[][] {
+				var namedWindowObjectName = "named window 'MyWindow'";
+				var eventTypeObjectName = "event type 'MyWindow'";
+				var namedWindowDependencies = new string[][] {
 					new string[] {"select * from MyWindow", namedWindowObjectName},
 					new string[] {"insert into MyWindow select * from SupportBean", namedWindowObjectName},
 					new string[] {"select (select count(*) from MyWindow) from SupportBean", namedWindowObjectName},
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 					new string[] {"select * from pattern[every MyWindow]", eventTypeObjectName},
 					new string[] {"on MyWindow merge MyWindow where 1=1 when not matched then insert into ABC select *", namedWindowObjectName}
 				};
-				foreach (string[] line in namedWindowDependencies) {
+				foreach (var line in namedWindowDependencies) {
 					AssertPrecondition(env, path, stage, idCreate, line[1], line[0]);
 				}
 
@@ -134,8 +134,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			string objectName,
 			string epl)
 		{
-			env.CompileDeploy("@Name('tester') " + epl, path);
-			string idTester = env.DeploymentId("tester");
+			env.CompileDeploy("@name('tester') " + epl, path);
+			var idTester = env.DeploymentId("tester");
 			TryInvalidStageProvides(env, stage, idCreate, idTester, objectName);
 			TryInvalidStageConsumes(env, stage, idTester, idCreate, objectName);
 			env.UndeployModuleContaining("tester");
@@ -148,13 +148,13 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			string idConsuming,
 			string objectName)
 		{
-			string expected = "Failed to stage deployment '" +
-			                  idStaged +
-			                  "': Deployment provides " +
-			                  objectName +
-			                  " to deployment '" +
-			                  idConsuming +
-			                  "' and must therefore also be staged";
+			var expected = "Failed to stage deployment '" +
+			               idStaged +
+			               "': Deployment provides " +
+			               objectName +
+			               " to deployment '" +
+			               idConsuming +
+			               "' and must therefore also be staged";
 			TryInvalidStage(env, stage, new string[] {idStaged}, expected);
 		}
 
@@ -165,13 +165,13 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			string idProviding,
 			string objectName)
 		{
-			string expected = "Failed to stage deployment '" +
-			                  idStaged +
-			                  "': Deployment consumes " +
-			                  objectName +
-			                  " from deployment '" +
-			                  idProviding +
-			                  "' and must therefore also be staged";
+			var expected = "Failed to stage deployment '" +
+			               idStaged +
+			               "': Deployment consumes " +
+			               objectName +
+			               " from deployment '" +
+			               idProviding +
+			               "' and must therefore also be staged";
 			TryInvalidStage(env, stage, new string[] {idStaged}, expected);
 		}
 

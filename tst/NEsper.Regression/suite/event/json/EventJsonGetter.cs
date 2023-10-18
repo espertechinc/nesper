@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				
 				env.CompileDeploy(
 						$"@public @buseventtype create json schema JsonEvent(prop {mapType});\n" +
-						"@Name('s0') select * from JsonEvent")
+						"@name('s0') select * from JsonEvent")
 					.AddListener("s0");
 
 				env.SendEventJson(
@@ -49,12 +49,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 						.ToString(),
 					"JsonEvent");
 
-				var @event = env.Listener("s0").AssertOneGetNewAndReset();
-				var getterMapped = @event.EventType.GetGetter("prop('x')");
+				env.AssertEventNew(
+					"s0",
+					@event => {
+						var getterMapped = @event.EventType.GetGetter("prop('x')");
 
-				Assert.AreEqual("y", getterMapped.Get(@event));
-				Assert.IsNull(@event.EventType.GetGetter("prop.somefield?"));
-
+						Assert.AreEqual("y", getterMapped.Get(@event));
+						Assert.IsNull(@event.EventType.GetGetter("prop.somefield?"));
+					});
+				
 				env.UndeployAll();
 			}
 		}

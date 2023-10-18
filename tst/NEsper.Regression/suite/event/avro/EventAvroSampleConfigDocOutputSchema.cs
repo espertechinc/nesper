@@ -28,15 +28,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
         public void Run(RegressionEnvironment env)
         {
             // schema from statement
-            var epl = "@Name('s0') " +
+            var epl = "@name('s0') " +
                       EventRepresentationChoice.AVRO.GetAnnotationText() +
                       "select 1 as carId, 'abc' as carType from SupportBean";
             env.CompileDeploy(epl);
-            var schema = (Schema) ((AvroSchemaEventType) env.Statement("s0").EventType).Schema;
-            var schemaJson = schema.ToJsonObject();
-            Assert.AreEqual(
-                "{\"type\":\"record\",\"name\":\"stmt0_out0\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
-                schemaJson.ToString(Newtonsoft.Json.Formatting.None));
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    var schema = (Schema)((AvroSchemaEventType)statement.EventType).Schema;
+                    var schemaJson = schema.ToJsonObject();
+                    Assert.AreEqual(
+                        "{\"type\":\"record\",\"name\":\"stmt0_out0\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
+                        schemaJson.ToString(Newtonsoft.Json.Formatting.None));
+                });
+            
             env.UndeployAll();
 
             // schema to-string Avro
@@ -52,16 +57,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                 schemaTwo.ToJsonObject().ToString(Newtonsoft.Json.Formatting.None));
             env.UndeployAll();
 
-            env.CompileDeploy("@Name('s0') select count(*) from CarLocUpdateEvent(direction = 1)#time(1 min)")
+            env.CompileDeploy("@name('s0') select count(*) from CarLocUpdateEvent(direction = 1)#time(1 min)")
                 .AddListener("s0");
-            var schemaCarLocUpd = AvroSchemaUtil
-                .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured("CarLocUpdateEvent"))
+            
+            var schemaCarLocUpd = env.RuntimeAvroSchemaPreconfigured("CarLocUpdateEvent")
                 .AsRecordSchema();
             var @event = new GenericRecord(schemaCarLocUpd);
             @event.Put("carId", "A123456");
             @event.Put("direction", 1);
             env.SendEventAvro(@event, "CarLocUpdateEvent");
-            Assert.AreEqual(1L, env.Listener("s0").AssertOneGetNewAndReset().Get("count(*)"));
+            env.AssertEqualsNew("s0", "count(*)", 1L);
 
             env.UndeployAll();
         }

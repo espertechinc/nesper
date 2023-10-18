@@ -11,8 +11,14 @@ using com.espertech.esper.common.client.util;
 namespace com.espertech.esper.compiler.client.option
 {
 	/// <summary>
-	/// Implement this interface to provide or override the access modifier for an inlined-class.
+	///     Implement this interface to provide or override the access modifier for an inlined-class.
 	/// </summary>
+
+	public delegate NameAccessModifier AccessModifierInlinedClassOption(
+		AccessModifierInlinedClassContext env);
+	
+#if DEPRECATED_INTERFACE
+
 	public interface AccessModifierInlinedClassOption
 	{
 		/// <summary>
@@ -22,4 +28,5 @@ namespace com.espertech.esper.compiler.client.option
 		/// <returns>modifier</returns>
 		NameAccessModifier GetValue(AccessModifierInlinedClassContext env);
 	}
+#endif
 } // end of namespace

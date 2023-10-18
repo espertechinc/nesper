@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         public void Run(RegressionEnvironment env)
         {
             var fields = new [] { "c0", "c1" };
-            var epl = "@Name('s0') select * from SupportBean match_recognize (" +
+            var epl = "@name('s0') select * from SupportBean match_recognize (" +
                       "partition by TheString " +
                       "measures A.TheString as c0, C.IntPrimitive as c1 " +
                       "pattern (A B+ C) " +
@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             SendEvent(env, "E1", 10, 0);
             SendEvent(env, "E1", 11, 50);
             SendEvent(env, "E1", 12, 11);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.Milestone(0);
 
@@ -42,8 +42,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.Milestone(1);
 
             SendEvent(env, "E2", 12, 12);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
+            env.AssertPropsNew(
+                "s0",
                 fields,
                 new object[] {"E2", 12});
 

@@ -55,8 +55,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
-                    ? "create window MyInfra#keepall as (c0 string, c1 int)"
-                    : "create table MyInfra(c0 string primary key, c1 int)";
+                    ? "@public create window MyInfra#keepall as (c0 string, c1 int)"
+                    : "@public create table MyInfra(c0 string primary key, c1 int)";
                 env.CompileDeploy(eplCreate, path);
 
                 // create insert into
@@ -65,27 +65,32 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create subquery
                 var eplSubquery =
-                    "@Name('s0') select P00, (select * from MyInfra) @eventbean as detail from SupportBean_S0";
+                    "@name('s0') select P00, (select * from MyInfra) @eventbean as detail from SupportBean_S0";
                 env.CompileDeploy(eplSubquery, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(0));
-                AssertReceived(env.Listener("s0"), null);
+                env.AssertListener("s0", listener => AssertReceived(listener, null));
 
                 env.SendEventBean(new SupportBean("E1", 1));
 
                 env.SendEventBean(new SupportBean_S0(0));
-                AssertReceived(
-                    env.Listener("s0"),
-                    new[] {new object[] {"E1", 1}});
+                env.AssertListener("s0", listener => AssertReceived(
+                    listener,
+                    new[] {new object[] {"E1", 1}}));
 
                 env.SendEventBean(new SupportBean("E2", 2));
 
                 env.SendEventBean(new SupportBean_S0(0));
-                AssertReceived(
-                    env.Listener("s0"),
-                    new[] {new object[] {"E1", 1}, new object[] {"E2", 2}});
+                env.AssertListener("s0", listener => AssertReceived(
+                    listener,
+                    new[] {new object[] {"E1", 1}, new object[] {"E2", 2}}));
 
                 env.UndeployAll();
+            }
+
+            public string Name()
+            {
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
         }
     }

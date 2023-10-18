@@ -11,8 +11,8 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -20,406 +20,288 @@ using com.espertech.esper.regressionlib.support.epl;
 
 using NUnit.Framework;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
-    public class EPLOtherStreamExpr
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithChainedParameterized(execs);
-            WithStreamFunction(execs);
-            WithInstanceMethodOuterJoin(execs);
-            WithInstanceMethodStatic(execs);
-            WithStreamInstanceMethodAliased(execs);
-            WithStreamInstanceMethodNoAlias(execs);
-            WithJoinStreamSelectNoWildcard(execs);
-            WithPatternStreamSelectNoWildcard(execs);
-            WithInvalidSelect(execs);
-            return execs;
-        }
+	public class EPLOtherStreamExpr {
+	    public static IList<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new EPLOtherChainedParameterized());
+	        execs.Add(new EPLOtherStreamFunction());
+	        execs.Add(new EPLOtherInstanceMethodOuterJoin());
+	        execs.Add(new EPLOtherInstanceMethodStatic());
+	        execs.Add(new EPLOtherStreamInstanceMethodAliased());
+	        execs.Add(new EPLOtherStreamInstanceMethodNoAlias());
+	        execs.Add(new EPLOtherJoinStreamSelectNoWildcard());
+	        execs.Add(new EPLOtherPatternStreamSelectNoWildcard());
+	        execs.Add(new EPLOtherInvalidSelect());
+	        return execs;
+	    }
 
-        public static IList<RegressionExecution> WithInvalidSelect(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherInvalidSelect());
-            return execs;
-        }
+	    private class EPLOtherChainedParameterized : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
 
-        public static IList<RegressionExecution> WithPatternStreamSelectNoWildcard(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherPatternStreamSelectNoWildcard());
-            return execs;
-        }
+	            var subexpr = "top.getChildOne(\"abc\",10).getChildTwo(\"append\")";
+	            var epl = "@name('s0') select " + subexpr + " from SupportChainTop as top";
+	            env.CompileDeploy(epl).AddListener("s0");
+	            TryAssertionChainedParam(env, subexpr);
+	            env.UndeployAll();
 
-        public static IList<RegressionExecution> WithJoinStreamSelectNoWildcard(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherJoinStreamSelectNoWildcard());
-            return execs;
-        }
+	            env.EplToModelCompileDeploy(epl).AddListener("s0");
+	            TryAssertionChainedParam(env, subexpr);
+	            env.UndeployAll();
 
-        public static IList<RegressionExecution> WithStreamInstanceMethodNoAlias(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherStreamInstanceMethodNoAlias());
-            return execs;
-        }
+	            // test property hosts a method
+	            env.CompileDeploy("@name('s0') select inside.getMyString() as val," +
+	                "inside.insideTwo.getMyOtherString() as val2 " +
+	                "from SupportBeanStaticOuter").AddListener("s0");
 
-        public static IList<RegressionExecution> WithStreamInstanceMethodAliased(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherStreamInstanceMethodAliased());
-            return execs;
-        }
+	            env.SendEventBean(new SupportBeanStaticOuter());
+	            env.AssertEventNew("s0", result => {
+	                Assert.AreEqual("hello", result.Get("val"));
+	                Assert.AreEqual("hello2", result.Get("val2"));
+	            });
+	            env.UndeployAll();
+	        }
 
-        public static IList<RegressionExecution> WithInstanceMethodStatic(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherInstanceMethodStatic());
-            return execs;
-        }
+	        private static void TryAssertionChainedParam(RegressionEnvironment env, string subexpr) {
 
-        public static IList<RegressionExecution> WithInstanceMethodOuterJoin(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherInstanceMethodOuterJoin());
-            return execs;
-        }
+	            env.AssertStatement("s0", statement => {
+	                var rows = new object[][]{
+	                    new object[] {subexpr, typeof(SupportChainChildTwo)}
+	                };
+	                for (var i = 0; i < rows.Length; i++) {
+	                    var prop = statement.EventType.PropertyDescriptors[i];
+	                    Assert.AreEqual(rows[i][0], prop.PropertyName);
+	                    Assert.AreEqual(rows[i][1], prop.PropertyType);
+	                }
+	            });
 
-        public static IList<RegressionExecution> WithStreamFunction(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherStreamFunction());
-            return execs;
-        }
+	            env.SendEventBean(new SupportChainTop());
+	            env.AssertEventNew("s0", @event => {
+	                var result = @event.Get(subexpr);
+	                Assert.AreEqual("abcappend", ((SupportChainChildTwo) result).Text);
+	            });
+	        }
+	    }
 
-        public static IList<RegressionExecution> WithChainedParameterized(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherChainedParameterized());
-            return execs;
-        }
+	    private class EPLOtherStreamFunction : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var prefix = "@name('s0') select * from SupportMarketDataBean as s0 where " +
+	                         typeof(SupportStaticMethodLib).FullName;
+	            TryAssertionStreamFunction(env, prefix + ".volumeGreaterZero(s0)");
+	            TryAssertionStreamFunction(env, prefix + ".volumeGreaterZero(*)");
+	            TryAssertionStreamFunction(env, prefix + ".volumeGreaterZeroEventBean(s0)");
+	            TryAssertionStreamFunction(env, prefix + ".volumeGreaterZeroEventBean(*)");
+	        }
 
-        internal class EPLOtherChainedParameterized : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var subexpr = "top.GetChildOne(\"abc\",10).GetChildTwo(\"append\")";
-                var epl = "@Name('s0') select " + subexpr + " from SupportChainTop as top";
-                env.CompileDeploy(epl).AddListener("s0");
-                TryAssertionChainedParam(env, subexpr);
-                env.UndeployAll();
+	        private static void TryAssertionStreamFunction(RegressionEnvironment env, string epl) {
 
-                env.EplToModelCompileDeploy(epl).AddListener("s0");
-                TryAssertionChainedParam(env, subexpr);
-                env.UndeployAll();
+	            env.CompileDeploy(epl).AddListener("s0");
 
-                // test property hosts a method
-                env.CompileDeploy(
-                        "@Name('s0') select " +
-                        "Inside.GetMyString() as val," +
-                        "Inside.InsideTwo.GetMyOtherString() as val2 " +
-                        "from SupportBeanStaticOuter")
-                    .AddListener("s0");
+	            env.SendEventBean(new SupportMarketDataBean("ACME", 0, 0L, null));
+	            env.AssertListenerNotInvoked("s0");
+	            env.SendEventBean(new SupportMarketDataBean("ACME", 0, 100L, null));
+	            env.AssertListenerInvoked("s0");
 
-                env.SendEventBean(new SupportBeanStaticOuter());
-                var result = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual("hello", result.Get("val"));
-                Assert.AreEqual("hello2", result.Get("val2"));
-                env.UndeployAll();
-            }
+	            env.UndeployAll();
+	        }
+	    }
 
-            private static void TryAssertionChainedParam(
-                RegressionEnvironment env,
-                string subexpr)
-            {
-                object[][] rows = {
-                    new object[] {subexpr, typeof(SupportChainChildTwo)}
-                };
-                for (var i = 0; i < rows.Length; i++) {
-                    var prop = env.Statement("s0").EventType.PropertyDescriptors[i];
-                    Assert.AreEqual(rows[i][0], prop.PropertyName);
-                    Assert.AreEqual(rows[i][1], prop.PropertyType);
-                }
+	    private class EPLOtherInstanceMethodOuterJoin : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var textOne = "@name('s0') select symbol, s1.getTheString() as theString from " +
+	                          "SupportMarketDataBean#keepall as s0 " +
+	                          "left outer join " +
+	                          "SupportBean#keepall as s1 on s0.symbol=s1.theString";
+	            env.CompileDeploy(textOne).AddListener("s0");
 
-                env.SendEventBean(new SupportChainTop());
-                var result = env.Listener("s0").AssertOneGetNewAndReset().Get(subexpr);
-                Assert.AreEqual("abcappend", ((SupportChainChildTwo) result).Text);
-            }
-        }
+	            var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
+	            env.SendEventBean(eventA);
+	            env.AssertPropsNew("s0", new string[]{"symbol", "theString"}, new object[]{"ACME", null});
 
-        internal class EPLOtherStreamFunction : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var prefix = "@Name('s0') select * from SupportMarketDataBean as S0 where " +
-                             typeof(SupportStaticMethodLib).FullName;
-                TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZero(S0)");
-                TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZero(*)");
-                TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZeroEventBean(S0)");
-                TryAssertionStreamFunction(env, prefix + ".VolumeGreaterZeroEventBean(*)");
-            }
+	            env.UndeployAll();
+	        }
+	    }
 
-            private static void TryAssertionStreamFunction(
-                RegressionEnvironment env,
-                string epl)
-            {
-                env.CompileDeploy(epl).AddListener("s0");
+	    private class EPLOtherInstanceMethodStatic : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var textOne = "@name('s0') select symbol, s1.getSimpleProperty() as simpleprop, s1.makeDefaultBean() as def from " +
+	                          "SupportMarketDataBean#keepall as s0 " +
+	                          "left outer join " +
+	                          "SupportBeanComplexProps#keepall as s1 on s0.symbol=s1.simpleProperty";
+	            env.CompileDeploy(textOne).AddListener("s0");
 
-                env.SendEventBean(new SupportMarketDataBean("ACME", 0, 0L, null));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                env.SendEventBean(new SupportMarketDataBean("ACME", 0, 100L, null));
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+	            var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
+	            env.SendEventBean(eventA);
+	            env.AssertEventNew("s0", theEvent => {
+	                EPAssertionUtil.AssertProps(theEvent, new string[]{"symbol", "simpleprop"}, new object[]{"ACME", null});
+	                Assert.IsNull(theEvent.Get("def"));
+	            });
 
-                env.UndeployAll();
-            }
-        }
+	            var eventComplexProps = SupportBeanComplexProps.MakeDefaultBean();
+	            eventComplexProps.SimpleProperty = "ACME";
+	            env.SendEventBean(eventComplexProps);
+	            env.AssertEventNew("s0", @event => {
+	                EPAssertionUtil.AssertProps(@event, new string[]{"symbol", "simpleprop"}, new object[]{"ACME", "ACME"});
+	                Assert.IsNotNull(@event.Get("def"));
+	            });
 
-        internal class EPLOtherInstanceMethodOuterJoin : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var textOne = "@Name('s0') select Symbol, S1.GetTheString() as TheString from " +
-                              "SupportMarketDataBean#keepall as S0 " +
-                              "left outer join " +
-                              "SupportBean#keepall as S1 on S0.Symbol=S1.TheString";
-                env.CompileDeploy(textOne).AddListener("s0");
+	            env.UndeployAll();
+	        }
+	    }
 
-                var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
-                env.SendEventBean(eventA);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"Symbol", "TheString"},
-                    new object[] {"ACME", null});
+	    private class EPLOtherStreamInstanceMethodAliased : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var textOne = "@name('s0') select s0.getVolume() as volume, s0.getSymbol() as symbol, s0.getPriceTimesVolume(2) as pvf from " +
+	                          "SupportMarketDataBean as s0 ";
+	            env.CompileDeploy(textOne).AddListener("s0");
 
-                env.UndeployAll();
-            }
-        }
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(3, type.PropertyNames.Length);
+	                Assert.AreEqual(typeof(long?), type.GetPropertyType("volume"));
+	                Assert.AreEqual(typeof(string), type.GetPropertyType("symbol"));
+	                Assert.AreEqual(typeof(double?), type.GetPropertyType("pvf"));
+	            });
 
-        internal class EPLOtherInstanceMethodStatic : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var textOne =
-                    "@Name('s0') select Symbol, S1.GetSimpleProperty() as Simpleprop, S1.MakeDefaultBean() as def from " +
-                    "SupportMarketDataBean#keepall as S0 " +
-                    "left outer join " +
-                    "SupportBeanComplexProps#keepall as S1 on S0.Symbol=S1.SimpleProperty";
-                env.CompileDeploy(textOne).AddListener("s0");
+	            var eventA = new SupportMarketDataBean("ACME", 4, 99L, null);
+	            env.SendEventBean(eventA);
+	            env.AssertPropsNew("s0", new string[]{"volume", "symbol", "pvf"}, new object[]{99L, "ACME", 4d * 99L * 2});
 
-                var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
-                env.SendEventBean(eventA);
-                var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertProps(
-                    theEvent,
-                    new[] {"Symbol", "Simpleprop"},
-                    new object[] {"ACME", null});
-                Assert.IsNull(theEvent.Get("def"));
+	            env.UndeployAll();
+	        }
+	    }
 
-                var eventComplexProps = SupportBeanComplexProps.MakeDefaultBean();
-                eventComplexProps.SimpleProperty = "ACME";
-                env.SendEventBean(eventComplexProps);
-                theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertProps(
-                    theEvent,
-                    new[] {"Symbol", "Simpleprop"},
-                    new object[] {"ACME", "ACME"});
-                Assert.IsNotNull(theEvent.Get("def"));
+	    private class EPLOtherStreamInstanceMethodNoAlias : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var textOne = "@name('s0') select s0.getVolume(), s0.getPriceTimesVolume(3) from " +
+	                          "SupportMarketDataBean as s0 ";
+	            env.CompileDeploy(textOne).AddListener("s0");
 
-                env.UndeployAll();
-            }
-        }
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(2, type.PropertyNames.Length);
+	                Assert.AreEqual(typeof(long?), type.GetPropertyType("s0.getVolume()"));
+	                Assert.AreEqual(typeof(double?), type.GetPropertyType("s0.getPriceTimesVolume(3)"));
+	            });
 
-        internal class EPLOtherStreamInstanceMethodAliased : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var textOne =
-                    "@Name('s0') select S0.GetVolume() as Volume, S0.GetSymbol() as Symbol, S0.GetPriceTimesVolume(2) as pvf from " +
-                    "SupportMarketDataBean as S0 ";
-                env.CompileDeploy(textOne).AddListener("s0");
+	            var eventA = new SupportMarketDataBean("ACME", 4, 2L, null);
+	            env.SendEventBean(eventA);
+	            env.AssertPropsNew("s0", new string[]{"s0.getVolume()", "s0.getPriceTimesVolume(3)"}, new object[]{2L, 4d * 2L * 3d});
+	            env.UndeployAll();
 
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(3, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(long?), type.GetPropertyType("Volume"));
-                Assert.AreEqual(typeof(string), type.GetPropertyType("Symbol"));
-                Assert.AreEqual(typeof(double?), type.GetPropertyType("pvf"));
+	            // try instance method that accepts EventBean
+	            var epl = "@buseventtype @public create schema MyTestEvent as " + typeof(MyTestEvent).FullName + ";\n" +
+	                      "@name('s0') select " +
+	                      "s0.getValueAsInt(s0, 'id') as c0," +
+	                      "s0.getValueAsInt(*, 'id') as c1" +
+	                      " from MyTestEvent as s0";
+	            env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
 
-                var eventA = new SupportMarketDataBean("ACME", 4, 99L, null);
-                env.SendEventBean(eventA);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"Volume", "Symbol", "pvf"},
-                    new object[] {99L, "ACME", 4d * 99L * 2});
+	            env.SendEventBean(new MyTestEvent(10));
+	            env.AssertPropsNew("s0", "c0,c1".SplitCsv(), new object[]{10, 10});
 
-                env.UndeployAll();
-            }
-        }
+	            env.UndeployAll();
+	        }
+	    }
 
-        internal class EPLOtherStreamInstanceMethodNoAlias : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var textOne = "@Name('s0') select S0.GetVolume(), S0.GetPriceTimesVolume(3) from " +
-                              "SupportMarketDataBean as S0 ";
-                env.CompileDeploy(textOne).AddListener("s0");
+	    private class EPLOtherJoinStreamSelectNoWildcard : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            // try with alias
+	            var textOne = "@name('s0') select s0 as s0stream, s1 as s1stream from " +
+	                          "SupportMarketDataBean#keepall as s0, " +
+	                          "SupportBean#keepall as s1";
 
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(2, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(long?), type.GetPropertyType("S0.GetVolume()"));
-                Assert.AreEqual(typeof(double?), type.GetPropertyType("S0.GetPriceTimesVolume(3)"));
+	            // Attach listener to feed
+	            env.CompileDeploy(textOne).AddListener("s0");
+	            var model = env.EplToModel(textOne);
+	            Assert.AreEqual(textOne, model.ToEPL());
 
-                var eventA = new SupportMarketDataBean("ACME", 4, 2L, null);
-                env.SendEventBean(eventA);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"S0.GetVolume()", "S0.GetPriceTimesVolume(3)"},
-                    new object[] {2L, 4d * 2L * 3d});
-                env.UndeployAll();
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(2, type.PropertyNames.Length);
+	                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s0stream"));
+	                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s1stream"));
+	            });
 
-                // try instance method that accepts EventBean
-                var epl = "create schema MyTestEvent as " +
-                          typeof(MyTestEvent).MaskTypeName() +
-                          ";\n" +
-                          "@Name('s0') select " +
-                          "S0.GetValueAsInt(S0, 'Id') as c0," +
-                          "S0.GetValueAsInt(*, 'Id') as c1" +
-                          " from MyTestEvent as S0";
-                env.CompileDeployWBusPublicType(epl, new RegressionPath()).AddListener("s0");
+	            var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
+	            env.SendEventBean(eventA);
 
-                env.SendEventBean(new MyTestEvent(10));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"c0", "c1"},
-                    new object[] {10, 10});
+	            var eventB = new SupportBean();
+	            env.SendEventBean(eventB);
+	            env.AssertPropsNew("s0", new string[]{"s0stream", "s1stream"}, new object[]{eventA, eventB});
 
-                env.UndeployAll();
-            }
-        }
+	            env.UndeployAll();
 
-        internal class EPLOtherJoinStreamSelectNoWildcard : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // try with alias
-                var textOne = "@Name('s0') select S0 as S0stream, S1 as S1stream from " +
-                              "SupportMarketDataBean#keepall as S0, " +
-                              "SupportBean#keepall as S1";
+	            // try no alias
+	            textOne = "@name('s0') select s0, s1 from " +
+	                "SupportMarketDataBean#keepall as s0, " +
+	                "SupportBean#keepall as s1";
+	            env.CompileDeploy(textOne).AddListener("s0");
 
-                // Attach listener to feed
-                env.CompileDeploy(textOne).AddListener("s0");
-                var model = env.EplToModel(textOne);
-                Assert.AreEqual(textOne, model.ToEPL());
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(2, type.PropertyNames.Length);
+	                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s0"));
+	                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s1"));
+	            });
 
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(2, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S0stream"));
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S1stream"));
+	            env.SendEventBean(eventA);
+	            env.SendEventBean(eventB);
+	            env.AssertPropsNew("s0", new string[]{"s0", "s1"}, new object[]{eventA, eventB});
 
-                var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
-                env.SendEventBean(eventA);
+	            env.UndeployAll();
+	        }
+	    }
 
-                var eventB = new SupportBean();
-                env.SendEventBean(eventB);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"S0stream", "S1stream"},
-                    new object[] {eventA, eventB});
+	    private class EPLOtherPatternStreamSelectNoWildcard : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            // try with alias
+	            var textOne = "@name('s0') select * from pattern [every e1=SupportMarketDataBean -> e2=" +
+	                          "SupportBean(" + typeof(SupportStaticMethodLib).FullName + ".compareEvents(e1, e2))]";
+	            env.CompileDeploy(textOne).AddListener("s0");
 
-                env.UndeployAll();
+	            var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
+	            env.SendEventBean(eventA);
 
-                // try no alias
-                textOne = "@Name('s0') select S0, S1 from " +
-                          "SupportMarketDataBean#keepall as S0, " +
-                          "SupportBean#keepall as S1";
-                env.CompileDeploy(textOne).AddListener("s0");
+	            var eventB = new SupportBean("ACME", 1);
+	            env.SendEventBean(eventB);
+	            env.AssertPropsNew("s0", new string[]{"e1", "e2"}, new object[]{eventA, eventB});
 
-                type = env.Statement("s0").EventType;
-                Assert.AreEqual(2, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S0"));
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S1"));
+	            env.UndeployAll();
+	        }
+	    }
 
-                env.SendEventBean(eventA);
-                env.SendEventBean(eventB);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"S0", "S1"},
-                    new object[] {eventA, eventB});
+	    private class EPLOtherInvalidSelect : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            env.TryInvalidCompile("select s0.getString(1,2,3) from SupportBean as s0",
+	                "skip");
 
-                env.UndeployAll();
-            }
-        }
+	            env.TryInvalidCompile("select s0.abc() from SupportBean as s0",
+	                "Failed to validate select-clause expression 's0.abc()': Failed to solve 'abc' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'abc': Could not find enumeration method, date-time method, instance method or property named 'abc' in class '" + typeof(SupportBean).FullName + "' taking no parameters [");
 
-        internal class EPLOtherPatternStreamSelectNoWildcard : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // try with alias
-                var textOne = "@Name('s0') select * from pattern [every e1=SupportMarketDataBean -> e2=" +
-                              "SupportBean(" +
-                              typeof(SupportStaticMethodLib).MaskTypeName() +
-                              ".CompareEvents(e1, e2))]";
-                env.CompileDeploy(textOne).AddListener("s0");
+	            env.TryInvalidCompile("select s.theString from pattern [every [2] s=SupportBean] ee",
+	                "Failed to validate select-clause expression 's.theString': Failed to resolve property 's.theString' (property 's' is an indexed property and requires an index or enumeration method to access values)");
+	        }
+	    }
 
-                var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
-                env.SendEventBean(eventA);
+	    [Serializable]
+	    public class MyTestEvent {
 
-                var eventB = new SupportBean("ACME", 1);
-                env.SendEventBean(eventB);
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"e1", "e2"},
-                    new object[] {eventA, eventB});
+	        private int id;
 
-                env.UndeployAll();
-            }
-        }
+	        internal MyTestEvent(int id) {
+	            this.id = id;
+	        }
 
-        internal class EPLOtherInvalidSelect : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                TryInvalidCompile(
-                    env,
-                    "select S0.GetString(1,2,3) from SupportBean as S0",
-                    "skip");
+	        public int Id => id;
 
-                TryInvalidCompile(
-                    env,
-                    "select S0.abc() from SupportBean as S0",
-                    "Failed to validate select-clause expression 'S0.abc()': Failed to solve 'abc' to either an date-time or enumeration method, an event property or a method on the event underlying object: Failed to resolve method 'abc': Could not find enumeration method, date-time method, instance method or property named 'abc' in class '" +
-                    typeof(SupportBean).MaskTypeName() +
-                    "' taking no parameters [");
-
-                TryInvalidCompile(
-                    env,
-                    "select s.TheString from pattern [every [2] s=SupportBean] ee",
-                    "Failed to validate select-clause expression 's.TheString': Failed to resolve property 's.TheString' (property 's' is an indexed property and requires an index or enumeration method to access values)");
-            }
-        }
-
-        [Serializable]
-        public class MyTestEvent
-        {
-            public MyTestEvent(int id)
-            {
-                Id = id;
-            }
-
-            public int Id { get; }
-
-            public int GetValueAsInt(
-                EventBean @event,
-                string propertyName)
-            {
-                return @event.Get(propertyName).AsInt32();
-            }
-        }
-    }
+	        public int GetValueAsInt(EventBean @event, string propertyName)
+	        {
+		        return @event.Get(propertyName).AsInt32();
+	        }
+	    }
+	}
 } // end of namespace

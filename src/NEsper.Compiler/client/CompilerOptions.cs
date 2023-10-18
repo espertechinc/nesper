@@ -190,16 +190,18 @@ namespace com.espertech.esper.compiler.client
 	    /// Sets the classback for inlined-class compilation wherein the callback receives class output
 	    /// </summary>
 	    /// <param name="inlinedClassInspection">callback</param>
-	    public void SetInlinedClassInspection(InlinedClassInspectionOption inlinedClassInspection) {
+	    public CompilerOptions SetInlinedClassInspection(InlinedClassInspectionOption inlinedClassInspection) {
 	        InlinedClassInspection = inlinedClassInspection;
+	        return this;
 	    }
 
 	    /// <summary>
 	    /// For internal-use-only and subject-to-change-between-versions, state-management settings
 	    /// </summary>
 	    /// <param name="stateMgmtSetting">settings option</param>
-	    public void SetStateMgmtSetting(StateMgmtSettingOption stateMgmtSetting) {
+	    public CompilerOptions SetStateMgmtSetting(StateMgmtSettingOption stateMgmtSetting) {
 	        StateMgmtSetting = stateMgmtSetting;
+	        return this;
 	    }
 
 	    /// <summary>
@@ -207,8 +209,9 @@ namespace com.espertech.esper.compiler.client
 	    /// the EPL objects that the <seealso cref="EPCompiled" /> provides.
 	    /// </summary>
 	    /// <param name="pathCache">or null if not using a cache</param>
-	    public void SetPathCache(CompilerPathCache pathCache) {
+	    public CompilerOptions SetPathCache(CompilerPathCache pathCache) {
 	        PathCache = pathCache;
+	        return this;
 	    }
 
 	    /// <summary>
@@ -216,8 +219,9 @@ namespace com.espertech.esper.compiler.client
 	    /// <para />NOTE: Experimental API and not supported
 	    /// </summary>
 	    /// <param name="compilerHook">provider of the compiler to that replaces the default compiler</param>
-	    public void SetCompilerHook(CompilerHookOption compilerHook) {
+	    public CompilerOptions SetCompilerHook(CompilerHookOption compilerHook) {
 	        CompilerHook = compilerHook;
+	        return this;
 	    }
 	}
 } // end of namespace

@@ -27,6 +27,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtTimeWindow : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             TrySend(env, 10, 5000);
@@ -46,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var listener = new SupportMTUpdateListener();
             env.CompileDeploy(
-                "@Name('s0') select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)");
+                "@name('s0') select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)");
             env.Statement("s0").AddListener(listener);
 
             var threadPool = Executors.NewFixedThreadPool(
@@ -75,13 +80,13 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var totalExpected = numThreads * numRepeats;
 
             // assert new data
-            var resultNewData = listener.GetNewDataListFlattened();
+            var resultNewData = listener.NewDataListFlattened;
             Assert.AreEqual(totalExpected, resultNewData.Length);
             var resultsNewData = SortPerIntKey(resultNewData);
             AssertResult(numRepeats, numThreads, resultsNewData);
 
             // assert old data
-            var resultOldData = listener.GetOldDataListFlattened();
+            var resultOldData = listener.OldDataListFlattened;
             Assert.AreEqual(totalExpected, resultOldData.Length);
             var resultsOldData = SortPerIntKey(resultOldData);
             AssertResult(numRepeats, numThreads, resultsOldData);

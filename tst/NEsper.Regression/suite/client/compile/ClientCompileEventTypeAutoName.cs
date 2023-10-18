@@ -46,13 +46,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "create schema MANE as MyAutoNameEvent;\n" +
-                             "@Name('s0') select P0 from MANE;\n";
-                EPCompiled compiled = env.CompileWBusPublicType(epl);
+                var epl = "@public @buseventtype create schema MANE as MyAutoNameEvent;\n" +
+                          "@name('s0') select P0 from MANE;\n";
+                var compiled = env.Compile(epl);
                 env.Deploy(compiled).AddListener("s0");
 
                 env.SendEventBean(new MyAutoNameEvent("test"), "MANE");
-                Assert.AreEqual("test", env.Listener("s0").AssertOneGetNewAndReset().Get("P0"));
+                env.AssertEqualsNew("s0", "P0", "test");
 
                 env.UndeployAll();
             }
@@ -62,8 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                TryInvalidCompile(
-                    env,
+                env.TryInvalidCompile(
                     "create schema SupportAmbiguousEventType as SupportAmbiguousEventType",
                     "Failed to resolve name 'SupportAmbiguousEventType', the class was ambiguously found both in namespace 'com.espertech.esper.regressionlib.support.autoname.one' and in namespace 'com.espertech.esper.regressionlib.support.autoname.two'");
             }

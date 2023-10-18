@@ -8,115 +8,91 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
+using com.espertech.esper.runtime.client.scopetest;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertFalse
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+// assertNotNull
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
-    public class EPLJoinStartStop
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithStartStopSceneOne(execs);
-            WithInvalidJoin(execs);
-            return execs;
-        }
+	public class EPLJoinStartStop {
+	    public static IList<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new EPLJoinStartStopSceneOne());
+	        execs.Add(new EPLJoinInvalidJoin());
+	        return execs;
+	    }
 
-        public static IList<RegressionExecution> WithInvalidJoin(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLJoinInvalidJoin());
-            return execs;
-        }
+	    private class EPLJoinStartStopSceneOne : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var joinStatement = "@name('s0') select * from " +
+	                                "SupportMarketDataBean(symbol='IBM')#length(3) s0, " +
+	                                "SupportMarketDataBean(symbol='CSCO')#length(3) s1" +
+	                                " where s0.volume=s1.volume";
+	            env.CompileDeployAddListenerMileZero(joinStatement, "s0");
 
-        public static IList<RegressionExecution> WithStartStopSceneOne(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLJoinStartStopSceneOne());
-            return execs;
-        }
+	            var setOne = new object[5];
+	            var setTwo = new object[5];
+	            var volumesOne = new long[]{10, 20, 20, 40, 50};
+	            var volumesTwo = new long[]{10, 20, 30, 40, 50};
+	            for (var i = 0; i < setOne.Length; i++) {
+	                setOne[i] = new SupportMarketDataBean("IBM", volumesOne[i], i, "");
+	                setTwo[i] = new SupportMarketDataBean("CSCO", volumesTwo[i], i, "");
+	            }
 
-        private static void SendEvent(
-            RegressionEnvironment env,
-            object theEvent)
-        {
-            env.SendEventBean(theEvent);
-        }
+	            SendEvent(env, setOne[0]);
+	            SendEvent(env, setTwo[0]);
+	            env.AssertListener("s0", listener => Assert.IsNotNull(listener.GetAndResetLastNewData()));
 
-        internal class EPLJoinStartStopSceneOne : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var joinStatement = "@Name('s0') select * from " +
-                                    "SupportMarketDataBean(Symbol='IBM')#length(3) S0, " +
-                                    "SupportMarketDataBean(Symbol='CSCO')#length(3) S1" +
-                                    " where S0.Volume=S1.Volume";
-                env.CompileDeployAddListenerMileZero(joinStatement, "s0");
+	            var listener = env.Listener("s0");
+	            env.UndeployAll();
+	            SendEvent(env, setOne[1]);
+	            SendEvent(env, setTwo[1]);
+	            Assert.IsFalse(listener.IsInvoked);
 
-                var setOne = new object[5];
-                var setTwo = new object[5];
-                long[] volumesOne = {10, 20, 20, 40, 50};
-                long[] volumesTwo = {10, 20, 30, 40, 50};
-                for (var i = 0; i < setOne.Length; i++) {
-                    setOne[i] = new SupportMarketDataBean("IBM", volumesOne[i], i, "");
-                    setTwo[i] = new SupportMarketDataBean("CSCO", volumesTwo[i], i, "");
-                }
+	            env.CompileDeploy(joinStatement).AddListener("s0");
+	            SendEvent(env, setOne[2]);
+	            env.AssertListenerNotInvoked("s0");
 
-                SendEvent(env, setOne[0]);
-                SendEvent(env, setTwo[0]);
-                Assert.IsNotNull(env.Listener("s0").LastNewData);
-                env.Listener("s0").Reset();
+	            env.UndeployAll();
+	            SendEvent(env, setOne[3]);
+	            SendEvent(env, setOne[4]);
+	            SendEvent(env, setTwo[3]);
 
-                var listener = env.Listener("s0");
-                env.UndeployAll();
-                SendEvent(env, setOne[1]);
-                SendEvent(env, setTwo[1]);
-                Assert.IsFalse(listener.IsInvoked);
+	            env.CompileDeploy(joinStatement).AddListener("s0");
+	            SendEvent(env, setTwo[4]);
+	            env.AssertListenerNotInvoked("s0");
 
-                env.CompileDeploy(joinStatement).AddListener("s0");
-                SendEvent(env, setOne[2]);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            env.UndeployAll();
+	        }
 
-                env.UndeployAll();
-                SendEvent(env, setOne[3]);
-                SendEvent(env, setOne[4]);
-                SendEvent(env, setTwo[3]);
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.OBSERVEROPS);
+	        }
+	    }
 
-                env.CompileDeploy(joinStatement).AddListener("s0");
-                SendEvent(env, setTwo[4]);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	    private class EPLJoinInvalidJoin : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var invalidJoin = "select * from SupportBean_A, SupportBean_B";
+	            env.TryInvalidCompile(invalidJoin,
+	                "Joins require that at least one view is specified for each stream, no view was specified for SupportBean_A");
 
-                env.UndeployAll();
-            }
-        }
+	            invalidJoin = "select * from SupportBean_A#time(5 min), SupportBean_B";
+	            env.TryInvalidCompile(invalidJoin,
+	                "Joins require that at least one view is specified for each stream, no view was specified for SupportBean_B");
 
-        internal class EPLJoinInvalidJoin : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var invalidJoin = "select * from SupportBean_A, SupportBean_B";
-                TryInvalidCompile(
-                    env,
-                    invalidJoin,
-                    "Joins require that at least one view is specified for each stream, no view was specified for SupportBean_A");
+	            invalidJoin = "select * from SupportBean_A#time(5 min), pattern[SupportBean_A->SupportBean_B]";
+	            env.TryInvalidCompile(invalidJoin,
+	                "Joins require that at least one view is specified for each stream, no view was specified for pattern event stream");
+	        }
+	    }
 
-                invalidJoin = "select * from SupportBean_A#time(5 min), SupportBean_B";
-                TryInvalidCompile(
-                    env,
-                    invalidJoin,
-                    "Joins require that at least one view is specified for each stream, no view was specified for SupportBean_B");
-
-                invalidJoin = "select * from SupportBean_A#time(5 min), pattern[SupportBean_A->SupportBean_B]";
-                TryInvalidCompile(
-                    env,
-                    invalidJoin,
-                    "Joins require that at least one view is specified for each stream, no view was specified for pattern event stream");
-            }
-        }
-    }
+	    private static void SendEvent(RegressionEnvironment env, object theEvent) {
+	        env.SendEventBean(theEvent);
+	    }
+	}
 } // end of namespace

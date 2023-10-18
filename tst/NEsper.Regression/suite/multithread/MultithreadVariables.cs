@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -33,14 +34,19 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadVariables : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             var listenerSetOne = new SupportMTUpdateListener();
             var listenerSetTwo = new SupportMTUpdateListener();
 
             var stmtSetOneText =
-                "@Name('setOne') on SupportBean set var1=LongPrimitive, var2=LongPrimitive, var3=var3+1";
-            var stmtSetTwoText = "@Name('setTwo')on SupportMarketDataBean set var1=Volume, var2=Volume, var3=var3+1";
+                "@name('setOne') on SupportBean set var1=LongPrimitive, var2=LongPrimitive, var3=var3+1";
+            var stmtSetTwoText = "@name('setTwo')on SupportMarketDataBean set var1=Volume, var2=Volume, var3=var3+1";
             env.CompileDeploy(stmtSetOneText).Statement("setOne").AddListener(listenerSetOne);
             env.CompileDeploy(stmtSetTwoText).Statement("setTwo").AddListener(listenerSetTwo);
 
@@ -73,11 +79,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // Since "var3 = var3 + 1" is executed by multiple statements and threads we need to have
             // this counter have all the values from 0 to N-1.
             ISet<long> var3Values = new SortedSet<long>();
-            foreach (var theEvent in listenerSetOne.GetNewDataListFlattened()) {
+            foreach (var theEvent in listenerSetOne.NewDataListFlattened) {
                 var3Values.Add(theEvent.Get("var3").AsInt64());
             }
 
-            foreach (var theEvent in listenerSetTwo.GetNewDataListFlattened()) {
+            foreach (var theEvent in listenerSetTwo.NewDataListFlattened) {
                 var3Values.Add(theEvent.Get("var3").AsInt64());
             }
 

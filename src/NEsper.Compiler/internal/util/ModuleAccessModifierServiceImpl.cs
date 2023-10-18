@@ -113,7 +113,7 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             return GetModifier(
                 @base.StatementRawInfo.Annotations,
-                opts => opts.AccessModifierInlinedClass?.GetValue(new AccessModifierInlinedClassContext(@base, inlinedClassName)),
+                opts => opts.AccessModifierInlinedClass?.Invoke(new AccessModifierInlinedClassContext(@base, inlinedClassName)),
                 _ => _.AccessModifierInlinedClass);
         }
 

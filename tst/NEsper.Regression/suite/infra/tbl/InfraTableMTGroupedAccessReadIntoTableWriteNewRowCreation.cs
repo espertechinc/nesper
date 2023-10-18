@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
@@ -28,6 +29,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         /// <summary>
         ///     Table:
         ///     create table varTotal (key string primary key, total sum(int));
@@ -51,9 +57,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numEvents)
         {
             var epl =
-                "create table varTotal (key string primary key, total sum(int));\n" +
+                "@public create table varTotal (key string primary key, total sum(int));\n" +
                 "into table varTotal select TheString, sum(IntPrimitive) as total from SupportBean group by TheString;\n" +
-                "@Name('s0') select varTotal[P00].total as c0 from SupportBean_S0;\n";
+                "@name('s0') select varTotal[P00].total as c0 from SupportBean_S0;\n";
             env.CompileDeploy(epl).AddListener("s0");
             env.SendEventBean(new SupportBean("A", 10));
 

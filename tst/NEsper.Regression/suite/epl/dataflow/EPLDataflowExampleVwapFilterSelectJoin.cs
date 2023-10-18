@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
@@ -31,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 return;
             }
 
-            var epl = "@Name('flow')create dataflow VWAPSample\r\n" +
+            var epl = "@name('flow')create dataflow VWAPSample\r\n" +
                       "create objectarray schema TradeQuoteType as (type string, ticker string, Price double, Volume long, askPrice double, asksize long),\n" +
                       "MyObjectArrayGraphSource -> TradeQuoteStream<TradeQuoteType> {}\r\n" +
                       "filter(TradeQuoteStream) -> TradeStream {\r\n" +
@@ -99,6 +100,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.UndeployAll();
         }
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.DATAFLOW);
+        }
+        
         private string RemoveNewlines(string text)
         {
             return text.Replace("\n", "").Replace("\r", "");

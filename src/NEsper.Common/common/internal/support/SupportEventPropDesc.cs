@@ -114,6 +114,12 @@ namespace com.espertech.esper.common.@internal.support
             return this;
         }
 
+        public SupportEventPropDesc WithComponentType<T>()
+        {
+            this.componentType = typeof(T);
+            return this;
+        }
+
         public SupportEventPropDesc WithFragment()
         {
             isFragment = true;

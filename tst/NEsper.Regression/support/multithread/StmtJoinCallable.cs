@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     //ThreadLogUtil.info("sent", eventS0, eventS1);
                     // Should have received one that's mine, possible multiple since the statement is used by other threads
                     var found = false;
-                    var events = assertListener.GetNewDataListFlattened();
+                    var events = assertListener.NewDataListFlattened;
                     foreach (var theEvent in events) {
                         var s0Received = theEvent.Get("S0");
                         var s1Received = theEvent.Get("S1");

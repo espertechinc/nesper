@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
@@ -54,8 +53,6 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
             return false;
         }
-
-        object IEnumerator.Current => Current;
 
         public object Current {
             get {

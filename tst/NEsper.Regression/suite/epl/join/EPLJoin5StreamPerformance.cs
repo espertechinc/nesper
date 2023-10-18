@@ -6,10 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -23,9 +25,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+        }
+
         public void Run(RegressionEnvironment env)
         {
-            var statement = "@Name('s0') select * from " +
+            var statement = "@name('s0') select * from " +
                             "SupportBean_S0#length(100000) as S0," +
                             "SupportBean_S1#length(100000) as S1," +
                             "SupportBean_S2#length(100000) as S2," +
@@ -40,19 +47,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             log.Info(".testPerfAllProps Preloading events");
             var startTime = PerformanceObserver.MilliTime;
             for (var i = 0; i < 1000; i++) {
-                SendEvents(env, new[] {0, 0, 0, 0, 0}, new[] {"s0" + i, "s1" + i, "s2" + i, "s3" + i, "s4" + i});
+                SendEvents(env, new[] {0, 0, 0, 0, 0}, new[] { $"s0{i}", $"s1{i}", $"s2{i}", $"s3{i}", $"s4{i}" });
             }
 
             var endTime = PerformanceObserver.MilliTime;
-            log.Info(".testPerfAllProps delta=" + (endTime - startTime));
+            log.Info($".testPerfAllProps delta={(endTime - startTime)}");
             Assert.IsTrue(endTime - startTime < 1500);
 
             // test if join returns data
-            Assert.IsNull(env.Listener("s0").LastNewData);
-            string[] propertyValues = {"x", "x", "x", "x", "x"};
-            int[] ids = {1, 2, 3, 4, 5};
-            SendEvents(env, ids, propertyValues);
-            AssertEventsReceived(env.Listener("s0"), ids);
+            env.AssertListener(
+                "s0",
+                listener => {
+                    Assert.IsNull(listener.LastNewData);
+                    string[] propertyValues = { "x", "x", "x", "x", "x" };
+                    int[] ids = { 1, 2, 3, 4, 5 };
+                    SendEvents(env, ids, propertyValues);
+                    AssertEventsReceived(listener, ids);
+                });
 
             env.UndeployAll();
         }

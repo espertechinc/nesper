@@ -32,11 +32,11 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			return execs;
 		}
 
-		private class ClientStageEPStageStageInvalid : RegressionExecution
+		private class ClientStageEPStageStageInvalid : ClientStageRegressionExecution
 		{
-			public void Run(RegressionEnvironment env)
+			public override void Run(RegressionEnvironment env)
 			{
-				EPStage stageA = env.StageService.GetStage("ST");
+				var stageA = env.StageService.GetStage("ST");
 
 				TryIllegalArgument(() => stageA.Stage(null));
 				TryOp(() => stageA.Stage(EmptyList<string>.Instance));
@@ -53,13 +53,13 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			}
 		}
 
-		private class ClientStageEPStageDestroy : RegressionExecution
+		private class ClientStageEPStageDestroy : ClientStageRegressionExecution
 		{
-			public void Run(RegressionEnvironment env)
+			public override void Run(RegressionEnvironment env)
 			{
-				EPStage stageA = env.StageService.GetStage("ST");
-				env.CompileDeploy("@Name('s0') select * from SupportBean");
-				string deploymentId = env.DeploymentId("s0");
+				var stageA = env.StageService.GetStage("ST");
+				env.CompileDeploy("@name('s0') select * from SupportBean");
+				var deploymentId = env.DeploymentId("s0");
 
 				StageIt(env, "ST", deploymentId);
 				try {

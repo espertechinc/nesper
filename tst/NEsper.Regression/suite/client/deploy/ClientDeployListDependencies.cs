@@ -10,13 +10,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.util;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertNull
 
-using static com.espertech.esper.common.client.scopetest.EPAssertionUtil;
+using static com.espertech.esper.common.client.scopetest.EPAssertionUtil; // assertEqualsAnyOrder
 
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
@@ -38,11 +39,11 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 			public void Run(RegressionEnvironment env)
 			{
 				var path = new RegressionPath();
-				env.CompileDeploy("@Name('typea') @public create schema TypeA()", path);
-				env.CompileDeploy("@Name('typeb') @public create schema TypeB()", path);
-				env.CompileDeploy("@Name('typec') @public create schema TypeC(a TypeA, b TypeB)", path);
-				env.CompileDeploy("@Name('typed') @public create schema TypeD(c TypeC)", path);
-				env.CompileDeploy("@Name('typee') @public create schema TypeE(c TypeC)", path);
+				env.CompileDeploy("@name('typea') @public create schema TypeA()", path);
+				env.CompileDeploy("@name('typeb') @public create schema TypeB()", path);
+				env.CompileDeploy("@name('typec') @public create schema TypeC(a TypeA, b TypeB)", path);
+				env.CompileDeploy("@name('typed') @public create schema TypeD(c TypeC)", path);
+				env.CompileDeploy("@name('typee') @public create schema TypeE(c TypeC)", path);
 
 				var a = env.DeploymentId("typea");
 				var b = env.DeploymentId("typeb");
@@ -71,6 +72,11 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
 				env.UndeployAll();
 			}
+
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.RUNTIMEOPS);
+			}
 		}
 
 		private class ClientDeployListDependenciesInvalid : RegressionExecution
@@ -80,11 +86,26 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 				Assert.IsNull(env.Deployment.GetDeploymentDependenciesConsumed("dummy"));
 				Assert.IsNull(env.Deployment.GetDeploymentDependenciesProvided("dummy"));
 
-				Assert.Throws<ArgumentException>(
-					() => { Assert.IsNull(env.Deployment.GetDeploymentDependenciesConsumed(null)); });
+				try {
+					Assert.IsNull(env.Deployment.GetDeploymentDependenciesConsumed(null));
+					Assert.Fail();
+				}
+				catch (ArgumentException ex) {
+					// expected
+				}
 
-				Assert.Throws<ArgumentException>(
-					() => { Assert.IsNull(env.Deployment.GetDeploymentDependenciesProvided(null)); });
+				try {
+					Assert.IsNull(env.Deployment.GetDeploymentDependenciesProvided(null));
+					Assert.Fail();
+				}
+				catch (ArgumentException ex) {
+					// expected
+				}
+			}
+
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.RUNTIMEOPS);
 			}
 		}
 
@@ -92,11 +113,16 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				env.CompileDeploy("@Name('s0') select * from SupportBean");
+				env.CompileDeploy("@name('s0') select * from SupportBean");
 				AssertNoneProvidedConsumed(env, "s0");
 				env.CompileDeploy("module A;\n @name('table') create table MyTable(k string, v string)");
 				AssertNoneProvidedConsumed(env, "table");
 				env.UndeployAll();
+			}
+
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.RUNTIMEOPS);
 			}
 		}
 
@@ -105,15 +131,19 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 			public void Run(RegressionEnvironment env)
 			{
 				var pathA = new RegressionPath();
-				env.CompileDeploy("module A;\n @name('createA') @protected create window MyWindow#keepall as SupportBean", pathA);
+				env.CompileDeploy(
+					"module A;\n @name('createA') @protected create window MyWindow#keepall as SupportBean",
+					pathA);
 
 				var pathB = new RegressionPath();
-				env.CompileDeploy("module B;\n @name('createB') @protected create window MyWindow#keepall as SupportBean", pathB);
+				env.CompileDeploy(
+					"module B;\n @name('createB') @protected create window MyWindow#keepall as SupportBean",
+					pathB);
 
-				env.CompileDeploy("@Name('B1') select * from MyWindow", pathB);
-				env.CompileDeploy("@Name('A1') select * from MyWindow", pathA);
-				env.CompileDeploy("@Name('A2') select * from MyWindow", pathA);
-				env.CompileDeploy("@Name('B2') select * from MyWindow", pathB);
+				env.CompileDeploy("module B; @name('B1') select * from MyWindow", pathB);
+				env.CompileDeploy("module A; @name('A1') select * from MyWindow", pathA);
+				env.CompileDeploy("module A; @name('A2') select * from MyWindow", pathA);
+				env.CompileDeploy("module B; @name('B2') select * from MyWindow", pathB);
 
 				AssertProvided(
 					env,
@@ -123,21 +153,32 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 					env,
 					env.DeploymentId("createB"),
 					MakeProvided(EPObjectType.NAMEDWINDOW, "MyWindow", env.DeploymentId("B1"), env.DeploymentId("B2")));
-				foreach (var name in new string[] {"A1", "A2"}) {
+				foreach (var name in new string[] { "A1", "A2" }) {
 					AssertConsumed(
 						env,
 						env.DeploymentId(name),
-						new EPDeploymentDependencyConsumed.Item(env.DeploymentId("createA"), EPObjectType.NAMEDWINDOW, "MyWindow"));
+						new EPDeploymentDependencyConsumed.Item(
+							env.DeploymentId("createA"),
+							EPObjectType.NAMEDWINDOW,
+							"MyWindow"));
 				}
 
-				foreach (var name in new string[] {"B1", "B2"}) {
+				foreach (var name in new string[] { "B1", "B2" }) {
 					AssertConsumed(
 						env,
 						env.DeploymentId(name),
-						new EPDeploymentDependencyConsumed.Item(env.DeploymentId("createB"), EPObjectType.NAMEDWINDOW, "MyWindow"));
+						new EPDeploymentDependencyConsumed.Item(
+							env.DeploymentId("createB"),
+							EPObjectType.NAMEDWINDOW,
+							"MyWindow"));
 				}
 
 				env.UndeployAll();
+			}
+
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.RUNTIMEOPS);
 			}
 		}
 
@@ -147,22 +188,23 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 			{
 				var path = new RegressionPath();
 				var eplProvide =
-					"@Name('provide') @public create window MyWindow#keepall as SupportBean;\n" +
+					"@name('provide') @public create window MyWindow#keepall as SupportBean;\n" +
 					"@public create table MyTable(k string primary key, value string);\n" +
 					"@public create variable int MyVariable = 0;\n" +
-					"@public create context MyContext partition by TheString from SupportBean;\n" +
+					"@public create context MyContext partition by theString from SupportBean;\n" +
 					"@public create schema MyEventType();\n" +
 					"@public create expression MyExpression { 0 };\n" +
 					"@public create expression double MyScript(stringvalue) [0];\n" +
-					"@public create index MyIndexA on MyWindow(IntPrimitive);\n" +
+					"@public create index MyIndexA on MyWindow(intPrimitive);\n" +
 					"@public create index MyIndexB on MyTable(value);\n" +
-					"@public create inlined_class \"\"\" public class MyClass { public static string DoIt() { return \"abc\"; } }\"\"\";\n";
+					"@public create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"abc\"; } }\"\"\";\n";
 				env.CompileDeploy(eplProvide, path);
 
-				var eplConsume = "@Name('consume') context MyContext select MyVariable, count(*), MyTable['a'].value from MyWindow;\n" +
-				                 "select MyExpression(), MyScript('a'), MyClass.DoIt() from MyEventType;\n" +
-				                 "on SupportBean as sb merge MyWindow as mw where sb.IntPrimitive=mw.IntPrimitive when matched then delete;\n" +
-				                 "on SupportBean as sb merge MyTable as mt where sb.TheString=mt.value when matched then delete;\n";
+				var eplConsume =
+					"@name('consume') context MyContext select MyVariable, count(*), MyTable['a'].value from MyWindow;\n" +
+					"select MyExpression(), MyScript('a'), MyClass.doIt() from MyEventType;\n" +
+					"on SupportBean as sb merge MyWindow as mw where sb.intPrimitive=mw.intPrimitive when matched then delete;\n" +
+					"on SupportBean as sb merge MyTable as mt where sb.theString=mt.value when matched then delete;\n";
 				env.CompileDeploy(eplConsume, path);
 
 				var deploymentIdProvide = env.DeploymentId("provide");
@@ -190,15 +232,34 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 					new EPDeploymentDependencyConsumed.Item(deploymentIdProvide, EPObjectType.VARIABLE, "MyVariable"),
 					new EPDeploymentDependencyConsumed.Item(deploymentIdProvide, EPObjectType.CONTEXT, "MyContext"),
 					new EPDeploymentDependencyConsumed.Item(deploymentIdProvide, EPObjectType.EVENTTYPE, "MyEventType"),
-					new EPDeploymentDependencyConsumed.Item(deploymentIdProvide, EPObjectType.EXPRESSION, "MyExpression"),
+					new EPDeploymentDependencyConsumed.Item(
+						deploymentIdProvide,
+						EPObjectType.EXPRESSION,
+						"MyExpression"),
 					new EPDeploymentDependencyConsumed.Item(deploymentIdProvide, EPObjectType.SCRIPT, "MyScript#1"),
-					new EPDeploymentDependencyConsumed.Item(deploymentIdProvide, EPObjectType.INDEX, "MyIndexA on named-window MyWindow"),
-					new EPDeploymentDependencyConsumed.Item(deploymentIdProvide, EPObjectType.INDEX, "MyIndexB on table MyTable"),
-					new EPDeploymentDependencyConsumed.Item(deploymentIdProvide, EPObjectType.CLASSPROVIDED, "MyClass"));
+					new EPDeploymentDependencyConsumed.Item(
+						deploymentIdProvide,
+						EPObjectType.INDEX,
+						"MyIndexA on named-window MyWindow"),
+					new EPDeploymentDependencyConsumed.Item(
+						deploymentIdProvide,
+						EPObjectType.INDEX,
+						"MyIndexB on table MyTable"),
+					new EPDeploymentDependencyConsumed.Item(
+						deploymentIdProvide,
+						EPObjectType.CLASSPROVIDED,
+						"MyClass"));
 
-				AssertEqualsAnyOrder(new string[] {env.DeploymentId("provide")}, env.Deployment.GetDeployment(deploymentIdConsume).DeploymentIdDependencies);
+				AssertEqualsAnyOrder(
+					new string[] { env.DeploymentId("provide") },
+					env.Deployment.GetDeployment(deploymentIdConsume).DeploymentIdDependencies);
 
 				env.UndeployAll();
+			}
+
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.RUNTIMEOPS);
 			}
 		}
 
@@ -210,7 +271,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 			return new EPDeploymentDependencyProvided.Item(
 				objectType,
 				objectName,
-				new HashSet<string>(deploymentIds));
+				new HashSet<string>(Arrays.AsList(deploymentIds)));
 		}
 
 		private static void AssertConsumed(

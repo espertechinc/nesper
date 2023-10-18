@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
@@ -25,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('flow') create dataflow WordCount " +
+            var epl = "@name('flow') create dataflow WordCount " +
                       "MyLineFeedSource -> LineOfTextStream {} " +
                       "MyTokenizerCounter(LineOfTextStream) -> SingleLineCountStream {}" +
                       "MyWordCountAggregator(SingleLineCountStream) -> WordCountStream {}" +
@@ -40,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "WordCount", options).Start();
 
-            var received = new object[0];
+            var received = Array.Empty<object>();
             try {
                 received = future.GetValue(3, TimeUnit.SECONDS);
             }
@@ -55,6 +56,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             Assert.AreEqual(23, stats.Chars);
 
             env.UndeployAll();
+        }
+        
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.DATAFLOW);
         }
     }
 } // end of namespace

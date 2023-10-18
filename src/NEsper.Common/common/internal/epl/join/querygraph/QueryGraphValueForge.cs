@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             bool isBetweenOrIn)
         {
             // Note: Read as follows:
-            // System.out.println("If I have an index on '" + propertyValue + "' I'm evaluating " + propertyKey + " and finding all values of " + propertyValue + " " + op + " then " + propertyKey);
+            // Console.WriteLine("If I have an index on '" + propertyValue + "' I'm evaluating " + propertyKey + " and finding all values of " + propertyValue + " " + op + " then " + propertyKey);
 
             // Check if there is an opportunity to convert this to a range or remove an earlier specification
             var existing = FindIdentEntry(propertyValueIdent);

@@ -32,14 +32,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select 10/5.0m as c0 from SupportBean";
+				var epl = "@name('s0') select 10/5.0m as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var fields = "c0".SplitCsv();
-				Assert.AreEqual(typeof(decimal?), env.Statement("s0").EventType.GetPropertyType("c0"));
+				env.AssertStatement("s0", statement => Assert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("c0")));
 
 				env.SendEventBean(new SupportBean());
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, 2.0m);
+				env.AssertPropsNew("s0", fields, new object[] { 2.0m });
 
 				env.UndeployAll();
 			}
@@ -50,8 +50,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 			public void Run(RegressionEnvironment env)
 			{
 				// cast and divide
-				env.CompileDeploy("@Name('s0')  Select 1.6m / 9.2m from SupportBean").AddListener("s0");
-				env.Statement("s0").SetSubscriber(new MySubscriber());
+				env.CompileDeploy("@name('s0')  Select 1.6m / 9.2m from SupportBean").AddListener("s0");
+				env.AssertStatement("s0", statement => { statement.SetSubscriber(new MySubscriber()); });
 				env.SendEventBean(new SupportBean());
 				env.UndeployAll();
 			}

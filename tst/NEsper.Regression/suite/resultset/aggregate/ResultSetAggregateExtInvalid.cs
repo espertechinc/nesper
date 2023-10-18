@@ -16,8 +16,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
     {
         public void Run(RegressionEnvironment env)
         {
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 "select rate(10) from SupportBean",
                 "Failed to validate select-clause expression 'rate(10)': Unknown single-row function, aggregation function or mapped or indexed property named 'rate' could not be resolved [select rate(10) from SupportBean]");
         }

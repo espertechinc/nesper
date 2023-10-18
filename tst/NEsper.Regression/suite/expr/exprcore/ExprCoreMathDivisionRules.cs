@@ -9,12 +9,9 @@
 using System.Collections.Generic;
 using System.Numerics;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
@@ -23,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
 		public static ICollection<RegressionExecution> Executions()
 		{
-			var executions = new List<RegressionExecution>();
+			IList<RegressionExecution> executions = new List<RegressionExecution>();
 			executions.Add(new ExprCoreMathRulesBigInt());
 			executions.Add(new ExprCoreMathRulesLong());
 			executions.Add(new ExprCoreMathRulesFloat());
@@ -36,18 +33,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var bigInteger = typeof(BigIntegerHelper).FullName;
-				var epl = $"@Name('s0') select {bigInteger}.ValueOf(4)/{bigInteger}.ValueOf(2) as c0 from SupportBean";
+				var epl = "@name('s0') select BigInteger.valueOf(4)/BigInteger.valueOf(2) as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
-				Assert.AreEqual(typeof(BigInteger?), env.Statement("s0").EventType.GetPropertyType("c0"));
+				env.AssertStmtType("s0", "c0", typeof(BigInteger?));
 
 				var fields = "c0".SplitCsv();
 				env.SendEventBean(new SupportBean());
-				EPAssertionUtil.AssertProps(
-					env.Listener("s0").AssertOneGetNewAndReset(),
-					fields,
-					new BigInteger(4) / new BigInteger(2));
+				env.AssertPropsNew("s0", fields, new object[] { new BigInteger(4) / new BigInteger(2) });
 
 				env.UndeployAll();
 			}
@@ -57,14 +50,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select 10L/2L as c0 from SupportBean";
+				var epl = "@name('s0') select 10L/2L as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
-				Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("c0"));
+				env.AssertStmtType("s0", "c0", typeof(long?));
 
 				var fields = "c0".SplitCsv();
 				env.SendEventBean(new SupportBean());
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, 5L);
+				env.AssertPropsNew("s0", fields, new object[] { 5L });
 
 				env.UndeployAll();
 			}
@@ -74,14 +67,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select 10f/2f as c0 from SupportBean";
+				var epl = "@name('s0') select 10f/2f as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
-				Assert.AreEqual(typeof(float?), env.Statement("s0").EventType.GetPropertyType("c0"));
+				env.AssertStmtType("s0", "c0", typeof(float?));
 
 				var fields = "c0".SplitCsv();
 				env.SendEventBean(new SupportBean());
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, 5f);
+				env.AssertPropsNew("s0", fields, new object[] { 5f });
 
 				env.UndeployAll();
 			}
@@ -91,12 +84,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select 10d/0d as c0 from SupportBean";
+				var epl = "@name('s0') select 10d/0d as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var fields = "c0".SplitCsv();
 				env.SendEventBean(new SupportBean());
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {null});
+				env.AssertPropsNew("s0", fields, new object[] { null });
 
 				env.UndeployAll();
 			}
@@ -106,19 +99,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select IntPrimitive/IntBoxed as result from SupportBean";
+				var epl = "@name('s0') select intPrimitive/intBoxed as result from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
-				Assert.AreEqual(typeof(int?), env.Statement("s0").EventType.GetPropertyType("result"));
+				env.AssertStmtType("s0", "result", typeof(int?));
 
 				SendEvent(env, 100, 3);
-				Assert.AreEqual(33, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+				env.AssertEqualsNew("s0", "result", 33);
 
 				SendEvent(env, 100, null);
-				Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+				env.AssertEqualsNew("s0", "result", null);
 
 				SendEvent(env, 100, 0);
-				Assert.AreEqual(null, env.Listener("s0").AssertOneGetNewAndReset().Get("result"));
+				env.AssertEqualsNew("s0", "result", null);
 
 				env.UndeployAll();
 			}

@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
@@ -27,6 +29,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     public class InfraTableMTUngroupedSubqueryReadMergeWriteColumnUpd : RegressionExecution
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         /// <summary>
         ///     Tests column-consistency for subquery:
@@ -56,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "  when not matched then insert select '1' as p0, '1' as p1, '1' as p2, '1' as p3, '1' as p4;\n" +
                 "on SupportBean_S0 merge MyTable " +
                 "  when matched then update set p0=P00, p1=P00, p2=P00, p3=P00, p4=P00;\n" +
-                "@Name('out') select " +
+                "@name('out') select " +
                 "(select p0 from MyTable where " +
                 "  (p0='1' and p1='1' and p2='1' and p3='1' and p4='1') " +
                 "  or (p0='2' and p1='2' and p2='2' and p3='2' and p4='2')) as c0 " +

@@ -16,7 +16,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
     {
         public void Run(RegressionEnvironment env)
         {
-            var statement = "@Name('s0') select 0x23 as mybyte, " +
+            var statement = "@name('s0') select 0x23 as mybyte, " +
                             "'\u0041' as myunicode," +
                             "08 as zero8, " +
                             "09 as zero9, " +
@@ -26,8 +26,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             env.SendEventBean(new SupportBean("e1", 100));
 
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
+            env.AssertPropsNew(
+                "s0",
                 new[] {"mybyte", "myunicode", "zero8", "zero9", "zeroZero8"},
                 new object[] {(byte) 35, "A", 8, 9, 8});
 

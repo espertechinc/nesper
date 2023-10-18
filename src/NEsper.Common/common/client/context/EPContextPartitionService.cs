@@ -70,6 +70,14 @@ namespace com.espertech.esper.common.client.context
             ContextPartitionSelector selector);
 
         /// <summary>
+        /// Returns the current count of context partition.
+        /// </summary>
+        /// <param name="deploymentId">deployment id of context (deployment id of create-context statement)</param>
+        /// <param name="contextName">context name</param>
+        /// <returns>context partition count</returns>
+        long GetContextPartitionCount(string deploymentId, string contextName);
+        
+        /// <summary>
         ///     Returning the descriptor of a given context partition.
         /// </summary>
         /// <param name="deploymentId">deployment id of context (deployment id of create-context statement)</param>

@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             double height)
         {
             var values = MXCIFQuadTreeRowIndexQuery.QueryRange(quadTree, x, y, width, height);
-            // Comment-me-in: System.out.println("// query(tree, " + x + ", " + y + ", " + width + ", " + height + "); -=> " + values);
+            // Comment-me-in: Console.WriteLine("// query(tree, " + x + ", " + y + ", " + width + ", " + height + "); -=> " + values);
             return values;
         }
 
@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             double height,
             string value)
         {
-            // Comment-me-in: System.out.println("remove(tree, " + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\");");
+            // Comment-me-in: Console.WriteLine("remove(tree, " + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\");");
             MXCIFQuadTreeRowIndexRemove.Remove(x, y, width, height, value, quadTree);
         }
 
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             double height,
             string value)
         {
-            // Comment-me-in: System.out.println("addNonUnique(tree, " + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\");");
+            // Comment-me-in: Console.WriteLine("addNonUnique(tree, " + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\");");
             return MXCIFQuadTreeRowIndexAdd.Add(x, y, width, height, value, quadTree, false, "indexNameDummy");
         }
 
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             double height,
             string value)
         {
-            // Comment-me-in: System.out.println("addUnique(tree, " + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\");");
+            // Comment-me-in: Console.WriteLine("addUnique(tree, " + x + ", " + y + ", " + width + ", " + height + ", \"" + value + "\");");
             MXCIFQuadTreeRowIndexAdd.Add(x, y, width, height, value, tree, true, "indexNameHere");
         }
 

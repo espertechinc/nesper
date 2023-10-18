@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
@@ -20,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 	{
 		public static ICollection<RegressionExecution> Executions()
 		{
-			List<RegressionExecution> execs = new List<RegressionExecution>();
+			var execs = new List<RegressionExecution>();
 			WithUseEnum(execs);
 			WithConst(execs);
 			WithInnerClass(execs);
@@ -60,19 +59,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string text = "public class MyResult {\n" +
-				              "  private readonly string _id;\n" +
-				              "  public MyResult(string id) {this._id = id;}\n" +
-				              "  public string Id => _id;\n" +
-				              "}";
-				string epl = EscapeClass(text) +
-				             "@Name('s0') select new MyResult(TheString) as c0 from SupportBean";
+				var text = "public class MyResult {\n" +
+				           "  private readonly string _id;\n" +
+				           "  public MyResult(string id) {this._id = id;}\n" +
+				           "  public string Id => _id;\n" +
+				           "}";
+				var epl = EscapeClass(text) +
+				          "@name('s0') select new MyResult(TheString) as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("E1", 0));
-				var result = env.Listener("s0").AssertOneGetNewAndReset().Get("c0");
-
-				Assert.That(result.GetType().GetProperty("Id").GetValue(result), Is.EqualTo("E1"));
+				env.AssertEventNew(
+					"s0",
+					@event => {
+						var result = @event.Get("c0");
+						Assert.That(result.GetType().GetProperty("Id").GetValue(result), Is.EqualTo("E1"));
+					});
 
 				env.UndeployAll();
 			}
@@ -82,13 +84,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string text = "public class MyConstants {\n" +
-				              "  public class MyInnerClass {" +
-				              "    public static readonly string VALUE = \"abc\";\n" +
-				              "  }" +
-				              "}";
-				string epl = EscapeClass(text) +
-				             "@Name('s0') select MyConstants$MyInnerClass.VALUE as c0 from SupportBean";
+				var text = "public class MyConstants {\n" +
+				           "  public class MyInnerClass {" +
+				           "    public static readonly string VALUE = \"abc\";\n" +
+				           "  }" +
+				           "}";
+				var epl = EscapeClass(text) +
+				          "@name('s0') select MyConstants$MyInnerClass.VALUE as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendSBAssert(env, "E1", 0, "abc");
@@ -101,11 +103,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string text = "public class MyConstants {\n" +
-				              "  public static readonly string VALUE = \"test\";\n" +
-				              "}";
-				string epl = EscapeClass(text) +
-				             "@Name('s0') select MyConstants.VALUE as c0 from SupportBean";
+				var text = "public class MyConstants {\n" +
+				           "  public static readonly string VALUE = \"test\";\n" +
+				           "}";
+				var epl = EscapeClass(text) +
+				          "@name('s0') select MyConstants.VALUE as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendSBAssert(env, "E1", 0, "test");
@@ -118,21 +120,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string text = "public enum MyLevel {\n" +
-				              "  HIGH, MEDIUM, LOW\n" +
-				              "}\n" +
-				              "public static class MyLevelExtensions {\n" +
-				              "  public static int GetLevelCode(this MyLevel value) {\n" +
-				              "    switch(value) {\n" +
-				              "        case MyLevel.HIGH: return 3;\n" +
-				              "        case MyLevel.MEDIUM: return 2;\n" +
-				              "        case MyLevel.LOW: return 1;\n" +
-				              "        default: throw new System.ArgumentException(nameof(value));\n" +
-				              "    }\n" +
-				              "  }\n" +
-				              "}";
-				string epl = EscapeClass(text) +
-				             "@Name('s0') select MyLevel.MEDIUM.GetLevelCode() as c0 from SupportBean";
+				var text = "public enum MyLevel {\n" +
+				           "  HIGH, MEDIUM, LOW\n" +
+				           "}\n" +
+				           "public class MyLevelExtensions {\n" +
+				           "  public static int GetLevelCode(this MyLevel value) {\n" +
+				           "    switch(value) {\n" +
+				           "        case MyLevel.HIGH: return 3;\n" +
+				           "        case MyLevel.MEDIUM: return 2;\n" +
+				           "        case MyLevel.LOW: return 1;\n" +
+				           "        default: throw new System.ArgumentException(nameof(value));\n" +
+				           "    }\n" +
+				           "  }\n" +
+				           "}";
+				var epl = EscapeClass(text) +
+				          "@name('s0') select MyLevel.MEDIUM.GetLevelCode() as c0 from SupportBean";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendSBAssert(env, "E1", 0, 2);
@@ -153,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 			object expected)
 		{
 			env.SendEventBean(new SupportBean(theString, intPrimitive));
-			Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+			env.AssertEqualsNew("s0", "c0", expected);
 		}
 	}
 } // end of namespace

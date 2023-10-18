@@ -8,316 +8,248 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
-using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
+using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
-    public class InfraNWTableOnUpdate
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
+	public class InfraNWTableOnUpdate {
 
-            WithOnUpdateSceneOne(execs);
-            WithUpdateOrderOfFields(execs);
-            WithSubquerySelf(execs);
-            WithSubqueryMultikeyWArray(execs);
+	    public static ICollection<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
 
-            return execs;
-        }
+	        execs.Add(new InfraNWTableOnUpdateSceneOne(true));
+	        execs.Add(new InfraNWTableOnUpdateSceneOne(false));
 
-        public static IList<RegressionExecution> WithSubqueryMultikeyWArray(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new InfraSubqueryMultikeyWArray(true));
-            execs.Add(new InfraSubqueryMultikeyWArray(false));
-            return execs;
-        }
+	        execs.Add(new InfraUpdateOrderOfFields(true));
+	        execs.Add(new InfraUpdateOrderOfFields(false));
 
-        public static IList<RegressionExecution> WithSubquerySelf(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new InfraSubquerySelf(true));
-            execs.Add(new InfraSubquerySelf(false));
-            return execs;
-        }
+	        execs.Add(new InfraSubquerySelf(true));
+	        execs.Add(new InfraSubquerySelf(false));
 
-        public static IList<RegressionExecution> WithUpdateOrderOfFields(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new InfraUpdateOrderOfFields(true));
-            execs.Add(new InfraUpdateOrderOfFields(false));
-            return execs;
-        }
+	        execs.Add(new InfraSubqueryMultikeyWArray(true));
+	        execs.Add(new InfraSubqueryMultikeyWArray(false));
 
-        public static IList<RegressionExecution> WithOnUpdateSceneOne(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new InfraNWTableOnUpdateSceneOne(true));
-            execs.Add(new InfraNWTableOnUpdateSceneOne(false));
-            return execs;
-        }
+	        return execs;
+	    }
 
-        private static SupportBean MakeSupportBean(
-            string theString,
-            int intPrimitive,
-            double doublePrimitive)
-        {
-            var sb = new SupportBean(theString, intPrimitive);
-            sb.DoublePrimitive = doublePrimitive;
-            return sb;
-        }
+	    private class InfraSubqueryMultikeyWArray : RegressionExecution {
 
-        internal class InfraSubqueryMultikeyWArray : RegressionExecution
-        {
+	        private bool namedWindow;
 
-            private bool namedWindow;
+	        public InfraSubqueryMultikeyWArray(bool namedWindow) {
+	            this.namedWindow = namedWindow;
+	        }
 
-            public InfraSubqueryMultikeyWArray(bool namedWindow)
-            {
-                this.namedWindow = namedWindow;
-            }
+	        public void Run(RegressionEnvironment env) {
+	            var path = new RegressionPath();
+	            var stmtTextCreate = namedWindow ?
+	                "@name('create') @public create window MyInfra#keepall() as (value int)" :
+	                "@name('create') @public create table MyInfra(value int)";
+	            env.CompileDeploy(stmtTextCreate, path).AddListener("create");
+	            env.CompileExecuteFAFNoResult("insert into MyInfra select 0 as value", path);
 
-            public void Run(RegressionEnvironment env)
-            {
-                RegressionPath path = new RegressionPath();
-                string stmtTextCreate = namedWindow
-                    ? "@Name('create') create window MyInfra#keepall() as (Value int)"
-                    : "@Name('create') create table MyInfra(Value int)";
-                env.CompileDeploy(stmtTextCreate, path).AddListener("create");
-                env.CompileExecuteFAF("insert into MyInfra select 0 as Value", path);
+	            var epl = "on SupportBean update MyInfra set value = (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array)";
+	            env.CompileDeploy(epl, path);
 
-                string epl = "on SupportBean update MyInfra set Value = (select sum(Value) as c0 from SupportEventWithIntArray#keepall group by Array)";
-                env.CompileDeploy(epl, path);
+	            env.SendEventBean(new SupportEventWithIntArray("E1", new int[]{1, 2}, 10));
+	            env.SendEventBean(new SupportEventWithIntArray("E2", new int[]{1, 2}, 11));
 
-                env.SendEventBean(new SupportEventWithIntArray("E1", new int[] {1, 2}, 10));
-                env.SendEventBean(new SupportEventWithIntArray("E2", new int[] {1, 2}, 11));
+	            env.Milestone(0);
+	            AssertUpdate(env, 21);
 
-                env.Milestone(0);
-                AssertUpdate(env, 21);
+	            env.SendEventBean(new SupportEventWithIntArray("E3", new int[]{1, 2}, 12));
+	            AssertUpdate(env, 33);
 
-                env.SendEventBean(new SupportEventWithIntArray("E3", new int[] {1, 2}, 12));
-                AssertUpdate(env, 33);
+	            env.Milestone(1);
 
-                env.Milestone(1);
+	            env.SendEventBean(new SupportEventWithIntArray("E4", new int[]{1}, 13));
+	            AssertUpdate(env, null);
 
-                env.SendEventBean(new SupportEventWithIntArray("E4", new int[] {1}, 13));
-                AssertUpdate(env, null);
+	            env.UndeployAll();
+	        }
 
-                env.UndeployAll();
-            }
+	        private void AssertUpdate(RegressionEnvironment env, int? expected) {
+	            env.SendEventBean(new SupportBean());
+	            env.AssertIterator("create", iterator => Assert.AreEqual(expected, iterator.Advance().Get("value")));
+	        }
 
-            private void AssertUpdate(
-                RegressionEnvironment env,
-                int? expected)
-            {
-                env.SendEventBean(new SupportBean());
-                var enumerator = env.GetEnumerator("create");
-                Assert.That(enumerator.MoveNext(), Is.True);
-                Assert.That(enumerator.Current, Is.Not.Null);
-                Assert.That(enumerator.Current.Get("Value"), Is.EqualTo(expected));
-            }
-        }
+	        public string Name() {
+	            return this.GetType().Name + "{" +
+	                "namedWindow=" + namedWindow +
+	                '}';
+	        }
+	    }
 
-        public class InfraNWTableOnUpdateSceneOne : RegressionExecution
-        {
-            private readonly bool namedWindow;
+	    public class InfraNWTableOnUpdateSceneOne : RegressionExecution {
+	        private bool namedWindow;
 
-            public InfraNWTableOnUpdateSceneOne(bool namedWindow)
-            {
-                this.namedWindow = namedWindow;
-            }
+	        public InfraNWTableOnUpdateSceneOne(bool namedWindow) {
+	            this.namedWindow = namedWindow;
+	        }
 
-            public void Run(RegressionEnvironment env)
-            {
-                string[] fields = {"TheString", "IntPrimitive"};
-                var path = new RegressionPath();
+	        public void Run(RegressionEnvironment env) {
+	            var fields = new string[]{"theString", "intPrimitive"};
+	            var path = new RegressionPath();
 
-                // create window
-                var stmtTextCreate = namedWindow
-                    ? "@Name('create') create window MyInfra.win:keepall() as SupportBean"
-                    : "@Name('create') create table MyInfra(TheString string, IntPrimitive int primary key)";
-                env.CompileDeploy(stmtTextCreate, path).AddListener("create");
+	            // create window
+	            var stmtTextCreate = namedWindow ?
+	                "@name('create') @public create window MyInfra.win:keepall() as SupportBean" :
+	                "@name('create') @public create table MyInfra(theString string, intPrimitive int primary key)";
+	            env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
-                // create insert into
-                var stmtTextInsert =
-                    "@Name('insert') insert into MyInfra select TheString, IntPrimitive from SupportBean";
-                env.CompileDeploy(stmtTextInsert, path);
+	            // create insert into
+	            var stmtTextInsert = "@name('insert') insert into MyInfra select theString, intPrimitive from SupportBean";
+	            env.CompileDeploy(stmtTextInsert, path);
 
-                env.Milestone(0);
+	            env.Milestone(0);
 
-                // populate some data
-                env.SendEventBean(new SupportBean("A1", 1));
-                env.SendEventBean(new SupportBean("B2", 2));
+	            // populate some data
+	            env.SendEventBean(new SupportBean("A1", 1));
+	            env.SendEventBean(new SupportBean("B2", 2));
 
-                // create onUpdate
-                var stmtTextOnUpdate =
-                    "@Name('update') on SupportBean_S0 update MyInfra set TheString = P00 where IntPrimitive = Id";
-                env.CompileDeploy(stmtTextOnUpdate, path).AddListener("update");
-                Assert.AreEqual(
-                    StatementType.ON_UPDATE,
-                    env.Statement("update").GetProperty(StatementProperty.STATEMENTTYPE));
+	            // create onUpdate
+	            var stmtTextOnUpdate = "@name('update') on SupportBean_S0 update MyInfra set theString = p00 where intPrimitive = id";
+	            env.CompileDeploy(stmtTextOnUpdate, path).AddListener("update");
+	            env.AssertStatement("update", statement => Assert.AreEqual(StatementType.ON_UPDATE, statement.GetProperty(StatementProperty.STATEMENTTYPE)));
 
-                env.Milestone(1);
+	            env.Milestone(1);
 
-                env.SendEventBean(new SupportBean_S0(1, "X1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("update").AssertOneGetOld(),
-                    fields,
-                    new object[] {"A1", 1});
-                EPAssertionUtil.AssertProps(
-                    env.Listener("update").LastNewData[0],
-                    fields,
-                    new object[] {"X1", 1});
-                env.Listener("update").Reset();
-                if (namedWindow) {
-                    EPAssertionUtil.AssertPropsPerRow(
-                        env.GetEnumerator("create"),
-                        fields,
-                        new[] {new object[] {"B2", 2}, new object[] {"X1", 1}});
-                }
-                else {
-                    EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                        env.GetEnumerator("create"),
-                        fields,
-                        new[] {new object[] {"B2", 2}, new object[] {"X1", 1}});
-                }
+	            env.SendEventBean(new SupportBean_S0(1, "X1"));
+	            env.AssertPropsIRPair("update", fields, new object[]{"X1", 1}, new object[]{"A1", 1});
+	            if (namedWindow) {
+	                env.AssertPropsPerRowIterator("create", fields, new object[][]{new object[] {"B2", 2}, new object[] {"X1", 1}});
+	            } else {
+	                env.AssertPropsPerRowIteratorAnyOrder("create", fields, new object[][]{new object[] {"B2", 2}, new object[] {"X1", 1}});
+	            }
 
-                env.Milestone(2);
+	            env.Milestone(2);
 
-                env.SendEventBean(new SupportBean_S0(2, "X2"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("update").AssertOneGetOld(),
-                    fields,
-                    new object[] {"B2", 2});
-                EPAssertionUtil.AssertProps(
-                    env.Listener("update").LastNewData[0],
-                    fields,
-                    new object[] {"X2", 2});
-                env.Listener("update").Reset();
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.GetEnumerator("create"),
-                    fields,
-                    new[] {new object[] {"X1", 1}, new object[] {"X2", 2}});
+	            env.SendEventBean(new SupportBean_S0(2, "X2"));
+	            env.AssertPropsIRPair("update", fields, new object[]{"X2", 2}, new object[]{"B2", 2});
+	            env.AssertPropsPerRowIteratorAnyOrder("create", fields, new object[][]{new object[] {"X1", 1}, new object[] {"X2", 2}});
 
-                env.Milestone(3);
+	            env.Milestone(3);
 
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.GetEnumerator("create"),
-                    fields,
-                    new[] {new object[] {"X1", 1}, new object[] {"X2", 2}});
+	            env.AssertPropsPerRowIteratorAnyOrder("create", fields, new object[][]{new object[] {"X1", 1}, new object[] {"X2", 2}});
 
-                env.UndeployModuleContaining("insert");
-                env.UndeployModuleContaining("update");
-                env.UndeployModuleContaining("create");
+	            env.UndeployModuleContaining("insert");
+	            env.UndeployModuleContaining("update");
+	            env.UndeployModuleContaining("create");
 
-                env.Milestone(4);
+	            env.Milestone(4);
 
-                env.UndeployAll();
-            }
-        }
+	            env.UndeployAll();
+	        }
 
-        internal class InfraUpdateOrderOfFields : RegressionExecution
-        {
-            private readonly bool namedWindow;
+	        public string Name() {
+	            return this.GetType().Name + "{" +
+	                "namedWindow=" + namedWindow +
+	                '}';
+	        }
+	    }
 
-            public InfraUpdateOrderOfFields(bool namedWindow)
-            {
-                this.namedWindow = namedWindow;
-            }
+	    private class InfraUpdateOrderOfFields : RegressionExecution {
+	        private readonly bool namedWindow;
 
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = namedWindow
-                    ? "create window MyInfra#keepall as SupportBean;\n"
-                    : "create table MyInfra(TheString string primary key, IntPrimitive int, IntBoxed int, DoublePrimitive double);\n";
-                epl +=
-                    "insert into MyInfra select TheString, IntPrimitive, IntBoxed, DoublePrimitive from SupportBean;\n";
-                epl += "@Name('update') on SupportBean_S0 as sb " +
-                       "update MyInfra as mywin" +
-                       " set IntPrimitive=Id, IntBoxed=mywin.IntPrimitive, DoublePrimitive=initial.IntPrimitive" +
-                       " where mywin.TheString = sb.P00;\n";
-                env.CompileDeploy(epl).AddListener("update");
-                var fields = new [] { "IntPrimitive","IntBoxed","DoublePrimitive" };
+	        public InfraUpdateOrderOfFields(bool namedWindow) {
+	            this.namedWindow = namedWindow;
+	        }
 
-                env.SendEventBean(MakeSupportBean("E1", 1, 2));
-                env.SendEventBean(new SupportBean_S0(5, "E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("update").GetAndResetLastNewData()[0],
-                    fields,
-                    new object[] {5, 5, 1.0});
+	        public void Run(RegressionEnvironment env) {
 
-                env.Milestone(0);
+	            var epl = namedWindow ?
+	                "@public @public create window MyInfra#keepall as SupportBean;\n" :
+	                "@public @public create table MyInfra(theString string primary key, intPrimitive int, intBoxed int, doublePrimitive double);\n";
+	            epl += "insert into MyInfra select theString, intPrimitive, intBoxed, doublePrimitive from SupportBean;\n";
+	            epl += "@name('update') on SupportBean_S0 as sb " +
+	                "update MyInfra as mywin" +
+	                " set intPrimitive=id, intBoxed=mywin.intPrimitive, doublePrimitive=initial.intPrimitive" +
+	                " where mywin.theString = sb.p00;\n";
+	            env.CompileDeploy(epl).AddListener("update");
+	            var fields = "intPrimitive,intBoxed,doublePrimitive".SplitCsv();
 
-                env.SendEventBean(MakeSupportBean("E2", 10, 20));
-                env.SendEventBean(new SupportBean_S0(6, "E2"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("update").GetAndResetLastNewData()[0],
-                    fields,
-                    new object[] {6, 6, 10.0});
+	            env.SendEventBean(MakeSupportBean("E1", 1, 2));
+	            env.SendEventBean(new SupportBean_S0(5, "E1"));
+	            env.AssertPropsPerRowLastNew("update", fields, new object[][]{new object[] {5, 5, 1.0}});
 
-                env.Milestone(1);
+	            env.Milestone(0);
 
-                env.SendEventBean(new SupportBean_S0(7, "E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("update").GetAndResetLastNewData()[0],
-                    fields,
-                    new object[] {7, 7, 5.0});
+	            env.SendEventBean(MakeSupportBean("E2", 10, 20));
+	            env.SendEventBean(new SupportBean_S0(6, "E2"));
+	            env.AssertPropsPerRowLastNew("update", fields, new object[][]{new object[] {6, 6, 10.0}});
 
-                env.UndeployAll();
-            }
-        }
+	            env.Milestone(1);
 
-        internal class InfraSubquerySelf : RegressionExecution
-        {
-            private readonly bool namedWindow;
+	            env.SendEventBean(new SupportBean_S0(7, "E1"));
+	            env.AssertPropsPerRowLastNew("update", fields, new object[][]{new object[] {7, 7, 5.0}});
 
-            public InfraSubquerySelf(bool namedWindow)
-            {
-                this.namedWindow = namedWindow;
-            }
+	            env.UndeployAll();
+	        }
 
-            public void Run(RegressionEnvironment env)
-            {
-                // ESPER-507
-                var path = new RegressionPath();
-                var eplCreate = namedWindow
-                    ? "@Name('create') create window MyInfraSS#keepall as SupportBean"
-                    : "@Name('create') create table MyInfraSS(TheString string primary key, IntPrimitive int)";
-                env.CompileDeploy(eplCreate, path);
-                env.CompileDeploy("insert into MyInfraSS select TheString, IntPrimitive from SupportBean", path);
+	        public string Name() {
+	            return this.GetType().Name + "{" +
+	                "namedWindow=" + namedWindow +
+	                '}';
+	        }
+	    }
 
-                // This is better done with "set IntPrimitive = IntPrimitive + 1"
-                var epl = "@Name(\"Self Update\")\n" +
-                          "on SupportBean_A c\n" +
-                          "update MyInfraSS s\n" +
-                          "set IntPrimitive = (select IntPrimitive from MyInfraSS t where t.TheString = c.Id) + 1\n" +
-                          "where s.TheString = c.Id";
-                env.CompileDeploy(epl, path);
+	    private class InfraSubquerySelf : RegressionExecution {
+	        private readonly bool namedWindow;
 
-                env.SendEventBean(new SupportBean("E1", 1));
-                env.SendEventBean(new SupportBean("E2", 6));
-                env.SendEventBean(new SupportBean_A("E1"));
+	        public InfraSubquerySelf(bool namedWindow) {
+	            this.namedWindow = namedWindow;
+	        }
 
-                env.Milestone(0);
+	        public void Run(RegressionEnvironment env) {
+	            // ESPER-507
+	            var path = new RegressionPath();
+	            var eplCreate = namedWindow ?
+	                "@name('create') @public create window MyInfraSS#keepall as SupportBean" :
+	                "@name('create') @public create table MyInfraSS(theString string primary key, intPrimitive int)";
+	            env.CompileDeploy(eplCreate, path);
+	            env.CompileDeploy("insert into MyInfraSS select theString, intPrimitive from SupportBean", path);
 
-                env.SendEventBean(new SupportBean_A("E1"));
-                env.SendEventBean(new SupportBean_A("E2"));
+	            // This is better done with "set intPrimitive = intPrimitive + 1"
+	            var epl = "@name(\"Self Update\")\n" +
+	                      "on SupportBean_A c\n" +
+	                      "update MyInfraSS s\n" +
+	                      "set intPrimitive = (select intPrimitive from MyInfraSS t where t.theString = c.id) + 1\n" +
+	                      "where s.theString = c.id";
+	            env.CompileDeploy(epl, path);
 
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.GetEnumerator("create"),
-                    new [] { "TheString","IntPrimitive" },
-                    new[] {new object[] {"E1", 3}, new object[] {"E2", 7}});
-                env.UndeployAll();
-            }
-        }
-    }
+	            env.SendEventBean(new SupportBean("E1", 1));
+	            env.SendEventBean(new SupportBean("E2", 6));
+	            env.SendEventBean(new SupportBean_A("E1"));
+
+	            env.Milestone(0);
+
+	            env.SendEventBean(new SupportBean_A("E1"));
+	            env.SendEventBean(new SupportBean_A("E2"));
+
+	            env.AssertPropsPerRowIteratorAnyOrder("create", "theString,intPrimitive".SplitCsv(), new object[][]{new object[] {"E1", 3}, new object[] {"E2", 7}});
+	            env.UndeployAll();
+	        }
+
+	        public string Name() {
+	            return this.GetType().Name + "{" +
+	                "namedWindow=" + namedWindow +
+	                '}';
+	        }
+	    }
+
+	    private static SupportBean MakeSupportBean(string theString, int intPrimitive, double doublePrimitive) {
+	        var sb = new SupportBean(theString, intPrimitive);
+	        sb.DoublePrimitive = doublePrimitive;
+	        return sb;
+	    }
+	}
 } // end of namespace

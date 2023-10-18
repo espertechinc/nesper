@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string eventTypeName,
             RegressionPath path)
         {
-            var text = "@Name('s0') select order_amount from " + eventTypeName;
+            var text = "@name('s0') select order_amount from " + eventTypeName;
             env.CompileDeploy(text, path).AddListener("s0");
 
             SupportXML.SendXMLEvent(
@@ -83,10 +83,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 "<order_amount>202.1</order_amount>" +
                 "</order>",
                 "OrderEvent");
-            var theEvent = env.Listener("s0").LastNewData[0];
-            Assert.AreEqual(typeof(double), theEvent.Get("order_amount").GetType());
-            Assert.AreEqual(202.1d, theEvent.Get("order_amount"));
-            env.Listener("s0").Reset();
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var theEvent = listener.LastNewData[0];
+                    Assert.AreEqual(typeof(double), theEvent.Get("order_amount").GetType());
+                    Assert.AreEqual(202.1d, theEvent.Get("order_amount"));
+                    listener.Reset();
+                });
 
             env.UndeployAll();
         }

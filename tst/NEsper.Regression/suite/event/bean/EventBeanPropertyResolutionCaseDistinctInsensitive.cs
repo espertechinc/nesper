@@ -19,17 +19,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
     {
         public void Run(RegressionEnvironment env)
         {
-            env.CompileDeploy("@Name('s0') select MYPROPERTY, myproperty, myProperty from SupportBeanDupProperty");
+            env.CompileDeploy("@name('s0') select MYPROPERTY, myproperty, myProperty from SupportBeanDupProperty");
             env.AddListener("s0");
 
             env.SendEventBean(new SupportBeanDupProperty("lowercamel", "uppercamel", "upper", "lower"));
-            var result = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("upper", result.Get("MYPROPERTY"));
-            Assert.AreEqual("lower", result.Get("myproperty"));
-            Assert.AreEqual("lowercamel", result.Get("myProperty"));
+            env.AssertEventNew(
+                "s0",
+                result => {
+                    Assert.AreEqual("upper", result.Get("MYPROPERTY"));
+                    Assert.AreEqual("lower", result.Get("myproperty"));
+                    Assert.AreEqual("lowercamel", result.Get("myProperty"));
+                });
 
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 "select mYpropertY from SupportBeanDupProperty",
                 "Unable to determine which property to use for \"mYpropertY\" because more than one property matched [");
 

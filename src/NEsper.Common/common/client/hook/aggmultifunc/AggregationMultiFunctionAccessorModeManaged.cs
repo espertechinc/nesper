@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// </summary>
         /// <param name="strategy">strategy</param>
         /// <returns>itself</returns>
-        public AggregationMultiFunctionAccessorModeManaged SetInjectionStrategyAggregationAccessorFactory(
+        public AggregationMultiFunctionAccessorModeManaged WithInjectionStrategyAggregationAccessorFactory(
             InjectionStrategy strategy)
         {
             _injectionStrategyAggregationAccessorFactory = strategy;

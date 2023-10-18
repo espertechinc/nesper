@@ -15,7 +15,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
     {
         public void Run(RegressionEnvironment env)
         {
-            var statementText = "@Name('s0') select a\\.b, a\\.b\\.c, nes\\., nes\\.nes2.x\\.y from DotMap";
+            var statementText = "@name('s0') select a\\.b, a\\.b\\.c, nes\\., nes\\.nes2.x\\.y from DotMap";
             env.CompileDeploy(statementText).AddListener("s0");
 
             var data = EventMapCore.MakeMap(
@@ -28,9 +28,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             env.SendEventMap(data, "DotMap");
 
             var fields = new [] { "a.b","a.b.c","nes.","nes.nes2.x.y" };
-            var received = env.Listener("s0").AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(
-                received,
+            env.AssertPropsNew(
+                "s0",
                 fields,
                 new object[] {10, 20, 30, 40});
 

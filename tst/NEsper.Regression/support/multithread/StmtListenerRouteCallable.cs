@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 this._env = env;
                 this._numThread = numThread;
                 _compiled = env.Compile(
-                    "@Name('t" + numThread + "') select * from SupportMarketDataBean where Volume=" + numThread);
+                    "@name('t" + numThread + "') select * from SupportMarketDataBean where Volume=" + numThread);
             }
 
             public void Update(
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 _env.SendEventBean(theEvent, theEvent.GetType().Name);
                 _env.UndeployModuleContaining("t" + _numThread);
 
-                var eventsReceived = listener.GetNewDataListFlattened();
+                var eventsReceived = listener.NewDataListFlattened;
 
                 var found = false;
                 for (var i = 0; i < eventsReceived.Length; i++) {

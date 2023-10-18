@@ -6,9 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
@@ -26,16 +29,16 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             SendTimer(env, 1000);
 
             statements[0] =
-                env.CompileDeploy("@Name('MyStatement@METRIC') select * from " + typeof(StatementMetric).FullName)
+                env.CompileDeploy("@name('MyStatement@METRIC') select * from " + typeof(StatementMetric).FullName)
                     .Statement("MyStatement@METRIC");
             statements[0].AddListener(env.ListenerNew());
 
             statements[1] =
-                env.CompileDeploy("@Name('stmtone') select * from SupportBean(IntPrimitive=1)#keepall where 2=2")
+                env.CompileDeploy("@name('stmtone') select * from SupportBean(IntPrimitive=1)#keepall where 2=2")
                     .Statement("stmtone");
             SendEvent(env, "E1", 1, CPUGOALONENANO);
             statements[2] =
-                env.CompileDeploy("@Name('stmttwo') select * from SupportBean(IntPrimitive>0)#lastevent where 1=1")
+                env.CompileDeploy("@name('stmttwo') select * from SupportBean(IntPrimitive>0)#lastevent where 1=1")
                     .Statement("stmttwo");
             SendEvent(env, "E2", 1, CPUGOALONENANO);
 
@@ -75,6 +78,11 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 new[] {new object[] {"stmtone"}});
 
             env.UndeployAll();
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.RUNTIMEOPS);
         }
 
         private void SendTimer(

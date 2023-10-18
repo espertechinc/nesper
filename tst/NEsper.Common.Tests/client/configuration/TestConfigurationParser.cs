@@ -55,7 +55,8 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(PropertyResolutionStyle.CASE_SENSITIVE, common.EventMeta.ClassPropertyResolutionStyle);
             Assert.AreEqual(AccessorStyle.NATIVE, common.EventMeta.DefaultAccessorStyle);
             Assert.AreEqual(EventUnderlyingType.MAP, common.EventMeta.DefaultEventRepresentation);
-            Assert.IsTrue(common.EventMeta.AvroSettings.IsEnableAvro);
+            Assert.IsFalse(common.EventMeta.IsEnableXmlXsd);
+            Assert.IsFalse(common.EventMeta.AvroSettings.IsEnableAvro);
             Assert.IsTrue(common.EventMeta.AvroSettings.IsEnableNativeString);
             Assert.IsTrue(common.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull);
             Assert.IsNull(common.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass);
@@ -88,10 +89,11 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierScript);
             Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierTable);
             Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierVariable);
+            Assert.AreEqual(NameAccessModifier.PRIVATE, byteCode.AccessModifierInlinedClass);
             Assert.AreEqual(EventTypeBusModifier.NONBUS, byteCode.BusModifierEventType);
             Assert.AreEqual(8, byteCode.ThreadPoolCompilerNumThreads);
             Assert.IsNull(byteCode.ThreadPoolCompilerCapacity);
-            Assert.AreEqual(16*1024, byteCode.MaxMethodsPerClass);
+            Assert.AreEqual(1024, byteCode.MaxMethodsPerClass);
             Assert.IsTrue(byteCode.IsAllowInlinedClass);
             Assert.AreEqual(StreamSelector.ISTREAM_ONLY, compiler.StreamSelection.DefaultStreamSelector);
             Assert.IsFalse(compiler.Language.IsSortUsingCollator);
@@ -138,6 +140,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsFalse(runtime.Logging.IsEnableExecutionDebug);
             Assert.IsTrue(runtime.Logging.IsEnableTimerDebug);
             Assert.IsNull(runtime.Logging.AuditPattern);
+            Assert.IsFalse(runtime.Logging.IsEnableLockActivity);
             Assert.AreEqual(15000, runtime.Variables.MsecVersionRelease);
             Assert.IsNull(runtime.Patterns.MaxSubexpressions);
             Assert.IsTrue(runtime.Patterns.IsMaxSubexpressionPreventStart);
@@ -145,6 +148,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsTrue(runtime.MatchRecognize.IsMaxStatesPreventStart);
             Assert.AreEqual(TimeSourceType.MILLI, runtime.TimeSource.TimeSourceType);
             Assert.IsFalse(runtime.Execution.IsPrioritized);
+            Assert.IsFalse(runtime.Execution.IsPrecedenceEnabled);
             Assert.IsFalse(runtime.Execution.IsDisableLocking);
             Assert.AreEqual(FilterServiceProfile.READMOSTLY, runtime.Execution.FilterServiceProfile);
             Assert.AreEqual(1, runtime.Execution.DeclaredExprValueCacheSize);
@@ -340,6 +344,8 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, common.EventMeta.ClassPropertyResolutionStyle);
             Assert.AreEqual(AccessorStyle.PUBLIC, common.EventMeta.DefaultAccessorStyle);
             Assert.AreEqual(EventUnderlyingType.MAP, common.EventMeta.DefaultEventRepresentation);
+            Assert.IsTrue(common.EventMeta.IsEnableXmlXsd);
+            Assert.IsTrue(common.EventMeta.AvroSettings.IsEnableAvro);
             Assert.IsFalse(common.EventMeta.AvroSettings.IsEnableAvro);
             Assert.IsFalse(common.EventMeta.AvroSettings.IsEnableNativeString);
             Assert.IsFalse(common.EventMeta.AvroSettings.IsEnableSchemaDefaultNonNull);
@@ -387,6 +393,8 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(ThreadingProfile.LARGE, common.Execution.ThreadingProfile);
 
             Assert.AreEqual(2, common.EventTypeAutoNameNamespaces.Count);
+            Assert.IsTrue(common.EventTypeAutoNameNamespaces.Contains("com.mycompany.eventsone"));
+            Assert.IsTrue(common.EventTypeAutoNameNamespaces.Contains("com.mycompany.eventstwo"));
             Assert.AreEqual("com.mycompany.eventsone", common.EventTypeAutoNameNamespaces.ToArray()[0]);
             Assert.AreEqual("com.mycompany.eventstwo", common.EventTypeAutoNameNamespaces.ToArray()[1]);
 
@@ -514,6 +522,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierScript);
             Assert.AreEqual(NameAccessModifier.PUBLIC, byteCode.AccessModifierTable);
             Assert.AreEqual(NameAccessModifier.INTERNAL, byteCode.AccessModifierVariable);
+            Assert.AreEqual(NameAccessModifier.PUBLIC, byteCode.AccessModifierInlinedClass);
             Assert.AreEqual(EventTypeBusModifier.BUS, byteCode.BusModifierEventType);
             Assert.AreEqual(1234, byteCode.ThreadPoolCompilerNumThreads);
             Assert.AreEqual(4321, (int) byteCode.ThreadPoolCompilerCapacity);
@@ -581,6 +590,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual(1234567, runtime.Threading.InternalTimerMsecResolution);
             Assert.IsTrue(runtime.Logging.IsEnableExecutionDebug);
             Assert.IsFalse(runtime.Logging.IsEnableTimerDebug);
+            Assert.IsTrue(runtime.Logging.IsEnableLockActivity);
             Assert.AreEqual("[%u] %m", runtime.Logging.AuditPattern);
             Assert.AreEqual(30000, runtime.Variables.MsecVersionRelease);
             Assert.AreEqual(3L, (long) runtime.Patterns.MaxSubexpressions);
@@ -608,6 +618,7 @@ namespace com.espertech.esper.common.client.configuration
 
             Assert.AreEqual(TimeSourceType.NANO, runtime.TimeSource.TimeSourceType);
             Assert.IsTrue(runtime.Execution.IsPrioritized);
+            Assert.IsTrue(runtime.Execution.IsPrecedenceEnabled);
             Assert.IsTrue(runtime.Execution.IsFairlock);
             Assert.IsTrue(runtime.Execution.IsDisableLocking);
             Assert.AreEqual(FilterServiceProfile.READWRITE, runtime.Execution.FilterServiceProfile);

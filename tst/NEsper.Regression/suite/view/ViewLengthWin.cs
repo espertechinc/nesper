@@ -8,288 +8,184 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
-using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
+using SupportBeanComplexProps = com.espertech.esper.common.@internal.support.SupportBeanComplexProps; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
-    public class ViewLengthWin
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            WithdowSceneOne(execs);
-            WithdowWPrevPrior(execs);
-            WithWPropertyDetail(execs);
-            WithdowIterator(execs);
-            return execs;
-        }
+	public class ViewLengthWin {
 
-        public static IList<RegressionExecution> WithdowIterator(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ViewLengthWindowIterator());
-            return execs;
-        }
+	    public static ICollection<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new ViewLengthWindowSceneOne());
+	        execs.Add(new ViewLengthWindowWPrevPrior());
+	        execs.Add(new ViewLengthWinWPropertyDetail());
+	        execs.Add(new ViewLengthWindowIterator());
+	        return execs;
+	    }
 
-        public static IList<RegressionExecution> WithWPropertyDetail(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ViewLengthWinWPropertyDetail());
-            return execs;
-        }
+	    public class ViewLengthWindowSceneOne : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var fields = "theString".SplitCsv();
 
-        public static IList<RegressionExecution> WithdowWPrevPrior(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ViewLengthWindowWPrevPrior());
-            return execs;
-        }
+	            env.Milestone(0);
 
-        public static IList<RegressionExecution> WithdowSceneOne(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ViewLengthWindowSceneOne());
-            return execs;
-        }
+	            var epl = "@name('s0') select irstream * from SupportBean#length(2)";
+	            env.CompileDeployAddListenerMile(epl, "s0", 1);
 
-        private static SupportMarketDataBean MakeMarketDataEvent(string symbol)
-        {
-            return new SupportMarketDataBean(symbol, 0, 0L, null);
-        }
+	            env.AssertPropsPerRowIterator("s0", fields, null);
 
-        private static void SendSupportBean(
-            RegressionEnvironment env,
-            string theString)
-        {
-            env.SendEventBean(new SupportBean(theString, 0));
-        }
+	            SendSupportBean(env, "E1");
+	            env.AssertPropsNew("s0", fields, new object[]{"E1"});
 
-        private static void SendEvent(
-            RegressionEnvironment env,
-            string symbol,
-            double price)
-        {
-            var theEvent = new SupportMarketDataBean(symbol, price, 0L, "feed1");
-            env.SendEventBean(theEvent);
-        }
+	            env.Milestone(2);
+	            env.AssertPropsPerRowIterator("s0", fields, new object[][]{new object[] {"E1"}});
 
-        public class ViewLengthWindowSceneOne : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new[] {"TheString"};
+	            SendSupportBean(env, "E2");
+	            env.AssertPropsNew("s0", fields, new object[]{"E2"});
 
-                env.Milestone(0);
+	            env.Milestone(3);
+	            env.AssertPropsPerRowIterator("s0", fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}});
 
-                var epl = "@Name('s0') select irstream * from SupportBean#length(2)";
-                env.CompileDeployAddListenerMile(epl, "s0", 1);
+	            SendSupportBean(env, "E3");
+	            env.AssertPropsIRPair("s0", fields, new object[]{"E3"}, new object[]{"E1"});
 
-                EPAssertionUtil.AssertPropsPerRow(env.GetEnumerator("s0"), fields, null);
+	            env.Milestone(4);
+	            env.AssertPropsPerRowIterator("s0", fields, new object[][]{new object[] {"E2"}, new object[] {"E3"}});
 
-                SendSupportBean(env, "E1");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E1"});
+	            env.Milestone(5);
+	            env.AssertPropsPerRowIterator("s0", fields, new object[][]{new object[] {"E2"}, new object[] {"E3"}});
 
-                env.Milestone(2);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s0"),
-                    fields,
-                    new[] {new object[] {"E1"}});
+	            SendSupportBean(env, "E4");
+	            env.AssertPropsIRPair("s0", fields, new object[]{"E4"}, new object[]{"E2"});
+	            env.AssertPropsPerRowIterator("s0", fields, new object[][]{new object[] {"E3"}, new object[] {"E4"}});
 
-                SendSupportBean(env, "E2");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {"E2"});
+	            env.UndeployAll();
+	        }
+	    }
 
-                env.Milestone(3);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s0"),
-                    fields,
-                    new[] {new object[] {"E1"}, new object[] {"E2"}});
+	    public class ViewLengthWindowWPrevPrior : RegressionExecution {
 
-                SendSupportBean(env, "E3");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertGetAndResetIRPair(),
-                    fields,
-                    new object[] {"E3"},
-                    new object[] {"E1"});
+	        public void Run(RegressionEnvironment env) {
+	            var text = "@name('s0') select irstream symbol, " +
+	                       "prev(1, symbol) as prev1, " +
+	                       "prior(1, symbol) as prio1, " +
+	                       "prevtail(symbol) as prevtail0, " +
+	                       "prevcount(symbol) as prevCountSym, " +
+	                       "prevwindow(symbol) as prevWindowSym " +
+	                       "from SupportMarketDataBean.win:length(2)";
+	            env.CompileDeployAddListenerMileZero(text, "s0");
+	            var fields = new string[]{"symbol", "prev1", "prio1", "prevtail0", "prevCountSym", "prevWindowSym"};
 
-                env.Milestone(4);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s0"),
-                    fields,
-                    new[] {new object[] {"E2"}, new object[] {"E3"}});
+	            env.SendEventBean(MakeMarketDataEvent("E1"));
+	            env.AssertPropsNew("s0", fields, new object[]{"E1", null, null, "E1", 1L, new object[]{"E1"}});
 
-                env.Milestone(5);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s0"),
-                    fields,
-                    new[] {new object[] {"E2"}, new object[] {"E3"}});
+	            env.Milestone(1);
 
-                SendSupportBean(env, "E4");
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertGetAndResetIRPair(),
-                    fields,
-                    new object[] {"E4"},
-                    new object[] {"E2"});
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.GetEnumerator("s0"),
-                    fields,
-                    new[] {new object[] {"E3"}, new object[] {"E4"}});
+	            env.SendEventBean(MakeMarketDataEvent("E2"));
+	            env.AssertPropsNew("s0", fields, new object[]{"E2", "E1", "E1", "E1", 2L, new object[]{"E2", "E1"}});
 
-                env.UndeployAll();
-            }
-        }
+	            env.Milestone(2);
 
-        public class ViewLengthWindowWPrevPrior : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var text = "@Name('s0') select irstream Symbol, " +
-                           "prev(1, Symbol) as prev1, " +
-                           "prior(1, Symbol) as prio1, " +
-                           "prevtail(Symbol) as prevtail0, " +
-                           "prevcount(Symbol) as prevCountSym, " +
-                           "prevwindow(Symbol) as prevWindowSym " +
-                           "from SupportMarketDataBean.win:length(2)";
-                env.CompileDeployAddListenerMileZero(text, "s0");
-                string[] fields = {"Symbol", "prev1", "prio1", "prevtail0", "prevCountSym", "prevWindowSym"};
+	            for (var i = 3; i < 10; i++) {
+	                env.SendEventBean(MakeMarketDataEvent("E" + i));
 
-                env.SendEventBean(MakeMarketDataEvent("E1"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {
-                        "E1", null, null, "E1", 1L,
-                        new object[] {"E1"}
-                    });
+	                env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "E" + i}, new object[] {"prev1", "E" + (i - 1)}, new object[] {"prio1", "E" + (i - 1)}, new object[] {"prevtail0", "E" + (i - 1)}}, // new data
+	                    new object[][]{new object[] {"symbol", "E" + (i - 2)}, new object[] {"prev1", null}, new object[] {"prevtail0", null}} //  old data
+	                );
 
-                env.Milestone(1);
+	                env.Milestone(i);
+	            }
 
-                env.SendEventBean(MakeMarketDataEvent("E2"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {
-                        "E2", "E1", "E1", "E1", 2L,
-                        new object[] {"E2", "E1"}
-                    });
+	            // Lets try the iterator
+	            env.AssertIterator("s0", events => {
+	                for (var i = 8; i < 10; i++) {
+	                    var @event = events.Advance();
+	                    Assert.AreEqual("E" + i, @event.Get("symbol"));
+	                }
+	            });
+	            env.UndeployAll();
+	        }
+	    }
 
-                env.Milestone(2);
+	    private class ViewLengthWinWPropertyDetail : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select mapped('keyOne') as a," +
+	                      "indexed[1] as b, nested.nestedNested.nestedNestedValue as c, mapProperty, " +
+	                      "arrayProperty[0] " +
+	                      "  from SupportBeanComplexProps#length(3) " +
+	                      " where mapped('keyOne') = 'valueOne' and " +
+	                      " indexed[1] = 2 and " +
+	                      " nested.nestedNested.nestedNestedValue = 'nestedNestedValue'";
+	            env.CompileDeployAddListenerMileZero(epl, "s0");
 
-                for (var i = 3; i < 10; i++) {
-                    env.SendEventBean(MakeMarketDataEvent("E" + i));
+	            var eventObject = SupportBeanComplexProps.MakeDefaultBean();
+	            env.SendEventBean(eventObject);
+	            env.AssertEventNew("s0", theEvent => {
+	                Assert.AreEqual(eventObject.GetMapped("keyOne"), theEvent.Get("a"));
+	                Assert.AreEqual(eventObject.GetIndexed(1), theEvent.Get("b"));
+	                Assert.AreEqual(eventObject.Nested.NestedNested.NestedNestedValue, theEvent.Get("c"));
+	                Assert.AreEqual(eventObject.MapProperty, theEvent.Get("mapProperty"));
+	                Assert.AreEqual(eventObject.ArrayProperty[0], theEvent.Get("arrayProperty[0]"));
+	            });
 
-                    env.Listener("s0")
-                        .AssertNewOldData(
-                            new[] {
-                                new object[] {"Symbol", "E" + i}, new object[] {"prev1", "E" + (i - 1)},
-                                new object[] {"prio1", "E" + (i - 1)}, new object[] {"prevtail0", "E" + (i - 1)}
-                            }, // new data
-                            new[] {
-                                new object[] {"Symbol", "E" + (i - 2)}, new object[] {"prev1", null},
-                                new object[] {"prevtail0", null}
-                            } //  old data
-                        );
+	            env.Milestone(1);
 
-                    env.Milestone(i);
-                }
+	            eventObject.SetIndexed(1, int.MinValue);
+	            env.AssertListenerNotInvoked("s0");
+	            env.SendEventBean(eventObject);
+	            env.AssertListenerNotInvoked("s0");
 
-                // Lets try the iterator
-                var events = env.GetEnumerator("s0");
-                for (var i = 8; i < 10; i++) {
-                    var @event = events.Advance();
-                    Assert.AreEqual("E" + i, @event.Get("Symbol"));
-                }
+	            env.Milestone(2);
 
-                env.UndeployAll();
-            }
-        }
+	            eventObject.SetIndexed(1, 2);
+	            env.SendEventBean(eventObject);
+	            env.AssertListenerInvoked("s0");
 
-        internal class ViewLengthWinWPropertyDetail : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select " +
-                          "Mapped('keyOne') as a," +
-                          "Indexed[1] as b, " +
-                          "Nested.NestedNested.NestedNestedValue as c, " +
-                          "MapProperty, " +
-                          "ArrayProperty[0] " +
-                          "  from SupportBeanComplexProps#length(3) " +
-                          " where Mapped('keyOne') = 'valueOne' and " +
-                          " Indexed[1] = 2 and " +
-                          " Nested.NestedNested.NestedNestedValue = 'NestedNestedValue'";
-                env.CompileDeployAddListenerMileZero(epl, "s0");
+	            env.UndeployAll();
+	        }
+	    }
 
-                var eventObject = SupportBeanComplexProps.MakeDefaultBean();
-                env.SendEventBean(eventObject);
-                var theEvent = env.Listener("s0").GetAndResetLastNewData()[0];
-                Assert.AreEqual(eventObject.GetMapped("keyOne"), theEvent.Get("a"));
-                Assert.AreEqual(eventObject.GetIndexed(1), theEvent.Get("b"));
-                Assert.AreEqual(eventObject.Nested.NestedNested.NestedNestedValue, theEvent.Get("c"));
-                Assert.AreEqual(eventObject.MapProperty, theEvent.Get("MapProperty"));
-                Assert.AreEqual(eventObject.ArrayProperty[0], theEvent.Get("ArrayProperty[0]"));
+	    private class ViewLengthWindowIterator : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var fields = "symbol,price".SplitCsv();
+	            var epl = "@name('s0') select symbol, price from SupportMarketDataBean#length(2)";
+	            env.CompileDeployAddListenerMileZero(epl, "s0");
 
-                eventObject.SetIndexed(1, int.MinValue);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                env.SendEventBean(eventObject);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            SendEvent(env, "ABC", 20);
+	            SendEvent(env, "DEF", 100);
 
-                eventObject.SetIndexed(1, 2);
-                env.SendEventBean(eventObject);
-                Assert.IsTrue(env.Listener("s0").IsInvoked);
+	            env.AssertPropsPerRowIterator("s0", fields, new object[][] {new object[] {"ABC", 20d}, new object[] {"DEF", 100d}});
 
-                env.UndeployAll();
-            }
-        }
+	            SendEvent(env, "EFG", 50);
 
-        internal class ViewLengthWindowIterator : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select Symbol, Price from SupportMarketDataBean#length(2)";
-                env.CompileDeployAddListenerMileZero(epl, "s0");
+	            env.Milestone(1);
 
-                SendEvent(env, "ABC", 20);
-                SendEvent(env, "DEF", 100);
+	            env.AssertPropsPerRowIterator("s0", fields, new object[][] {new object[] {"DEF", 100d}, new object[] {"EFG", 50d}, });
 
-                // check iterator results
-                var events = env.Statement("s0").GetEnumerator();
-                var theEvent = events.Advance();
-                Assert.AreEqual("ABC", theEvent.Get("Symbol"));
-                Assert.AreEqual(20d, theEvent.Get("Price"));
+	            env.UndeployAll();
+	        }
+	    }
 
-                theEvent = events.Advance();
-                Assert.AreEqual("DEF", theEvent.Get("Symbol"));
-                Assert.AreEqual(100d, theEvent.Get("Price"));
-                Assert.IsFalse(events.MoveNext());
+	    private static SupportMarketDataBean MakeMarketDataEvent(string symbol) {
+	        return new SupportMarketDataBean(symbol, 0, 0L, null);
+	    }
 
-                SendEvent(env, "EFG", 50);
+	    private static void SendSupportBean(RegressionEnvironment env, string theString) {
+	        env.SendEventBean(new SupportBean(theString, 0));
+	    }
 
-                // check iterator results
-                events = env.Statement("s0").GetEnumerator();
-                theEvent = events.Advance();
-                Assert.AreEqual("DEF", theEvent.Get("Symbol"));
-                Assert.AreEqual(100d, theEvent.Get("Price"));
-
-                theEvent = events.Advance();
-                Assert.AreEqual("EFG", theEvent.Get("Symbol"));
-                Assert.AreEqual(50d, theEvent.Get("Price"));
-
-                env.UndeployAll();
-            }
-        }
-    }
+	    private static void SendEvent(RegressionEnvironment env, string symbol, double price) {
+	        var theEvent = new SupportMarketDataBean(symbol, price, 0L, "feed1");
+	        env.SendEventBean(theEvent);
+	    }
+	}
 } // end of namespace

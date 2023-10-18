@@ -28,9 +28,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly static IDictionary<string, SupportCountListener> _supportCountListeners =
+        private static readonly IDictionary<string, SupportCountListener> _supportCountListeners =
             new Dictionary<string, SupportCountListener>();
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Configure(Configuration configuration)
         {
             configuration.Common.AddEventType(typeof(SupportByteArrEventLongId));
@@ -59,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             for (var i = 0; i < numStatements; i++) {
                 var statementName = "s" + i;
                 var stmtText =
-                    $"@Name('s{i}')select * from pattern" +
+                    $"@name('s{i}')select * from pattern" +
                     $" [ every e1=SupportByteArrEventLongId(Id={i}) -> timer:interval(1 seconds)]";
 
                 var supportCountListener = new SupportCountListener();

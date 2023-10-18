@@ -31,21 +31,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-WithBeanType(execs);
-WithMapType(execs);
+            WithBeanType(execs);
+            WithMapType(execs);
             return execs;
         }
-public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowMapType());
-    return execs;
-}public static IList<RegressionExecution> WithBeanType(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowBeanType());
-    return execs;
-}
+
+        public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowMapType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBeanType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowBeanType());
+            return execs;
+        }
+
         private static IDictionary<string, object> MakeMap(
             string p0,
             int p1)
@@ -61,7 +65,7 @@ public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> 
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> outstream<SupportBean> {}" +
                     "MySupportBeanOutputOp(outstream) {}" +
                     "SupportGenericOutputOpWPort(outstream) {}");
@@ -92,6 +96,10 @@ public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> 
 
                 env.UndeployAll();
             }
+            
+            public ISet<RegressionFlag> Flags() {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
         internal class EPLDataflowMapType : RegressionExecution
@@ -99,9 +107,9 @@ public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> 
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create map schema MyMap (p0 String, p1 int)", path);
+                env.CompileDeploy("@public create map schema MyMap (p0 String, p1 int)", path);
                 env.CompileDeploy(
-                    "@Name('flow') create dataflow MyDataFlowOne " +
+                    "@name('flow') create dataflow MyDataFlowOne " +
                     "DefaultSupportSourceOp -> outstream<MyMap> {}" +
                     "MyMapOutputOp(outstream) {}" +
                     "DefaultSupportCaptureOp(outstream) {}",
@@ -132,6 +140,10 @@ public static IList<RegressionExecution> WithMapType(IList<RegressionExecution> 
                     });
 
                 env.UndeployAll();
+            }
+            
+            public ISet<RegressionFlag> Flags() {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 

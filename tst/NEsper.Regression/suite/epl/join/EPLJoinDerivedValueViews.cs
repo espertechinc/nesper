@@ -17,7 +17,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select\n" +
+            var epl = "@name('s0') select\n" +
                       "Math.Sign(stream1.slope) as S1,\n" +
                       "Math.Sign(stream2.slope) as S2\n" +
                       "from\n" +
@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.CompileDeployAddListenerMileZero(epl, "s0");
             env.SendEventBean(MakeEvent("E3", 1, 100));
             env.SendEventBean(MakeEvent("E4", 1, 100));
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.UndeployAll();
         }

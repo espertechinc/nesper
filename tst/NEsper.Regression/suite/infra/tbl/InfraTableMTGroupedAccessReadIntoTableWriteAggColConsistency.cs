@@ -30,6 +30,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         /// <summary>
         ///     Table:
         ///     create table vartotal (key string primary key, tc0 sum(int), tc1 sum(int) ... tc9 sum(int))
@@ -56,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numSeconds)
         {
             var path = new RegressionPath();
-            var eplCreateVariable = "create table vartotal (key string primary key, " +
+            var eplCreateVariable = "@public create table vartotal (key string primary key, " +
                                     CollectionUtil.ToString(GetDeclareCols()) +
                                     ")";
             env.CompileDeploy(eplCreateVariable, path);
@@ -201,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 log.Info("Started event send for read");
 
                 try {
-                    var eplSelect = "@Name('s0') select vartotal[TheString] as out from SupportBean";
+                    var eplSelect = "@name('s0') select vartotal[TheString] as out from SupportBean";
                     env.CompileDeploy(eplSelect, path).AddListener("s0");
                     var listener = env.Listener("s0");
 

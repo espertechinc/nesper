@@ -12,6 +12,7 @@ using System.IO;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -29,6 +30,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
         private class ExprFilterWhereClauseNoDataWindowPerf : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+            
             // Compares the performance of
             //     select * from SupportBean(TheString = 'xyz')
             //  against
@@ -40,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 for (var i = 0; i < 100; i++) {
                     var epl = string.Format(
-                        "@Name('s{0}') select * from SupportBean where TheString = '{1}';\n",
+                        "@name('s{0}') select * from SupportBean where TheString = '{1}';\n",
                         i,
                         Convert.ToString(i));
                     module.Write(epl);

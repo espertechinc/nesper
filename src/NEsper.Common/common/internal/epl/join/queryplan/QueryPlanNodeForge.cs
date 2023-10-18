@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// <summary>
     /// Specification node for a query execution plan to be extended by specific execution specification nodes.
     /// </summary>
-    public abstract class QueryPlanNodeForge : CodegenMakeable
+    public abstract class QueryPlanNodeForge : CodegenMakeable<SAIFFInitializeSymbol>
     {
         public abstract void AddIndexes(HashSet<TableLookupIndexReqKey> usedIndexes);
 

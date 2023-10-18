@@ -11,166 +11,119 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertEquals
+
+// assertNull
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
-    public class EPLInsertIntoFromPattern
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithPropsWildcard(execs);
-            WithProps(execs);
-            WithNoProps(execs);
-            WithFromPatternNamedWindow(execs);
-            return execs;
-        }
+	public class EPLInsertIntoFromPattern {
+	    public static IList<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new EPLInsertIntoPropsWildcard());
+	        execs.Add(new EPLInsertIntoProps());
+	        execs.Add(new EPLInsertIntoNoProps());
+	        execs.Add(new EPLInsertIntoFromPatternNamedWindow());
+	        return execs;
+	    }
 
-        public static IList<RegressionExecution> WithFromPatternNamedWindow(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoFromPatternNamedWindow());
-            return execs;
-        }
+	    private class EPLInsertIntoPropsWildcard : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var path = new RegressionPath();
+	            var stmtText = "@public insert into MyThirdStream(es0id, es1id) " +
+	                           "select es0.id, es1.id " +
+	                           "from " +
+	                           "pattern [every (es0=SupportBean_S0" +
+	                           " or es1=SupportBean_S1)]";
+	            env.CompileDeploy(stmtText, path);
 
-        public static IList<RegressionExecution> WithNoProps(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoNoProps());
-            return execs;
-        }
+	            var stmtTwoText = "@name('s0') select * from MyThirdStream";
+	            env.CompileDeploy(stmtTwoText, path).AddListener("s0");
 
-        public static IList<RegressionExecution> WithProps(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoProps());
-            return execs;
-        }
+	            SendEventsAndAssert(env);
 
-        public static IList<RegressionExecution> WithPropsWildcard(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoPropsWildcard());
-            return execs;
-        }
+	            env.UndeployAll();
+	        }
+	    }
 
-        private static void SendEventsAndAssert(RegressionEnvironment env)
-        {
-            SendEventS1(env, 10, "");
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.IsNull(theEvent.Get("es0Id"));
-            Assert.AreEqual(10, theEvent.Get("es1Id"));
+	    private class EPLInsertIntoProps : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var path = new RegressionPath();
+	            var stmtText = "@public insert into MySecondStream(s0, s1) " +
+	                           "select es0, es1 " +
+	                           "from " +
+	                           "pattern [every (es0=SupportBean_S0" +
+	                           " or es1=SupportBean_S1)]";
+	            env.CompileDeploy(stmtText, path);
 
-            env.Milestone(0);
+	            var stmtTwoText = "@name('s0') select s0.id as es0id, s1.id as es1id from MySecondStream";
+	            env.CompileDeploy(stmtTwoText, path).AddListener("s0");
 
-            SendEventS0(env, 20, "");
-            theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual(20, theEvent.Get("es0Id"));
-            Assert.IsNull(theEvent.Get("es1Id"));
-        }
+	            SendEventsAndAssert(env);
 
-        private static void SendEventS0(
-            RegressionEnvironment env,
-            int id,
-            string p00)
-        {
-            var theEvent = new SupportBean_S0(id, p00);
-            env.SendEventBean(theEvent);
-        }
+	            env.UndeployAll();
+	        }
+	    }
 
-        private static void SendEventS1(
-            RegressionEnvironment env,
-            int id,
-            string p10)
-        {
-            var theEvent = new SupportBean_S1(id, p10);
-            env.SendEventBean(theEvent);
-        }
+	    private class EPLInsertIntoNoProps : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var path = new RegressionPath();
+	            var stmtText = "@public insert into MyStream " +
+	                           "select es0, es1 " +
+	                           "from " +
+	                           "pattern [every (es0=SupportBean_S0" +
+	                           " or es1=SupportBean_S1)]";
+	            env.CompileDeploy(stmtText, path);
 
-        internal class EPLInsertIntoPropsWildcard : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                var stmtText = "insert into MyThirdStream(es0Id, es1Id) " +
-                               "select es0.Id, es1.Id " +
-                               "from " +
-                               "pattern [every (es0=SupportBean_S0" +
-                               " or es1=SupportBean_S1)]";
-                env.CompileDeploy(stmtText, path);
+	            var stmtTwoText = "@name('s0') select es0.id as es0id, es1.id as es1id from MyStream#length(10)";
+	            env.CompileDeploy(stmtTwoText, path).AddListener("s0");
 
-                var stmtTwoText = "@Name('s0') select * from MyThirdStream";
-                env.CompileDeploy(stmtTwoText, path).AddListener("s0");
+	            SendEventsAndAssert(env);
 
-                SendEventsAndAssert(env);
+	            env.UndeployAll();
+	        }
+	    }
 
-                env.UndeployAll();
-            }
-        }
+	    public class EPLInsertIntoFromPatternNamedWindow : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var path = new RegressionPath();
+	            env.CompileDeploy("@public create window PositionW.win:time(1 hour).std:unique(intPrimitive) as select * from SupportBean", path);
+	            env.CompileDeploy("insert into PositionW select * from SupportBean", path);
+	            env.CompileDeploy("@name('s1') insert into Foo select * from pattern[every a = PositionW -> every b = PositionW]", path);
+	            env.AddListener("s1").Milestone(0);
 
-        internal class EPLInsertIntoProps : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                var stmtText = "insert into MySecondStream(s0, s1) " +
-                               "select es0, es1 " +
-                               "from " +
-                               "pattern [every (es0=SupportBean_S0" +
-                               " or es1=SupportBean_S1)]";
-                env.CompileDeploy(stmtText, path);
+	            env.SendEventBean(new SupportBean("E1", 1));
+	            env.SendEventBean(new SupportBean("E2", 1));
+	            env.AssertListenerInvoked("s1");
 
-                var stmtTwoText = "@Name('s0') select s0.Id as es0Id, s1.Id as es1Id from MySecondStream";
-                env.CompileDeploy(stmtTwoText, path).AddListener("s0");
+	            env.UndeployAll();
+	        }
+	    }
 
-                SendEventsAndAssert(env);
+	    private static void SendEventsAndAssert(RegressionEnvironment env) {
+	        SendEventS1(env, 10, "");
+	        env.AssertEventNew("s0", theEvent => {
+	            Assert.IsNull(theEvent.Get("es0id"));
+	            Assert.AreEqual(10, theEvent.Get("es1id"));
+	        });
 
-                env.UndeployAll();
-            }
-        }
+	        env.Milestone(0);
 
-        internal class EPLInsertIntoNoProps : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                var stmtText = "insert into MyStream " +
-                               "select es0, es1 " +
-                               "from " +
-                               "pattern [every (es0=SupportBean_S0" +
-                               " or es1=SupportBean_S1)]";
-                env.CompileDeploy(stmtText, path);
+	        SendEventS0(env, 20, "");
+	        env.AssertEventNew("s0", theEvent => {
+	            Assert.AreEqual(20, theEvent.Get("es0id"));
+	            Assert.IsNull(theEvent.Get("es1id"));
+	        });
+	    }
 
-                var stmtTwoText = "@Name('s0') select es0.Id as es0Id, es1.Id as es1Id from MyStream#length(10)";
-                env.CompileDeploy(stmtTwoText, path).AddListener("s0");
+	    private static void SendEventS0(RegressionEnvironment env, int id, string p00) {
+	        var theEvent = new SupportBean_S0(id, p00);
+	        env.SendEventBean(theEvent);
+	    }
 
-                SendEventsAndAssert(env);
-
-                env.UndeployAll();
-            }
-        }
-
-        public class EPLInsertIntoFromPatternNamedWindow : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy(
-                    "create window PositionW.win:time(1 hour).std:unique(IntPrimitive) as select * from SupportBean",
-                    path);
-                env.CompileDeploy("insert into PositionW select * from SupportBean", path);
-                env.CompileDeploy(
-                    "@Name('s1') insert into Foo select * from pattern[every a = PositionW -> every b = PositionW]",
-                    path);
-                env.AddListener("s1").Milestone(0);
-
-                env.SendEventBean(new SupportBean("E1", 1));
-                env.SendEventBean(new SupportBean("E2", 1));
-                Assert.IsTrue(env.Listener("s1").IsInvoked);
-
-                env.UndeployAll();
-            }
-        }
-    }
+	    private static void SendEventS1(RegressionEnvironment env, int id, string p10) {
+	        var theEvent = new SupportBean_S1(id, p10);
+	        env.SendEventBean(theEvent);
+	    }
+	}
 } // end of namespace

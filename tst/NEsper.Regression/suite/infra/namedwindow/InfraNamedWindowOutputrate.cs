@@ -20,14 +20,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create window MyWindowOne#keepall as (TheString string, intv int)", path);
+            env.CompileDeploy("@public create window MyWindowOne#keepall as (TheString string, intv int)", path);
             env.CompileDeploy("insert into MyWindowOne select TheString, IntPrimitive as intv from SupportBean", path);
 
             env.AdvanceTime(0);
 
             string[] fields = {"TheString", "c"};
             env.CompileDeploy(
-                    "@Name('s0') select irstream TheString, count(*) as c from MyWindowOne group by TheString output snapshot every 1 second",
+                    "@name('s0') select irstream TheString, count(*) as c from MyWindowOne group by TheString output snapshot every 1 second",
                     path)
                 .AddListener("s0");
 
@@ -37,23 +37,23 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             env.AdvanceTime(1000);
 
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Listener("s0").GetAndResetLastNewData(),
+            env.AssertPropsPerRowLastNew(
+                "s0",
                 fields,
                 new[] {new object[] {"A", 2L}, new object[] {"B", 1L}});
 
             env.SendEventBean(new SupportBean("B", 5));
             env.AdvanceTime(2000);
 
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Listener("s0").GetAndResetLastNewData(),
+            env.AssertPropsPerRowLastNew(
+                "s0",
                 fields,
                 new[] {new object[] {"A", 2L}, new object[] {"B", 2L}});
 
             env.AdvanceTime(3000);
 
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Listener("s0").GetAndResetLastNewData(),
+            env.AssertPropsPerRowLastNew(
+                "s0",
                 fields,
                 new[] {new object[] {"A", 2L}, new object[] {"B", 2L}});
 
@@ -61,8 +61,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             env.SendEventBean(new SupportBean("C", 1));
             env.AdvanceTime(4000);
 
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Listener("s0").GetAndResetLastNewData(),
+            env.AssertPropsPerRowLastNew(
+                "s0",
                 fields,
                 new[] {new object[] {"A", 3L}, new object[] {"B", 2L}, new object[] {"C", 1L}});
 

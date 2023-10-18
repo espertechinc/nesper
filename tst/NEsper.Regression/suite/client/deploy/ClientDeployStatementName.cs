@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.option;
@@ -30,25 +31,33 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             public void Run(RegressionEnvironment env)
             {
                 MyStatementNameRuntimeResolver.Contexts.Clear();
-                var epl = "@Name('s0') select * from SupportBean";
+                var epl = "@name('s0') select * from SupportBean";
                 var compiled = env.Compile(epl);
                 var options = new DeploymentOptions();
                 options.StatementNameRuntime = new MyStatementNameRuntimeResolver().GetStatementName;
 
                 env.Deployment.Deploy(compiled, options);
 
-                var ctx = MyStatementNameRuntimeResolver.Contexts[0];
-                Assert.AreEqual("s0", ctx.StatementName);
-                Assert.AreEqual(env.DeploymentId("hello"), ctx.DeploymentId);
-                Assert.AreSame(env.Statement("hello").Annotations, ctx.Annotations);
-                Assert.AreEqual(epl, ctx.Epl);
-                Assert.AreEqual("hello", env.Statement("hello").Name);
-
+                env.AssertThat(
+                    () => {
+                        var ctx = MyStatementNameRuntimeResolver.Contexts[0];
+                        Assert.AreEqual("s0", ctx.StatementName);
+                        Assert.AreEqual(env.DeploymentId("hello"), ctx.DeploymentId);
+                        Assert.AreSame(env.Statement("hello").Annotations, ctx.Annotations);
+                        Assert.AreEqual(epl, ctx.Epl);
+                        Assert.AreEqual("hello", env.Statement("hello").Name);
+                    });
+                
                 env.Milestone(0);
-
-                Assert.AreEqual("hello", env.Statement("hello").Name);
+                
+                env.AssertStatement("hello", statement => Assert.AreEqual("hello", statement.Name));
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.STATICHOOK);
             }
         }
 

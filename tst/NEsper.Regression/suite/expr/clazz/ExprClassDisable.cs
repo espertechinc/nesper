@@ -8,19 +8,17 @@
 
 using com.espertech.esper.regressionlib.framework;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
 namespace com.espertech.esper.regressionlib.suite.expr.clazz
 {
     public class ExprClassDisable : RegressionExecution
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') inlined_class \"\"\"\n" +
+            var epl = "@name('s0') inlined_class \"\"\"\n" +
                       "    public class MyClass {}\n" +
                       "\"\"\" " +
                       "select * from SupportBean\n";
-            TryInvalidCompile(env, epl, "Inlined-class compilation has been disabled by configuration");
+            env.TryInvalidCompile(epl, "Inlined-class compilation has been disabled by configuration");
         }
     }
 } // end of namespace

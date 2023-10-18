@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
@@ -28,6 +30,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         /// <summary>
         ///     Primary key is single: {id}
         ///     For a given number of seconds:
@@ -49,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numSeconds)
         {
             var path = new RegressionPath();
-            var eplCreateVariable = "create table MyTable (pkey string primary key)";
+            var eplCreateVariable = "@public create table MyTable (pkey string primary key)";
             env.CompileDeploy(eplCreateVariable, path);
 
             var eplInsertInto = "insert into MyTable select TheString as pkey from SupportBean";
@@ -59,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportBean("E0", 0));
 
             // select/read
-            var eplSubselect = "@Name('s0') select (select count(*) from MyTable) as c0 from SupportBean_S0";
+            var eplSubselect = "@name('s0') select (select count(*) from MyTable) as c0 from SupportBean_S0";
             env.CompileDeploy(eplSubselect, path).AddListener("s0");
 
             var writeRunnable = new WriteRunnable(env);

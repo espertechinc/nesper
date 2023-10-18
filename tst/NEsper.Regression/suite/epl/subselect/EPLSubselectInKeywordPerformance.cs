@@ -11,147 +11,125 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
 {
-    public class EPLSubselectInKeywordPerformance
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithInKeywordAsPartOfSubquery(execs);
-            WithWhereClauseCoercion(execs);
-            WithWhereClause(execs);
-            return execs;
-        }
+	public class EPLSubselectInKeywordPerformance {
 
-        public static IList<RegressionExecution> WithWhereClause(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLSubselectPerformanceWhereClause());
-            return execs;
-        }
+	    public static IList<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new EPLSubselectPerformanceInKeywordAsPartOfSubquery());
+	        execs.Add(new EPLSubselectPerformanceWhereClauseCoercion());
+	        execs.Add(new EPLSubselectPerformanceWhereClause());
+	        return execs;
+	    }
 
-        public static IList<RegressionExecution> WithWhereClauseCoercion(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLSubselectPerformanceWhereClauseCoercion());
-            return execs;
-        }
+	    private class EPLSubselectPerformanceInKeywordAsPartOfSubquery : RegressionExecution {
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+	        }
 
-        public static IList<RegressionExecution> WithInKeywordAsPartOfSubquery(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLSubselectPerformanceInKeywordAsPartOfSubquery());
-            return execs;
-        }
+	        public void Run(RegressionEnvironment env) {
+	            var milestone = new AtomicLong();
+	            var eplSingleIndex = "@name('s0') select (select p00 from SupportBean_S0#keepall as s0 where s0.p01 in (s1.p10, s1.p11)) as c0 from SupportBean_S1 as s1";
+	            env.CompileDeployAddListenerMile(eplSingleIndex, "s0", milestone.GetAndIncrement());
 
-        private static void TryAssertionPerformanceInKeywordAsPartOfSubquery(RegressionEnvironment env)
-        {
-            for (var i = 0; i < 10000; i++) {
-                env.SendEventBean(new SupportBean_S0(i, "v" + i, "P00_" + i));
-            }
+	            TryAssertionPerformanceInKeywordAsPartOfSubquery(env);
+	            env.UndeployAll();
 
-            var startTime = PerformanceObserver.MilliTime;
-            for (var i = 0; i < 2000; i++) {
-                var index = 5000 + i % 1000;
-                env.SendEventBean(new SupportBean_S1(index, "x", "P00_" + index));
-                Assert.AreEqual("v" + index, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
-            }
+	            var eplMultiIdx = "@name('s0') select (select p00 from SupportBean_S0#keepall as s0 where s1.p11 in (s0.p00, s0.p01)) as c0 from SupportBean_S1 as s1";
+	            env.CompileDeployAddListenerMile(eplMultiIdx, "s0", milestone.GetAndIncrement());
 
-            var endTime = PerformanceObserver.MilliTime;
-            var delta = endTime - startTime;
+	            TryAssertionPerformanceInKeywordAsPartOfSubquery(env);
 
-            Assert.That(delta, Is.LessThan(1000), "Failed perf test, delta=" + delta);
-        }
+	            env.UndeployAll();
+	        }
+	    }
 
-        internal class EPLSubselectPerformanceInKeywordAsPartOfSubquery : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var milestone = new AtomicLong();
-                var eplSingleIndex =
-                    "@Name('s0') select (select P00 from SupportBean_S0#keepall as S0 where S0.P01 in (S1.P10, S1.P11)) as c0 from SupportBean_S1 as S1";
-                env.CompileDeployAddListenerMile(eplSingleIndex, "s0", milestone.GetAndIncrement());
+	    private class EPLSubselectPerformanceWhereClauseCoercion : RegressionExecution {
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+	        }
 
-                TryAssertionPerformanceInKeywordAsPartOfSubquery(env);
-                env.UndeployAll();
+	        public void Run(RegressionEnvironment env) {
+	            var stmtText = "@name('s0') select intPrimitive from SupportBean(theString='A') as s0 where intPrimitive in (" +
+	                           "select longBoxed from SupportBean(theString='B')#length(10000) where s0.intPrimitive = longBoxed)";
 
-                var eplMultiIdx =
-                    "@Name('s0') select (select P00 from SupportBean_S0#keepall as S0 where S1.P11 in (S0.P00, S0.P01)) as c0 from SupportBean_S1 as S1";
-                env.CompileDeployAddListenerMile(eplMultiIdx, "s0", milestone.GetAndIncrement());
+	            env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
-                TryAssertionPerformanceInKeywordAsPartOfSubquery(env);
+	            // preload with 10k events
+	            for (var i = 0; i < 10000; i++) {
+	                var bean = new SupportBean();
+	                bean.TheString = "B";
+	                bean.LongBoxed = i;
+	                env.SendEventBean(bean);
+	            }
 
-                env.UndeployAll();
-            }
-        }
+	            var startTime = PerformanceObserver.MilliTime;
+	            for (var i = 0; i < 10000; i++) {
+	                var index = 5000 + i % 1000;
+	                var bean = new SupportBean();
+	                bean.TheString = "A";
+	                bean.IntPrimitive = index;
+	                env.SendEventBean(bean);
+	                env.AssertEqualsNew("s0", "intPrimitive", index);
+	            }
+	            var endTime = PerformanceObserver.MilliTime;
+	            var delta = endTime - startTime;
 
-        internal class EPLSubselectPerformanceWhereClauseCoercion : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText =
-                    "@Name('s0') select IntPrimitive from SupportBean(TheString='A') as S0 where IntPrimitive in (" +
-                    "select LongBoxed from SupportBean(TheString='B')#length(10000) where S0.IntPrimitive = LongBoxed)";
+	            Assert.That(delta, Is.LessThan(2000), "Failed perf test, delta=" + delta);
+	            env.UndeployAll();
+	        }
+	    }
 
-                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+	    private class EPLSubselectPerformanceWhereClause : RegressionExecution {
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+	        }
 
-                // preload with 10k events
-                for (var i = 0; i < 10000; i++) {
-                    var bean = new SupportBean();
-                    bean.TheString = "B";
-                    bean.LongBoxed = i;
-                    env.SendEventBean(bean);
-                }
+	        public void Run(RegressionEnvironment env) {
+	            var stmtText = "@name('s0') select id from SupportBean_S0 as s0 where p00 in (" +
+	                           "select p10 from SupportBean_S1#length(10000) where s0.p00 = p10)";
+	            env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
-                var startTime = PerformanceObserver.MilliTime;
-                for (var i = 0; i < 10000; i++) {
-                    var index = 5000 + i % 1000;
-                    var bean = new SupportBean();
-                    bean.TheString = "A";
-                    bean.IntPrimitive = index;
-                    env.SendEventBean(bean);
-                    Assert.AreEqual(index, env.Listener("s0").AssertOneGetNewAndReset().Get("IntPrimitive"));
-                }
+	            // preload with 10k events
+	            for (var i = 0; i < 10000; i++) {
+	                env.SendEventBean(new SupportBean_S1(i, Convert.ToString(i)));
+	            }
 
-                var endTime = PerformanceObserver.MilliTime;
-                var delta = endTime - startTime;
+	            var startTime = PerformanceObserver.MilliTime;
+	            for (var i = 0; i < 10000; i++) {
+	                var index = 5000 + i % 1000;
+	                env.SendEventBean(new SupportBean_S0(index, Convert.ToString(index)));
+	                env.AssertEqualsNew("s0", "id", index);
+	            }
+	            var endTime = PerformanceObserver.MilliTime;
+	            var delta = endTime - startTime;
 
-                Assert.That(delta, Is.LessThan(4000), "Failed perf test, delta=" + delta);
-                env.UndeployAll();
-            }
-        }
+	            Assert.That(delta, Is.LessThan(1000), "Failed perf test, delta=" + delta);
+	            env.UndeployAll();
+	        }
+	    }
 
-        internal class EPLSubselectPerformanceWhereClause : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText = "@Name('s0') select Id from SupportBean_S0 as S0 where P00 in (" +
-                               "select P10 from SupportBean_S1#length(10000) where S0.P00 = P10)";
-                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+	    private static void TryAssertionPerformanceInKeywordAsPartOfSubquery(RegressionEnvironment env) {
+	        for (var i = 0; i < 10000; i++) {
+	            env.SendEventBean(new SupportBean_S0(i, "v" + i, "p00_" + i));
+	        }
 
-                // preload with 10k events
-                for (var i = 0; i < 10000; i++) {
-                    env.SendEventBean(new SupportBean_S1(i, Convert.ToString(i)));
-                }
+	        var startTime = PerformanceObserver.MilliTime;
+	        for (var i = 0; i < 2000; i++) {
+	            var index = 5000 + i % 1000;
+	            env.SendEventBean(new SupportBean_S1(index, "x", "p00_" + index));
+	            env.AssertEqualsNew("s0", "c0", "v" + index);
+	        }
+	        var endTime = PerformanceObserver.MilliTime;
+	        var delta = endTime - startTime;
 
-                var startTime = PerformanceObserver.MilliTime;
-                for (var i = 0; i < 10000; i++) {
-                    var index = 5000 + i % 1000;
-                    env.SendEventBean(new SupportBean_S0(index, Convert.ToString(index)));
-                    Assert.AreEqual(index, env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
-                }
-
-                var endTime = PerformanceObserver.MilliTime;
-                var delta = endTime - startTime;
-
-                Assert.That(delta, Is.LessThan(1000), "Failed perf test, delta=" + delta);
-                env.UndeployAll();
-            }
-        }
-    }
+	        Assert.That(delta, Is.LessThan(500), "Failed perf test, delta=" + delta);
+	    }
+	}
 } // end of namespace

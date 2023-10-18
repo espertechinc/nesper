@@ -11,660 +11,484 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.runtime.client.scopetest;
+
 
 using NUnit.Framework;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
-using SupportBean = com.espertech.esper.common.@internal.support.SupportBean;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
-    public class EPLOtherSelectExprStreamSelector
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithInvalidSelectWildcardProperty(execs);
-            WithInsertTransposeNestedProperty(execs);
-            WithInsertFromPattern(execs);
-            WithObjectModelJoinAlias(execs);
-            WithNoJoinWildcardNoAlias(execs);
-            WithJoinWildcardNoAlias(execs);
-            WithNoJoinWildcardWithAlias(execs);
-            WithJoinWildcardWithAlias(execs);
-            WithNoJoinWithAliasWithProperties(execs);
-            WithJoinWithAliasWithProperties(execs);
-            WithNoJoinNoAliasWithProperties(execs);
-            WithJoinNoAliasWithProperties(execs);
-            WithAloneNoJoinNoAlias(execs);
-            WithAloneNoJoinAlias(execs);
-            WithAloneJoinAlias(execs);
-            WithAloneJoinNoAlias(execs);
-            WithInvalidSelect(execs);
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithInvalidSelect(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherInvalidSelect());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithAloneJoinNoAlias(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherAloneJoinNoAlias());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithAloneJoinAlias(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherAloneJoinAlias());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithAloneNoJoinAlias(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherAloneNoJoinAlias());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithAloneNoJoinNoAlias(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherAloneNoJoinNoAlias());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithJoinNoAliasWithProperties(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherJoinNoAliasWithProperties());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithNoJoinNoAliasWithProperties(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherNoJoinNoAliasWithProperties());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithJoinWithAliasWithProperties(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherJoinWithAliasWithProperties());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithNoJoinWithAliasWithProperties(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherNoJoinWithAliasWithProperties());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithJoinWildcardWithAlias(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherJoinWildcardWithAlias());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithNoJoinWildcardWithAlias(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherNoJoinWildcardWithAlias());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithJoinWildcardNoAlias(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherJoinWildcardNoAlias());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithNoJoinWildcardNoAlias(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherNoJoinWildcardNoAlias());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithObjectModelJoinAlias(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherObjectModelJoinAlias());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithInsertFromPattern(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherInsertFromPattern());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithInsertTransposeNestedProperty(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherInsertTransposeNestedProperty());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithInvalidSelectWildcardProperty(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherInvalidSelectWildcardProperty());
-            return execs;
-        }
-
-        private static SupportBean SendBeanEvent(
-            RegressionEnvironment env,
-            string s)
-        {
-            var bean = new SupportBean();
-            bean.TheString = s;
-            env.SendEventBean(bean);
-            return bean;
-        }
-
-        private static SupportBean SendBeanEvent(
-            RegressionEnvironment env,
-            string s,
-            int intPrimitive)
-        {
-            var bean = new SupportBean();
-            bean.TheString = s;
-            bean.IntPrimitive = intPrimitive;
-            env.SendEventBean(bean);
-            return bean;
-        }
-
-        private static SupportMarketDataBean SendMarketEvent(
-            RegressionEnvironment env,
-            string s)
-        {
-            var bean = new SupportMarketDataBean(s, 0d, 0L, "");
-            env.SendEventBean(bean);
-            return bean;
-        }
-
-        internal class EPLOtherInvalidSelectWildcardProperty : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                TryInvalidCompile(
-                    env,
-                    "select SimpleProperty.* as a from SupportBeanComplexProps as S0",
-                    "The property wildcard syntax must be used without column name");
-            }
-        }
-
-        internal class EPLOtherInsertTransposeNestedProperty : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                var stmtOneText = "@Name('l1') insert into StreamA select Nested.* from SupportBeanComplexProps as S0";
-                env.CompileDeploy(stmtOneText, path).AddListener("l1");
-                Assert.AreEqual(
-                    typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested),
-                    env.Statement("l1").EventType.UnderlyingType);
-
-                var stmtTwoText = "@Name('l2') select NestedValue from StreamA";
-                env.CompileDeploy(stmtTwoText, path).AddListener("l2");
-                Assert.AreEqual(typeof(string), env.Statement("l2").EventType.GetPropertyType("NestedValue"));
-
-                env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
-
-                Assert.AreEqual("NestedValue", env.Listener("l1").AssertOneGetNewAndReset().Get("NestedValue"));
-                Assert.AreEqual("NestedValue", env.Listener("l2").AssertOneGetNewAndReset().Get("NestedValue"));
-
-                env.UndeployAll();
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherInsertFromPattern : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtOneText = "@Name('l1') insert into streamA select a.* from pattern [every a=SupportBean]";
-                env.CompileDeploy(stmtOneText).AddListener("l1");
-
-                var stmtTwoText =
-                    "@Name('l2') insert into streamA select a.* from pattern [every a=SupportBean where timer:within(30 sec)]";
-                env.CompileDeploy(stmtTwoText).AddListener("l2");
-
-                var eventType = env.Statement("l1").EventType;
-                Assert.AreEqual(typeof(SupportBean), eventType.UnderlyingType);
-
-                object theEvent = SendBeanEvent(env, "E1", 10);
-                Assert.AreSame(theEvent, env.Listener("l2").AssertOneGetNewAndReset().Underlying);
-
-                theEvent = SendBeanEvent(env, "E2", 10);
-                Assert.AreSame(theEvent, env.Listener("l2").AssertOneGetNewAndReset().Underlying);
-
-                var stmtThreeText =
-                    "@Name('l3') insert into streamB select a.*, 'abc' as abc from pattern [every a=SupportBean where timer:within(30 sec)]";
-                env.CompileDeploy(stmtThreeText);
-                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), env.Statement("l3").EventType.UnderlyingType);
-                Assert.AreEqual(typeof(string), env.Statement("l3").EventType.GetPropertyType("abc"));
-                Assert.AreEqual(typeof(string), env.Statement("l3").EventType.GetPropertyType("TheString"));
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherObjectModelJoinAlias : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create()
-                    .AddStreamWildcard("S0")
-                    .AddStreamWildcard("S1", "S1stream")
-                    .AddWithAsProvidedName("TheString", "sym");
-                model.FromClause = FromClause.Create()
-                    .Add(FilterStream.Create("SupportBean", "S0").AddView("keepall"))
-                    .Add(FilterStream.Create("SupportMarketDataBean", "S1").AddView("keepall"));
-                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                env.CompileDeploy(model).AddListener("s0");
-
-                var epl =
-                    "@Name('s0') select S0.*, S1.* as S1stream, TheString as sym from SupportBean#keepall as S0, " +
-                    "SupportMarketDataBean#keepall as S1";
-                Assert.AreEqual(epl, model.ToEPL());
-                var modelReverse = env.EplToModel(model.ToEPL());
-                Assert.AreEqual(epl, modelReverse.ToEPL());
-
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S1stream"));
-                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
-
-                SendBeanEvent(env, "E1");
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                object theEvent = SendMarketEvent(env, "E1");
-                var outevent = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreSame(theEvent, outevent.Get("S1stream"));
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherNoJoinWildcardNoAlias : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select *, win.* from SupportBean#length(3) as win";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                var type = env.Statement("s0").EventType;
-                Assert.IsTrue(type.PropertyNames.Length > 15);
-                Assert.AreEqual(typeof(SupportBean), type.UnderlyingType);
-
-                object theEvent = SendBeanEvent(env, "E1", 16);
-                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Underlying);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherJoinWildcardNoAlias : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select *, S1.* from SupportBean#length(3) as S0, " +
-                          "SupportMarketDataBean#keepall as S1";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(7, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(long?), type.GetPropertyType("Volume"));
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0"));
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S1"));
-                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
-
-                object eventOne = SendBeanEvent(env, "E1", 13);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                object eventTwo = SendMarketEvent(env, "E2");
-                string[] fields = {"S0", "S1", "Symbol", "Volume"};
-                var received = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertProps(
-                    received,
-                    fields,
-                    new[] {eventOne, eventTwo, "E2", 0L});
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherNoJoinWildcardWithAlias : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select *, win.* as S0 from SupportBean#length(3) as win";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                var type = env.Statement("s0").EventType;
-                Assert.IsTrue(type.PropertyNames.Length > 15);
-                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0"));
-
-                object theEvent = SendBeanEvent(env, "E1", 15);
-                string[] fields = {"TheString", "IntPrimitive", "S0"};
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new[] {"E1", 15, theEvent});
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherJoinWildcardWithAlias : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl =
-                    "@Name('s0') select *, S1.* as S1stream, S0.* as S0stream from SupportBean#length(3) as S0, " +
-                    "SupportMarketDataBean#keepall as S1";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(4, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0stream"));
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0"));
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S1stream"));
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S1"));
-                Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
-
-                object eventOne = SendBeanEvent(env, "E1", 13);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                object eventTwo = SendMarketEvent(env, "E2");
-                string[] fields = {"S0", "S1", "S0stream", "S1stream"};
-                var received = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertProps(
-                    received,
-                    fields,
-                    new[] {eventOne, eventTwo, eventOne, eventTwo});
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherNoJoinWithAliasWithProperties : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl =
-                    "@Name('s0') select TheString.* as S0, IntPrimitive as a, TheString.* as S1, IntPrimitive as b from SupportBean#length(3) as TheString";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(4, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("a"));
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("b"));
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0"));
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S1"));
-
-                object theEvent = SendBeanEvent(env, "E1", 12);
-                string[] fields = {"S0", "S1", "a", "b"};
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new[] {theEvent, theEvent, 12, 12});
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherJoinWithAliasWithProperties : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl =
-                    "@Name('s0') select IntPrimitive, S1.* as S1stream, TheString, Symbol as sym, S0.* as S0stream from SupportBean#length(3) as S0, " +
-                    "SupportMarketDataBean#keepall as S1";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(5, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("IntPrimitive"));
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S1stream"));
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0stream"));
-                Assert.AreEqual(typeof(string), type.GetPropertyType("sym"));
-                Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
-                Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
-
-                object eventOne = SendBeanEvent(env, "E1", 13);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                object eventTwo = SendMarketEvent(env, "E2");
-                string[] fields = {"IntPrimitive", "sym", "TheString", "S0stream", "S1stream"};
-                var received = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertProps(
-                    received,
-                    fields,
-                    new[] {13, "E2", "E1", eventOne, eventTwo});
-                var theEvent = (EventBean) ((IDictionary<string, object>) received.Underlying).Get("S0stream");
-                Assert.AreSame(eventOne, theEvent.Underlying);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherNoJoinNoAliasWithProperties : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl =
-                    "@Name('s0') select IntPrimitive as a, string.*, IntPrimitive as b from SupportBean#length(3) as string";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(24, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("a"));
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("b"));
-                Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
-
-                SendBeanEvent(env, "E1", 10);
-                string[] fields = {"a", "TheString", "IntPrimitive", "b"};
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new object[] {10, "E1", 10, 10});
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherJoinNoAliasWithProperties : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select IntPrimitive, S1.*, Symbol as sym from SupportBean#length(3) as S0, " +
-                          "SupportMarketDataBean#keepall as S1";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(7, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(int?), type.GetPropertyType("IntPrimitive"));
-                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
-
-                SendBeanEvent(env, "E1", 11);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                object theEvent = SendMarketEvent(env, "E1");
-                string[] fields = {"IntPrimitive", "sym", "Symbol"};
-                var received = env.Listener("s0").AssertOneGetNewAndReset();
-                EPAssertionUtil.AssertProps(
-                    received,
-                    fields,
-                    new object[] {11, "E1", "E1"});
-                Assert.AreSame(theEvent, ((Pair<object, IDictionary<string, object>>) received.Underlying).First);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherAloneNoJoinNoAlias : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select TheString.* from SupportBean#length(3) as TheString";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                var type = env.Statement("s0").EventType;
-                Assert.IsTrue(type.PropertyNames.Length > 10);
-                Assert.AreEqual(typeof(SupportBean), type.UnderlyingType);
-
-                object theEvent = SendBeanEvent(env, "E1");
-                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Underlying);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherAloneNoJoinAlias : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select TheString.* as S0 from SupportBean#length(3) as TheString";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(1, type.PropertyNames.Length);
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S0"));
-                Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
-
-                object theEvent = SendBeanEvent(env, "E1");
-                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Get("S0"));
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherAloneJoinAlias : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select S1.* as S1 from SupportBean#length(3) as S0, " +
-                          "SupportMarketDataBean#keepall as S1";
-                env.CompileDeploy(epl);
-                var testListener = new SupportUpdateListener();
-                env.Statement("s0").AddListener(testListener);
-
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S1"));
-                Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
-
-                SendBeanEvent(env, "E1");
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                object theEvent = SendMarketEvent(env, "E1");
-                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Get("S1"));
-
-                env.UndeployAll();
-
-                // reverse streams
-                epl = "@Name('s0') select S0.* as szero from SupportBean#length(3) as S0, " +
-                      "SupportMarketDataBean#keepall as S1";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                type = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("szero"));
-                Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
-
-                SendMarketEvent(env, "E1");
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                theEvent = SendBeanEvent(env, "E1");
-                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Get("szero"));
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherAloneJoinNoAlias : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select S1.* from SupportBean#length(3) as S0, " +
-                          "SupportMarketDataBean#keepall as S1";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                var type = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(long?), type.GetPropertyType("Volume"));
-                Assert.AreEqual(typeof(SupportMarketDataBean), type.UnderlyingType);
-
-                SendBeanEvent(env, "E1");
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                object theEvent = SendMarketEvent(env, "E1");
-                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Underlying);
-
-                env.UndeployAll();
-
-                // reverse streams
-                epl = "@Name('s0') select S0.* from SupportBean#length(3) as S0, " +
-                      "SupportMarketDataBean#keepall as S1";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                type = env.Statement("s0").EventType;
-                Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
-                Assert.AreEqual(typeof(SupportBean), type.UnderlyingType);
-
-                SendMarketEvent(env, "E1");
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                theEvent = SendBeanEvent(env, "E1");
-                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Underlying);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherInvalidSelect : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                TryInvalidCompile(
-                    env,
-                    "select TheString.* as TheString, TheString from SupportBean#length(3) as TheString",
-                    "Column name 'TheString' appears more then once in select clause");
-
-                TryInvalidCompile(
-                    env,
-                    "select S1.* as abc from SupportBean#length(3) as S0",
-                    "Stream selector 'S1.*' does not match any stream name in the from clause [");
-
-                TryInvalidCompile(
-                    env,
-                    "select S0.* as abc, S0.* as abc from SupportBean#length(3) as S0",
-                    "Column name 'abc' appears more then once in select clause");
-
-                TryInvalidCompile(
-                    env,
-                    "select S0.*, S1.* from SupportBean#keepall as S0, SupportBean#keepall as S1",
-                    "A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation");
-            }
-        }
-    }
+	public class EPLOtherSelectExprStreamSelector {
+	    public static IList<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new EPLOtherInvalidSelectWildcardProperty());
+	        execs.Add(new EPLOtherInsertTransposeNestedProperty());
+	        execs.Add(new EPLOtherInsertFromPattern());
+	        execs.Add(new EPLOtherObjectModelJoinAlias());
+	        execs.Add(new EPLOtherNoJoinWildcardNoAlias());
+	        execs.Add(new EPLOtherJoinWildcardNoAlias());
+	        execs.Add(new EPLOtherNoJoinWildcardWithAlias());
+	        execs.Add(new EPLOtherJoinWildcardWithAlias());
+	        execs.Add(new EPLOtherNoJoinWithAliasWithProperties());
+	        execs.Add(new EPLOtherJoinWithAliasWithProperties());
+	        execs.Add(new EPLOtherNoJoinNoAliasWithProperties());
+	        execs.Add(new EPLOtherJoinNoAliasWithProperties());
+	        execs.Add(new EPLOtherAloneNoJoinNoAlias());
+	        execs.Add(new EPLOtherAloneNoJoinAlias());
+	        execs.Add(new EPLOtherAloneJoinAlias());
+	        execs.Add(new EPLOtherAloneJoinNoAlias());
+	        execs.Add(new EPLOtherInvalidSelect());
+	        return execs;
+	    }
+
+	    private class EPLOtherInvalidSelectWildcardProperty : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            env.TryInvalidCompile("select simpleProperty.* as a from SupportBeanComplexProps as s0",
+	                "The property wildcard syntax must be used without column name");
+	        }
+	    }
+
+	    private class EPLOtherInsertTransposeNestedProperty : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var path = new RegressionPath();
+	            var stmtOneText = "@name('l1') @public insert into StreamA select nested.* from SupportBeanComplexProps as s0";
+	            env.CompileDeploy(stmtOneText, path).AddListener("l1");
+	            env.AssertStatement("l1", statement => Assert.AreEqual(typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested), statement.EventType.UnderlyingType));
+
+	            var stmtTwoText = "@name('l2') select nestedValue from StreamA";
+	            env.CompileDeploy(stmtTwoText, path).AddListener("l2");
+	            env.AssertStatement("l2", statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("nestedValue")));
+
+	            env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
+
+	            env.AssertEqualsNew("l1", "nestedValue", "nestedValue");
+	            env.AssertEqualsNew("l2", "nestedValue", "nestedValue");
+
+	            env.UndeployAll();
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherInsertFromPattern : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var stmtOneText = "@name('l1') insert into streamA select a.* from pattern [every a=SupportBean]";
+	            env.CompileDeploy(stmtOneText).AddListener("l1");
+
+	            var stmtTwoText = "@name('l2') insert into streamA select a.* from pattern [every a=SupportBean where timer:within(30 sec)]";
+	            env.CompileDeploy(stmtTwoText).AddListener("l2");
+
+	            env.AssertStatement("l1", statement => {
+	                var eventType = statement.EventType;
+	                Assert.AreEqual(typeof(SupportBean), eventType.UnderlyingType);
+	            });
+
+	            object theEventOne = SendBeanEvent(env, "E1", 10);
+	            env.AssertEventNew("l2", @event =>Assert.AreSame(theEventOne, @event.Underlying));
+
+	            object theEventTwo = SendBeanEvent(env, "E2", 10);
+	            env.AssertEventNew("l2", @event =>Assert.AreSame(theEventTwo, @event.Underlying));
+
+	            var stmtThreeText = "@name('l3') insert into streamB select a.*, 'abc' as abc from pattern [every a=SupportBean where timer:within(30 sec)]";
+	            env.CompileDeploy(stmtThreeText);
+	            env.AssertStatement("l3", statement => {
+	                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), statement.EventType.UnderlyingType);
+	                Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("abc"));
+	                Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("theString"));
+	            });
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherObjectModelJoinAlias : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var model = new EPStatementObjectModel();
+	            model.SelectClause = SelectClause.Create()
+	                .AddStreamWildcard("s0")
+	                .AddStreamWildcard("s1", "s1stream")
+	                .AddWithAsProvidedName("theString", "sym");
+	            model.FromClause = FromClause.Create()
+	                .Add(FilterStream.Create("SupportBean", "s0").AddView("keepall"))
+	                .Add(FilterStream.Create("SupportMarketDataBean", "s1").AddView("keepall"));
+	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+	            env.CompileDeploy(model).AddListener("s0");
+
+	            var epl = "@name('s0') select s0.*, s1.* as s1stream, theString as sym from SupportBean#keepall as s0, " +
+	                      "SupportMarketDataBean#keepall as s1";
+	            Assert.AreEqual(epl, model.ToEPL());
+	            var modelReverse = env.EplToModel(model.ToEPL());
+	            Assert.AreEqual(epl, modelReverse.ToEPL());
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1stream"));
+	                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
+	            });
+
+	            SendBeanEvent(env, "E1");
+	            env.AssertListenerNotInvoked("s0");
+
+	            object theEvent = SendMarketEvent(env, "E1");
+	            env.AssertEventNew("s0", @event =>Assert.AreSame(theEvent, @event.Get("s1stream")));
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherNoJoinWildcardNoAlias : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select *, win.* from SupportBean#length(3) as win";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.IsTrue(type.PropertyNames.Length > 15);
+	                Assert.AreEqual(typeof(SupportBean), type.UnderlyingType);
+	            });
+
+	            object theEvent = SendBeanEvent(env, "E1", 16);
+	            env.AssertEventNew("s0", @event =>Assert.AreSame(theEvent, @event.Underlying));
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherJoinWildcardNoAlias : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select *, s1.* from SupportBean#length(3) as s0, " +
+	                      "SupportMarketDataBean#keepall as s1";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(7, type.PropertyNames.Length);
+	                Assert.AreEqual(typeof(long?), type.GetPropertyType("volume"));
+	                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0"));
+	                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1"));
+	                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
+	            });
+
+	            object eventOne = SendBeanEvent(env, "E1", 13);
+	            env.AssertListenerNotInvoked("s0");
+
+	            object eventTwo = SendMarketEvent(env, "E2");
+	            var fields = new string[]{"s0", "s1", "symbol", "volume"};
+	            env.AssertPropsNew("s0", fields, new object[]{eventOne, eventTwo, "E2", 0L});
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherNoJoinWildcardWithAlias : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select *, win.* as s0 from SupportBean#length(3) as win";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.IsTrue(type.PropertyNames.Length > 15);
+	                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
+	                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0"));
+	            });
+
+	            object theEvent = SendBeanEvent(env, "E1", 15);
+	            var fields = new string[]{"theString", "intPrimitive", "s0"};
+	            env.AssertPropsNew("s0", fields, new object[]{"E1", 15, theEvent});
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherJoinWildcardWithAlias : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select *, s1.* as s1stream, s0.* as s0stream from SupportBean#length(3) as s0, " +
+	                      "SupportMarketDataBean#keepall as s1";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(4, type.PropertyNames.Length);
+	                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0stream"));
+	                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0"));
+	                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1stream"));
+	                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1"));
+	                Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
+	            });
+
+	            object eventOne = SendBeanEvent(env, "E1", 13);
+	            env.AssertListenerNotInvoked("s0");
+
+	            object eventTwo = SendMarketEvent(env, "E2");
+	            var fields = new string[]{"s0", "s1", "s0stream", "s1stream"};
+	            env.AssertPropsNew("s0", fields, new object[]{eventOne, eventTwo, eventOne, eventTwo});
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherNoJoinWithAliasWithProperties : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select theString.* as s0, intPrimitive as a, theString.* as s1, intPrimitive as b from SupportBean#length(3) as theString";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(4, type.PropertyNames.Length);
+	                Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
+	                Assert.AreEqual(typeof(int?), type.GetPropertyType("a"));
+	                Assert.AreEqual(typeof(int?), type.GetPropertyType("b"));
+	                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0"));
+	                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s1"));
+	            });
+
+	            object theEvent = SendBeanEvent(env, "E1", 12);
+	            var fields = new string[]{"s0", "s1", "a", "b"};
+	            env.AssertPropsNew("s0", fields, new object[]{theEvent, theEvent, 12, 12});
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherJoinWithAliasWithProperties : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select intPrimitive, s1.* as s1stream, theString, symbol as sym, s0.* as s0stream from SupportBean#length(3) as s0, " +
+	                      "SupportMarketDataBean#keepall as s1";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(5, type.PropertyNames.Length);
+	                Assert.AreEqual(typeof(int?), type.GetPropertyType("intPrimitive"));
+	                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1stream"));
+	                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0stream"));
+	                Assert.AreEqual(typeof(string), type.GetPropertyType("sym"));
+	                Assert.AreEqual(typeof(string), type.GetPropertyType("theString"));
+	                Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
+	            });
+
+	            object eventOne = SendBeanEvent(env, "E1", 13);
+	            env.AssertListenerNotInvoked("s0");
+
+	            object eventTwo = SendMarketEvent(env, "E2");
+	            var fields = new string[]{"intPrimitive", "sym", "theString", "s0stream", "s1stream"};
+	            env.AssertEventNew("s0", @event => {
+	                EPAssertionUtil.AssertProps(@event, fields, new object[]{13, "E2", "E1", eventOne, eventTwo});
+	                var theEvent = (EventBean) ((IDictionary<string, object>) @event.Underlying).Get("s0stream");
+	                Assert.AreSame(eventOne, theEvent.Underlying);
+	            });
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherNoJoinNoAliasWithProperties : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select intPrimitive as a, string.*, intPrimitive as b from SupportBean#length(3) as string";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(22, type.PropertyNames.Length);
+	                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
+	                Assert.AreEqual(typeof(int?), type.GetPropertyType("a"));
+	                Assert.AreEqual(typeof(int?), type.GetPropertyType("b"));
+	                Assert.AreEqual(typeof(string), type.GetPropertyType("theString"));
+	            });
+
+	            SendBeanEvent(env, "E1", 10);
+	            var fields = new string[]{"a", "theString", "intPrimitive", "b"};
+	            env.AssertPropsNew("s0", fields, new object[]{10, "E1", 10, 10});
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherJoinNoAliasWithProperties : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select intPrimitive, s1.*, symbol as sym from SupportBean#length(3) as s0, " +
+	                      "SupportMarketDataBean#keepall as s1";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(7, type.PropertyNames.Length);
+	                Assert.AreEqual(typeof(int?), type.GetPropertyType("intPrimitive"));
+	                Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
+	            });
+
+	            SendBeanEvent(env, "E1", 11);
+	            env.AssertListenerNotInvoked("s0");
+
+	            object theEvent = SendMarketEvent(env, "E1");
+	            var fields = new string[]{"intPrimitive", "sym", "symbol"};
+	            env.AssertEventNew("s0", @event => {
+	                EPAssertionUtil.AssertProps(@event, fields, new object[]{11, "E1", "E1"});
+	                Assert.AreSame(theEvent, ((Pair<object, IDictionary<string, object>>) @event.Underlying).First);
+	            });
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherAloneNoJoinNoAlias : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select theString.* from SupportBean#length(3) as theString";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.IsTrue(type.PropertyNames.Length > 10);
+	                Assert.AreEqual(typeof(SupportBean), type.UnderlyingType);
+	            });
+
+	            object theEvent = SendBeanEvent(env, "E1");
+	            env.AssertEventNew("s0", @event =>Assert.AreSame(theEvent, @event.Underlying));
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherAloneNoJoinAlias : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select theString.* as s0 from SupportBean#length(3) as theString";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(1, type.PropertyNames.Length);
+	                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0"));
+	                Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
+	            });
+
+	            object theEvent = SendBeanEvent(env, "E1");
+	            env.AssertEventNew("s0", @event =>Assert.AreSame(theEvent, @event.Get("s0")));
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherAloneJoinAlias : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select s1.* as s1 from SupportBean#length(3) as s0, " +
+	                      "SupportMarketDataBean#keepall as s1";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1"));
+	                Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
+	            });
+
+	            SendBeanEvent(env, "E1");
+	            env.AssertListenerNotInvoked("s0");
+
+	            object eventOne = SendMarketEvent(env, "E1");
+	            env.AssertEventNew("s0", @event =>Assert.AreSame(eventOne, @event.Get("s1")));
+
+	            env.UndeployAll();
+
+	            // reverse streams
+	            epl = "@name('s0') select s0.* as szero from SupportBean#length(3) as s0, " +
+	                "SupportMarketDataBean#keepall as s1";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("szero"));
+	                Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
+	            });
+
+	            SendMarketEvent(env, "E1");
+	            env.AssertListenerNotInvoked("s0");
+
+	            object eventTwo = SendBeanEvent(env, "E1");
+	            env.AssertEventNew("s0", @event =>Assert.AreSame(eventTwo, @event.Get("szero")));
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherAloneJoinNoAlias : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select s1.* from SupportBean#length(3) as s0, " +
+	                      "SupportMarketDataBean#keepall as s1";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(typeof(long?), type.GetPropertyType("volume"));
+	                Assert.AreEqual(typeof(SupportMarketDataBean), type.UnderlyingType);
+	            });
+
+	            SendBeanEvent(env, "E1");
+	            env.AssertListenerNotInvoked("s0");
+
+	            object eventOne = SendMarketEvent(env, "E1");
+	            env.AssertEventNew("s0", @event =>Assert.AreSame(eventOne, @event.Underlying));
+
+	            env.UndeployAll();
+
+	            // reverse streams
+	            epl = "@name('s0') select s0.* from SupportBean#length(3) as s0, " +
+	                "SupportMarketDataBean#keepall as s1";
+	            env.CompileDeploy(epl).AddListener("s0");
+
+	            env.AssertStatement("s0", statement => {
+	                var type = statement.EventType;
+	                Assert.AreEqual(typeof(string), type.GetPropertyType("theString"));
+	                Assert.AreEqual(typeof(SupportBean), type.UnderlyingType);
+	            });
+
+	            SendMarketEvent(env, "E1");
+	            env.AssertListenerNotInvoked("s0");
+
+	            object eventTwo = SendBeanEvent(env, "E1");
+	            env.AssertEventNew("s0", @event =>Assert.AreSame(eventTwo, @event.Underlying));
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private class EPLOtherInvalidSelect : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            env.TryInvalidCompile("select theString.* as theString, theString from SupportBean#length(3) as theString",
+	                "Column name 'theString' appears more then once in select clause");
+
+	            env.TryInvalidCompile("select s1.* as abc from SupportBean#length(3) as s0",
+	                "Stream selector 's1.*' does not match any stream name in the from clause [");
+
+	            env.TryInvalidCompile("select s0.* as abc, s0.* as abc from SupportBean#length(3) as s0",
+	                "Column name 'abc' appears more then once in select clause");
+
+	            env.TryInvalidCompile("select s0.*, s1.* from SupportBean#keepall as s0, SupportBean#keepall as s1",
+	                "A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation");
+	        }
+	    }
+
+	    private static SupportBean SendBeanEvent(RegressionEnvironment env, string s) {
+	        var bean = new SupportBean();
+	        bean.TheString = s;
+	        env.SendEventBean(bean);
+	        return bean;
+	    }
+
+	    private static SupportBean SendBeanEvent(RegressionEnvironment env, string s, int intPrimitive) {
+	        var bean = new SupportBean();
+	        bean.TheString = s;
+	        bean.IntPrimitive = intPrimitive;
+	        env.SendEventBean(bean);
+	        return bean;
+	    }
+
+	    private static SupportMarketDataBean SendMarketEvent(RegressionEnvironment env, string s) {
+	        var bean = new SupportMarketDataBean(s, 0d, 0L, "");
+	        env.SendEventBean(bean);
+	        return bean;
+	    }
+	}
 } // end of namespace

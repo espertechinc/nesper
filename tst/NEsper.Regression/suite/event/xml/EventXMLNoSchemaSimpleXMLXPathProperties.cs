@@ -8,10 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
@@ -40,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         public static IList<RegressionExecution> Executions()
         {
-            List<RegressionExecution> execs = new List<RegressionExecution>();
+            var execs = new List<RegressionExecution>();
             WithPreconfig(execs);
             WithCreateSchema(execs);
             return execs;
@@ -72,24 +74,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "@public @buseventtype " +
-                             "@XMLSchema(RootElementName='myevent'," +
-                             "  XPathFunctionResolver='" +
-                             typeof(SupportXPathFunctionResolver).MaskTypeName() +
-                             "'," +
-                             "  XPathVariableResolver='" +
-                             typeof(SupportXPathVariableResolver).MaskTypeName() +
-                             "')" +
-                             "@XMLSchemaField(Name='xpathElement1', XPath='/myevent/element1', Type='STRING')" +
-                             "@XMLSchemaField(Name='xpathCountE21', XPath='count(/myevent/element2/element21)', Type='NUMBER')" +
-                             "@XMLSchemaField(Name='xpathAttrString', XPath='/myevent/element3/@attrString', Type='STRING')" +
-                             "@XMLSchemaField(Name='xpathAttrNum', XPath='/myevent/element3/@attrNum', Type='NUMBER')" +
-                             "@XMLSchemaField(Name='xpathAttrBool', XPath='/myevent/element3/@attrBool', Type='BOOLEAN')" +
-                             "@XMLSchemaField(Name='stringCastLong', XPath='/myevent/element3/@attrNum', Type='STRING', CastToType='long')" +
-                             "@XMLSchemaField(Name='stringCastDouble', XPath='/myevent/element3/@attrNum', Type='STRING', CastToType='double')" +
-                             "@XMLSchemaField(Name='numCastInt', XPath='/myevent/element3/@attrNum', Type='NUMBER', CastToType='int')" +
-                             "create xml schema MyEventCreateSchema()";
-                RegressionPath path = new RegressionPath();
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(RootElementName='myevent'," +
+                          "  XPathFunctionResolver='" + typeof(SupportXPathFunctionResolver).MaskTypeName() + "'," +
+                          "  XPathVariableResolver='" + typeof(SupportXPathVariableResolver).MaskTypeName() + "')" +
+                          "@XMLSchemaField(Name='xpathElement1', XPath='/myevent/element1', Type='STRING')" +
+                          "@XMLSchemaField(Name='xpathCountE21', XPath='count(/myevent/element2/element21)', Type='NUMBER')" +
+                          "@XMLSchemaField(Name='xpathAttrString', XPath='/myevent/element3/@attrString', Type='STRING')" +
+                          "@XMLSchemaField(Name='xpathAttrNum', XPath='/myevent/element3/@attrNum', Type='NUMBER')" +
+                          "@XMLSchemaField(Name='xpathAttrBool', XPath='/myevent/element3/@attrBool', Type='BOOLEAN')" +
+                          "@XMLSchemaField(Name='stringCastLong', XPath='/myevent/element3/@attrNum', Type='STRING', CastToType='long')" +
+                          "@XMLSchemaField(Name='stringCastDouble', XPath='/myevent/element3/@attrNum', Type='STRING', CastToType='double')" +
+                          "@XMLSchemaField(Name='numCastInt', XPath='/myevent/element3/@attrNum', Type='NUMBER', CastToType='int')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
                 env.CompileDeploy(epl, path);
                 RunAssertion(env, "MyEventCreateSchema", path);
             }
@@ -97,169 +95,29 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
         private static void RunAssertion(
             RegressionEnvironment env,
-            String eventTypeName,
+            string eventTypeName,
             RegressionPath path)
         {
             // assert type metadata
-            EventType type = env.Runtime.EventTypeService.GetEventTypePreconfigured(eventTypeName);
-            Assert.AreEqual(EventTypeApplicationType.XML, type.Metadata.ApplicationType);
+            env.AssertThat(
+                () => {
+                    var type = env.Runtime.EventTypeService.GetEventTypePreconfigured(eventTypeName);
+                    Assert.AreEqual(EventTypeApplicationType.XML, type.Metadata.ApplicationType);
 
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor(
-                        "xpathElement1",
-                        typeof(string),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "xpathCountE21",
-                        typeof(double?),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "xpathAttrString",
-                        typeof(string),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "xpathAttrNum",
-                        typeof(double?),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "xpathAttrBool",
-                        typeof(bool?),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "stringCastLong",
-                        typeof(long),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "stringCastDouble",
-                        typeof(double),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "numCastInt",
-                        typeof(int),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false)
-                },
-                type.PropertyDescriptors);
-
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor(
-                        "xpathElement1",
-                        typeof(string),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "xpathCountE21",
-                        typeof(double?),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "xpathAttrString",
-                        typeof(string),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "xpathAttrNum",
-                        typeof(double?),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "xpathAttrBool",
-                        typeof(bool?),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "stringCastLong",
-                        typeof(long),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "stringCastDouble",
-                        typeof(double),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false),
-                    new EventPropertyDescriptor(
-                        "numCastInt",
-                        typeof(int),
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        false)
-                },
-                type.PropertyDescriptors);
+                    SupportEventPropUtil.AssertPropsEquals(
+                        type.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("xpathElement1", typeof(string)),
+                        new SupportEventPropDesc("xpathCountE21", typeof(double?)),
+                        new SupportEventPropDesc("xpathAttrString", typeof(string)),
+                        new SupportEventPropDesc("xpathAttrNum", typeof(double?)),
+                        new SupportEventPropDesc("xpathAttrBool", typeof(bool?)),
+                        new SupportEventPropDesc("stringCastLong", typeof(long?)),
+                        new SupportEventPropDesc("stringCastDouble", typeof(double?)),
+                        new SupportEventPropDesc("numCastInt", typeof(int?)));
+                });
 
             var stmt =
-                "@Name('s0') select xpathElement1, xpathCountE21, xpathAttrString, xpathAttrNum, xpathAttrBool," +
+                "@name('s0') select xpathElement1, xpathCountE21, xpathAttrString, xpathAttrNum, xpathAttrBool," +
                 "stringCastLong," +
                 "stringCastDouble," +
                 "numCastInt " +
@@ -282,17 +140,21 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             RegressionEnvironment env,
             string element1)
         {
-            Assert.IsNotNull(env.Listener("s0").LastNewData);
-            var theEvent = env.Listener("s0").LastNewData[0];
+            env.AssertListener(
+                "s0",
+                listener => {
+                    Assert.NotNull(listener.LastNewData);
+                    var theEvent = listener.LastNewData[0];
 
-            Assert.AreEqual(element1, theEvent.Get("xpathElement1"));
-            Assert.AreEqual(2.0, theEvent.Get("xpathCountE21"));
-            Assert.AreEqual("VAL3", theEvent.Get("xpathAttrString"));
-            Assert.AreEqual(5d, theEvent.Get("xpathAttrNum"));
-            Assert.AreEqual(true, theEvent.Get("xpathAttrBool"));
-            Assert.AreEqual(5L, theEvent.Get("stringCastLong"));
-            Assert.AreEqual(5d, theEvent.Get("stringCastDouble"));
-            Assert.AreEqual(5, theEvent.Get("numCastInt"));
+                    Assert.AreEqual(element1, theEvent.Get("xpathElement1"));
+                    Assert.AreEqual(2.0, theEvent.Get("xpathCountE21"));
+                    Assert.AreEqual("VAL3", theEvent.Get("xpathAttrString"));
+                    Assert.AreEqual(5d, theEvent.Get("xpathAttrNum"));
+                    Assert.AreEqual(true, theEvent.Get("xpathAttrBool"));
+                    Assert.AreEqual(5L, theEvent.Get("stringCastLong"));
+                    Assert.AreEqual(5d, theEvent.Get("stringCastDouble"));
+                    Assert.AreEqual(5, theEvent.Get("numCastInt"));
+                });
         }
 
         public static void SendEvent(

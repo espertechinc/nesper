@@ -199,7 +199,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 				string description,
 				string hint,
 				int priority,
-				Boolean drop,
+				bool drop,
 				IDictionary<string, string> tag)
 			{
 				DeploymentId = deploymentId;

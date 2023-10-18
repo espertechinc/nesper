@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 
@@ -33,8 +34,8 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('s0') insert into SomeStream select TheString, IntPrimitive from SupportBean;" +
-                    "@Name('s1') select TheString, IntPrimitive from SomeStream(IntPrimitive = 0)";
+                    "@name('s0') insert into SomeStream select TheString, IntPrimitive from SupportBean;" +
+                    "@name('s1') select TheString, IntPrimitive from SomeStream(IntPrimitive = 0)";
                 var compiled = env.Compile(epl);
 
                 env.Deploy(compiled).AddListener("s1").Milestone(0);
@@ -58,13 +59,13 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
             {
                 env.SendEventBean(new SupportBean(theString, intPrimitive));
                 if (received) {
-                    EPAssertionUtil.AssertProps(
-                        env.Listener("s1").AssertOneGetNewAndReset(),
+                    env.AssertPropsNew(
+                        "s1",
                         new [] { "TheString","IntPrimitive" },
-                        new object[] {theString, intPrimitive});
+                        new object[] { theString, intPrimitive });
                 }
                 else {
-                    Assert.IsFalse(env.Listener("s1").IsInvoked);
+                    env.AssertListenerNotInvoked("s1");
                 }
             }
         }
@@ -76,10 +77,10 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
                 var args = new CompilerArguments(env.Configuration);
                 args.Options.AccessModifierEventType = ctx => NameAccessModifier.PUBLIC;
                 var first = env.Compile(
-                    "@Name('s0') insert into SomeStream select TheString as a, IntPrimitive as b from SupportBean",
+                    "@name('s0') insert into SomeStream select TheString as a, IntPrimitive as b from SupportBean",
                     args);
                 var second = env.Compile(
-                    "@Name('s1') select a, b from SomeStream",
+                    "@name('s1') select a, b from SomeStream",
                     new CompilerArguments(env.Configuration).SetPath(new CompilerPath().Add(first)));
 
                 env.Deploy(first).Milestone(0);
@@ -104,10 +105,12 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
                 int intPrimitive)
             {
                 env.SendEventBean(new SupportBean(theString, intPrimitive));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s1").AssertOneGetNewAndReset(),
-                    new [] { "a","b" },
-                    new object[] {theString, intPrimitive});
+                env.AssertPropsNew("s1", new [] { "a","b" }, new object[] {theString, intPrimitive});
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
     }

@@ -9,211 +9,171 @@
 using System;
 using System.Collections.Generic;
 
+using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 
 using NEsper.Avro.Extensions;
-using NEsper.Avro.Util.Support;
 
 using Newtonsoft.Json.Linq;
 
-using NUnit.Framework;
+using static NEsper.Avro.Core.AvroConstant;
+using static NEsper.Avro.Extensions.TypeBuilder;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
-	public class EventInfraContainedNestedArray : RegressionExecution
-	{
-		public void Run(RegressionEnvironment env)
-		{
-			// Bean
-			BiConsumer<EventType, string[]> bean = (
-				type,
-				ids) => {
-				var property = new LocalInnerEvent[ids.Length];
-				for (var i = 0; i < ids.Length; i++) {
-					property[i] = new LocalInnerEvent(new LocalLeafEvent(ids[i]));
-				}
+	public class EventInfraContainedNestedArray : RegressionExecution {
+	    public void Run(RegressionEnvironment env) {
+	        // Bean
+	        Consumer<string[]> bean = ids => {
+	            var property = new LocalInnerEvent[ids.Length];
+	            for (var i = 0; i < ids.Length; i++) {
+	                property[i] = new LocalInnerEvent(new LocalLeafEvent(ids[i]));
+	            }
+	            env.SendEventBean(new LocalEvent(property));
+	        };
+	        var beanepl = "@public @buseventtype create schema LocalLeafEvent as " + typeof(LocalLeafEvent).FullName + ";\n" +
+	                      "@public @buseventtype create schema LocalInnerEvent as " + typeof(LocalInnerEvent).FullName + ";\n" +
+	                      "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).FullName + ";\n";
+	        RunAssertion(env, beanepl, bean);
 
-				env.SendEventBean(new LocalEvent(property));
-			};
-			var beanepl = "@public @buseventtype create schema LocalLeafEvent as " +
-			              typeof(LocalLeafEvent).MaskTypeName() +
-			              ";\n" +
-			              "@public @buseventtype create schema LocalInnerEvent as " +
-			              typeof(LocalInnerEvent).MaskTypeName() +
-			              ";\n" +
-			              "@public @buseventtype create schema LocalEvent as " +
-			              typeof(LocalEvent).MaskTypeName() +
-			              ";\n";
-			RunAssertion(env, beanepl, bean);
+	        // Map
+	        Consumer<string[]> map = ids => {
+	            var property = new IDictionary<string, object>[ids.Length];
+	            for (var i = 0; i < ids.Length; i++) {
+	                property[i] = Collections.SingletonDataMap("leaf", Collections.SingletonDataMap("id", ids[i]));
+	            }
+	            env.SendEventMap(Collections.SingletonDataMap("property", property), "LocalEvent");
+	        };
+	        RunAssertion(env, GetEpl("map"), map);
 
-			// Map
-			BiConsumer<EventType, string[]> map = (
-				type,
-				ids) => {
-				var property = new IDictionary<string, object>[ids.Length];
-				for (var i = 0; i < ids.Length; i++) {
-					property[i] = Collections.SingletonDataMap("Leaf", Collections.SingletonDataMap("Id", ids[i]));
-				}
+	        // Object-array
+	        Consumer<string[]> oa = ids => {
+	            var property = new object[ids.Length][];
+	            for (var i = 0; i < ids.Length; i++) {
+	                property[i] = new object[]{new object[]{ids[i]}};
+	            }
+	            env.SendEventObjectArray(new object[]{property}, "LocalEvent");
+	        };
+	        RunAssertion(env, GetEpl("objectarray"), oa);
 
-				env.SendEventMap(Collections.SingletonDataMap("Property", property), "LocalEvent");
-			};
-			RunAssertion(env, GetEpl("map"), map);
+	        // Json
+	        Consumer<string[]> json = ids => {
+	            var property = new JArray();
+	            for (var i = 0; i < ids.Length; i++) {
+		            var inner = new JObject(new JProperty("leaf", new JObject(new JProperty("id", ids[i]))));
+	                property.Add(inner);
+	            }
+	            env.SendEventJson(new JObject(new JProperty("property", property)).ToString(), "LocalEvent");
+	        };
+	        RunAssertion(env, GetEpl("json"), json);
 
-			// Object-array
-			BiConsumer<EventType, string[]> oa = (
-				type,
-				ids) => {
-				var property = new object[ids.Length][];
-				for (var i = 0; i < ids.Length; i++) {
-					property[i] = new object[] {new object[] {ids[i]}};
-				}
+	        // Json-Class-Provided
+	        var eplJsonProvided = "@JsonSchema(className='" + typeof(MyLocalJsonProvided).FullName + "') @public @buseventtype create json schema LocalEvent();\n";
+	        RunAssertion(env, eplJsonProvided, json);
 
-				env.SendEventObjectArray(new object[] {property}, "LocalEvent");
-			};
-			RunAssertion(env, GetEpl("objectarray"), oa);
+	        // Avro
+	        Consumer<string[]> avro = ids => {
+	            var schema = env.RuntimeAvroSchemaByDeployment("schema", "LocalEvent");
+	            var property = new List<GenericRecord>();
+	            for (var i = 0; i < ids.Length; i++) {
+		            var leaf = new GenericRecord(
+			            schema.GetField("property")
+				            .Schema.AsArraySchema()
+				            .ItemSchema.GetField("leaf")
+				            .Schema.AsRecordSchema());
+	                leaf.Put("id", ids[i]);
+	                var inner = new GenericRecord(
+		                schema.GetField("property")
+			                .Schema.AsArraySchema()
+			                .ItemSchema.AsRecordSchema());
+	                inner.Put("leaf", leaf);
+	                property.Add(inner);
+	            }
+	            var @event = new GenericRecord(schema.AsRecordSchema());
+	            @event.Put("property", property);
+	            env.SendEventAvro(@event, "LocalEvent");
+	        };
+	        RunAssertion(env, GetEpl("avro"), avro);
+	    }
 
-			// Json
-			BiConsumer<EventType, string[]> json = (
-				type,
-				ids) => {
-				var property = new JArray();
-				for (var i = 0; i < ids.Length; i++) {
-					var inner = new JObject(new JProperty("Leaf", new JObject(new JProperty("Id", ids[i]))));
-					property.Add(inner);
-				}
+	    private string GetEpl(string underlying) {
+	        return "create " + underlying + " schema LocalLeafEvent(id string);\n" +
+	            "create " + underlying + " schema LocalInnerEvent(leaf LocalLeafEvent);\n" +
+	            "@name('schema') @public @buseventtype create " + underlying + " schema LocalEvent(property LocalInnerEvent[]);\n";
+	    }
 
-				env.SendEventJson(new JObject(new JProperty("Property", property)).ToString(), "LocalEvent");
-			};
-			RunAssertion(env, GetEpl("json"), json);
+	    public void RunAssertion(RegressionEnvironment env,
+	                             string createSchemaEPL,
+	                             Consumer<string[]> sender) {
 
-			// Json-Class-Provided
-			var eplJsonProvided = "@JsonSchema(ClassName='" + typeof(MyLocalJsonProvided).MaskTypeName() + "') @public @buseventtype create json schema LocalEvent();\n";
-			RunAssertion(env, eplJsonProvided, json);
+	        env.CompileDeploy(createSchemaEPL +
+	            "@name('s0') select * from LocalEvent[property[0].leaf];\n" +
+	            "@name('s1') select * from LocalEvent[property[1].leaf];\n").AddListener("s0").AddListener("s1");
 
-			// Avro
-			BiConsumer<EventType, string[]> avro = (
-				type,
-				ids) => {
-				var schema = SupportAvroUtil.GetAvroSchema(type);
-				var property = new List<GenericRecord>();
-				for (var i = 0; i < ids.Length; i++) {
-					var leaf = new GenericRecord(
-						schema
-							.GetField("Property")
-							.Schema
-							.AsArraySchema()
-							.ItemSchema
-							.AsRecordSchema()
-							.GetField("Leaf")
-							.Schema
-							.AsRecordSchema()
-					);
-					leaf.Put("Id", ids[i]);
-					var inner = new GenericRecord(
-						schema
-							.GetField("Property")
-							.Schema
-							.AsArraySchema()
-							.ItemSchema
-							.AsRecordSchema());
-					inner.Put("Leaf", leaf);
-					property.Add(inner);
-				}
+	        sender.Invoke("a,b".SplitCsv());
+	        env.AssertEqualsNew("s0", "id", "a");
+	        env.AssertEqualsNew("s1", "id", "b");
 
-				var @event = new GenericRecord(schema.AsRecordSchema());
-				@event.Put("Property", property);
-				env.SendEventAvro(@event, "LocalEvent");
-			};
-			RunAssertion(env, GetEpl("avro"), avro);
-		}
+	        env.UndeployAll();
+	    }
 
-		private string GetEpl(string underlying)
-		{
-			return "create " +
-			       underlying +
-			       " schema LocalLeafEvent(Id string);\n" +
-			       "create " +
-			       underlying +
-			       " schema LocalInnerEvent(Leaf LocalLeafEvent);\n" +
-			       "@public @buseventtype create " +
-			       underlying +
-			       " schema LocalEvent(Property LocalInnerEvent[]);\n";
-		}
+	    [Serializable]
+	    public class LocalLeafEvent {
+	        private readonly string id;
 
-		public void RunAssertion(
-			RegressionEnvironment env,
-			string createSchemaEPL,
-			BiConsumer<EventType, string[]> sender)
-		{
+	        public LocalLeafEvent(string id) {
+	            this.id = id;
+	        }
 
-			env.CompileDeploy(
-					createSchemaEPL +
-					"@Name('s0') select * from LocalEvent[Property[0].Leaf];\n" +
-					"@Name('s1') select * from LocalEvent[Property[1].Leaf];\n")
-				.AddListener("s0")
-				.AddListener("s1");
-			var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s0"), "LocalEvent");
+	        public string GetId() {
+	            return id;
+	        }
+	    }
 
-			sender.Invoke(eventType, "a,b".SplitCsv());
-			Assert.AreEqual("a", env.Listener("s0").AssertOneGetNewAndReset().Get("Id"));
-			Assert.AreEqual("b", env.Listener("s1").AssertOneGetNewAndReset().Get("Id"));
+	    [Serializable]
+	    public class LocalInnerEvent {
+	        private readonly LocalLeafEvent leaf;
 
-			env.UndeployAll();
-		}
+	        public LocalInnerEvent(LocalLeafEvent leaf) {
+	            this.leaf = leaf;
+	        }
 
-		public class LocalLeafEvent
-		{
-			public LocalLeafEvent(string id)
-			{
-				this.Id = id;
-			}
+	        public LocalLeafEvent GetLeaf() {
+	            return leaf;
+	        }
+	    }
 
-			public string Id { get; }
-		}
+	    [Serializable]
+	    public class LocalEvent {
+	        private LocalInnerEvent[] property;
 
-		public class LocalInnerEvent
-		{
-			public LocalInnerEvent(LocalLeafEvent leaf)
-			{
-				this.Leaf = leaf;
-			}
+	        public LocalEvent(LocalInnerEvent[] property) {
+	            this.property = property;
+	        }
 
-			public LocalLeafEvent Leaf { get; }
-		}
+	        public LocalInnerEvent[] GetProperty() {
+	            return property;
+	        }
+	    }
 
-		public class LocalEvent
-		{
-			public LocalEvent(LocalInnerEvent[] property)
-			{
-				this.Property = property;
-			}
+	    [Serializable]
+	    public class MyLocalJsonProvided {
+	        public MyLocalJsonProvidedInnerEvent[] property;
+	    }
 
-			public LocalInnerEvent[] Property { get; }
-		}
+	    [Serializable]
+	    public class MyLocalJsonProvidedInnerEvent {
+	        public MyLocalJsonProvidedLeafEvent leaf;
+	    }
 
-		[Serializable]
-		public class MyLocalJsonProvided
-		{
-			public MyLocalJsonProvidedInnerEvent[] Property;
-		}
-
-		[Serializable]
-		public class MyLocalJsonProvidedInnerEvent
-		{
-			public MyLocalJsonProvidedLeafEvent Leaf;
-		}
-
-		[Serializable]
-		public class MyLocalJsonProvidedLeafEvent
-		{
-			public string Id;
-		}
+	    [Serializable]
+	    public class MyLocalJsonProvidedLeafEvent {
+	        public string id;
+	    }
 	}
 } // end of namespace

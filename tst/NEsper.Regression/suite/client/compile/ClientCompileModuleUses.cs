@@ -65,8 +65,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                RegressionPath path = new RegressionPath();
-                string eplObjects = "@public create variable int MYVAR;\n";
+                var path = new RegressionPath();
+                var eplObjects = "@public create variable int MYVAR;\n";
                 env.Compile(eplObjects, path);
 
                 env.Compile("uses dummy; select MYVAR from SupportBean", path);
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     moduleC = GetModule("A");
                     moduleD = GetModule("B", "A", "C");
                     moduleE = GetModule("C");
-                    ModuleOrderOptions options = new ModuleOrderOptions();
+                    var options = new ModuleOrderOptions();
                     options.IsCheckUses = false;
                     order = ModuleOrderUtil.GetModuleOrder(
                         Arrays.AsList(new Module[] {moduleA, moduleB, moduleC, moduleD, moduleE}),
@@ -196,9 +196,9 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 // Circular 3
-                Module moduleB = GetModule("B", "C");
-                Module moduleC = GetModule("C", "D");
-                Module moduleD = GetModule("D", "B");
+                var moduleB = GetModule("B", "C");
+                var moduleC = GetModule("C", "D");
+                var moduleD = GetModule("D", "B");
 
                 try {
                     ModuleOrderUtil.GetModuleOrder(
@@ -240,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 }
 
                 // turn off circular check
-                ModuleOrderOptions options = new ModuleOrderOptions();
+                var options = new ModuleOrderOptions();
                 options.IsCheckCircularDependency = false;
                 try {
                     order = ModuleOrderUtil.GetModuleOrder(Arrays.AsList(new Module[] {moduleC, moduleB}), EmptySet<string>.Instance, options);
@@ -258,7 +258,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 // Single module
-                Module moduleB = GetModule("B", "C");
+                var moduleB = GetModule("B", "C");
                 try {
                     ModuleOrderUtil.GetModuleOrder(Arrays.AsList(new Module[] {moduleB}), EmptySet<string>.Instance, new ModuleOrderOptions());
                     Assert.Fail();
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 }
 
                 // multiple module
-                Module[] modules = new Module[] {GetModule("B", "C"), GetModule("C", "D"), GetModule("D", "x")};
+                var modules = new Module[] {GetModule("B", "C"), GetModule("C", "D"), GetModule("D", "x")};
                 try {
                     ModuleOrderUtil.GetModuleOrder(Arrays.AsList(modules), EmptySet<string>.Instance, new ModuleOrderOptions());
                     Assert.Fail();
@@ -278,7 +278,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 }
 
                 // turn off uses-checks
-                ModuleOrderOptions options = new ModuleOrderOptions();
+                var options = new ModuleOrderOptions();
                 options.IsCheckUses = false;
                 try {
                     ModuleOrderUtil.GetModuleOrder(Arrays.AsList(modules), EmptySet<string>.Instance, options);

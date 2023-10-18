@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
@@ -22,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 	{
 		public static ICollection<RegressionExecution> Executions()
 		{
-			List<RegressionExecution> execs = new List<RegressionExecution>();
+			var execs = new List<RegressionExecution>();
 			WithAllLocal(execs);
 			WithInvalid(execs);
 			WithClasspath(execs);
@@ -56,27 +55,27 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 			{
 				var exprClassClassDependency = typeof(ExprClassClassDependency);
 				
-				string eplNoImport = "@Name('s0') " +
-				                     "inlined_class \"\"\"\n" +
-				                     "    public class MyUtilX {\n" +
-				                     "        public static string DoIt(string parameter) {\n" +
-				                     $"            return {exprClassClassDependency.FullName}.SupportQuoteString(parameter);\n" +
-				                     "        }\n" +
-				                     "    }\n" +
-				                     "\"\"\" \n" +
-				                     "select MyUtilX.DoIt(TheString) as c0 from SupportBean\n";
+				var eplNoImport = "@name('s0') " +
+				                  "inlined_class \"\"\"\n" +
+				                  "    public class MyUtilX {\n" +
+				                  "        public static string DoIt(string parameter) {\n" +
+				                  $"            return {exprClassClassDependency.FullName}.SupportQuoteString(parameter);\n" +
+				                  "        }\n" +
+				                  "    }\n" +
+				                  "\"\"\" \n" +
+				                  "select MyUtilX.DoIt(TheString) as c0 from SupportBean\n";
 				RunAssertion(env, eplNoImport);
 
-				string eplImport = "@Name('s0') " +
-				                   "inlined_class \"\"\"\n" +
-				                   $"    using {exprClassClassDependency.Namespace};\n" +
-				                   "    public class MyUtilY {\n" +
-				                   "        public static string DoIt(string parameter) {\n" +
-				                   $"            return {exprClassClassDependency}.SupportQuoteString(parameter);\n" +
-				                   "        }\n" +
-				                   "    }\n" +
-				                   "\"\"\" \n" +
-				                   "select MyUtilY.DoIt(TheString) as c0 from SupportBean\n";
+				var eplImport = "@name('s0') " +
+				                "inlined_class \"\"\"\n" +
+				                $"    using {exprClassClassDependency.Namespace};\n" +
+				                "    public class MyUtilY {\n" +
+				                "        public static string DoIt(string parameter) {\n" +
+				                $"            return {exprClassClassDependency}.SupportQuoteString(parameter);\n" +
+				                "        }\n" +
+				                "    }\n" +
+				                "\"\"\" \n" +
+				                "select MyUtilY.DoIt(TheString) as c0 from SupportBean\n";
 				RunAssertion(env, eplImport);
 			}
 
@@ -87,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("E1", 1));
-				Assert.AreEqual("'E1'", env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+				env.AssertEqualsNew("s0", "c0", "'E1'");
 
 				env.UndeployAll();
 			}
@@ -98,27 +97,26 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 			public void Run(RegressionEnvironment env)
 			{
 				// Class depending on create-class class
-				RegressionPath path = new RegressionPath();
-				string epl = "@public create inlined_class \"\"\"\n" +
-				             "    public class MyUtilX {\n" +
-				             "        public static string SomeFunction(string parameter) {\n" +
-				             "            return \"|\" + parameter + \"|\";\n" +
-				             "        }\n" +
-				             "    }\n" +
-				             "\"\"\"";
-				EPCompiled compiled = env.Compile(epl);
+				var path = new RegressionPath();
+				var epl = "@public create inlined_class \"\"\"\n" +
+				          "    public class MyUtilX {\n" +
+				          "        public static string SomeFunction(string parameter) {\n" +
+				          "            return \"|\" + parameter + \"|\";\n" +
+				          "        }\n" +
+				          "    }\n" +
+				          "\"\"\"";
+				var compiled = env.Compile(epl);
 				path.Add(compiled);
 
-				string eplInvalid = "inlined_class \"\"\"\n" +
-				                    "    public class MyClassY {\n" +
-				                    "        public static string DoIt(string parameter) {\n" +
-				                    "            return MyUtil.SomeFunction(\">\" + parameter + \"<\");\n" +
-				                    "        }\n" +
-				                    "    }\n" +
-				                    "\"\"\" \n" +
-				                    "select MyClassY.DoIt(TheString) as c0 from SupportBean\n";
-				TryInvalidCompile(
-					env,
+				var eplInvalid = "inlined_class \"\"\"\n" +
+				                 "    public class MyClassY {\n" +
+				                 "        public static string DoIt(string parameter) {\n" +
+				                 "            return MyUtil.SomeFunction(\">\" + parameter + \"<\");\n" +
+				                 "        }\n" +
+				                 "    }\n" +
+				                 "\"\"\" \n" +
+				                 "select MyClassY.DoIt(TheString) as c0 from SupportBean\n";
+				env.TryInvalidCompile(
 					path,
 					eplInvalid,
 					"Exception processing statement: " +
@@ -133,8 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 				             "        }\n" +
 				             "    }\n" +
 				             "\"\"\"";
-				TryInvalidCompile(
-					env,
+				env.TryInvalidCompile(
 					path,
 					eplInvalid,
 					"Exception processing statement: " +
@@ -147,26 +144,26 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@Name('s0') " +
-				             "inlined_class \"\"\"\n" +
-				             "    public class MyUtil {\n" +
-				             "        public static string SomeFunction(string parameter) {\n" +
-				             "            return \"|\" + parameter + \"|\";\n" +
-				             "        }\n" +
-				             "    }\n" +
-				             "\"\"\" \n" +
-				             "inlined_class \"\"\"\n" +
-				             "    public class MyClass {\n" +
-				             "        public static string DoIt(string parameter) {\n" +
-				             "            return MyUtil.SomeFunction(\">\" + parameter + \"<\");\n" +
-				             "        }\n" +
-				             "    }\n" +
-				             "\"\"\" \n" +
-				             "select MyClass.DoIt(TheString) as c0 from SupportBean\n";
+				var epl = "@name('s0') " +
+				          "inlined_class \"\"\"\n" +
+				          "    public class MyUtil {\n" +
+				          "        public static string SomeFunction(string parameter) {\n" +
+				          "            return \"|\" + parameter + \"|\";\n" +
+				          "        }\n" +
+				          "    }\n" +
+				          "\"\"\" \n" +
+				          "inlined_class \"\"\"\n" +
+				          "    public class MyClass {\n" +
+				          "        public static string DoIt(string parameter) {\n" +
+				          "            return MyUtil.SomeFunction(\">\" + parameter + \"<\");\n" +
+				          "        }\n" +
+				          "    }\n" +
+				          "\"\"\" \n" +
+				          "select MyClass.DoIt(TheString) as c0 from SupportBean\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBean("E1", 1));
-				Assert.AreEqual("|>E1<|", env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+				env.AssertEqualsNew("s0", "c0", "|>E1<|");
 
 				env.UndeployAll();
 			}

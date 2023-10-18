@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// <summary>
     ///     Abstract specification on how to perform a table lookup.
     /// </summary>
-    public abstract class TableLookupPlanForge : CodegenMakeable
+    public abstract class TableLookupPlanForge : CodegenMakeable<SAIFFInitializeSymbol>
     {
         internal readonly int indexedStream;
         internal readonly int lookupStream;
@@ -74,14 +74,6 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
         /// </summary>
         /// <returns>index number</returns>
         public TableLookupIndexReqKey[] IndexNum { get; }
-
-        public CodegenExpression Make(
-            CodegenMethodScope parent,
-            CodegenSymbolProvider symbols,
-            CodegenClassScope classScope)
-        {
-            return Make(parent, (SAIFFInitializeSymbol)symbols, classScope);
-        }
 
         public CodegenExpression Make(
             CodegenMethodScope parent,

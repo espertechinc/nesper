@@ -28,69 +28,88 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 		public static ICollection<RegressionExecution> Executions()
 		{
 			var execs = new List<RegressionExecution>();
-WithLikeWConstants(execs);
-WithLikeWExprs(execs);
-WithRegexpWConstants(execs);
-WithRegexpWExprs(execs);
-WithLikeRegexStringAndNull(execs);
-WithLikeRegexInvalid(execs);
-WithLikeRegexEscapedChar(execs);
-WithLikeRegexStringAndNullOM(execs);
-WithRegexStringAndNullCompile(execs);
-WithLikeRegexNumericAndNull(execs);
+			WithLikeWConstants(execs);
+			WithLikeWExprs(execs);
+			WithRegexpWConstants(execs);
+			WithRegexpWExprs(execs);
+			WithLikeRegexStringAndNull(execs);
+			WithLikeRegexInvalid(execs);
+			WithLikeRegexEscapedChar(execs);
+			WithLikeRegexStringAndNullOM(execs);
+			WithRegexStringAndNullCompile(execs);
+			WithLikeRegexNumericAndNull(execs);
 			return execs;
 		}
-public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprCoreLikeRegexNumericAndNull());
-    return execs;
-}public static IList<RegressionExecution> WithRegexStringAndNullCompile(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprCoreRegexStringAndNullCompile());
-    return execs;
-}public static IList<RegressionExecution> WithLikeRegexStringAndNullOM(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprCoreLikeRegexStringAndNullOM());
-    return execs;
-}public static IList<RegressionExecution> WithLikeRegexEscapedChar(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprCoreLikeRegexEscapedChar());
-    return execs;
-}public static IList<RegressionExecution> WithLikeRegexInvalid(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprCoreLikeRegexInvalid());
-    return execs;
-}public static IList<RegressionExecution> WithLikeRegexStringAndNull(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprCoreLikeRegexStringAndNull());
-    return execs;
-}public static IList<RegressionExecution> WithRegexpWExprs(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprCoreRegexpWExprs());
-    return execs;
-}public static IList<RegressionExecution> WithRegexpWConstants(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprCoreRegexpWConstants());
-    return execs;
-}public static IList<RegressionExecution> WithLikeWExprs(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprCoreLikeWExprs());
-    return execs;
-}public static IList<RegressionExecution> WithLikeWConstants(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new ExprCoreLikeWConstants());
-    return execs;
-}
+
+		public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<RegressionExecution> execs = null)
+		{
+		    execs = execs ?? new List<RegressionExecution>();
+		    execs.Add(new ExprCoreLikeRegexNumericAndNull());
+		    return execs;
+		}
+		
+		public static IList<RegressionExecution> WithRegexStringAndNullCompile(IList<RegressionExecution> execs = null)
+		{
+		    execs = execs ?? new List<RegressionExecution>();
+		    execs.Add(new ExprCoreRegexStringAndNullCompile());
+		    return execs;
+		}
+		
+		public static IList<RegressionExecution> WithLikeRegexStringAndNullOM(IList<RegressionExecution> execs = null)
+		{
+		    execs = execs ?? new List<RegressionExecution>();
+		    execs.Add(new ExprCoreLikeRegexStringAndNullOM());
+		    return execs;
+		}
+		
+		public static IList<RegressionExecution> WithLikeRegexEscapedChar(IList<RegressionExecution> execs = null)
+		{
+		    execs = execs ?? new List<RegressionExecution>();
+		    execs.Add(new ExprCoreLikeRegexEscapedChar());
+		    return execs;
+		}
+		
+		public static IList<RegressionExecution> WithLikeRegexInvalid(IList<RegressionExecution> execs = null)
+		{
+		    execs = execs ?? new List<RegressionExecution>();
+		    execs.Add(new ExprCoreLikeRegexInvalid());
+		    return execs;
+		}
+		
+		public static IList<RegressionExecution> WithLikeRegexStringAndNull(IList<RegressionExecution> execs = null)
+		{
+		    execs = execs ?? new List<RegressionExecution>();
+		    execs.Add(new ExprCoreLikeRegexStringAndNull());
+		    return execs;
+		}
+		
+		public static IList<RegressionExecution> WithRegexpWExprs(IList<RegressionExecution> execs = null)
+		{
+		    execs = execs ?? new List<RegressionExecution>();
+		    execs.Add(new ExprCoreRegexpWExprs());
+		    return execs;
+		}
+		
+		public static IList<RegressionExecution> WithRegexpWConstants(IList<RegressionExecution> execs = null)
+		{
+		    execs = execs ?? new List<RegressionExecution>();
+		    execs.Add(new ExprCoreRegexpWConstants());
+		    return execs;
+		}
+		
+		public static IList<RegressionExecution> WithLikeWExprs(IList<RegressionExecution> execs = null)
+		{
+		    execs = execs ?? new List<RegressionExecution>();
+		    execs.Add(new ExprCoreLikeWExprs());
+		    return execs;
+		}
+		
+		public static IList<RegressionExecution> WithLikeWConstants(IList<RegressionExecution> execs = null)
+		{
+		    execs = execs ?? new List<RegressionExecution>();
+		    execs.Add(new ExprCoreLikeWConstants());
+		    return execs;
+		}
 		private class ExprCoreLikeWConstants : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
@@ -159,7 +178,7 @@ public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<Regre
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select P00 like P01 as r1, " +
+				var epl = "@name('s0') select P00 like P01 as r1, " +
 				          " P00 like P01 escape \"!\" as r2," +
 				          " P02 regexp P03 as r3 " +
 				          " from SupportBean_S0";
@@ -185,8 +204,7 @@ public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<Regre
 				TryInvalidExpr(env, "BoolPrimitive regexp string");
 				TryInvalidExpr(env, "string regexp IntPrimitive");
 				
-				TryInvalidCompile(
-					env,
+				env.TryInvalidCompile(
 					"select TheString regexp \"*any*\" from SupportBean",
 					"Failed to validate select-clause expression 'TheString regexp \"*any*\"': " +
 					"Failed to compile regex pattern '*any*': " +
@@ -219,7 +237,7 @@ public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<Regre
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var stmtText = "@Name('s0') select P00 like P01 as r1, " +
+				var stmtText = "@name('s0') select P00 like P01 as r1, " +
 				               "P00 like P01 escape \"!\" as r2, " +
 				               "P02 regexp P03 as r3 " +
 				               "from SupportBean_S0";
@@ -248,7 +266,7 @@ public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<Regre
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select P00 like P01 as r1, " +
+				var epl = "@name('s0') select P00 like P01 as r1, " +
 				          "P00 like P01 escape \"!\" as r2, " +
 				          "P02 regexp P03 as r3 " +
 				          "from SupportBean_S0";
@@ -358,12 +376,15 @@ public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<Regre
 			RegressionEnvironment env,
 			object[][] objects)
 		{
-			var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-			foreach (var @object in objects) {
-				var key = (string) @object[0];
-				var result = @object[1];
-				Assert.AreEqual(result, theEvent.Get(key), "key=" + key + " result=" + result);
-			}
+			env.AssertEventNew(
+				"s0",
+				theEvent => {
+					foreach (var @object in objects) {
+						var key = (string)@object[0];
+						var result = @object[1];
+						Assert.AreEqual(result, theEvent.Get(key), "key=" + key + " result=" + result);
+					}
+				});
 		}
 
 		private static void TryInvalidExpr(
@@ -371,7 +392,7 @@ public static IList<RegressionExecution> WithLikeRegexNumericAndNull(IList<Regre
 			string expr)
 		{
 			var statement = "select " + expr + " from SupportBean";
-			TryInvalidCompile(env, statement, "skip");
+			env.TryInvalidCompile(statement, "skip");
 		}
 
 		private static SupportBean MakeSupportBeanEvent(

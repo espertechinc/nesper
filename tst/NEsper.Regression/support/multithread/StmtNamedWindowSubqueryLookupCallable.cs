@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     runtime.EventService.SendEventBean(new SupportBean(threadKey, -1), "SupportBean");
 
                     // assert trigger event received
-                    var events = listener.GetNewDataListCopy();
+                    var events = listener.NewDataListCopy;
                     var found = false;
                     foreach (var arr in events) {
                         found = arr

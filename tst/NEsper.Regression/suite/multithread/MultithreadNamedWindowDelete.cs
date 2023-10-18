@@ -24,11 +24,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadNamedWindowDelete : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@Name('create') create window MyWindow#keepall() as select TheString, LongPrimitive from SupportBean",
+                "@name('create') @public create window MyWindow#keepall() as select TheString, LongPrimitive from SupportBean",
                 path);
             var listenerWindow = new SupportMTUpdateListener();
             env.Statement("create").AddListener(listenerWindow);
@@ -40,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var stmtTextDelete = "on SupportBean_A as S0 delete from MyWindow as win where win.TheString = S0.Id";
             env.CompileDeploy(stmtTextDelete, path);
 
-            env.CompileDeploy("@Name('s0') select irstream TheString, LongPrimitive from MyWindow", path);
+            env.CompileDeploy("@name('s0') select irstream TheString, LongPrimitive from MyWindow", path);
             var listenerConsumer = new SupportMTUpdateListener();
             env.Statement("s0").AddListener(listenerConsumer);
 
@@ -85,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             Assert.AreEqual(2 * numThreads * numRepeats, listenerConsumer.NewDataList.Count); // old and new each
 
             // compute list of received
-            var newEvents = listenerWindow.GetNewDataListFlattened();
+            var newEvents = listenerWindow.NewDataListFlattened;
             var receivedIds = new string[newEvents.Length];
             for (var i = 0; i < newEvents.Length; i++) {
                 receivedIds[i] = (string) newEvents[i].Get("TheString");

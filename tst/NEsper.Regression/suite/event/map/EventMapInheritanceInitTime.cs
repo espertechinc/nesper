@@ -6,8 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
@@ -19,15 +25,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 {
     public class EventMapInheritanceInitTime : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.OBSERVEROPS);
+        }
+
         public void Run(RegressionEnvironment env)
         {
-            CollectionAssert.AreEquivalent(
-                new EventPropertyDescriptor[] {
-                    new EventPropertyDescriptor("base", typeof(string), typeof(char), false, false, true, false, false),
-                    new EventPropertyDescriptor("sub1", typeof(string), typeof(char), false, false, true, false, false),
-                    new EventPropertyDescriptor("suba", typeof(string), typeof(char), false, false, true, false, false)
-                },
-                env.Runtime.EventTypeService.GetEventTypePreconfigured("SubAEvent").PropertyDescriptors);
+            SupportEventPropUtil.AssertPropsEquals(
+                env.Runtime.EventTypeService.GetEventTypePreconfigured("SubAEvent").PropertyDescriptors.ToArray(),
+                new SupportEventPropDesc("base", typeof(string)),
+                new SupportEventPropDesc("sub1", typeof(string)),
+                new SupportEventPropDesc("suba", typeof(string)));
 
             RunAssertionMapInheritance(env, new RegressionPath());
         }
@@ -45,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 "select base as vbase, sub1? as v1, sub2 as v2, suba? as va, subb as vb from SubBEvent" // 4
             };
             for (var i = 0; i < statements.Length; i++) {
-                env.CompileDeploy("@Name('s" + i + "') " + statements[i], path);
+                env.CompileDeploy("@name('s" + i + "') " + statements[i], path);
                 listeners[i] = new SupportUpdateListener();
                 env.Statement("s" + i).AddListener(listeners[i]);
             }
@@ -109,8 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 listeners[1].IsInvoked || listeners[2].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
 
             // try property not available
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 path,
                 "select suba from Sub1Event",
                 "Failed to validate select-clause expression 'suba': Property named 'suba' is not valid in any stream (did you mean 'sub1'?) [select suba from Sub1Event]");

@@ -6,10 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -37,10 +40,15 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             configuration.Runtime.Threading.IsInsertIntoDispatchPreserveOrder = false;
         }
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@Name('window') create window MyWindow#keepall as (c0 string, c1 string)", path);
+            env.CompileDeploy("@name('window') @public create window MyWindow#keepall as (c0 string, c1 string)", path);
             env.CompileDeploy("insert into MyWindow select P00 as c0, P01 as c1 from SupportBean_S0", path);
             env.CompileDeploy(
                 "@Priority(1) on SupportBean_S1 S1 merge MyWindow S0 where S1.P10 = c0 " +

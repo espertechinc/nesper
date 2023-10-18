@@ -44,12 +44,17 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         private class ClientCompileUserObjectResolveContextInfo : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 MyUserObjectResolver.Contexts.Clear();
                 var args = new CompilerArguments(env.Configuration);
                 args.Options.StatementUserObject = (new MyUserObjectResolver()).GetValue;
-                var epl = "@Name('s0') select * from SupportBean";
+                var epl = "@name('s0') select * from SupportBean";
                 env.Compile(epl, args);
 
                 var ctx = MyUserObjectResolver.Contexts[0];
@@ -63,6 +68,10 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         private class ClientCompileUserObjectDifferentTypes : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
+            }
             public void Run(RegressionEnvironment env)
             {
                 AssertUserObject(env, "ABC");
@@ -78,18 +87,22 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             var args = new CompilerArguments(env.Configuration);
             args.Options.SetStatementUserObject(_ => userObject);
-            var compiled = env.Compile("@Name('s0') select * from SupportBean", args);
+            var compiled = env.Compile("@name('s0') select * from SupportBean", args);
             env.Deploy(compiled);
-            var received = env.Statement("s0").UserObjectCompileTime;
-            if (received == null) {
-                Assert.IsNull(userObject);
-            }
-            else if (received.GetType() == typeof(int[])) {
-                Assert.IsTrue(Arrays.AreEqual((int[]) received, (int[]) userObject));
-            }
-            else {
-                Assert.AreEqual(userObject, env.Statement("s0").UserObjectCompileTime);
-            }
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    var received = statement.UserObjectCompileTime;
+                    if (received == null) {
+                        Assert.IsNull(userObject);
+                    }
+                    else if (received.GetType() == typeof(int[])) {
+                        Assert.IsTrue(Arrays.AreEqual((int[])received, (int[])userObject));
+                    }
+                    else {
+                        Assert.AreEqual(userObject, env.Statement("s0").UserObjectCompileTime);
+                    }
+                });
 
             env.UndeployAll();
         }

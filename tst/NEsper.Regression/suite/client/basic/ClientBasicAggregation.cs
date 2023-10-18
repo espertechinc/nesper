@@ -16,7 +16,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select count(*) as cnt from SupportBean";
+            var epl = "@name('s0') select count(*) as cnt from SupportBean";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             SendAssert(env, 1);
@@ -37,8 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
             long expected)
         {
             env.SendEventBean(new SupportBean("E1", 0));
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
+            env.AssertPropsNew("s0",
                 new [] { "cnt" },
                 new object[] {expected});
         }

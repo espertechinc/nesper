@@ -7,9 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -32,11 +34,16 @@ namespace com.espertech.esper.regressionlib.support.filter
             this.stats = stats;
         }
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.OBSERVEROPS);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             // set up statement
             var stmtName = "stmt";
-            var expr = "@Name('" + stmtName + "') select * from SupportBean" + testCase.FilterExpr;
+            var expr = "@name('" + stmtName + "') select * from SupportBean" + testCase.FilterExpr;
             env.CompileDeployAddListenerMileZero(expr, stmtName);
             var initialListener = env.Listener(stmtName);
 

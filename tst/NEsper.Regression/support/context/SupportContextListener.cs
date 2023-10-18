@@ -94,17 +94,18 @@ namespace com.espertech.esper.regressionlib.support.context
             }
         }
 
-        public IList<ContextStateEventContextPartitionAllocated> GetAllocatedEvents()
-        {
-            IList<ContextStateEventContextPartitionAllocated> allocateds =
-                new List<ContextStateEventContextPartitionAllocated>();
-            foreach (var @event in events) {
-                if (@event is ContextStateEventContextPartitionAllocated) {
-                    allocateds.Add((ContextStateEventContextPartitionAllocated) @event);
+        public IList<ContextStateEventContextPartitionAllocated> AllocatedEvents {
+            get {
+                IList<ContextStateEventContextPartitionAllocated> allocateds =
+                    new List<ContextStateEventContextPartitionAllocated>();
+                foreach (var @event in events) {
+                    if (@event is ContextStateEventContextPartitionAllocated) {
+                        allocateds.Add((ContextStateEventContextPartitionAllocated)@event);
+                    }
                 }
-            }
 
-            return allocateds;
+                return allocateds;
+            }
         }
 
         public void AssertNotInvoked()

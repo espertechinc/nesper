@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.support.extend.vdw
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetEnumerator();
+            return EnumerationHelper.Empty<EventBean>();
         }
 
         public IEnumerator<EventBean> GetEnumerator()

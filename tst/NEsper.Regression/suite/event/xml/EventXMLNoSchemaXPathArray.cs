@@ -79,13 +79,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                       "</Participants>\n" +
                       "</Event>";
 
-            env.CompileDeploy("@Name('s0') select * from " + eventTypeName, path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from " + eventTypeName, path).AddListener("s0");
 
             SendXMLEvent(env, xml, eventTypeName);
 
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            EPAssertionUtil.AssertProps(
-                theEvent,
+            env.AssertPropsNew(
+                "s0",
                 new[] {"A"},
                 new object[] {new object[] {"987654321", "9876543210"}});
 

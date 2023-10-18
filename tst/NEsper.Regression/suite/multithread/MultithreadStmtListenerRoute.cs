@@ -26,6 +26,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtListenerRoute : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             TryListener(env, 4, 500);
@@ -36,8 +41,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numThreads,
             int numRoutes)
         {
-            env.CompileDeploy("@Name('trigger') select * from SupportBean");
-            env.CompileDeploy("@Name('s0') select * from SupportMarketDataBean");
+            env.CompileDeploy("@name('trigger') select * from SupportBean");
+            env.CompileDeploy("@name('s0') select * from SupportMarketDataBean");
             var listener = new SupportMTUpdateListener();
             env.Statement("s0").AddListener(listener);
 
@@ -63,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.AssertFutures(future);
 
             // assert
-            var results = listener.GetNewDataListFlattened();
+            var results = listener.NewDataListFlattened;
             Assert.IsTrue(results.Length >= numThreads * numRoutes);
 
             foreach (var routedEvent in routed) {

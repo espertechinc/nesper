@@ -31,6 +31,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public const int NUM_STRINGS = 100;
         public const int NUM_INTS = 10;
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             TrySend(env, 5, 10000);
@@ -44,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // setup statements
             var path = new RegressionPath();
             env.CompileDeploy(
-                "create window MyWindow#unique(TheString, IntPrimitive) as select * from SupportBean",
+                "@public create window MyWindow#unique(TheString, IntPrimitive) as select * from SupportBean",
                 path);
             env.CompileDeploy("insert into MyWindow select * from SupportBean(BoolPrimitive = true)", path);
             env.CompileDeploy(
@@ -121,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             Assert.AreEqual(totalUpdates, numThreads * numEventsPerThread);
             //long deltaTime = endTime - startTime;
-            //System.out.println("Totals updated: " + totalUpdates + "  Delta cumu: " + deltaCumulative + "  Delta pooled: " + deltaTime);
+            //Console.WriteLine("Totals updated: " + totalUpdates + "  Delta cumu: " + deltaCumulative + "  Delta pooled: " + deltaTime);
 
             env.UndeployAll();
         }

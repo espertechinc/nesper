@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -24,6 +25,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtSubquery : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             TrySend(env, 4, 10000);
@@ -37,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             int numRepeats)
         {
             env.CompileDeploy(
-                "@Name('s0') select (select Id from SupportBean_S0#length(1000000) where Id = S1.Id) as value from SupportBean_S1 as S1");
+                "@name('s0') select (select Id from SupportBean_S0#length(1000000) where Id = S1.Id) as value from SupportBean_S1 as S1");
             var listener = new SupportMTUpdateListener();
             env.Statement("s0").AddListener(listener);
 
@@ -58,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var totalExpected = numThreads * numRepeats;
 
             // assert new data
-            var resultNewData = listener.GetNewDataListFlattened();
+            var resultNewData = listener.NewDataListFlattened;
             Assert.AreEqual(totalExpected, resultNewData.Length);
 
             ISet<int> values = new HashSet<int>();

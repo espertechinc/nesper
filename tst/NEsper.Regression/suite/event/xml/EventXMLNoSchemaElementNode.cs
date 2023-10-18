@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@public @buseventtype " +
+                var epl = "@Public @buseventtype " +
                           "@XMLSchema(RootElementName='batch-event')" +
                           "@XMLSchemaField(Name='event.type', XPath='//event/@type', Type='string')" +
                           "@XMLSchemaField(Name='event.uid', XPath='//event/@uid', Type='string')" +
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string eventTypeName,
             RegressionPath path)
         {
-            var stmt = "@Name('s0') select event.type as type, event.uid as uid from " + eventTypeName;
+            var stmt = "@name('s0') select event.type as type, event.uid as uid from " + eventTypeName;
             env.CompileDeploy(stmt, path).AddListener("s0");
 
             var xml = "<batch-event>" +
@@ -76,9 +76,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                       "</batch-event>";
             SendXMLEvent(env, xml, eventTypeName);
 
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("a-f-G", theEvent.Get("type"));
-            Assert.AreEqual("terminal.55", theEvent.Get("uid"));
+            env.AssertEventNew(
+                "s0",
+                theEvent => {
+                    Assert.AreEqual("a-f-G", theEvent.Get("type"));
+                    Assert.AreEqual("terminal.55", theEvent.Get("uid"));
+                });
 
             env.UndeployAll();
         }

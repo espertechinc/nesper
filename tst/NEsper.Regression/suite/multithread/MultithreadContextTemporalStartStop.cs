@@ -7,11 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
@@ -29,10 +31,15 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create context EverySecond as start (*, *, *, *, *, *) end (*, *, *, *, *, *)", path);
+            env.CompileDeploy("@public create context EverySecond as start (*, *, *, *, *, *) end (*, *, *, *, *, *)", path);
             env.CompileDeploy("context EverySecond select * from SupportBean", path);
 
             var timerRunnable = new TimerRunnable(env, 0, 24 * 60 * 60 * 1000, 1000);

@@ -8,154 +8,144 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.rowrecog;
 
-using NUnit.Framework;
+using static com.espertech.esper.regressionlib.framework.RegressionFlag; // PERFORMANCE
+using NUnit.Framework; // assertFalse
+
+// assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
-    public class RowRecogIterateOnly
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new RowRecogNoListenerMode());
-            execs.Add(new RowRecogPrev());
-            execs.Add(new RowRecogPrevPartitioned());
-            return execs;
-        }
+	public class RowRecogIterateOnly {
 
-        internal class RowRecogNoListenerMode : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "a" };
-                var text = "@Name('s0') @Hint('iterate_only') select * from SupportRecogBean#length(1) " +
-                           "match_recognize (" +
-                           "  measures A.TheString as a" +
-                           "  all matches " +
-                           "  pattern (A) " +
-                           "  define A as SupportStaticMethodLib.SleepReturnTrue(mySleepDuration)" +
-                           ")";
+	    public static ICollection<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new RowRecogNoListenerMode());
+	        execs.Add(new RowRecogPrev());
+	        execs.Add(new RowRecogPrevPartitioned());
+	        return execs;
+	    }
 
-                env.CompileDeploy(text).AddListener("s0");
+	    private class RowRecogNoListenerMode : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var fields = "a".SplitCsv();
+	            var text = "@name('s0') @Hint('iterate_only') select * from SupportRecogBean#length(1) " +
+	                       "match_recognize (" +
+	                       "  measures A.theString as a" +
+	                       "  all matches " +
+	                       "  pattern (A) " +
+	                       "  define A as SupportStaticMethodLib.sleepReturnTrue(mySleepDuration)" +
+	                       ")";
+	            env.CompileDeploy(text).AddListener("s0");
 
-                // this should not block
-                var start = PerformanceObserver.MilliTime;
-                for (var i = 0; i < 50; i++) {
-                    env.SendEventBean(new SupportRecogBean("E1", 1));
-                }
+	            // this should not block
+	            var start = PerformanceObserver.MilliTime;
+	            for (var i = 0; i < 50; i++) {
+	                env.SendEventBean(new SupportRecogBean("E1", 1));
+	            }
+	            var end = PerformanceObserver.MilliTime;
+	            Assert.IsTrue((end - start) <= 100);
+	            env.AssertListenerNotInvoked("s0");
 
-                var end = PerformanceObserver.MilliTime;
-                Assert.IsTrue(end - start <= 100);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            env.Milestone(0);
 
-                env.SendEventBean(new SupportRecogBean("E2", 2));
-                env.Runtime.VariableService.SetVariableValue(null, "mySleepDuration", 0);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
-                    fields,
-                    new[] {new object[] {"E2"}});
+	            env.SendEventBean(new SupportRecogBean("E2", 2));
+	            env.RuntimeSetVariable(null, "mySleepDuration", 0);
+	            env.AssertListenerNotInvoked("s0");
+	            env.AssertPropsPerRowIterator("s0", fields,
+	                new object[][]{new object[] {"E2"}});
 
-                env.UndeployAll();
-            }
-        }
+	            env.UndeployAll();
+	        }
 
-        internal class RowRecogPrev : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "a" };
-                var text = "@Hint('iterate_only') @Name('s0') select * from SupportRecogBean#lastevent " +
-                           "match_recognize (" +
-                           "  measures A.TheString as a" +
-                           "  all matches " +
-                           "  pattern (A) " +
-                           "  define A as prev(A.Value, 2) = Value" +
-                           ")";
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(PERFORMANCE);
+	        }
+	    }
 
-                env.CompileDeploy(text).AddListener("s0");
+	    private class RowRecogPrev : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var fields = "a".SplitCsv();
+	            var text = "@Hint('iterate_only') @name('s0') select * from SupportRecogBean#lastevent " +
+	                       "match_recognize (" +
+	                       "  measures A.theString as a" +
+	                       "  all matches " +
+	                       "  pattern (A) " +
+	                       "  define A as prev(A.value, 2) = value" +
+	                       ")";
 
-                env.SendEventBean(new SupportRecogBean("E1", 1));
-                env.SendEventBean(new SupportRecogBean("E2", 2));
+	            env.CompileDeploy(text).AddListener("s0");
 
-                env.Milestone(0);
+	            env.SendEventBean(new SupportRecogBean("E1", 1));
+	            env.SendEventBean(new SupportRecogBean("E2", 2));
 
-                env.SendEventBean(new SupportRecogBean("E3", 3));
-                env.SendEventBean(new SupportRecogBean("E4", 4));
-                env.SendEventBean(new SupportRecogBean("E5", 2));
-                Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
+	            env.Milestone(0);
 
-                env.Milestone(1);
+	            env.SendEventBean(new SupportRecogBean("E3", 3));
+	            env.SendEventBean(new SupportRecogBean("E4", 4));
+	            env.SendEventBean(new SupportRecogBean("E5", 2));
+	            env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
 
-                env.SendEventBean(new SupportRecogBean("E6", 4));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
-                    fields,
-                    new[] {new object[] {"E6"}});
+	            env.Milestone(1);
 
-                env.Milestone(2);
+	            env.SendEventBean(new SupportRecogBean("E6", 4));
+	            env.AssertPropsPerRowIterator("s0", fields,
+	                new object[][]{new object[] {"E6"}});
 
-                env.SendEventBean(new SupportRecogBean("E7", 2));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
-                    fields,
-                    new[] {new object[] {"E7"}});
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            env.Milestone(2);
 
-                env.UndeployAll();
-            }
-        }
+	            env.SendEventBean(new SupportRecogBean("E7", 2));
+	            env.AssertPropsPerRowIterator("s0", fields,
+	                new object[][]{new object[] {"E7"}});
+	            env.AssertListenerNotInvoked("s0");
 
-        internal class RowRecogPrevPartitioned : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "a","cat" };
-                var text = "@Name('s0') @Hint('iterate_only') select * from SupportRecogBean#lastevent " +
-                           "match_recognize (" +
-                           "  partition by Cat" +
-                           "  measures A.TheString as a, A.Cat as cat" +
-                           "  all matches " +
-                           "  pattern (A) " +
-                           "  define A as prev(A.Value, 2) = Value" +
-                           ")";
+	            env.UndeployAll();
+	        }
+	    }
 
-                env.CompileDeploy(text).AddListener("s0");
+	    private class RowRecogPrevPartitioned : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var fields = "a,cat".SplitCsv();
+	            var text = "@name('s0') @Hint('iterate_only') select * from SupportRecogBean#lastevent " +
+	                       "match_recognize (" +
+	                       "  partition by cat" +
+	                       "  measures A.theString as a, A.cat as cat" +
+	                       "  all matches " +
+	                       "  pattern (A) " +
+	                       "  define A as prev(A.value, 2) = value" +
+	                       ")";
 
-                env.SendEventBean(new SupportRecogBean("E1", "A", 1));
-                env.SendEventBean(new SupportRecogBean("E2", "B", 1));
+	            env.CompileDeploy(text).AddListener("s0");
 
-                env.Milestone(0);
+	            env.SendEventBean(new SupportRecogBean("E1", "A", 1));
+	            env.SendEventBean(new SupportRecogBean("E2", "B", 1));
 
-                env.SendEventBean(new SupportRecogBean("E3", "B", 3));
-                env.SendEventBean(new SupportRecogBean("E4", "A", 4));
-                env.SendEventBean(new SupportRecogBean("E5", "B", 2));
-                Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
+	            env.Milestone(0);
 
-                env.Milestone(1);
+	            env.SendEventBean(new SupportRecogBean("E3", "B", 3));
+	            env.SendEventBean(new SupportRecogBean("E4", "A", 4));
+	            env.SendEventBean(new SupportRecogBean("E5", "B", 2));
+	            env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
 
-                env.SendEventBean(new SupportRecogBean("E6", "A", 1));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
-                    fields,
-                    new[] {new object[] {"E6", "A"}});
+	            env.Milestone(1);
 
-                env.Milestone(2);
+	            env.SendEventBean(new SupportRecogBean("E6", "A", 1));
+	            env.AssertPropsPerRowIterator("s0", fields,
+	                new object[][]{new object[] {"E6", "A"}});
 
-                env.SendEventBean(new SupportRecogBean("E7", "B", 3));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Statement("s0").GetEnumerator(),
-                    fields,
-                    new[] {new object[] {"E7", "B"}});
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            env.Milestone(2);
 
-                env.UndeployAll();
-            }
-        }
-    }
+	            env.SendEventBean(new SupportRecogBean("E7", "B", 3));
+	            env.AssertPropsPerRowIterator("s0", fields,
+	                new object[][]{new object[] {"E7", "B"}});
+	            env.AssertListenerNotInvoked("s0");
+
+	            env.UndeployAll();
+	        }
+	    }
+	}
 } // end of namespace

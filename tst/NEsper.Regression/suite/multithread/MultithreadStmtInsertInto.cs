@@ -26,23 +26,28 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtInsertInto : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "insert into XStream " +
+                "@public insert into XStream " +
                 " select TheString as key, count(*) as mycount\n" +
                 " from SupportBean#time(5 min)" +
                 " group by TheString",
                 path);
             env.CompileDeploy(
-                "insert into XStream " +
+                "@public insert into XStream " +
                 " select Symbol as key, count(*) as mycount\n" +
                 " from SupportMarketDataBean#time(5 min)" +
                 " group by Symbol",
                 path);
 
-            env.CompileDeploy("@Name('s0') select key, mycount from XStream", path);
+            env.CompileDeploy("@name('s0') select key, mycount from XStream", path);
             var listener = new SupportMTUpdateListener();
             env.Statement("s0").AddListener(listener);
 
@@ -73,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // Assert results
             var totalExpected = numThreads * numRepeats * 2;
-            var result = listener.GetNewDataListFlattened();
+            var result = listener.NewDataListFlattened;
             Assert.AreEqual(totalExpected, result.Length);
             IDictionary<long, ICollection<string>> results = new Dictionary<long, ICollection<string>>();
             foreach (var theEvent in result) {

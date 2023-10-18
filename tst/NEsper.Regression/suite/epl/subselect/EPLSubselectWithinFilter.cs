@@ -43,11 +43,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "@Name('s0') " +
-                             "inlined_class \"\"\"\n" +
-                             "  public class MyUtil { public static bool CompareIt(string one, string two) { return one.Equals(two); } }\n" +
-                             "\"\"\" \n" +
-                             "select * from SupportBean_S0(exists (select * from SupportBean_S1#keepall where MyUtil.CompareIt(s0.P00,P10))) as s0;\n";
+                var epl = "@name('s0') " +
+                          "inlined_class \"\"\"\n" +
+                          "  public class MyUtil { public static bool CompareIt(string one, string two) { return one.Equals(two); } }\n" +
+                          "\"\"\" \n" +
+                          "select * from SupportBean_S0(exists (select * from SupportBean_S1#keepall where MyUtil.CompareIt(s0.P00,P10))) as s0;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendS0Assert(env, 1, "a", false);
@@ -65,11 +65,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "@Name('s0') " +
-                             "inlined_class \"\"\"\n" +
-                             "  public class MyUtil { public static bool CompareIt(string one, string two) { return one.Equals(two); } }\n" +
-                             "\"\"\" \n" +
-                             "select * from SupportBean_S0('abc' = (select P11 from SupportBean_S1#keepall where MyUtil.CompareIt(s0.P00,P10))) as s0;\n";
+                var epl = "@name('s0') " +
+                          "inlined_class \"\"\"\n" +
+                          "  public class MyUtil { public static bool CompareIt(string one, string two) { return one.Equals(two); } }\n" +
+                          "\"\"\" \n" +
+                          "select * from SupportBean_S0('abc' = (select P11 from SupportBean_S1#keepall where MyUtil.CompareIt(s0.P00,P10))) as s0;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendS0Assert(env, 1, "a", false);
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             bool expected)
         {
             env.SendEventBean(new SupportBean_S0(id, p00));
-            Assert.AreEqual(expected, env.Listener("s0").IsInvokedAndReset());
+            env.AssertListenerInvokedFlag("s0", expected);
         }
     }
 } // end of namespace

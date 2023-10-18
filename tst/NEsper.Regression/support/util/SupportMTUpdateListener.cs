@@ -15,146 +15,151 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
-    public class SupportMTUpdateListener : UpdateListener
-    {
-        public SupportMTUpdateListener()
-        {
-            NewDataList = new List<EventBean[]>();
-            OldDataList = new List<EventBean[]>();
-        }
+	public class SupportMTUpdateListener : UpdateListener {
+	    private readonly IList<EventBean[]> newDataList;
+	    private readonly IList<EventBean[]> oldDataList;
+	    private EventBean[] lastNewData;
+	    private EventBean[] lastOldData;
+	    private bool isInvoked;
 
-        public EventBean[] LastNewData { get; private set; }
+	    public SupportMTUpdateListener() {
+	        newDataList = new List<EventBean[]>();
+	        oldDataList = new List<EventBean[]>();
+	    }
 
-        public EventBean[] LastOldData { get; private set; }
+	    public void Update(
+		    object sender,
+		    UpdateEventArgs eventArgs)
+	    {
+		    var oldData = eventArgs.OldEvents;
+		    var newData = eventArgs.NewEvents;
+		    
+		    lock (this) {
+			    oldDataList.Add(oldData);
+			    newDataList.Add(newData);
 
-        public IList<EventBean[]> NewDataList { get; }
+			    lastNewData = newData;
+			    lastOldData = oldData;
 
-        public IList<EventBean[]> OldDataList { get; }
+			    isInvoked = true;
+		    }
+	    }
 
-        public bool IsInvoked { get; private set; }
+	    public void Reset() {
+		    lock (this) {
+			    oldDataList.Clear();
+			    newDataList.Clear();
+			    lastNewData = null;
+			    lastOldData = null;
+			    isInvoked = false;
+		    }
+	    }
 
-        public void Update(
-            object sender,
-            UpdateEventArgs eventArgs)
-        {
-            var newData = eventArgs.NewEvents;
-            var oldData = eventArgs.OldEvents;
+	    public EventBean[] LastNewData => lastNewData;
 
-            lock (this) {
-                OldDataList.Add(oldData);
-                NewDataList.Add(newData);
+	    public EventBean[] GetAndResetLastNewData()
+	    {
+		    lock (this) {
+			    var lastNew = lastNewData;
+			    Reset();
+			    return lastNew;
+		    }
+	    }
 
-                LastNewData = newData;
-                LastOldData = oldData;
+	    public EventBean AssertOneGetNewAndReset() {
+		    lock (this) {
 
-                IsInvoked = true;
-            }
-        }
+			    Assert.IsTrue(isInvoked);
 
-        public void Reset()
-        {
-            lock (this) {
-                OldDataList.Clear();
-                NewDataList.Clear();
-                LastNewData = null;
-                LastOldData = null;
-                IsInvoked = false;
-            }
-        }
+			    Assert.AreEqual(1, newDataList.Count);
+			    Assert.AreEqual(1, oldDataList.Count);
 
-        public EventBean[] GetAndResetLastNewData()
-        {
-            lock (this) {
-                var lastNew = LastNewData;
-                Reset();
-                return lastNew;
-            }
-        }
+			    Assert.AreEqual(1, lastNewData.Length);
+			    Assert.IsNull(lastOldData);
 
-        public EventBean AssertOneGetNewAndReset()
-        {
-            lock (this) {
-                Assert.IsTrue(IsInvoked);
+			    var lastNew = lastNewData[0];
+			    Reset();
+			    return lastNew;
+		    }
+	    }
 
-                Assert.AreEqual(1, NewDataList.Count);
-                Assert.AreEqual(1, OldDataList.Count);
+	    public EventBean AssertOneGetOldAndReset() {
+		    lock (this) {
 
-                Assert.AreEqual(1, LastNewData.Length);
-                Assert.IsNull(LastOldData);
+			    Assert.IsTrue(isInvoked);
 
-                var lastNew = LastNewData[0];
-                Reset();
-                return lastNew;
-            }
-        }
+			    Assert.AreEqual(1, newDataList.Count);
+			    Assert.AreEqual(1, oldDataList.Count);
 
-        public EventBean AssertOneGetOldAndReset()
-        {
-            lock (this) {
-                Assert.IsTrue(IsInvoked);
+			    Assert.AreEqual(1, lastOldData.Length);
+			    Assert.IsNull(lastNewData);
 
-                Assert.AreEqual(1, NewDataList.Count);
-                Assert.AreEqual(1, OldDataList.Count);
+			    var lastNew = lastOldData[0];
+			    Reset();
+			    return lastNew;
+		    }
+	    }
 
-                Assert.AreEqual(1, LastOldData.Length);
-                Assert.IsNull(LastNewData);
+	    public EventBean[] LastOldData => lastOldData;
 
-                var lastNew = LastOldData[0];
-                Reset();
-                return lastNew;
-            }
-        }
+	    public IList<EventBean[]> NewDataList => newDataList;
 
-        public IList<EventBean[]> GetNewDataListCopy()
-        {
-            lock (this) {
-                return new List<EventBean[]>(NewDataList);
-            }
-        }
+	    public IList<EventBean[]> NewDataListCopy {
+		    get {
+			    lock (this) {
+				    return new List<EventBean[]>(newDataList);
+			    }
+		    }
+	    }
 
-        public bool GetAndClearIsInvoked()
-        {
-            lock (this) {
-                var invoked = IsInvoked;
-                IsInvoked = false;
-                return invoked;
-            }
-        }
+	    public IList<EventBean[]> OldDataList => oldDataList;
 
-        public EventBean[] GetNewDataListFlattened()
-        {
-            lock (this) {
-                return Flatten(NewDataList);
-            }
-        }
+	    public bool IsInvoked() {
+	        return isInvoked;
+	    }
 
-        public EventBean[] GetOldDataListFlattened()
-        {
-            lock (this) {
-                return Flatten(OldDataList);
-            }
-        }
+	    public bool GetAndClearIsInvoked() {
+		    lock (this) {
+			    var invoked = isInvoked;
+			    isInvoked = false;
+			    return invoked;
+		    }
+	    }
 
-        private EventBean[] Flatten(IList<EventBean[]> list)
-        {
-            var count = 0;
-            foreach (var events in list) {
-                if (events != null) {
-                    count += events.Length;
-                }
-            }
+	    public EventBean[] NewDataListFlattened {
+		    get {
+			    lock (this) {
+				    return Flatten(newDataList);
+			    }
+		    }
+	    }
 
-            var array = new EventBean[count];
-            count = 0;
-            foreach (var events in list) {
-                if (events != null) {
-                    for (var i = 0; i < events.Length; i++) {
-                        array[count++] = events[i];
-                    }
-                }
-            }
+	    public EventBean[] OldDataListFlattened {
+		    get {
+			    lock (this) {
+				    return Flatten(oldDataList);
+			    }
+		    }
+	    }
 
-            return array;
-        }
-    }
+	    private EventBean[] Flatten(IList<EventBean[]> list) {
+	        var count = 0;
+	        foreach (var events in list) {
+	            if (events != null) {
+	                count += events.Length;
+	            }
+	        }
+
+	        var array = new EventBean[count];
+	        count = 0;
+	        foreach (var events in list) {
+	            if (events != null) {
+	                for (var i = 0; i < events.Length; i++) {
+	                    array[count++] = events[i];
+	                }
+	            }
+	        }
+	        return array;
+	    }
+	}
 } // end of namespace

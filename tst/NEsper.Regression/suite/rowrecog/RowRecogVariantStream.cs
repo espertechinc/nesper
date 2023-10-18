@@ -17,10 +17,10 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create variant schema MyVariantType as SupportBean_S0, SupportBean_S1", path);
+            env.CompileDeploy("@public create variant schema MyVariantType as SupportBean_S0, SupportBean_S1", path);
 
             var fields = new [] { "a","b" };
-            var text = "@Name('s0') select * from MyVariantType#keepall " +
+            var text = "@name('s0') select * from MyVariantType#keepall " +
                        "match_recognize (" +
                        "  measures A.Id? as a, B.Id? as b" +
                        "  pattern (A B) " +
@@ -35,8 +35,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
             env.SendEventBean(new SupportBean_S0(1, "S0"));
             env.SendEventBean(new SupportBean_S1(2, "S1"));
-            EPAssertionUtil.AssertPropsPerRow(
-                env.Listener("s0").GetAndResetLastNewData(),
+            env.AssertPropsPerRowLastNew(
+                "s0",
                 fields,
                 new[] {new object[] {1, 2}});
             EPAssertionUtil.AssertPropsPerRow(

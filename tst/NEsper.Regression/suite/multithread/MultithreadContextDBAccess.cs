@@ -12,6 +12,7 @@ using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -41,13 +42,18 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             configDB.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
             configuration.Common.AddDatabaseReference("MyDB", configDB);
         }
+        
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("create context CtxEachString partition by TheString from SupportBean", path);
+            env.CompileDeploy("@public create context CtxEachString partition by TheString from SupportBean", path);
             env.CompileDeploy(
-                "@Name('select') context CtxEachString " +
+                "@name('select') context CtxEachString " +
                 "select * from SupportBean, " +
                 "  sql:MyDB ['select mycol3 from mytesttable_large where ${TheString} = mycol1']",
                 path);

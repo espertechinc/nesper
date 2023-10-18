@@ -6,9 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.IO;
 
 using com.espertech.esper.common.@internal.epl.pattern.core;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.patternassert;
 
@@ -18,6 +20,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternExpressionText : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.STATICHOOK);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             TryAssertion(env, "every a=SupportBean -> b=SupportBean@consume", null);
@@ -206,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             string patternText,
             string expectedIfDifferent)
         {
-            var epl = "@Name('A') select * from pattern [" + patternText + "]";
+            var epl = "@name('A') select * from pattern [" + patternText + "]";
             TryAssertionEPL(env, epl, patternText, expectedIfDifferent);
 
             epl = "@Audit @Name('A') select * from pattern [" + patternText + "]";

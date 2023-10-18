@@ -89,12 +89,12 @@ namespace com.espertech.esper.common.client.variable
         ///     re-evaluate such new variable value for any given statement. The timer thread performs this work.
         ///     Not for use with context-partitioned variables.
         /// </summary>
-        /// <param name="variableValues">is the map of variable name and variable value, with null an allowed value</param>
+        /// <param name="value">is the map of variable name and variable value, with null an allowed value</param>
         /// <throws>
         ///     VariableValueException    if any value does not match variable type or cannot be safely coerced to the variable type
         /// </throws>
         /// <throws>VariableNotFoundException if any of the variable names has not been declared</throws>
-        void SetVariableValue(IDictionary<DeploymentIdNamePair, object> variableValues);
+        void SetVariableValue(IDictionary<DeploymentIdNamePair, object> value);
 
         /// <summary>
         ///     Sets the value of multiple context-partitioned variables in one update, applying all or none of the changes
@@ -104,14 +104,14 @@ namespace com.espertech.esper.common.client.variable
         ///     re-evaluate such new variable value for any given statement. The timer thread performs this work.
         ///     Only for use with context-partitioned variables.
         /// </summary>
-        /// <param name="variableValues">is the map of variable name and variable value, with null an allowed value</param>
+        /// <param name="value">is the map of variable name and variable value, with null an allowed value</param>
         /// <param name="agentInstanceId">the id of the context partition</param>
         /// <throws>
         ///     VariableValueException    if any value does not match variable type or cannot be safely coerced to the variable type
         /// </throws>
         /// <throws>VariableNotFoundException if any of the variable names has not been declared</throws>
         void SetVariableValue(
-            IDictionary<DeploymentIdNamePair, object> variableValues,
+            IDictionary<DeploymentIdNamePair, object> value,
             int agentInstanceId);
     }
 } // end of namespace

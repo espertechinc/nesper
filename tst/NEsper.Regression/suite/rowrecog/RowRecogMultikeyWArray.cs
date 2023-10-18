@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
 		public static ICollection<RegressionExecution> Executions()
 		{
-			List<RegressionExecution> execs = new List<RegressionExecution>();
+			var execs = new List<RegressionExecution>();
 			execs.Add(new RowRecogPartitionMultikeyWArray());
 			execs.Add(new RowRecogPartitionMultikeyPlain());
 			return execs;
@@ -31,15 +31,15 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string text = "@Name('s0') select * from SupportEventWithIntArray " +
-				              "match_recognize (" +
-				              " partition by Array" +
-				              " measures A.Id as a, B.Id as b" +
-				              " pattern (A B)" +
-				              " define" +
-				              " A as A.Value = 1," +
-				              " B as B.Value = 2" +
-				              ")";
+				var text = "@name('s0') select * from SupportEventWithIntArray " +
+				           "match_recognize (" +
+				           " partition by Array" +
+				           " measures A.Id as a, B.Id as b" +
+				           " pattern (A B)" +
+				           " define" +
+				           " A as A.Value = 1," +
+				           " B as B.Value = 2" +
+				           ")";
 
 				env.CompileDeploy(text).AddListener("s0");
 
@@ -70,15 +70,15 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string text = "@Name('s0') select * from SupportBean " +
-				              "match_recognize (" +
-				              " partition by IntPrimitive, LongPrimitive" +
-				              " measures A.TheString as a, B.TheString as b" +
-				              " pattern (A B)" +
-				              " define" +
-				              " A as A.DoublePrimitive = 1," +
-				              " B as B.DoublePrimitive = 2" +
-				              ")";
+				var text = "@name('s0') select * from SupportBean " +
+				           "match_recognize (" +
+				           " partition by IntPrimitive, LongPrimitive" +
+				           " measures A.TheString as a, B.TheString as b" +
+				           " pattern (A B)" +
+				           " define" +
+				           " A as A.DoublePrimitive = 1," +
+				           " B as B.DoublePrimitive = 2" +
+				           ")";
 
 				env.CompileDeploy(text).AddListener("s0");
 
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 			long longPrimitive,
 			double doublePrimitive)
 		{
-			SupportBean sb = new SupportBean(theString, intPrimitive);
+			var sb = new SupportBean(theString, intPrimitive);
 			sb.LongPrimitive = longPrimitive;
 			sb.DoublePrimitive = doublePrimitive;
 			env.SendEventBean(sb);
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 			string a,
 			string b)
 		{
-			EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "a,b".SplitCsv(), new object[] {a, b});
+			env.AssertPropsNew("s0", "a,b".SplitCsv(), new object[] {a, b});
 		}
 	}
 } // end of namespace

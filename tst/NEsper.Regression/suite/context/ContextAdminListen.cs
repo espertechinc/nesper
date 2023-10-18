@@ -11,406 +11,286 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.context;
 
-using NUnit.Framework;
-
 using static com.espertech.esper.regressionlib.support.context.SupportContextListenUtil;
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.context
 {
-    public class ContextAdminListen
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            WithMinListenInitTerm(execs);
-            WithMinListenHash(execs);
-            WithMinListenCategory(execs);
-            WithMinListenNested(execs);
-            WithAddRemoveListener(execs);
-            WithMinPartitionAddRemoveListener(execs);
-            WithMinListenMultipleStatements(execs);
-            return execs;
-        }
+	public class ContextAdminListen {
 
-        public static IList<RegressionExecution> WithMinListenMultipleStatements(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ContextAdminListenMultipleStatements());
-            return execs;
-        }
+	    public static ICollection<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new ContextAdminListenInitTerm());
+	        execs.Add(new ContextAdminListenHash());
+	        execs.Add(new ContextAdminListenCategory());
+	        execs.Add(new ContextAdminListenNested());
+	        execs.Add(new ContextAddRemoveListener());
+	        execs.Add(new ContextAdminPartitionAddRemoveListener());
+	        execs.Add(new ContextAdminListenMultipleStatements());
+	        return execs;
+	    }
 
-        public static IList<RegressionExecution> WithMinPartitionAddRemoveListener(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ContextAdminPartitionAddRemoveListener());
-            return execs;
-        }
+	    private class ContextAdminListenMultipleStatements : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var name = "MyContextStartS0EndS1";
+	            var path = new RegressionPath();
+	            var contextEPL = "@name('ctx') @public create context MyContextStartS0EndS1 start SupportBean_S0 as s0 end SupportBean_S1";
+	            env.CompileDeploy(contextEPL, path);
+	            var depIdCtx = env.DeploymentId("ctx");
 
-        public static IList<RegressionExecution> WithAddRemoveListener(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ContextAddRemoveListener());
-            return execs;
-        }
+	            var listener = new SupportContextListener(env);
+	            env.Runtime.ContextPartitionService.AddContextPartitionStateListener(depIdCtx, "MyContextStartS0EndS1", listener);
+	            env.CompileDeploy("@name('a') context MyContextStartS0EndS1 select count(*) from SupportBean", path);
+	            var depIdA = env.DeploymentId("a");
+	            env.CompileDeploy("@name('b') context MyContextStartS0EndS1 select count(*) from SupportBean_S0", path);
+	            var depIdB = env.DeploymentId("b");
 
-        public static IList<RegressionExecution> WithMinListenNested(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ContextAdminListenNested());
-            return execs;
-        }
+	            listener.AssertAndReset(SupportContextListenUtil.EventContextWStmt(depIdCtx, name, typeof(ContextStateEventContextStatementAdded), depIdA, "a"), SupportContextListenUtil.EventContext(depIdCtx, name, typeof(ContextStateEventContextActivated)), SupportContextListenUtil.EventContextWStmt(depIdCtx, name, typeof(ContextStateEventContextStatementAdded), depIdB, "b"));
 
-        public static IList<RegressionExecution> WithMinListenCategory(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ContextAdminListenCategory());
-            return execs;
-        }
+	            env.SendEventBean(new SupportBean_S0(1));
+	            listener.AssertAndReset(SupportContextListenUtil.EventPartitionInitTerm(depIdCtx, name, typeof(ContextStateEventContextPartitionAllocated)));
 
-        public static IList<RegressionExecution> WithMinListenHash(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ContextAdminListenHash());
-            return execs;
-        }
+	            env.UndeployAll();
+	        }
 
-        public static IList<RegressionExecution> WithMinListenInitTerm(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ContextAdminListenInitTerm());
-            return execs;
-        }
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.RUNTIMEOPS);
+	        }
+	    }
 
-        private static void RunAssertionPartitionAddRemoveListener(
-            RegressionEnvironment env,
-            string eplContext,
-            string contextName)
-        {
-            var path = new RegressionPath();
-            env.CompileDeploy("@Name('ctx') " + eplContext, path);
-            env.CompileDeploy("@Name('s0') context " + contextName + " select count(*) from SupportBean", path);
-            var api = env.Runtime.ContextPartitionService;
-            var depIdCtx = env.DeploymentId("ctx");
+	    private class ContextAdminPartitionAddRemoveListener : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "create context MyContextStartEnd start SupportBean_S0 as s0 end SupportBean_S1";
+	            RunAssertionPartitionAddRemoveListener(env, epl, "MyContextStartEnd");
 
-            var listeners = new SupportContextListener[3];
-            for (var i = 0; i < listeners.Length; i++) {
-                listeners[i] = new SupportContextListener(env);
-                env.Runtime.ContextPartitionService.AddContextPartitionStateListener(
-                    depIdCtx,
-                    contextName,
-                    listeners[i]);
-            }
+	            epl = "create context MyContextStartEndWithNeverEnding " +
+	                "context NeverEndingStory start @now, " +
+	                "context ABSession start SupportBean_S0 as s0 end SupportBean_S1";
+	            RunAssertionPartitionAddRemoveListener(env, epl, "MyContextStartEndWithNeverEnding");
+	        }
 
-            env.SendEventBean(new SupportBean_S0(1));
-            for (var i = 0; i < listeners.Length; i++) {
-                listeners[i]
-                    .AssertAndReset(
-                        EventPartitionInitTerm(
-                            depIdCtx,
-                            contextName,
-                            typeof(ContextStateEventContextPartitionAllocated)));
-            }
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.RUNTIMEOPS);
+	        }
+	    }
 
-            api.RemoveContextPartitionStateListener(depIdCtx, contextName, listeners[0]);
-            env.SendEventBean(new SupportBean_S1(1));
-            listeners[0].AssertNotInvoked();
-            listeners[1]
-                .AssertAndReset(
-                    EventPartitionInitTerm(
-                        depIdCtx,
-                        contextName,
-                        typeof(ContextStateEventContextPartitionDeallocated)));
-            listeners[2]
-                .AssertAndReset(
-                    EventPartitionInitTerm(
-                        depIdCtx,
-                        contextName,
-                        typeof(ContextStateEventContextPartitionDeallocated)));
+	    private static void RunAssertionPartitionAddRemoveListener(RegressionEnvironment env, string eplContext, string contextName) {
+	        var path = new RegressionPath();
+	        env.CompileDeploy("@name('ctx') @public " + eplContext, path);
+	        env.CompileDeploy("@name('s0') context " + contextName + " select count(*) from SupportBean", path);
+	        var api = env.Runtime.ContextPartitionService;
+	        var depIdCtx = env.DeploymentId("ctx");
 
-            var enumerator = api.GetContextPartitionStateListeners(depIdCtx, contextName);
-            Assert.AreSame(listeners[1], enumerator.Advance());
-            Assert.AreSame(listeners[2], enumerator.Advance());
-            Assert.IsFalse(enumerator.MoveNext());
+	        var listeners = new SupportContextListener[3];
+	        for (var i = 0; i < listeners.Length; i++) {
+	            listeners[i] = new SupportContextListener(env);
+	            env.Runtime.ContextPartitionService.AddContextPartitionStateListener(depIdCtx, contextName, listeners[i]);
+	        }
 
-            api.RemoveContextPartitionStateListeners(depIdCtx, contextName);
-            Assert.IsFalse(api.GetContextPartitionStateListeners(depIdCtx, contextName).MoveNext());
+	        env.SendEventBean(new SupportBean_S0(1));
+	        for (var i = 0; i < listeners.Length; i++) {
+	            listeners[i].AssertAndReset(SupportContextListenUtil.EventPartitionInitTerm(depIdCtx, contextName, typeof(ContextStateEventContextPartitionAllocated)));
+	        }
 
-            env.SendEventBean(new SupportBean_S0(2));
-            env.SendEventBean(new SupportBean_S1(2));
-            for (var i = 0; i < listeners.Length; i++) {
-                listeners[i].AssertNotInvoked();
-            }
+	        api.RemoveContextPartitionStateListener(depIdCtx, contextName, listeners[0]);
+	        env.SendEventBean(new SupportBean_S1(1));
+	        listeners[0].AssertNotInvoked();
+	        listeners[1].AssertAndReset(SupportContextListenUtil.EventPartitionInitTerm(depIdCtx, contextName, typeof(ContextStateEventContextPartitionDeallocated)));
+	        listeners[2].AssertAndReset(SupportContextListenUtil.EventPartitionInitTerm(depIdCtx, contextName, typeof(ContextStateEventContextPartitionDeallocated)));
 
-            env.UndeployAll();
-        }
+	        var it = api.GetContextPartitionStateListeners(depIdCtx, contextName);
+	        Assert.AreSame(listeners[1], it.Advance());
+	        Assert.AreSame(listeners[2], it.Advance());
+	        Assert.IsFalse(it.MoveNext());
 
-        internal class ContextAdminListenMultipleStatements : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var name = "MyContextStartS0EndS1";
-                var path = new RegressionPath();
-                var contextEPL =
-                    "@Name('ctx') create context MyContextStartS0EndS1 start SupportBean_S0 as S0 end SupportBean_S1";
-                env.CompileDeploy(contextEPL, path);
-                var depIdCtx = env.DeploymentId("ctx");
+	        api.RemoveContextPartitionStateListeners(depIdCtx, contextName);
+	        Assert.IsFalse(api.GetContextPartitionStateListeners(depIdCtx, contextName).MoveNext());
 
-                var listener = new SupportContextListener(env);
-                env.Runtime.ContextPartitionService.AddContextPartitionStateListener(
-                    depIdCtx,
-                    "MyContextStartS0EndS1",
-                    listener);
-                env.CompileDeploy("@Name('a') context MyContextStartS0EndS1 select count(*) from SupportBean", path);
-                var depIdA = env.DeploymentId("a");
-                env.CompileDeploy("@Name('b') context MyContextStartS0EndS1 select count(*) from SupportBean_S0", path);
-                var depIdB = env.DeploymentId("b");
+	        env.SendEventBean(new SupportBean_S0(2));
+	        env.SendEventBean(new SupportBean_S1(2));
+	        for (var i = 0; i < listeners.Length; i++) {
+	            listeners[i].AssertNotInvoked();
+	        }
 
-                listener.AssertAndReset(
-                    EventContextWStmt(depIdCtx, name, typeof(ContextStateEventContextStatementAdded), depIdA, "a"),
-                    EventContext(depIdCtx, name, typeof(ContextStateEventContextActivated)),
-                    EventContextWStmt(depIdCtx, name, typeof(ContextStateEventContextStatementAdded), depIdB, "b"));
+	        env.UndeployAll();
+	    }
 
-                env.SendEventBean(new SupportBean_S0(1));
-                listener.AssertAndReset(
-                    EventPartitionInitTerm(depIdCtx, name, typeof(ContextStateEventContextPartitionAllocated)));
+	    private class ContextAddRemoveListener : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var api = env.Runtime.ContextPartitionService;
 
-                env.UndeployAll();
-            }
-        }
+	            var epl = "@name('ctx') @public create context MyContext start SupportBean_S0 as s0 end SupportBean_S1";
+	            var listeners = new SupportContextListener[3];
+	            for (var i = 0; i < listeners.Length; i++) {
+	                listeners[i] = new SupportContextListener(env);
+	                env.Runtime.ContextPartitionService.AddContextStateListener(listeners[i]);
+	            }
 
-        internal class ContextAdminPartitionAddRemoveListener : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "create context MyContextStartEnd start SupportBean_S0 as S0 end SupportBean_S1";
-                RunAssertionPartitionAddRemoveListener(env, epl, "MyContextStartEnd");
+	            env.CompileDeploy(epl);
+	            var depIdCtx = env.DeploymentId("ctx");
+	            for (var i = 0; i < listeners.Length; i++) {
+	                listeners[i].AssertAndReset(SupportContextListenUtil.EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextCreated)));
+	            }
 
-                epl = "create context MyContextStartEndWithNeverEnding " +
-                      "context NeverEndingStory start @now, " +
-                      "context ABSession start SupportBean_S0 as S0 end SupportBean_S1";
-                RunAssertionPartitionAddRemoveListener(env, epl, "MyContextStartEndWithNeverEnding");
-            }
-        }
+	            api.RemoveContextStateListener(listeners[0]);
+	            env.UndeployModuleContaining("ctx");
+	            listeners[0].AssertNotInvoked();
+	            listeners[1].AssertAndReset(SupportContextListenUtil.EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextDestroyed)));
+	            listeners[2].AssertAndReset(SupportContextListenUtil.EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextDestroyed)));
 
-        internal class ContextAddRemoveListener : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var api = env.Runtime.ContextPartitionService;
+	            var it = api.ContextStateListeners;
+	            Assert.AreSame(listeners[1], it.Advance());
+	            Assert.AreSame(listeners[2], it.Advance());
+	            Assert.IsFalse(it.MoveNext());
 
-                var epl = "@Name('ctx') create context MyContext start SupportBean_S0 as S0 end SupportBean_S1";
-                var listeners = new SupportContextListener[3];
-                for (var i = 0; i < listeners.Length; i++) {
-                    listeners[i] = new SupportContextListener(env);
-                    env.Runtime.ContextPartitionService.AddContextStateListener(listeners[i]);
-                }
+	            api.RemoveContextStateListeners();
+	            Assert.IsFalse(api.ContextStateListeners.MoveNext());
 
-                env.CompileDeploy(epl);
-                var depIdCtx = env.DeploymentId("ctx");
-                for (var i = 0; i < listeners.Length; i++) {
-                    listeners[i]
-                        .AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextCreated)));
-                }
+	            env.CompileDeploy(epl);
+	            env.UndeployAll();
+	            for (var i = 0; i < listeners.Length; i++) {
+	                listeners[i].AssertNotInvoked();
+	            }
+	        }
 
-                api.RemoveContextStateListener(listeners[0]);
-                env.UndeployModuleContaining("ctx");
-                listeners[0].AssertNotInvoked();
-                listeners[1]
-                    .AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextDestroyed)));
-                listeners[2]
-                    .AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextDestroyed)));
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.RUNTIMEOPS, RegressionFlag.OBSERVEROPS);
+	        }
+	    }
 
-                var enumerator = api.ContextStateListeners;
-                Assert.AreSame(listeners[1], enumerator.Advance());
-                Assert.AreSame(listeners[2], enumerator.Advance());
-                Assert.IsFalse(enumerator.MoveNext());
+	    private class ContextAdminListenNested : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var listener = new SupportContextListener(env);
+	            env.Runtime.ContextPartitionService.AddContextStateListener(listener);
 
-                api.RemoveContextStateListeners();
-                Assert.IsFalse(api.ContextStateListeners.MoveNext());
+	            var path = new RegressionPath();
+	            env.CompileDeploy("@name('ctx') @public create context MyContext " +
+	                "context ContextPosNeg group by intPrimitive > 0 as pos, group by intPrimitive < 0 as neg from SupportBean, " +
+	                "context ByString partition by theString from SupportBean", path);
+	            var depIdCtx = env.DeploymentId("ctx");
+	            listener.AssertAndReset(SupportContextListenUtil.EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextCreated)));
 
-                env.CompileDeploy(epl);
-                env.UndeployAll();
-                for (var i = 0; i < listeners.Length; i++) {
-                    listeners[i].AssertNotInvoked();
-                }
-            }
-        }
+	            env.CompileDeploy("@name('s0') context MyContext select count(*) from SupportBean", path);
+	            var depIdStmt = env.DeploymentId("s0");
+	            listener.AssertAndReset(SupportContextListenUtil.EventContextWStmt(depIdCtx, "MyContext", typeof(ContextStateEventContextStatementAdded), depIdStmt, "s0"), SupportContextListenUtil.EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextActivated)));
 
-        internal class ContextAdminListenNested : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var listener = new SupportContextListener(env);
-                env.Runtime.ContextPartitionService.AddContextStateListener(listener);
+	            env.SendEventBean(new SupportBean("E1", 1));
+	            var allocated = listener.AllocatedEvents;
+	            Assert.AreEqual(1, allocated.Count);
+	            var nested = (ContextPartitionIdentifierNested) allocated[0].Identifier;
+	            EPAssertionUtil.AssertEqualsExactOrder("E1".SplitCsv(), ((ContextPartitionIdentifierPartitioned) nested.Identifiers[1]).Keys);
+	            Assert.AreEqual(1, listener.GetAndReset().Count);
 
-                var path = new RegressionPath();
-                env.CompileDeploy(
-                    "@Name('ctx') create context MyContext " +
-                    "context ContextPosNeg group by IntPrimitive > 0 as pos, group by IntPrimitive < 0 as neg from SupportBean, " +
-                    "context ByString partition by TheString from SupportBean",
-                    path);
-                var depIdCtx = env.DeploymentId("ctx");
-                listener.AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextCreated)));
+	            env.UndeployModuleContaining("s0");
+	            listener.AssertAndReset(
+	                SupportContextListenUtil.EventContextWStmt(depIdCtx, "MyContext", typeof(ContextStateEventContextStatementRemoved), depIdStmt, "s0"),
+	                SupportContextListenUtil.EventPartitionInitTerm(depIdCtx, "MyContext", typeof(ContextStateEventContextPartitionDeallocated)),
+	                SupportContextListenUtil.EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextDeactivated)));
 
-                env.CompileDeploy("@Name('s0') context MyContext select count(*) from SupportBean", path);
-                var depIdStmt = env.DeploymentId("s0");
-                listener.AssertAndReset(
-                    EventContextWStmt(
-                        depIdCtx,
-                        "MyContext",
-                        typeof(ContextStateEventContextStatementAdded),
-                        depIdStmt,
-                        "s0"),
-                    EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextActivated)));
+	            env.UndeployModuleContaining("ctx");
+	            listener.AssertAndReset(SupportContextListenUtil.EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextDestroyed)));
 
-                env.SendEventBean(new SupportBean("E1", 1));
-                var allocated = listener.GetAllocatedEvents();
-                Assert.AreEqual(1, allocated.Count);
-                var nested = (ContextPartitionIdentifierNested)allocated[0].Identifier;
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    new[] { "E1" },
-                    ((ContextPartitionIdentifierPartitioned)nested.Identifiers[1]).Keys);
-                Assert.AreEqual(1, listener.GetAndReset().Count);
+	            env.Runtime.ContextPartitionService.RemoveContextStateListeners();
+	        }
 
-                env.UndeployModuleContaining("s0");
-                listener.AssertAndReset(
-                    EventContextWStmt(
-                        depIdCtx,
-                        "MyContext",
-                        typeof(ContextStateEventContextStatementRemoved),
-                        depIdStmt,
-                        "s0"),
-                    EventPartitionInitTerm(depIdCtx, "MyContext", typeof(ContextStateEventContextPartitionDeallocated)),
-                    EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextDeactivated)));
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.RUNTIMEOPS);
+	        }
+	    }
 
-                env.UndeployModuleContaining("ctx");
-                listener.AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextDestroyed)));
+	    private class ContextAdminListenCategory : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var listener = new SupportContextListener(env);
+	            env.Runtime.ContextPartitionService.AddContextStateListener(listener);
 
-                env.Runtime.ContextPartitionService.RemoveContextStateListeners();
-            }
-        }
+	            var path = new RegressionPath();
+	            env.CompileDeploy("@name('ctx') @public create context MyContext group by intPrimitive > 0 as pos, group by intPrimitive < 0 as neg from SupportBean", path);
+	            env.CompileDeploy("@name('s0') context MyContext select count(*) from SupportBean", path);
 
-        internal class ContextAdminListenCategory : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var listener = new SupportContextListener(env);
-                env.Runtime.ContextPartitionService.AddContextStateListener(listener);
+	            var allocated = listener.AllocatedEvents;
+	            Assert.AreEqual(2, allocated.Count);
+	            Assert.AreEqual("neg", ((ContextPartitionIdentifierCategory) allocated[1].Identifier).Label);
+	            listener.GetAndReset();
 
-                var path = new RegressionPath();
-                env.CompileDeploy(
-                    "@Name('ctx') create context MyContext group by IntPrimitive > 0 as pos, group by IntPrimitive < 0 as neg from SupportBean",
-                    path);
-                env.CompileDeploy("@Name('s0') context MyContext select count(*) from SupportBean", path);
+	            env.UndeployModuleContaining("s0");
+	            env.UndeployModuleContaining("ctx");
+	            env.Runtime.ContextPartitionService.RemoveContextStateListeners();
+	        }
 
-                var allocated = listener.GetAllocatedEvents();
-                Assert.AreEqual(2, allocated.Count);
-                Assert.AreEqual("neg", ((ContextPartitionIdentifierCategory)allocated[1].Identifier).Label);
-                listener.GetAndReset();
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.RUNTIMEOPS);
+	        }
+	    }
 
-                env.UndeployModuleContaining("s0");
-                env.UndeployModuleContaining("ctx");
-                env.Runtime.ContextPartitionService.RemoveContextStateListeners();
-            }
-        }
+	    private class ContextAdminListenHash : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var listener = new SupportContextListener(env);
+	            env.Runtime.ContextPartitionService.AddContextStateListener(listener);
 
-        internal class ContextAdminListenHash : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var listener = new SupportContextListener(env);
-                env.Runtime.ContextPartitionService.AddContextStateListener(listener);
+	            var epl = "@name('ctx') create context MyContext coalesce by consistent_hash_crc32(theString) from SupportBean granularity 2 preallocate;\n" +
+	                      "@name('s0') context MyContext select count(*) from SupportBean;\n";
+	            env.CompileDeploy(epl);
+	            var deploymentId = env.DeploymentId("s0");
 
-                var epl =
-                    "@Name('ctx') create context MyContext coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 2 preallocate;\n" +
-                    "@Name('s0') context MyContext select count(*) from SupportBean;\n";
-                env.CompileDeploy(epl);
-                var deploymentId = env.DeploymentId("s0");
+	            var allocated = listener.AllocatedEvents;
+	            Assert.AreEqual(2, allocated.Count);
+	            Assert.AreEqual(1, ((ContextPartitionIdentifierHash) allocated[1].Identifier).Hash);
+	            listener.GetAndReset();
 
-                var allocated = listener.GetAllocatedEvents();
-                Assert.AreEqual(2, allocated.Count);
-                Assert.AreEqual(1, ((ContextPartitionIdentifierHash)allocated[1].Identifier).Hash);
-                listener.GetAndReset();
+	            env.UndeployAll();
 
-                env.UndeployAll();
+	            listener.AssertAndReset(
+	                SupportContextListenUtil.EventContextWStmt(deploymentId, "MyContext", typeof(ContextStateEventContextStatementRemoved), deploymentId, "s0"),
+	                SupportContextListenUtil.EventPartitionInitTerm(deploymentId, "MyContext", typeof(ContextStateEventContextPartitionDeallocated)),
+	                SupportContextListenUtil.EventPartitionInitTerm(deploymentId, "MyContext", typeof(ContextStateEventContextPartitionDeallocated)),
+	                SupportContextListenUtil.EventContext(deploymentId, "MyContext", typeof(ContextStateEventContextDeactivated)),
+	                SupportContextListenUtil.EventContext(deploymentId, "MyContext", typeof(ContextStateEventContextDestroyed)));
 
-                listener.AssertAndReset(
-                    EventContextWStmt(
-                        deploymentId,
-                        "MyContext",
-                        typeof(ContextStateEventContextStatementRemoved),
-                        deploymentId,
-                        "s0"),
-                    EventPartitionInitTerm(
-                        deploymentId,
-                        "MyContext",
-                        typeof(ContextStateEventContextPartitionDeallocated)),
-                    EventPartitionInitTerm(
-                        deploymentId,
-                        "MyContext",
-                        typeof(ContextStateEventContextPartitionDeallocated)),
-                    EventContext(deploymentId, "MyContext", typeof(ContextStateEventContextDeactivated)),
-                    EventContext(deploymentId, "MyContext", typeof(ContextStateEventContextDestroyed)));
+	            env.Runtime.ContextPartitionService.RemoveContextStateListeners();
+	        }
 
-                env.Runtime.ContextPartitionService.RemoveContextStateListeners();
-            }
-        }
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.STATICHOOK);
+	        }
+	    }
 
-        internal class ContextAdminListenInitTerm : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var listener = new SupportContextListener(env);
-                env.Runtime.ContextPartitionService.AddContextStateListener(listener);
+	    private class ContextAdminListenInitTerm : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var listener = new SupportContextListener(env);
+	            env.Runtime.ContextPartitionService.AddContextStateListener(listener);
 
-                var path = new RegressionPath();
-                env.CompileDeploy(
-                    "@Name('ctx') create context MyContext start SupportBean_S0 as S0 end SupportBean_S1",
-                    path);
-                var depIdCtx = env.DeploymentId("ctx");
-                listener.AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextCreated)));
+	            var path = new RegressionPath();
+	            env.CompileDeploy("@name('ctx') @public create context MyContext start SupportBean_S0 as s0 end SupportBean_S1", path);
+	            var depIdCtx = env.DeploymentId("ctx");
+	            listener.AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextCreated)));
 
-                env.CompileDeploy("@Name('s0') context MyContext select count(*) from SupportBean", path);
-                var depIdStmt = env.DeploymentId("s0");
-                listener.AssertAndReset(
-                    EventContextWStmt(
-                        depIdCtx,
-                        "MyContext",
-                        typeof(ContextStateEventContextStatementAdded),
-                        depIdStmt,
-                        "s0"),
-                    EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextActivated)));
+	            env.CompileDeploy("@name('s0') context MyContext select count(*) from SupportBean", path);
+	            var depIdStmt = env.DeploymentId("s0");
+	            listener.AssertAndReset(EventContextWStmt(depIdCtx, "MyContext", typeof(ContextStateEventContextStatementAdded), depIdStmt, "s0"), EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextActivated)));
 
-                env.SendEventBean(new SupportBean_S0(1));
-                listener.AssertAndReset(
-                    EventPartitionInitTerm(depIdCtx, "MyContext", typeof(ContextStateEventContextPartitionAllocated)));
+	            env.SendEventBean(new SupportBean_S0(1));
+	            listener.AssertAndReset(EventPartitionInitTerm(depIdCtx, "MyContext", typeof(ContextStateEventContextPartitionAllocated)));
 
-                env.SendEventBean(new SupportBean_S1(1));
-                listener.AssertAndReset(
-                    EventPartitionInitTerm(
-                        depIdCtx,
-                        "MyContext",
-                        typeof(ContextStateEventContextPartitionDeallocated)));
+	            env.SendEventBean(new SupportBean_S1(1));
+	            listener.AssertAndReset(EventPartitionInitTerm(depIdCtx, "MyContext", typeof(ContextStateEventContextPartitionDeallocated)));
 
-                env.UndeployModuleContaining("s0");
-                listener.AssertAndReset(
-                    EventContextWStmt(
-                        depIdCtx,
-                        "MyContext",
-                        typeof(ContextStateEventContextStatementRemoved),
-                        depIdStmt,
-                        "s0"),
-                    EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextDeactivated)));
+	            env.UndeployModuleContaining("s0");
+	            listener.AssertAndReset(EventContextWStmt(depIdCtx, "MyContext", typeof(ContextStateEventContextStatementRemoved), depIdStmt, "s0"), EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextDeactivated)));
 
-                env.UndeployModuleContaining("ctx");
-                listener.AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextDestroyed)));
+	            env.UndeployModuleContaining("ctx");
+	            listener.AssertAndReset(EventContext(depIdCtx, "MyContext", typeof(ContextStateEventContextDestroyed)));
 
-                env.Runtime.ContextPartitionService.RemoveContextStateListeners();
-            }
-        }
-    }
+	            env.Runtime.ContextPartitionService.RemoveContextStateListeners();
+	        }
+
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.STATICHOOK);
+	        }
+	    }
+	}
 } // end of namespace

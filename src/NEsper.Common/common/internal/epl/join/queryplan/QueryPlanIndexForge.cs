@@ -26,15 +26,11 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// <summary>
     ///     Specifies an index to build as part of an overall query plan.
     /// </summary>
-    public class QueryPlanIndexForge : CodegenMakeable
+    public class QueryPlanIndexForge : CodegenMakeable<SAIFFInitializeSymbol>
     {
         public QueryPlanIndexForge(IDictionary<TableLookupIndexReqKey, QueryPlanIndexItemForge> items)
         {
-            if (items == null) {
-                throw new ArgumentException("Null value not allowed for items");
-            }
-
-            Items = items;
+            Items = items ?? throw new ArgumentException("Null value not allowed for items");
         }
 
         public IDictionary<TableLookupIndexReqKey, QueryPlanIndexItemForge> Items { get; }
@@ -60,13 +56,12 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
-            CodegenSymbolProvider symbolsArg,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var symbols = (SAIFFInitializeSymbol)symbolsArg;
             var itemsAsMakeables = Items.Transform<
-                CodegenMakeable,
-                CodegenMakeable,
+                CodegenMakeable<SAIFFInitializeSymbol>,
+                CodegenMakeable<SAIFFInitializeSymbol>,
                 TableLookupIndexReqKey,
                 QueryPlanIndexItemForge>(
                 k => k,

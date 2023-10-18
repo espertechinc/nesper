@@ -14,40 +14,44 @@ using Avro.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.@internal.@event.json.core;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.regressionlib.support.json;
 using com.espertech.esper.regressionlib.support.util;
 
-using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
 
+using static com.espertech.esper.common.@internal.support.SupportEventPropUtil;
 using static com.espertech.esper.common.@internal.util.CollectionUtil;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
 	public class EventInfraPropertyNestedIndexed : RegressionExecution
 	{
-		public static readonly string XML_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "XML";
-		public static readonly string MAP_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "Map";
-		public static readonly string OA_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "OA";
-		public static readonly string AVRO_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "Avro";
-		private static readonly string BEAN_TYPENAME = nameof(InfraNestedIndexPropTop);
-		private static readonly string JSON_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "Json";
-		private static readonly string JSONPROVIDED_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "JsonProvided";
+		public const string XML_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "XML";
+		public const string MAP_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "Map";
+		public const string OA_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "OA";
+		public const string AVRO_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "Avro";
+		private const string BEAN_TYPENAME = nameof(InfraNestedIndexPropTop);
+		private const string JSON_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "Json";
+		private const string JSONPROVIDED_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "JsonProvided";
 
 		public void Run(RegressionEnvironment env)
 		{
 			var path = new RegressionPath();
 
-			RunAssertion(env, true, BEAN_TYPENAME, FBEAN, typeof(InfraNestedIndexedPropLvl1), typeof(InfraNestedIndexedPropLvl1).FullName, path);
+			RunAssertion(
+				env,
+				true,
+				BEAN_TYPENAME,
+				FBEAN,
+				typeof(InfraNestedIndexedPropLvl1),
+				typeof(InfraNestedIndexedPropLvl1).FullName,
+				path);
 			RunAssertion(env, true, MAP_TYPENAME, FMAP, typeof(IDictionary<string, object>), MAP_TYPENAME + "_1", path);
 			RunAssertion(env, true, OA_TYPENAME, FOA, typeof(object[]), OA_TYPENAME + "_1", path);
 			RunAssertion(env, true, XML_TYPENAME, FXML, typeof(XmlNode), XML_TYPENAME + ".l1", path);
@@ -56,30 +60,37 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			// Json
 			var eplJson =
 				"create json schema " + JSON_TYPENAME + "_4(lvl4 int);\n" +
-				"create json schema " + JSON_TYPENAME + "_3(lvl3 int, l4 " + JSON_TYPENAME + "_4[]);\n" +
-				"create json schema " + JSON_TYPENAME + "_2(lvl2 int, l3 " + JSON_TYPENAME + "_3[]);\n" +
-				"create json schema " + JSON_TYPENAME + "_1(lvl1 int, l2 " + JSON_TYPENAME + "_2[]);\n" +
-				"@Name('types') @public @buseventtype " +
-				"create json schema " + JSON_TYPENAME + "(l1 " + JSON_TYPENAME + "_1[]);\n";
+				" create json schema " + JSON_TYPENAME + "_3(lvl3 int, l4 " + JSON_TYPENAME + "_4[]);\n" +
+				" create json schema " + JSON_TYPENAME + "_2(lvl2 int, l3 " + JSON_TYPENAME + "_3[]);\n" +
+				" create json schema " + JSON_TYPENAME + "_1(lvl1 int, l2 " + JSON_TYPENAME + "_2[]);\n" +
+				"@name('types') @public @buseventtype" +
+				" create json schema " + JSON_TYPENAME + "(l1 " + JSON_TYPENAME + "_1[]);\n";
 			env.CompileDeploy(eplJson, path);
-			RunAssertion(env, false, JSON_TYPENAME, FJSON, typeof(object), JSON_TYPENAME + "_1", path);
+			RunAssertion(env, false, JSON_TYPENAME, FJSON, typeof(object[]), JSON_TYPENAME + "_1", path);
 			env.UndeployModuleContaining("types");
 
 			// Json-Class-Provided
 			var eplJsonProvided =
-				"@JsonSchema(ClassName='" + typeof(MyLocalJSONProvidedLvl4).FullName + "') " +
-				"create json schema " + JSONPROVIDED_TYPENAME + "_4();\n" +
-				"@JsonSchema(ClassName='" + typeof(MyLocalJSONProvidedLvl3).FullName + "') " +
-				"create json schema " + JSONPROVIDED_TYPENAME + "_3(lvl3 int, l4 " + JSONPROVIDED_TYPENAME + "_4[]);\n" +
-				"@JsonSchema(ClassName='" + typeof(MyLocalJSONProvidedLvl2).FullName + "') " + 
-				"create json schema " + JSONPROVIDED_TYPENAME + "_2(lvl2 int, l3 " + JSONPROVIDED_TYPENAME + "_3[]);\n" +
-				"@JsonSchema(ClassName='" + typeof(MyLocalJSONProvidedLvl1).FullName + "') " +
-				"create json schema " + JSONPROVIDED_TYPENAME + "_1(lvl1 int, l2 " + JSONPROVIDED_TYPENAME + "_2[]);\n" +
-				"@JsonSchema(ClassName='" + typeof(MyLocalJSONProvidedTop).FullName + "') " +
-				"@name('types') @public @buseventtype " +
-				"create json schema " + JSONPROVIDED_TYPENAME + "(l1 " + JSONPROVIDED_TYPENAME + "_1[]);\n";
+				"@JsonSchema(className='" + typeof(MyLocalJSONProvidedLvl4).FullName + "')" +
+				" create json schema " + JSONPROVIDED_TYPENAME + "_4();\n" +
+				"@JsonSchema(className='" + typeof(MyLocalJSONProvidedLvl3).FullName + "')" +
+				" create json schema " + JSONPROVIDED_TYPENAME + "_3(lvl3 int, l4 " + JSONPROVIDED_TYPENAME + "_4[]);\n" +
+				"@JsonSchema(className='" + typeof(MyLocalJSONProvidedLvl2).FullName + "')" +
+				" create json schema " + JSONPROVIDED_TYPENAME + "_2(lvl2 int, l3 " + JSONPROVIDED_TYPENAME + "_3[]);\n" +
+				"@JsonSchema(className='" + typeof(MyLocalJSONProvidedLvl1).FullName + "')" + 
+				" create json schema " + JSONPROVIDED_TYPENAME + "_1(lvl1 int, l2 " + JSONPROVIDED_TYPENAME + "_2[]);\n" +
+				"@JsonSchema(className='" + typeof(MyLocalJSONProvidedTop).FullName + "') @name('types') @public @buseventtype" +
+				" create json schema " + JSONPROVIDED_TYPENAME + "(l1 " + JSONPROVIDED_TYPENAME + "_1[]);\n";
+
 			env.CompileDeploy(eplJsonProvided, path);
-			RunAssertion(env, false, JSONPROVIDED_TYPENAME, FJSON, typeof(MyLocalJSONProvidedLvl1), "EventInfraPropertyNestedIndexedJsonProvided_1", path);
+			RunAssertion(
+				env,
+				false,
+				JSONPROVIDED_TYPENAME,
+				FJSON,
+				typeof(MyLocalJSONProvidedLvl1[]),
+				"EventInfraPropertyNestedIndexedJsonProvided_1",
+				path);
 
 			env.UndeployAll();
 		}
@@ -95,8 +106,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 			RunAssertionSelectNested(env, typename, send, path);
 			RunAssertionBeanNav(env, typename, send, path);
-			RunAssertionTypeValidProp(env, preconfigured, typename, send, nestedClass, fragmentTypeName);
-			RunAssertionTypeInvalidProp(env, typename);
+			env.AssertThat(
+				() => {
+					RunAssertionTypeValidProp(env, preconfigured, typename, send, nestedClass, fragmentTypeName);
+					RunAssertionTypeInvalidProp(env, typename);
+				});
 		}
 
 		private void RunAssertionBeanNav(
@@ -105,21 +119,32 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			FunctionSendEvent4IntWArrayNested send,
 			RegressionPath path)
 		{
-			var epl = "@Name('s0') select * from " + typename;
+			var epl = "@name('s0') select * from " + typename;
 			env.CompileDeploy(epl, path).AddListener("s0");
 
 			send.Invoke(typename, env, 1, 2, 3, 4);
-			var @event = env.Listener("s0").AssertOneGetNewAndReset();
-			EPAssertionUtil.AssertProps(
-				@event,
-				"l1[0].lvl1,l1[0].l2[0].lvl2,l1[0].l2[0].l3[0].lvl3,l1[0].l2[0].l3[0].l4[0].lvl4".SplitCsv(),
-				new object[] {1, 2, 3, 4});
-			SupportEventTypeAssertionUtil.AssertConsistency(@event);
-			var isNative = typename.Equals(BEAN_TYPENAME);
-			SupportEventTypeAssertionUtil.AssertFragments(@event, isNative, true, "l1,l1[0].l2,l1[0].l2[0].l3,l1[0].l2[0].l3[0].l4");
-			SupportEventTypeAssertionUtil.AssertFragments(@event, isNative, false, "l1[0],l1[0].l2[0],l1[0].l2[0].l3[0],l1[0].l2[0].l3[0].l4[0]");
+			env.AssertEventNew(
+				"s0",
+				@event => {
+					EPAssertionUtil.AssertProps(
+						@event,
+						"l1[0].lvl1,l1[0].l2[0].lvl2,l1[0].l2[0].l3[0].lvl3,l1[0].l2[0].l3[0].l4[0].lvl4".SplitCsv(),
+						new object[] { 1, 2, 3, 4 });
+					SupportEventTypeAssertionUtil.AssertConsistency(@event);
+					var isNative = typename.Equals(BEAN_TYPENAME);
+					SupportEventTypeAssertionUtil.AssertFragments(
+						@event,
+						isNative,
+						true,
+						"l1,l1[0].l2,l1[0].l2[0].l3,l1[0].l2[0].l3[0].l4");
+					SupportEventTypeAssertionUtil.AssertFragments(
+						@event,
+						isNative,
+						false,
+						"l1[0],l1[0].l2[0],l1[0].l2[0].l3[0],l1[0].l2[0].l3[0].l4[0]");
 
-			RunAssertionEventInvalidProp(@event);
+					RunAssertionEventInvalidProp(@event);
+				});
 
 			env.UndeployModuleContaining("s0");
 		}
@@ -130,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			FunctionSendEvent4IntWArrayNested send,
 			RegressionPath path)
 		{
-			var epl = "@Name('s0') select " +
+			var epl = "@name('s0') select " +
 			          "l1[0].lvl1 as c0, " +
 			          "exists(l1[0].lvl1) as exists_c0, " +
 			          "l1[0].l2[0].lvl2 as c1, " +
@@ -145,18 +170,27 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			var fields = "c0,exists_c0,c1,exists_c1,c2,exists_c2,c3,exists_c3".SplitCsv();
 
-			var eventType = env.Statement("s0").EventType;
-			foreach (var property in fields) {
-				Assert.AreEqual(property.StartsWith("exists") ? typeof(bool?) : typeof(int?), eventType.GetPropertyType(property).GetBoxedType());
-			}
+			env.AssertStatement(
+				"s0",
+				statement => {
+					var eventType = statement.EventType;
+					foreach (var property in fields) {
+						Assert.AreEqual(
+							property.StartsWith("exists") ? typeof(bool?) : typeof(int?),
+							Boxing.GetBoxedType(eventType.GetPropertyType(property)));
+					}
+				});
 
 			send.Invoke(typename, env, 1, 2, 3, 4);
-			var @event = env.Listener("s0").AssertOneGetNewAndReset();
-			EPAssertionUtil.AssertProps(@event, fields, new object[] {1, true, 2, true, 3, true, 4, true});
-			SupportEventTypeAssertionUtil.AssertConsistency(@event);
+			env.AssertEventNew(
+				"s0",
+				@event => {
+					EPAssertionUtil.AssertProps(@event, fields, new object[] { 1, true, 2, true, 3, true, 4, true });
+					SupportEventTypeAssertionUtil.AssertConsistency(@event);
+				});
 
 			send.Invoke(typename, env, 10, 5, 50, 400);
-			EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {10, true, 5, true, 50, true, 400, true});
+			env.AssertPropsNew("s0", fields, new object[] { 10, true, 5, true, 50, true, 400, true });
 
 			env.UndeployModuleContaining("s0");
 		}
@@ -181,23 +215,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				? env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName)
 				: env.Runtime.EventTypeService.GetEventType(env.DeploymentId("types"), typeName);
 
-			var arrayType = nestedClass == typeof(object[]) ? nestedClass : TypeHelper.GetArrayType(nestedClass);
-			//arrayType = arrayType == typeof(GenericRecord[]) ? typeof(ICollection) : arrayType;
 			var expectedType = new object[][] {
-				new object[] {"l1", arrayType, fragmentTypeName, true}
+				new object[] { "l1", nestedClass, fragmentTypeName, true }
 			};
-			SupportEventTypeAssertionUtil.AssertEventTypeProperties(expectedType, eventType, SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
+			SupportEventTypeAssertionUtil.AssertEventTypeProperties(
+				expectedType,
+				eventType,
+				SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
 
-			EPAssertionUtil.AssertEqualsAnyOrder(new string[] {"l1"}, eventType.PropertyNames);
+			EPAssertionUtil.AssertEqualsAnyOrder(new string[] { "l1" }, eventType.PropertyNames);
 
 			foreach (var prop in Arrays.AsList("l1[0]", "l1[0].lvl1", "l1[0].l2", "l1[0].l2[0]", "l1[0].l2[0].lvl2")) {
 				Assert.IsNotNull(eventType.GetGetter(prop));
 				Assert.IsTrue(eventType.IsProperty(prop));
 			}
 
-			Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(eventType.GetPropertyType("l1"), arrayType));
+			Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(eventType.GetPropertyType("l1"), nestedClass));
 			foreach (var prop in Arrays.AsList("l1[0].lvl1", "l1[0].l2[0].lvl2", "l1[0].l2[0].l3[0].lvl3")) {
-				Assert.AreEqual(typeof(int?), eventType.GetPropertyType(prop).GetBoxedType());
+				Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType(prop)));
 			}
 
 			var lvl1Fragment = eventType.GetFragmentType("l1");
@@ -210,12 +245,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			Assert.IsTrue(lvl2Fragment.IsIndexed);
 			Assert.AreEqual(isNative, lvl2Fragment.IsNative);
 
-			if (typeName.Equals(JSON_TYPENAME)) {
-				arrayType = TypeHelper.GetArrayType(SupportJsonEventTypeUtil.GetNestedUnderlyingType((JsonEventType) eventType, "l1"));
-				nestedClass = arrayType.GetElementType();
+			var received = eventType.GetPropertyDescriptor("l1");
+
+			var componentType = typeName.Equals(AVRO_TYPENAME) ? typeof(GenericRecord) : null;
+			if (nestedClass.IsArray) {
+				componentType = nestedClass.GetElementType();
 			}
 
-			Assert.AreEqual(new EventPropertyDescriptor("l1", arrayType, nestedClass, false, false, true, false, true), eventType.GetPropertyDescriptor("l1"));
+			if (typeName.Equals(JSON_TYPENAME)) {
+				nestedClass = received.PropertyType;
+				componentType = received.PropertyComponentType;
+			}
+
+			AssertPropEquals(
+				new SupportEventPropDesc("l1", nestedClass)
+					.WithComponentType(componentType)
+					.WithIndexed()
+					.WithFragment(),
+				received);
 		}
 
 		private void RunAssertionTypeInvalidProp(
@@ -224,7 +271,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		{
 			var eventType = env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName);
 
-			foreach (var prop in Arrays.AsList("l2[0]", "l1[0].l3", "l1[0].lvl1.lvl1", "l1[0].l2.l4", "l1[0].l2[0].xx", "l1[0].l2[0].l3[0].lvl5")) {
+			foreach (var prop in Arrays.AsList(
+				         "l2[0]",
+				         "l1[0].l3",
+				         "l1[0].lvl1.lvl1",
+				         "l1[0].l2.l4",
+				         "l1[0].l2[0].xx",
+				         "l1[0].l2[0].l3[0].lvl5")) {
 				Assert.AreEqual(false, eventType.IsProperty(prop));
 				Assert.AreEqual(null, eventType.GetPropertyType(prop));
 				Assert.IsNull(eventType.GetPropertyDescriptor(prop));
@@ -239,10 +292,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			lvl3,
 			lvl4) => {
 			var l4 = new InfraNestedIndexedPropLvl4(lvl4);
-			var l3 = new InfraNestedIndexedPropLvl3(new InfraNestedIndexedPropLvl4[] {l4}, lvl3);
-			var l2 = new InfraNestedIndexedPropLvl2(new InfraNestedIndexedPropLvl3[] {l3}, lvl2);
-			var l1 = new InfraNestedIndexedPropLvl1(new InfraNestedIndexedPropLvl2[] {l2}, lvl1);
-			var top = new InfraNestedIndexPropTop(new InfraNestedIndexedPropLvl1[] {l1});
+			var l3 = new InfraNestedIndexedPropLvl3(new InfraNestedIndexedPropLvl4[] { l4 }, lvl3);
+			var l2 = new InfraNestedIndexedPropLvl2(new InfraNestedIndexedPropLvl3[] { l3 }, lvl2);
+			var l1 = new InfraNestedIndexedPropLvl1(new InfraNestedIndexedPropLvl2[] { l2 }, lvl1);
+			var top = new InfraNestedIndexPropTop(new InfraNestedIndexedPropLvl1[] { l1 });
 			env.SendEventBean(top);
 		};
 
@@ -254,10 +307,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			lvl3,
 			lvl4) => {
 			var l4 = Collections.SingletonDataMap("lvl4", lvl4);
-			var l3 = TwoEntryMap<string, object>("l4", new IDictionary<string, object>[] {l4}, "lvl3", lvl3);
-			var l2 = TwoEntryMap<string, object>("l3", new IDictionary<string, object>[] {l3}, "lvl2", lvl2);
-			var l1 = TwoEntryMap<string, object>("l2", new IDictionary<string, object>[] {l2}, "lvl1", lvl1);
-			var top = Collections.SingletonDataMap("l1", new IDictionary<string, object>[] {l1});
+			var l3 = TwoEntryMap<string, object>("l4", new IDictionary<string, object>[] { l4 }, "lvl3", lvl3);
+			var l2 = TwoEntryMap<string, object>("l3", new IDictionary<string, object>[] { l3 }, "lvl2", lvl2);
+			var l1 = TwoEntryMap<string, object>("l2", new IDictionary<string, object>[] { l2 }, "lvl1", lvl1);
+			var top = Collections.SingletonDataMap("l1", new IDictionary<string, object>[] { l1 });
 			env.SendEventMap(top, eventTypeName);
 		};
 
@@ -268,11 +321,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			lvl2,
 			lvl3,
 			lvl4) => {
-			var l4 = new object[] {lvl4};
-			var l3 = new object[] {new object[] {l4}, lvl3};
-			var l2 = new object[] {new object[] {l3}, lvl2};
-			var l1 = new object[] {new object[] {l2}, lvl1};
-			var top = new object[] {new object[] {l1}};
+			var l4 = new object[] { lvl4 };
+			var l3 = new object[] { new object[] { l4 }, lvl3 };
+			var l2 = new object[] { new object[] { l3 }, lvl2 };
+			var l1 = new object[] { new object[] { l2 }, lvl1 };
+			var top = new object[] { new object[] { l1 } };
 			env.SendEventObjectArray(top, eventTypeName);
 		};
 
@@ -298,8 +351,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			xml = xml.Replace("${lvl2}", Convert.ToString(lvl2));
 			xml = xml.Replace("${lvl3}", Convert.ToString(lvl3));
 			xml = xml.Replace("${lvl4}", Convert.ToString(lvl4));
-
-			SupportXML.SendXMLEvent(env, xml, eventTypeName);
+			try {
+				SupportXML.SendXMLEvent(env, xml, eventTypeName);
+			}
+			catch (Exception e) {
+				throw new EPRuntimeException(e);
+			}
 		};
 
 		private static readonly FunctionSendEvent4IntWArrayNested FAVRO = (
@@ -309,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			lvl2,
 			lvl3,
 			lvl4) => {
-			var schema = AvroSchemaUtil.ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured(AVRO_TYPENAME)).AsRecordSchema();
+			var schema = env.RuntimeAvroSchemaPreconfigured(AVRO_TYPENAME).AsRecordSchema();
 			var lvl1Schema = schema.GetField("l1").Schema.AsArraySchema().ItemSchema.AsRecordSchema();
 			var lvl2Schema = lvl1Schema.GetField("l2").Schema.AsArraySchema().ItemSchema.AsRecordSchema();
 			var lvl3Schema = lvl2Schema.GetField("l3").Schema.AsArraySchema().ItemSchema.AsRecordSchema();
@@ -374,6 +431,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			int lvl3,
 			int lvl4);
 
+		[Serializable]
 		public class InfraNestedIndexPropTop
 		{
 			private InfraNestedIndexedPropLvl1[] l1;
@@ -383,10 +441,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				this.l1 = l1;
 			}
 
-			[PropertyName("l1")]
 			public InfraNestedIndexedPropLvl1[] L1 => l1;
 		}
 
+		[Serializable]
 		public class InfraNestedIndexedPropLvl1
 		{
 			private InfraNestedIndexedPropLvl2[] l2;
@@ -400,13 +458,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				this.lvl1 = lvl1;
 			}
 
-			[PropertyName("l2")]
 			public InfraNestedIndexedPropLvl2[] L2 => l2;
 
-			[PropertyName("lvl1")]
 			public int Lvl1 => lvl1;
 		}
 
+		[Serializable]
 		public class InfraNestedIndexedPropLvl2
 		{
 			private InfraNestedIndexedPropLvl3[] l3;
@@ -420,13 +477,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				this.lvl2 = lvl2;
 			}
 
-			[PropertyName("l3")]
 			public InfraNestedIndexedPropLvl3[] L3 => l3;
 
-			[PropertyName("lvl2")]
 			public int Lvl2 => lvl2;
 		}
 
+		[Serializable]
 		public class InfraNestedIndexedPropLvl3
 		{
 			private InfraNestedIndexedPropLvl4[] l4;
@@ -440,13 +496,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				this.lvl3 = lvl3;
 			}
 
-			[PropertyName("l4")]
 			public InfraNestedIndexedPropLvl4[] L4 => l4;
 
-			[PropertyName("lvl3")]
 			public int Lvl3 => lvl3;
 		}
 
+		[Serializable]
 		public class InfraNestedIndexedPropLvl4
 		{
 			private int lvl4;
@@ -456,7 +511,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				this.lvl4 = lvl4;
 			}
 
-			[PropertyName("lvl4")]
 			public int Lvl4 => lvl4;
 		}
 

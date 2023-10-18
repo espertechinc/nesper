@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.util
         public void TestDistance()
         {
             Assert.AreEqual(1, LevenshteinDistance.ComputeLevenshteinDistance("abc", "abcd"));
-            // System.out.println(result);
+            // Console.WriteLine(result);
         }
     }
 } // end of namespace

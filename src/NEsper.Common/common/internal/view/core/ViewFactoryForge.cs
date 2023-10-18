@@ -11,12 +11,14 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.fabric;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.view.core
 {
-    public interface ViewFactoryForge : CodegenMakeable
+    public interface ViewFactoryForge : CodegenMakeable<SAIFFInitializeSymbol>
     {
         void SetViewParameters(
             IList<ExprNode> parameters,
@@ -31,9 +33,11 @@ namespace com.espertech.esper.common.@internal.view.core
 
         string ViewName { get; }
 
-        IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv);
+        IList<StmtClassForgeableFactory> InitAdditionalForgeables(ViewForgeEnv viewForgeEnv) {
+            return EmptyList<StmtClassForgeableFactory>.Instance;
+        }
 
-        IList<ViewFactoryForge> InnerForges { get; }
+        IList<ViewFactoryForge> InnerForges => EmptyList<ViewFactoryForge>.Instance;
 
         void AssignStateMgmtSettings(
             FabricCharge fabricCharge,
@@ -43,9 +47,8 @@ namespace com.espertech.esper.common.@internal.view.core
         }
 
         T Accept<T>(ViewFactoryForgeVisitor<T> visitor);
-
-        void Accept(ViewForgeVisitor visitor)
-        {
+        
+        void Accept(ViewForgeVisitor visitor) {
             visitor.Visit(this);
         }
     }

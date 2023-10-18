@@ -14,8 +14,6 @@ using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
 
-using static com.espertech.esper.common.client.scopetest.EPAssertionUtil;
-
 namespace com.espertech.esper.regressionlib.suite.client.stage
 {
 	public class ClientStageEPStageService {
@@ -26,14 +24,14 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 	        return execs;
 	    }
 
-	    private class ClientStageEPStageServiceGetStage : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
+	    private class ClientStageEPStageServiceGetStage : ClientStageRegressionExecution {
+	        public override void Run(RegressionEnvironment env) {
 	            var stageAOne = env.StageService.GetStage("A");
 	            var stageBTwo = env.StageService.GetStage("A");
 
 	            Assert.AreSame(stageAOne, stageBTwo);
 	            Assert.AreEqual("A", stageAOne.URI);
-	            AssertEqualsAnyOrder("A".SplitCsv(), env.StageService.StageURIs);
+	            CollectionAssert.AreEquivalent("A".SplitCsv(), env.StageService.StageURIs);
 	            Assert.IsNull(env.StageService.GetExistingStage("B"));
 	            Assert.AreEqual("A", env.StageService.GetStage("A").URI);
 
@@ -41,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 
 	            var stageB = env.StageService.GetStage("B");
 	            Assert.AreNotSame(stageB, stageAOne);
-	            AssertEqualsAnyOrder("A,B".SplitCsv(), env.StageService.StageURIs);
+	            CollectionAssert.AreEquivalent("A,B".SplitCsv(), env.StageService.StageURIs);
 	            Assert.IsNull(env.StageService.GetExistingStage("C"));
 	            Assert.AreEqual("A", env.StageService.GetExistingStage("A").URI);
 	            Assert.AreEqual("B", env.StageService.GetExistingStage("B").URI);
@@ -50,16 +48,16 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 
 	            var stageC = env.StageService.GetStage("C");
 	            Assert.AreNotSame(stageB, stageC);
-	            AssertEqualsAnyOrder("A,B,C".SplitCsv(), env.StageService.StageURIs);
+	            CollectionAssert.AreEquivalent("A,B,C".SplitCsv(), env.StageService.StageURIs);
 	            Assert.AreEqual("A", env.StageService.GetExistingStage("A").URI);
 	            Assert.AreEqual("B", env.StageService.GetExistingStage("B").URI);
 	            Assert.AreEqual("C", env.StageService.GetExistingStage("C").URI);
 
 	            env.Milestone(2);
 
-	            AssertEqualsAnyOrder("A,B,C".SplitCsv(), env.StageService.StageURIs);
+	            CollectionAssert.AreEquivalent("A,B,C".SplitCsv(), env.StageService.StageURIs);
 	            env.StageService.GetStage("A").Destroy();
-	            AssertEqualsAnyOrder("B,C".SplitCsv(), env.StageService.StageURIs);
+	            CollectionAssert.AreEquivalent("B,C".SplitCsv(), env.StageService.StageURIs);
 	            Assert.IsNull(env.StageService.GetExistingStage("A"));
 	            Assert.AreEqual("B", env.StageService.GetExistingStage("B").URI);
 	            Assert.AreEqual("C", env.StageService.GetExistingStage("C").URI);
@@ -70,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 	            Assert.AreEqual("B", env.StageService.GetExistingStage("B").URI);
 	            Assert.AreEqual("C", env.StageService.GetExistingStage("C").URI);
 	            env.StageService.GetStage("B").Destroy();
-	            AssertEqualsAnyOrder("C".SplitCsv(), env.StageService.StageURIs);
+	            CollectionAssert.AreEquivalent("C".SplitCsv(), env.StageService.StageURIs);
 	            Assert.IsNull(env.StageService.GetExistingStage("A"));
 	            Assert.IsNull(env.StageService.GetExistingStage("B"));
 	            Assert.AreEqual("C", env.StageService.GetExistingStage("C").URI);

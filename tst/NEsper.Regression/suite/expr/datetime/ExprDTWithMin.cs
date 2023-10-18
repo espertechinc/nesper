@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var fields = new[] { "val0", "val1", "val2", "val3" };
-                var eplFragment = "@Name('s0') select " +
+                var eplFragment = "@name('s0') select " +
                                   "LongDate.withMin('month') as val0," +
                                   "DateTime.withMin('month') as val1," +
                                   "DateTimeOffset.withMin('month') as val2," +
@@ -54,8 +54,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
+                env.AssertStmtTypes(
+                    "s0",
                     fields,
                     new[] {
                         typeof(long?),
@@ -68,8 +68,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var expectedTime = "2002-01-30T09:00:00.000";
                 env.SendEventBean(SupportDateTime.Make(startTime));
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
+                env.AssertPropsNew(
+                    "s0",
                     fields,
                     SupportDateTime.GetArrayCoerced(expectedTime, "long", "date", "dto", "dtx"));
 
@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var fields = new[] { "val0", "val1", "val2", "val3", "val4", "val5", "val6" };
-                var eplFragment = "@Name('s0') select " +
+                var eplFragment = "@name('s0') select " +
                                   "DateTimeOffset.withMin('msec') as val0," +
                                   "DateTimeOffset.withMin('sec') as val1," +
                                   "DateTimeOffset.withMin('minutes') as val2," +
@@ -92,18 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                                   "DateTimeOffset.withMin('year') as val6" +
                                   " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?)
-                    });
+                env.AssertStmtTypesAllSame("s0", fields, typeof(DateTimeOffset?));
 
                 string[] expected = {
                     "2002-05-30T09:01:02.000",
@@ -116,9 +105,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 };
                 var startTime = "2002-05-30T09:01:02.003";
                 env.SendEventBean(SupportDateTime.Make(startTime));
-                //System.out.println("==-> " + SupportDateTime.print(env.Listener("s0").assertOneGetNew().Get("val7")));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
+                //Console.WriteLine("==-> " + SupportDateTime.print(env.Listener("s0").AssertOneGetNew().Get("val7")));
+                env.AssertPropsNew(
+                    "s0",
                     fields,
                     SupportDateTime.GetArrayCoerced(expected, "dto"));
 

@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
@@ -13,6 +14,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
@@ -26,6 +28,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
     public class ClientRuntimeThreadedConfigRoute : RegressionExecutionWithConfigure
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.OBSERVEROPS);
+        }
 
         public void Configure(Configuration configuration)
         {
@@ -72,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             // destroy all statements
             env.UndeployAll();
 
-            env.CompileDeploy("@Name('s0') select SupportStaticMethodLib.Sleep(10) from SupportBean, SupportBean");
+            env.CompileDeploy("@name('s0') select SupportStaticMethodLib.Sleep(10) from SupportBean, SupportBean");
             env.Statement("s0").AddListener(listener);
             env.SendEventBean(new SupportBean());
             try {

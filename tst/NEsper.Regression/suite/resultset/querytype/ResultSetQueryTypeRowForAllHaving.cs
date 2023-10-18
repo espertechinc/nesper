@@ -12,156 +12,131 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertEquals
+
+// assertNull
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
-    public class ResultSetQueryTypeRowForAllHaving
-    {
-        private const string JOIN_KEY = "KEY";
+	public class ResultSetQueryTypeRowForAllHaving {
+	    private const string JOIN_KEY = "KEY";
 
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetQueryTypeSumOneView());
-            execs.Add(new ResultSetQueryTypeSumJoin());
-            execs.Add(new ResultSetQueryTypeAvgGroupWindow());
-            return execs;
-        }
+	    public static ICollection<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new ResultSetQueryTypeRowForAllWHavingSumOneView());
+	        execs.Add(new ResultSetQueryTypeRowForAllWHavingSumJoin());
+	        execs.Add(new ResultSetQueryTypeAvgRowForAllWHavingGroupWindow());
+	        return execs;
+	    }
 
-        private static void TryAssert(RegressionEnvironment env)
-        {
-            // assert select result type
-            Assert.AreEqual(typeof(long?), env.Statement("s0").EventType.GetPropertyType("mySum"));
+	    private class ResultSetQueryTypeRowForAllWHavingSumOneView : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select irstream sum(longBoxed) as mySum " +
+	                      "from SupportBean#time(10 seconds) " +
+	                      "having sum(longBoxed) > 10";
+	            env.CompileDeploy(epl).AddListener("s0");
 
-            SendTimerEvent(env, 0);
-            SendEvent(env, 10);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            TryAssert(env);
 
-            env.Milestone(0);
+	            env.UndeployAll();
+	        }
+	    }
 
-            SendTimerEvent(env, 5000);
-            SendEvent(env, 15);
-            Assert.AreEqual(25L, env.Listener("s0").GetAndResetLastNewData()[0].Get("mySum"));
+	    private class ResultSetQueryTypeRowForAllWHavingSumJoin : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select irstream sum(longBoxed) as mySum " +
+	                      "from SupportBeanString#time(10 seconds) as one, " +
+	                      "SupportBean#time(10 seconds) as two " +
+	                      "where one.theString = two.theString " +
+	                      "having sum(longBoxed) > 10";
+	            env.CompileDeploy(epl).AddListener("s0");
+	            env.SendEventBean(new SupportBeanString(JOIN_KEY));
 
-            SendTimerEvent(env, 8000);
-            SendEvent(env, -5);
-            Assert.AreEqual(20L, env.Listener("s0").GetAndResetLastNewData()[0].Get("mySum"));
-            Assert.IsNull(env.Listener("s0").LastOldData);
+	            TryAssert(env);
 
-            env.Milestone(1);
+	            env.UndeployAll();
+	        }
+	    }
 
-            SendTimerEvent(env, 10000);
-            Assert.AreEqual(20L, env.Listener("s0").LastOldData[0].Get("mySum"));
-            Assert.IsNull(env.Listener("s0").GetAndResetLastNewData());
-        }
+	    private class ResultSetQueryTypeAvgRowForAllWHavingGroupWindow : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var stmtText = "@name('s0') select istream avg(price) as aprice from SupportMarketDataBean#unique(symbol) having avg(price) <= 0";
+	            env.CompileDeploy(stmtText).AddListener("s0");
 
-        private static object SendEvent(
-            RegressionEnvironment env,
-            string symbol,
-            double price)
-        {
-            object theEvent = new SupportMarketDataBean(symbol, price, null, null);
-            env.SendEventBean(theEvent);
-            return theEvent;
-        }
+	            SendEvent(env, "A", -1);
+	            env.AssertEqualsNew("s0", "aprice", -1.0);
 
-        private static void SendEvent(
-            RegressionEnvironment env,
-            long longBoxed,
-            int intBoxed,
-            short shortBoxed)
-        {
-            var bean = new SupportBean();
-            bean.TheString = JOIN_KEY;
-            bean.LongBoxed = longBoxed;
-            bean.IntBoxed = intBoxed;
-            bean.ShortBoxed = shortBoxed;
-            env.SendEventBean(bean);
-        }
+	            SendEvent(env, "A", 5);
+	            env.AssertListenerNotInvoked("s0");
 
-        private static void SendEvent(
-            RegressionEnvironment env,
-            long longBoxed)
-        {
-            SendEvent(env, longBoxed, 0, 0);
-        }
+	            SendEvent(env, "B", -6);
+	            env.AssertEqualsNew("s0", "aprice", -.5d);
 
-        private static void SendTimerEvent(
-            RegressionEnvironment env,
-            long msec)
-        {
-            env.AdvanceTime(msec);
-        }
+	            env.Milestone(0);
 
-        internal class ResultSetQueryTypeSumOneView : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select irstream sum(LongBoxed) as mySum " +
-                          "from SupportBean#time(10 seconds) " +
-                          "having sum(LongBoxed) > 10";
-                env.CompileDeploy(epl).AddListener("s0");
+	            SendEvent(env, "C", 2);
+	            env.AssertListenerNotInvoked("s0");
 
-                TryAssert(env);
+	            SendEvent(env, "C", 3);
+	            env.AssertListenerNotInvoked("s0");
 
-                env.UndeployAll();
-            }
-        }
+	            env.Milestone(1);
 
-        internal class ResultSetQueryTypeSumJoin : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') select irstream sum(LongBoxed) as mySum " +
-                          "from SupportBeanString#time(10 seconds) as one, " +
-                          "SupportBean#time(10 seconds) as two " +
-                          "where one.TheString = two.TheString " +
-                          "having sum(LongBoxed) > 10";
-                env.CompileDeploy(epl).AddListener("s0");
-                env.SendEventBean(new SupportBeanString(JOIN_KEY));
+	            SendEvent(env, "C", -2);
+	            env.AssertEqualsNew("s0", "aprice", -1d);
 
-                TryAssert(env);
+	            env.UndeployAll();
+	        }
+	    }
 
-                env.UndeployAll();
-            }
-        }
+	    private static void TryAssert(RegressionEnvironment env) {
+	        // assert select result type
+	        env.AssertStatement("s0", statement => Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("mySum")));
 
-        internal class ResultSetQueryTypeAvgGroupWindow : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText =
-                    "@Name('s0') select istream avg(Price) as aPrice from SupportMarketDataBean#unique(Symbol) having avg(Price) <= 0";
-                env.CompileDeploy(stmtText).AddListener("s0");
+	        SendTimerEvent(env, 0);
+	        SendEvent(env, 10);
+	        env.AssertListenerNotInvoked("s0");
 
-                SendEvent(env, "A", -1);
-                Assert.AreEqual(-1.0d, env.Listener("s0").LastNewData[0].Get("aPrice"));
-                env.Listener("s0").Reset();
+	        env.Milestone(0);
 
-                SendEvent(env, "A", 5);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	        SendTimerEvent(env, 5000);
+	        SendEvent(env, 15);
+	        env.AssertEqualsNew("s0", "mySum", 25L);
 
-                SendEvent(env, "B", -6);
-                Assert.AreEqual(-.5d, env.Listener("s0").LastNewData[0].Get("aPrice"));
-                env.Listener("s0").Reset();
+	        SendTimerEvent(env, 8000);
+	        SendEvent(env, -5);
+	        env.AssertListener("s0", listener => Assert.AreEqual(20L, listener.GetAndResetLastNewData()[0].Get("mySum")));
 
-                env.Milestone(0);
+	        env.Milestone(1);
 
-                SendEvent(env, "C", 2);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	        SendTimerEvent(env, 10000);
+	        env.AssertListener("s0", listener => {
+	            Assert.AreEqual(20L, listener.LastOldData[0].Get("mySum"));
+	            Assert.IsNull(listener.GetAndResetLastNewData());
+	        });
+	    }
 
-                SendEvent(env, "C", 3);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	    private static object SendEvent(RegressionEnvironment env, string symbol, double price) {
+	        object theEvent = new SupportMarketDataBean(symbol, price, null, null);
+	        env.SendEventBean(theEvent);
+	        return theEvent;
+	    }
 
-                env.Milestone(1);
+	    private static void SendEvent(RegressionEnvironment env, long longBoxed, int intBoxed, short shortBoxed) {
+	        var bean = new SupportBean();
+	        bean.TheString = JOIN_KEY;
+	        bean.LongBoxed = longBoxed;
+	        bean.IntBoxed = intBoxed;
+	        bean.ShortBoxed = shortBoxed;
+	        env.SendEventBean(bean);
+	    }
 
-                SendEvent(env, "C", -2);
-                Assert.AreEqual(-1d, env.Listener("s0").LastNewData[0].Get("aPrice"));
-                env.Listener("s0").Reset();
+	    private static void SendEvent(RegressionEnvironment env, long longBoxed) {
+	        SendEvent(env, longBoxed, 0, 0);
+	    }
 
-                env.UndeployAll();
-            }
-        }
-    }
+	    private static void SendTimerEvent(RegressionEnvironment env, long msec) {
+	        env.AdvanceTime(msec);
+	    }
+	}
 } // end of namespace

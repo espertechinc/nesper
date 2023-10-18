@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
@@ -26,13 +28,18 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             env.AdvanceTime(0);
             var path = new RegressionPath();
-            env.CompileDeploy("create context MyCtx start @now end after 1 second", path);
+            env.CompileDeploy("@public create context MyCtx start @now end after 1 second", path);
             env.CompileDeploy(
-                "@Name('s0') context MyCtx select count(*) as cnt from SupportBean output last when terminated",
+                "@name('s0') context MyCtx select count(*) as cnt from SupportBean output last when terminated",
                 path);
             var listener = new SupportUpdateListener();
             env.Statement("s0").AddListener(listener);

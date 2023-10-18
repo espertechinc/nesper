@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.compiler.client.option;
 using com.espertech.esper.regressionlib.framework;
@@ -42,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var epl = "select * from SupportBean";
                 var compiled = env.Compile(epl, args);
 
-                StatementNameContext ctx = MyStatementNameResolver.Contexts[0];
+                var ctx = MyStatementNameResolver.Contexts[0];
                 Assert.AreEqual(epl, ctx.EplSupplier.Invoke());
                 Assert.AreEqual(null, ctx.StatementName);
                 Assert.AreEqual(null, ctx.ModuleName);
@@ -50,8 +51,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 Assert.AreEqual(0, ctx.StatementNumber);
 
                 env.Deploy(compiled);
-                Assert.AreEqual("hello", env.Statement("hello").Name);
+                env.AssertStatement("hello", statement => Assert.AreEqual("hello", statement.Name));
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
             }
         }
 

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -61,18 +62,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             // Send events for each stream
-            log.Info(methodName + " Preloading events");
+            log.Info($"{methodName} Preloading events");
             var startTime = PerformanceObserver.MilliTime;
             for (var i = 0; i < 100; i++) {
-                SendEvent(env, new SupportBean_A("CSCO_" + i));
-                SendEvent(env, new SupportBean_B("IBM_" + i));
-                SendEvent(env, new SupportBean_C("GE_" + i));
+                SendEvent(env, new SupportBean_A($"CSCO_{i}"));
+                SendEvent(env, new SupportBean_B($"IBM_{i}"));
+                SendEvent(env, new SupportBean_C($"GE_{i}"));
             }
 
-            log.Info(methodName + " Done preloading");
+            log.Info($"{methodName} Done preloading");
 
             var endTime = PerformanceObserver.MilliTime;
-            log.Info(methodName + " delta=" + (endTime - startTime));
+            log.Info($"{methodName} delta={(endTime - startTime)}");
 
             // Stay below 500, no index would be 4 sec plus
             Assert.IsTrue(endTime - startTime < 500);
@@ -89,10 +90,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         internal class EPLJoinPerfAllProps : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+            
             public void Run(RegressionEnvironment env)
             {
                 // Statement where all streams are reachable from each other via properties
-                var stmt = "@Name('s0') select * from " +
+                var stmt = "@name('s0') select * from " +
                            "SupportBean_A()#length(1000000) S1," +
                            "SupportBean_B()#length(1000000) S2," +
                            "SupportBean_C()#length(1000000) S3" +
@@ -103,10 +109,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         internal class EPLJoinPerfPartialProps : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+            
             public void Run(RegressionEnvironment env)
             {
                 // Statement where the s1 stream is not reachable by joining s2 to s3 and s3 to s1
-                var stmt = "@Name('s0') select * from " +
+                var stmt = "@name('s0') select * from " +
                            "SupportBean_A#length(1000000) S1," +
                            "SupportBean_B#length(1000000) S2," +
                            "SupportBean_C#length(1000000) S3" +
@@ -117,12 +128,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         internal class EPLJoinPerfPartialStreams : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+            
             public void Run(RegressionEnvironment env)
             {
                 var methodName = ".testPerfPartialStreams";
 
                 // Statement where the s1 stream is not reachable by joining s2 to s3 and s3 to s1
-                var epl = "@Name('s0') select * from " +
+                var epl = "@name('s0') select * from " +
                           "SupportBean_A#length(1000000) S1," +
                           "SupportBean_B#length(1000000) S2," +
                           "SupportBean_C#length(1000000) S3" +
@@ -133,17 +149,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 SendEvent(env, new SupportBean_C("GE_0"));
 
                 // Send events for each stream
-                log.Info(methodName + " Preloading events");
+                log.Info($"{methodName} Preloading events");
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
-                    SendEvent(env, new SupportBean_A("CSCO_" + i));
-                    SendEvent(env, new SupportBean_B("IBM_" + i));
+                    SendEvent(env, new SupportBean_A($"CSCO_{i}"));
+                    SendEvent(env, new SupportBean_B($"IBM_{i}"));
                 }
 
-                log.Info(methodName + " Done preloading");
+                log.Info($"{methodName} Done preloading");
 
                 var endTime = PerformanceObserver.MilliTime;
-                log.Info(methodName + " delta=" + (endTime - startTime));
+                log.Info($"{methodName} delta={(endTime - startTime)}");
 
                 // Stay below 500, no index would be 4 sec plus
                 Assert.IsTrue(endTime - startTime < 500);

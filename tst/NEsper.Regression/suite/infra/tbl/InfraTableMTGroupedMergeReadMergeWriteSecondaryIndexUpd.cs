@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -29,6 +31,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         /// <summary>
         ///     Primary key is composite: {topgroup, subgroup}. Secondary index on {topgroup}.
         ///     For a given number of seconds:
@@ -51,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             var path = new RegressionPath();
             var eplCreateVariable =
-                "create table vartotal (topgroup int primary key, subgroup int primary key, thecnt count(*))";
+                "@public create table vartotal (topgroup int primary key, subgroup int primary key, thecnt count(*))";
             env.CompileDeploy(eplCreateVariable, path);
 
             var eplCreateIndex = "create index myindex on vartotal (topgroup)";
@@ -70,11 +77,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportTopGroupSubGroupEvent(0, 0));
 
             // select/read
-            var eplMergeSelect = "on SupportBean merge vartotal as vt " +
-                                 "where vt.topgroup = IntPrimitive and vt.thecnt > 0 " +
-                                 "when matched then insert into MyOutputStream select *";
+            var eplMergeSelect = 
+                "@public on SupportBean merge vartotal as vt " +
+                "where vt.topgroup = IntPrimitive and vt.thecnt > 0 " +
+                "when matched then insert into MyOutputStream select *";
             env.CompileDeploy(eplMergeSelect, path);
-            env.CompileDeploy("@Name('s0') select * from MyOutputStream", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from MyOutputStream", path).AddListener("s0");
             var listener = env.Listener("s0");
 
             var writeRunnable = new WriteRunnable(env);
@@ -186,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     while (!shutdown) {
                         env.SendEventBean(new SupportBean(null, 0));
                         var len = listener.NewDataList.Count;
-                        // Comment me in: System.out.println("Number of events found: " + len);
+                        // Comment me in: Console.WriteLine("Number of events found: " + len);
                         listener.Reset();
                         Assert.IsTrue(len >= 1);
                         numQueries++;

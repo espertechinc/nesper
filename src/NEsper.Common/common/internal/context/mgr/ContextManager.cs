@@ -60,6 +60,8 @@ namespace com.espertech.esper.common.@internal.context.mgr
 
         ISet<int> GetContextPartitionIds(ContextPartitionSelector selector);
 
+        long ContextPartitionCount { get; }
+
         void AddListener(ContextPartitionStateListener listener);
 
         void RemoveListener(ContextPartitionStateListener listener);

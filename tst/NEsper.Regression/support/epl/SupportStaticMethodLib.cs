@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.support.epl
         public static IDictionary<string, object>[] FetchResult12(int? value)
         {
             if (value == null) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             var result = new IDictionary<string, object>[2];
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.support.epl
         public static IDictionary<string, object>[] FetchResult23(int? value)
         {
             if (value == null) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             var result = new IDictionary<string, object>[2];
@@ -182,11 +182,11 @@ namespace com.espertech.esper.regressionlib.support.epl
             int? upper)
         {
             if (lower == null || upper == null) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             if (upper < lower) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             var delta = upper.Value - lower.Value + 1;
@@ -206,11 +206,11 @@ namespace com.espertech.esper.regressionlib.support.epl
             int? upper)
         {
             if (lower == null || upper == null) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             if (upper < lower) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             var delta = upper.Value - lower.Value + 1;
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             }
 
             if (id == 0) {
-                return new IDictionary<string, object>[0];
+                return Array.Empty<IDictionary<string, object>>();
             }
 
             var rows = new IDictionary<string, object>[id];
@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             }
 
             if (id == 0) {
-                return new object[0][];
+                return Array.Empty<object[]>();
             }
 
             var rows = new object[id][];
@@ -379,7 +379,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             return upd;
         }
 
-        public static String ConvertEventJson(JsonEventObject row)
+        public static string ConvertEventJson(JsonEventObject row)
         {
             var val1 = row.Get("one").ToString();
             var val2 = row.Get("two").ToString();
@@ -485,7 +485,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             }
 
             if (numGenerate == 0) {
-                return new FetchedData[0];
+                return Array.Empty<FetchedData>();
             }
 
             if (numGenerate == 1) {
@@ -751,7 +751,7 @@ namespace com.espertech.esper.regressionlib.support.epl
             }
 
             if (id == 0) {
-                return new MyMethodReturn[0];
+                return Array.Empty<MyMethodReturn>();
             }
 
             var rows = new MyMethodReturn[id];

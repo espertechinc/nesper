@@ -66,13 +66,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string eventTypeName,
             RegressionPath path)
         {
-            var stmt = "@Name('s0') select a\\.b.c\\.d as val from " + eventTypeName;
+            var stmt = "@name('s0') select a\\.b.c\\.d as val from " + eventTypeName;
             env.CompileDeploy(stmt, path).AddListener("s0");
 
             SendXMLEvent(env, "<myroot><a.b><c.d>value</c.d></a.b></myroot>", eventTypeName);
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("value", theEvent.Get("val"));
 
+            env.AssertEqualsNew("s0", "val", "value");
             env.UndeployAll();
         }
     }

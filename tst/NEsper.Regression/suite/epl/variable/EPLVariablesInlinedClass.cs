@@ -33,22 +33,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				RegressionPath path = new RegressionPath();
-				string eplClass = "@public @name('clazz') create inlined_class \"\"\"\n" +
-				                  "[System.Serializable]\n" +
-				                  "public class MyStatefulValue {\n" +
-				                  "    private string _value = \"X\";\n" +
-				                  "    public string Value {\n" +
-				                  "        get => _value;\n" +
-				                  "        set => _value = value;\n" +
-				                  "    }\n" +
-				                  "}\n" +
-				                  "\"\"\"\n";
+				var path = new RegressionPath();
+				var eplClass = "@public @name('clazz') create inlined_class \"\"\"\n" +
+				               "[System.Serializable]\n" +
+				               "public class MyStatefulValue {\n" +
+				               "    private string _value = \"X\";\n" +
+				               "    public string Value {\n" +
+				               "        get => _value;\n" +
+				               "        set => _value = value;\n" +
+				               "    }\n" +
+				               "}\n" +
+				               "\"\"\"\n";
 				env.CompileDeploy(eplClass, path);
 
-				string epl = "create variable MyStatefulValue msf = new MyStatefulValue();\n" +
-				             "@Name('s0') select msf.Value as c0 from SupportBean;\n" +
-				             "on SupportBean_S0 set msf.Value = P00;\n";
+				var epl = "@public create variable MyStatefulValue msf = new MyStatefulValue();\n" +
+				          "@name('s0') select msf.Value as c0 from SupportBean;\n" +
+				          "on SupportBean_S0 set msf.Value = P00;\n";
 				env.CompileDeploy(epl, path).AddListener("s0");
 
 				SendAssert(env, "X");
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 				string expected)
 			{
 				env.SendEventBean(new SupportBean());
-				AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0".SplitCsv(), new object[] {expected});
+				env.AssertPropsNew("s0", "c0".SplitCsv(), new object[] {expected});
 			}
 		}
 
@@ -79,20 +79,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "inlined_class \"\"\"\n" +
-				             "[System.Serializable]\n" +
-				             "public class MyStatefulPair {\n" +
-				             "    public MyStatefulPair(int a, int b) {\n" +
-				             "        this.A = a;\n" +
-				             "        this.B = b;\n" +
-				             "    }\n" +
-				             "    public int A { get; set; }\n" +
-				             "    public int B { get; set; }\n" +
-				             "}\n" +
-				             "\"\"\"\n" +
-				             "create variable MyStatefulPair msf = new MyStatefulPair(2, 3);\n" +
-				             "@Name('s0') select msf.A as c0, msf.B as c1 from SupportBean;\n" +
-				             "on SupportBeanNumeric set msf.A = IntOne, msf.B = IntTwo;\n";
+				var epl = "inlined_class \"\"\"\n" +
+				          "[System.Serializable]\n" +
+				          "public class MyStatefulPair {\n" +
+				          "    public MyStatefulPair(int a, int b) {\n" +
+				          "        this.A = a;\n" +
+				          "        this.B = b;\n" +
+				          "    }\n" +
+				          "    public int A { get; set; }\n" +
+				          "    public int B { get; set; }\n" +
+				          "}\n" +
+				          "\"\"\"\n" +
+				          "create variable MyStatefulPair msf = new MyStatefulPair(2, 3);\n" +
+				          "@name('s0') select msf.A as c0, msf.B as c1 from SupportBean;\n" +
+				          "on SupportBeanNumeric set msf.A = IntOne, msf.B = IntTwo;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssert(env, 2, 3);
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 				int expectedB)
 			{
 				env.SendEventBean(new SupportBean());
-				AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), "c0,c1".SplitCsv(), new object[] {expectedA, expectedB});
+				env.AssertPropsNew("s0", "c0,c1".SplitCsv(), new object[] {expectedA, expectedB});
 			}
 		}
 	}

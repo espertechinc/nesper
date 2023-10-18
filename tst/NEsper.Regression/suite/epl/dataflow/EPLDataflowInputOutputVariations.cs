@@ -34,27 +34,33 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-WithLargeNumOpsDataFlow(execs);
-WithFanInOut(execs);
-WithFactorial(execs);
+            WithLargeNumOpsDataFlow(execs);
+            WithFanInOut(execs);
+            WithFactorial(execs);
             return execs;
         }
-public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowFactorial());
-    return execs;
-}public static IList<RegressionExecution> WithFanInOut(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowFanInOut());
-    return execs;
-}public static IList<RegressionExecution> WithLargeNumOpsDataFlow(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowLargeNumOpsDataFlow());
-    return execs;
-}
+
+        public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowFactorial());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFanInOut(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowFanInOut());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLargeNumOpsDataFlow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowLargeNumOpsDataFlow());
+            return execs;
+        }
+
         internal class EPLDataflowLargeNumOpsDataFlow : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -63,7 +69,7 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
                     return;
                 }
 
-                var epl = "@Name('flow') create dataflow MyGraph \n" +
+                var epl = "@name('flow') create dataflow MyGraph \n" +
                           "" +
                           "create objectarray schema SchemaOne (p1 string),\n" +
                           "\n" +
@@ -110,13 +116,17 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
 
                 env.UndeployAll();
             }
+            
+            public ISet<RegressionFlag> Flags() {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
         internal class EPLDataflowFanInOut : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('flow') create dataflow MultiInMultiOutGraph \n" +
+                var epl = "@name('flow') create dataflow MultiInMultiOutGraph \n" +
                           "" +
                           "create objectarray schema SchemaOne (p1 string),\n" +
                           "create objectarray schema SchemaTwo (p2 int),\n" +
@@ -171,13 +181,17 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
 
                 env.UndeployAll();
             }
+            
+            public ISet<RegressionFlag> Flags() {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
         internal class EPLDataflowFactorial : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('flow') create dataflow FactorialGraph \n" +
+                var epl = "@name('flow') create dataflow FactorialGraph \n" +
                           "" +
                           "create objectarray schema InputSchema (number int),\n" +
                           "create objectarray schema TempSchema (current int, temp long),\n" +
@@ -208,6 +222,10 @@ public static IList<RegressionExecution> WithFactorial(IList<RegressionExecution
                 Assert.AreEqual((long) 5 * 4 * 3 * 2, ((object[]) result[0])[0]);
 
                 env.UndeployAll();
+            }
+            
+            public ISet<RegressionFlag> Flags() {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
 

@@ -14,6 +14,7 @@ using Avro.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.json;
@@ -31,26 +32,21 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 	{
 		public void Run(RegressionEnvironment env)
 		{
-/*
 			// Bean
-			BiConsumer<EventType, NullableObject<int?>> bean = (
-				type,
-				nullable) => {
+			Consumer<NullableObject<int?>> bean = nullable => {
 				if (nullable == null) {
 					env.SendEventBean(new LocalEvent());
-				}
-				else if (nullable.Value == null) {
+				} else if (nullable.Value == null) {
 					env.SendEventBean(new LocalEventSubA(null));
-				}
-				else {
+				} else {
 					var array = new LocalInnerEvent[nullable.Value.Value];
 					for (var i = 0; i < array.Length; i++) {
 						array[i] = new LocalInnerEvent();
 					}
-
 					env.SendEventBean(new LocalEventSubA(array));
 				}
 			};
+			
 			var beanepl =
 				$"@public @buseventtype create schema LocalInnerEvent as {typeof(LocalInnerEvent).MaskTypeName()};\n" +
 				$"@public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()};\n" +
@@ -60,22 +56,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			RunAssertion(env, beanepl, bean);
 
 			// Map
-			BiConsumer<EventType, NullableObject<int?>> map = (
-				type,
-				nullable) => {
+			Consumer<NullableObject<int?>> map = nullable => {
 				if (nullable == null) {
-					env.SendEventMap(EmptyDictionary<string, object>.Instance, "LocalEvent");
-				}
-				else if (nullable.Value == null) {
-					env.SendEventMap(Collections.SingletonDataMap("Array", null), "LocalEvent");
-				}
-				else {
+					env.SendEventMap(Collections.EmptyDataMap, "LocalEvent");
+				} else if (nullable.Value == null) {
+					env.SendEventMap(Collections.SingletonDataMap("array", null), "LocalEvent");
+				} else {
 					var array = new IDictionary<string, object>[nullable.Value.Value];
 					for (var i = 0; i < array.Length; i++) {
 						array[i] = new Dictionary<string, object>();
 					}
-
-					env.SendEventMap(Collections.SingletonDataMap("Array", array), "LocalEvent");
+					env.SendEventMap(Collections.SingletonDataMap("array", array), "LocalEvent");
 				}
 			};
 			var mapepl =
@@ -88,26 +79,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 				"@public @buseventtype create objectarray schema LocalEvent();\n" +
 			    "@public @buseventtype create objectarray schema LocalEventSubA (Array string[]) inherits LocalEvent;\n";
 			RunAssertion(env, oaepl, null);
-*/
 	
 			// Json
-			BiConsumer<EventType, NullableObject<int?>> json = (
-				type,
-				nullable) => {
+			Consumer<NullableObject<int?>> json = nullable => {
 				if (nullable == null) {
 					env.SendEventJson("{}", "LocalEvent");
-				}
-				else if (nullable.Value == null) {
-					env.SendEventJson(new JObject(new JProperty("Array", null)).ToString(), "LocalEvent");
-				}
-				else {
+				} else if (nullable.Value == null) {
+					env.SendEventJson(new JObject(new JProperty("array")).ToString(), "LocalEvent");
+				} else {
 					var @event = new JObject();
 					var array = new JArray();
-					@event.Add("Array", array);
+					@event.Add("array", array);
 					for (var i = 0; i < nullable.Value; i++) {
 						array.Add(new JObject());
 					}
-
 					env.SendEventJson(@event.ToString(), "LocalEvent");
 				}
 			};
@@ -123,29 +108,25 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			RunAssertion(env, eplJsonProvided, json);
 
 			// Avro
-			BiConsumer<EventType, NullableObject<int?>> avro = (
-				type,
-				nullable) => {
+			Consumer<NullableObject<int?>> avro = nullable => {
 				var inner = SchemaBuilder.Record("inner");
 				var schema = SchemaBuilder.Record("name", TypeBuilder.Field("Array", TypeBuilder.Array(inner)));
 				GenericRecord @event;
 				if (nullable == null) {
 					// no action
-					@event = new GenericRecord(SupportAvroUtil.GetAvroSchema(type).AsRecordSchema());
-				}
-				else if (nullable.Value == null) {
 					@event = new GenericRecord(schema);
-				}
-				else {
+					@event.Put("array", EmptyList<GenericRecord>.Instance);
+				} else if (nullable.Value == null) {
 					@event = new GenericRecord(schema);
-					ICollection<GenericRecord> inners = new List<GenericRecord>();
+						@event.Put("array", EmptyList<GenericRecord>.Instance);
+				} else {
+					@event = new GenericRecord(schema);
+					var inners = new List<GenericRecord>();
 					for (var i = 0; i < nullable.Value; i++) {
 						inners.Add(new GenericRecord(inner));
 					}
-
-					@event.Put("Array", inners);
+					@event.Put("array", inners);
 				}
-
 				env.SendEventAvro(@event, "LocalEvent");
 			};
 			var avroepl =
@@ -157,65 +138,62 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 		public void RunAssertion(
 			RegressionEnvironment env,
 			string createSchemaEPL,
-			BiConsumer<EventType, NullableObject<int?>> sender)
+			Consumer<NullableObject<int?>> sender)
 		{
 			var path = new RegressionPath();
 			env.CompileDeploy(createSchemaEPL, path);
 
-			env.CompileDeploy("@Name('s0') select * from LocalEvent", path).AddListener("s0");
-			var eventType = env.Statement("s0").EventType;
-			var g0 = eventType.GetGetter("Array[0]?");
-			var g1 = eventType.GetGetter("Array[1]?");
+			env.CompileDeploy("@name('s0') select * from LocalEvent", path).AddListener("s0");
 
 			if (sender == null) {
-				Assert.IsNull(g0);
-				Assert.IsNull(g1);
+				env.AssertStatement("s0", statement => {
+					var eventType = statement.EventType;
+					var g0 = eventType.GetGetter("array[0]?");
+					var g1 = eventType.GetGetter("array[1]?");
+					Assert.IsNull(g0);
+					Assert.IsNull(g1);
+				});
 				env.UndeployAll();
 				return;
 			}
-			else {
-				var propepl =
-					"@Name('s1') select " +
-					"Array[0]? as c0, " +
-					"Array[1]? as c1, " +
-					"exists(Array[0]?) as c2, " +
-					"exists(Array[1]?) as c3, " +
-					"typeof(Array[0]?) as c4, " +
-					"typeof(Array[1]?) as c5 from LocalEvent;\n";
-				env.CompileDeploy(propepl, path).AddListener("s1");
-			}
+			
+			var propepl = "@name('s1') select array[0]? as c0, array[1]? as c1," +
+			              "exists(array[0]?) as c2, exists(array[1]?) as c3, " +
+			              "typeof(array[0]?) as c4, typeof(array[1]?) as c5 from LocalEvent;\n";
+			env.CompileDeploy(propepl, path).AddListener("s1");
 
-			sender.Invoke(eventType, new NullableObject<int?>(2));
-			var @event = env.Listener("s0").AssertOneGetNewAndReset();
-			AssertGetter(@event, g0, true);
-			AssertGetter(@event, g1, true);
+			sender.Invoke(new NullableObject<int?>(2));
+			env.AssertEventNew("s0", @event => AssertGetters(@event, true, true));
 			AssertProps(env, true, true);
 
-			sender.Invoke(eventType, new NullableObject<int?>(1));
-			@event = env.Listener("s0").AssertOneGetNewAndReset();
-			AssertGetter(@event, g0, true);
-			AssertGetter(@event, g1, false);
+			sender.Invoke(new NullableObject<int?>(1));
+			env.AssertEventNew("s0", @event => AssertGetters(@event, true, false));
 			AssertProps(env, true, false);
 
-			sender.Invoke(eventType, new NullableObject<int?>(0));
-			@event = env.Listener("s0").AssertOneGetNewAndReset();
-			AssertGetter(@event, g0, false);
-			AssertGetter(@event, g1, false);
+			sender.Invoke(new NullableObject<int?>(0));
+			env.AssertEventNew("s0", @event => AssertGetters(@event, false, false));
 			AssertProps(env, false, false);
 
-			sender.Invoke(eventType, new NullableObject<int?>(null));
-			@event = env.Listener("s0").AssertOneGetNewAndReset();
-			AssertGetter(@event, g0, false);
-			AssertGetter(@event, g1, false);
+			sender.Invoke(new NullableObject<int?>(null));
+			env.AssertEventNew("s0", @event => AssertGetters(@event, false, false));
 			AssertProps(env, false, false);
 
-			sender.Invoke(eventType, null);
-			@event = env.Listener("s0").AssertOneGetNewAndReset();
-			AssertGetter(@event, g0, false);
-			AssertGetter(@event, g1, false);
+			sender.Invoke(null);
+			env.AssertEventNew("s0", @event => AssertGetters(@event, false, false));
 			AssertProps(env, false, false);
 
 			env.UndeployAll();
+		}
+
+		private void AssertGetters(
+			EventBean @event,
+			bool existsZero,
+			bool existsOne)
+		{
+			var g0 = @event.EventType.GetGetter("Array[0]?");
+			var g1 = @event.EventType.GetGetter("Array[1]?");
+			AssertGetter(@event, g0, existsZero);
+			AssertGetter(@event, g1, existsOne);
 		}
 
 		private void AssertGetter(
@@ -243,14 +221,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 			Assert.AreEqual(hasB, @event.Get("c5") != null);
 		}
 
+		[Serializable]
 		public class LocalInnerEvent
 		{
 		}
 
+		[Serializable]
 		public class LocalEvent
 		{
 		}
 
+		[Serializable]
 		public class LocalEventSubA : LocalEvent
 		{
 			public LocalEventSubA(LocalInnerEvent[] array)

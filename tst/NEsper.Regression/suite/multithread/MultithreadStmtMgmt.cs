@@ -6,9 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Text;
 
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -41,6 +43,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             "select a.* from pattern[every a=" + EVENT_NAME + "(Feed='RT', Price < 1000)]",
             "select a.* from pattern[every a=" + EVENT_NAME + "(Symbol='IBM', Feed='RT')]"
         };
+        
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
 
         public void Run(RegressionEnvironment env)
         {

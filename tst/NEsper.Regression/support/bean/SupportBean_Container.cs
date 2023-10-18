@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
@@ -13,6 +14,7 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.regressionlib.support.bean
 {
+    [Serializable]
     public class SupportBean_Container
     {
         public SupportBean_Container(IList<SupportBean> beans)

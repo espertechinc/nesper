@@ -22,25 +22,23 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('window') create window MyWindowOne#unique(TheString) as SupportBean;\n" +
+            var epl = "@name('window') create window MyWindowOne#unique(TheString) as SupportBean;\n" +
                       "insert into MyWindowOne select * from SupportBean;\n" +
-                      "@Name('idx') create unique index I1 on MyWindowOne(TheString);\n";
+                      "@name('idx') create unique index I1 on MyWindowOne(TheString);\n";
             env.CompileDeploy(epl);
-            Assert.AreEqual(
-                StatementType.CREATE_INDEX,
-                env.Statement("idx").GetProperty(StatementProperty.STATEMENTTYPE));
-            Assert.AreEqual(
-                "I1",
-                env.Statement("idx").GetProperty(StatementProperty.CREATEOBJECTNAME));
-
+            env.AssertStatement("idx", statement => {
+                Assert.AreEqual(StatementType.CREATE_INDEX, statement.GetProperty(StatementProperty.STATEMENTTYPE));
+                Assert.AreEqual("I1", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
+            });
+            
             env.SendEventBean(new SupportBean("E0", 1));
             env.SendEventBean(new SupportBean("E2", 2));
             env.SendEventBean(new SupportBean("E2", 3));
             env.SendEventBean(new SupportBean("E1", 4));
             env.SendEventBean(new SupportBean("E0", 5));
 
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                env.GetEnumerator("window"),
+            env.AssertPropsPerRowIteratorAnyOrder(
+                "window",
                 new [] { "TheString","IntPrimitive" },
                 new[] {new object[] {"E0", 5}, new object[] {"E1", 4}, new object[] {"E2", 3}});
 

@@ -205,8 +205,8 @@ namespace com.espertech.esperio.regression.adapter
             coordinator.Start();
 
             _runtime.EventService.AdvanceTime(400);
-            Assert.IsFalse(listenerTrade.IsInvoked());
-            Assert.IsFalse(listenerPrice.IsInvoked());
+            Assert.IsFalse(listenerTrade.IsInvoked);
+            Assert.IsFalse(listenerPrice.IsInvoked);
 
             // invoke read of events at 500 (see CSV)
             _runtime.EventService.AdvanceTime(1000);

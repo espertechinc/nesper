@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
             new AggregationFunctionModeMultiParam().SetInjectionStrategyAggregationFunctionFactory(
                 new InjectionStrategyClassNewInstance(typeof(SupportIntListAggregationFactory)));
 
-        public Type ValueType => typeof(IList<object>);
+        public Type ValueType => typeof(IList<int>);
 
         public string FunctionName {
             set { }

@@ -25,8 +25,10 @@ namespace com.espertech.esper.regressionlib.framework
 
             IList<T> filtered = new List<T>();
             foreach (var execution in executions) {
-                var simpleName = execution.GetType().Name;
-                if (simpleName.Equals(property)) {
+                var executionName = execution.Name();
+                if (executionName == property ||
+                    execution.GetType().Name == property ||
+                    executionName.Replace(" ", "") == property) {
                     filtered.Add(execution);
                 }
             }

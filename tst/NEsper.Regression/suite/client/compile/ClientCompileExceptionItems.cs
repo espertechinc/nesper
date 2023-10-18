@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 
@@ -32,16 +33,16 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "create schema\n" +
-                             "MySchemaOne\n" +
-                             "(\n" +
-                             "  col1 Wrong\n" +
-                             ");\n" +
-                             "create schema\n" +
-                             "MySchemaTwo\n" +
-                             "(\n" +
-                             "  col1 WrongTwo\n" +
-                             ");\n";
+                var epl = "create schema\n" +
+                          "MySchemaOne\n" +
+                          "(\n" +
+                          "  col1 Wrong\n" +
+                          ");\n" +
+                          "create schema\n" +
+                          "MySchemaTwo\n" +
+                          "(\n" +
+                          "  col1 WrongTwo\n" +
+                          ");\n";
                 try {
                     env.Compiler.Compile(epl, new CompilerArguments());
                     Assert.Fail();
@@ -61,14 +62,19 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                         "Nestable type configuration encountered an unexpected property type name 'WrongTwo' for property 'col1'");
                 }
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS, RegressionFlag.INVALIDITY);
+            }
         }
 
         public class ClientCompileExceptionTwoItems : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                string epl = "create schema MySchemaOne (col1 Wrong);\n" +
-                             "create schema MySchemaTwo (col1 WrongTwo);\n";
+                var epl = "create schema MySchemaOne (col1 Wrong);\n" +
+                          "create schema MySchemaTwo (col1 WrongTwo);\n";
                 try {
                     env.Compiler.Compile(epl, new CompilerArguments());
                     Assert.Fail();
@@ -88,6 +94,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                         "Nestable type configuration encountered an unexpected property type name 'WrongTwo' for property 'col1'");
                 }
             }
+            
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS, RegressionFlag.INVALIDITY);
+            }
         }
 
         public class ClientCompileExeptionEPLWNewline : RegressionExecution
@@ -103,6 +114,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     Assert.AreEqual(1, ex.Items.Count);
                     AssertItem(ex.Items[0], "XX X", 1, "Incorrect syntax near 'XX'");
                 }
+            }
+            
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS, RegressionFlag.INVALIDITY);
             }
         }
 

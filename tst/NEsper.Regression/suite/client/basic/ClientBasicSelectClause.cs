@@ -16,15 +16,14 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('s0') select IntPrimitive from SupportBean";
+            var epl = "@name('s0') select IntPrimitive from SupportBean";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             env.SendEventBean(new SupportBean("E1", 10));
-
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                new [] { "IntPrimitive" },
-                new object[] {10});
+            env.AssertPropsNew(
+                "s0",
+                new[] { "IntPrimitive" },
+                new object[] { 10 });
 
             env.UndeployAll();
         }

@@ -160,6 +160,15 @@ namespace com.espertech.esper.common.client.configuration.common
             ConnectionFactoryDesc = new DataSourceConnection(contextLookupName, environmentProps);
         }
 
+        /// <summary>
+        /// Sets the database driver.
+        /// </summary>
+        /// <param name="driverConnectionFactoryDesc">The db driver factory connection.</param>
+        public void SetDatabaseDriver(DriverConnectionFactoryDesc driverConnectionFactoryDesc)
+        {
+            ConnectionFactoryDesc = driverConnectionFactoryDesc;
+        }
+        
         /// <summary>Sets the database driver.</summary>
         /// <param name = "driverName">Name of the driver.</param>
         /// <param name = "connectionString">A specific connection string.</param>

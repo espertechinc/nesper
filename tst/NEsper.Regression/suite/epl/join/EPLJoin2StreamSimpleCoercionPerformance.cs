@@ -10,6 +10,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -54,9 +55,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         internal class EPLJoinPerformanceCoercionForward : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+
             public void Run(RegressionEnvironment env)
             {
-                var stmt = "@Name('s0') select A.LongBoxed as value from " +
+                var stmt = "@name('s0') select A.LongBoxed as value from " +
                            "SupportBean(TheString='A')#length(1000000) as A," +
                            "SupportBean(TheString='B')#length(1000000) as B" +
                            " where A.LongBoxed=B.IntPrimitive";
@@ -70,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 for (var i = 0; i < 5000; i++) {
                     var index = 5000 + i % 1000;
                     env.SendEventBean(MakeSupportEvent("B", index, 0));
-                    Assert.AreEqual((long) index, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+                    env.AssertEqualsNew("s0", "value", index);
                 }
 
                 var endTime = PerformanceObserver.MilliTime;
@@ -82,9 +88,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         internal class EPLJoinPerformanceCoercionBack : RegressionExecution
         {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
+            
             public void Run(RegressionEnvironment env)
             {
-                var stmt = "@Name('s0') select A.IntPrimitive as value from " +
+                var stmt = "@name('s0') select A.IntPrimitive as value from " +
                            "SupportBean(TheString='A')#length(1000000) as A," +
                            "SupportBean(TheString='B')#length(1000000) as B" +
                            " where A.IntPrimitive=B.LongBoxed";
@@ -98,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 for (var i = 0; i < 5000; i++) {
                     var index = 5000 + i % 1000;
                     env.SendEventBean(MakeSupportEvent("B", 0, index));
-                    Assert.AreEqual(index, env.Listener("s0").AssertOneGetNewAndReset().Get("value"));
+                    env.AssertEqualsNew("s0", "value", index);
                 }
 
                 var endTime = PerformanceObserver.MilliTime;

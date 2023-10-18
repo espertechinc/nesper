@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.util;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.index.advanced.index.service;
 using com.espertech.esper.common.@internal.epl.join.lookup;
 using com.espertech.esper.common.@internal.@event.core;
@@ -32,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
     /// <summary>
     ///     Specifies an index to build as part of an overall query plan.
     /// </summary>
-    public class QueryPlanIndexItemForge : CodegenMakeable
+    public class QueryPlanIndexItemForge : CodegenMakeable<SAIFFInitializeSymbol>
     {
         private readonly EventType _eventType;
         private StateMgmtSetting _stateMgmtSettings;
@@ -117,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
-            CodegenSymbolProvider symbols,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             return Make(parent, classScope);

@@ -37,15 +37,19 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var @base = env.Compile("@Name('basevar') @public create constant variable int basevar = 1");
-				var child0 = env.Compile("@Name('s0') select basevar from SupportBean", new RegressionPath().Add(@base));
-				var child1 = env.Compile(
-					"@Name('child1var') create constant variable int child1var = 2;\n" +
-					"@Name('s1') select basevar, child1var from SupportBean;\n",
+				var @base = env.Compile("@name('basevar') @public create constant variable int basevar = 1");
+				var child0 = env.Compile(
+					"@name('s0') select basevar from SupportBean",
 					new RegressionPath().Add(@base));
-				var child11 = env.Compile("@Name('s2') select basevar, child1var from SupportBean;\n", new RegressionPath().Add(@base).Add(child1));
+				var child1 = env.Compile(
+					"@name('child1var') @public create constant variable int child1var = 2;\n" +
+					"@name('s1') select basevar, child1var from SupportBean;\n",
+					new RegressionPath().Add(@base));
+				var child11 = env.Compile(
+					"@name('s2') select basevar, child1var from SupportBean;\n",
+					new RegressionPath().Add(@base).Add(child1));
 
-				env.Rollout(ToRolloutItems(@base, child0, child1, child11), null);
+				env.Rollout(Arrays.AsList(ToRolloutItems(@base, child0, child1, child11)), null);
 				env.AddListener("s0").AddListener("s1").AddListener("s2");
 
 				SendAssert(env, "s1,s2");
@@ -56,12 +60,14 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 				AssertStatementIds(env, "basevar,s0,child1var,s1,s2", 1, 2, 3, 4, 5);
 
 				var item = new EPDeploymentRolloutCompiled(
-					env.Compile("@Name('s3') select basevar, child1var from SupportBean", new RegressionPath().Add(@base).Add(child1)),
+					env.Compile(
+						"@name('s3') select basevar, child1var from SupportBean",
+						new RegressionPath().Add(@base).Add(child1)),
 					null);
 				env.Rollout(Collections.SingletonList(item), null).AddListener("s3");
 				var deploymentChild11 = env.Deployment.GetDeployment(env.DeploymentId("s2"));
 				EPAssertionUtil.AssertEqualsAnyOrder(
-					new string[] {env.DeploymentId("basevar"), env.DeploymentId("child1var")},
+					new string[] { env.DeploymentId("basevar"), env.DeploymentId("child1var") },
 					deploymentChild11.DeploymentIdDependencies);
 
 				env.Milestone(1);
@@ -73,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
 				env.Milestone(2);
 
-				env.CompileDeploy("@Name('s1') select * from SupportBean");
+				env.CompileDeploy("@name('s1') select * from SupportBean");
 				TryInvalidRollout(
 					env,
 					"A precondition is not satisfied: Required dependency variable 'basevar' cannot be found",
@@ -85,14 +91,22 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 				env.UndeployAll();
 			}
 
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.RUNTIMEOPS);
+			}
+
 			private void SendAssert(
 				RegressionEnvironment env,
 				string stmtNameCsv)
 			{
 				env.SendEventBean(new SupportBean());
-				Assert.AreEqual(1, env.Listener("s0").AssertOneGetNewAndReset().Get("basevar"));
+				env.AssertEqualsNew("s0", "basevar", 1);
 				foreach (var stmtName in stmtNameCsv.SplitCsv()) {
-					EPAssertionUtil.AssertProps(env.Listener(stmtName).AssertOneGetNewAndReset(), "basevar,child1var".SplitCsv(), new object[] {1, 2});
+					EPAssertionUtil.AssertProps(
+						env.Listener(stmtName).AssertOneGetNewAndReset(),
+						"basevar,child1var".SplitCsv(),
+						new object[] { 1, 2 });
 				}
 			}
 		}
@@ -101,21 +115,46 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var type = env.Compile("@Name('s0') @public @buseventtype create schema MyEvent(p string)");
-				var selectMyEvent = env.Compile("@Name('s0') select * from MyEvent", new RegressionPath().Add(type));
-				var selectSB = env.Compile("@Name('s0') select * from SupportBean");
-				var selectSBParameterized = env.Compile("@Name('s0') select * from SupportBean(TheString = ?::string)");
-				env.CompileDeploy("@Name('s1') select * from SupportBean");
+				var type = env.Compile("@name('s0') @public @buseventtype create schema MyEvent(p string)");
+				var selectMyEvent = env.Compile(
+					"@name('s0') select * from MyEvent",
+					new RegressionPath().Add(type));
+				var selectSB = env.Compile("@name('s0') select * from SupportBean");
+				var selectSBParameterized =
+					env.Compile("@name('s0') select * from SupportBean(theString = ?::string)");
+				env.CompileDeploy("@name('s1') select * from SupportBean");
 
 				// dependency not found
-				var msg = "A precondition is not satisfied: Required dependency event type 'MyEvent' cannot be found";
+				var msg =
+					"A precondition is not satisfied: Required dependency event type 'MyEvent' cannot be found";
 				TryInvalidRollout(env, msg, 1, typeof(EPDeployPreconditionException), selectSB, selectMyEvent);
 				TryInvalidRollout(env, msg, 0, typeof(EPDeployPreconditionException), selectMyEvent);
-				TryInvalidRollout(env, msg, 2, typeof(EPDeployPreconditionException), selectSB, selectSB, selectMyEvent);
-				TryInvalidRollout(env, msg, 1, typeof(EPDeployPreconditionException), selectSB, selectMyEvent, selectSB, selectSB);
+				TryInvalidRollout(
+					env,
+					msg,
+					2,
+					typeof(EPDeployPreconditionException),
+					selectSB,
+					selectSB,
+					selectMyEvent);
+				TryInvalidRollout(
+					env,
+					msg,
+					1,
+					typeof(EPDeployPreconditionException),
+					selectSB,
+					selectMyEvent,
+					selectSB,
+					selectSB);
 
 				// already defined
-				TryInvalidRollout(env, "Event type by name 'MyEvent' already registered", 1, typeof(EPDeployException), type, type);
+				TryInvalidRollout(
+					env,
+					"Event type by name 'MyEvent' already registered",
+					1,
+					typeof(EPDeployException),
+					type,
+					type);
 
 				// duplicate deployment id
 				TryInvalidRollout(
@@ -133,7 +172,9 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 					1,
 					typeof(EPDeployDeploymentExistsException),
 					new EPDeploymentRolloutCompiled(selectSB, new DeploymentOptions().WithDeploymentId("a")),
-					new EPDeploymentRolloutCompiled(selectSB, new DeploymentOptions().WithDeploymentId(env.DeploymentId("s1"))));
+					new EPDeploymentRolloutCompiled(
+						selectSB,
+						new DeploymentOptions().WithDeploymentId(env.DeploymentId("s1"))));
 
 				// substitution param problem
 				TryInvalidRollout(
@@ -146,6 +187,11 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
 				env.UndeployAll();
 			}
+
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.INVALIDITY);
+			}
 		}
 
 		private class ClientDeployRolloutTwoInterdepModules : RegressionExecution
@@ -153,17 +199,23 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 			public void Run(RegressionEnvironment env)
 			{
 				var path = new RegressionPath();
-				var eplOne = "@Name('type') @public @buseventtype create schema MyEvent(p string)";
+				var eplOne = "@name('type') @public @buseventtype create schema MyEvent(p string)";
 				var compiledOne = env.Compile(eplOne, path);
-				var eplTwo = "@Name('s0') select * from MyEvent";
+				var eplTwo = "@name('s0') select * from MyEvent";
 				var compiledTwo = env.Compile(eplTwo, path);
 
 				IList<EPDeploymentRolloutCompiled> items = new List<EPDeploymentRolloutCompiled>();
 				items.Add(new EPDeploymentRolloutCompiled(compiledOne));
 				items.Add(new EPDeploymentRolloutCompiled(compiledTwo));
 
-				var rollout = env.Deployment.Rollout(items);
-				env.AddListener("s0");
+				EPDeploymentRollout rollout;
+				try {
+					rollout = env.Deployment.Rollout(items);
+					env.AddListener("s0");
+				}
+				catch (EPDeployException ex) {
+					throw new EPRuntimeException(ex);
+				}
 
 				Assert.AreEqual(2, rollout.Items.Length);
 				AssertDeployment(env, rollout.Items[0].Deployment, "type");
@@ -176,6 +228,11 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 				AssertSendAndReceive(env, "b");
 
 				env.UndeployAll();
+			}
+
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.RUNTIMEOPS);
 			}
 
 			private void AssertDeployment(
@@ -193,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 				string value)
 			{
 				env.SendEventMap(Collections.SingletonDataMap("p", value), "MyEvent");
-				Assert.AreEqual(value, env.Listener("s0").AssertOneGetNewAndReset().Get("p"));
+				env.AssertEqualsNew("s0", "p", value);
 			}
 		}
 
@@ -224,14 +281,24 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 			Type exceptionType,
 			params EPDeploymentRolloutCompiled[] items)
 		{
-			var ex = (EPDeployException) Assert.Throws(
-				Is.InstanceOf<EPDeployException>(),
-				() => env.Runtime.DeploymentService.Rollout(items));
-			Assert.AreEqual(rolloutNumber, ex.RolloutItemNumber);
-			SupportMessageAssertUtil.AssertMessage(ex.Message, expectedMsg);
-			Assert.AreEqual(exceptionType, ex.GetType());
+			try {
+				env.Runtime.DeploymentService.Rollout(Arrays.AsList(items));
+				Assert.Fail();
+			}
+			catch (EPDeployException ex) {
+				Assert.AreEqual(rolloutNumber, ex.RolloutItemNumber);
+				SupportMessageAssertUtil.AssertMessage(ex.Message, expectedMsg);
+				Assert.AreEqual(exceptionType, ex.GetType());
+			}
 
-			Assert.Throws<ArgumentException>(() => env.DeploymentId("s0"));
+			try {
+				env.DeploymentId("s0");
+				Assert.Fail();
+			}
+			catch (Exception) {
+				// expected
+			}
+
 			Assert.IsNotNull(env.DeploymentId("s1"));
 		}
 
@@ -242,8 +309,13 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 		{
 			var names = nameCSV.SplitCsv();
 			for (var i = 0; i < names.Length; i++) {
-				var spi = (EPStatementSPI) env.Statement(names[i]);
-				Assert.AreEqual(statementIds[i], spi.StatementId);
+				var index = i;
+				env.AssertStatement(
+					names[i],
+					statement => {
+						var spi = (EPStatementSPI)statement;
+						Assert.AreEqual(statementIds[index], spi.StatementId);
+					});
 			}
 		}
 	}

@@ -17,12 +17,12 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.collections.btree;
 using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
@@ -31,118 +31,20 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		public static ICollection<RegressionExecution> Executions()
 		{
 			var execs = new List<RegressionExecution>();
-			WithNonTable(execs);
-			WithTableAccess(execs);
-			WithTableIdent(execs);
-			WithCFHL(execs);
-			WithCFHLEnumerationAndDot(execs);
-			WithFirstLast(execs);
-			WithFirstLastEnumerationAndDot(execs);
-			WithGetContainsCounts(execs);
-			WithSubmapEventsBetween(execs);
-			WithOrderedDictionaryReference(execs);
-			WithMultiCriteria(execs);
-			WithGrouped(execs);
-			WithInvalid(execs);
-			WithDocSample(execs);
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithDocSample(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateSortedDocSample());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateSortedInvalid());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithGrouped(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateSortedGrouped());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithMultiCriteria(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateSortedMultiCriteria());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithOrderedDictionaryReference(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateSortedOrderedDictionaryReference());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithSubmapEventsBetween(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateSortedSubmapEventsBetween());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithGetContainsCounts(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateSortedGetContainsCounts());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithFirstLastEnumerationAndDot(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateSortedFirstLastEnumerationAndDot());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithFirstLast(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateSortedFirstLast());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithCFHLEnumerationAndDot(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateSortedCFHLEnumerationAndDot());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithCFHL(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateSortedCFHL());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithTableIdent(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateSortedTableIdent());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithTableAccess(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateSortedTableAccess());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithNonTable(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ResultSetAggregateSortedNonTable());
+			execs.Add(new ResultSetAggregateSortedTableAccess());
+			execs.Add(new ResultSetAggregateSortedTableIdent());
+			execs.Add(new ResultSetAggregateSortedCFHL());
+			execs.Add(new ResultSetAggregateSortedCFHLEnumerationAndDot());
+			execs.Add(new ResultSetAggregateSortedFirstLast());
+			execs.Add(new ResultSetAggregateSortedFirstLastEnumerationAndDot());
+			execs.Add(new ResultSetAggregateSortedGetContainsCounts());
+			execs.Add(new ResultSetAggregateSortedSubmapEventsBetween());
+			execs.Add(new ResultSetAggregateSortedOrderedDictionaryReference());
+			execs.Add(new ResultSetAggregateSortedMultiCriteria());
+			execs.Add(new ResultSetAggregateSortedGrouped());
+			execs.Add(new ResultSetAggregateSortedInvalid());
+			execs.Add(new ResultSetAggregateSortedDocSample());
 			return execs;
 		}
 
@@ -152,27 +54,27 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			{
 				var epl =
 					"@buseventtype @public create schema OrderEvent(OrderId string, price double);\n" +
-					"@Name('a') select sorted(price).lowerKey(price) as lowerPrice from OrderEvent#time(10 minutes);\n" +
-					"@Name('b') select sorted(price).lowerEvent(price).OrderId as lowerPriceOrderId from OrderEvent#time(10 minutes);\n" +
+					"@name('a') select sorted(price).lowerKey(price) as lowerPrice from OrderEvent#time(10 minutes);\n" +
+					"@name('b') select sorted(price).lowerEvent(price).OrderId as lowerPriceOrderId from OrderEvent#time(10 minutes);\n" +
 					"create table OrderPrices(prices sorted(price) @type('OrderEvent'));\n" +
 					"into table OrderPrices select sorted(*) as prices from OrderEvent#time(10 minutes);\n" +
-					"@Name('c') select OrderPrices.prices.firstKey() as lowestPrice, OrderPrices.prices.lastKey() as highestPrice from OrderEvent;\n" +
-					"@Name('d') select (select prices.firstKey() from OrderPrices) as lowestPrice, * from OrderEvent;\n";
+					"@name('c') select OrderPrices.prices.firstKey() as lowestPrice, OrderPrices.prices.lastKey() as highestPrice from OrderEvent;\n" +
+					"@name('d') select (select prices.firstKey() from OrderPrices) as lowestPrice, * from OrderEvent;\n";
 				env.CompileDeploy(epl).AddListener("a").AddListener("b").AddListener("c").AddListener("d");
 
 				env.SendEventMap(CollectionUtil.BuildMap("OrderId", "A", "price", 10d), "OrderEvent");
-				EPAssertionUtil.AssertProps(env.Listener("a").AssertOneGetNewAndReset(), "lowerPrice".SplitCsv(), new object[] {null});
-				EPAssertionUtil.AssertProps(env.Listener("b").AssertOneGetNewAndReset(), "lowerPriceOrderId".SplitCsv(), new object[] {null});
-				EPAssertionUtil.AssertProps(env.Listener("c").AssertOneGetNewAndReset(), "lowestPrice,highestPrice".SplitCsv(), new object[] {10d, 10d});
-				EPAssertionUtil.AssertProps(env.Listener("d").AssertOneGetNewAndReset(), "lowestPrice".SplitCsv(), new object[] {10d});
+				env.AssertPropsNew("a", "lowerPrice".SplitCsv(), new object[] { null });
+				env.AssertPropsNew("b", "lowerPriceOrderId".SplitCsv(), new object[] { null });
+				env.AssertPropsNew("c", "lowestPrice,highestPrice".SplitCsv(), new object[] { 10d, 10d });
+				env.AssertPropsNew("d", "lowestPrice".SplitCsv(), new object[] { 10d });
 
 				env.Milestone(0);
 
 				env.SendEventMap(CollectionUtil.BuildMap("OrderId", "B", "price", 20d), "OrderEvent");
-				EPAssertionUtil.AssertProps(env.Listener("a").AssertOneGetNewAndReset(), "lowerPrice".SplitCsv(), new object[] {10d});
-				EPAssertionUtil.AssertProps(env.Listener("b").AssertOneGetNewAndReset(), "lowerPriceOrderId".SplitCsv(), new object[] {"A"});
-				EPAssertionUtil.AssertProps(env.Listener("c").AssertOneGetNewAndReset(), "lowestPrice,highestPrice".SplitCsv(), new object[] {10d, 20d});
-				EPAssertionUtil.AssertProps(env.Listener("d").AssertOneGetNewAndReset(), "lowestPrice".SplitCsv(), new object[] {10d});
+				env.AssertPropsNew("a", "lowerPrice".SplitCsv(), new object[] { 10d });
+				env.AssertPropsNew("b", "lowerPriceOrderId".SplitCsv(), new object[] { "A" });
+				env.AssertPropsNew("c", "lowestPrice,highestPrice".SplitCsv(), new object[] { 10d, 20d });
+				env.AssertPropsNew("d", "lowestPrice".SplitCsv(), new object[] { 10d });
 
 				env.UndeployAll();
 			}
@@ -184,44 +86,39 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			public void Run(RegressionEnvironment env)
 			{
 				var path = new RegressionPath();
-				env.CompileDeploy("create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n", path);
+				env.CompileDeploy(
+					"create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n", path);
 
-				TryInvalidCompile(
-					env,
+				env.TryInvalidCompile(
 					path,
 					"select MyTable.sortcol.notAnAggMethod() from SupportBean_S0",
 					"Failed to validate select-clause expression 'MyTable.sortcol.notAnAggMethod()': Could not find event property or method named 'notAnAggMethod' in collection of events of type ");
 
-				TryInvalidCompile(
-					env,
+				env.TryInvalidCompile(
 					path,
 					"select MyTable.sortcol.floorKey() from SupportBean_S0",
 					"Failed to validate select-clause expression 'MyTable.sortcol.floorKey()': Parameters mismatch for aggregation method 'floorKey', the method requires an expression providing the key value");
-				TryInvalidCompile(
-					env,
+				env.TryInvalidCompile(
 					path,
 					"select MyTable.sortcol.floorKey('a') from SupportBean_S0",
 					"Failed to validate select-clause expression 'MyTable.sortcol.floorKey(\"a\")': Method 'floorKey' for parameter 0 requires a key of type 'System.Nullable<System.Int32>' but receives 'System.String'");
 
-				TryInvalidCompile(
-					env,
+				env.TryInvalidCompile(
 					path,
 					"select MyTable.sortcol.firstKey(Id) from SupportBean_S0",
 					"Failed to validate select-clause expression 'MyTable.sortcol.firstKey(Id)': Parameters mismatch for aggregation method 'firstKey', the method requires no parameters");
 
-				TryInvalidCompile(
-					env,
+				env.TryInvalidCompile(
 					path,
 					"select MyTable.sortcol.submap(1, 2, 3, true) from SupportBean_S0",
 					"Failed to validate select-clause expression 'MyTable.sortcol.submap(1,2,3,true)': Failed to validate aggregation method 'submap', expected a boolean-type result for expression parameter 1 but received System.Int32");
-				TryInvalidCompile(
-					env,
+				
+				env.TryInvalidCompile(
 					path,
 					"select MyTable.sortcol.submap('a', true, 3, true) from SupportBean_S0",
 					"Failed to validate select-clause expression 'MyTable.sortcol.submap(\"a\",true,3,true)': Method 'submap' for parameter 0 requires a key of type 'System.Nullable<System.Int32>' but receives 'System.String'");
 
-				TryInvalidCompile(
-					env,
+				env.TryInvalidCompile(
 					path,
 					"select MyTable.sortcol.submap(1, true, 'a', true) from SupportBean_S0",
 					"Failed to validate select-clause expression 'MyTable.sortcol.submap(1,true,\"a\",true)': Method 'submap' for parameter 2 requires a key of type 'System.Nullable<System.Int32>' but receives 'System.String'");
@@ -236,11 +133,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			{
 				var epl = "create table MyTable(k0 string primary key, sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean group by TheString;\n" +
-				          "@Name('s0') select " +
+				          "@name('s0') select " +
 				          "MyTable[P00].sortcol.sorted() as sortcol," +
 				          "MyTable[P00].sortcol.firstKey() as firstkey," +
 				          "MyTable[P00].sortcol.lastKey() as lastkey" +
-				          " from SupportBean_S0";
+					" from SupportBean_S0";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertGrouped(env, "A", null, null);
@@ -249,9 +146,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				env.SendEventBean(new SupportBean("A", 20));
 				SendAssertGrouped(env, "A", 10, 20);
 
+				env.Milestone(0);
+
 				env.SendEventBean(new SupportBean("A", 10));
 				env.SendEventBean(new SupportBean("A", 21));
 				SendAssertGrouped(env, "A", 10, 21);
+
+				env.Milestone(1);
 
 				env.SendEventBean(new SupportBean("B", 100));
 				SendAssertGrouped(env, "A", 10, 21);
@@ -268,7 +169,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			{
 				var fields = "firstkey,lastkey".SplitCsv();
 				env.SendEventBean(new SupportBean_S0(-1, p00));
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {firstKey, lastKey});
+				env.AssertPropsNew("s0", fields, new object[] { firstKey, lastKey });
 			}
 		}
 
@@ -278,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			{
 				var epl = "create table MyTable(sortcol sorted(TheString, IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-				          "@Name('s0') select " +
+				          "@name('s0') select " +
 				          "MyTable.sortcol.firstKey() as firstkey," +
 				          "MyTable.sortcol.lastKey() as lastkey," +
 				          "MyTable.sortcol.lowerKey(new HashableMultiKey('E4', 1)) as lowerkey," +
@@ -288,14 +189,19 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
 				AssertType(env, typeof(HashableMultiKey), "firstkey,lastkey,lowerkey");
 
-				PrepareTestData(env, new OrderedListDictionary<int, IList<SupportBean>>()); // 1, 1, 4, 6, 6, 8, 9
+				PrepareTestData(env, new BTreeDictionary<int, IList<SupportBean>>()); // 1, 1, 4, 6, 6, 8, 9
+
+				env.Milestone(0);
 
 				env.SendEventBean(new SupportBean_S0(-1));
-				var @event = env.Listener("s0").AssertOneGetNewAndReset();
-				CompareKeys(@event.Get("firstkey"), "E1a", 1);
-				CompareKeys(@event.Get("lastkey"), "E9", 9);
-				CompareKeys(@event.Get("lowerkey"), "E1b", 1);
-				CompareKeys(@event.Get("higherkey"), "E4b", 4);
+				env.AssertEventNew(
+					"s0",
+					@event => {
+						CompareKeys(@event.Get("firstkey"), "E1a", 1);
+						CompareKeys(@event.Get("lastkey"), "E9", 9);
+						CompareKeys(@event.Get("lowerkey"), "E1b", 1);
+						CompareKeys(@event.Get("higherkey"), "E4b", 4);
+					});
 
 				env.UndeployAll();
 			}
@@ -305,24 +211,23 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = 
-					"@public @buseventtype create schema MySubmapEvent as " +
+				var epl = "@public @buseventtype create schema MySubmapEvent as " +
 				    typeof(MySubmapEvent).MaskTypeName() +
-				    ";\n" +
+				          ";\n" +
 					"create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
-					"into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-					"@Name('s0') select " +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
+					"@name('s0') select " +
 					"MyTable.sortcol.eventsBetween(FromKey, IsFromInclusive, ToKey, IsToInclusive) as eb," +
 					"MyTable.sortcol.eventsBetween(FromKey, IsFromInclusive, ToKey, IsToInclusive).lastOf() as eblastof," +
 					"MyTable.sortcol.subMap(FromKey, IsFromInclusive, ToKey, IsToInclusive) as sm" +
-					" from MySubmapEvent";
+				          " from MySubmapEvent";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				AssertType(env, typeof(SupportBean[]), "eb");
 				AssertType(env, typeof(IOrderedDictionary<object, object>), "sm");
 				AssertType(env, typeof(SupportBean), "eblastof");
 
-				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
+				var treemap = new BTreeDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
 				for (var start = 0; start < 12; start++) {
@@ -331,21 +236,26 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 							continue;
 						}
 
-						foreach (var includeStart in new bool[] {false, true}) {
-							foreach (var includeEnd in new bool[] {false, true}) {
+						foreach (var includeStart in new bool[] { false, true }) {
+							foreach (var includeEnd in new bool[] { false, true }) {
 								var sme = new MySubmapEvent(start, includeStart, end, includeEnd);
 								env.SendEventBean(sme);
-								var @event = env.Listener("s0").AssertOneGetNewAndReset();
-								var submap = @event.Get("sm")
-									.AsObjectDictionary(MagicMarker.SingletonInstance)
-									.TransformLeft<object, object, SupportBean[]>();
-								
-								AssertEventsBetween(treemap, sme, (SupportBean[]) @event.Get("eb"), (SupportBean) @event.Get("eblastof"));
-								AssertSubmap(treemap, sme, submap);
+								env.AssertEventNew(
+									"s0",
+									@event => {
+										var submap = @event.Get("sm")
+											.AsObjectDictionary(MagicMarker.SingletonInstance)
+											.TransformLeft<object, object, SupportBean[]>();
+										
+										AssertEventsBetween(treemap, sme, (SupportBean[])@event.Get("eb"), (SupportBean)@event.Get("eblastof"));
+										AssertSubmap(treemap, sme, submap);
+									});
 							}
 						}
 					}
 				}
+
+				env.Milestone(0);
 
 				env.UndeployAll();
 			}
@@ -357,21 +267,25 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			{
 				var epl =
 					"create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
-					"into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-					"@Name('s0') select " +
-					"MyTable.sortcol.dictionaryReference() as nmr" +
-					" from SupportBean_S0";
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
+				          "@name('s0') select " +
+				          "MyTable.sortcol.dictionaryReference() as nmr" +
+				          " from SupportBean_S0";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				AssertType(env, typeof(IOrderedDictionary<object, object>), "nmr");
 
-				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
+				var treemap = new BTreeDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
+				env.Milestone(0);
+
 				env.SendEventBean(new SupportBean_S0(-1));
-				var @event = env.Listener("s0").AssertOneGetNewAndReset();
-				var eventDictionary = (IOrderedDictionary<object, ICollection<EventBean>>) @event.Get("nmr");
-				AssertOrderedDictionary(treemap, eventDictionary);
+				env.AssertEventNew(
+					"s0",
+					@event => AssertOrderedDictionary(
+						treemap,
+						(IOrderedDictionary<object, ICollection<EventBean>>)@event.Get("nmr")));
 
 				env.UndeployAll();
 			}
@@ -383,17 +297,17 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			{
 				var epl =
 					"create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
-					"into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-					"@Name('s0') select " +
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
+					"@name('s0') select " +
 					"MyTable.sortcol.getEvent(Id) as ge," +
 					"MyTable.sortcol.getEvents(Id) as ges," +
 					"MyTable.sortcol.containsKey(Id) as ck," +
-					"MyTable.sortcol.countEvents() as cnte," +
-					"MyTable.sortcol.countKeys() as cntk," +
+				          "MyTable.sortcol.countEvents() as cnte," +
+				          "MyTable.sortcol.countKeys() as cntk," +
 					"MyTable.sortcol.getEvent(Id).TheString as geid," +
 					"MyTable.sortcol.getEvent(Id).firstOf() as gefo," +
 					"MyTable.sortcol.getEvents(Id).lastOf() as geslo " +
-					" from SupportBean_S0";
+				          " from SupportBean_S0";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				AssertType(env, typeof(SupportBean), "ge,gefo,geslo");
@@ -402,24 +316,28 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				AssertType(env, typeof(bool?), "ck");
 				AssertType(env, typeof(string), "geid");
 
-				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
+				var treemap = new BTreeDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
+
+				env.Milestone(0);
 
 				for (var i = 0; i < 12; i++) {
 					env.SendEventBean(new SupportBean_S0(i));
-					var @event = env.Listener("s0").AssertOneGetNewAndReset();
-					var message = "failed at " + i;
-
-					var valueAtIndex = treemap.Get(i);
-					
-					Assert.AreEqual(FirstEvent(valueAtIndex), @event.Get("ge"), message);
-					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(valueAtIndex), (SupportBean[]) @event.Get("ges"));
-					Assert.AreEqual(treemap.ContainsKey(i), @event.Get("ck"), message);
-					Assert.AreEqual(7, @event.Get("cnte"), message);
-					Assert.AreEqual(5, @event.Get("cntk"), message);
-					Assert.AreEqual(FirstEventString(valueAtIndex), @event.Get("geid"), message);
-					Assert.AreEqual(FirstEvent(valueAtIndex), @event.Get("gefo"), message);
-					Assert.AreEqual(LastEvent(valueAtIndex), @event.Get("geslo"), message);
+					var index = i;
+					env.AssertEventNew(
+						"s0",
+						@event => {
+							var message = "failed at " + index;
+							var valueAtIndex = treemap.Get(index);
+							Assert.AreEqual(FirstEvent(valueAtIndex), @event.Get("ge"), message);
+							EPAssertionUtil.AssertEqualsExactOrder(AllEvents(valueAtIndex), (SupportBean[])@event.Get("ges"));
+							Assert.AreEqual(treemap.ContainsKey(index), @event.Get("ck"), message);
+							Assert.AreEqual(7, @event.Get("cnte"), message);
+							Assert.AreEqual(5, @event.Get("cntk"), message);
+							Assert.AreEqual(FirstEventString(valueAtIndex), @event.Get("geid"), message);
+							Assert.AreEqual(FirstEvent(valueAtIndex), @event.Get("gefo"), message);
+							Assert.AreEqual(LastEvent(valueAtIndex), @event.Get("geslo"), message);
+						});
 				}
 
 				env.UndeployAll();
@@ -432,7 +350,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			{
 				var epl = "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-				          "@Name('s0') select " +
+				          "@name('s0') select " +
 				          "MyTable.sortcol.firstEvent().TheString as feid," +
 				          "MyTable.sortcol.firstEvent().firstOf() as fefo," +
 				          "MyTable.sortcol.firstEvents().lastOf() as feslo," +
@@ -445,19 +363,25 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				AssertType(env, typeof(string), "feid,leid");
 				AssertType(env, typeof(SupportBean), "fefo,feslo,lefo,leslo");
 
-				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
+				var treemap = new BTreeDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
-				var treeMapFirst = treemap.First();
-				var treeMapLast = treemap.Last();
+
+				env.Milestone(0);
 
 				env.SendEventBean(new SupportBean_S0(-1));
-				var @event = env.Listener("s0").AssertOneGetNewAndReset();
-				Assert.AreEqual(FirstEventString<IList<SupportBean>>(treeMapFirst), @event.Get("feid"));
-				Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("fefo"));
-				Assert.AreEqual(LastEvent<IList<SupportBean>>(treeMapFirst), @event.Get("feslo"));
-				Assert.AreEqual(FirstEventString<IList<SupportBean>>(treeMapLast), @event.Get("leid"));
-				Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("lefo"));
-				Assert.AreEqual(LastEvent<IList<SupportBean>>(treeMapLast), @event.Get("leslo"));
+				env.AssertEventNew(
+					"s0",
+					@event => {
+						var treeMapFirst = treemap.First();
+						Assert.AreEqual(FirstEventString<IList<SupportBean>>(treeMapFirst), @event.Get("feid"));
+						Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("fefo"));
+						Assert.AreEqual(LastEvent<IList<SupportBean>>(treeMapFirst), @event.Get("feslo"));
+						
+						var treeMapLast = treemap.Last();
+						Assert.AreEqual(FirstEventString<IList<SupportBean>>(treeMapLast), @event.Get("leid"));
+						Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("lefo"));
+						Assert.AreEqual(LastEvent<IList<SupportBean>>(treeMapLast), @event.Get("leslo"));
+					});
 
 				env.UndeployAll();
 			}
@@ -469,7 +393,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			{
 				var epl = "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-				          "@Name('s0') select " +
+				          "@name('s0') select " +
 				          "MyTable.sortcol.firstEvent() as fe," +
 				          "MyTable.sortcol.minBy() as minb," +
 				          "MyTable.sortcol.firstEvents() as fes," +
@@ -485,22 +409,27 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				AssertType(env, typeof(SupportBean[]), "fes,les");
 				AssertType(env, typeof(int?), "fk,lk");
 
-				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
+				var treemap = new BTreeDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
-				var treeMapFirst = treemap.First();
-				var treeMapLast = treemap.Last();
-				
+				env.Milestone(0);
+
 				env.SendEventBean(new SupportBean_S0(-1));
-				var @event = env.Listener("s0").AssertOneGetNewAndReset();
-				Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("fe"));
-				Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("minb"));
-				EPAssertionUtil.AssertEqualsExactOrder(AllEvents<IList<SupportBean>>(treeMapFirst), (SupportBean[]) @event.Get("fes"));
-				Assert.AreEqual(treeMapFirst.Key, @event.Get("fk"));
-				Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("le"));
-				Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("maxb"));
-				EPAssertionUtil.AssertEqualsExactOrder(AllEvents<IList<SupportBean>>(treeMapLast), (SupportBean[]) @event.Get("les"));
-				Assert.AreEqual(treeMapLast.Key, @event.Get("lk"));
+				env.AssertEventNew(
+					"s0",
+					@event => {
+						var treeMapFirst = treemap.First();
+						Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("fe"));
+						Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("minb"));
+						EPAssertionUtil.AssertEqualsExactOrder(AllEvents<IList<SupportBean>>(treeMapFirst), (SupportBean[])@event.Get("fes"));
+						Assert.AreEqual(treeMapFirst.Key, @event.Get("fk"));
+						
+						var treeMapLast = treemap.Last();
+						Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("le"));
+						Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("maxb"));
+						EPAssertionUtil.AssertEqualsExactOrder(AllEvents<IList<SupportBean>>(treeMapLast), (SupportBean[])@event.Get("les"));
+						Assert.AreEqual(treeMapLast.Key, @event.Get("lk"));
+					});
 
 				env.UndeployAll();
 			}
@@ -512,7 +441,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			{
 				var epl = "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-				          "@Name('s0') select " +
+				          "@name('s0') select " +
 				          "MyTable.sortcol.ceilingEvent(Id).TheString as ceid," +
 				          "MyTable.sortcol.ceilingEvent(Id).firstOf() as cefo," +
 				          "MyTable.sortcol.ceilingEvents(Id).lastOf() as ceslo," +
@@ -531,25 +460,31 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				AssertType(env, typeof(string), "ceid,feid,heid,leid");
 				AssertType(env, typeof(SupportBean), "cefo,fefo,hefo,lefo,ceslo,feslo,heslo,leslo");
 
-				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
+				var treemap = new BTreeDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
+
+				env.Milestone(0);
 
 				for (var i = 0; i < 12; i++) {
 					env.SendEventBean(new SupportBean_S0(i));
-					var @event = env.Listener("s0").AssertOneGetNewAndReset();
-					var message = "failed at " + i;
-					Assert.AreEqual(FirstEventString(treemap.GreaterThanOrEqualTo(i)), @event.Get("ceid"), message);
-					Assert.AreEqual(FirstEvent(treemap.GreaterThanOrEqualTo(i)), @event.Get("cefo"), message);
-					Assert.AreEqual(LastEvent(treemap.GreaterThanOrEqualTo(i)), @event.Get("ceslo"), message);
-					Assert.AreEqual(FirstEventString(treemap.LessThanOrEqualTo(i)), @event.Get("feid"), message);
-					Assert.AreEqual(FirstEvent(treemap.LessThanOrEqualTo(i)), @event.Get("fefo"), message);
-					Assert.AreEqual(LastEvent(treemap.LessThanOrEqualTo(i)), @event.Get("feslo"), message);
-					Assert.AreEqual(FirstEventString(treemap.GreaterThan(i)), @event.Get("heid"), message);
-					Assert.AreEqual(FirstEvent(treemap.GreaterThan(i)), @event.Get("hefo"), message);
-					Assert.AreEqual(LastEvent(treemap.GreaterThan(i)), @event.Get("heslo"), message);
-					Assert.AreEqual(FirstEventString(treemap.LessThan(i)), @event.Get("leid"), message);
-					Assert.AreEqual(FirstEvent(treemap.LessThan(i)), @event.Get("lefo"), message);
-					Assert.AreEqual(LastEvent(treemap.LessThan(i)), @event.Get("leslo"), message);
+					var index = i;
+					env.AssertEventNew(
+						"s0",
+						@event => {
+							var message = "failed at " + index;
+							Assert.AreEqual(FirstEventString(treemap.GreaterThanOrEqualTo(index)), @event.Get("ceid"), message);
+							Assert.AreEqual(FirstEvent(treemap.GreaterThanOrEqualTo(index)), @event.Get("cefo"), message);
+							Assert.AreEqual(LastEvent(treemap.GreaterThanOrEqualTo(index)), @event.Get("ceslo"), message);
+							Assert.AreEqual(FirstEventString(treemap.LessThanOrEqualTo(index)), @event.Get("feid"), message);
+							Assert.AreEqual(FirstEvent(treemap.LessThanOrEqualTo(index)), @event.Get("fefo"), message);
+							Assert.AreEqual(LastEvent(treemap.LessThanOrEqualTo(index)), @event.Get("feslo"), message);
+							Assert.AreEqual(FirstEventString(treemap.GreaterThan(index)), @event.Get("heid"), message);
+							Assert.AreEqual(FirstEvent(treemap.GreaterThan(index)), @event.Get("hefo"), message);
+							Assert.AreEqual(LastEvent(treemap.GreaterThan(index)), @event.Get("heslo"), message);
+							Assert.AreEqual(FirstEventString(treemap.LessThan(index)), @event.Get("leid"), message);
+							Assert.AreEqual(FirstEvent(treemap.LessThan(index)), @event.Get("lefo"), message);
+							Assert.AreEqual(LastEvent(treemap.LessThan(index)), @event.Get("leslo"), message);
+						});
 				}
 
 				env.UndeployAll();
@@ -565,7 +500,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n";
 				env.CompileDeploy(epl, path);
 
-				var select = "@Name('s0') select " +
+				var select = "@name('s0') select " +
 				             "MyTable.sortcol as sortedItself, " +
 				             "MyTable.sortcol.ceilingEvent(Id) as ce, " +
 				             "MyTable.sortcol.ceilingEvents(Id) as ces, " +
@@ -586,24 +521,38 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				AssertType(env, typeof(SupportBean[]), "ces,fes,hes,les");
 				AssertType(env, typeof(int?), "ck,fk,hk,lk");
 
-				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
+				var treemap = new BTreeDictionary<int, IList<SupportBean>>();
 				PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
+
+				env.Milestone(0);
 
 				for (var i = 0; i < 12; i++) {
 					env.SendEventBean(new SupportBean_S0(i));
-					var @event = env.Listener("s0").AssertOneGetNewAndReset();
-					Assert.AreEqual(FirstEvent(treemap.GreaterThanOrEqualTo(i)), @event.Get("ce"));
-					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.GreaterThanOrEqualTo(i)), (SupportBean[]) @event.Get("ces"));
-					Assert.AreEqual(treemap.GreaterThanOrEqualTo(i)?.Key, @event.Get("ck"));
-					Assert.AreEqual(FirstEvent(treemap.LessThanOrEqualTo(i)), @event.Get("fe"));
-					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.LessThanOrEqualTo(i)), (SupportBean[]) @event.Get("fes"));
-					Assert.AreEqual(treemap.LessThanOrEqualTo(i)?.Key, @event.Get("fk"));
-					Assert.AreEqual(FirstEvent(treemap.GreaterThan(i)), @event.Get("he"));
-					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.GreaterThan(i)), (SupportBean[]) @event.Get("hes"));
-					Assert.AreEqual(treemap.GreaterThan(i)?.Key, @event.Get("hk"));
-					Assert.AreEqual(FirstEvent(treemap.LessThan(i)), @event.Get("le"));
-					EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.LessThan(i)), (SupportBean[]) @event.Get("les"));
-					Assert.AreEqual(treemap.LessThan(i)?.Key, @event.Get("lk"));
+					var index = i;
+					env.AssertEventNew(
+						"s0",
+						@event => {
+							Assert.AreEqual(FirstEvent(treemap.GreaterThanOrEqualTo(index)), @event.Get("ce"));
+							EPAssertionUtil.AssertEqualsExactOrder(
+								AllEvents(treemap.GreaterThanOrEqualTo(index)),
+								(SupportBean[])@event.Get("ces"));
+							Assert.AreEqual(treemap.GreaterThanOrEqualTo(index)?.Key, @event.Get("ck"));
+							Assert.AreEqual(FirstEvent(treemap.LessThanOrEqualTo(index)), @event.Get("fe"));
+							EPAssertionUtil.AssertEqualsExactOrder(
+								AllEvents(treemap.LessThanOrEqualTo(index)),
+								(SupportBean[])@event.Get("fes"));
+							Assert.AreEqual(treemap.LessThanOrEqualTo(index)?.Key, @event.Get("fk"));
+							Assert.AreEqual(FirstEvent(treemap.GreaterThan(index)), @event.Get("he"));
+							EPAssertionUtil.AssertEqualsExactOrder(
+								AllEvents(treemap.GreaterThan(index)),
+								(SupportBean[])@event.Get("hes"));
+							Assert.AreEqual(treemap.GreaterThan(index)?.Key, @event.Get("hk"));
+							Assert.AreEqual(FirstEvent(treemap.LessThan(index)), @event.Get("le"));
+							EPAssertionUtil.AssertEqualsExactOrder(
+								AllEvents(treemap.LessThan(index)),
+								(SupportBean[])@event.Get("les"));
+							Assert.AreEqual(treemap.LessThan(index)?.Key, @event.Get("lk"));
+						});
 				}
 
 				env.UndeployAll();
@@ -615,24 +564,24 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			public void Run(RegressionEnvironment env)
 			{
 				var fields = "c0".SplitCsv();
-				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
+				var treemap = new BTreeDictionary<int, IList<SupportBean>>();
 
-				var epl = "@Name('s0') select sorted(IntPrimitive).floorEvent(IntPrimitive-1) as c0 from SupportBean#length(3) as sb";
+				var epl = "@name('s0') select sorted(IntPrimitive).floorEvent(IntPrimitive-1) as c0 from SupportBean#length(3) as sb";
 				env.EplToModelCompileDeploy(epl).AddListener("s0");
 
 				MakeSendBean(env, treemap, "E1", 10);
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {LessThanOrEqualToFirstEvent(treemap, 10 - 1)});
+				env.AssertPropsNew("s0", fields, new object[] { LessThanOrEqualToFirstEvent(treemap, 10 - 1) });
 
 				MakeSendBean(env, treemap, "E2", 20);
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {LessThanOrEqualToFirstEvent(treemap, 20 - 1)});
+				env.AssertPropsNew("s0", fields, new object[] { LessThanOrEqualToFirstEvent(treemap, 20 - 1) });
 
 				env.Milestone(0);
 
 				MakeSendBean(env, treemap, "E3", 15);
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {LessThanOrEqualToFirstEvent(treemap, 15 - 1)});
+				env.AssertPropsNew("s0", fields, new object[] { LessThanOrEqualToFirstEvent(treemap, 15 - 1) });
 
 				MakeSendBean(env, treemap, "E3", 17);
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] {LessThanOrEqualToFirstEvent(treemap, 17 - 1)});
+				env.AssertPropsNew("s0", fields, new object[] { LessThanOrEqualToFirstEvent(treemap, 17 - 1) });
 
 				env.UndeployAll();
 			}
@@ -644,22 +593,27 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			{
 				var epl = "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
 				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n" +
-				          "@Name('s0') select MyTable.sortcol.floorEvent(Id) as c0 from SupportBean_S0";
+				          "@name('s0') select MyTable.sortcol.floorEvent(Id) as c0 from SupportBean_S0";
 				env.CompileDeploy(epl).AddListener("s0");
 
-				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
+				var treemap = new BTreeDictionary<int, IList<SupportBean>>();
 				MakeSendBean(env, treemap, "E1", 10);
 				MakeSendBean(env, treemap, "E2", 20);
 				MakeSendBean(env, treemap, "E3", 30);
 
 				env.SendEventBean(new SupportBean_S0(15));
-				Assert.AreEqual(LessThanOrEqualToFirstEvent(treemap, 15), env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+				env.AssertEventNew(
+					"s0",
+					@event => Assert.AreEqual(LessThanOrEqualToFirstEvent(treemap, 15), @event.Get("c0")));
 
 				env.Milestone(0);
 
 				for (var i = 0; i < 40; i++) {
 					env.SendEventBean(new SupportBean_S0(i));
-					Assert.AreEqual(LessThanOrEqualToFirstEvent(treemap, i), env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+					var index = i;
+					env.AssertEventNew(
+						"s0",
+						@event => Assert.AreEqual(LessThanOrEqualToFirstEvent(treemap, index), @event.Get("c0")));
 				}
 
 				env.UndeployAll();
@@ -673,13 +627,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				var path = new RegressionPath();
 				var epl =
 					"create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
-					"into table MyTable select sorted(*) as sortcol from SupportBean;\n";
+				          "into table MyTable select sorted(*) as sortcol from SupportBean;\n";
 				env.CompileDeploy(epl, path);
 
-				env.EplToModelCompileDeploy("@Name('s0') select sortcol.floorEvent(Id) as c0 from SupportBean_S0, MyTable", path)
+				env.EplToModelCompileDeploy(
+						"@name('s0') select sortcol.floorEvent(Id) as c0 from SupportBean_S0, MyTable",
+						path)
 					.AddListener("s0");
 
-				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
+				var treemap = new BTreeDictionary<int, IList<SupportBean>>();
 				MakeSendBean(env, treemap, "E1", 10);
 				MakeSendBean(env, treemap, "E2", 20);
 				MakeSendBean(env, treemap, "E3", 30);
@@ -688,7 +644,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
 				for (var i = 0; i < 40; i++) {
 					env.SendEventBean(new SupportBean_S0(i));
-					Assert.AreEqual(LessThanOrEqualToFirstEvent(treemap, i), env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+					var index = i;
+					env.AssertEventNew(
+						"s0",
+						@event => Assert.AreEqual(LessThanOrEqualToFirstEvent(treemap, index), @event.Get("c0")));
 				}
 
 				env.UndeployAll();
@@ -731,7 +690,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
 		private static SupportBean LastEvent(IList<SupportBean> list)
 		{
-			return list?[list.Count - 1];
+			return list?[^1];
 		}
 
 		private static SupportBean FirstEvent(IList<SupportBean> list)
@@ -783,10 +742,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			string csvProps)
 		{
 			var props = csvProps.SplitCsv();
-			var eventType = env.Statement("s0").EventType;
-			foreach (var prop in props) {
-				Assert.AreEqual(expected, eventType.GetPropertyType(prop), "failed for prop '" + prop + "'");
-			}
+			env.AssertStatement(
+				"s0",
+				statement => {
+					var eventType = statement.EventType;
+					foreach (var prop in props) {
+						Assert.AreEqual(expected, eventType.GetPropertyType(prop), "failed for prop '" + prop + "'");
+					}
+				});
 		}
 
 		private static void AssertEventsBetween<T>(
@@ -807,7 +770,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 				Assert.IsNull(lastOf);
 			}
 			else {
-				Assert.AreEqual(all[all.Count - 1], lastOf);
+				Assert.AreEqual(all[^1], lastOf);
 			}
 		}
 
@@ -817,7 +780,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			IDictionary<object, SupportBean[]> actual)
 			where T : ICollection<SupportBean>
 		{
-			var expected = treemap.Between(sme.FromKey, sme.IsFromInclusive, sme.ToKey, sme.IsToInclusive);
+			var expected = treemap.Between(
+				sme.FromKey,
+				sme.IsFromInclusive,
+				sme.ToKey,
+				sme.IsToInclusive);
 			Assert.AreEqual(expected.Count, actual.Count);
 			foreach (var key in expected.Keys) {
 				var expectedEvents = expected.Get(key).ToArray();
@@ -853,7 +820,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			Assert.AreEqual(treemap.ContainsKey(5), actual.ContainsKey(5));
 			Assert.AreEqual(treemap.IsEmpty(), actual.IsEmpty());
 
-			EPAssertionUtil.AssertEqualsExactOrder(new object[] {1, 4, 6, 8, 9}, actual.Keys.ToArray());
+			EPAssertionUtil.AssertEqualsExactOrder(new object[] { 1, 4, 6, 8, 9 }, actual.Keys.ToArray());
 
 			Assert.AreEqual(1, actual.Between(9, true, 9, true).Count);
 			Assert.AreEqual(1, actual.Tail(9).Count);
@@ -862,7 +829,6 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			Assert.AreEqual(1, actual.Head(2, false).Count);
 
 			Assert.AreEqual(5, actual.Count);
-			Assert.AreEqual(5, actual.Keys.Count);
 			Assert.AreEqual(5, actual.Values.Count);
 
 			// values
@@ -884,7 +850,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			CollectionAssert.AreEqual(
 				treemap.Get(1).ToArray(),
 				ToArrayOfUnderlying((ICollection<EventBean>) values.ToArray()[0]));
-
+			
 			// ordered key set
 			var oks = actual.OrderedKeys;
 
@@ -911,8 +877,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			Assert.That(oksit.MoveNext(), Is.True);
 			Assert.That(oksit.Current, Is.EqualTo(1));
 			Assert.That(oksit.MoveNext(), Is.True);
-
-
+			
 			// entry set
 			ICollection<KeyValuePair<object, ICollection<EventBean>>> set = actual;
 			Assert.IsFalse(set.IsEmpty());
@@ -949,7 +914,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			var events = new SupportBean[eventBeans.Count];
 			var index = 0;
 			foreach (var @event in eventBeans) {
-				events[index++] = (SupportBean) @event.Underlying;
+				events[index++] = (SupportBean)@event.Underlying;
 			}
 
 			return events;
@@ -959,7 +924,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 			object key,
 			params object[] keys)
 		{
-			EPAssertionUtil.AssertEqualsExactOrder(((HashableMultiKey) key).Keys, keys);
+			EPAssertionUtil.AssertEqualsExactOrder(((HashableMultiKey)key).Keys, keys);
 		}
 	}
 } // end of namespace

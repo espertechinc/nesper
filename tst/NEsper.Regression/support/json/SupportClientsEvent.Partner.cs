@@ -14,7 +14,7 @@ namespace com.espertech.esper.regressionlib.support.json
             }
 
             public static Partner Create(long id, string name, DateTimeOffset since) {
-                Partner partner = new Partner();
+                var partner = new Partner();
                 partner.id = id;
                 partner.name = name;
                 partner.since = since;

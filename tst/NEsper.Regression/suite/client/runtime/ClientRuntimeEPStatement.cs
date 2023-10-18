@@ -12,6 +12,7 @@ using com.espertech.esper.common.client.context;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
@@ -62,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@Name('s0') select * from SupportBean#length(2)");
+                env.CompileDeploy("@name('s0') select * from SupportBean#length(2)");
                 var listener = new SupportUpdateListener();
 
                 // test empty statement
@@ -78,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 listener.Reset();
 
                 // test 1 event
-                env.CompileDeploy("@Name('s0') select * from SupportBean#length(2)");
+                env.CompileDeploy("@name('s0') select * from SupportBean#length(2)");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.Statement("s0").AddListenerWithReplay(listener);
                 Assert.AreEqual("E1", listener.AssertOneGetNewAndReset().Get("TheString"));
@@ -86,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 listener.Reset();
 
                 // test 2 events
-                env.CompileDeploy("@Name('s0') select * from SupportBean#length(2)");
+                env.CompileDeploy("@name('s0') select * from SupportBean#length(2)");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", 1));
                 env.Statement("s0").AddListenerWithReplay(listener);
@@ -97,9 +98,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                         new object[] {"E1"},
                         new object[] {"E2"}
                     });
-                var stmt = env.Statement("s0");
                 env.UndeployAll();
                 listener.Reset();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
             }
         }
 
@@ -107,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@Name('s0') select * from SupportBean");
+                env.CompileDeploy("@name('s0') select * from SupportBean");
                 var statement = env.Statement("s0");
                 env.UndeployAll();
                 Assert.IsTrue(statement.IsDestroyed);
@@ -119,6 +124,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 TryInvalid(statement, stmt => stmt.AddListener(new SupportUpdateListener()));
                 TryInvalid(statement, stmt => stmt.SetSubscriber(this));
                 TryInvalid(statement, stmt => stmt.SetSubscriber(this, "somemethod"));
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
     }

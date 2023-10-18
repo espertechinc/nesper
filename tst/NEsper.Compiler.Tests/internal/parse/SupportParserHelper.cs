@@ -65,7 +65,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			ParseRuleSelector parseRuleSelector,
 			string text)
 		{
-			var lex = ParseHelper.NewLexer(new CaseInsensitiveInputStream(text));
+			var lex = ParseHelper.NewLexer(CaseChangingCharStreamFactory.Make(text));
 
 			var tokens = new CommonTokenStream(lex);
 			var g = ParseHelper.NewParser(tokens);

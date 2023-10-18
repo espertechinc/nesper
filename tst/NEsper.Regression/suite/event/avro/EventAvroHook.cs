@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using Avro;
 using Avro.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.type;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -23,166 +24,144 @@ using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
-using NUnit.Framework;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.avro
 {
-    public class EventAvroHook
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EventAvroHookSimpleWriteablePropertyCoerce());
-            execs.Add(new EventAvroHookSchemaFromClass());
-            execs.Add(new EventAvroHookPopulate());
-            execs.Add(new EventAvroHookNamedWindowPropertyAssignment());
-            return execs;
-        }
+	public class EventAvroHook {
 
-        public static DateTimeOffset MakeDateTimeOffset()
-        {
-            return DateTimeEx.NowUtc().DateTime;
-        }
+	    public static IList<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new EventAvroHookSimpleWriteablePropertyCoerce());
+	        execs.Add(new EventAvroHookSchemaFromClass());
+	        execs.Add(new EventAvroHookPopulate());
+	        execs.Add(new EventAvroHookNamedWindowPropertyAssignment());
+	        return execs;
+	    }
 
-        public static SupportBean MakeSupportBean()
-        {
-            return new SupportBean("E1", 10);
-        }
+	    /// <summary>
+	    /// Writeable-property tests: when a simple writable property needs to be converted
+	    /// </summary>
+	    internal class EventAvroHookSimpleWriteablePropertyCoerce : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
 
-        /// <summary>
-        ///     Writeable-property tests: when a simple writable property needs to be converted
-        /// </summary>
-        internal class EventAvroHookSimpleWriteablePropertyCoerce : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // invalid without explicit conversion
-                SupportMessageAssertUtil.TryInvalidCompile(
-                    env,
-                    "insert into MyEvent(isodate) select DateTime from SupportEventWithDateTime",
-                    "Invalid assignment of column 'isodate' of type '" +
-                    typeof(DateTime?).CleanName() +
-                    "' to event property 'isodate' typed as '" +
-                    typeof(string).CleanName() +
-                    "', column and parameter types mismatch");
+	            // invalid without explicit conversion
+	            env.TryInvalidCompile(
+		            "insert into MyEvent(isodate) select DateTime from SupportEventWithDateTime",
+		            "Invalid assignment of column 'isodate' of type '" +
+		            typeof(DateTime?).CleanName() +
+		            "' to event property 'isodate' typed as '" +
+		            typeof(string).CleanName() +
+		            "', column and parameter types mismatch");
 
-                // with hook
-                env.CompileDeploy(
-                        "@Name('s0') insert into MyEvent(isodate) select DateTimeOffset from SupportEventWithDateTimeOffset")
-                    .AddListener("s0");
+	            // with hook
+	            env.CompileDeploy("@name('s0') insert into MyEvent(isodate) select DateTimeOffset from SupportEventWithDateTimeOffset").AddListener("s0");
 
-                var now = DateTimeHelper.GetCurrentTimeUniversal();
-                env.SendEventBean(new SupportEventWithDateTimeOffset(now));
-                Assert.AreEqual(
-                    DateTimeFormat.ISO_DATE_TIME.Format(now),
-                    env.Listener("s0").AssertOneGetNewAndReset().Get("isodate"));
+	            var now = DateTimeHelper.GetCurrentTimeUniversal();
+	            env.SendEventBean(new SupportEventWithDateTimeOffset(now));
+	            env.AssertEqualsNew("s0", "isodate", DateTimeFormat.ISO_DATE_TIME.Format(now));
 
-                env.UndeployAll();
-            }
-        }
+	            env.UndeployAll();
+	        }
+	    }
 
-        /// <summary>
-        ///     Schema-from-Class
-        /// </summary>
-        internal class EventAvroHookSchemaFromClass : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') " +
-                          EventRepresentationChoice.AVRO.GetAnnotationText() +
-                          "insert into MyEventOut select " +
-                          typeof(EventAvroHook).FullName +
-                          ".MakeDateTimeOffset() as isodate from SupportBean as e1";
-                env.CompileDeploy(epl).AddListener("s0");
+	    /// <summary>
+	    /// Schema-from-Class
+	    /// </summary>
+	    internal class EventAvroHookSchemaFromClass : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') @public " + EventRepresentationChoice.AVRO.GetAnnotationText() + "insert into MyEventOut select " + typeof(EventAvroHook).FullName + ".makeLocalDateTime() as isodate from SupportBean as e1";
+	            env.CompileDeploy(epl).AddListener("s0");
 
-                var schema = SupportAvroUtil.GetAvroSchema(env.Statement("s0").EventType);
-                Assert.AreEqual(
-                    "{\"type\":\"record\",\"name\":\"MyEventOut\",\"fields\":[{\"name\":\"isodate\",\"type\":\"string\"}]}",
-                    schema.ToString());
+	            var schema = env.RuntimeAvroSchemaByDeployment("s0", "MyEventOut");
+	            Assert.AreEqual("{\"type\":\"record\",\"name\":\"MyEventOut\",\"fields\":[{\"name\":\"isodate\",\"type\":\"string\"}]}", schema.ToString());
 
-                env.SendEventBean(new SupportBean("E1", 10));
-                var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                SupportAvroUtil.AvroToJson(@event);
-                Assert.IsTrue(@event.Get("isodate").ToString().Length > 10);
+	            env.SendEventBean(new SupportBean("E1", 10));
+	            env.AssertEventNew("s0", @event => {
+	                SupportAvroUtil.AvroToJson(@event);
+	                Assert.That(@event.Get("isodate").ToString().Length, Is.LessThan(10));
+	            });
 
-                env.UndeployAll();
-            }
-        }
+	            env.UndeployAll();
+	        }
+	    }
 
-        /// <summary>
-        ///     Mapping of Class to GenericRecord
-        /// </summary>
-        internal class EventAvroHookPopulate : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@Name('s0') insert into MyEventPopulate(sb) select " +
-                          typeof(EventAvroHook).FullName +
-                          ".MakeSupportBean() from SupportBean_S0 as e1";
-                env.CompileDeploy(epl).AddListener("s0");
+	    /// <summary>
+	    /// Mapping of Class to GenericRecord
+	    /// </summary>
+	    internal class EventAvroHookPopulate : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') insert into MyEventPopulate(sb) select " + typeof(EventAvroHook).FullName + ".makeSupportBean() from SupportBean_S0 as e1";
+	            env.CompileDeploy(epl).AddListener("s0");
 
-                env.SendEventBean(new SupportBean_S0(10));
-                var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                Assert.AreEqual(
-                    "{\"sb\":{\"TheString\":\"E1\",\"IntPrimitive\":10}}",
-                    SupportAvroUtil.AvroToJson(@event));
+	            env.SendEventBean(new SupportBean_S0(10));
+	            env.AssertEventNew("s0", @event => Assert.AreEqual("{\"sb\":{\"TheString\":\"E1\",\"IntPrimitive\":10}}", SupportAvroUtil.AvroToJson(@event)));
 
-                env.UndeployAll();
-            }
-        }
+	            env.UndeployAll();
+	        }
 
-        internal class EventAvroHookNamedWindowPropertyAssignment : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy("@Name('NamedWindow') create window MyWindow#keepall as MyEventWSchema", path);
-                env.CompileDeploy("insert into MyWindow select * from MyEventWSchema", path);
-                env.CompileDeploy("on SupportBean thebean update MyWindow set sb = thebean", path);
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.STATICHOOK);
+	        }
+	    }
 
-                var schema = AvroSchemaUtil
-                    .ResolveAvroSchema(env.Runtime.EventTypeService.GetEventTypePreconfigured("MyEventWSchema"))
-                    .AsRecordSchema();
-                var @event = new GenericRecord(schema);
-                env.SendEventAvro(@event, "MyEventWSchema");
-                env.SendEventBean(new SupportBean("E1", 10));
+	    internal class EventAvroHookNamedWindowPropertyAssignment : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
 
-                var eventBean = env.GetEnumerator("NamedWindow").Advance();
-                Assert.AreEqual(
-                    "{\"sb\":{\"SupportBeanSchema\":{\"TheString\":\"E1\",\"IntPrimitive\":10}}}",
-                    SupportAvroUtil.AvroToJson(eventBean));
+	            var path = new RegressionPath();
+	            env.CompileDeploy("@name('NamedWindow') @public create window MyWindow#keepall as MyEventWSchema", path);
+	            env.CompileDeploy("insert into MyWindow select * from MyEventWSchema", path);
+	            env.CompileDeploy("on SupportBean thebean update MyWindow set sb = thebean", path);
 
-                env.UndeployAll();
-            }
-        }
+	            var schema = env
+		            .RuntimeAvroSchemaPreconfigured("MyEventWSchema")
+		            .AsRecordSchema();
+	            var @event = new GenericRecord(schema);
+	            env.SendEventAvro(@event, "MyEventWSchema");
+	            env.SendEventBean(new SupportBean("E1", 10));
 
-        public class MyObjectValueTypeWidenerFactory : ObjectValueTypeWidenerFactory
-        {
-            public ObjectValueTypeWidenerFactoryContext Context { get; private set; }
+	            var eventBean = env.GetEnumerator("NamedWindow").Advance();
+	            Assert.AreEqual("{\"sb\":{\"SupportBeanSchema\":{\"theString\":\"E1\",\"intPrimitive\":10}}}", SupportAvroUtil.AvroToJson(eventBean));
 
-            public TypeWidenerSPI Make(ObjectValueTypeWidenerFactoryContext context)
-            {
-                Context = context;
+	            env.UndeployAll();
+	        }
 
-                var contextClazz = context.Clazz.GetBoxedType();
-                if (contextClazz == typeof(DateTimeOffset?)) {
-                    return MyDateTimeOffsetTypeWidener.INSTANCE;
-                }
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.STATICHOOK);
+	        }
+	    }
 
-                if (contextClazz == typeof(SupportBean)) {
-                    return new MySupportBeanWidener();
-                }
+	    public static SupportBean MakeSupportBean() {
+	        return new SupportBean("E1", 10);
+	    }
 
-                return null;
-            }
-        }
+	    public class MyObjectValueTypeWidenerFactory : ObjectValueTypeWidenerFactory
+	    {
+		    public ObjectValueTypeWidenerFactoryContext Context { get; private set; }
 
+		    public TypeWidenerSPI Make(ObjectValueTypeWidenerFactoryContext context)
+		    {
+			    Context = context;
+
+			    var contextClazz = context.Clazz.GetBoxedType();
+			    if (contextClazz == typeof(DateTimeOffset?)) {
+				    return MyDateTimeOffsetTypeWidener.INSTANCE;
+			    }
+
+			    if (contextClazz == typeof(SupportBean)) {
+				    return new MySupportBeanWidener();
+			    }
+
+			    return null;
+		    }
+	    }
+
+	    
         public class MyDateTimeOffsetTypeWidener : TypeWidenerSPI
         {
             public static readonly MyDateTimeOffsetTypeWidener INSTANCE = new MyDateTimeOffsetTypeWidener();
@@ -193,46 +172,33 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
 
             public Type WidenResultType {
                 get => typeof(string);
-            }
+	        }
 
             public object Widen(object input)
             {
                 var dateTimeOffset = (DateTimeOffset) input;
                 return DateTimeFormat.ISO_DATE_TIME.Format(dateTimeOffset);
-            }
+	        }
 
-            public CodegenExpression WidenCodegen(
-                CodegenExpression expression,
-                CodegenMethodScope codegenMethodScope,
-                CodegenClassScope codegenClassScope)
-            {
+	        public CodegenExpression WidenCodegen(CodegenExpression expression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
                 return ExprDotMethod(
                     EnumValue(typeof(DateTimeFormat), "ISO_DATE_TIME"),
                     "Format",
                     Cast(typeof(DateTimeOffset), expression));
-            }
-        }
+	        }
+	    }
 
-        public class MySupportBeanWidener : TypeWidenerSPI
-        {
-            public static RecordSchema supportBeanSchema;
+	    public class MySupportBeanWidener : TypeWidenerSPI {
 
-            public Type WidenResultType {
-                get => typeof(GenericRecord);
-            }
+	        public static RecordSchema supportBeanSchema;
 
-            public object Widen(object input)
-            {
-                return WidenInput(input);
-            }
+	        public object Widen(object input) {
+	            return WidenInput(input);
+	        }
 
-            public CodegenExpression WidenCodegen(
-                CodegenExpression expression,
-                CodegenMethodScope codegenMethodScope,
-                CodegenClassScope codegenClassScope)
-            {
+	        public CodegenExpression WidenCodegen(CodegenExpression expression, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope) {
                 return StaticMethod(typeof(MySupportBeanWidener), "WidenInput", expression);
-            }
+	        }
 
             public static object WidenInput(object input)
             {
@@ -240,20 +206,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                 var record = new GenericRecord(supportBeanSchema);
                 record.Put("TheString", sb.TheString);
                 record.Put("IntPrimitive", sb.IntPrimitive);
-                return record;
-            }
-        }
+	            return record;
+	        }
+	    }
 
-        public class MyTypeRepresentationMapper : TypeRepresentationMapper
-        {
-            public object Map(TypeRepresentationMapperContext context)
-            {
+	    public class MyTypeRepresentationMapper : TypeRepresentationMapper {
+	        public object Map(TypeRepresentationMapperContext context) {
                 if (context.Clazz.GetBoxedType() == typeof(DateTimeOffset?)) {
                     return TypeBuilder.StringType();
-                }
-
-                return null;
-            }
-        }
-    }
+	            }
+	            return null;
+	        }
+	    }
+	}
 } // end of namespace

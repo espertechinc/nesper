@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.support.expreval
 				throw new ArgumentException("Names length and results length differ");
 			}
 
-			for (int i = 0; i < names.Length; i++) {
+			for (var i = 0; i < names.Length; i++) {
 				Expect(names[i], results[i]);
 			}
 

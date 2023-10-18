@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                         runtime.EventService.SendEventBean(theEvent, theEvent.GetType().Name);
 
                         // Should have received one or more events, one of them must be mine
-                        var newEvents = listener.GetNewDataListFlattened();
+                        var newEvents = listener.NewDataListFlattened;
                         Assert.IsTrue(newEvents.Length >= 1, "No event received");
                         ThreadLogUtil.Trace("assert received, size is", newEvents.Length);
                         var found = false;
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                         runtime.EventService.SendEventBean(theEvent, theEvent.GetType().Name);
 
                         // Make sure the event was not received
-                        newEvents = listener.GetNewDataListFlattened();
+                        newEvents = listener.NewDataListFlattened;
                         found = false;
                         for (var i = 0; i < newEvents.Length; i++) {
                             var underlying = newEvents[i].Underlying;

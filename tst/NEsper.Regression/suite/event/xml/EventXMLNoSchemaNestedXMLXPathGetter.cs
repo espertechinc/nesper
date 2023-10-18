@@ -6,87 +6,66 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.support.util.SupportXML;
+using static com.espertech.esper.regressionlib.support.util.SupportXML; // sendXMLEvent
+using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-    public class EventXMLNoSchemaNestedXMLXPathGetter
-    {
-        public static List<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            WithPreconfig(execs);
-            WithCreateSchema(execs);
-            return execs;
-        }
+	public class EventXMLNoSchemaNestedXMLXPathGetter {
 
-        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EventXMLNoSchemaNestedXMLXPathGetterCreateSchema());
-            return execs;
-        }
+	    public static IList<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new EventXMLNoSchemaNestedXMLXPathGetterPreconfig());
+	        execs.Add(new EventXMLNoSchemaNestedXMLXPathGetterCreateSchema());
+	        return execs;
+	    }
 
-        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EventXMLNoSchemaNestedXMLXPathGetterPreconfig());
-            return execs;
-        }
+	    public class EventXMLNoSchemaNestedXMLXPathGetterPreconfig : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            RunAssertion(env, "AEventMoreXPath", new RegressionPath());
+	        }
+	    }
 
-        public class EventXMLNoSchemaNestedXMLXPathGetterPreconfig : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                RunAssertion(env, "AEventMoreXPath", new RegressionPath());
-            }
-        }
+	    public class EventXMLNoSchemaNestedXMLXPathGetterCreateSchema : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@public @buseventtype " +
+	                      "@XMLSchema(rootElementName='a', xpathPropertyExpr=true)" +
+	                      "@XMLSchemaField(name='element1', xpath='/a/b/c', type='string')" +
+	                      "create xml schema MyEventCreateSchema()";
+	            var path = new RegressionPath();
+	            env.CompileDeploy(epl, path);
+	            RunAssertion(env, "MyEventCreateSchema", path);
+	        }
+	    }
 
-        public class EventXMLNoSchemaNestedXMLXPathGetterCreateSchema : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "@public @buseventtype " +
-                          "@XMLSchema(RootElementName='a', XPathPropertyExpr=true)" +
-                          "@XMLSchemaField(Name='element1', XPath='/a/b/c', Type='string')" +
-                          "create xml schema MyEventCreateSchema()";
-                var path = new RegressionPath();
-                env.CompileDeploy(epl, path);
-                RunAssertion(env, "MyEventCreateSchema", path);
-            }
-        }
+	    private static void RunAssertion(RegressionEnvironment env, string eventTypeName, RegressionPath path) {
 
-        private static void RunAssertion(
-            RegressionEnvironment env,
-            String eventTypeName,
-            RegressionPath path)
-        {
-            var stmt = "@Name('s0') select b.c as type, element1, result1 from " + eventTypeName;
-            env.CompileDeploy(stmt, path).AddListener("s0");
+	        var stmt = "@name('s0') select b.c as type, element1, result1 from " + eventTypeName;
+	        env.CompileDeploy(stmt, path).AddListener("s0");
 
-            SendXMLEvent(env, "<a><b><c></c></b></a>", eventTypeName);
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("", theEvent.Get("type"));
-            Assert.AreEqual("", theEvent.Get("element1"));
+	        SendXMLEvent(env, "<a><b><c></c></b></a>", eventTypeName);
+	        env.AssertEventNew("s0", theEvent => {
+	            Assert.AreEqual("", theEvent.Get("type"));
+	            Assert.AreEqual("", theEvent.Get("element1"));
+	        });
 
-            SendXMLEvent(env, "<a><b></b></a>", eventTypeName);
-            theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.IsNull(theEvent.Get("type"));
-            Assert.IsNull(theEvent.Get("element1"));
+	        SendXMLEvent(env, "<a><b></b></a>", eventTypeName);
+	        env.AssertEventNew("s0", theEvent => {
+	            Assert.AreEqual("", theEvent.Get("type"));
+	            Assert.AreEqual("", theEvent.Get("element1"));
+	        });
 
-            SendXMLEvent(env, "<a><b><c>text</c></b></a>", eventTypeName);
-            theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("text", theEvent.Get("type"));
-            Assert.AreEqual("text", theEvent.Get("element1"));
+	        SendXMLEvent(env, "<a><b><c>text</c></b></a>", eventTypeName);
+	        env.AssertEventNew("s0", theEvent => {
+	            Assert.AreEqual("text", theEvent.Get("type"));
+	            Assert.AreEqual("text", theEvent.Get("element1"));
+	        });
 
-            env.UndeployAll();
-        }
-    }
+	        env.UndeployAll();
+	    }
+	}
 } // end of namespace

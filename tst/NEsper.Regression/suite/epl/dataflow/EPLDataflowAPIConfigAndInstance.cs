@@ -6,8 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -40,12 +43,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             // finally create one
             var path = new RegressionPath();
-            var epl = "create objectarray schema MyEvent ();\n" +
-                      "@Name('df') create dataflow MyDataflow " +
-                      "BeaconSource -> outdata<MyEvent> {" +
-                      "  iterations:1" +
-                      "}" +
-                      "EventBusSink(outdata) {};\n";
+            var epl = 
+                "@public create objectarray schema MyEvent ();\n" +
+                "@name('df') create dataflow MyDataflow " +
+                "BeaconSource -> outdata<MyEvent> {" + 
+                "  iterations:1" +
+                "}" +
+                "EventBusSink(outdata) {};\n";
             env.CompileDeploy(epl, path);
 
             // add it
@@ -72,9 +76,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             // add once more to instantiate
             dataFlowRuntime.SaveConfiguration("MyFirstFlow", deploymentId, "MyDataflow", null);
             var instance = dataFlowRuntime.InstantiateSavedConfiguration("MyFirstFlow");
-            env.CompileDeploy("@Name('s0') select * from MyEvent", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from MyEvent", path).AddListener("s0");
             instance.Run();
-            Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
+            env.AssertListenerInvoked("s0");
             EPAssertionUtil.AssertEqualsExactOrder(new[] {"MyFirstFlow"}, dataFlowRuntime.SavedConfigurations);
             Assert.IsNotNull(dataFlowRuntime.GetSavedConfiguration("MyFirstFlow"));
 
@@ -96,6 +100,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             Assert.IsFalse(dataFlowRuntime.RemoveSavedInstance("F1"));
 
             env.UndeployAll();
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.DATAFLOW);
         }
     }
 } // end of namespace

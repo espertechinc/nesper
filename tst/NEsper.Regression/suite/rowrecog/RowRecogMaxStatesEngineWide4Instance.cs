@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             handler = SupportConditionHandlerFactory.LastHandler;
             var fields = new [] { "c0" };
 
-            var eplOne = "@Name('S1') select * from SupportBean(TheString = 'A') " +
+            var eplOne = "@name('S1') select * from SupportBean(TheString = 'A') " +
                          "match_recognize (" +
                          "  partition by IntPrimitive " +
                          "  measures P2.IntPrimitive as c0" +
@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                          ")";
             env.CompileDeploy(eplOne).AddListener("S1");
 
-            var eplTwo = "@Name('S2') select * from SupportBean(TheString = 'B')#length(2) " +
+            var eplTwo = "@name('S2') select * from SupportBean(TheString = 'B')#length(2) " +
                          "match_recognize (" +
                          "  partition by IntPrimitive " +
                          "  measures P2.IntPrimitive as c0" +
@@ -68,22 +68,22 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("A", 300, 1));
             RowRecogMaxStatesEngineWide3Instance.AssertContextEnginePool(
                 env,
-                env.Statement("S1"),
+                "S1",
                 handler.GetAndResetContexts(),
                 4,
                 RowRecogMaxStatesEngineWide3Instance.GetExpectedCountMap(env, "S1", 2, "S2", 2));
 
             // terminate B
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("B", 400, 2));
-            EPAssertionUtil.AssertProps(
-                env.Listener("S2").AssertOneGetNewAndReset(),
+            env.AssertPropsNew(
+                "S2",
                 fields,
                 new object[] {400});
 
             // terminate one of A
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("A", 100, 2));
-            EPAssertionUtil.AssertProps(
-                env.Listener("S1").AssertOneGetNewAndReset(),
+            env.AssertPropsNew(
+                "S1",
                 fields,
                 new object[] {100});
 
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("B", 500, 1));
             RowRecogMaxStatesEngineWide3Instance.AssertContextEnginePool(
                 env,
-                env.Statement("S2"),
+                "S2",
                 handler.GetAndResetContexts(),
                 4,
                 RowRecogMaxStatesEngineWide3Instance.GetExpectedCountMap(env, "S1", 4, "S2", 0));

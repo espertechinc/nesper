@@ -57,11 +57,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             env.AdvanceTime(startTime);
 
-            var epl = "@Name('s0') select " + select + " from SupportDateTime";
+            var epl = "@name('s0') select " + select + " from SupportDateTime";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventBean(@event);
-            EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, expected);
+            env.AssertPropsNew("s0", fields, expected);
 
             env.UndeployAll();
         }
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             env.AdvanceTime(0);
             var epl =
-                "@Name('s0') select * from " +
+                "@name('s0') select * from " +
                 "MyEvent(Id='A') as a unidirectional, " +
                 "MyEvent(Id='B')#lastevent as b" +
                 " where a.withDate(2002, 5, 30).before(b)";
@@ -82,11 +82,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             env.SendEventObjectArray(new object[] { "B", tsB, tsB }, "MyEvent");
 
             env.SendEventObjectArray(new object[] { "A", flipTimeEndtsA - 1, flipTimeEndtsA - 1 }, "MyEvent");
-            Assert.IsTrue(env.Listener("s0").IsInvokedAndReset());
+            env.AssertListenerInvoked("s0");
 
             env.SendEventObjectArray(new object[] { "A", flipTimeEndtsA, flipTimeEndtsA }, "MyEvent");
-            Assert.IsFalse(env.Listener("s0").IsInvokedAndReset());
-
+            env.AssertListenerNotInvoked("s0");
+            
             env.UndeployAll();
         }
 

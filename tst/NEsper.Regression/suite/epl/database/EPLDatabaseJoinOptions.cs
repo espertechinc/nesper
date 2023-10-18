@@ -51,20 +51,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             RegressionEnvironment env,
             string sql)
         {
-            var stmtText = "@Name('s0') select mydouble from " +
+            var stmtText = "@name('s0') select mydouble from " +
                            " sql:MyDBPlain ['" +
                            sql +
                            "'] as S0," +
                            "SupportBean#length(100) as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            Assert.AreEqual(typeof(double?), env.Statement("s0").EventType.GetPropertyType("mydouble"));
+            env.AssertStatement("s0", statement=> Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mydouble")));
 
             SendSupportBeanEvent(env, 10);
-            Assert.AreEqual(1.2, env.Listener("s0").AssertOneGetNewAndReset().Get("mydouble"));
+            env.AssertEqualsNew("s0", "mydouble", 1.2);
 
             SendSupportBeanEvent(env, 80);
-            Assert.AreEqual(8.2, env.Listener("s0").AssertOneGetNewAndReset().Get("mydouble"));
+            env.AssertEqualsNew("s0", "mydouble", 8.2);
 
             env.UndeployAll();
         }

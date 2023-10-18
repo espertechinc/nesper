@@ -29,19 +29,19 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.AdvanceTime(0);
 
             var epl =
-                "@Name('s0') @IterableUnbound @Hint('reclaim_group_aged=1,reclaim_group_freq=5') select TheString, count(*) from SupportBean group by TheString";
+                "@name('s0') @IterableUnbound @Hint('reclaim_group_aged=1,reclaim_group_freq=5') select TheString, count(*) from SupportBean group by TheString";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 0));
-            AssertCount(env.Statement("s0"), 1);
+            env.AssertStatement("s0", statement => AssertCount(statement, 1));
 
             env.AdvanceTime(flipTime - 1);
             env.SendEventBean(new SupportBean("E2", 0));
-            AssertCount(env.Statement("s0"), 2);
+            env.AssertStatement("s0", statement => AssertCount(statement, 2));
 
             env.AdvanceTime(flipTime);
             env.SendEventBean(new SupportBean("E3", 0));
-            AssertCount(env.Statement("s0"), 2);
+            env.AssertStatement("s0", statement => AssertCount(statement, 2));
 
             env.UndeployAll();
         }

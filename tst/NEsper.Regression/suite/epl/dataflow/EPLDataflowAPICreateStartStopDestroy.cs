@@ -6,15 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.dataflow.core;
-using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
@@ -27,21 +26,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-WithCreateStartStop(execs);
-WithDeploymentAdmin(execs);
+    WithCreateStartStop(execs);
+    WithDeploymentAdmin(execs);
             return execs;
         }
-public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowDeploymentAdmin());
-    return execs;
-}public static IList<RegressionExecution> WithCreateStartStop(IList<RegressionExecution> execs = null)
-{
-    execs = execs ?? new List<RegressionExecution>();
-    execs.Add(new EPLDataflowCreateStartStop());
-    return execs;
-}
+
+        public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowDeploymentAdmin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateStartStop(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowCreateStartStop());
+            return execs;
+        }
+
         private static void TryInstantiate(
             RegressionEnvironment env,
             string deploymentId,
@@ -69,7 +72,7 @@ public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExe
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('flow') create dataflow MyGraph Emitter -> outstream<?> {}";
+                var epl = "@name('flow') create dataflow MyGraph Emitter -> outstream<?> {}";
                 var compiledGraph = env.Compile(epl);
                 try {
                     env.Deployment.Deploy(compiledGraph, new DeploymentOptions().WithDeploymentId("DEP1"));
@@ -115,6 +118,11 @@ public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExe
                 dfruntime.Instantiate(env.DeploymentId("flow"), "MyGraph");
                 env.UndeployAll();
             }
+            
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
         }
 
         internal class EPLDataflowDeploymentAdmin : RegressionExecution
@@ -125,7 +133,7 @@ public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExe
                     return;
                 }
 
-                var epl = "@Name('flow') create dataflow TheGraph\n" +
+                var epl = "@name('flow') create dataflow TheGraph\n" +
                           "create schema ABC as " +
                           typeof(SupportBean).FullName +
                           "," +
@@ -133,7 +141,7 @@ public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExe
                           "select(outstream) -> selectedData {select: (select TheString, IntPrimitive from outstream) }\n" +
                           "DefaultSupportCaptureOp(selectedData) {};";
 
-                Module module = env.Compiler.ParseModule(epl);
+                var module = env.Compiler.ParseModule(epl);
 
                 Assert.AreEqual(1, module.Items.Count);
                 env.CompileDeploy(epl);
@@ -141,6 +149,11 @@ public static IList<RegressionExecution> WithDeploymentAdmin(IList<RegressionExe
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "TheGraph");
 
                 env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
     }

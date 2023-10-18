@@ -8,8 +8,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
@@ -18,160 +18,147 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
-using com.espertech.esper.runtime.client.scopetest;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertEquals
+
+// assertNull
 
 namespace com.espertech.esper.regressionlib.support.util
 {
-    public class LambdaAssertionUtil
-    {
-        public static void AssertValuesArrayScalar(
-            SupportListener listener,
-            string field,
-            params object[] expected)
-        {
-            var result = listener.AssertOneGetNew().Get(field);
+	public class LambdaAssertionUtil
+	{
 
-            AssertValuesArrayScalar(result, expected);
-        }
+		public static void AssertValuesArrayScalar(
+			RegressionEnvironment env,
+			string field,
+			params object[] expected)
+		{
+			env.AssertListener(
+				"s0",
+				listener => {
+					var result = listener.AssertOneGetNew().Get(field);
+					AssertValuesArrayScalar(result, expected);
+				});
+		}
 
-        public static void AssertValuesArrayScalar(
-            object result,
-            params object[] expected)
-        {
-            if (expected == null) {
-                Assert.IsNull(result);
-                return;
-            }
+		public static void AssertValuesArrayScalarWReset(
+			RegressionEnvironment env,
+			string field,
+			params object[] expected)
+		{
+			env.AssertEventNew("s0", @event => AssertValuesArrayScalar(@event.Get(field), expected));
+		}
 
-            var arr = result.UnwrapIntoArray<object>();
-            EPAssertionUtil.AssertEqualsExactOrder(expected, arr);
-        }
+		public static void AssertValuesArrayScalar(
+			EventBean @event,
+			string field,
+			params object[] expected)
+		{
+			var result = @event.Get(field);
+			AssertValuesArrayScalar(result, expected);
+		}
 
-        public static void AssertST0Id(
-            SupportListener listener,
-            string property,
-            string expectedList)
-        {
-            AssertST0Id(listener.AssertOneGetNew().Get(property), expectedList);
-        }
+		public static void AssertValuesArrayScalar(
+			object result,
+			params object[] expected)
+		{
+			if (expected == null) {
+				Assert.IsNull(result);
+				return;
+			}
 
-        public static void AssertST0Id(object value, string expectedList)
-        {
-            var arr = value.UnwrapIntoArray<SupportBean_ST0>();
-            if (arr == null) {
-                arr = new SupportBean_ST0[0];
-            }
-            
-            if (string.IsNullOrEmpty(expectedList) && arr.Length == 0) {
-                return;
-            }
+			var arr = result.UnwrapIntoArray<object>();
+			EPAssertionUtil.AssertEqualsExactOrder(expected, arr);
+		}
 
-            var expected = expectedList.SplitCsv();
-            Assert.AreEqual(expected.Length, arr.Length, "Received: " + GetIds(arr));
-            for (var i = 0; i < expected.Length; i++) {
-                Assert.AreEqual(expected[i], arr[i].Id);
-            }
-        }
+		public static void AssertST0IdWReset(
+			RegressionEnvironment env,
+			string property,
+			string expectedList)
+		{
+			env.AssertEventNew("s0", @event => AssertST0Id(@event, property, expectedList));
+		}
 
-        public static string GetIds(SupportBean_ST0[] arr)
-        {
-            var delimiter = "";
-            var writer = new StringBuilder();
-            foreach (var item in arr) {
-                writer.Write(delimiter);
-                delimiter = ",";
-                writer.Write(item.Id);
-            }
+		public static void AssertST0Id(
+			RegressionEnvironment env,
+			string property,
+			string expectedList)
+		{
+			env.AssertListener("s0", listener => { AssertST0Id(listener.AssertOneGetNew(), property, expectedList); });
+		}
 
-            return writer.ToString();
-        }
+		private static void AssertST0Id(
+			EventBean eventBean,
+			string property,
+			string expectedList)
+		{
+			AssertST0Id(eventBean.Get(property), expectedList);
+		}
 
-        private static SupportBean_ST0[] ToArray(ICollection<SupportBean_ST0> it)
-        {
-            if (it == null) {
-                return null;
-            }
+		public static void AssertST0Id(
+			object value,
+			string expectedList)
+		{
+			var arr = value.UnwrapIntoArray<SupportBean_ST0>();
+			if (expectedList == null && arr == null) {
+				return;
+			}
 
-            if (it.IsEmpty()) {
-                return new SupportBean_ST0[0];
-            }
+			if (string.IsNullOrEmpty(expectedList) && arr.Length == 0) {
+				return;
+			}
 
-            return it.ToArray();
-        }
+			var expected = expectedList.SplitCsv();
+			Assert.AreEqual(expected.Length, arr.Length, "Received: " + GetIds(arr));
+			for (var i = 0; i < expected.Length; i++) {
+				Assert.AreEqual(expected[i], arr[i].Id);
+			}
+		}
 
-        public static void AssertTypes(
-            EventType type,
-            string[] fields,
-            Type[] classes)
-        {
-            var count = 0;
-            foreach (var field in fields) {
-                Assert.AreEqual(classes[count++], type.GetPropertyType(field), "position " + count);
-            }
-        }
+		public static string GetIds(SupportBean_ST0[] arr)
+		{
+			var delimiter = "";
+			var writer = new StringWriter();
+			foreach (var item in arr) {
+				writer.Write(delimiter);
+				delimiter = ",";
+				writer.Write(item.Id);
+			}
 
-        public static void AssertTypes(EventType type, string field, Type clazz)
-        {
-            AssertTypes(type, new string[]{ field }, new []{ clazz });
-        }
+			return writer.ToString();
+		}
 
-        public static void AssertTypesAllSame(
-            EventType type,
-            string[] fields,
-            Type clazz)
-        {
-            var count = 0;
-            foreach (var field in fields) {
-                Assert.AreEqual(clazz, type.GetPropertyType(field), "position " + count);
-            }
-        }
+		private static SupportBean_ST0[] ToArray(ICollection<SupportBean_ST0> it)
+		{
+			if (it == null) {
+				return null;
+			}
 
-        public static void AssertSingleAndEmptySupportColl(
-            SupportEvalBuilder builder,
-            string[] fields)
-        {
-            var assertionOne = builder.WithAssertion(SupportCollection.MakeString("E1"));
-            foreach (var field in fields) {
-                assertionOne.Verify(field, value => LambdaAssertionUtil.AssertValuesArrayScalar(value, "E1"));
-            }
+			if (it.IsEmpty()) {
+				return Array.Empty<SupportBean_ST0>();
+			}
 
-            var assertionTwo = builder.WithAssertion(SupportCollection.MakeString(null));
-            foreach (var field in fields) {
-                assertionTwo.Verify(field, value => LambdaAssertionUtil.AssertValuesArrayScalar(value, null));
-            }
+			return it.ToArray();
+		}
 
-            var assertionThree = builder.WithAssertion(SupportCollection.MakeString(""));
-            foreach (var field in fields) {
-                assertionThree.Verify(field, value => LambdaAssertionUtil.AssertValuesArrayScalar(value));
-            }
-        }
+		public static void AssertSingleAndEmptySupportColl(
+			SupportEvalBuilder builder,
+			string[] fields)
+		{
+			var assertionOne = builder.WithAssertion(SupportCollection.MakeString("E1"));
+			foreach (var field in fields) {
+				assertionOne.Verify(field, value => AssertValuesArrayScalar(value, "E1"));
+			}
 
-        public static void AssertSingleAndEmptySupportColl(
-            RegressionEnvironment env,
-            string[] fields)
-        {
-            env.SendEventBean(SupportCollection.MakeString("E1"));
-            foreach (var field in fields) {
-                AssertValuesArrayScalar(env.Listener("s0"), field, "E1");
-            }
+			var assertionTwo = builder.WithAssertion(SupportCollection.MakeString(null));
+			foreach (var field in fields) {
+				assertionTwo.Verify(field, value => AssertValuesArrayScalar(value, null));
+			}
 
-            env.Listener("s0").Reset();
-
-            env.SendEventBean(SupportCollection.MakeString(null));
-            foreach (var field in fields) {
-                AssertValuesArrayScalar(env.Listener("s0"), field, null);
-            }
-
-            env.Listener("s0").Reset();
-
-            env.SendEventBean(SupportCollection.MakeString(""));
-            foreach (var field in fields) {
-                AssertValuesArrayScalar(env.Listener("s0"), field);
-            }
-
-            env.Listener("s0").Reset();
-        }
-    }
+			var assertionThree = builder.WithAssertion(SupportCollection.MakeString(""));
+			foreach (var field in fields) {
+				assertionThree.Verify(field, value => AssertValuesArrayScalar(value));
+			}
+		}
+	}
 } // end of namespace

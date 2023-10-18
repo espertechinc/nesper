@@ -8,91 +8,94 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertEquals
+
+// assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
-    public class InfraNWTableOnMergePerf
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new InfraPerformance(true, EventRepresentationChoice.OBJECTARRAY));
-            execs.Add(new InfraPerformance(true, EventRepresentationChoice.MAP));
-            execs.Add(new InfraPerformance(true, EventRepresentationChoice.DEFAULT));
-            execs.Add(new InfraPerformance(false, EventRepresentationChoice.OBJECTARRAY));
-            return execs;
-        }
+	public class InfraNWTableOnMergePerf {
 
-        internal class InfraPerformance : RegressionExecution
-        {
-            private readonly bool namedWindow;
-            private readonly EventRepresentationChoice outputType;
+	    public static ICollection<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new InfraPerformance(true, EventRepresentationChoice.OBJECTARRAY));
+	        execs.Add(new InfraPerformance(true, EventRepresentationChoice.MAP));
+	        execs.Add(new InfraPerformance(true, EventRepresentationChoice.DEFAULT));
+	        execs.Add(new InfraPerformance(false, EventRepresentationChoice.OBJECTARRAY));
+	        return execs;
+	    }
 
-            public InfraPerformance(
-                bool namedWindow,
-                EventRepresentationChoice outputType)
-            {
-                this.namedWindow = namedWindow;
-                this.outputType = outputType;
-            }
+	    private class InfraPerformance : RegressionExecution {
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+	        }
 
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                var eplCreate = namedWindow
-                    ? outputType.GetAnnotationText() +
-                      "@Name('create') create window MyWindow#keepall as (c1 string, c2 int)"
-                    : "@Name('create') create table MyWindow(c1 string primary key, c2 int)";
-                env.CompileDeploy(eplCreate, path);
-                Assert.IsTrue(outputType.MatchesClass(env.Statement("create").EventType.UnderlyingType));
+	        private readonly bool namedWindow;
+	        private readonly EventRepresentationChoice outputType;
 
-                // preload events
-                env.CompileDeploy(
-                    "@Name('insert') insert into MyWindow select TheString as c1, IntPrimitive as c2 from SupportBean",
-                    path);
-                var totalUpdated = 5000;
-                for (var i = 0; i < totalUpdated; i++) {
-                    env.SendEventBean(new SupportBean("E" + i, 0));
-                }
+	        public InfraPerformance(bool namedWindow, EventRepresentationChoice outputType) {
+	            this.namedWindow = namedWindow;
+	            this.outputType = outputType;
+	        }
 
-                env.UndeployModuleContaining("insert");
+	        public void Run(RegressionEnvironment env) {
+	            var path = new RegressionPath();
+	            var eplCreate = namedWindow ?
+	                outputType.GetAnnotationText() + "@name('create') @public create window MyWindow#keepall as (c1 string, c2 int)" :
+	                "@name('create') @public create table MyWindow(c1 string primary key, c2 int)";
+	            env.CompileDeploy(eplCreate, path);
+	            env.AssertStatement("create", statement => Assert.IsTrue(outputType.MatchesClass(statement.EventType.UnderlyingType)));
 
-                var epl = "@Name('s0') on SupportBean sb merge MyWindow nw where nw.c1 = sb.TheString " +
-                          "when matched then update set nw.c2=sb.IntPrimitive";
-                env.CompileDeploy(epl, path);
+	            // preload events
+	            env.CompileDeploy("@name('insert') insert into MyWindow select theString as c1, intPrimitive as c2 from SupportBean", path);
+	            var totalUpdated = 5000;
+	            for (var i = 0; i < totalUpdated; i++) {
+	                env.SendEventBean(new SupportBean("E" + i, 0));
+	            }
+	            env.UndeployModuleContaining("insert");
 
-                // prime
-                for (var i = 0; i < 100; i++) {
-                    env.SendEventBean(new SupportBean("E" + i, 1));
-                }
+	            var epl = "@name('s0') on SupportBean sb merge MyWindow nw where nw.c1 = sb.theString " +
+	                      "when matched then update set nw.c2=sb.intPrimitive";
+	            env.CompileDeploy(epl, path);
 
-                var startTime = PerformanceObserver.MilliTime;
-                for (var i = 0; i < totalUpdated; i++) {
-                    env.SendEventBean(new SupportBean("E" + i, 1));
-                }
+	            // prime
+	            for (var i = 0; i < 100; i++) {
+	                env.SendEventBean(new SupportBean("E" + i, 1));
+	            }
+	            var startTime = PerformanceObserver.MilliTime;
+	            for (var i = 0; i < totalUpdated; i++) {
+	                env.SendEventBean(new SupportBean("E" + i, 1));
+	            }
+	            var endTime = PerformanceObserver.MilliTime;
+	            var delta = endTime - startTime;
 
-                var endTime = PerformanceObserver.MilliTime;
-                var delta = endTime - startTime;
+	            // verify
+	            env.AssertIterator("create", events => {
+	                var count = 0;
+	                for (; events.MoveNext(); ) {
+	                    var next = events.Current;
+	                    Assert.AreEqual(1, next.Get("c2"));
+	                    count++;
+	                }
+	                Assert.AreEqual(totalUpdated, count);
+	            });
+	            Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 
-                // verify
-                var events = env.Statement("create").GetEnumerator();
-                var count = 0;
-                while (events.MoveNext()) {
-                    var next = events.Current;
-                    Assert.AreEqual(1, next.Get("c2"));
-                    count++;
-                }
+	            env.UndeployAll();
+	        }
 
-                Assert.AreEqual(totalUpdated, count);
-                Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
-
-                env.UndeployAll();
-            }
-        }
-    }
+	        public string Name() {
+	            return this.GetType().Name + "{" +
+	                "namedWindow=" + namedWindow +
+	                ", outputType=" + outputType +
+	                '}';
+	        }
+	    }
+	}
 } // end of namespace

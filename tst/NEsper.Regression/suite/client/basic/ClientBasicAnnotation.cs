@@ -17,14 +17,17 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
     {
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@Name('abc') @Tag(Name='a', Value='b') @Priority(1) @Drop select * from SupportBean";
+            var epl = "@name('abc') @Tag(Name='a', Value='b') @Priority(1) @Drop select * from SupportBean";
             env.CompileDeployAddListenerMileZero(epl, "abc");
 
-            var annotations = env.Statement("abc").Annotations;
-
-            Assert.AreEqual(typeof(AnnotationName), annotations[0].GetType());
-            Assert.AreEqual("abc", ((AnnotationName) annotations[0]).Value);
-
+            env.AssertStatement(
+                "abc",
+                statement => {
+                    var annotations = statement.Annotations;
+                    Assert.AreEqual(typeof(AnnotationName), annotations[0].GetType());
+                    Assert.AreEqual("abc", ((AnnotationName)annotations[0]).Value);
+                });
+            
             env.UndeployAll();
         }
     }

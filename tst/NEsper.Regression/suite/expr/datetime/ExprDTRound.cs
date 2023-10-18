@@ -9,255 +9,192 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
 
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
-    public class ExprDTRound
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            WithInput(execs);
-            WithCeil(execs);
-            WithFloor(execs);
-            WithHalf(execs);
-            return execs;
-        }
+	public class ExprDTRound
+	{
+		public static ICollection<RegressionExecution> Executions()
+		{
+			IList<RegressionExecution> executions = new List<RegressionExecution>();
+			executions.Add(new ExprDTRoundInput());
+			executions.Add(new ExprDTRoundCeil());
+			executions.Add(new ExprDTRoundFloor());
+			executions.Add(new ExprDTRoundHalf());
+			return executions;
+		}
 
-        public static IList<RegressionExecution> WithHalf(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ExprDTRoundHalf());
-            return execs;
-        }
+		internal class ExprDTRoundInput : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
 
-        public static IList<RegressionExecution> WithFloor(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ExprDTRoundFloor());
-            return execs;
-        }
+				var fields = "val0,val1,val2,val3".SplitCsv();
+				var eplFragment = "@name('s0') select " +
+				                  "DateTimeEx.roundCeiling('hour') as val0," +
+				                  "DateTimeOffset.roundCeiling('hour') as val1," +
+				                  "DateTime.roundCeiling('hour') as val2," +
+				                  "LongDate.roundCeiling('hour') as val3" +
+				                  " from SupportDateTime";
+				env.CompileDeploy(eplFragment).AddListener("s0");
+				env.AssertStmtTypes(
+					"s0",
+					fields,
+					new Type[] {
+						typeof(DateTimeEx),
+						typeof(DateTimeOffset?),
+						typeof(DateTime?),
+						typeof(long?)
+					});
 
-        public static IList<RegressionExecution> WithCeil(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ExprDTRoundCeil());
-            return execs;
-        }
+				var startTime = "2002-05-30T09:01:02.003";
+				var expectedTime = "2002-05-30T10:00:00.000";
+				env.SendEventBean(SupportDateTime.Make(startTime));
+				env.AssertPropsNew(
+					"s0",
+					fields,
+					SupportDateTime.GetArrayCoerced(expectedTime, "dtx", "dto", "date", "long"));
 
-        public static IList<RegressionExecution> WithInput(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ExprDTRoundInput());
-            return execs;
-        }
+				env.UndeployAll();
+			}
+		}
 
-        internal class ExprDTRoundInput : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new[] { "val0", "val1", "val2", "val3" };
-                var eplFragment = "@Name('s0') select " +
-                                  "DateTimeEx.roundCeiling('hour') as val0," +
-                                  "DateTimeOffset.roundCeiling('hour') as val1," +
-                                  "DateTime.roundCeiling('hour') as val2," +
-                                  "LongDate.roundCeiling('hour') as val3" +
-                                  " from SupportDateTime";
-                env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {
-                        typeof(DateTimeEx),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTime?),
-                        typeof(long?)
-                    });
+		internal class ExprDTRoundCeil : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
 
-                var startTime = "2002-05-30T09:01:02.003";
-                var expectedTime = "2002-05-30T10:00:00.000";
-                env.SendEventBean(SupportDateTime.Make(startTime));
+				var fields = "val0,val1,val2,val3,val4,val5,val6".SplitCsv();
+				var eplFragment = "@name('s0') select " +
+				                  "DateTimeOffset.roundCeiling('msec') as val0," +
+				                  "DateTimeOffset.roundCeiling('sec') as val1," +
+				                  "DateTimeOffset.roundCeiling('minutes') as val2," +
+				                  "DateTimeOffset.roundCeiling('hour') as val3," +
+				                  "DateTimeOffset.roundCeiling('day') as val4," +
+				                  "DateTimeOffset.roundCeiling('month') as val5," +
+				                  "DateTimeOffset.roundCeiling('year') as val6" +
+				                  " from SupportDateTime";
+				env.CompileDeploy(eplFragment).AddListener("s0");
+				env.AssertStmtTypesAllSame("s0", fields, typeof(DateTimeOffset?));
 
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    SupportDateTime.GetArrayCoerced(expectedTime, "dtx", "dto", "date", "long"));
+				string[] expected = {
+					"2002-05-30T09:01:02.003",
+					"2002-05-30T09:01:03.000",
+					"2002-05-30T09:02:00.000",
+					"2002-05-30T10:00:00.000",
+					"2002-05-31T00:00:00.000",
+					"2002-06-01T00:00:00.000",
+					"2003-01-01T00:00:00.000",
+				};
+				var startTime = "2002-05-30T09:01:02.003";
+				env.SendEventBean(SupportDateTime.Make(startTime));
+				env.AssertPropsNew("s0", fields, SupportDateTime.GetArrayCoerced(expected, "dto"));
 
-                env.UndeployAll();
-            }
-        }
+				env.UndeployAll();
+			}
+		}
 
-        internal class ExprDTRoundCeil : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new[] { "val0", "val1", "val2", "val3", "val4", "val5", "val6" };
-                var eplFragment = "@Name('s0') select " +
-                                  "DateTimeOffset.roundCeiling('msec') as val0," +
-                                  "DateTimeOffset.roundCeiling('sec') as val1," +
-                                  "DateTimeOffset.roundCeiling('minutes') as val2," +
-                                  "DateTimeOffset.roundCeiling('hour') as val3," +
-                                  "DateTimeOffset.roundCeiling('day') as val4," +
-                                  "DateTimeOffset.roundCeiling('month') as val5," +
-                                  "DateTimeOffset.roundCeiling('year') as val6" +
-                                  " from SupportDateTime";
-                env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?)
-                    });
+		internal class ExprDTRoundFloor : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
 
-                string[] expected = {
-                    "2002-05-30T09:01:02.003",
-                    "2002-05-30T09:01:03.000",
-                    "2002-05-30T09:02:00.000",
-                    "2002-05-30T10:00:00.000",
-                    "2002-05-31T00:00:00.000",
-                    "2002-06-01T00:00:00.000",
-                    "2003-01-01T00:00:00.000"
-                };
-                var startTime = "2002-05-30T09:01:02.003";
-                env.SendEventBean(SupportDateTime.Make(startTime));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    SupportDateTime.GetArrayCoerced(expected, "dto"));
+				var fields = "val0,val1,val2,val3,val4,val5,val6".SplitCsv();
+				var eplFragment = "@name('s0') select " +
+				                  "DateTimeOffset.roundFloor('msec') as val0," +
+				                  "DateTimeOffset.roundFloor('sec') as val1," +
+				                  "DateTimeOffset.roundFloor('minutes') as val2," +
+				                  "DateTimeOffset.roundFloor('hour') as val3," +
+				                  "DateTimeOffset.roundFloor('day') as val4," +
+				                  "DateTimeOffset.roundFloor('month') as val5," +
+				                  "DateTimeOffset.roundFloor('year') as val6" +
+				                  " from SupportDateTime";
+				env.CompileDeploy(eplFragment).AddListener("s0");
+				env.AssertStmtTypesAllSame("s0", fields, typeof(DateTimeOffset?));
 
-                env.UndeployAll();
-            }
-        }
+				string[] expected = {
+					"2002-05-30T09:01:02.003",
+					"2002-05-30T09:01:02.000",
+					"2002-05-30T09:01:00.000",
+					"2002-05-30T09:00:00.000",
+					"2002-05-30T00:00:00.000",
+					"2002-05-01T00:00:00.000",
+					"2002-01-01T00:00:00.000",
+				};
+				var startTime = "2002-05-30T09:01:02.003";
+				env.SendEventBean(SupportDateTime.Make(startTime));
+				env.AssertPropsNew("s0", fields, SupportDateTime.GetArrayCoerced(expected, "dto"));
 
-        internal class ExprDTRoundFloor : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new[] { "val0", "val1", "val2", "val3", "val4", "val5", "val6" };
-                var eplFragment = "@Name('s0') select " +
-                                  "DateTimeOffset.roundFloor('msec') as val0," +
-                                  "DateTimeOffset.roundFloor('sec') as val1," +
-                                  "DateTimeOffset.roundFloor('minutes') as val2," +
-                                  "DateTimeOffset.roundFloor('hour') as val3," +
-                                  "DateTimeOffset.roundFloor('day') as val4," +
-                                  "DateTimeOffset.roundFloor('month') as val5," +
-                                  "DateTimeOffset.roundFloor('year') as val6" +
-                                  " from SupportDateTime";
-                env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?)
-                    });
+				env.UndeployAll();
+			}
+		}
 
-                string[] expected = {
-                    "2002-05-30T09:01:02.003",
-                    "2002-05-30T09:01:02.000",
-                    "2002-05-30T09:01:00.000",
-                    "2002-05-30T09:00:00.000",
-                    "2002-05-30T00:00:00.000",
-                    "2002-05-01T00:00:00.000",
-                    "2002-01-01T00:00:00.000"
-                };
-                var startTime = "2002-05-30T09:01:02.003";
-                env.SendEventBean(SupportDateTime.Make(startTime));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    SupportDateTime.GetArrayCoerced(expected, "dto"));
+		internal class ExprDTRoundHalf : RegressionExecution
+		{
+			public void Run(RegressionEnvironment env)
+			{
 
-                env.UndeployAll();
-            }
-        }
+				var fields = "val0,val1,val2,val3,val4,val5,val6".SplitCsv();
+				var eplFragment = "@name('s0') select " +
+				                  "DateTimeOffset.roundHalf('msec') as val0," +
+				                  "DateTimeOffset.roundHalf('sec') as val1," +
+				                  "DateTimeOffset.roundHalf('minutes') as val2," +
+				                  "DateTimeOffset.roundHalf('hour') as val3," +
+				                  "DateTimeOffset.roundHalf('day') as val4," +
+				                  "DateTimeOffset.roundHalf('month') as val5," +
+				                  "DateTimeOffset.roundHalf('year') as val6" +
+				                  " from SupportDateTime";
+				env.CompileDeploy(eplFragment).AddListener("s0");
+				env.AssertStmtTypesAllSame("s0", fields, typeof(DateTimeOffset?));
 
-        internal class ExprDTRoundHalf : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new[] { "val0", "val1", "val2", "val3", "val4", "val5", "val6" };
-                var eplFragment = "@Name('s0') select " +
-                                  "DateTimeOffset.roundHalf('msec') as val0," +
-                                  "DateTimeOffset.roundHalf('sec') as val1," +
-                                  "DateTimeOffset.roundHalf('minutes') as val2," +
-                                  "DateTimeOffset.roundHalf('hour') as val3," +
-                                  "DateTimeOffset.roundHalf('day') as val4," +
-                                  "DateTimeOffset.roundHalf('month') as val5," +
-                                  "DateTimeOffset.roundHalf('year') as val6" +
-                                  " from SupportDateTime";
-                env.CompileDeploy(eplFragment).AddListener("s0");
-                LambdaAssertionUtil.AssertTypes(
-                    env.Statement("s0").EventType,
-                    fields,
-                    new[] {
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?),
-                        typeof(DateTimeOffset?)
-                    });
+				string[] expected = {
+					"2002-05-30T15:30:02.550",
+					"2002-05-30T15:30:03.000",
+					"2002-05-30T15:30:00.000",
+					"2002-05-30T16:00:00.00",
+					"2002-05-31T00:00:00.000",
+					"2002-06-01T00:00:00.000",
+					"2002-01-01T00:00:00.000"
+				};
+				var startTime = "2002-05-30T15:30:02.550";
+				env.SendEventBean(SupportDateTime.Make(startTime));
+				env.AssertPropsNew("s0", fields, SupportDateTime.GetArrayCoerced(expected, "dto"));
 
-                string[] expected = {
-                    "2002-05-30T15:30:02.550",
-                    "2002-05-30T15:30:03.000",
-                    "2002-05-30T15:30:00.000",
-                    "2002-05-30T16:00:00.00",
-                    "2002-05-31T00:00:00.000",
-                    "2002-06-01T00:00:00.000",
-                    "2002-01-01T00:00:00.000"
-                };
-                var startTime = "2002-05-30T15:30:02.550";
-                env.SendEventBean(SupportDateTime.Make(startTime));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    SupportDateTime.GetArrayCoerced(expected, "dto"));
+				// test rounding up/down
+				env.UndeployAll();
+				var fieldsVal0 = "val0".SplitCsv();
+				eplFragment = "@name('s0') select DateTimeOffset.roundHalf('min') as val0 from SupportDateTime";
+				env.CompileDeployAddListenerMile(eplFragment, "s0", 1);
 
-                // test rounding up/down
-                env.UndeployAll();
-                fields = new[] { "val0" };
-                eplFragment = "@Name('s0') select DateTimeOffset.roundHalf('min') as val0 from SupportDateTime";
-                env.CompileDeployAddListenerMile(eplFragment, "s0", 1);
+				env.SendEventBean(SupportDateTime.Make("2002-05-30T15:30:29.999"));
+				env.AssertPropsNew(
+					"s0",
+					fieldsVal0,
+					new object[] {
+						SupportDateTime.GetValueCoerced("2002-05-30T15:30:00.000", "dto")
+					});
 
-                env.SendEventBean(SupportDateTime.Make("2002-05-30T15:30:29.999"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new[] { SupportDateTime.GetValueCoerced("2002-05-30T15:30:00.000", "dto") });
+				env.SendEventBean(SupportDateTime.Make("2002-05-30T15:30:30.000"));
+				env.AssertPropsNew(
+					"s0",
+					fieldsVal0,
+					new object[] {
+						SupportDateTime.GetValueCoerced("2002-05-30T15:31:00.000", "dto")
+					});
 
-                env.SendEventBean(SupportDateTime.Make("2002-05-30T15:30:30.000"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new[] { SupportDateTime.GetValueCoerced("2002-05-30T15:31:00.000", "dto") });
+				env.SendEventBean(SupportDateTime.Make("2002-05-30T15:30:30.001"));
+				env.AssertPropsNew(
+					"s0",
+					fieldsVal0,
+					new object[] {
+						SupportDateTime.GetValueCoerced("2002-05-30T15:31:00.000", "dto")
+					});
 
-                env.SendEventBean(SupportDateTime.Make("2002-05-30T15:30:30.001"));
-                EPAssertionUtil.AssertProps(
-                    env.Listener("s0").AssertOneGetNewAndReset(),
-                    fields,
-                    new[] { SupportDateTime.GetValueCoerced("2002-05-30T15:31:00.000", "dto") });
-
-                env.UndeployAll();
-            }
-        }
-    }
+				env.UndeployAll();
+			}
+		}
+	}
 } // end of namespace

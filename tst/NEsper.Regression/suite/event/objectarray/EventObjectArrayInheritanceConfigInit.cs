@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -37,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 "select base as vbase, sub1? as v1, sub2? as v2, suba? as va, subb as vb from SubBEvent" // 4
             };
             for (var i = 0; i < statements.Length; i++) {
-                env.CompileDeploy("@Name('s" + i + "') " + statements[i], path);
+                env.CompileDeploy("@name('s" + i + "') " + statements[i], path);
                 listeners[i] = new SupportUpdateListener();
                 env.Statement("s" + i).AddListener(listeners[i]);
             }
@@ -119,13 +121,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 listeners[1].IsInvoked || listeners[2].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
 
             // try property not available
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 path,
                 "select suba from Sub1Event",
                 "Failed to validate select-clause expression 'suba': Property named 'suba' is not valid in any stream (did you mean 'sub1'?)");
 
             env.UndeployAll();
+        }
+        
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.OBSERVEROPS);
         }
     }
 } // end of namespace

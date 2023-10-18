@@ -11,9 +11,9 @@ using System.Collections.Generic;
 using System.Numerics;
 
 using com.espertech.esper.common.client;
-
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 
@@ -25,7 +25,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 {
 	public class EventJsonParserLaxness
 	{
-
 		public static IList<RegressionExecution> Executions()
 		{
 			IList<RegressionExecution> execs = new List<RegressionExecution>();
@@ -38,12 +37,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			return execs;
 		}
 
-		internal class EventJsonParserUndeclaredContent : RegressionExecution
+		private class EventJsonParserUndeclaredContent : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype create json schema JsonEvent ();\n" +
-				          "@Name('s0') select * from JsonEvent;\n";
+				          "@name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				var json = "{\n" +
@@ -76,12 +75,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			}
 		}
 
-		internal class EventJsonParserLaxnessObjectType : RegressionExecution
+		private class EventJsonParserLaxnessObjectType : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype create json schema JsonEvent (carray Object[], cobject Map);\n" +
-				          "@Name('s0') select * from JsonEvent;\n";
+				          "@name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssert(
@@ -105,31 +104,31 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			}
 		}
 
-		internal class EventJsonParserLaxnessBooleanType : RegressionExecution
+		private class EventJsonParserLaxnessBooleanType : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype create json schema JsonEvent (" +
 				          "cbool boolean, cboola1 boolean[], cboola2 boolean[][]);\n" +
-				          "@Name('s0') select * from JsonEvent;\n";
+				          "@name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssert(
 					env,
 					new JObject(new JProperty("cbool", "true")).ToString(),
-					@event => Assert.IsTrue(@event.Get("cbool").AsBoolean()));
+					@event => Assert.IsTrue((bool)@event.Get("cbool")));
 				SendAssert(
 					env,
 					new JObject(new JProperty("cbool", "false")).ToString(),
-					@event => Assert.IsFalse(@event.Get("cbool").AsBoolean()));
+					@event => Assert.IsFalse((bool)@event.Get("cbool")));
 				SendAssert(
 					env,
 					new JObject(new JProperty("cboola1", new JArray("true"))).ToString(),
-					@event => Assert.IsTrue(((object[]) @event.Get("cboola1"))[0].AsBoolean()));
+					@event => Assert.IsTrue((bool)((object[])@event.Get("cboola1"))[0]));
 				SendAssert(
 					env,
 					new JObject(new JProperty("cboola2", new JArray(new JArray("true")))).ToString(),
-					@event => Assert.IsTrue(((object[][]) @event.Get("cboola2"))[0][0].AsBoolean()));
+					@event => Assert.IsTrue((bool)((object[][])@event.Get("cboola2"))[0][0]));
 				SendAssert(
 					env,
 					new JObject(new JProperty("cbool", new JObject())).ToString(),
@@ -139,53 +138,60 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					new JObject(new JProperty("cbool", new JArray())).ToString(),
 					@event => Assert.IsNull(@event.Get("cbool")));
 
-				TryInvalid(
-					env,
-					new JObject(new JProperty("cbool", "x")).ToString(),
-					"Failed to parse json member name 'cbool' as a boolean-type from value 'x'");
-				TryInvalid(
-					env,
-					new JObject(new JProperty("cboola1", new JArray("x"))).ToString(),
-					"Failed to parse json member name 'cboola1' as a boolean-type from value 'x'");
-				TryInvalid(
-					env,
-					new JObject(new JProperty("cboola2", new JArray(new JArray(new JValue("x"))))).ToString(),
-					"Failed to parse json member name 'cboola2' as a boolean-type from value 'x'");
-				TryInvalid(
-					env,
-					new JObject(new JProperty("cbool", "null")).ToString(),
-					"Failed to parse json member name 'cbool' as a boolean-type from value 'null'");
+				env.AssertThat(
+					() => {
+						TryInvalid(
+							env,
+							new JObject(new JProperty("cbool", "x")).ToString(),
+							"Failed to parse json member name 'cbool' as a boolean-type from value 'x'");
+						TryInvalid(
+							env,
+							new JObject(new JProperty("cboola1", new JArray("x"))).ToString(),
+							"Failed to parse json member name 'cboola1' as a boolean-type from value 'x'");
+						TryInvalid(
+							env,
+							new JObject(new JProperty("cboola2", new JArray(new JArray("x")))).ToString(),
+							"Failed to parse json member name 'cboola2' as a boolean-type from value 'x'");
+						TryInvalid(
+							env,
+							new JObject(new JProperty("cbool", "null")).ToString(),
+							"Failed to parse json member name 'cbool' as a boolean-type from value 'null'");
+					});
 
 				env.UndeployAll();
 			}
 		}
 
-		internal class EventJsonParserLaxnessNumberType : RegressionExecution
+		private class EventJsonParserLaxnessNumberType : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype create json schema JsonEvent (" +
-				          "cbyte byte, cshort short, cint int, clong long, cdouble double, cfloat float, cBigint Biginteger, cDecimalOne DecimalOneimal," +
-				          "cbytea1 byte[], cshorta1 short[], cinta1 int[], clonga1 long[], cdoublea1 double[], cfloata1 float[], cBiginta1 Biginteger[], cDecimalOnea1 DecimalOneimal[]," +
-				          "cbytea2 byte[][], cshorta2 short[][], cinta2 int[][], clonga2 long[][], cdoublea2 double[][], cfloata2 float[][], cBiginta2 Biginteger[][], cDecimalOnea2 DecimalOneimal[][]);\n" +
-				          "@Name('s0') select * from JsonEvent;\n";
+				          "cbyte byte, cshort short, cint int, clong long, cdouble double, cfloat float, cbigint biginteger, cbigdec bigdecimal," +
+				          "cbytea1 byte[], cshorta1 short[], cinta1 int[], clonga1 long[], cdoublea1 double[], cfloata1 float[], cbiginta1 biginteger[], cbigdeca1 bigdecimal[]," +
+				          "cbytea2 byte[][], cshorta2 short[][], cinta2 int[][], clonga2 long[][], cdoublea2 double[][], cfloata2 float[][], cbiginta2 biginteger[][], cbigdeca2 bigdecimal[][]);\n" +
+				          "@name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 				var eventType = env.Runtime.EventTypeService.GetEventType(env.DeploymentId("s0"), "JsonEvent");
 
 				// lax parsing is the default, allowing string values
 				foreach (var propertyName in eventType.PropertyNames) {
-					var @event = MakeSendJson(env, propertyName, "1");
-					var value = @event.Get(propertyName);
-					Assert.IsNotNull(value, "Null for property " + propertyName);
-					if (propertyName.EndsWith("a2")) {
-						AssertAsNumber(propertyName, 1, ((object[][]) value)[0][0]);
-					}
-					else if (propertyName.EndsWith("a1")) {
-						AssertAsNumber(propertyName, 1, ((object[]) value)[0]);
-					}
-					else {
-						AssertAsNumber(propertyName, 1, value);
-					}
+					MakeSendJson(env, propertyName, "1");
+					env.AssertEventNew(
+						"s0",
+						@event => {
+							var value = @event.Get(propertyName);
+							Assert.IsNotNull(null, "Null for property " + propertyName);
+							if (propertyName.EndsWith("a2")) {
+								AssertAsNumber(propertyName, 1, ((object[][])value)[0][0]);
+							}
+							else if (propertyName.EndsWith("a1")) {
+								AssertAsNumber(propertyName, 1, ((object[])value)[0]);
+							}
+							else {
+								AssertAsNumber(propertyName, 1, value);
+							}
+						});
 				}
 
 				// invalid number
@@ -197,8 +203,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					catch (EPException ex) {
 						var typeName = propertyName.Substring(1).Replace("a1", "").Replace("a2", "");
 						Type type;
-						if (typeName.Equals("Bigint")) {
+						if (typeName.Equals("bigint")) {
 							type = typeof(BigInteger);
+						}
+						else if (typeName.Equals("bigdec")) {
+							type = typeof(decimal);
 						}
 						else {
 							type = TypeHelper.GetPrimitiveTypeForName(typeName).GetBoxedType();
@@ -215,13 +224,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				}
 
 				// unexpected object type
-				SendAssert(env, new JObject(new JProperty("cint", new JObject())).ToString(), @event => Assert.IsNull(@event.Get("cint")));
-				SendAssert(env, new JObject(new JProperty("cint", new JArray())).ToString(), @event => Assert.IsNull(@event.Get("cint")));
+				SendAssert(
+					env,
+					new JObject(new JProperty("cint", new JObject())).ToString(),
+					@event => Assert.IsNull(@event.Get("cint")));
+				SendAssert(
+					env,
+					new JObject(new JProperty("cint", new JArray())).ToString(),
+					@event => Assert.IsNull(@event.Get("cint")));
 
 				env.UndeployAll();
 			}
 
-			private EventBean MakeSendJson(
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.EVENTSENDER);
+			}
+
+			private void MakeSendJson(
 				RegressionEnvironment env,
 				string propertyName,
 				string value)
@@ -238,16 +258,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				}
 
 				env.SendEventJson(json.ToString(), "JsonEvent");
-				return env.Listener("s0").AssertOneGetNewAndReset();
 			}
 		}
 
-		internal class EventJsonParserLaxnessStringType : RegressionExecution
+		private class EventJsonParserLaxnessStringType : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype @JsonSchema create json schema JsonEvent(p1 string);\n" +
-				          "@Name('s0') select * from JsonEvent;\n";
+				          "@name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				// lax parsing is the default
@@ -263,12 +282,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			}
 		}
 
-		internal class EventJsonParserMalformedJson : RegressionExecution
+		private class EventJsonParserMalformedJson : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
 				var epl = "@public @buseventtype @JsonSchema create json schema JsonEvent(p1 string);\n" +
-				          "@Name('s0') select * from JsonEvent;\n";
+				          "@name('s0') select * from JsonEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				TryInvalid(env, "", "Failed to parse Json: Unexpected end of input at 1:1");
@@ -276,6 +295,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				TryInvalid(env, "{{}", "Failed to parse Json: Expected name at 1:2");
 
 				env.UndeployAll();
+			}
+
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.INVALIDITY);
 			}
 		}
 
@@ -293,7 +317,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			Consumer<EventBean> assertion)
 		{
 			env.SendEventJson(json, "JsonEvent");
-			assertion.Invoke(env.Listener("s0").AssertOneGetNewAndReset());
+			env.AssertEventNew("s0", assertion.Invoke);
 		}
 
 		private static void TryInvalid(
@@ -313,9 +337,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 		private static void AssertAsNumber(
 			string propertyName,
 			object expected,
-			object actualNumber)
+			object actual)
 		{
-			var actual = actualNumber;
 			if (propertyName.Contains("byte")) {
 				Assert.AreEqual(expected.AsByte(), actual.AsByte());
 			}
@@ -337,8 +360,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			else if (propertyName.Contains("decimal")) {
 				Assert.AreEqual(expected.AsDecimal(), actual.AsDecimal());
 			}
-			else if (propertyName.Contains("Bigint")) {
-				Assert.AreEqual(expected.ToString(), actual.ToString());
+			else if (propertyName.Contains("bigint")) {
+				Assert.AreEqual(expected.AsBigInteger(), actual.AsBigInteger());
 			}
 			else {
 				Assert.Fail("Not recognized '" + propertyName + "'");

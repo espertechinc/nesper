@@ -14,7 +14,7 @@ using com.espertech.esper.common.@internal.epl.index.unindexed;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
-    public class IndexBackingTableInfo
+    public interface IndexBackingTableInfo
     {
         public static readonly string INDEX_CALLBACK_HOOK =
             "@Hook(HookType=" +

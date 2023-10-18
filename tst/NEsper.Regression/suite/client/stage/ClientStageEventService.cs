@@ -6,11 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
@@ -43,12 +43,12 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			return execs;
 		}
 
-		private class ClientStageEventServiceEventSend : RegressionExecution
+		private class ClientStageEventServiceEventSend : ClientStageRegressionExecution
 		{
-			public void Run(RegressionEnvironment env)
+			public override void Run(RegressionEnvironment env)
 			{
-				EPStage stage = env.StageService.GetStage("ST");
-				RegressionPath path = new RegressionPath();
+				var stage = env.StageService.GetStage("ST");
+				var path = new RegressionPath();
 
 				// Bean
 				RunAssertion(
@@ -74,8 +74,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 					path,
 					stage,
 					OA_TYPENAME,
-					new object[0],
-					svc => svc.SendEventObjectArray(new object[0], OA_TYPENAME));
+					Array.Empty<object>(),
+					svc => svc.SendEventObjectArray(Array.Empty<object>(), OA_TYPENAME));
 
 				// XML
 				var node = SupportXML.GetDocument("<myevent/>").DocumentElement;
@@ -120,16 +120,16 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			Consumer<EPEventService> sender)
 		{
 
-			string epl = "@public @buseventtype create schema TriggerEvent();\n" +
-			             "@public @buseventtype @name('schema') create json schema " +
-			             JSON_TYPENAME +
-			             "();\n" +
-			             "@Name('trigger') select * from TriggerEvent;\n" +
-			             "@Name('s0') select * from " +
-			             typename +
-			             ";\n";
+			var epl = "@public @buseventtype create schema TriggerEvent();\n" +
+			          "@public @buseventtype @name('schema') create json schema " +
+			          JSON_TYPENAME +
+			          "();\n" +
+			          "@name('trigger') select * from TriggerEvent;\n" +
+			          "@name('s0') select * from " +
+			          typename +
+			          ";\n";
 			env.CompileDeploy(epl, path).AddListener("s0");
-			string deploymentId = env.DeploymentId("s0");
+			var deploymentId = env.DeploymentId("s0");
 			StageIt(env, "ST", deploymentId);
 
 			// test normal send
@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			AssertUnderlying(env, typename, underlying);
 
 			// test EventSender#send
-			EventSender eventSender = stage.EventService.GetEventSender(typename);
+			var eventSender = stage.EventService.GetEventSender(typename);
 			eventSender.SendEvent(underlying);
 			AssertUnderlying(env, typename, underlying);
 

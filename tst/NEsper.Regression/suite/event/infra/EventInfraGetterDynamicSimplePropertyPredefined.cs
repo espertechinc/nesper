@@ -8,134 +8,135 @@
 
 using System;
 
+using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 
 using NEsper.Avro.Extensions;
-using NEsper.Avro.Util.Support;
 
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
 
+using static NEsper.Avro.Core.AvroConstant;
+using static NEsper.Avro.Extensions.TypeBuilder;
+
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
-
-
 	public class EventInfraGetterDynamicSimplePropertyPredefined : RegressionExecution {
 	    public void Run(RegressionEnvironment env) {
 	        // Bean
-	        BiConsumer<EventType, string> bean = (type, property) => {
+	        Consumer<string> bean = property => {
 	            env.SendEventBean(new LocalEvent(property));
 	        };
-	        var beanepl = $"@public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()}";
+	        var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).FullName + ";\n";
 	        RunAssertion(env, beanepl, bean);
 
 	        // Map
-	        BiConsumer<EventType, string> map = (type, property) => {
-	            env.SendEventMap(Collections.SingletonDataMap("Property", property), "LocalEvent");
+	        Consumer<string> map = property => {
+	            env.SendEventMap(Collections.SingletonDataMap("property", property), "LocalEvent");
 	        };
 	        RunAssertion(env, GetEpl("map"), map);
 
 	        // Object-array
-	        BiConsumer<EventType, string> oa = (type, property) => {
+	        Consumer<string> oa = property => {
 	            env.SendEventObjectArray(new object[]{property}, "LocalEvent");
 	        };
 	        RunAssertion(env, GetEpl("objectarray"), oa);
 
 	        // Json
-	        BiConsumer<EventType, string> json = (type, property) => {
+	        Consumer<string> json = property => {
 	            if (property == null) {
-	                env.SendEventJson(new JObject(new JProperty("Property", null)).ToString(), "LocalEvent");
+	                env.SendEventJson(new JObject(new JProperty("property")).ToString(), "LocalEvent");
 	            } else {
-	                env.SendEventJson(new JObject(new JProperty("Property", property)).ToString(), "LocalEvent");
+	                env.SendEventJson(new JObject(new JProperty("property", property)).ToString(), "LocalEvent");
 	            }
 	        };
 	        RunAssertion(env, GetEpl("json"), json);
 
 	        // Json-Class-Predefined
-	        var eplJsonPredefined = "@JsonSchema(ClassName='" + typeof(MyLocalJsonProvided).MaskTypeName() + "') @buseventtype @public " +
+	        var eplJsonPredefined = "@JsonSchema(className='" + typeof(MyLocalJsonProvided).FullName + "') @buseventtype @public " +
 	                                "create json schema LocalEvent();\n";
 	        RunAssertion(env, eplJsonPredefined, json);
 
 	        // Avro
-	        BiConsumer<EventType, string> avro = (type, property) => {
-	            var @event = new GenericRecord(SupportAvroUtil.GetAvroSchema(type).AsRecordSchema());
-	            @event.Put("Property", property);
+	        Consumer<string> avro = property => {
+		        var schema = SchemaBuilder.Record("name", OptionalString("property"));
+	            var @event = new GenericRecord(schema);
+	            @event.Put("property", property);
 	            env.SendEventAvro(@event, "LocalEvent");
 	        };
 	        RunAssertion(env, GetEpl("avro"), avro);
 	    }
 
 	    private string GetEpl(string underlying) {
-	        return "@buseventtype @public create " + underlying + " schema LocalEvent(Property string);\n";
+	        return "@name('schema') @buseventtype @public create " + underlying + " schema LocalEvent(property string);\n";
 	    }
 
 	    public void RunAssertion(RegressionEnvironment env,
 	                             string createSchemaEPL,
-	                             BiConsumer<EventType, string> sender) {
+	                             Consumer<string> sender) {
 
 	        var path = new RegressionPath();
 	        env.CompileDeploy(createSchemaEPL, path);
 
-	        env.CompileDeploy("@Name('s0') select * from LocalEvent", path).AddListener("s0");
-	        var eventType = env.Statement("s0").EventType;
-	        var g0 = eventType.GetGetter("Property?");
+	        env.CompileDeploy("@name('s0') select * from LocalEvent", path).AddListener("s0");
 
 	        if (sender == null) {
-	            Assert.IsNull(g0);
+	            env.AssertStatement("s0", statement => {
+	                var eventType = statement.EventType;
+	                var g0 = eventType.GetGetter("property?");
+	                Assert.IsNull(g0);
+	            });
 	            env.UndeployAll();
 	            return;
-	        } else {
-	            var propepl = "@Name('s1') select Property? as c0, exists(Property?) as c1, typeof(Property?) as c2 from LocalEvent;\n";
-	            env.CompileDeploy(propepl, path).AddListener("s1");
 	        }
 
-	        sender.Invoke(eventType, "a");
-	        var @event = env.Listener("s0").AssertOneGetNewAndReset();
-	        AssertGetter(@event, g0, true, "a");
+	        var propepl = "@name('s1') select property? as c0, exists(property?) as c1, typeof(property?) as c2 from LocalEvent;\n";
+	        env.CompileDeploy(propepl, path).AddListener("s1");
+
+	        sender.Invoke("a");
+	        env.AssertEventNew("s0", @event => AssertGetter(@event, true, "a"));
 	        AssertProps(env, true, "a");
 
-	        sender.Invoke(eventType, null);
-	        @event = env.Listener("s0").AssertOneGetNewAndReset();
-	        AssertGetter(@event, g0, true, null);
+	        sender.Invoke(null);
+	        env.AssertEventNew("s0", @event => AssertGetter(@event, true, null));
 	        AssertProps(env, true, null);
 
 	        env.UndeployAll();
 	    }
 
-	    private void AssertGetter(EventBean @event, EventPropertyGetter getter, bool exists, string value) {
+	    private void AssertGetter(EventBean @event, bool exists, string value) {
+	        var getter = @event.EventType.GetGetter("property?");
 	        Assert.AreEqual(exists, getter.IsExistsProperty(@event));
 	        Assert.AreEqual(value, getter.Get(@event));
 	        Assert.IsNull(getter.GetFragment(@event));
 	    }
 
 	    private void AssertProps(RegressionEnvironment env, bool exists, string value) {
-	        var @event = env.Listener("s1").AssertOneGetNewAndReset();
-	        Assert.AreEqual(value, @event.Get("c0"));
-	        Assert.AreEqual(exists, @event.Get("c1"));
-	        Assert.AreEqual(value != null ? "String" : null, @event.Get("c2"));
-	    }
-
-	    public class LocalEvent
-	    {
-		    public LocalEvent(string property)
-		    {
-			    this.Property = property;
-		    }
-
-		    public string Property { get; }
+	        env.AssertEventNew("s1", @event => {
+	            Assert.AreEqual(value, @event.Get("c0"));
+	            Assert.AreEqual(exists, @event.Get("c1"));
+	            Assert.AreEqual(value != null ? "String" : null, @event.Get("c2"));
+	        });
 	    }
 
 	    [Serializable]
-	    public class MyLocalJsonProvided
-	    {
-		    public string Property;
+	    public class LocalEvent {
+		    public LocalEvent(string property) {
+	            this.Property = property;
+	        }
+
+	        public string Property { get; }
+	    }
+
+	    [Serializable]
+	    public class MyLocalJsonProvided {
+	        public string property;
 	    }
 	}
 } // end of namespace

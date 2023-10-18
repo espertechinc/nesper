@@ -7,229 +7,202 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Reflection;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertEquals
+
+// assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
-    public class EPLJoin3StreamOuterJoinCoercionPerformance
-    {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+	public class EPLJoin3StreamOuterJoinCoercionPerformance {
 
-        public static IList<RegressionExecution> Executions()
-        {
-            IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithSceneOne(execs);
-            WithSceneTwo(execs);
-            WithSceneThree(execs);
-            WithRange(execs);
-            return execs;
-        }
+	    public static IList<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new EPLJoinPerfCoercion3waySceneOne());
+	        execs.Add(new EPLJoinPerfCoercion3waySceneTwo());
+	        execs.Add(new EPLJoinPerfCoercion3waySceneThree());
+	        execs.Add(new EPLJoinPerfCoercion3wayRange());
+	        return execs;
+	    }
 
-        public static IList<RegressionExecution> WithRange(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLJoinPerfCoercion3wayRange());
-            return execs;
-        }
+	    private class EPLJoinPerfCoercion3waySceneOne : RegressionExecution {
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+	        }
 
-        public static IList<RegressionExecution> WithSceneThree(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLJoinPerfCoercion3waySceneThree());
-            return execs;
-        }
+	        public void Run(RegressionEnvironment env) {
+	            var stmtText = "@name('s0') select s1.intBoxed as v1, s2.longBoxed as v2, s3.doubleBoxed as v3 from " +
+	                           "SupportBean(theString='A')#length(1000000) s1 " +
+	                           " left outer join " +
+	                           "SupportBean(theString='B')#length(1000000) s2 on s1.intBoxed=s2.longBoxed " +
+	                           " left outer join " +
+	                           "SupportBean(theString='C')#length(1000000) s3 on s1.intBoxed=s3.doubleBoxed";
+	            env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
-        public static IList<RegressionExecution> WithSceneTwo(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLJoinPerfCoercion3waySceneTwo());
-            return execs;
-        }
+	            // preload
+	            for (var i = 0; i < 10000; i++) {
+	                SendEvent(env, "B", 0, i, 0);
+	                SendEvent(env, "C", 0, 0, i);
+	            }
 
-        public static IList<RegressionExecution> WithSceneOne(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLJoinPerfCoercion3waySceneOne());
-            return execs;
-        }
+	            var startTime = PerformanceObserver.MilliTime;
+	            for (var i = 0; i < 5000; i++) {
+	                var index = 5000 + i % 1000;
+	                SendEvent(env, "A", index, 0, 0);
+	                env.AssertEventNew("s0", theEvent => {
+	                    Assert.AreEqual(index, theEvent.Get("v1"));
+	                    Assert.AreEqual((long) index, theEvent.Get("v2"));
+	                    Assert.AreEqual((double) index, theEvent.Get("v3"));
+	                });
+	            }
+	            var endTime = PerformanceObserver.MilliTime;
+	            var delta = endTime - startTime;
 
-        private static void SendEvent(
-            RegressionEnvironment env,
-            string theString,
-            int intBoxed,
-            long longBoxed,
-            double doubleBoxed)
-        {
-            var bean = new SupportBean();
-            bean.TheString = theString;
-            bean.IntBoxed = intBoxed;
-            bean.LongBoxed = longBoxed;
-            bean.DoubleBoxed = doubleBoxed;
-            env.SendEventBean(bean);
-        }
+	            Assert.That(delta, Is.LessThan(1500), "Failed perf test, delta=" + delta);
+	            env.UndeployAll();
+	        }
+	    }
 
-        internal class EPLJoinPerfCoercion3waySceneOne : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText = "@Name('s0') select S1.IntBoxed as v1, S2.LongBoxed as v2, S3.DoubleBoxed as v3 from " +
-                               "SupportBean(TheString='A')#length(1000000) S1 " +
-                               " left outer join " +
-                               "SupportBean(TheString='B')#length(1000000) S2 on S1.IntBoxed=S2.LongBoxed " +
-                               " left outer join " +
-                               "SupportBean(TheString='C')#length(1000000) S3 on S1.IntBoxed=S3.DoubleBoxed";
-                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+	    private class EPLJoinPerfCoercion3waySceneTwo : RegressionExecution {
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+	        }
 
-                // preload
-                for (var i = 0; i < 10000; i++) {
-                    SendEvent(env, "B", 0, i, 0);
-                    SendEvent(env, "C", 0, 0, i);
-                }
+	        public void Run(RegressionEnvironment env) {
+	            var stmtText = "@name('s0') select s1.intBoxed as v1, s2.longBoxed as v2, s3.doubleBoxed as v3 from " +
+	                           "SupportBean(theString='A')#length(1000000) s1 " +
+	                           " left outer join " +
+	                           "SupportBean(theString='B')#length(1000000) s2 on s1.intBoxed=s2.longBoxed " +
+	                           " left outer join " +
+	                           "SupportBean(theString='C')#length(1000000) s3 on s1.intBoxed=s3.doubleBoxed";
+	            env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
-                var startTime = PerformanceObserver.MilliTime;
-                for (var i = 0; i < 5000; i++) {
-                    var index = 5000 + i % 1000;
-                    SendEvent(env, "A", index, 0, 0);
-                    var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                    Assert.AreEqual(index, theEvent.Get("v1"));
-                    Assert.AreEqual((long) index, theEvent.Get("v2"));
-                    Assert.AreEqual((double) index, theEvent.Get("v3"));
-                }
+	            // preload
+	            for (var i = 0; i < 10000; i++) {
+	                SendEvent(env, "B", 0, i, 0);
+	                SendEvent(env, "A", i, 0, 0);
+	            }
 
-                var endTime = PerformanceObserver.MilliTime;
-                var delta = endTime - startTime;
+	            env.ListenerReset("s0");
+	            var startTime = PerformanceObserver.MilliTime;
+	            for (var i = 0; i < 5000; i++) {
+	                var index = 5000 + i % 1000;
+	                SendEvent(env, "C", 0, 0, index);
+	                env.AssertEventNew("s0", theEvent => {
+	                    Assert.AreEqual(index, theEvent.Get("v1"));
+	                    Assert.AreEqual((long) index, theEvent.Get("v2"));
+	                    Assert.AreEqual((double) index, theEvent.Get("v3"));
+	                });
+	            }
+	            var endTime = PerformanceObserver.MilliTime;
+	            var delta = endTime - startTime;
 
-                Assert.That(delta, Is.LessThan(1500), "Failed perf test, delta=" + delta);
-                env.UndeployAll();
-            }
-        }
+	            Assert.That(delta, Is.LessThan(1500), "Failed perf test, delta=" + delta);
+	            env.UndeployAll();
+	        }
+	    }
 
-        internal class EPLJoinPerfCoercion3waySceneTwo : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText = "@Name('s0') select S1.IntBoxed as v1, S2.LongBoxed as v2, S3.DoubleBoxed as v3 from " +
-                               "SupportBean(TheString='A')#length(1000000) S1 " +
-                               " left outer join " +
-                               "SupportBean(TheString='B')#length(1000000) S2 on S1.IntBoxed=S2.LongBoxed " +
-                               " left outer join " +
-                               "SupportBean(TheString='C')#length(1000000) S3 on S1.IntBoxed=S3.DoubleBoxed";
-                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+	    private class EPLJoinPerfCoercion3waySceneThree : RegressionExecution {
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+	        }
 
-                // preload
-                for (var i = 0; i < 10000; i++) {
-                    SendEvent(env, "B", 0, i, 0);
-                    SendEvent(env, "A", i, 0, 0);
-                }
+	        public void Run(RegressionEnvironment env) {
+	            var stmtText = "@name('s0') select s1.intBoxed as v1, s2.longBoxed as v2, s3.doubleBoxed as v3 from " +
+	                           "SupportBean(theString='A')#length(1000000) s1 " +
+	                           " left outer join " +
+	                           "SupportBean(theString='B')#length(1000000) s2 on s1.intBoxed=s2.longBoxed " +
+	                           " left outer join " +
+	                           "SupportBean(theString='C')#length(1000000) s3 on s1.intBoxed=s3.doubleBoxed";
+	            env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
-                env.Listener("s0").Reset();
-                var startTime = PerformanceObserver.MilliTime;
-                for (var i = 0; i < 5000; i++) {
-                    var index = 5000 + i % 1000;
-                    SendEvent(env, "C", 0, 0, index);
-                    var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                    Assert.AreEqual(index, theEvent.Get("v1"));
-                    Assert.AreEqual((long) index, theEvent.Get("v2"));
-                    Assert.AreEqual((double) index, theEvent.Get("v3"));
-                }
+	            // preload
+	            for (var i = 0; i < 10000; i++) {
+	                SendEvent(env, "A", i, 0, 0);
+	                SendEvent(env, "C", 0, 0, i);
+	            }
 
-                var endTime = PerformanceObserver.MilliTime;
-                var delta = endTime - startTime;
+	            env.ListenerReset("s0");
+	            var startTime = PerformanceObserver.MilliTime;
+	            for (var i = 0; i < 5000; i++) {
+	                var index = 5000 + i % 1000;
+	                SendEvent(env, "B", 0, index, 0);
+	                env.AssertEventNew("s0", theEvent => {
+	                    Assert.AreEqual(index, theEvent.Get("v1"));
+	                    Assert.AreEqual((long) index, theEvent.Get("v2"));
+	                    Assert.AreEqual((double) index, theEvent.Get("v3"));
+	                });
+	            }
+	            var endTime = PerformanceObserver.MilliTime;
+	            var delta = endTime - startTime;
 
-                Assert.That(delta, Is.LessThan(1500), "Failed perf test, delta=" + delta);
-                env.UndeployAll();
-            }
-        }
+	            Assert.That(delta, Is.LessThan(1500), "Failed perf test, delta=" + delta);
+	            env.UndeployAll();
+	        }
+	    }
 
-        internal class EPLJoinPerfCoercion3waySceneThree : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText = "@Name('s0') select S1.IntBoxed as v1, S2.LongBoxed as v2, S3.DoubleBoxed as v3 from " +
-                               "SupportBean(TheString='A')#length(1000000) S1 " +
-                               " left outer join " +
-                               "SupportBean(TheString='B')#length(1000000) S2 on S1.IntBoxed=S2.LongBoxed " +
-                               " left outer join " +
-                               "SupportBean(TheString='C')#length(1000000) S3 on S1.IntBoxed=S3.DoubleBoxed";
-                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+	    private class EPLJoinPerfCoercion3wayRange : RegressionExecution {
+	        public ISet<RegressionFlag> Flags() {
+	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+	        }
 
-                // preload
-                for (var i = 0; i < 10000; i++) {
-                    SendEvent(env, "A", i, 0, 0);
-                    SendEvent(env, "C", 0, 0, i);
-                }
+	        public void Run(RegressionEnvironment env) {
 
-                env.Listener("s0").Reset();
-                var startTime = PerformanceObserver.MilliTime;
-                for (var i = 0; i < 5000; i++) {
-                    var index = 5000 + i % 1000;
-                    SendEvent(env, "B", 0, index, 0);
-                    var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-                    Assert.AreEqual(index, theEvent.Get("v1"));
-                    Assert.AreEqual((long) index, theEvent.Get("v2"));
-                    Assert.AreEqual((double) index, theEvent.Get("v3"));
-                }
+	            var stmtText = "@name('s0') select * from " +
+	                           "SupportBeanRange#keepall sbr " +
+	                           " left outer join " +
+	                           "SupportBean_ST0#keepall s0 on s0.key0=sbr.key" +
+	                           " left outer join " +
+	                           "SupportBean_ST1#keepall s1 on s1.key1=s0.key0" +
+	                           " where s0.p00 between sbr.rangeStartLong and sbr.rangeEndLong";
+	            env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
-                var endTime = PerformanceObserver.MilliTime;
-                var delta = endTime - startTime;
+	            // preload
+	            log.Info("Preload");
+	            for (var i = 0; i < 10; i++) {
+	                env.SendEventBean(new SupportBean_ST1($"ST1_{i}", "K", i));
+	            }
+	            for (var i = 0; i < 10000; i++) {
+	                env.SendEventBean(new SupportBean_ST0($"ST0_{i}", "K", i));
+	            }
+	            log.Info("Preload done");
 
-                Assert.That(delta, Is.LessThan(1500), "Failed perf test, delta=" + delta);
-                env.UndeployAll();
-            }
-        }
+	            var startTime = PerformanceObserver.MilliTime;
+	            for (var i = 0; i < 100; i++) {
+	                long index = 5000 + i;
+	                env.SendEventBean(SupportBeanRange.MakeLong("R", "K", index, index + 2));
+	                env.AssertListener("s0", listener => Assert.AreEqual(30, listener.GetAndResetLastNewData().Length));
+	            }
+	            var endTime = PerformanceObserver.MilliTime;
+	            var delta = endTime - startTime;
 
-        internal class EPLJoinPerfCoercion3wayRange : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText = "@Name('s0') select * from " +
-                               "SupportBeanRange#keepall sbr " +
-                               " left outer join " +
-                               "SupportBean_ST0#keepall S0 on S0.Key0=sbr.Key" +
-                               " left outer join " +
-                               "SupportBean_ST1#keepall S1 on S1.Key1=S0.Key0" +
-                               " where S0.P00 between sbr.RangeStartLong and sbr.RangeEndLong";
-                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+	            env.SendEventBean(new SupportBean_ST0("ST0X", "K", 5000));
+	            env.AssertListener("s0", listener => Assert.AreEqual(10, listener.GetAndResetLastNewData().Length));
 
-                // preload
-                log.Info("Preload");
-                for (var i = 0; i < 10; i++) {
-                    env.SendEventBean(new SupportBean_ST1("ST1_" + i, "K", i));
-                }
+	            env.SendEventBean(new SupportBean_ST1("ST1X", "K", 5004));
+	            env.AssertListener("s0", listener => Assert.AreEqual(301, listener.GetAndResetLastNewData().Length));
 
-                for (var i = 0; i < 10000; i++) {
-                    env.SendEventBean(new SupportBean_ST0("ST0_" + i, "K", i));
-                }
+	            Assert.That(delta, Is.LessThan(500), "Failed perf test, delta=" + delta);
+	            env.UndeployAll();
+	        }
+	    }
 
-                log.Info("Preload done");
+	    private static void SendEvent(RegressionEnvironment env, string theString, int intBoxed, long longBoxed, double doubleBoxed) {
+	        var bean = new SupportBean();
+	        bean.TheString = theString;
+	        bean.IntBoxed = intBoxed;
+	        bean.LongBoxed = longBoxed;
+	        bean.DoubleBoxed = doubleBoxed;
+	        env.SendEventBean(bean);
+	    }
 
-                var startTime = PerformanceObserver.MilliTime;
-                for (var i = 0; i < 100; i++) {
-                    long index = 5000 + i;
-                    env.SendEventBean(SupportBeanRange.MakeLong("R", "K", index, index + 2));
-                    Assert.AreEqual(30, env.Listener("s0").GetAndResetLastNewData().Length);
-                }
-
-                var endTime = PerformanceObserver.MilliTime;
-                var delta = endTime - startTime;
-
-                env.SendEventBean(new SupportBean_ST0("ST0X", "K", 5000));
-                Assert.AreEqual(10, env.Listener("s0").GetAndResetLastNewData().Length);
-
-                env.SendEventBean(new SupportBean_ST1("ST1X", "K", 5004));
-                Assert.AreEqual(301, env.Listener("s0").GetAndResetLastNewData().Length);
-
-                Assert.That(delta, Is.LessThan(500), "Failed perf test, delta=" + delta);
-                env.UndeployAll();
-            }
-        }
-    }
+	    private static readonly ILog log = LogManager.GetLogger(typeof(EPLJoin3StreamOuterJoinCoercionPerformance));
+	}
 } // end of namespace

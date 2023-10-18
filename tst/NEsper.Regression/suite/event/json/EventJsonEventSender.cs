@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.json.util;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.json
@@ -26,18 +27,23 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl =
+				var epl =
 					"@public @buseventtype @JsonSchema create json schema MyEvent(p1 string);\n" +
-					"@Name('s0') select * from MyEvent;\n";
+					"@name('s0') select * from MyEvent;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
-				EventSenderJson sender = (EventSenderJson) env.Runtime.EventService.GetEventSender("MyEvent");
-				JsonEventObject underlying = (JsonEventObject) sender.Parse("{\"p1\": \"abc\"}");
+				var sender = (EventSenderJson) env.Runtime.EventService.GetEventSender("MyEvent");
+				var underlying = (JsonEventObject) sender.Parse("{\"p1\": \"abc\"}");
 
 				sender.SendEvent(underlying);
-				env.Listener("s0").AssertInvokedAndReset();
+				env.AssertListenerInvoked("s0");
 
 				env.UndeployAll();
+			}
+			
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.DATAFLOW);
 			}
 		}
 	}

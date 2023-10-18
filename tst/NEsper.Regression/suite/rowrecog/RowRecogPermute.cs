@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         private void RunDocSampleUpToN(RegressionEnvironment env)
         {
             var fields = new [] { "a_Id","b_Id" };
-            var epl = "@Name('s0') select * from TemperatureSensorEvent\n" +
+            var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by Device\n" +
                       "  measures A.Id as a_Id, B.Id as b_Id\n" +
@@ -84,8 +84,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
             env.SendEventObjectArray(new object[] {"E1", 1, 99d}, "TemperatureSensorEvent");
             env.SendEventObjectArray(new object[] {"E2", 1, 100d}, "TemperatureSensorEvent");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
+            env.AssertPropsNew(
+                "s0",
                 fields,
                 new object[] {"E1", "E2"});
 
@@ -93,13 +93,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
             env.SendEventObjectArray(new object[] {"E3", 1, 100d}, "TemperatureSensorEvent");
             env.SendEventObjectArray(new object[] {"E4", 1, 99d}, "TemperatureSensorEvent");
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
+            env.AssertPropsNew(
+                "s0",
                 fields,
                 new object[] {"E4", "E3"});
 
             env.SendEventObjectArray(new object[] {"E5", 1, 98d}, "TemperatureSensorEvent");
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
 
             env.UndeployAll();
         }
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             bool soda,
             string pattern)
         {
-            var epl = "@Name('s0') select * from SupportBean " +
+            var epl = "@name('s0') select * from SupportBean " +
                       "match_recognize (" +
                       " partition by IntPrimitive" +
                       " measures A as a, B as b, C as c" +
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
                 count++;
 
-                EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, expected);
+                env.AssertPropsNew("s0", fields, expected);
             }
 
             env.UndeployAll();

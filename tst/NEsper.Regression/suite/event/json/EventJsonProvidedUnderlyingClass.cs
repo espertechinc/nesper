@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.client.scopetest;
@@ -23,8 +22,6 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.json;
 
 using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
@@ -50,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			public void Run(RegressionEnvironment env)
 			{
 				env.AdvanceTime(0);
-				string epl =
+				var epl =
 					"@public @buseventtype @JsonSchema(ClassName='" +
 					typeof(MyLocalJsonProvidedEventOne).FullName +
 					"') create json schema EventOne();\n" +
@@ -60,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					"@public @buseventtype @JsonSchema(ClassName='" +
 					typeof(MyLocalJsonProvidedEventOut).FullName +
 					"') create json schema EventOut();\n" +
-					"@Name('s0') insert into EventOut select s as startEvent, e as endEvents from pattern [" +
+					"@name('s0') insert into EventOut select s as startEvent, e as endEvents from pattern [" +
 					"every s=EventOne -> e=EventTwo(id=s.id) until timer:interval(10 sec)]";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -69,12 +66,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				env.SendEventJson("{\"id\":\"G1\",\"val\":3}", "EventTwo");
 				env.AdvanceTime(10000);
 
-				MyLocalJsonProvidedEventOut @out = (MyLocalJsonProvidedEventOut) env.Listener("s0").AssertOneGetNewAndReset().Underlying;
-				Assert.AreEqual("G1", @out.startEvent.id);
-				Assert.AreEqual("G1", @out.endEvents[0].id);
-				Assert.AreEqual(2, @out.endEvents[0].val);
-				Assert.AreEqual("G1", @out.endEvents[1].id);
-				Assert.AreEqual(3, @out.endEvents[1].val);
+				env.AssertEventNew(
+					"s0",
+					@event => {
+						var @out = (MyLocalJsonProvidedEventOut)@event.Underlying;
+						Assert.AreEqual("G1", @out.startEvent.id);
+						Assert.AreEqual("G1", @out.endEvents[0].id);
+						Assert.AreEqual(2, @out.endEvents[0].val);
+						Assert.AreEqual("G1", @out.endEvents[1].id);
+						Assert.AreEqual(3, @out.endEvents[1].val);
+					});
 
 				env.UndeployAll();
 			}
@@ -84,15 +85,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@public @buseventtype @JsonSchema(ClassName='" +
-				             typeof(MyLocalJsonProvidedPrimitiveInt).FullName +
-				             "') create json schema MySchema();\n" +
-				             "insert into MySchema select IntBoxed as primitiveInt from SupportBean;\n" +
-				             "@Name('s0') select * from MySchema;\n";
+				var epl = "@public @buseventtype @JsonSchema(ClassName='" +
+				          typeof(MyLocalJsonProvidedPrimitiveInt).FullName +
+				          "') create json schema MySchema();\n" +
+				          "insert into MySchema select IntBoxed as primitiveInt from SupportBean;\n" +
+				          "@name('s0') select * from MySchema;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				env.SendEventBean(new SupportBean());
-				Assert.AreEqual(-1, env.Listener("s0").AssertOneGetNewAndReset().Get("primitiveInt"));
+				env.AssertEqualsNew("s0", "primitiveInt", -1);
 
 				env.UndeployAll();
 			}
@@ -102,13 +103,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string prefix = "@JsonSchema(ClassName='" + typeof(MyLocalJsonProvidedStringInt).FullName + "') ";
-				string epl = prefix + "create json schema MySchema(c0 int)";
+				var prefix = "@JsonSchema(ClassName='" + typeof(MyLocalJsonProvidedStringInt).FullName + "') ";
+				var epl = prefix + "create json schema MySchema(c0 int)";
 				TryInvalidSchema(
 					env,
 					epl,
 					typeof(MyLocalJsonProvidedStringInt),
-					"Public field 'c0' of class '%CLASS%' declared as type 'System.String' cannot receive a value of type 'System.Int32'");
+					"Public field 'c0' of class '%CLASS%' declared as type 'String' cannot receive a value of type 'Integer'");
 			}
 		}
 
@@ -118,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				var mapType = typeof(Properties).FullName;
 				var prefix = EventRepresentationChoice.JSONCLASSPROVIDED.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedStringInt));
-				
+
 				TryInvalidSchema(
 					env,
 					prefix + "select 0 as dummy from SupportBean",
@@ -143,9 +144,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			{
 				string epl;
 
-				epl = "@JsonSchema(Dynamic=true, ClassName='" + typeof(SupportClientsEvent).FullName + "') create json schema Clients()";
-				TryInvalidCompile(
-					env,
+				epl = "@JsonSchema(Dynamic=true, ClassName='" +
+				      typeof(SupportClientsEvent).FullName +
+				      "') create json schema Clients()";
+				env.TryInvalidCompile(
 					epl,
 					"The dynamic flag is not supported when used with a provided JSON event class");
 
@@ -153,26 +155,28 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				      "@JsonSchema(ClassName='" +
 				      typeof(SupportClientsEvent).FullName +
 				      "') create json schema Clients() inherits ABC";
-				TryInvalidCompile(
-					env,
+				env.TryInvalidCompile(
 					epl,
 					"Specifying a supertype is not supported with a provided JSON event class");
 
-				epl = "@JsonSchema(ClassName='" + typeof(MyLocalNonPublicInvalid).FullName + "') create json schema Clients()";
-				TryInvalidCompile(
-					env,
+				epl = "@JsonSchema(ClassName='" +
+				      typeof(MyLocalNonPublicInvalid).FullName +
+				      "') create json schema Clients()";
+				env.TryInvalidCompile(
 					epl,
 					"Provided JSON event class is not public");
 
-				epl = "@JsonSchema(ClassName='" + typeof(MyLocalNoDefaultCtorInvalid).FullName + "') create json schema Clients()";
-				TryInvalidCompile(
-					env,
+				epl = "@JsonSchema(ClassName='" +
+				      typeof(MyLocalNoDefaultCtorInvalid).FullName +
+				      "') create json schema Clients()";
+				env.TryInvalidCompile(
 					epl,
 					"Provided JSON event class does not have a public default constructor or is a non-static inner class");
 
-				epl = "@JsonSchema(ClassName='" + typeof(MyLocalInstanceInvalid).FullName + "') create json schema Clients()";
-				TryInvalidCompile(
-					env,
+				epl = "@JsonSchema(ClassName='" +
+				      typeof(MyLocalInstanceInvalid).FullName +
+				      "') create json schema Clients()";
+				env.TryInvalidCompile(
 					epl,
 					"Provided JSON event class does not have a public default constructor or is a non-static inner class");
 			}
@@ -182,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string schema =
+				var schema =
 					"create json schema Partner(id long, name string, since System.DateTimeOffset);\n" +
 					"create json schema Client(" +
 					"_id long,\n" +
@@ -209,23 +213,27 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					"partners Partner[]\n" +
 					");\n" +
 					"@public @buseventtype create json schema Clients(clients Client[]);\n" +
-					"@Name('s0') select * from Clients;\n";
+					"@name('s0') select * from Clients;\n";
 				env.CompileDeploy(schema).AddListener("s0");
 
 				env.SendEventJson(ClientsJson, "Clients");
 
-				JsonEventObject @event = (JsonEventObject) env.Listener("s0").AssertOneGetNewAndReset().Underlying;
-				Assert.AreEqual(ClientsJsonReplaceWhitespace, @event.ToString());
+				env.AssertEventNew(
+					"s0",
+					theEvent => {
+						var @event = (JsonEventObject)theEvent.Underlying;
+						Assert.AreEqual(ClientsJsonReplaceWhitespace, @event.ToString());
+					});
 
 				env.UndeployAll();
 			}
 		}
 
-		internal class EventJsonProvidedClassUsersEventWithCreateSchema : RegressionExecution
+		private class EventJsonProvidedClassUsersEventWithCreateSchema : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string schema =
+				var schema =
 					"create json schema Friend(id string, name string);\n" +
 					"create json schema User(" +
 					"_id string,\n" +
@@ -252,41 +260,46 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 					"favoriteFruit string\n" +
 					");\n" +
 					"@public @buseventtype create json schema Users(users User[]);\n" +
-					"@Name('s0') select * from Users;\n";
+					"@name('s0') select * from Users;\n";
 				env.CompileDeploy(schema).AddListener("s0");
 
 				env.SendEventJson(UsersJson, "Users");
 
-				JsonEventObject @event = (JsonEventObject) env.Listener("s0").AssertOneGetNewAndReset().Underlying;
-				Assert.AreEqual(UsersJsonReplaceWhitespace, @event.ToString());
+				env.AssertEventNew(
+					"s0",
+					theEvent => {
+						var @event = (JsonEventObject)theEvent.Underlying;
+						Assert.AreEqual(UsersJsonReplaceWhitespace, @event.ToString());
+					});
 
 				env.UndeployAll();
 			}
 		}
 
-		internal class EventJsonProvidedClassClientsEvent : RegressionExecution
+		private class EventJsonProvidedClassClientsEvent : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@public @buseventtype @JsonSchema(ClassName='" +
-				             typeof(SupportClientsEvent).FullName +
-				             "') create json schema Clients();\n" +
-				             "@Name('s0') select * from Clients;";
+				var epl = "@public @buseventtype @JsonSchema(ClassName='" +
+				          typeof(SupportClientsEvent).FullName +
+				          "') create json schema Clients();\n" +
+				          "@name('s0') select * from Clients;";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				// try sender parse-only
-				EventSenderJson sender = (EventSenderJson) env.Runtime.EventService.GetEventSender("Clients");
-				SupportClientsEvent clients = (SupportClientsEvent) sender.Parse(ClientsJson);
+				var sender = (EventSenderJson)env.Runtime.EventService.GetEventSender("Clients");
+				var clients = (SupportClientsEvent)sender.Parse(ClientsJson);
 				AssertClientsPremade(clients);
 
 				// try send-event
 				sender.SendEvent(ClientsJson);
-				EventBean @event = env.Listener("s0").AssertOneGetNewAndReset();
-				AssertClientsPremade((SupportClientsEvent) @event.Underlying);
-
-				// try write
-				JSONEventRenderer render = env.Runtime.RenderEventService.GetJSONRenderer(@event.EventType);
-				Assert.AreEqual(ClientsJsonReplaceWhitespace, render.Render(@event));
+				env.AssertEventNew(
+					"s0",
+					@event => {
+						AssertClientsPremade((SupportClientsEvent)@event.Underlying);
+						var render = env.Runtime.RenderEventService.GetJSONRenderer(@event.EventType);
+						Assert.AreEqual(ClientsJsonReplaceWhitespace, render.Render(@event));
+					});
 
 				env.UndeployAll();
 			}
@@ -294,44 +307,57 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			private void AssertClientsPremade(SupportClientsEvent clients)
 			{
 				Assert.AreEqual(1, clients.clients.Count);
-				SupportClientsEvent.Client first = clients.clients[0];
+				var first = clients.clients[0];
 				Assert.AreEqual(ClientObject.clients[0], first);
+			}
+
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.EVENTSENDER);
 			}
 		}
 
-		internal class EventJsonProvidedClassUsersEvent : RegressionExecution
+		private class EventJsonProvidedClassUsersEvent : RegressionExecution
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl = "@public @buseventtype @JsonSchema(ClassName='" +
-				             typeof(SupportUsersEvent).FullName +
-				             "') create json schema Users();\n" +
-				             "@Name('s0') select * from Users;";
+				var epl = "@public @buseventtype @JsonSchema(ClassName='" +
+				          typeof(SupportUsersEvent).FullName +
+				          "') create json schema Users();\n" +
+				          "@name('s0') select * from Users;";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				// try sender parse-only
-				EventSenderJson sender = (EventSenderJson) env.Runtime.EventService.GetEventSender("Users");
-				SupportUsersEvent users = (SupportUsersEvent) sender.Parse(UsersJson);
+				var sender = (EventSenderJson)env.Runtime.EventService.GetEventSender("Users");
+				var users = (SupportUsersEvent)sender.Parse(UsersJson);
 				AssertUsersPremade(users);
 
 				// try send-event
 				sender.SendEvent(UsersJson);
-				EventBean @event = env.Listener("s0").AssertOneGetNewAndReset();
-				AssertUsersPremade((SupportUsersEvent) @event.Underlying);
+				env.AssertEventNew(
+					"s0",
+					@event => {
+						AssertUsersPremade((SupportUsersEvent)@event.Underlying);
 
-				// try write
-				JSONEventRenderer render = env.Runtime.RenderEventService.GetJSONRenderer(@event.EventType);
-				Assert.AreEqual(UsersJsonReplaceWhitespace, render.Render(@event));
+						// try write
+						var render = env.Runtime.RenderEventService.GetJSONRenderer(@event.EventType);
+						Assert.AreEqual(UsersJsonReplaceWhitespace, render.Render(@event));
+					});
 
 				env.UndeployAll();
+			}
+
+			public ISet<RegressionFlag> Flags()
+			{
+				return Collections.Set(RegressionFlag.EVENTSENDER);
 			}
 
 			private void AssertUsersPremade(SupportUsersEvent users)
 			{
 				Assert.AreEqual(2, users.users.Count);
-				SupportUsersEvent.User first = users.users[0];
+				var first = users.users[0];
 				Assert.AreEqual("45166552176594981065", first._id);
-				SupportUsersEvent.User second = users.users[1];
+				var second = users.users[1];
 				Assert.AreEqual("23504426278646846580", second._id);
 				EPAssertionUtil.AssertEqualsExactOrder(UserObject.users.ToArray(), users.users.ToArray());
 			}
@@ -339,20 +365,21 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 
 		private static SupportUsersEvent UserObject {
 			get {
-				SupportUsersEvent.Friend u0f0 = new SupportUsersEvent.Friend();
+				var u0f0 = new SupportUsersEvent.Friend();
 				u0f0.id = "3987";
 				u0f0.name = "dWwKYheGgTZejIMYdglXvvrWAzUqsk";
-				SupportUsersEvent.Friend u0f1 = new SupportUsersEvent.Friend();
+				var u0f1 = new SupportUsersEvent.Friend();
 				u0f1.id = "4673";
 				u0f1.name = "EqVIiZyuhSCkWXvqSxgyQihZaiwSra";
 
-				SupportUsersEvent.User u0 = new SupportUsersEvent.User();
+				var u0 = new SupportUsersEvent.User();
 				u0._id = "45166552176594981065";
 				u0.index = 692815193;
 				u0.guid = "oLzFhQttjjCGmijYulZg";
 				u0.isActive = true;
 				u0.balance = "XtMtTkSfmQtyRHS1086c";
-				u0.picture = "i0wzskJJ2SvxXL1UbXEzy332JksricBvitJkeKt3JcoZGx10JxhbdkQ8YoyJ0cL1MGFwC9bpAzQXSFBEcAUQ8lGQekvJZDeJ5C5p";
+				u0.picture =
+					"i0wzskJJ2SvxXL1UbXEzy332JksricBvitJkeKt3JcoZGx10JxhbdkQ8YoyJ0cL1MGFwC9bpAzQXSFBEcAUQ8lGQekvJZDeJ5C5p";
 				u0.age = 23;
 				u0.eyeColor = "XqoN9IzOBVixZhrofJpd";
 				u0.name = "xBavaMCv6j0eYkT6HMcB";
@@ -370,13 +397,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				u0.greeting = "xfS8vUXYq4wzufBLP6CY";
 				u0.favoriteFruit = "KT0tVAxXRawtbeQIWAot";
 
-				SupportUsersEvent.User u1 = new SupportUsersEvent.User();
+				var u1 = new SupportUsersEvent.User();
 				u1._id = "23504426278646846580";
 				u1.index = 675066974;
 				u1.guid = "MfiCc1n1WfG6d6iXcdNf";
 				u1.isActive = true;
 				u1.balance = "OQEwTOBvwK0b8dJYFpBU";
-				u1.picture = "avtMGQxSrO1h86V7KVaKaWOWohfCnENnMfKcLbydRSMq2eHc533hC4n7GMwsGhXz10EyVBhnP1LUFZ0ooZd9GmIynRomjCjP8tEN";
+				u1.picture =
+					"avtMGQxSrO1h86V7KVaKaWOWohfCnENnMfKcLbydRSMq2eHc533hC4n7GMwsGhXz10EyVBhnP1LUFZ0ooZd9GmIynRomjCjP8tEN";
 				u1.age = 33;
 				u1.eyeColor = "Fjsm1nmwyphAw7DRnfZ7";
 				u1.name = "NnjrrCj1TTObhT9gHMH2";
@@ -394,7 +422,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 				u1.greeting = "EQqKZyiGnlyHeZf9ojnl";
 				u1.favoriteFruit = "9aUx0u6G840i0EeKFM4Z";
 
-				SupportUsersEvent @event = new SupportUsersEvent();
+				var @event = new SupportUsersEvent();
 				@event.users = Arrays.AsList(u0, u1);
 				return @event;
 			}
@@ -410,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 			Type provided,
 			string message)
 		{
-			TryInvalidCompile(env, epl, message.Replace("%CLASS%", provided.FullName));
+			env.TryInvalidCompile(epl, message.Replace("%CLASS%", provided.FullName));
 		}
 
 		private static string UsersJson =>
@@ -527,39 +555,39 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 
 		private static SupportClientsEvent ClientObject {
 			get {
-				SupportClientsEvent.Client client = new SupportClientsEvent.Client();
+				var client = new SupportClientsEvent.Client();
 				client._id = 4063715686146184700L;
 				client.index = 1951037102;
 				client.guid = Guid.Parse("b7dc7f66-4f6d-4f03-14d7-83da210dfba6");
 				client.isActive = true;
 				client.balance = 0.8509300187678505m;
-				client.picture = "TB6izKKNN5ihBLFiRekRmcntxaVAke1rL7rhUDQPACG4DxrLCvOfKNjy5KZl9Rg0QUknq7RFifVbZg4RbnVjdEThMdD1UAZQk3Le";
+				client.picture =
+					"TB6izKKNN5ihBLFiRekRmcntxaVAke1rL7rhUDQPACG4DxrLCvOfKNjy5KZl9Rg0QUknq7RFifVbZg4RbnVjdEThMdD1UAZQk3Le";
 				client.age = 9;
 				client.eyeColor = SupportClientsEvent.EyeColor.BROWN;
 				client.name = "PTgbx3rVSkXaSVlKV2SK";
 				client.gender = "D7TzVALMRaVmCEkC8bzT";
 				client.company = "m4dcMP9VIFlniImW4Ezc";
-				client.emails = new string[] {"puYIMDORrusZXRUZjMQM", "vxMKjpYtPjJPRvDYuCjZ"};
-				client.phones = new long[] {1206223281};
+				client.emails = new string[] { "puYIMDORrusZXRUZjMQM", "vxMKjpYtPjJPRvDYuCjZ" };
+				client.phones = new long[] { 1206223281 };
 				client.address = "Hf2YGJnogcwkIwj5hTJz";
 				client.about = "d0FcpUETNRV2ky15EmBc";
 				client.registered = DateTimeParsingFunctions.ParseDefaultDateTimeOffset("1961-10-09").DateTime;
 				client.latitude = 26.91225115361936;
 				client.longitude = 74.26256260138875;
 				client.tags = EmptyList<string>.Instance;
-				;
 
-				SupportClientsEvent.Partner partnerOne = new SupportClientsEvent.Partner();
+				var partnerOne = new SupportClientsEvent.Partner();
 				partnerOne.id = -4413101314901277000L;
 				partnerOne.name = "YjiSvZzaXYhJMkZddxlVPdHfoIthbY";
 				partnerOne.since = DateTimeParsingFunctions.ParseDefault("1974-11-01T07:58:27.373380998Z");
-				SupportClientsEvent.Partner partnerTwo = new SupportClientsEvent.Partner();
+				var partnerTwo = new SupportClientsEvent.Partner();
 				partnerTwo.id = -7309654308880836000L;
 				partnerTwo.name = "HxHDrtpnXAxCooxasYVLZLqYImRLzW";
 				partnerTwo.since = DateTimeParsingFunctions.ParseDefault("1927-02-02T14:34:09.672667878Z");
 				client.partners = Arrays.AsList(partnerOne, partnerTwo);
 
-				SupportClientsEvent @event = new SupportClientsEvent();
+				var @event = new SupportClientsEvent();
 				@event.clients = Collections.SingletonList(client);
 				return @event;
 			}

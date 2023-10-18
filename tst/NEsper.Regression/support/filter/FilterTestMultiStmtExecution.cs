@@ -36,8 +36,12 @@ namespace com.espertech.esper.regressionlib.support.filter
         {
             _theCase = theCase;
             _testCaseName = originator.Name + " permutation " + theCase.Filters.RenderAny();
-            _stats = withStats ? new String[] { theCase.Stats } : null;
+            _stats = withStats ? new string[] { theCase.Stats } : null;
+        }
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.OBSERVEROPS);
         }
 
         public void Run(RegressionEnvironment env)
@@ -51,7 +55,7 @@ namespace com.espertech.esper.regressionlib.support.filter
             for (var i = 0; i < _theCase.Filters.Length; i++) {
                 var filter = _theCase.Filters[i];
                 var stmtName = "s" + i;
-                var epl = "@Name('" + stmtName + "') select * from SupportBean(" + filter + ")";
+                var epl = "@name('" + stmtName + "') select * from SupportBean(" + filter + ")";
                 env.CompileDeploy(epl).AddListener(stmtName);
                 existingStatements[i] = true;
                 startedStatements[i] = true;

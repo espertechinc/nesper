@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public void Run(RegressionEnvironment env)
         {
             var lineSeparator = Environment.NewLine;
-            var statement = "@Name('s0') select TheString, /* this is my string */\n" +
+            var statement = "@name('s0') select TheString, /* this is my string */\n" +
                             "IntPrimitive, // same line Comment\n" +
                             "/* Comment taking one line */\n" +
                             "// another Comment taking a line\n" +
@@ -32,14 +32,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             env.SendEventBean(new SupportBean("e1", 100));
 
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual("e1", theEvent.Get("TheString"));
-            Assert.AreEqual(100, theEvent.Get("IntPrimitive"));
-            Assert.AreEqual(100, theEvent.Get("myPrimitive"));
-            env.Listener("s0").Reset();
+            env.AssertEventNew(
+                "s0",
+                theEvent => {
+                    Assert.AreEqual("e1", theEvent.Get("TheString"));
+                    Assert.AreEqual(100, theEvent.Get("IntPrimitive"));
+                    Assert.AreEqual(100, theEvent.Get("myPrimitive"));
+                });
 
             env.SendEventBean(new SupportBean("e1", -1));
-            Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
+            env.AssertListenerNotInvoked("s0");
 
             env.UndeployAll();
         }

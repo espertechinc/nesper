@@ -24,7 +24,6 @@ namespace com.espertech.esper.common.@internal.util
     public partial class TypeWidenerFactory
     {
         private static readonly TypeWidenerSPI STRING_TO_CHAR_COERCER = new ProxyTypeWidenerSPI {
-            ProcWidenResultType = () => typeof(char),
             ProcWiden = input => SimpleTypeCasterFactory.CharTypeCaster.Cast(input),
             ProcWidenCodegen = (
                     expression,

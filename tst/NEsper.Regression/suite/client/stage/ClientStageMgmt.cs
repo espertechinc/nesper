@@ -26,12 +26,12 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 			return execs;
 		}
 
-		private class ClientStageMgmtInvalidStageDestroyWhileNotEmpty : RegressionExecution
+		private class ClientStageMgmtInvalidStageDestroyWhileNotEmpty : ClientStageRegressionExecution
 		{
-			public void Run(RegressionEnvironment env)
+			public override void Run(RegressionEnvironment env)
 			{
-				env.CompileDeploy("@Name('s0') select * from SupportBean");
-				string deploymentId = env.DeploymentId("s0");
+				env.CompileDeploy("@name('s0') select * from SupportBean");
+				var deploymentId = env.DeploymentId("s0");
 				env.StageService.GetStage("ST");
 				StageIt(env, "ST", deploymentId);
 

@@ -6,11 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Threading;
 
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
@@ -20,22 +23,28 @@ using static com.espertech.esper.regressionlib.support.client.SupportCompileDepl
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
-    public class MultithreadStmtNamedWindowUniqueTwoWJoinConsumer
+    public class MultithreadStmtNamedWindowUniqueTwoWJoinConsumer : RegressionExecutionPreConfigured
     {
         private int _count;
         private EPRuntimeProvider _runtimeProvider;
+        private readonly Configuration _configuration;
 
-        public void Run(Configuration configuration)
+        public MultithreadStmtNamedWindowUniqueTwoWJoinConsumer(Configuration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public void Run()
         {
             _runtimeProvider = new EPRuntimeProvider();
             
-            configuration.Common.AddEventType(typeof(EventOne));
-            configuration.Common.AddEventType(typeof(EventTwo));
+            _configuration.Common.AddEventType(typeof(EventOne));
+            _configuration.Common.AddEventType(typeof(EventTwo));
             
-            RunAssertion(1, true, null, null, configuration);
-            RunAssertion(2, false, true, Locking.SPIN, configuration);
-            RunAssertion(3, false, true, Locking.SUSPEND, configuration);
-            RunAssertion(4, false, false, null, configuration);
+            RunAssertion(1, true, null, null, _configuration);
+            RunAssertion(2, false, true, Locking.SPIN, _configuration);
+            RunAssertion(3, false, true, Locking.SUSPEND, _configuration);
+            RunAssertion(4, false, false, null, _configuration);
         }
 
         private void RunAssertion(
@@ -69,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                       "insert into EventOneWindow select * from EventOne;\n" +
                       "create window EventTwoWindow#unique(Key) as EventTwo;\n" +
                       "insert into EventTwoWindow select * from EventTwo;\n" +
-                      "@Name('out') select * from EventOneWindow as e1, EventTwoWindow as e2 where e1.Key = e2.Key";
+                      "@name('out') select * from EventOneWindow as e1, EventTwoWindow as e2 where e1.Key = e2.Key";
             var deployed = CompileDeploy(epl, runtime, config);
 
             var listener = new SupportMTUpdateListener();
@@ -136,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             foreach (var events in delivered) {
                 var idE1 = events[0].Get("e1.Instance").AsInt64();
                 var idE2 = events[0].Get("e2.Instance").AsInt64();
-                // comment-in when needed: System.out.println("Received " + IdE1 + " " + IdE2);
+                // comment-in when needed: Console.WriteLine("Received " + IdE1 + " " + IdE2);
 
                 if (previousIdE1 != null) {
                     var incorrect = idE1 != previousIdE1 && idE2 != previousIdE2;
@@ -146,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     }
 
                     if (incorrect) {
-                        // comment-in when needed: System.out.println("Non-Monotone increase (this is still correct but noteworthy)");
+                        // comment-in when needed: Console.WriteLine("Non-Monotone increase (this is still correct but noteworthy)");
                         countNotMonotone++;
                     }
                 }

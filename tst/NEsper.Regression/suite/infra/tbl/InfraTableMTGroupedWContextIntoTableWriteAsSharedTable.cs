@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
@@ -27,6 +29,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         /// <summary>
         ///     Multiple writers share a key space that they aggregate into.
         ///     Writer utilize a hash partition context.
@@ -52,8 +59,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numGroups)
         {
             var eplDeclare =
-                "create table varTotal (key string primary key, total sum(int));\n" +
-                "create context ByStringHash\n" +
+                "@public create table varTotal (key string primary key, total sum(int));\n" +
+                "@public create context ByStringHash\n" +
                 "  coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 16 preallocate\n;" +
                 "context ByStringHash into table varTotal select TheString, sum(IntPrimitive) as total from SupportBean group by TheString;\n";
             var eplAssert = "select varTotal[P00].total as c0 from SupportBean_S0";
@@ -99,13 +106,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             }
 
             // each group should total up to "numLoops*numThreads"
-            env.CompileDeploy("@Name('s0') " + eplAssert, path).AddListener("s0");
-            var listener = env.Listener("s0");
+            env.CompileDeploy("@name('s0') " + eplAssert, path).AddListener("s0");
 
             int? expected = numLoops * numThreads;
             for (var i = 0; i < numGroups; i++) {
                 env.SendEventBean(new SupportBean_S0(0, "G" + i));
-                Assert.AreEqual(expected, listener.AssertOneGetNewAndReset().Get("c0"));
+                env.AssertEqualsNew("s0", "c0", expected);
             }
 
             env.UndeployAll();

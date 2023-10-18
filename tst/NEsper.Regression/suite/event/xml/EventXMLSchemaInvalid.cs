@@ -16,8 +16,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
     {
         public void Run(RegressionEnvironment env)
         {
-            TryInvalidCompile(
-                env,
+            env.TryInvalidCompile(
                 "select element1 from XMLSchemaConfigTwo#length(100)",
                 "Failed to validate select-clause expression 'element1': Property named 'element1' is not valid in any stream [");
         }

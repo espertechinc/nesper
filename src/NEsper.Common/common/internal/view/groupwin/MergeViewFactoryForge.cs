@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage3;
+using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat;
@@ -40,7 +41,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
-            CodegenSymbolProvider symbols,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             throw new UnsupportedOperationException("not supported for merge forge");

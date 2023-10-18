@@ -47,6 +47,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     // some action here
                 }
             }
+            
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
         }
 
         public class ClientRuntimeRuntimeStateChange

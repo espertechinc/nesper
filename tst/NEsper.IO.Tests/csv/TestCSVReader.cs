@@ -213,7 +213,7 @@ namespace com.espertech.esperio.csv
             var adapter = new CSVInputAdapter(runtime, spec);
             adapter.Start();
 
-            Assert.IsTrue(ul.IsInvoked());
+            Assert.IsTrue(ul.IsInvoked);
             var e = ul.AssertOneGetNewAndReset();
             var f = (Figure) e.Underlying;
             Assert.AreEqual(1, f.Point.X);
@@ -244,7 +244,7 @@ namespace com.espertech.esperio.csv
             var adapter = new CSVInputAdapter(runtime, spec);
             adapter.Start();
 
-            Assert.IsTrue(ul.IsInvoked());
+            Assert.IsTrue(ul.IsInvoked);
             var e = ul.AssertOneGetNewAndReset();
             Assert.AreEqual(1, e.Get("Point.X"));
         }

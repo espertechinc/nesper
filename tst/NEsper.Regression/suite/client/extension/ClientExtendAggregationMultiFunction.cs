@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.client.scopetest;
@@ -15,7 +16,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.extend.aggmultifunc;
-using com.espertech.esper.runtime.client.scopetest;
+
 
 using NUnit.Framework;
 
@@ -27,70 +28,14 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		public static ICollection<RegressionExecution> Executions()
 		{
 			var execs = new List<RegressionExecution>();
-			WithSimpleState(execs);
-			WithScalarOnly(execs);
-			WithScalarArray(execs);
-			WithScalarColl(execs);
-			WithSingleEvent(execs);
-			WithCollEvent(execs);
-			WithSameProviderGroupedReturnSingleEvent(execs);
-			WithWithTable(execs);
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithWithTable(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ClientExtendAggregationMFManagedWithTable());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithSameProviderGroupedReturnSingleEvent(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ClientExtendAggregationMFManagedSameProviderGroupedReturnSingleEvent());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithCollEvent(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ClientExtendAggregationMFManagedCollEvent());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithSingleEvent(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ClientExtendAggregationMFManagedSingleEvent());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithScalarColl(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ClientExtendAggregationMFManagedScalarColl());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithScalarArray(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ClientExtendAggregationMFManagedScalarArray());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithScalarOnly(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ClientExtendAggregationMFManagedScalarOnly());
-			return execs;
-		}
-
-		public static IList<RegressionExecution> WithSimpleState(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
 			execs.Add(new ClientExtendAggregationMFManagedSimpleState());
+			execs.Add(new ClientExtendAggregationMFManagedScalarOnly());
+			execs.Add(new ClientExtendAggregationMFManagedScalarArray());
+			execs.Add(new ClientExtendAggregationMFManagedScalarColl());
+			execs.Add(new ClientExtendAggregationMFManagedSingleEvent());
+			execs.Add(new ClientExtendAggregationMFManagedCollEvent());
+			execs.Add(new ClientExtendAggregationMFManagedSameProviderGroupedReturnSingleEvent());
+			execs.Add(new ClientExtendAggregationMFManagedWithTable());
 			return execs;
 		}
 
@@ -100,17 +45,18 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
 		private class ClientExtendAggregationMFManagedWithTable : RegressionExecution
 		{
-			public bool ExcludeWhenInstrumented()
+			public ISet<RegressionFlag> Flags()
 			{
-				return true;
+				return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED);
 			}
 
 			public void Run(RegressionEnvironment env)
 			{
 				var path = new RegressionPath();
-				env.CompileDeploy("create table MyTable(col collectEvents())", path);
+				env.CompileDeploy("@public create table MyTable(col collectEvents())", path);
 				env.CompileDeploy("into table MyTable select collectEvents(*) as col from SupportBean#length(2)", path);
-				env.CompileDeploy("@Name('s0') on SupportBean_S0 select col as c0 from MyTable", path).AddListener("s0");
+				env.CompileDeploy("@name('s0') on SupportBean_S0 select col as c0 from MyTable", path)
+					.AddListener("s0");
 
 				var e1 = new SupportBean("E1", 1);
 				env.SendEventBean(e1);
@@ -119,6 +65,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 				var e2 = new SupportBean("E2", 2);
 				env.SendEventBean(e2);
 				SendAssertList(env, e1, e2);
+
+				env.Milestone(0);
 
 				var e3 = new SupportBean("E3", 3);
 				env.SendEventBean(e3);
@@ -133,36 +81,37 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			public void Run(RegressionEnvironment env)
 			{
 				var fieldsEnumEvent = "c0,c1,c2".SplitCsv();
-				var eplEnumEvent = "@Name('s0') select " +
+				var eplEnumEvent = "@name('s0') select " +
 				                   "ee() as c0, " +
-				                   "ee().allOf(v => v.TheString = 'E1') as c1, " +
-				                   "ee().allOf(v => v.IntPrimitive = 1) as c2 " +
+				                   "ee().allOf(v => v.theString = 'E1') as c1, " +
+				                   "ee().allOf(v => v.intPrimitive = 1) as c2 " +
 				                   "from SupportBean";
 				env.CompileDeploy(eplEnumEvent).AddListener("s0");
 
-				var expectedEnumEvent = new[] {
+				var expectedEnumEvent = new object[][] {
 					new object[] { "c0", typeof(SupportBean[]), typeof(SupportBean).FullName, true },
-					new object[] { "c1", typeof(bool?), null, null },
-					new object[] { "c2", typeof(bool?), null, null }
+					new object[] { "c1", typeof(bool?), null, null }, new object[] { "c2", typeof(bool?), null, null }
 				};
-				SupportEventTypeAssertionUtil.AssertEventTypeProperties(
-					expectedEnumEvent,
-					env.Statement("s0").EventType,
-					SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
+				env.AssertStatement(
+					"s0",
+					statement => SupportEventTypeAssertionUtil.AssertEventTypeProperties(
+						expectedEnumEvent,
+						statement.EventType,
+						SupportEventTypeAssertionEnumExtensions.GetSetWithFragment()));
 
 				var eventEnumOne = new SupportBean("E1", 1);
 				env.SendEventBean(eventEnumOne);
-				EPAssertionUtil.AssertProps(
-					env.Listener("s0").AssertOneGetNewAndReset(),
+				env.AssertPropsNew(
+					"s0",
 					fieldsEnumEvent,
-					new object[] { new[] { eventEnumOne }, true, true });
+					new object[] { new SupportBean[] { eventEnumOne }, true, true });
 
 				var eventEnumTwo = new SupportBean("E2", 2);
 				env.SendEventBean(eventEnumTwo);
-				EPAssertionUtil.AssertProps(
-					env.Listener("s0").AssertOneGetNewAndReset(),
+				env.AssertPropsNew(
+					"s0",
 					fieldsEnumEvent,
-					new object[] { new[] { eventEnumOne, eventEnumTwo }, false, false });
+					new object[] { new SupportBean[] { eventEnumOne, eventEnumTwo }, false, false });
 
 				env.UndeployAll();
 			}
@@ -174,34 +123,36 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			{
 				// test single-event return
 				var fieldsSingleEvent = "c0,c1,c2,c3,c4".SplitCsv();
-				var eplSingleEvent = "@Name('s0') select " +
+				var eplSingleEvent = "@name('s0') select " +
 				                     "se1() as c0, " +
-				                     "se1().allOf(v => v.TheString = 'E1') as c1, " +
-				                     "se1().allOf(v => v.IntPrimitive = 1) as c2, " +
-				                     "se1().TheString as c3, " +
-				                     "se1().IntPrimitive as c4 " +
+				                     "se1().allOf(v => v.theString = 'E1') as c1, " +
+				                     "se1().allOf(v => v.intPrimitive = 1) as c2, " +
+				                     "se1().theString as c3, " +
+				                     "se1().intPrimitive as c4 " +
 				                     "from SupportBean";
 				env.CompileDeploy(eplSingleEvent).AddListener("s0");
 
-				var expectedSingleEvent = new[] {
+				var expectedSingleEvent = new object[][] {
 					new object[] { "c0", typeof(SupportBean), typeof(SupportBean).FullName, false },
-					new object[] { "c1", typeof(bool?), null, null },
-					new object[] { "c2", typeof(bool?), null, null },
-					new object[] { "c3", typeof(string), null, null },
-					new object[] { "c4", typeof(int?), null, null },
+					new object[] { "c1", typeof(bool?), null, null }, new object[] { "c2", typeof(bool?), null, null },
+					new object[] { "c3", typeof(string), null, null }, new object[] { "c4", typeof(int?), null, null },
 				};
-				SupportEventTypeAssertionUtil.AssertEventTypeProperties(
-					expectedSingleEvent,
-					env.Statement("s0").EventType,
-					SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
+				env.AssertStatement(
+					"s0",
+					statement => SupportEventTypeAssertionUtil.AssertEventTypeProperties(
+						expectedSingleEvent,
+						statement.EventType,
+						SupportEventTypeAssertionEnumExtensions.GetSetWithFragment()));
 
 				var eventOne = new SupportBean("E1", 1);
 				env.SendEventBean(eventOne);
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fieldsSingleEvent, new object[] { eventOne, true, true, "E1", 1 });
+				env.AssertPropsNew("s0", fieldsSingleEvent, new object[] { eventOne, true, true, "E1", 1 });
+
+				env.Milestone(0);
 
 				var eventTwo = new SupportBean("E2", 2);
 				env.SendEventBean(eventTwo);
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fieldsSingleEvent, new object[] { eventTwo, false, false, "E2", 2 });
+				env.AssertPropsNew("s0", fieldsSingleEvent, new object[] { eventTwo, false, false, "E2", 2 });
 
 				env.UndeployAll();
 			}
@@ -213,42 +164,51 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			{
 				// test scalar-collection only
 				var fieldsScalarColl = "c2,c3".SplitCsv();
-				var eplScalarColl = "@Name('s0') select " +
-				                    "sc(TheString) as c0, " +
-				                    "sc(IntPrimitive) as c1, " +
-				                    "sc(TheString).allOf(v => v = 'E1') as c2, " +
-				                    "sc(IntPrimitive).allOf(v => v = 1) as c3 " +
+				var eplScalarColl = "@name('s0') select " +
+				                    "sc(theString) as c0, " +
+				                    "sc(intPrimitive) as c1, " +
+				                    "sc(theString).allOf(v => v = 'E1') as c2, " +
+				                    "sc(intPrimitive).allOf(v => v = 1) as c3 " +
 				                    "from SupportBean";
 				env.CompileDeploy(eplScalarColl).AddListener("s0");
 
-				var expectedScalarColl = new[] {
+				var expectedScalarColl = new object[][] {
 					new object[] { "c0", typeof(ICollection<object>), null, null },
 					new object[] { "c1", typeof(ICollection<object>), null, null },
-					new object[] { "c2", typeof(bool?), null, null },
-					new object[] { "c3", typeof(bool?), null, null },
+					new object[] { "c2", typeof(bool?), null, null }, new object[] { "c3", typeof(bool?), null, null },
 				};
-				SupportEventTypeAssertionUtil.AssertEventTypeProperties(
-					expectedScalarColl,
-					env.Statement("s0").EventType,
-					SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
+				env.AssertStatement(
+					"s0",
+					statement => SupportEventTypeAssertionUtil.AssertEventTypeProperties(
+						expectedScalarColl,
+						statement.EventType,
+						SupportEventTypeAssertionEnumExtensions.GetSetWithFragment()));
 
 				env.SendEventBean(new SupportBean("E1", 1));
-				EPAssertionUtil.AssertEqualsExactOrder(
-					new object[] { "E1" },
-					env.Listener("s0").AssertOneGetNew().Get("c0").Unwrap<object>());
-				EPAssertionUtil.AssertEqualsExactOrder(
-					new object[] { 1 },
-					env.Listener("s0").AssertOneGetNew().Get("c1").Unwrap<object>());
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fieldsScalarColl, new object[] { true, true });
+				env.AssertEventNew(
+					"s0",
+					@event => {
+						EPAssertionUtil.AssertEqualsExactOrder(
+							new object[] { "E1" },
+							(ICollection<object>)@event.Get("c0"));
+						EPAssertionUtil.AssertEqualsExactOrder(
+							new object[] { 1 },
+							(ICollection<object>)@event.Get("c1"));
+						EPAssertionUtil.AssertProps(@event, fieldsScalarColl, new object[] { true, true });
+					});
 
 				env.SendEventBean(new SupportBean("E2", 2));
-				EPAssertionUtil.AssertEqualsExactOrder(
-					new object[] { "E1", "E2" },
-					env.Listener("s0").AssertOneGetNew().Get("c0").Unwrap<object>());
-				EPAssertionUtil.AssertEqualsExactOrder(
-					new object[] { 1, 2 },
-					env.Listener("s0").AssertOneGetNew().Get("c1").Unwrap<object>());
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fieldsScalarColl, new object[] { false, false });
+				env.AssertEventNew(
+					"s0",
+					@event => {
+						EPAssertionUtil.AssertEqualsExactOrder(
+							new object[] { "E1", "E2" },
+							(ICollection<object>)@event.Get("c0"));
+						EPAssertionUtil.AssertEqualsExactOrder(
+							new object[] { 1, 2 },
+							(ICollection<object>)@event.Get("c1"));
+						EPAssertionUtil.AssertProps(@event, fieldsScalarColl, new object[] { false, false });
+					});
 
 				env.UndeployAll();
 			}
@@ -259,39 +219,40 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			public void Run(RegressionEnvironment env)
 			{
 				var fieldsScalarArray = "c0,c1,c2,c3".SplitCsv();
-				var eplScalarArray = "@Name('s0') select " +
-				                     "sa(TheString) as c0, " +
-				                     "sa(IntPrimitive) as c1, " +
-				                     "sa(TheString).allOf(v => v = 'E1') as c2, " +
-				                     "sa(IntPrimitive).allOf(v => v = 1) as c3 " +
+				var eplScalarArray = "@name('s0') select " +
+				                     "sa(theString) as c0, " +
+				                     "sa(intPrimitive) as c1, " +
+				                     "sa(theString).allOf(v => v = 'E1') as c2, " +
+				                     "sa(intPrimitive).allOf(v => v = 1) as c3 " +
 				                     "from SupportBean";
 				env.CompileDeploy(eplScalarArray).AddListener("s0");
 
-				var expectedScalarArray = new[] {
+				var expectedScalarArray = new object[][] {
 					new object[] { "c0", typeof(string[]), null, null },
 					new object[] { "c1", typeof(int?[]), null, null },
-					new object[] { "c2", typeof(bool?), null, null },
-					new object[] { "c3", typeof(bool?), null, null },
+					new object[] { "c2", typeof(bool?), null, null }, new object[] { "c3", typeof(bool?), null, null },
 				};
-				SupportEventTypeAssertionUtil.AssertEventTypeProperties(
-					expectedScalarArray,
-					env.Statement("s0").EventType,
-					SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
+				env.AssertStatement(
+					"s0",
+					statement => SupportEventTypeAssertionUtil.AssertEventTypeProperties(
+						expectedScalarArray,
+						statement.EventType,
+						SupportEventTypeAssertionEnumExtensions.GetSetWithFragment()));
 
 				env.SendEventBean(new SupportBean("E1", 1));
-				EPAssertionUtil.AssertProps(
-					env.Listener("s0").AssertOneGetNewAndReset(),
+				env.AssertPropsNew(
+					"s0",
 					fieldsScalarArray,
 					new object[] {
-						new[] { "E1" }, new int?[] { 1 }, true, true
+						new string[] { "E1" }, new int?[] { 1 }, true, true
 					});
 
 				env.SendEventBean(new SupportBean("E2", 2));
-				EPAssertionUtil.AssertProps(
-					env.Listener("s0").AssertOneGetNewAndReset(),
+				env.AssertPropsNew(
+					"s0",
 					fieldsScalarArray,
 					new object[] {
-						new[] { "E1", "E2" }, new int?[] { 1, 2 }, false, false
+						new string[] { "E1", "E2" }, new int?[] { 1, 2 }, false, false
 					});
 
 				env.UndeployAll();
@@ -303,23 +264,26 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			public void Run(RegressionEnvironment env)
 			{
 				var fieldsScalar = "c0,c1".SplitCsv();
-				var eplScalar = "@Name('s0') select ss(TheString) as c0, ss(IntPrimitive) as c1 from SupportBean";
+				var eplScalar = "@name('s0') select ss(theString) as c0, ss(intPrimitive) as c1 from SupportBean";
 				env.CompileDeploy(eplScalar).AddListener("s0");
 
-				var expectedScalar = new[] {
-					new object[] { "c0", typeof(string), null, null },
-					new object[] { "c1", typeof(int?), null, null }
+				var expectedScalar = new object[][] {
+					new object[] { "c0", typeof(string), null, null }, new object[] { "c1", typeof(int?), null, null }
 				};
-				SupportEventTypeAssertionUtil.AssertEventTypeProperties(
-					expectedScalar,
-					env.Statement("s0").EventType,
-					SupportEventTypeAssertionEnumExtensions.GetSetWithFragment());
+				env.AssertStatement(
+					"s0",
+					statement => SupportEventTypeAssertionUtil.AssertEventTypeProperties(
+						expectedScalar,
+						statement.EventType,
+						SupportEventTypeAssertionEnumExtensions.GetSetWithFragment()));
 
 				env.SendEventBean(new SupportBean("E1", 1));
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fieldsScalar, new object[] { "E1", 1 });
+				env.AssertPropsNew("s0", fieldsScalar, new object[] { "E1", 1 });
+
+				env.Milestone(0);
 
 				env.SendEventBean(new SupportBean("E2", 2));
-				EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fieldsScalar, new object[] { "E2", 2 });
+				env.AssertPropsNew("s0", fieldsScalar, new object[] { "E2", 2 });
 
 				env.UndeployAll();
 			}
@@ -327,26 +291,30 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
 		private class ClientExtendAggregationMFManagedSimpleState : RegressionExecution
 		{
-			public bool ExcludeWhenInstrumented()
+
+			public ISet<RegressionFlag> Flags()
 			{
-				return true;
+				return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED);
 			}
 
 			public void Run(RegressionEnvironment env)
 			{
-				env.CompileDeploy("@Name('s0') select collectEvents(*) as c0 from SupportBean#length(2)").AddListener("s0");
+				env.CompileDeploy("@name('s0') select collectEvents(*) as c0 from SupportBean#length(2)")
+					.AddListener("s0");
 
 				var e1 = new SupportBean("E1", 1);
 				env.SendEventBean(e1);
-				AssertList(env.Listener("s0"), e1);
+				AssertList(env, e1);
 
 				var e2 = new SupportBean("E2", 2);
 				env.SendEventBean(e2);
-				AssertList(env.Listener("s0"), e1, e2);
+				AssertList(env, e1, e2);
+
+				env.Milestone(0);
 
 				var e3 = new SupportBean("E3", 3);
 				env.SendEventBean(e3);
-				AssertList(env.Listener("s0"), e2, e3);
+				AssertList(env, e2, e3);
 
 				env.UndeployAll();
 			}
@@ -356,7 +324,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				var epl = "@Name('s0') select se1() as c0, se2() as c1 from SupportBean#keepall group by TheString";
+				var epl = "@name('s0') select se1() as c0, se2() as c1 from SupportBean#keepall group by theString";
 
 				// test regular
 				SupportAggMFMultiRTForge.Reset();
@@ -380,54 +348,69 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 		private static void TryAssertion(RegressionEnvironment env)
 		{
 			var fields = "c0,c1".SplitCsv();
-			var eventType = env.Statement("s0").EventType;
-			foreach (var prop in fields) {
-				Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyDescriptor(prop).PropertyType);
-				Assert.AreEqual(true, eventType.GetPropertyDescriptor(prop).IsFragment);
-				Assert.AreEqual(typeof(SupportBean).FullName, eventType.GetFragmentType(prop).FragmentType.Name);
-			}
 
-			// there should be just 1 forge instance for all of the registered functions for this statement
-			Assert.AreEqual(1, SupportAggMFMultiRTForge.Forges.Count);
-			Assert.AreEqual(2, SupportAggMFMultiRTForge.FunctionDeclContexts.Count);
-			for (var i = 0; i < 2; i++) {
-				AggregationMultiFunctionDeclarationContext contextDecl = SupportAggMFMultiRTForge.FunctionDeclContexts[i];
-				Assert.AreEqual(i == 0 ? "se1" : "se2", contextDecl.FunctionName);
-				Assert.IsFalse(contextDecl.IsDistinct());
-				Assert.IsNotNull(contextDecl.Configuration);
+			env.AssertStatement(
+				"s0",
+				statement => {
+					var eventType = statement.EventType;
+					foreach (var prop in fields) {
+						Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyDescriptor(prop).PropertyType);
+						Assert.AreEqual(true, eventType.GetPropertyDescriptor(prop).IsFragment);
+						Assert.AreEqual(
+							typeof(SupportBean).FullName,
+							eventType.GetFragmentType(prop).FragmentType.Name);
+					}
+				});
 
-				AggregationMultiFunctionValidationContext contextValid = SupportAggMFMultiRTForge.FunctionHandlerValidationContexts[i];
-				Assert.AreEqual(i == 0 ? "se1" : "se2", contextValid.FunctionName);
-				Assert.IsNotNull(contextValid.ParameterExpressions);
-				Assert.IsNotNull(contextValid.AllParameterExpressions);
-				Assert.AreEqual("someinfovalue", contextValid.Config.AdditionalConfiguredProperties.Get("someinfokey"));
-				Assert.IsNotNull(contextValid.EventTypes);
-				Assert.IsNotNull(contextValid.ValidationContext);
-				Assert.IsNotNull(contextValid.StatementName);
-			}
+			env.AssertThat(
+				() => {
+					// there should be just 1 forge instance for all of the registered functions for this statement
+					Assert.AreEqual(1, SupportAggMFMultiRTForge.Forges.Count);
+					Assert.AreEqual(2, SupportAggMFMultiRTForge.FunctionDeclContexts.Count);
+					for (var i = 0; i < 2; i++) {
+						var contextDecl =
+							SupportAggMFMultiRTForge.FunctionDeclContexts[i];
+						Assert.AreEqual(i == 0 ? "se1" : "se2", contextDecl.FunctionName);
+						Assert.IsFalse(contextDecl.IsDistinct);
+						Assert.IsNotNull(contextDecl.Configuration);
 
-			Assert.AreEqual(2, SupportAggMFMultiRTHandler.ProviderKeys.Count);
-			if (!SupportAggMFMultiRTHandler.AccessorModes.IsEmpty()) {
-				Assert.AreEqual(2, SupportAggMFMultiRTHandler.AccessorModes.Count);
-				Assert.AreEqual(1, SupportAggMFMultiRTHandler.StateFactoryModes.Count);
-			}
+						var contextValid =
+							SupportAggMFMultiRTForge.FunctionHandlerValidationContexts[i];
+						Assert.AreEqual(i == 0 ? "se1" : "se2", contextValid.FunctionName);
+						Assert.IsNotNull(contextValid.ParameterExpressions);
+						Assert.IsNotNull(contextValid.AllParameterExpressions);
+						Assert.AreEqual(
+							"someinfovalue",
+							contextValid.Config.AdditionalConfiguredProperties.Get("someinfokey"));
+						Assert.IsNotNull(contextValid.EventTypes);
+						Assert.IsNotNull(contextValid.ValidationContext);
+						Assert.IsNotNull(contextValid.StatementName);
+					}
 
-			Assert.AreEqual(0, SupportAggMFMultiRTSingleEventStateFactory.StateContexts.Count);
+					Assert.AreEqual(2, SupportAggMFMultiRTHandler.ProviderKeys.Count);
+					if (!SupportAggMFMultiRTHandler.AccessorModes.IsEmpty()) {
+						Assert.AreEqual(2, SupportAggMFMultiRTHandler.AccessorModes.Count);
+						Assert.AreEqual(1, SupportAggMFMultiRTHandler.StateFactoryModes.Count);
+					}
+
+					Assert.AreEqual(0, SupportAggMFMultiRTSingleEventStateFactory.StateContexts.Count);
+				});
 
 			// group 1
 			var eventOne = new SupportBean("E1", 1);
 			env.SendEventBean(eventOne);
-			EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { eventOne, eventOne });
+			env.AssertPropsNew("s0", fields, new object[] { eventOne, eventOne });
 			if (!SupportAggMFMultiRTSingleEventStateFactory.StateContexts.IsEmpty()) {
 				Assert.AreEqual(1, SupportAggMFMultiRTSingleEventStateFactory.StateContexts.Count);
-				SupportAggMFMultiRTSingleEventState context = SupportAggMFMultiRTSingleEventStateFactory.StateContexts[0];
-				// Not available: assertEquals("E1", context.getGroupKey());
+				var context =
+					SupportAggMFMultiRTSingleEventStateFactory.StateContexts[0];
+				// Not available: Assert.AreEqual("E1", context.getGroupKey());
 			}
 
 			// group 2
 			var eventTwo = new SupportBean("E2", 2);
 			env.SendEventBean(eventTwo);
-			EPAssertionUtil.AssertProps(env.Listener("s0").AssertOneGetNewAndReset(), fields, new object[] { eventTwo, eventTwo });
+			env.AssertPropsNew("s0", fields, new object[] { eventTwo, eventTwo });
 			if (!SupportAggMFMultiRTSingleEventStateFactory.StateContexts.IsEmpty()) {
 				Assert.AreEqual(2, SupportAggMFMultiRTSingleEventStateFactory.StateContexts.Count);
 			}
@@ -440,16 +423,19 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 			params SupportBean[] events)
 		{
 			env.SendEventBean(new SupportBean_S0(1));
-			var @out = (env.Listener("s0").AssertOneGetNewAndReset().Get("c0")).UnwrapIntoArray<object>();
-			EPAssertionUtil.AssertEqualsExactOrder(@out, events);
+			AssertList(env, events);
 		}
 
 		private static void AssertList(
-			SupportListener listener,
+			RegressionEnvironment env,
 			params SupportBean[] events)
 		{
-			var @out = listener.AssertOneGetNewAndReset().Get("c0").UnwrapIntoArray<object>();
-			EPAssertionUtil.AssertEqualsExactOrder(@out, events);
+			env.AssertEventNew(
+				"s0",
+				@event => {
+					var @out = @event.Get("c0").UnwrapIntoArray<object>();
+					EPAssertionUtil.AssertEqualsExactOrder(@out, events);
+				});
 		}
 	}
 } // end of namespace

@@ -22,7 +22,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
 		public static ICollection<RegressionExecution> Executions()
 		{
-			List<RegressionExecution> execs = new List<RegressionExecution>();
+			var execs = new List<RegressionExecution>();
 			execs.Add(new ExprDefineEventParamPatternPONO());
 			execs.Add(new ExprDefineEventParamPatternMap());
 			execs.Add(new ExprDefineEventParamContextProperty());
@@ -36,8 +36,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl =
-					"@Name('s0') expression combineProperties {v -> v.P00 || v.P01} select combineProperties((select * from SupportBean_S0#keepall)) as c0 from SupportBean_S1 as p";
+				var epl =
+					"@name('s0') expression combineProperties {v -> v.P00 || v.P01} select combineProperties((select * from SupportBean_S0#keepall)) as c0 from SupportBean_S1 as p";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertS1(env, null);
@@ -56,10 +56,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl =
+				var epl =
 					"@public @buseventtype create schema EventOne(p0 string, p1 string);\n" +
 					"@public @buseventtype create schema EventTwo();\n" +
-					"@Name('s0') expression combineProperties {v -> v.p0 || v.p1} select combineProperties((select * from EventOne#lastevent)) as c0 from EventTwo as p";
+					"@name('s0') expression combineProperties {v -> v.p0 || v.p1} select combineProperties((select * from EventOne#lastevent)) as c0 from EventTwo as p";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertEventTwo(env, null);
@@ -78,10 +78,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl =
+				var epl =
 					"@public @buseventtype create schema EventOne(p0 string, p1 string);\n" +
 					"@public @buseventtype create schema EventTwo();\n" +
-					"@Name('s0') expression combineProperties {v -> v.p0 || v.p1} select combineProperties((select * from EventOne#keepall where p0='a')) as c0 from EventTwo as p";
+					"@name('s0') expression combineProperties {v -> v.p0 || v.p1} select combineProperties((select * from EventOne#keepall where p0='a')) as c0 from EventTwo as p";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendAssertEventTwo(env, null);
@@ -103,11 +103,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl =
+				var epl =
 					"@public @buseventtype create schema EventOne(p0 string, p1 string);\n" +
 					"@public @buseventtype create schema EventTwo();\n" +
 					"create context PerEventOne initiated by EventOne e1;\n" +
-					"@Name('s0') expression combineProperties {v -> v.p0 || v.p1} \n" +
+					"@name('s0') expression combineProperties {v -> v.p0 || v.p1} \n" +
 					"context PerEventOne select combineProperties(context.e1) as c0 from EventTwo;\n";
 				env.CompileDeploy(epl).AddListener("s0");
 
@@ -122,10 +122,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl =
+				var epl =
 					"@public @buseventtype create schema EventOne(p0 string, p1 string);\n" +
 					"@public @buseventtype create schema EventTwo();\n" +
-					"@Name('s0') expression combineProperties {v -> v.p0 || v.p1} select combineProperties(p.a) as c0 from pattern [a=EventOne -> EventTwo] as p";
+					"@name('s0') expression combineProperties {v -> v.p0 || v.p1} select combineProperties(p.a) as c0 from pattern [a=EventOne -> EventTwo] as p";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendEventOne(env, "a", "b");
@@ -139,8 +139,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 		{
 			public void Run(RegressionEnvironment env)
 			{
-				string epl =
-					"@Name('s0') expression combineProperties {v -> v.P00 || v.P01} select combineProperties(p.a) as c0 from pattern [a=SupportBean_S0 -> SupportBean_S1] as p";
+				var epl =
+					"@name('s0') expression combineProperties {v -> v.P00 || v.P01} select combineProperties(p.a) as c0 from pattern [a=SupportBean_S0 -> SupportBean_S1] as p";
 				env.CompileDeploy(epl).AddListener("s0");
 
 				SendS0(env, "a", "b");
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 			RegressionEnvironment env,
 			object expected)
 		{
-			Assert.AreEqual(expected, env.Listener("s0").AssertOneGetNewAndReset().Get("c0"));
+			env.AssertEqualsNew("s0", "c0", expected);
 		}
 	}
 } // end of namespace

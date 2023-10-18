@@ -25,253 +25,179 @@ using SupportMarkerInterface = com.espertech.esper.regressionlib.support.bean.Su
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
-	public class ExprCoreInstanceOf
-	{
+	public class ExprCoreInstanceOf {
 
-		public static ICollection<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			WithInstanceofSimple(execs);
-			WithInstanceofStringAndNullOM(execs);
-			WithInstanceofStringAndNullCompile(execs);
-			WithDynamicPropertyNativeTypes(execs);
-			WithDynamicSuperTypeAndInterface(execs);
-			return execs;
-		}
+	    public static ICollection<RegressionExecution> Executions() {
+	        IList<RegressionExecution> executions = new List<RegressionExecution>();
+	        executions.Add(new ExprCoreInstanceofSimple());
+	        executions.Add(new ExprCoreInstanceofStringAndNullOM());
+	        executions.Add(new ExprCoreInstanceofStringAndNullCompile());
+	        executions.Add(new ExprCoreDynamicPropertyJavaTypes());
+	        executions.Add(new ExprCoreDynamicSuperTypeAndInterface());
+	        return executions;
+	    }
 
-		public static IList<RegressionExecution> WithDynamicSuperTypeAndInterface(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprCoreDynamicSuperTypeAndInterface());
-			return execs;
-		}
+	    private class ExprCoreInstanceofSimple : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
+	            var builder = new SupportEvalBuilder("SupportBean")
+	                .WithExpression(fields[0], "instanceof(theString, string)")
+	                .WithExpression(fields[1], "instanceof(intBoxed, int)")
+	                .WithExpression(fields[2], "instanceof(floatBoxed, System.Single)")
+	                .WithExpression(fields[3], "instanceof(theString, System.Single, char, byte)")
+	                .WithExpression(fields[4], "instanceof(intPrimitive, System.Int32)")
+	                .WithExpression(fields[5], "instanceof(intPrimitive, long)")
+	                .WithExpression(fields[6], "instanceof(intPrimitive, long, long, System.Object)")
+	                .WithExpression(fields[7], "instanceof(floatBoxed, long, float)");
 
-		public static IList<RegressionExecution> WithDynamicPropertyNativeTypes(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprCoreDynamicPropertyNativeTypes());
-			return execs;
-		}
+	            builder.WithStatementConsumer(stmt => {
+	                for (var i = 0; i < fields.Length; i++) {
+	                    Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType(fields[i]));
+	                }
+	            });
 
-		public static IList<RegressionExecution> WithInstanceofStringAndNullCompile(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprCoreInstanceofStringAndNullCompile());
-			return execs;
-		}
+	            var bean = new SupportBean("abc", 100);
+	            bean.FloatBoxed = 100F;
+	            builder.WithAssertion(bean).Expect(fields, true, false, true, false, true, false, true, true);
 
-		public static IList<RegressionExecution> WithInstanceofStringAndNullOM(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprCoreInstanceofStringAndNullOM());
-			return execs;
-		}
+	            bean = new SupportBean(null, 100);
+	            bean.FloatBoxed = null;
+	            builder.WithAssertion(bean).Expect(fields, false, false, false, false, true, false, true, false);
 
-		public static IList<RegressionExecution> WithInstanceofSimple(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprCoreInstanceofSimple());
-			return execs;
-		}
+	            builder.Run(env);
+	            env.UndeployAll();
+	        }
+	    }
 
-		private class ExprCoreInstanceofSimple : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
-				var builder = new SupportEvalBuilder("SupportBean")
-					.WithExpression(fields[0], "instanceof(TheString, string)")
-					.WithExpression(fields[1], "instanceof(IntBoxed, int)")
-					.WithExpression(fields[2], "instanceof(FloatBoxed, System.Single)")
-					.WithExpression(fields[3], "instanceof(TheString, System.Single, char, byte)")
-					.WithExpression(fields[4], "instanceof(IntPrimitive, System.Int32)")
-					.WithExpression(fields[5], "instanceof(IntPrimitive, long)")
-					.WithExpression(fields[6], "instanceof(IntPrimitive, long, long, System.Object)")
-					.WithExpression(fields[7], "instanceof(FloatBoxed, long, float)");
+	    private class ExprCoreInstanceofStringAndNullOM : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var stmtText = "select instanceof(theString,string) as t0, " +
+	                           "instanceof(theString,float,string,int) as t1 " +
+	                           "from SupportBean";
 
-				builder.WithStatementConsumer(
-					stmt => {
-						for (var i = 0; i < fields.Length; i++) {
-							Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType(fields[i]));
-						}
-					});
+	            var model = new EPStatementObjectModel();
+	            model.SelectClause = SelectClause.Create()
+	                .Add(Expressions.InstanceOf("theString", "string"), "t0")
+	                .Add(Expressions.InstanceOf(Expressions.Property("theString"), "float", "string", "int"), "t1");
+	            model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
+	            model = env.CopyMayFail(model);
+	            Assert.AreEqual(stmtText, model.ToEPL());
 
-				var bean = new SupportBean("abc", 100);
-				bean.FloatBoxed = 100F;
-				builder.WithAssertion(bean).Expect(fields, true, false, true, false, true, false, true, true);
+	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+	            env.CompileDeploy(model).AddListener("s0").Milestone(0);
 
-				bean = new SupportBean(null, 100);
-				bean.FloatBoxed = null;
-				builder.WithAssertion(bean).Expect(fields, false, false, false, false, true, false, true, false);
+	            env.SendEventBean(new SupportBean("abc", 100));
+	            env.AssertEventNew("s0", theEvent => {
+	                Assert.IsTrue((bool) theEvent.Get("t0"));
+	                Assert.IsTrue((bool) theEvent.Get("t1"));
+	            });
 
-				builder.Run(env);
-				env.UndeployAll();
-			}
-		}
+	            env.SendEventBean(new SupportBean(null, 100));
+	            env.AssertEventNew("s0", theEvent => {
+	                Assert.IsFalse((bool) theEvent.Get("t0"));
+	                Assert.IsFalse((bool) theEvent.Get("t1"));
+	            });
 
-		private class ExprCoreInstanceofStringAndNullOM : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var stmtText = "select " +
-				               "instanceof(TheString,string) as t0, " +
-				               "instanceof(TheString,float,string,int) as t1 " +
-				               "from SupportBean";
+	            env.UndeployAll();
+	        }
+	    }
 
-				var model = new EPStatementObjectModel();
-				model.SelectClause = SelectClause.Create()
-					.Add(Expressions.InstanceOf("TheString", "string"), "t0")
-					.Add(Expressions.InstanceOf(Expressions.Property("TheString"), "float", "string", "int"), "t1");
-				model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
-				model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
-				Assert.AreEqual(stmtText, model.ToEPL());
+	    private class ExprCoreInstanceofStringAndNullCompile : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select instanceof(theString,string) as t0, " +
+	                      "instanceof(theString,float,string,int) as t1 " +
+	                      "from SupportBean";
+	            env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
 
-				model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-				env.CompileDeploy(model).AddListener("s0").Milestone(0);
+	            env.SendEventBean(new SupportBean("abc", 100));
+	            env.AssertEventNew("s0", theEvent => {
+	                Assert.IsTrue((bool) theEvent.Get("t0"));
+	                Assert.IsTrue((bool) theEvent.Get("t1"));
+	            });
 
-				env.SendEventBean(new SupportBean("abc", 100));
-				var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				Assert.IsTrue((Boolean) theEvent.Get("t0"));
-				Assert.IsTrue((Boolean) theEvent.Get("t1"));
+	            env.SendEventBean(new SupportBean(null, 100));
+	            env.AssertEventNew("s0", theEvent => {
+	                Assert.IsFalse((bool) theEvent.Get("t0"));
+	                Assert.IsFalse((bool) theEvent.Get("t1"));
+	            });
 
-				env.SendEventBean(new SupportBean(null, 100));
-				theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				Assert.IsFalse((Boolean) theEvent.Get("t0"));
-				Assert.IsFalse((Boolean) theEvent.Get("t1"));
+	            env.UndeployAll();
+	        }
+	    }
 
-				env.UndeployAll();
-			}
-		}
+	    private class ExprCoreDynamicPropertyJavaTypes : RegressionExecution {
 
-		private class ExprCoreInstanceofStringAndNullCompile : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var epl = "@Name('s0') select instanceof(TheString,string) as t0, " +
-				          "instanceof(TheString,float,string,int) as t1 " +
-				          "from SupportBean";
-				env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select instanceof(item?, string) as t0, " +
+	                      " instanceof(item?, int) as t1, " +
+	                      " instanceof(item?, System.Single) as t2, " +
+	                      " instanceof(item?, System.Single, char, byte) as t3, " +
+	                      " instanceof(item?, System.Int32) as t4, " +
+	                      " instanceof(item?, long) as t5, " +
+	                      " instanceof(item?, long, long, System.Object) as t6, " +
+	                      " instanceof(item?, long, float) as t7 " +
+	                      " from SupportBeanDynRoot";
 
-				env.SendEventBean(new SupportBean("abc", 100));
-				var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				Assert.IsTrue((Boolean) theEvent.Get("t0"));
-				Assert.IsTrue((Boolean) theEvent.Get("t1"));
+	            env.CompileDeploy(epl).AddListener("s0");
 
-				env.SendEventBean(new SupportBean(null, 100));
-				theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-				Assert.IsFalse((Boolean) theEvent.Get("t0"));
-				Assert.IsFalse((Boolean) theEvent.Get("t1"));
+	            env.SendEventBean(new SupportBeanDynRoot("abc"));
+	            env.AssertEventNew("s0", @event => AssertResults(@event, new bool[]{true, false, false, false, false, false, false, false}));
 
-				env.UndeployAll();
-			}
-		}
+	            env.SendEventBean(new SupportBeanDynRoot(100f));
+	            env.AssertEventNew("s0", @event => AssertResults(@event, new bool[]{false, false, true, true, false, false, true, true}));
 
-		private class ExprCoreDynamicPropertyNativeTypes : RegressionExecution
-		{
+	            env.SendEventBean(new SupportBeanDynRoot(null));
+	            env.AssertEventNew("s0", @event => AssertResults(@event, new bool[]{false, false, false, false, false, false, false, false}));
 
-			public void Run(RegressionEnvironment env)
-			{
-				var epl = "@Name('s0') select " +
-				          " instanceof(Item?, string) as t0, " +
-				          " instanceof(Item?, int) as t1, " +
-				          " instanceof(Item?, System.Single) as t2, " +
-				          " instanceof(Item?, System.Single, char, byte) as t3, " +
-				          " instanceof(Item?, System.Int32) as t4, " +
-				          " instanceof(Item?, long) as t5, " +
-				          " instanceof(Item?, long, long, System.Object) as t6, " +
-				          " instanceof(Item?, long, float) as t7 " +
-				          " from SupportBeanDynRoot";
+	            env.SendEventBean(new SupportBeanDynRoot(10));
+	            env.AssertEventNew("s0", @event => AssertResults(@event, new bool[]{false, true, false, false, true, false, true, false}));
 
-				env.CompileDeploy(epl).AddListener("s0");
+	            env.SendEventBean(new SupportBeanDynRoot(99L));
+	            env.AssertEventNew("s0", @event => AssertResults(@event, new bool[]{false, false, false, false, false, true, true, true}));
 
-				env.SendEventBean(new SupportBeanDynRoot("abc"));
-				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {true, false, false, false, false, false, true, false});
+	            env.UndeployAll();
+	        }
+	    }
 
-				env.SendEventBean(new SupportBeanDynRoot(100f));
-				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {false, false, true, true, false, false, true, true});
+	    private class ExprCoreDynamicSuperTypeAndInterface : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "@name('s0') select instanceof(item?, " + typeof(SupportMarkerInterface).FullName + ") as t0, " +
+	                      " instanceof(item?, " + typeof(ISupportA).FullName + ") as t1, " +
+	                      " instanceof(item?, " + typeof(ISupportBaseAB).FullName + ") as t2, " +
+	                      " instanceof(item?, " + typeof(ISupportBaseABImpl).FullName + ") as t3, " +
+	                      " instanceof(item?, " + typeof(ISupportA).FullName + ", " + typeof(ISupportB).FullName + ") as t4, " +
+	                      " instanceof(item?, " + typeof(ISupportBaseAB).FullName + ", " + typeof(ISupportB).FullName + ") as t5, " +
+	                      " instanceof(item?, " + typeof(ISupportAImplSuperG).FullName + ", " + typeof(ISupportB).FullName + ") as t6, " +
+	                      " instanceof(item?, " + typeof(ISupportAImplSuperGImplPlus).FullName + ", " + typeof(SupportBeanAtoFBase).FullName + ") as t7 " +
+	                      " from SupportBeanDynRoot";
+	            env.CompileDeploy(epl).AddListener("s0");
 
-				env.SendEventBean(new SupportBeanDynRoot(null));
-				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {false, false, false, false, false, false, false, false});
+	            env.SendEventBean(new SupportBeanDynRoot(new SupportBeanDynRoot("abc")));
+	            env.AssertEventNew("s0", @event => AssertResults(@event, new bool[]{true, false, false, false, false, false, false, false}));
 
-				env.SendEventBean(new SupportBeanDynRoot(10));
-				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {false, true, false, false, true, false, true, false});
+	            env.SendEventBean(new SupportBeanDynRoot(new ISupportAImplSuperGImplPlus()));
+	            env.AssertEventNew("s0", @event => AssertResults(@event, new bool[]{false, true, true, false, true, true, true, true}));
 
-				env.SendEventBean(new SupportBeanDynRoot(99L));
-				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {false, false, false, false, false, true, true, true});
+	            env.SendEventBean(new SupportBeanDynRoot(new ISupportAImplSuperGImpl("", "", "")));
+	            env.AssertEventNew("s0", @event => AssertResults(@event, new bool[]{false, true, true, false, true, true, true, false}));
 
-				env.UndeployAll();
-			}
-		}
+	            env.SendEventBean(new SupportBeanDynRoot(new ISupportBaseABImpl("")));
+	            env.AssertEventNew("s0", @event => AssertResults(@event, new bool[]{false, false, true, true, false, true, false, false}));
 
-		private class ExprCoreDynamicSuperTypeAndInterface : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var epl = "@Name('s0') select" +
-				          " instanceof(Item?, " +
-				          typeof(SupportMarkerInterface).FullName +
-				          ") as t0, " +
-				          " instanceof(Item?, " +
-				          typeof(ISupportA).FullName +
-				          ") as t1, " +
-				          " instanceof(Item?, " +
-				          typeof(ISupportBaseAB).FullName +
-				          ") as t2, " +
-				          " instanceof(Item?, " +
-				          typeof(ISupportBaseABImpl).FullName +
-				          ") as t3, " +
-				          " instanceof(Item?, " +
-				          typeof(ISupportA).FullName +
-				          ", " +
-				          typeof(ISupportB).FullName +
-				          ") as t4, " +
-				          " instanceof(Item?, " +
-				          typeof(ISupportBaseAB).FullName +
-				          ", " +
-				          typeof(ISupportB).FullName +
-				          ") as t5, " +
-				          " instanceof(Item?, " +
-				          typeof(ISupportAImplSuperG).FullName +
-				          ", " +
-				          typeof(ISupportB).FullName +
-				          ") as t6, " +
-				          " instanceof(Item?, " +
-				          typeof(ISupportAImplSuperGImplPlus).FullName +
-				          ", " +
-				          typeof(SupportBeanAtoFBase).FullName +
-				          ") as t7 " +
-				          " from SupportBeanDynRoot";
-				env.CompileDeploy(epl).AddListener("s0");
+	            env.SendEventBean(new SupportBeanDynRoot(new ISupportBImpl("", "")));
+	            env.AssertEventNew("s0", @event => AssertResults(@event, new bool[]{false, false, true, false, true, true, true, false}));
 
-				env.SendEventBean(new SupportBeanDynRoot(new SupportBeanDynRoot("abc")));
-				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {true, false, false, false, false, false, false, false});
+	            env.SendEventBean(new SupportBeanDynRoot(new ISupportAImpl("", "")));
+	            env.AssertEventNew("s0", @event => AssertResults(@event, new bool[]{false, true, true, false, true, true, false, false}));
 
-				env.SendEventBean(new SupportBeanDynRoot(new ISupportAImplSuperGImplPlus()));
-				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {false, true, true, false, true, true, true, true});
+	            env.UndeployAll();
+	        }
+	    }
 
-				env.SendEventBean(new SupportBeanDynRoot(new ISupportAImplSuperGImpl("", "", "")));
-				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {false, true, true, false, true, true, true, false});
-
-				env.SendEventBean(new SupportBeanDynRoot(new ISupportBaseABImpl("")));
-				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {false, false, true, true, false, true, false, false});
-
-				env.SendEventBean(new SupportBeanDynRoot(new ISupportBImpl("", "")));
-				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {false, false, true, false, true, true, true, false});
-
-				env.SendEventBean(new SupportBeanDynRoot(new ISupportAImpl("", "")));
-				AssertResults(env.Listener("s0").AssertOneGetNewAndReset(), new[] {false, true, true, false, true, true, false, false});
-
-				env.UndeployAll();
-			}
-		}
-
-		private static void AssertResults(
-			EventBean theEvent,
-			bool[] result)
-		{
-			for (var i = 0; i < result.Length; i++) {
-				Assert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
-			}
-		}
+	    private static void AssertResults(EventBean theEvent, bool[] result) {
+	        for (var i = 0; i < result.Length; i++) {
+	            Assert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
+	        }
+	    }
 	}
 } // end of namespace

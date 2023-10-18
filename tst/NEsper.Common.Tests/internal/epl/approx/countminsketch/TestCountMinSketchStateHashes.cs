@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             }
 
             var delta = PerformanceObserver.NanoTime - start;
-            // Comment me in - System.out.println("Delta " + (delta / 1000000000.0));
+            // Comment me in - Console.WriteLine("Delta " + (delta / 1000000000.0));
         }
 
         [Test]

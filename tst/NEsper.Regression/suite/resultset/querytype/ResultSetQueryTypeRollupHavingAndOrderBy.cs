@@ -8,403 +8,358 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
-    public class ResultSetQueryTypeRollupHavingAndOrderBy
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetQueryTypeHaving(false));
-            execs.Add(new ResultSetQueryTypeHaving(true));
-            execs.Add(new ResultSetQueryTypeIteratorWindow(false));
-            execs.Add(new ResultSetQueryTypeIteratorWindow(true));
-            execs.Add(new ResultSetQueryTypeOrderByTwoCriteriaAsc(false));
-            execs.Add(new ResultSetQueryTypeOrderByTwoCriteriaAsc(true));
-            execs.Add(new ResultSetQueryTypeUnidirectional());
-            execs.Add(new ResultSetQueryTypeOrderByOneCriteriaDesc());
-            return execs;
-        }
+	public class ResultSetQueryTypeRollupHavingAndOrderBy {
 
-        private static SupportBean MakeEvent(
-            string theString,
-            int intPrimitive,
-            long longPrimitive)
-        {
-            var sb = new SupportBean(theString, intPrimitive);
-            sb.LongPrimitive = longPrimitive;
-            return sb;
-        }
+	    public static ICollection<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new ResultSetQueryTypeHaving(false));
+	        execs.Add(new ResultSetQueryTypeHaving(true));
+	        execs.Add(new ResultSetQueryTypeIteratorWindow(false));
+	        execs.Add(new ResultSetQueryTypeIteratorWindow(true));
+	        execs.Add(new ResultSetQueryTypeOrderByTwoCriteriaAsc(false));
+	        execs.Add(new ResultSetQueryTypeOrderByTwoCriteriaAsc(true));
+	        execs.Add(new ResultSetQueryTypeUnidirectional());
+	        execs.Add(new ResultSetQueryTypeOrderByOneCriteriaDesc());
+	        return execs;
+	    }
 
-        internal class ResultSetQueryTypeIteratorWindow : RegressionExecution
-        {
-            private readonly bool join;
+	    private class ResultSetQueryTypeIteratorWindow : RegressionExecution {
+	        private readonly bool join;
 
-            public ResultSetQueryTypeIteratorWindow(bool join)
-            {
-                this.join = join;
-            }
+	        public ResultSetQueryTypeIteratorWindow(bool join) {
+	            this.join = join;
+	        }
 
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "c0", "c1" };
-                var epl = "@Name('s0')" +
-                          "select TheString as c0, sum(IntPrimitive) as c1 " +
-                          "from SupportBean#length(3) " +
-                          (join ? ", SupportBean_S0#keepall " : "") +
-                          "group by rollup(TheString)";
-                env.CompileDeploy(epl).AddListener("s0");
+	        public void Run(RegressionEnvironment env) {
 
-                env.SendEventBean(new SupportBean_S0(1));
+	            var fields = "c0,c1".SplitCsv();
+	            var epl = "@name('s0')" +
+	                      "select theString as c0, sum(intPrimitive) as c1 " +
+	                      "from SupportBean#length(3) " + (join ? ", SupportBean_S0#keepall " : "") +
+	                      "group by rollup(theString)";
+	            env.CompileDeploy(epl).AddListener("s0");
 
-                env.SendEventBean(new SupportBean("E1", 1));
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Statement("s0").GetEnumerator(),
-                    fields,
-                    new[] {new object[] {"E1", 1}, new object[] {null, 1}});
+	            env.SendEventBean(new SupportBean_S0(1));
 
-                env.Milestone(0);
+	            env.SendEventBean(new SupportBean("E1", 1));
+	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E1", 1}, new object[] {null, 1}});
 
-                env.SendEventBean(new SupportBean("E2", 2));
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Statement("s0").GetEnumerator(),
-                    fields,
-                    new[] {new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {null, 3}});
+	            env.Milestone(0);
 
-                env.SendEventBean(new SupportBean("E1", 3));
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Statement("s0").GetEnumerator(),
-                    fields,
-                    new[] {new object[] {"E1", 4}, new object[] {"E2", 2}, new object[] {null, 6}});
+	            env.SendEventBean(new SupportBean("E2", 2));
+	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}, new object[] {null, 3}});
 
-                env.Milestone(1);
+	            env.SendEventBean(new SupportBean("E1", 3));
+	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E1", 4}, new object[] {"E2", 2}, new object[] {null, 6}});
 
-                env.SendEventBean(new SupportBean("E2", 4));
-                EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                    env.Statement("s0").GetEnumerator(),
-                    fields,
-                    new[] {new object[] {"E2", 6}, new object[] {"E1", 3}, new object[] {null, 9}});
+	            env.Milestone(1);
 
-                env.UndeployAll();
-            }
-        }
+	            env.SendEventBean(new SupportBean("E2", 4));
+	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E2", 6}, new object[] {"E1", 3}, new object[] {null, 9}});
 
-        internal class ResultSetQueryTypeUnidirectional : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var fields = new [] { "c0", "c1", "c2" };
+	            env.UndeployAll();
+	        }
 
-                var epl = "@Name('s0')" +
-                          "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
-                          "from SupportBean_S0 unidirectional, SupportBean#keepall " +
-                          "group by cube(TheString, IntPrimitive)";
-                env.CompileDeploy(epl).AddListener("s0");
+	        public string Name() {
+	            return this.GetType().Name + "{" +
+	                "join=" + join +
+	                '}';
+	        }
+	    }
 
-                env.SendEventBean(MakeEvent("E1", 10, 100));
-                env.SendEventBean(MakeEvent("E2", 20, 200));
-                env.SendEventBean(MakeEvent("E1", 11, 300));
-                env.SendEventBean(MakeEvent("E2", 20, 400));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	    private class ResultSetQueryTypeUnidirectional : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var fields = "c0,c1,c2".SplitCsv();
 
-                env.SendEventBean(new SupportBean_S0(1));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
-                    fields,
-                    new[] {
-                        new object[] {"E1", 10, 100L},
-                        new object[] {"E2", 20, 600L},
-                        new object[] {"E1", 11, 300L},
-                        new object[] {"E1", null, 400L},
-                        new object[] {"E2", null, 600L},
-                        new object[] {null, 10, 100L},
-                        new object[] {null, 20, 600L},
-                        new object[] {null, 11, 300L},
-                        new object[] {null, null, 1000L}
-                    });
+	            var epl = "@name('s0')" +
+	                      "select theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 " +
+	                      "from SupportBean_S0 unidirectional, SupportBean#keepall " +
+	                      "group by cube(theString, intPrimitive)";
+	            env.CompileDeploy(epl).AddListener("s0");
 
-                env.SendEventBean(MakeEvent("E1", 10, 1));
-                env.SendEventBean(new SupportBean_S0(2));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
-                    fields,
-                    new[] {
-                        new object[] {"E1", 10, 101L},
-                        new object[] {"E2", 20, 600L},
-                        new object[] {"E1", 11, 300L},
-                        new object[] {"E1", null, 401L},
-                        new object[] {"E2", null, 600L},
-                        new object[] {null, 10, 101L},
-                        new object[] {null, 20, 600L},
-                        new object[] {null, 11, 300L},
-                        new object[] {null, null, 1001L}
-                    });
+	            env.SendEventBean(MakeEvent("E1", 10, 100));
+	            env.SendEventBean(MakeEvent("E2", 20, 200));
+	            env.SendEventBean(MakeEvent("E1", 11, 300));
+	            env.SendEventBean(MakeEvent("E2", 20, 400));
+	            env.AssertListenerNotInvoked("s0");
 
-                env.UndeployAll();
-            }
-        }
+	            env.SendEventBean(new SupportBean_S0(1));
+	            env.AssertPropsPerRowLastNew("s0", fields,
+	                new object[][]{
+	                    new object[] {"E1", 10, 100L},
+	                    new object[] {"E2", 20, 600L},
+	                    new object[] {"E1", 11, 300L},
+	                    new object[] {"E1", null, 400L},
+	                    new object[] {"E2", null, 600L},
+	                    new object[] {null, 10, 100L},
+	                    new object[] {null, 20, 600L},
+	                    new object[] {null, 11, 300L},
+	                    new object[] {null, null, 1000L}
+	                });
 
-        internal class ResultSetQueryTypeHaving : RegressionExecution
-        {
-            private readonly bool join;
+	            env.SendEventBean(MakeEvent("E1", 10, 1));
+	            env.SendEventBean(new SupportBean_S0(2));
+	            env.AssertPropsPerRowLastNew("s0", fields,
+	                new object[][]{
+	                    new object[] {"E1", 10, 101L},
+	                    new object[] {"E2", 20, 600L},
+	                    new object[] {"E1", 11, 300L},
+	                    new object[] {"E1", null, 401L},
+	                    new object[] {"E2", null, 600L},
+	                    new object[] {null, 10, 101L},
+	                    new object[] {null, 20, 600L},
+	                    new object[] {null, 11, 300L},
+	                    new object[] {null, null, 1001L}
+	                });
 
-            public ResultSetQueryTypeHaving(bool join)
-            {
-                this.join = join;
-            }
+	            env.UndeployAll();
+	        }
+	    }
 
-            public void Run(RegressionEnvironment env)
-            {
-                // test having on the aggregation alone
-                var fields = new [] { "c0", "c1", "c2" };
+	    private class ResultSetQueryTypeHaving : RegressionExecution {
+	        private readonly bool join;
 
-                var epl = "@Name('s0')" +
-                          "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
-                          "from SupportBean#keepall " +
-                          (join ? ", SupportBean_S0#lastevent " : "") +
-                          "group by rollup(TheString, IntPrimitive)" +
-                          "having sum(LongPrimitive) > 1000";
-                env.CompileDeploy(epl).AddListener("s0");
-                env.SendEventBean(new SupportBean_S0(1));
+	        public ResultSetQueryTypeHaving(bool join) {
+	            this.join = join;
+	        }
 
-                env.SendEventBean(MakeEvent("E1", 10, 100));
-                env.SendEventBean(MakeEvent("E2", 20, 200));
-                env.SendEventBean(MakeEvent("E1", 11, 300));
-                env.SendEventBean(MakeEvent("E2", 20, 400));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	        public void Run(RegressionEnvironment env) {
 
-                env.SendEventBean(MakeEvent("E1", 11, 500));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
-                    fields,
-                    new[] {new object[] {null, null, 1500L}});
+	            // test having on the aggregation alone
+	            var fields = "c0,c1,c2".SplitCsv();
 
-                env.SendEventBean(MakeEvent("E2", 20, 600));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
-                    fields,
-                    new[] {
-                        new object[] {"E2", 20, 1200L}, new object[] {"E2", null, 1200L},
-                        new object[] {null, null, 2100L}
-                    });
-                env.UndeployAll();
+	            var epl = "@name('s0')" +
+	                      "select theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 " +
+	                      "from SupportBean#keepall " + (join ? ", SupportBean_S0#lastevent " : "") +
+	                      "group by rollup(theString, intPrimitive)" +
+	                      "having sum(longPrimitive) > 1000";
+	            env.CompileDeploy(epl).AddListener("s0");
+	            env.SendEventBean(new SupportBean_S0(1));
 
-                // test having on the aggregation alone
-                var fieldsC0C1 = new [] { "c0", "c1" };
-                epl = "@Name('s0')" +
-                      "select TheString as c0, sum(IntPrimitive) as c1 " +
-                      "from SupportBean#keepall " +
-                      (join ? ", SupportBean_S0#lastevent " : "") +
-                      "group by rollup(TheString) " +
-                      "having " +
-                      "(TheString is null and sum(IntPrimitive) > 100) " +
-                      "or " +
-                      "(TheString is not null and sum(IntPrimitive) > 200)";
-                env.CompileDeploy(epl).AddListener("s0");
+	            env.SendEventBean(MakeEvent("E1", 10, 100));
+	            env.SendEventBean(MakeEvent("E2", 20, 200));
+	            env.SendEventBean(MakeEvent("E1", 11, 300));
+	            env.SendEventBean(MakeEvent("E2", 20, 400));
+	            env.AssertListenerNotInvoked("s0");
 
-                env.SendEventBean(new SupportBean_S0(1));
+	            env.SendEventBean(MakeEvent("E1", 11, 500));
+	            env.AssertPropsPerRowLastNew("s0", fields,
+	                new object[][]{new object[] {null, null, 1500L}});
 
-                env.SendEventBean(new SupportBean("E1", 50));
-                env.SendEventBean(new SupportBean("E2", 50));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            env.SendEventBean(MakeEvent("E2", 20, 600));
+	            env.AssertPropsPerRowLastNew("s0", fields,
+	                new object[][]{new object[] {"E2", 20, 1200L}, new object[] {"E2", null, 1200L}, new object[] {null, null, 2100L}});
+	            env.UndeployAll();
 
-                env.SendEventBean(new SupportBean("E2", 20));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
-                    fieldsC0C1,
-                    new[] {new object[] {null, 120}});
+	            // test having on the aggregation alone
+	            var fieldsC0C1 = "c0,c1".SplitCsv();
+	            epl = "@name('s0')" +
+	                "select theString as c0, sum(intPrimitive) as c1 " +
+	                "from SupportBean#keepall " + (join ? ", SupportBean_S0#lastevent " : "") +
+	                "group by rollup(theString) " +
+	                "having " +
+	                "(theString is null and sum(intPrimitive) > 100) " +
+	                "or " +
+	                "(theString is not null and sum(intPrimitive) > 200)";
+	            env.CompileDeploy(epl).AddListener("s0");
 
-                env.SendEventBean(new SupportBean("E3", -300));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            env.SendEventBean(new SupportBean_S0(1));
 
-                env.SendEventBean(new SupportBean("E1", 200));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
-                    fieldsC0C1,
-                    new[] {new object[] {"E1", 250}});
+	            env.SendEventBean(new SupportBean("E1", 50));
+	            env.SendEventBean(new SupportBean("E2", 50));
+	            env.AssertListenerNotInvoked("s0");
 
-                env.SendEventBean(new SupportBean("E2", 500));
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetLastNewData(),
-                    fieldsC0C1,
-                    new[] {new object[] {"E2", 570}, new object[] {null, 520}});
+	            env.SendEventBean(new SupportBean("E2", 20));
+	            env.AssertPropsPerRowLastNew("s0", fieldsC0C1,
+	                new object[][]{new object[] {null, 120}});
 
-                env.UndeployAll();
-            }
-        }
+	            env.SendEventBean(new SupportBean("E3", -300));
+	            env.AssertListenerNotInvoked("s0");
 
-        internal class ResultSetQueryTypeOrderByTwoCriteriaAsc : RegressionExecution
-        {
-            private readonly bool join;
+	            env.SendEventBean(new SupportBean("E1", 200));
+	            env.AssertPropsPerRowLastNew("s0", fieldsC0C1,
+	                new object[][]{new object[] {"E1", 250}});
 
-            public ResultSetQueryTypeOrderByTwoCriteriaAsc(bool join)
-            {
-                this.join = join;
-            }
+	            env.SendEventBean(new SupportBean("E2", 500));
+	            env.AssertPropsPerRowLastNew("s0", fieldsC0C1,
+	                new object[][]{new object[] {"E2", 570}, new object[] {null, 520}});
 
-            public void Run(RegressionEnvironment env)
-            {
-                env.AdvanceTime(0);
-                var fields = new [] { "c0", "c1", "c2" };
+	            env.UndeployAll();
+	        }
 
-                var epl = "@Name('s0')" +
-                          "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
-                          "from SupportBean#time_batch(1 sec) " +
-                          (join ? ", SupportBean_S0#lastevent " : "") +
-                          "group by rollup(TheString, IntPrimitive) " +
-                          "order by TheString, IntPrimitive";
-                env.CompileDeploy(epl).AddListener("s0");
+	        public string Name() {
+	            return this.GetType().Name + "{" +
+	                "join=" + join +
+	                '}';
+	        }
+	    }
 
-                env.SendEventBean(new SupportBean_S0(1));
+	    private class ResultSetQueryTypeOrderByTwoCriteriaAsc : RegressionExecution {
+	        private readonly bool join;
 
-                env.SendEventBean(MakeEvent("E2", 10, 100));
-                env.SendEventBean(MakeEvent("E1", 11, 200));
+	        public ResultSetQueryTypeOrderByTwoCriteriaAsc(bool join) {
+	            this.join = join;
+	        }
 
-                env.Milestone(0);
+	        public void Run(RegressionEnvironment env) {
+	            env.AdvanceTime(0);
+	            var fields = "c0,c1,c2".SplitCsv();
 
-                env.SendEventBean(MakeEvent("E1", 10, 300));
-                env.SendEventBean(MakeEvent("E1", 11, 400));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            var epl = "@name('s0')" +
+	                      "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 " +
+	                      "from SupportBean#time_batch(1 sec) " + (join ? ", SupportBean_S0#lastevent " : "") +
+	                      "group by rollup(theString, intPrimitive) " +
+	                      "order by theString, intPrimitive";
+	            env.CompileDeploy(epl).AddListener("s0");
 
-                env.Milestone(1);
+	            env.SendEventBean(new SupportBean_S0(1));
 
-                env.AdvanceTime(1000);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetDataListsFlattened(),
-                    fields,
-                    new[] {
-                        new object[] {null, null, 1000L},
-                        new object[] {"E1", null, 900L},
-                        new object[] {"E1", 10, 300L},
-                        new object[] {"E1", 11, 600L},
-                        new object[] {"E2", null, 100L},
-                        new object[] {"E2", 10, 100L}
-                    },
-                    new[] {
-                        new object[] {null, null, null},
-                        new object[] {"E1", null, null},
-                        new object[] {"E1", 10, null},
-                        new object[] {"E1", 11, null},
-                        new object[] {"E2", null, null},
-                        new object[] {"E2", 10, null}
-                    });
+	            env.SendEventBean(MakeEvent("E2", 10, 100));
+	            env.SendEventBean(MakeEvent("E1", 11, 200));
 
-                env.SendEventBean(MakeEvent("E1", 11, 500));
-                env.SendEventBean(MakeEvent("E1", 10, 600));
-                env.SendEventBean(MakeEvent("E1", 12, 700));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            env.Milestone(0);
 
-                env.Milestone(2);
+	            env.SendEventBean(MakeEvent("E1", 10, 300));
+	            env.SendEventBean(MakeEvent("E1", 11, 400));
+	            env.AssertListenerNotInvoked("s0");
 
-                env.AdvanceTime(2000);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetDataListsFlattened(),
-                    fields,
-                    new[] {
-                        new object[] {null, null, 1800L},
-                        new object[] {"E1", null, 1800L},
-                        new object[] {"E1", 10, 600L},
-                        new object[] {"E1", 11, 500L},
-                        new object[] {"E1", 12, 700L},
-                        new object[] {"E2", null, null},
-                        new object[] {"E2", 10, null}
-                    },
-                    new[] {
-                        new object[] {null, null, 1000L},
-                        new object[] {"E1", null, 900L},
-                        new object[] {"E1", 10, 300L},
-                        new object[] {"E1", 11, 600L},
-                        new object[] {"E1", 12, null},
-                        new object[] {"E2", null, 100L},
-                        new object[] {"E2", 10, 100L}
-                    });
+	            env.Milestone(1);
 
-                env.UndeployAll();
-            }
-        }
+	            env.AdvanceTime(1000);
+	            env.AssertPropsPerRowIRPairFlattened("s0", fields,
+	                new object[][]{new object[] {null, null, 1000L},
+	                    new object[] {"E1", null, 900L},
+	                    new object[] {"E1", 10, 300L},
+	                    new object[] {"E1", 11, 600L},
+	                    new object[] {"E2", null, 100L},
+	                    new object[] {"E2", 10, 100L},
+	                },
+	                new object[][]{new object[] {null, null, null},
+	                    new object[] {"E1", null, null},
+	                    new object[] {"E1", 10, null},
+	                    new object[] {"E1", 11, null},
+	                    new object[] {"E2", null, null},
+	                    new object[] {"E2", 10, null},
+	                });
 
-        internal class ResultSetQueryTypeOrderByOneCriteriaDesc : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.AdvanceTime(0);
-                var fields = new [] { "c0", "c1", "c2" };
+	            env.SendEventBean(MakeEvent("E1", 11, 500));
+	            env.SendEventBean(MakeEvent("E1", 10, 600));
+	            env.SendEventBean(MakeEvent("E1", 12, 700));
+	            env.AssertListenerNotInvoked("s0");
 
-                var epl = "@Name('s0')" +
-                          "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#time_batch(1 sec) " +
-                          "group by rollup(TheString, IntPrimitive) " +
-                          "order by TheString desc;";
-                env.CompileDeploy(epl).AddListener("s0");
+	            env.Milestone(2);
 
-                env.SendEventBean(MakeEvent("E2", 10, 100));
-                env.SendEventBean(MakeEvent("E1", 11, 200));
-                env.SendEventBean(MakeEvent("E1", 10, 300));
+	            env.AdvanceTime(2000);
+	            env.AssertPropsPerRowIRPairFlattened("s0", fields,
+	                new object[][]{new object[] {null, null, 1800L},
+	                    new object[] {"E1", null, 1800L},
+	                    new object[] {"E1", 10, 600L},
+	                    new object[] {"E1", 11, 500L},
+	                    new object[] {"E1", 12, 700L},
+	                    new object[] {"E2", null, null},
+	                    new object[] {"E2", 10, null},
+	                },
+	                new object[][]{new object[] {null, null, 1000L},
+	                    new object[] {"E1", null, 900L},
+	                    new object[] {"E1", 10, 300L},
+	                    new object[] {"E1", 11, 600L},
+	                    new object[] {"E1", 12, null},
+	                    new object[] {"E2", null, 100L},
+	                    new object[] {"E2", 10, 100L},
+	                });
 
-                env.Milestone(0);
+	            env.UndeployAll();
+	        }
 
-                env.SendEventBean(MakeEvent("E1", 11, 400));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	        public string Name() {
+	            return this.GetType().Name + "{" +
+	                "join=" + join +
+	                '}';
+	        }
+	    }
 
-                env.AdvanceTime(1000);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetDataListsFlattened(),
-                    fields,
-                    new[] {
-                        new object[] {"E2", 10, 100L},
-                        new object[] {"E2", null, 100L},
-                        new object[] {"E1", 11, 600L},
-                        new object[] {"E1", 10, 300L},
-                        new object[] {"E1", null, 900L},
-                        new object[] {null, null, 1000L}
-                    },
-                    new[] {
-                        new object[] {"E2", 10, null},
-                        new object[] {"E2", null, null},
-                        new object[] {"E1", 11, null},
-                        new object[] {"E1", 10, null},
-                        new object[] {"E1", null, null},
-                        new object[] {null, null, null}
-                    });
+	    private class ResultSetQueryTypeOrderByOneCriteriaDesc : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            env.AdvanceTime(0);
+	            var fields = "c0,c1,c2".SplitCsv();
 
-                env.SendEventBean(MakeEvent("E1", 11, 500));
-                env.SendEventBean(MakeEvent("E1", 10, 600));
+	            var epl = "@name('s0')" +
+	                      "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from SupportBean#time_batch(1 sec) " +
+	                      "group by rollup(theString, intPrimitive) " +
+	                      "order by theString desc;";
+	            env.CompileDeploy(epl).AddListener("s0");
 
-                env.Milestone(1);
+	            env.SendEventBean(MakeEvent("E2", 10, 100));
+	            env.SendEventBean(MakeEvent("E1", 11, 200));
+	            env.SendEventBean(MakeEvent("E1", 10, 300));
 
-                env.SendEventBean(MakeEvent("E1", 12, 700));
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            env.Milestone(0);
 
-                env.AdvanceTime(2000);
-                EPAssertionUtil.AssertPropsPerRow(
-                    env.Listener("s0").GetAndResetDataListsFlattened(),
-                    fields,
-                    new[] {
-                        new object[] {"E2", 10, null},
-                        new object[] {"E2", null, null},
-                        new object[] {"E1", 11, 500L},
-                        new object[] {"E1", 10, 600L},
-                        new object[] {"E1", 12, 700L},
-                        new object[] {"E1", null, 1800L},
-                        new object[] {null, null, 1800L}
-                    },
-                    new[] {
-                        new object[] {"E2", 10, 100L},
-                        new object[] {"E2", null, 100L},
-                        new object[] {"E1", 11, 600L},
-                        new object[] {"E1", 10, 300L},
-                        new object[] {"E1", 12, null},
-                        new object[] {"E1", null, 900L},
-                        new object[] {null, null, 1000L}
-                    });
+	            env.SendEventBean(MakeEvent("E1", 11, 400));
+	            env.AssertListenerNotInvoked("s0");
 
-                env.UndeployAll();
-            }
-        }
-    }
+	            env.AdvanceTime(1000);
+	            env.AssertPropsPerRowIRPairFlattened("s0", fields,
+	                new object[][]{
+	                    new object[] {"E2", 10, 100L},
+	                    new object[] {"E2", null, 100L},
+	                    new object[] {"E1", 11, 600L},
+	                    new object[] {"E1", 10, 300L},
+	                    new object[] {"E1", null, 900L},
+	                    new object[] {null, null, 1000L},
+	                },
+	                new object[][]{
+	                    new object[] {"E2", 10, null},
+	                    new object[] {"E2", null, null},
+	                    new object[] {"E1", 11, null},
+	                    new object[] {"E1", 10, null},
+	                    new object[] {"E1", null, null},
+	                    new object[] {null, null, null},
+	                });
+
+	            env.SendEventBean(MakeEvent("E1", 11, 500));
+	            env.SendEventBean(MakeEvent("E1", 10, 600));
+
+	            env.Milestone(1);
+
+	            env.SendEventBean(MakeEvent("E1", 12, 700));
+	            env.AssertListenerNotInvoked("s0");
+
+	            env.AdvanceTime(2000);
+	            env.AssertPropsPerRowIRPairFlattened("s0", fields,
+	                new object[][]{
+	                    new object[] {"E2", 10, null},
+	                    new object[] {"E2", null, null},
+	                    new object[] {"E1", 11, 500L},
+	                    new object[] {"E1", 10, 600L},
+	                    new object[] {"E1", 12, 700L},
+	                    new object[] {"E1", null, 1800L},
+	                    new object[] {null, null, 1800L},
+	                },
+	                new object[][]{
+	                    new object[] {"E2", 10, 100L},
+	                    new object[] {"E2", null, 100L},
+	                    new object[] {"E1", 11, 600L},
+	                    new object[] {"E1", 10, 300L},
+	                    new object[] {"E1", 12, null},
+	                    new object[] {"E1", null, 900L},
+	                    new object[] {null, null, 1000L},
+	                });
+
+	            env.UndeployAll();
+	        }
+	    }
+
+	    private static SupportBean MakeEvent(string theString, int intPrimitive, long longPrimitive) {
+	        var sb = new SupportBean(theString, intPrimitive);
+	        sb.LongPrimitive = longPrimitive;
+	        return sb;
+	    }
+	}
 } // end of namespace

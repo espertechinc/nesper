@@ -7,10 +7,12 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 
 using com.espertech.esper.common.client.metric;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
@@ -30,24 +32,24 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             SendTimer(env, 1000);
 
             var statements = new EPStatement[5];
-            statements[0] = env.CompileDeploy("@Name('stmt_metrics') select * from " + typeof(StatementMetric).FullName)
+            statements[0] = env.CompileDeploy("@name('stmt_metrics') select * from " + typeof(StatementMetric).FullName)
                 .Statement("stmt_metrics");
             statements[0].AddListener(env.ListenerNew());
 
             statements[1] = env.CompileDeploy(
-                    "@Name('cpuStmtOne') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeMillis(LongPrimitive)")
+                    "@name('cpuStmtOne') select * from SupportBean(IntPrimitive=1)#keepall where MyMetricFunctions.TakeMillis(LongPrimitive)")
                 .Statement("cpuStmtOne");
             statements[1].AddListener(env.ListenerNew());
             statements[2] = env.CompileDeploy(
-                    "@Name('cpuStmtTwo') select * from SupportBean(IntPrimitive=2)#keepall where MyMetricFunctions.TakeMillis(LongPrimitive)")
+                    "@name('cpuStmtTwo') select * from SupportBean(IntPrimitive=2)#keepall where MyMetricFunctions.TakeMillis(LongPrimitive)")
                 .Statement("cpuStmtTwo");
             statements[2].AddListener(env.ListenerNew());
             statements[3] = env.CompileDeploy(
-                    "@Name('wallStmtThree') select * from SupportBean(IntPrimitive=3)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)")
+                    "@name('wallStmtThree') select * from SupportBean(IntPrimitive=3)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)")
                 .Statement("wallStmtThree");
             statements[3].AddListener(env.ListenerNew());
             statements[4] = env.CompileDeploy(
-                    "@Name('wallStmtFour') select * from SupportBean(IntPrimitive=4)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)")
+                    "@name('wallStmtFour') select * from SupportBean(IntPrimitive=4)#keepall where MyMetricFunctions.TakeWallTime(LongPrimitive)")
                 .Statement("wallStmtFour");
             statements[4].AddListener(env.ListenerNew());
 
@@ -56,6 +58,24 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             SendEvent(env, "E3", 3, TOTAL_GOAL_ONE);
             SendEvent(env, "E4", 4, TOTAL_GOAL_TWO);
 
+            var result = new Dictionary<string, IDictionary<string, StatementMetric>>();
+            env.Runtime.MetricsService.EnumerateStatementGroups(group => {
+                var resultGroup = new Dictionary<string, StatementMetric>();
+                result[group.Name] = resultGroup;
+                group.IterateStatements(metric => {
+                    resultGroup[metric.Metric.StatementName] = metric.Metric;
+                });
+            });
+            Assert.AreEqual(0, result.Get("group-default").Count);
+            Assert.AreEqual(0, result.Get("group-2").Count);
+            var group = result.Get("group-1");
+            EPAssertionUtil.AssertEqualsAnyOrder(group.Keys, new string[] {"cpuStmtTwo", "wallStmtFour", "cpuStmtOne", "wallStmtThree"});
+            var metric = group.Get("cpuStmtOne");
+            Assert.AreEqual(1, metric.NumInput);
+
+            var runtimeMetric = env.Runtime.MetricsService.GetRuntimeMetric();
+            Assert.AreEqual(4, runtimeMetric.InputCount);
+            
             var listener = env.Listener("stmt_metrics");
             SendTimer(env, 10999);
             Assert.IsFalse(env.Listener("stmt_metrics").IsInvoked);
@@ -78,8 +98,13 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
 
             SendTimer(env, 31000);
             Assert.IsFalse(env.Listener("stmt_metrics").IsInvoked);
-
+            
             env.UndeployAll();
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.OBSERVEROPS);
         }
 
         private void TryAssertion(

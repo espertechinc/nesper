@@ -7,12 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
@@ -26,10 +28,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     /// </summary>
     public class InfraTableMTGroupedJoinReadMergeWriteSecondaryIndexUpd : RegressionExecution
     {
-        private const int NUM_KEYS = 10;
-        private const int OFFSET_ADDED = 100000000;
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private const int NUM_KEYS = 10;
+        private const int OFFSET_ADDED = 100000000;
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         /// <summary>
         ///     Tests concurrent updates on a secondary index also read by a join:
         ///     create table MyTable (key string primary key, value int)
@@ -63,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "create table MyTable (key1 string primary key, value int);\n" +
                 "create index MyIndex on MyTable (value);\n" +
                 "on SupportBean merge MyTable where TheString = key1 when not matched then insert select TheString as key1, IntPrimitive as value;\n" +
-                "@Name('out') select * from SupportBean_S0, MyTable where value = Id;\n" +
+                "@name('out') select * from SupportBean_S0, MyTable where value = Id;\n" +
                 "on SupportBean_S1 delete from MyTable where key1 like 'B%';\n";
             env.CompileDeploy(epl).AddListener("out");
 

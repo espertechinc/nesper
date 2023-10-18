@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.fabric
             DataInputOutputSerdeForge serde);
 
         void AggregatorRateEver(short serdeVersion);
-        void BigDecimal();
+        void Decimal();
         void BigInteger();
         void CountMinSketch(CountMinSketchSpecForge spec);
         void PlugInAggregation(Type serde);

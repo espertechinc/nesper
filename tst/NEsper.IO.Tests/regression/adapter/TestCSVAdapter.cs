@@ -98,7 +98,7 @@ namespace com.espertech.esperio.regression.adapter
             double? myDouble,
             String myString)
         {
-            Assert.IsTrue(_listener.IsInvoked());
+            Assert.IsTrue(_listener.IsInvoked);
             Assert.IsTrue(howManyBack < _listener.GetNewDataList().Count);
             var data = _listener.GetNewDataList()[howManyBack];
             Assert.AreEqual(1, data.Length);
@@ -168,7 +168,7 @@ namespace com.espertech.esperio.regression.adapter
             double? doubleTwo,
             String stringTwo)
         {
-            Assert.IsTrue(_listener.IsInvoked());
+            Assert.IsTrue(_listener.IsInvoked);
             Assert.AreEqual(2, _listener.GetNewDataList().Count);
 
             Assert.AreEqual(1, _listener.GetNewDataList()[0].Length);

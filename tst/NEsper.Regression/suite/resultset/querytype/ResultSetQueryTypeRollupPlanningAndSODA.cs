@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Text;
 
 using com.espertech.esper.common.client.annotation;
@@ -152,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             SupportGroupRollupPlanHook.Reset();
 
             env.Compile(epl);
-            ComparePlan(expectedCSV);
+            env.AssertThat(() => ComparePlan(expectedCSV));
             env.UndeployAll();
 
             var model = env.EplToModel(epl);
@@ -161,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
             model.Annotations.Add(AnnotationPart.NameAnnotation("s0"));
             env.CompileDeploy(model).AddListener("s0");
-            ComparePlan(expectedCSV);
+            env.AssertThat(() => ComparePlan(expectedCSV));
 
             env.UndeployAll();
         }
@@ -174,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             for (var i = 0; i < levels.Length; i++) {
                 var level = levels[i];
                 if (level.IsAggregationTop) {
-                    received[i] = new string[0];
+                    received[i] = Array.Empty<string>();
                 }
                 else {
                     received[i] = new string[level.RollupKeys.Length];

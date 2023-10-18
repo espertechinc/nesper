@@ -11,7 +11,9 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.io;
 using com.espertech.esper.regressionlib.framework;
 
 using NEsper.Avro.Core;
@@ -62,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('s0') insert into AvroExistingType select " +
+                var epl = "@name('s0') insert into AvroExistingType select " +
                           "1 as MyLong," +
                           "{1L, 2L} as MyLongArray," +
                           nameof(EPLInsertIntoPopulateCreateStreamAvro) +
@@ -72,19 +74,32 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                           "from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
+                env.AssertStmtTypes(
+                    "s0",
+                    new[] { "MyLong","MyLongArray","MyByteArray","MyMap" },
+                    new[] {
+                        typeof(long?),
+                        typeof(ICollection<long?>),
+                        typeof(ByteBuffer),
+                        typeof(IDictionary<string, string>)
+                    });
+
                 env.SendEventBean(new SupportBean());
-                var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                SupportAvroUtil.AvroToJson(@event);
-                Assert.AreEqual(1L, @event.Get("MyLong"));
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    new[] {1L, 2L},
-                    @event.Get("MyLongArray").UnwrapIntoArray<long>());
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        SupportAvroUtil.AvroToJson(@event);
+                        Assert.AreEqual(1L, @event.Get("MyLong"));
+                        EPAssertionUtil.AssertEqualsExactOrder(
+                            new[] { 1L, 2L },
+                            @event.Get("MyLongArray").UnwrapIntoArray<long>());
 
-                CollectionAssert.AreEqual(
-                    new byte[] {1, 2, 3},
-                    (byte[]) @event.Get("MyByteArray"));
+                        CollectionAssert.AreEqual(
+                            new byte[] { 1, 2, 3 },
+                            (byte[])@event.Get("MyByteArray"));
 
-                Assert.AreEqual("{\"k1\"=\"v1\"}", @event.Get("MyMap").RenderAny());
+                        Assert.AreEqual("{\"k1\"=\"v1\"}", @event.Get("MyMap").RenderAny());
+                    });
 
                 env.UndeployAll();
             }
@@ -95,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var insertInto = typeof(EPLInsertIntoPopulateCreateStreamAvro).FullName;
-                var epl = "@Name('s0') " +
+                var epl = "@name('s0') " +
                           EventRepresentationChoice.AVRO.GetAnnotationText() +
                           " select 1 as myInt," +
                           "{1L, 2L} as myLongArray," +
@@ -105,26 +120,33 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
-                var @event = env.Listener("s0").AssertOneGetNewAndReset();
-                var json = SupportAvroUtil.AvroToJson(@event);
-                Console.Out.WriteLine(json);
-                Assert.AreEqual(1, @event.Get("myInt"));
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    new[] {1L, 2L},
-                    @event.Get("myLongArray").UnwrapIntoArray<long>());
-                CollectionAssert.AreEqual(new byte[] {1, 2, 3}, (byte[]) @event.Get("myByteArray"));
-                Assert.AreEqual("{\"k1\"=\"v1\"}", @event.Get("myMap").RenderAny());
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        var json = SupportAvroUtil.AvroToJson(@event);
+                        Console.Out.WriteLine(json);
+                        Assert.AreEqual(1, @event.Get("myInt"));
+                        EPAssertionUtil.AssertEqualsExactOrder(
+                            new[] { 1L, 2L },
+                            @event.Get("myLongArray").UnwrapIntoArray<long>());
+                        CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, (byte[])@event.Get("myByteArray"));
+                        Assert.AreEqual("{\"k1\"=\"v1\"}", @event.Get("myMap").RenderAny());
 
-                var designSchema = SchemaBuilder.Record(
-                    "name",
-                    RequiredInt("myInt"),
-                    Field("myLongArray", Array(LongType())),
-                    Field("myByteArray", BytesType()),
-                    Field("myMap", Map(StringType(Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE)))));
+                        var designSchema = SchemaBuilder.Record(
+                            "name",
+                            RequiredInt("myInt"),
+                            Field("myLongArray", Array(LongType())),
+                            Field("myByteArray", BytesType()),
+                            Field(
+                                "myMap",
+                                Map(
+                                    StringType(
+                                        Property(AvroConstant.PROP_STRING_KEY, AvroConstant.PROP_STRING_VALUE)))));
 
-                var assembledSchema = ((AvroEventType) @event.EventType).SchemaAvro;
-                var compareMsg = SupportAvroUtil.CompareSchemas(designSchema, assembledSchema);
-                Assert.IsNull(compareMsg, compareMsg);
+                        var assembledSchema = ((AvroEventType)@event.EventType).SchemaAvro;
+                        var compareMsg = SupportAvroUtil.CompareSchemas(designSchema, assembledSchema);
+                        Assert.IsNull(compareMsg, compareMsg);
+                    });
 
                 env.UndeployAll();
             }

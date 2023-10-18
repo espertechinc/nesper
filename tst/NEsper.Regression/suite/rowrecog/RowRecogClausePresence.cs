@@ -6,88 +6,76 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
-    public class RowRecogClausePresence : RegressionExecution
-    {
-        public void Run(RegressionEnvironment env)
-        {
-            RunAssertionMeasurePresence(env, 0, "B.size()", 1);
-            RunAssertionMeasurePresence(env, 0, "100+B.size()", 101);
-            RunAssertionMeasurePresence(env, 1000000, "B.anyOf(v->TheString='E2')", true);
+	public class RowRecogClausePresence : RegressionExecution {
 
-            RunAssertionDefineNotPresent(env, true);
-            RunAssertionDefineNotPresent(env, false);
-        }
+	    public void Run(RegressionEnvironment env) {
+	        var milestone = new AtomicLong();
+	        RunAssertionMeasurePresence(env, 0, "B.size()", 1, milestone);
+	        RunAssertionMeasurePresence(env, 0, "100+B.size()", 101, milestone);
+	        RunAssertionMeasurePresence(env, 1000000, "B.anyOf(v=>theString='E2')", true, milestone);
 
-        private void RunAssertionDefineNotPresent(
-            RegressionEnvironment env,
-            bool soda)
-        {
-            var epl = "@Name('s0') select * from SupportBean " +
-                      "match_recognize (" +
-                      " measures A as a, B as b" +
-                      " pattern (A B)" +
-                      ")";
-            env.CompileDeploy(soda, epl).AddListener("s0");
+	        RunAssertionDefineNotPresent(env, true, milestone);
+	        RunAssertionDefineNotPresent(env, false, milestone);
+	    }
 
-            var fields = new [] { "a","b" };
-            var beans = new SupportBean[4];
-            for (var i = 0; i < beans.Length; i++) {
-                beans[i] = new SupportBean("E" + i, i);
-            }
+	    private void RunAssertionDefineNotPresent(RegressionEnvironment env, bool soda, AtomicLong milestone) {
 
-            env.SendEventBean(beans[0]);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
-            env.SendEventBean(beans[1]);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {beans[0], beans[1]});
+	        var epl = "@name('s0') select * from SupportBean " +
+	                  "match_recognize (" +
+	                  " measures A as a, B as b" +
+	                  " pattern (A B)" +
+	                  ")";
+	        env.CompileDeploy(soda, epl).AddListener("s0");
 
-            env.SendEventBean(beans[2]);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
-            env.SendEventBean(beans[3]);
-            EPAssertionUtil.AssertProps(
-                env.Listener("s0").AssertOneGetNewAndReset(),
-                fields,
-                new object[] {beans[2], beans[3]});
+	        var fields = "a,b".SplitCsv();
+	        var beans = new SupportBean[4];
+	        for (var i = 0; i < beans.Length; i++) {
+	            beans[i] = new SupportBean("E" + i, i);
+	        }
 
-            env.UndeployAll();
-        }
+	        env.SendEventBean(beans[0]);
+	        env.AssertListenerNotInvoked("s0");
+	        env.SendEventBean(beans[1]);
+	        env.AssertPropsNew("s0", fields, new object[]{beans[0], beans[1]});
 
-        private void RunAssertionMeasurePresence(
-            RegressionEnvironment env,
-            long baseTime,
-            string select,
-            object value)
-        {
-            env.AdvanceTime(baseTime);
-            var epl = "@Name('s0') select * from SupportBean  " +
-                      "match_recognize (" +
-                      "    measures A as a, A.TheString as Id, " +
-                      select +
-                      " as val " +
-                      "    pattern (A B*) " +
-                      "    interval 1 minute " +
-                      "    define " +
-                      "        A as (A.IntPrimitive=1)," +
-                      "        B as (B.IntPrimitive=2))";
-            env.CompileDeploy(epl).AddListener("s0");
+	        env.MilestoneInc(milestone);
 
-            env.SendEventBean(new SupportBean("E1", 1));
-            env.SendEventBean(new SupportBean("E2", 2));
+	        env.SendEventBean(beans[2]);
+	        env.AssertListenerNotInvoked("s0");
+	        env.SendEventBean(beans[3]);
+	        env.AssertPropsNew("s0", fields, new object[]{beans[2], beans[3]});
 
-            env.AdvanceTimeSpan(baseTime + 60 * 1000 * 2);
-            Assert.AreEqual(value, env.Listener("s0").NewDataListFlattened[0].Get("val"));
+	        env.UndeployAll();
+	    }
 
-            env.UndeployAll();
-        }
-    }
+	    private void RunAssertionMeasurePresence(RegressionEnvironment env, long baseTime, string select, object value, AtomicLong milestone) {
+
+	        env.AdvanceTime(baseTime);
+	        var epl = "@name('s0') select * from SupportBean  " +
+	                  "match_recognize (" +
+	                  "    measures A as a, A.theString as id, " + select + " as val " +
+	                  "    pattern (A B*) " +
+	                  "    interval 1 minute " +
+	                  "    define " +
+	                  "        A as (A.intPrimitive=1)," +
+	                  "        B as (B.intPrimitive=2))";
+	        env.CompileDeploy(epl).AddListener("s0");
+
+	        env.SendEventBean(new SupportBean("E1", 1));
+	        env.SendEventBean(new SupportBean("E2", 2));
+
+	        env.MilestoneInc(milestone);
+
+	        env.AdvanceTimeSpan(baseTime + 60 * 1000 * 2);
+	        env.AssertEqualsNew("s0", "val", value);
+
+	        env.UndeployAll();
+	    }
+	}
 } // end of namespace

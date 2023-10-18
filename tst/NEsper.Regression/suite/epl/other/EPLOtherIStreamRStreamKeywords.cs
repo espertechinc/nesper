@@ -13,367 +13,281 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
-    public class EPLOtherIStreamRStreamKeywords
-    {
-        public static IList<RegressionExecution> Executions()
-        {
-            IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithRStreamOnlyOM(execs);
-            WithRStreamOnlyCompile(execs);
-            WithRStreamOnly(execs);
-            WithRStreamInsertInto(execs);
-            WithRStreamInsertIntoRStream(execs);
-            WithRStreamJoin(execs);
-            WithIStreamOnly(execs);
-            WithIStreamInsertIntoRStream(execs);
-            WithIStreamJoin(execs);
-            WithRStreamOutputSnapshot(execs);
-            return execs;
-        }
+	public class EPLOtherIStreamRStreamKeywords {
+	    public static IList<RegressionExecution> Executions() {
+	        IList<RegressionExecution> execs = new List<RegressionExecution>();
+	        execs.Add(new EPLOtherRStreamOnlyOM());
+	        execs.Add(new EPLOtherRStreamOnlyCompile());
+	        execs.Add(new EPLOtherRStreamOnly());
+	        execs.Add(new EPLOtherRStreamInsertInto());
+	        execs.Add(new EPLOtherRStreamInsertIntoRStream());
+	        execs.Add(new EPLOtherRStreamJoin());
+	        execs.Add(new EPLOtherIStreamOnly());
+	        execs.Add(new EPLOtherIStreamInsertIntoRStream());
+	        execs.Add(new EPLOtherIStreamJoin());
+	        execs.Add(new EPLOtherRStreamOutputSnapshot());
+	        return execs;
+	    }
 
-        public static IList<RegressionExecution> WithRStreamOutputSnapshot(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherRStreamOutputSnapshot());
-            return execs;
-        }
+	    private class EPLOtherRStreamOutputSnapshot : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var epl = "select rstream * from SupportBean#time(30 minutes) output snapshot";
+	            env.CompileDeploy(epl).UndeployAll();
+	        }
+	    }
 
-        public static IList<RegressionExecution> WithIStreamJoin(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherIStreamJoin());
-            return execs;
-        }
+	    private class EPLOtherRStreamOnlyOM : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var stmtText = "select rstream * from SupportBean#length(3)";
+	            var model = new EPStatementObjectModel();
+	            model.SelectClause = SelectClause.CreateWildcard(StreamSelector.RSTREAM_ONLY);
+	            var fromClause = FromClause.Create(FilterStream.Create("SupportBean").AddView(View.Create("length", Expressions.Constant(3))));
+	            model.FromClause = fromClause;
+	            model = env.CopyMayFail(model);
 
-        public static IList<RegressionExecution> WithIStreamInsertIntoRStream(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherIStreamInsertIntoRStream());
-            return execs;
-        }
+	            Assert.AreEqual(stmtText, model.ToEPL());
+	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+	            env.CompileDeploy(model).AddListener("s0");
 
-        public static IList<RegressionExecution> WithIStreamOnly(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherIStreamOnly());
-            return execs;
-        }
+	            var theEvent = SendEvent(env, "a", 2);
+	            env.AssertListenerNotInvoked("s0");
 
-        public static IList<RegressionExecution> WithRStreamJoin(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherRStreamJoin());
-            return execs;
-        }
+	            SendEvents(env, new string[]{"a", "b"});
+	            env.AssertListenerNotInvoked("s0");
 
-        public static IList<RegressionExecution> WithRStreamInsertIntoRStream(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherRStreamInsertIntoRStream());
-            return execs;
-        }
+	            SendEvent(env, "d", 2);
+	            env.AssertListener("s0", listener => {
+	                Assert.AreSame(theEvent, listener.LastNewData[0].Underlying);    // receive 'a' as new data
+	                Assert.IsNull(listener.LastOldData);  // receive no more old data
+	            });
 
-        public static IList<RegressionExecution> WithRStreamInsertInto(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherRStreamInsertInto());
-            return execs;
-        }
+	            env.UndeployAll();
+	        }
+	    }
 
-        public static IList<RegressionExecution> WithRStreamOnly(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherRStreamOnly());
-            return execs;
-        }
+	    private class EPLOtherRStreamOnlyCompile : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var stmtText = "select rstream * from SupportBean#length(3)";
+	            var model = env.EplToModel(stmtText);
+	            model = env.CopyMayFail(model);
 
-        public static IList<RegressionExecution> WithRStreamOnlyCompile(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherRStreamOnlyCompile());
-            return execs;
-        }
+	            Assert.AreEqual(stmtText, model.ToEPL());
+	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+	            env.CompileDeploy(model).AddListener("s0");
 
-        public static IList<RegressionExecution> WithRStreamOnlyOM(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLOtherRStreamOnlyOM());
-            return execs;
-        }
+	            var theEvent = SendEvent(env, "a", 2);
+	            env.AssertListenerNotInvoked("s0");
 
-        private static void SendEvents(
-            RegressionEnvironment env,
-            string[] stringValue)
-        {
-            for (var i = 0; i < stringValue.Length; i++) {
-                SendEvent(env, stringValue[i], 2);
-            }
-        }
+	            SendEvents(env, new string[]{"a", "b"});
+	            env.AssertListenerNotInvoked("s0");
 
-        private static object SendEvent(
-            RegressionEnvironment env,
-            string stringValue,
-            int intPrimitive)
-        {
-            var theEvent = new SupportBean();
-            theEvent.TheString = stringValue;
-            theEvent.IntPrimitive = intPrimitive;
-            env.SendEventBean(theEvent);
-            return theEvent;
-        }
+	            SendEvent(env, "d", 2);
+	            env.AssertListener("s0", listener => {
+	                Assert.AreSame(theEvent, listener.LastNewData[0].Underlying);    // receive 'a' as new data
+	                Assert.IsNull(listener.LastOldData);  // receive no more old data
+	            });
 
-        internal class EPLOtherRStreamOutputSnapshot : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                string epl = "select rstream * from SupportBean#time(30 minutes) output snapshot";
-                env.CompileDeploy(epl).UndeployAll();
-            }
-        }
+	            env.UndeployAll();
+	        }
+	    }
 
-        internal class EPLOtherRStreamOnlyOM : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText = "select rstream * from SupportBean#length(3)";
-                var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.CreateWildcard(StreamSelector.RSTREAM_ONLY);
-                var fromClause = FromClause.Create(
-                    FilterStream.Create("SupportBean").AddView(View.Create("length", Expressions.Constant(3))));
-                model.FromClause = fromClause;
-                model = env.CopyMayFail(model);
+	    private class EPLOtherRStreamOnly : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            env.CompileDeploy("@name('s0') select rstream * from SupportBean#length(3)").AddListener("s0");
 
-                Assert.AreEqual(stmtText, model.ToEPL());
-                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                env.CompileDeploy(model).AddListener("s0");
+	            var theEvent = SendEvent(env, "a", 2);
+	            env.AssertListenerNotInvoked("s0");
 
-                var theEvent = SendEvent(env, "a", 2);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            SendEvents(env, new string[]{"a", "b"});
+	            env.AssertListenerNotInvoked("s0");
 
-                SendEvents(env, new[] {"a", "b"});
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            SendEvent(env, "d", 2);
+	            env.AssertListener("s0", listener => {
+	                Assert.AreSame(theEvent, listener.LastNewData[0].Underlying);    // receive 'a' as new data
+	                Assert.IsNull(listener.LastOldData);  // receive no more old data
+	            });
 
-                SendEvent(env, "d", 2);
-                Assert.AreSame(theEvent, env.Listener("s0").LastNewData[0].Underlying); // receive 'a' as new data
-                Assert.IsNull(env.Listener("s0").LastOldData); // receive no more old data
+	            env.UndeployAll();
+	        }
+	    }
 
-                env.UndeployAll();
-            }
-        }
+	    private class EPLOtherRStreamInsertInto : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var path = new RegressionPath();
+	            env.CompileDeploy("@name('s0') @public insert into NextStream " +
+	                "select rstream s0.theString as theString from SupportBean#length(3) as s0", path);
+	            env.AddListener("s0");
+	            env.CompileDeploy("@name('ii') select * from NextStream", path).AddListener("ii");
 
-        internal class EPLOtherRStreamOnlyCompile : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var stmtText = "select rstream * from SupportBean#length(3)";
-                var model = env.EplToModel(stmtText);
-                model = env.CopyMayFail(model);
+	            SendEvent(env, "a", 2);
+	            env.AssertListenerNotInvoked("s0");
+	            env.AssertEqualsNew("ii", "theString", "a");
 
-                Assert.AreEqual(stmtText, model.ToEPL());
-                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                env.CompileDeploy(model).AddListener("s0");
+	            SendEvents(env, new string[]{"b", "c"});
+	            env.AssertListenerNotInvoked("s0");
+	            env.AssertListener("ii", listener => {
+	                Assert.AreEqual(2, listener.NewDataList.Count);    // insert into unchanged
+	                listener.Reset();
+	            });
 
-                var theEvent = SendEvent(env, "a", 2);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            SendEvent(env, "d", 2);
+	            env.AssertListener("s0", listener => {
+	                Assert.AreSame("a", listener.LastNewData[0].Get("theString"));    // receive 'a' as new data
+	                Assert.IsNull(listener.LastOldData);  // receive no more old data
+	            });
+	            env.AssertListener("ii", listener => {
+	                Assert.AreEqual("d", listener.LastNewData[0].Get("theString"));    // insert into unchanged
+	                Assert.IsNull(listener.LastOldData);  // receive no old data in insert into
+	            });
 
-                SendEvents(env, new[] {"a", "b"});
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            env.UndeployAll();
+	        }
+	    }
 
-                SendEvent(env, "d", 2);
-                Assert.AreSame(theEvent, env.Listener("s0").LastNewData[0].Underlying); // receive 'a' as new data
-                Assert.IsNull(env.Listener("s0").LastOldData); // receive no more old data
+	    private class EPLOtherRStreamInsertIntoRStream : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var path = new RegressionPath();
+	            env.CompileDeploy("@name('s0') @public insert rstream into NextStream " +
+	                "select rstream s0.theString as theString from SupportBean#length(3) as s0", path);
+	            env.AddListener("s0");
 
-                env.UndeployAll();
-            }
-        }
+	            env.CompileDeploy("@name('ii') select * from NextStream", path).AddListener("ii");
 
-        internal class EPLOtherRStreamOnly : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.CompileDeploy("@Name('s0') select rstream * from SupportBean#length(3)").AddListener("s0");
+	            SendEvent(env, "a", 2);
+	            env.AssertListenerNotInvoked("s0");
+	            env.AssertListenerNotInvoked("ii");
 
-                var theEvent = SendEvent(env, "a", 2);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            SendEvents(env, new string[]{"b", "c"});
+	            env.AssertListenerNotInvoked("s0");
+	            env.AssertListenerNotInvoked("ii");
 
-                SendEvents(env, new[] {"a", "b"});
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            SendEvent(env, "d", 2);
+	            env.AssertListener("s0", listener => {
+	                Assert.AreSame("a", listener.LastNewData[0].Get("theString"));    // receive 'a' as new data
+	                Assert.IsNull(listener.LastOldData);  // receive no more old data
+	            });
+	            env.AssertListener("ii", listener => {
+	                Assert.AreEqual("a", listener.LastNewData[0].Get("theString"));    // insert into unchanged
+	                Assert.IsNull(listener.LastOldData);  // receive no old data in insert into
+	            });
 
-                SendEvent(env, "d", 2);
-                Assert.AreSame(theEvent, env.Listener("s0").LastNewData[0].Underlying); // receive 'a' as new data
-                Assert.IsNull(env.Listener("s0").LastOldData); // receive no more old data
+	            env.UndeployAll();
+	        }
+	    }
 
-                env.UndeployAll();
-            }
-        }
+	    private class EPLOtherRStreamJoin : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            env.CompileDeploy("@name('s0') select rstream s1.intPrimitive as aID, s2.intPrimitive as bID " +
+	                "from SupportBean(theString='a')#length(2) as s1, "
+	                + "SupportBean(theString='b')#keepall as s2" +
+	                " where s1.intPrimitive = s2.intPrimitive").AddListener("s0");
 
-        internal class EPLOtherRStreamInsertInto : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy(
-                    "@Name('s0') insert into NextStream " +
-                    "select rstream S0.TheString as TheString from SupportBean#length(3) as S0",
-                    path);
-                env.AddListener("s0");
-                env.CompileDeploy("@Name('ii') select * from NextStream", path).AddListener("ii");
+	            SendEvent(env, "a", 1);
+	            SendEvent(env, "b", 1);
+	            env.AssertListenerNotInvoked("s0");
 
-                SendEvent(env, "a", 2);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.AreEqual(
-                    "a",
-                    env.Listener("ii").AssertOneGetNewAndReset().Get("TheString")); // insert into unchanged
+	            SendEvent(env, "a", 2);
+	            env.AssertListenerNotInvoked("s0");
 
-                SendEvents(env, new[] {"b", "c"});
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.AreEqual(2, env.Listener("ii").NewDataList.Count); // insert into unchanged
-                env.Listener("ii").Reset();
+	            SendEvent(env, "a", 3);
+	            env.AssertListener("s0", listener => {
+	                Assert.AreEqual(1, listener.LastNewData[0].Get("aID"));    // receive 'a' as new data
+	                Assert.AreEqual(1, listener.LastNewData[0].Get("bID"));
+	                Assert.IsNull(listener.LastOldData);  // receive no more old data
+	            });
 
-                SendEvent(env, "d", 2);
-                Assert.AreSame("a", env.Listener("s0").LastNewData[0].Get("TheString")); // receive 'a' as new data
-                Assert.IsNull(env.Listener("s0").LastOldData); // receive no more old data
-                Assert.AreEqual("d", env.Listener("ii").LastNewData[0].Get("TheString")); // insert into unchanged
-                Assert.IsNull(env.Listener("ii").LastOldData); // receive no old data in insert into
+	            env.UndeployAll();
+	        }
+	    }
 
-                env.UndeployAll();
-            }
-        }
+	    private class EPLOtherIStreamOnly : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            env.CompileDeploy("@name('s0') select istream * from SupportBean#length(1)").AddListener("s0");
 
-        internal class EPLOtherRStreamInsertIntoRStream : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy(
-                    "@Name('s0') insert rstream into NextStream " +
-                    "select rstream S0.TheString as TheString from SupportBean#length(3) as S0",
-                    path);
-                env.AddListener("s0");
+	            var eventOne = SendEvent(env, "a", 2);
+	            env.AssertEventNew("s0", @event =>Assert.AreSame(eventOne, @event.Underlying));
 
-                env.CompileDeploy("@Name('ii') select * from NextStream", path).AddListener("ii");
+	            var eventTwo = SendEvent(env, "b", 2);
+	            env.AssertListener("s0", listener => {
+	                Assert.AreSame(eventTwo, listener.LastNewData[0].Underlying);
+	                Assert.IsNull(listener.LastOldData); // receive no old data, just istream events
+	            });
 
-                SendEvent(env, "a", 2);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.IsFalse(env.Listener("ii").IsInvoked);
+	            env.UndeployAll();
+	        }
+	    }
 
-                SendEvents(env, new[] {"b", "c"});
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-                Assert.IsFalse(env.Listener("ii").IsInvoked);
+	    private class EPLOtherIStreamInsertIntoRStream : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            var path = new RegressionPath();
+	            env.CompileDeploy("@name('s0') @public insert rstream into NextStream " +
+	                "select istream a.theString as theString from SupportBean#length(1) as a", path);
+	            env.AddListener("s0");
 
-                SendEvent(env, "d", 2);
-                Assert.AreSame("a", env.Listener("s0").LastNewData[0].Get("TheString")); // receive 'a' as new data
-                Assert.IsNull(env.Listener("s0").LastOldData); // receive no more old data
-                Assert.AreEqual("a", env.Listener("ii").LastNewData[0].Get("TheString")); // insert into unchanged
-                Assert.IsNull(env.Listener("s0").LastOldData); // receive no old data in insert into
+	            env.CompileDeploy("@name('ii') select * from NextStream", path).AddListener("ii");
 
-                env.UndeployAll();
-            }
-        }
+	            SendEvent(env, "a", 2);
+	            env.AssertEqualsNew("s0", "theString", "a");
+	            env.AssertListenerNotInvoked("ii");
 
-        internal class EPLOtherRStreamJoin : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.CompileDeploy(
-                        "@Name('s0') select rstream S1.IntPrimitive as aID, S2.IntPrimitive as bID " +
-                        "from SupportBean(TheString='a')#length(2) as S1, " +
-                        "SupportBean(TheString='b')#keepall as S2" +
-                        " where S1.IntPrimitive = S2.IntPrimitive")
-                    .AddListener("s0");
+	            SendEvent(env, "b", 2);
+	            env.AssertListener("s0", listener => {
+	                Assert.AreEqual("b", listener.LastNewData[0].Get("theString"));
+	                Assert.IsNull(listener.LastOldData);
+	            });
+	            env.AssertListener("ii", listener => {
+	                Assert.AreEqual("a", listener.LastNewData[0].Get("theString"));
+	                Assert.IsNull(listener.LastOldData);
+	            });
 
-                SendEvent(env, "a", 1);
-                SendEvent(env, "b", 1);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	            env.UndeployAll();
+	        }
+	    }
 
-                SendEvent(env, "a", 2);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
+	    private class EPLOtherIStreamJoin : RegressionExecution {
+	        public void Run(RegressionEnvironment env) {
+	            env.CompileDeploy("@name('s0') " +
+	                "select istream s1.intPrimitive as aID, s2.intPrimitive as bID " +
+	                "from SupportBean(theString='a')#length(2) as s1, "
+	                + "SupportBean(theString='b')#keepall as s2" +
+	                " where s1.intPrimitive = s2.intPrimitive").AddListener("s0");
 
-                SendEvent(env, "a", 3);
-                Assert.AreEqual(1, env.Listener("s0").LastNewData[0].Get("aID")); // receive 'a' as new data
-                Assert.AreEqual(1, env.Listener("s0").LastNewData[0].Get("bID"));
-                Assert.IsNull(env.Listener("s0").LastOldData); // receive no more old data
+	            SendEvent(env, "a", 1);
+	            SendEvent(env, "b", 1);
+	            env.AssertListener("s0", listener => {
+	                Assert.AreEqual(1, listener.LastNewData[0].Get("aID"));    // receive 'a' as new data
+	                Assert.AreEqual(1, listener.LastNewData[0].Get("bID"));
+	                Assert.IsNull(listener.LastOldData);  // receive no more old data
+	                listener.Reset();
+	            });
 
-                env.UndeployAll();
-            }
-        }
+	            SendEvent(env, "a", 2);
+	            env.AssertListenerNotInvoked("s0");
 
-        internal class EPLOtherIStreamOnly : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.CompileDeploy("@Name('s0') select istream * from SupportBean#length(1)").AddListener("s0");
+	            SendEvent(env, "a", 3);
+	            env.AssertListenerNotInvoked("s0");
 
-                var theEvent = SendEvent(env, "a", 2);
-                Assert.AreSame(theEvent, env.Listener("s0").AssertOneGetNewAndReset().Underlying);
+	            env.UndeployAll();
+	        }
+	    }
 
-                theEvent = SendEvent(env, "b", 2);
-                Assert.AreSame(theEvent, env.Listener("s0").LastNewData[0].Underlying);
-                Assert.IsNull(env.Listener("s0").LastOldData); // receive no old data, just istream events
+	    private static void SendEvents(RegressionEnvironment env, string[] stringValue) {
+	        for (var i = 0; i < stringValue.Length; i++) {
+	            SendEvent(env, stringValue[i], 2);
+	        }
+	    }
 
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherIStreamInsertIntoRStream : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy(
-                    "@Name('s0') insert rstream into NextStream " +
-                    "select istream a.TheString as TheString from SupportBean#length(1) as a",
-                    path);
-                env.AddListener("s0");
-
-                env.CompileDeploy("@Name('ii') select * from NextStream", path).AddListener("ii");
-
-                SendEvent(env, "a", 2);
-                Assert.AreEqual("a", env.Listener("s0").AssertOneGetNewAndReset().Get("TheString"));
-                Assert.IsFalse(env.Listener("ii").IsInvoked);
-
-                SendEvent(env, "b", 2);
-                var listener = env.Listener("s0");
-                Assert.AreEqual("b", env.Listener("s0").LastNewData[0].Get("TheString"));
-                Assert.IsNull(env.Listener("s0").LastOldData);
-                Assert.AreEqual("a", env.Listener("ii").LastNewData[0].Get("TheString"));
-                Assert.IsNull(env.Listener("ii").LastOldData);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class EPLOtherIStreamJoin : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                env.CompileDeploy(
-                        "@Name('s0') " +
-                        "select istream S1.IntPrimitive as aID, S2.IntPrimitive as bID " +
-                        "from SupportBean(TheString='a')#length(2) as S1, " +
-                        "SupportBean(TheString='b')#keepall as S2" +
-                        " where S1.IntPrimitive = S2.IntPrimitive")
-                    .AddListener("s0");
-
-                SendEvent(env, "a", 1);
-                SendEvent(env, "b", 1);
-                Assert.AreEqual(1, env.Listener("s0").LastNewData[0].Get("aID")); // receive 'a' as new data
-                Assert.AreEqual(1, env.Listener("s0").LastNewData[0].Get("bID"));
-                Assert.IsNull(env.Listener("s0").LastOldData); // receive no more old data
-                env.Listener("s0").Reset();
-
-                SendEvent(env, "a", 2);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                SendEvent(env, "a", 3);
-                Assert.IsFalse(env.Listener("s0").IsInvoked);
-
-                env.UndeployAll();
-            }
-        }
-    }
+	    private static object SendEvent(RegressionEnvironment env, string stringValue, int intPrimitive) {
+	        var theEvent = new SupportBean();
+	        theEvent.TheString = stringValue;
+	        theEvent.IntPrimitive = intPrimitive;
+	        env.SendEventBean(theEvent);
+	        return theEvent;
+	    }
+	}
 } // end of namespace

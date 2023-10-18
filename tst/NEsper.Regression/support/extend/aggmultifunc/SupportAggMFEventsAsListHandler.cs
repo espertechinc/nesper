@@ -23,12 +23,18 @@ namespace com.espertech.esper.regressionlib.support.extend.aggmultifunc
 
         public AggregationMultiFunctionStateKey AggregationStateUniqueKey => AGGREGATION_STATE_KEY;
 
-        public AggregationMultiFunctionStateMode StateMode =>
-            new AggregationMultiFunctionStateModeManaged().SetInjectionStrategyAggregationStateFactory(
-                new InjectionStrategyClassNewInstance(typeof(SupportAggMFEventsAsListStateFactory)));
+        public AggregationMultiFunctionStateMode StateMode {
+            get {
+                var mode = new AggregationMultiFunctionStateModeManaged();
+                mode.HasHA = true;
+                mode.Serde = typeof(SupportAggMFEventsAsListStateSerde);
+                mode.InjectionStrategyAggregationStateFactory = new InjectionStrategyClassNewInstance(typeof(SupportAggMFEventsAsListStateFactory));
+                return mode;
+            }
+        }
 
         public AggregationMultiFunctionAccessorMode AccessorMode =>
-            new AggregationMultiFunctionAccessorModeManaged().SetInjectionStrategyAggregationAccessorFactory(
+            new AggregationMultiFunctionAccessorModeManaged().WithInjectionStrategyAggregationAccessorFactory(
                 new InjectionStrategyClassNewInstance(typeof(SupportAggMFEventsAsListAccessorFactory)));
 
         public AggregationMultiFunctionAgentMode AgentMode =>

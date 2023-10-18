@@ -6,49 +6,60 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
+using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertEquals
+
+// assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
-    public class EventBeanEventPropertyDynamicPerformance : RegressionExecution
-    {
-        public void Run(RegressionEnvironment env)
-        {
-            var stmtText = "@Name('s0') select SimpleProperty?, " +
-                           "Indexed[1]? as Indexed, " +
-                           "Mapped('keyOne')? as Mapped " +
-                           "from SupportBeanComplexProps";
-            env.CompileDeploy(stmtText).AddListener("s0");
+	public class EventBeanEventPropertyDynamicPerformance : RegressionExecution {
+	    public ISet<RegressionFlag> Flags() {
+	        return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+	    }
 
-            var type = env.Statement("s0").EventType;
-            Assert.AreEqual(typeof(object), type.GetPropertyType("SimpleProperty?"));
-            Assert.AreEqual(typeof(object), type.GetPropertyType("Indexed"));
-            Assert.AreEqual(typeof(object), type.GetPropertyType("Mapped"));
+	    public void Run(RegressionEnvironment env) {
 
-            var inner = SupportBeanComplexProps.MakeDefaultBean();
-            env.SendEventBean(inner);
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
-            Assert.AreEqual(inner.SimpleProperty, theEvent.Get("SimpleProperty?"));
-            Assert.AreEqual(inner.GetIndexed(1), theEvent.Get("Indexed"));
-            Assert.AreEqual(inner.GetMapped("keyOne"), theEvent.Get("Mapped"));
+	        var stmtText = "@name('s0') select simpleProperty?, " +
+	                       "indexed[1]? as indexed, " +
+	                       "mapped('keyOne')? as mapped " +
+	                       "from SupportBeanComplexProps";
+	        env.CompileDeploy(stmtText).AddListener("s0");
 
-            var start = PerformanceObserver.MilliTime;
-            for (var i = 0; i < 10000; i++) {
-                env.SendEventBean(inner);
-                if (i % 1000 == 0) {
-                    env.Listener("s0").Reset();
-                }
-            }
+	        env.AssertStatement("s0", statement => {
+	            var type = statement.EventType;
+	            Assert.AreEqual(typeof(object), type.GetPropertyType("simpleProperty?"));
+	            Assert.AreEqual(typeof(object), type.GetPropertyType("indexed"));
+	            Assert.AreEqual(typeof(object), type.GetPropertyType("mapped"));
+	        });
 
-            var end = PerformanceObserver.MilliTime;
-            var delta = end - start;
-            Assert.That(delta, Is.LessThan(1000), "delta=" + delta);
+	        SupportBeanComplexProps inner = SupportBeanComplexProps.MakeDefaultBean();
+	        env.SendEventBean(inner);
+	        env.AssertEventNew("s0", theEvent => {
+	            Assert.AreEqual(inner.SimpleProperty, theEvent.Get("simpleProperty?"));
+	            Assert.AreEqual(inner.GetIndexed(1), theEvent.Get("indexed"));
+	            Assert.AreEqual(inner.GetMapped("keyOne"), theEvent.Get("mapped"));
+	        });
 
-            env.UndeployAll();
-        }
-    }
+	        var start = PerformanceObserver.MilliTime;
+	        for (var i = 0; i < 10000; i++) {
+	            env.SendEventBean(inner);
+	            if (i % 1000 == 0) {
+	                env.ListenerReset("s0");
+	            }
+	        }
+	        var end = PerformanceObserver.MilliTime;
+	        var delta = end - start;
+	        Assert.That(delta, Is.LessThan(1000), "delta=" + delta);
+
+	        env.UndeployAll();
+	    }
+	}
 } // end of namespace

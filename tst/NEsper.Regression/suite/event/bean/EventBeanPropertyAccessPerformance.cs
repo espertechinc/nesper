@@ -6,7 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -17,27 +20,27 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
 	public class EventBeanPropertyAccessPerformance : RegressionExecution
 	{
-		public bool ExcludeWhenInstrumented()
+		public ISet<RegressionFlag> Flags()
 		{
-			return true;
+			return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
 		}
 
 		public void Run(RegressionEnvironment env)
 		{
-			string methodName = ".testPerfPropertyAccess";
+			var methodName = ".testPerfPropertyAccess";
 
-			string joinStatement = "@Name('s0') select * from " +
-			                       "SupportBeanCombinedProps#length(1)" +
-			                       " where Indexed[0].Mapped('a').Value = 'dummy'";
+			var joinStatement = "@name('s0') select * from " +
+			                    "SupportBeanCombinedProps#length(1)" +
+			                    " where Indexed[0].Mapped('a').Value = 'dummy'";
 			env.CompileDeploy(joinStatement).AddListener("s0");
 
 			// Send events for each stream
-			SupportBeanCombinedProps theEvent = SupportBeanCombinedProps.MakeDefaultBean();
+			var theEvent = SupportBeanCombinedProps.MakeDefaultBean();
 			log.Info(methodName + " Sending events");
 
 			var delta = PerformanceObserver.TimeMillis(
 				() => {
-					for (int i = 0; i < 10000; i++) {
+					for (var i = 0; i < 10000; i++) {
 						SendEvent(env, theEvent);
 					}
 

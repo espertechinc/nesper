@@ -6,12 +6,14 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
@@ -36,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public void Run(RegressionEnvironment env)
         {
             var listener = new SupportListenerSleeping(200);
-            env.CompileDeploy("@Name('s0') select * from SupportBean").Statement("s0").AddListener(listener);
+            env.CompileDeploy("@name('s0') select * from SupportBean").Statement("s0").AddListener(listener);
 
             var start = PerformanceObserver.NanoTime;
             for (var i = 0; i < 5; i++) {
@@ -57,6 +59,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             Assert.AreEqual(5, listener.NewEvents.Count);
 
             env.UndeployAll();
+        }
+
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.RUNTIMEOPS);
         }
     }
 } // end of namespace

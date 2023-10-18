@@ -319,6 +319,15 @@ namespace com.espertech.esper.compat.collections
             }
         }
 
+        public static void ForEachRemaining<T>(
+            this IEnumerator<T> enumThis,
+            Action<T> action)
+        {
+            while (enumThis.MoveNext()) {
+                action.Invoke(enumThis.Current);
+            }
+        }
+
         public static IEnumerable Is<T, TX>(this IEnumerable<T> enumThis)
         {
             return enumThis.Where(item => item is TX);

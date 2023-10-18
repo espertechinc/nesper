@@ -26,6 +26,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtStatelessEnummethod : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             ICollection<string> vals = Arrays.AsList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j");
@@ -36,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 return bean;
             };
 
-            var enumFilter = "@Name('s0') select Strvals.anyOf(v -> v = 'j') from SupportCollection";
+            var enumFilter = "@name('s0') select Strvals.anyOf(v -> v = 'j') from SupportCollection";
             TryCount(env, 4, 1000, enumFilter, enumCallback);
             env.UndeployAll();
         }
@@ -68,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
             SupportCompileDeployUtil.AssertFutures(future);
 
-            Assert.AreEqual(numMessages * numThreads, listener.GetNewDataListFlattened().Length);
+            Assert.AreEqual(numMessages * numThreads, listener.NewDataListFlattened.Length);
         }
     }
 }

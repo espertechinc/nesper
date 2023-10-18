@@ -6,11 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
@@ -24,6 +26,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
     public class EventInfraSuperType : RegressionExecution
     {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.OBSERVEROPS);
+        }
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
@@ -56,10 +63,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 path,
                 "OA",
                 FOAWTYPE,
-                new object[0],
-                new object[0],
-                new object[0],
-                new object[0]);
+                Array.Empty<object>(),
+                Array.Empty<object>(),
+                Array.Empty<object>(),
+                Array.Empty<object>());
 
             // Avro
             var fake = SchemaBuilder.Record("fake");
@@ -105,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var statements = new EPStatement[4];
             var listeners = new SupportUpdateListener[4];
             for (var i = 0; i < typeNames.Length; i++) {
-                env.CompileDeploy("@Name('s" + i + "') select * from " + typePrefix + "_" + typeNames[i], path);
+                env.CompileDeploy("@name('s" + i + "') select * from " + typePrefix + "_" + typeNames[i], path);
                 statements[i] = env.Statement("s" + i);
                 listeners[i] = new SupportUpdateListener();
                 statements[i].AddListener(listeners[i]);

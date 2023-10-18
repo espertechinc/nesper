@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat;
@@ -15,222 +16,220 @@ using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
 
-using static com.espertech.esper.common.client.scopetest.EPAssertionUtil;
-using static com.espertech.esper.regressionlib.support.bean.SupportBean_ST0_Container;
-using static com.espertech.esper.regressionlib.support.bean.SupportCollection;
-using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
+using static com.espertech.esper.common.client.scopetest.EPAssertionUtil; // assertEqualsExactOrder
+using static com.espertech.esper.common.@internal.support.SupportEventPropUtil; // assertTypes
+// assertTypesAllSame
+using static com.espertech.esper.regressionlib.support.bean.SupportBean_ST0_Container; // make2Value
+// make2ValueNull
+using static com.espertech.esper.regressionlib.support.bean.SupportCollection; // makeString
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
-	public class ExprEnumArrayOf
-	{
-		public static ICollection<RegressionExecution> Executions()
-		{
-			List<RegressionExecution> execs = new List<RegressionExecution>();
-			WithWSelectFromScalar(execs);
-			WithWSelectFromScalarWIndex(execs);
-			WithWSelectFromEvent(execs);
-			WithEvents(execs);
-			WithScalar(execs);
-			return execs;
-		}
+    public class ExprEnumArrayOf
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            execs.Add(new ExprEnumArrayOfWSelectFromScalar());
+            execs.Add(new ExprEnumArrayOfWSelectFromScalarWIndex());
+            execs.Add(new ExprEnumArrayOfWSelectFromEvent());
+            execs.Add(new ExprEnumArrayOfEvents());
+            execs.Add(new ExprEnumArrayOfScalar());
+            execs.Add(new ExprArrayOfInvalid());
+            return execs;
+        }
 
-		public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprEnumArrayOfScalar());
-			return execs;
-		}
+        private class ExprEnumArrayOfScalar : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "c0,c1,c2,c3,c4".SplitCsv();
+                var builder = new SupportEvalBuilder("SupportCollection");
+                builder.WithExpression(fields[0], "strvals.arrayOf()");
+                builder.WithExpression(fields[1], "strvals.arrayOf(v => v)");
+                builder.WithExpression(fields[2], "strvals.arrayOf( (v, i) => v || '_' || Integer.toString(i))");
+                builder.WithExpression(
+                    fields[3],
+                    "strvals.arrayOf( (v, i, s) => v || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
+                builder.WithExpression(fields[4], "strvals.arrayOf( (v, i) => i)");
 
-		public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprEnumArrayOfEvents());
-			return execs;
-		}
+                builder.WithStatementConsumer(
+                    stmt => AssertTypes(
+                        stmt.EventType,
+                        fields,
+                        new Type[] {
+                            typeof(string[]), typeof(string[]), typeof(string[]), typeof(string[]), typeof(int?[])
+                        }));
 
-		public static IList<RegressionExecution> WithWSelectFromEvent(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprEnumArrayOfWSelectFromEvent());
-			return execs;
-		}
+                builder.WithAssertion(SupportCollection.MakeString("A,B,C"))
+                    .Expect(
+                        fields,
+                        Csv("A,B,C"),
+                        Csv("A,B,C"),
+                        Csv("A_0,B_1,C_2"),
+                        Csv("A_0_3,B_1_3,C_2_3"),
+                        new int?[] { 0, 1, 2 });
 
-		public static IList<RegressionExecution> WithWSelectFromScalarWIndex(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprEnumArrayOfWSelectFromScalarWIndex());
-			return execs;
-		}
+                builder.WithAssertion(SupportCollection.MakeString(""))
+                    .Expect(fields, Csv(""), Csv(""), Csv(""), Csv(""), new int?[] { });
 
-		public static IList<RegressionExecution> WithWSelectFromScalar(IList<RegressionExecution> execs = null)
-		{
-			execs = execs ?? new List<RegressionExecution>();
-			execs.Add(new ExprEnumArrayOfWSelectFromScalar());
-			return execs;
-		}
+                builder.WithAssertion(SupportCollection.MakeString("A"))
+                    .Expect(fields, Csv("A"), Csv("A"), Csv("A_0"), Csv("A_0_1"), new int?[] { 0 });
 
-		private class ExprEnumArrayOfScalar : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				string[] fields = "c0,c1,c2,c3".SplitCsv();
-				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "Strvals.arrayOf()");
-				builder.WithExpression(fields[1], "Strvals.arrayOf(v => v)");
-				builder.WithExpression(fields[2], "Strvals.arrayOf( (v, i) => v || '_' || Convert.ToString(i))");
-				builder.WithExpression(fields[3], "Strvals.arrayOf( (v, i, s) => v || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
+                builder.WithAssertion(SupportCollection.MakeString(null))
+                    .Expect(fields, null, null, null, null, null);
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string[])));
+                builder.Run(env);
+            }
+        }
 
-				builder.WithAssertion(SupportCollection.MakeString("A,B,C"))
-					.Expect(fields, Csv("A,B,C"), Csv("A,B,C"), Csv("A_0,B_1,C_2"), Csv("A_0_3,B_1_3,C_2_3"));
+        private class ExprEnumArrayOfEvents : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "c0,c1,c2".SplitCsv();
+                var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+                builder.WithExpression(fields[0], "contained.arrayOf(x => x.p00)");
+                builder.WithExpression(fields[1], "contained.arrayOf((x, i) => x.p00 + i*10)");
+                builder.WithExpression(fields[2], "contained.arrayOf((x, i, s) => x.p00 + i*10 + s*100)");
 
-				builder.WithAssertion(SupportCollection.MakeString(""))
-					.Expect(fields, Csv(""), Csv(""), Csv(""), Csv(""));
+                builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?[])));
 
-				builder.WithAssertion(SupportCollection.MakeString("A"))
-					.Expect(fields, Csv("A"), Csv("A"), Csv("A_0"), Csv("A_0_1"));
+                builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E2,2"))
+                    .Expect(fields, IntArray(1, 9, 2), IntArray(1, 19, 22), IntArray(301, 319, 322));
 
-				builder.WithAssertion(SupportCollection.MakeString(null))
-					.Expect(fields, null, null, null, null);
+                builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull())
+                    .Expect(fields, null, null, null);
 
-				builder.Run(env);
-			}
-		}
+                builder.WithAssertion(SupportBean_ST0_Container.Make2Value())
+                    .Expect(fields, IntArray(), IntArray(), IntArray());
 
-		private class ExprEnumArrayOfEvents : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				string[] fields = "c0,c1,c2".SplitCsv();
-				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "Contained.arrayOf(x => x.P00)");
-				builder.WithExpression(fields[1], "Contained.arrayOf((x, i) => x.P00 + i*10)");
-				builder.WithExpression(fields[2], "Contained.arrayOf((x, i, s) => x.P00 + i*10 + s*100)");
+                builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,9"))
+                    .Expect(fields, IntArray(9), IntArray(9), IntArray(109));
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?[])));
+                builder.Run(env);
+            }
+        }
 
-				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,9", "E2,2"))
-					.Expect(fields, IntArray(1, 9, 2), IntArray(1, 19, 22), IntArray(301, 319, 322));
+        private class ExprEnumArrayOfWSelectFromEvent : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "c0".SplitCsv();
+                var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
+                builder.WithExpression(fields[0], "contained.selectFrom(v => v.id).arrayOf()");
 
-				builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull())
-					.Expect(fields, null, null, null);
+                builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string[])));
 
-				builder.WithAssertion(SupportBean_ST0_Container.Make2Value())
-					.Expect(fields, IntArray(), IntArray(), IntArray());
+                builder.WithAssertion(Make2Value("E1,12", "E2,11", "E3,2"))
+                    .Verify(fields[0], val => AssertArrayEquals(new string[] { "E1", "E2", "E3" }, val));
 
-				builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,9"))
-					.Expect(fields, IntArray(9), IntArray(9), IntArray(109));
+                builder.WithAssertion(Make2Value("E4,14"))
+                    .Verify(fields[0], val => AssertArrayEquals(new string[] { "E4" }, val));
 
-				builder.Run(env);
-			}
-		}
+                builder.WithAssertion(Make2Value())
+                    .Verify(fields[0], val => AssertArrayEquals(Array.Empty<string>(), val));
 
-		private class ExprEnumArrayOfWSelectFromEvent : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				string[] fields = "c0".SplitCsv();
-				SupportEvalBuilder builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-				builder.WithExpression(fields[0], "Contained.selectFrom(v => v.Id).arrayOf()");
+                builder.WithAssertion(Make2ValueNull())
+                    .Verify(fields[0], Assert.IsNull);
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string[])));
+                builder.Run(env);
+            }
+        }
 
-				builder.WithAssertion(Make2Value("E1,12", "E2,11", "E3,2"))
-					.Verify(fields[0], val => AssertArrayEquals(new[] { "E1", "E2", "E3" }, val));
+        private class ExprEnumArrayOfWSelectFromScalarWIndex : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "c0".SplitCsv();
+                var builder = new SupportEvalBuilder("SupportCollection");
+                builder.WithExpression(
+                    fields[0],
+                    "strvals.selectfrom((v, i) => v || '-' || Integer.toString(i)).arrayOf()");
 
-				builder.WithAssertion(Make2Value("E4,14"))
-					.Verify(fields[0], val => AssertArrayEquals(new[] { "E4" }, val));
+                builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string[])));
 
-				builder.WithAssertion(Make2Value())
-					.Verify(fields[0], val => AssertArrayEquals(new string[0], val));
+                builder.WithAssertion(MakeString("E1,E2,E3"))
+                    .Verify(fields[0], val => AssertArrayEquals(new string[] { "E1-0", "E2-1", "E3-2" }, val));
 
-				builder.WithAssertion(Make2ValueNull())
-					.Verify(fields[0], Assert.IsNull);
+                builder.WithAssertion(MakeString("E4"))
+                    .Verify(fields[0], val => AssertArrayEquals(new string[] { "E4-0" }, val));
 
-				builder.Run(env);
-			}
-		}
+                builder.WithAssertion(MakeString(""))
+                    .Verify(fields[0], val => AssertArrayEquals(Array.Empty<string>(), val));
 
-		private class ExprEnumArrayOfWSelectFromScalarWIndex : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				string[] fields = "c0".SplitCsv();
-				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "Strvals.selectfrom((v, i) => v || '-' || Convert.ToString(i)).arrayOf()");
+                builder.WithAssertion(MakeString(null))
+                    .Verify(fields[0], Assert.IsNull);
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string[])));
+                builder.Run(env);
+            }
+        }
 
-				builder.WithAssertion(MakeString("E1,E2,E3"))
-					.Verify(fields[0], val => AssertArrayEquals(new[] { "E1-0", "E2-1", "E3-2" }, val));
+        private class ExprEnumArrayOfWSelectFromScalar : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "c0".SplitCsv();
+                var builder = new SupportEvalBuilder("SupportCollection");
+                builder.WithExpression(fields[0], "strvals.selectfrom(v => Integer.parseInt(v)).arrayOf()");
 
-				builder.WithAssertion(MakeString("E4"))
-					.Verify(fields[0], val => AssertArrayEquals(new[] { "E4-0" }, val));
+                builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?[])));
 
-				builder.WithAssertion(MakeString(""))
-					.Verify(fields[0], val => AssertArrayEquals(new string[0], val));
+                builder.WithAssertion(MakeString("1,2,3"))
+                    .Verify(fields[0], val => AssertArrayEquals(new int?[] { 1, 2, 3 }, val));
 
-				builder.WithAssertion(MakeString(null))
-					.Verify(fields[0], Assert.IsNull);
+                builder.WithAssertion(MakeString("1"))
+                    .Verify(fields[0], val => AssertArrayEquals(new int?[] { 1 }, val));
 
-				builder.Run(env);
-			}
-		}
+                builder.WithAssertion(MakeString(""))
+                    .Verify(fields[0], val => AssertArrayEquals(new int?[] { }, val));
 
-		private class ExprEnumArrayOfWSelectFromScalar : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				string[] fields = "c0".SplitCsv();
-				SupportEvalBuilder builder = new SupportEvalBuilder("SupportCollection");
-				builder.WithExpression(fields[0], "Strvals.selectfrom(v => Int32.Parse(v)).arrayOf()");
+                builder.WithAssertion(MakeString(null))
+                    .Verify(fields[0], Assert.IsNull);
 
-				builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?[])));
+                builder.Run(env);
+            }
+        }
 
-				builder.WithAssertion(MakeString("1,2,3"))
-					.Verify(fields[0], val => AssertArrayEquals(new int?[] { 1, 2, 3 }, val));
+        private static void AssertArrayEquals(
+            string[] expected,
+            object received)
+        {
+            AssertEqualsExactOrder(expected, (string[])received);
+        }
 
-				builder.WithAssertion(MakeString("1"))
-					.Verify(fields[0], val => AssertArrayEquals(new int?[] { 1 }, val));
+        private static void AssertArrayEquals(
+            int?[] expected,
+            object received)
+        {
+            AssertEqualsExactOrder(expected, (int?[])received);
+        }
 
-				builder.WithAssertion(MakeString(""))
-					.Verify(fields[0], val => AssertArrayEquals(new int?[] { }, val));
+        private static int?[] IntArray(params int?[] ints)
+        {
+            return ints;
+        }
 
-				builder.WithAssertion(MakeString(null))
-					.Verify(fields[0], Assert.IsNull);
+        private static string[] Csv(string csv)
+        {
+            if (string.IsNullOrWhiteSpace(csv)) {
+                return Array.Empty<string>();
+            }
 
-				builder.Run(env);
-			}
-		}
+            return csv.SplitCsv();
+        }
 
-		private static void AssertArrayEquals(
-			string[] expected,
-			object received)
-		{
-			AssertEqualsExactOrder(expected, (string[])received);
-		}
+        private class ExprArrayOfInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl;
 
-		private static void AssertArrayEquals(
-			int?[] expected,
-			object received)
-		{
-			AssertEqualsExactOrder(expected, (int?[])received);
-		}
-
-		private static int[] IntArray(params int[] ints)
-		{
-			return ints;
-		}
-
-		private static string[] Csv(string csv)
-		{
-			if (string.IsNullOrWhiteSpace(csv)) {
-				return new string[0];
-			}
-
-			return csv.SplitCsv();
-		}
-	}
+                epl = "select strvals.arrayOf(v => null) from SupportCollection";
+                env.TryInvalidCompile(
+                    epl,
+                    "Failed to validate select-clause expression 'strvals.arrayOf()': Null-type is not allowed");
+            }
+        }
+    }
 } // end of namespace

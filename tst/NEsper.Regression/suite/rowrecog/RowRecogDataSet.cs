@@ -42,54 +42,65 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             object theEvent)
         {
             if (row.Length < 3 || row[2] == null) {
-                if (env.Listener("s0").IsInvoked) {
-                    var matchesInner = env.Listener("s0").LastNewData;
-                    if (matchesInner != null) {
-                        for (var i = 0; i < matchesInner.Length; i++) {
-                            log.Info("Received matches: " + GetProps(matchesInner[i]));
+                env.AssertListener(
+                    "s0",
+                    listener => {
+                        if (listener.IsInvoked) {
+                            var matchesInner = listener.LastNewData;
+                            if (matchesInner != null) {
+                                for (var i = 0; i < matchesInner.Length; i++) {
+                                    log.Info("Received matches: " + GetProps(matchesInner[i]));
+                                }
+                            }
                         }
-                    }
-                }
 
-                Assert.IsFalse(env.Listener("s0").IsInvoked, "For event " + theEvent + " row " + rowCount);
+                        Assert.IsFalse(listener.IsInvoked, "For event " + theEvent + " row " + rowCount);
+                    });
+                
                 return;
             }
 
             var expected = (string[]) row[2];
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var matches = listener.LastNewData;
+                    string[] matchesText = null;
+                    if (matches != null) {
+                        matchesText = new string[matches.Length];
+                        for (var i = 0; i < matches.Length; i++) {
+                            matchesText[i] = GetProps(matches[i]);
+                            log.Debug(GetProps(matches[i]));
+                        }
+                    }
+                    else {
+                        if (expected != null) {
+                            log.Info("Received no matches but expected: ");
+                            for (var i = 0; i < expected.Length; i++) {
+                                log.Info(expected[i]);
+                            }
 
-            var matches = env.Listener("s0").LastNewData;
-            string[] matchesText = null;
-            if (matches != null) {
-                matchesText = new string[matches.Length];
-                for (var i = 0; i < matches.Length; i++) {
-                    matchesText[i] = GetProps(matches[i]);
-                    log.Debug(GetProps(matches[i]));
-                }
-            }
-            else {
-                if (expected != null) {
-                    log.Info("Received no matches but expected: ");
-                    for (var i = 0; i < expected.Length; i++) {
-                        log.Info(expected[i]);
+                            Assert.Fail();
+                        }
                     }
 
-                    Assert.Fail();
-                }
-            }
+                    Array.Sort(expected);
+                    Array.Sort(matchesText);
 
-            Array.Sort(expected);
-            Array.Sort(matchesText);
+                    Assert.AreEqual(matches.Length, expected.Length, "For event " + theEvent);
+                    for (var i = 0; i < expected.Length; i++) {
+                        if (!expected[i].Equals(matchesText[i])) {
+                            log.Info("expected:" + expected[i]);
+                            log.Info("  actual:" + expected[i]);
+                            Assert.AreEqual(
+                                expected[i],
+                                matchesText[i],
+                                "Sending event " + theEvent + " row " + rowCount);
+                        }
+                    }
 
-            Assert.AreEqual(matches.Length, expected.Length, "For event " + theEvent);
-            for (var i = 0; i < expected.Length; i++) {
-                if (!expected[i].Equals(matchesText[i])) {
-                    log.Info("expected:" + expected[i]);
-                    log.Info("  actual:" + expected[i]);
-                    Assert.AreEqual(expected[i], matchesText[i], "Sending event " + theEvent + " row " + rowCount);
-                }
-            }
-
-            env.Listener("s0").Reset();
+                    listener.Reset();
+                });
         }
 
         private static string GetProps(EventBean theEvent)
@@ -111,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@Name('s0') select * " +
+                var text = "@name('s0') select * " +
                            "from SupportBean " +
                            "match_recognize (" +
                            " measures A.TheString as beginA, last(Z.TheString) as lastZ" +
@@ -261,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var query = "@Name('s0') SELECT * " +
+                var query = "@name('s0') SELECT * " +
                             "FROM SupportRecogBean#keepall" +
                             "   MATCH_RECOGNIZE (" +
                             "       MEASURES A.TheString AS a_string," +

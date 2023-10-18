@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat.collections;
@@ -14,57 +15,113 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.sales;
 
-using NUnit.Framework;
+using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
     public class ExprEnumNested
     {
-        public static IList<RegressionExecution> Executions()
+        public static ICollection<RegressionExecution> Executions()
         {
-            var execs = new List<RegressionExecution>();
-            WithEquivalentToMinByUncorrelated(execs);
-            WithMinByWhere(execs);
-            WithCorrelated(execs);
-            WithAnyOf(execs);
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithAnyOf(IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            execs.Add(new ExprEnumEquivalentToMinByUncorrelated());
+            execs.Add(new ExprEnumMinByWhere());
+            execs.Add(new ExprEnumCorrelated());
             execs.Add(new ExprEnumAnyOf());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithCorrelated(IList<RegressionExecution> execs = null)
+        private class ExprEnumEquivalentToMinByUncorrelated : RegressionExecution
         {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ExprEnumCorrelated());
-            return execs;
+            public void Run(RegressionEnvironment env)
+            {
+                var eplFragment =
+                    "@name('s0') select contained.where(x => (x.p00 = contained.min(y => y.p00))) as val from SupportBean_ST0_Container";
+                env.CompileDeploy(eplFragment).AddListener("s0");
+
+                var bean = SupportBean_ST0_Container.Make2Value("E1,2", "E2,1", "E3,2");
+                env.SendEventBean(bean);
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        var result = (ICollection<SupportBean_ST0>)@event.Get("val");
+                        EPAssertionUtil.AssertEqualsExactOrder(new object[] { bean.Contained[1] }, result.ToArray());
+                    });
+
+                env.UndeployAll();
+            }
         }
 
-        public static IList<RegressionExecution> WithMinByWhere(IList<RegressionExecution> execs = null)
+        private class ExprEnumMinByWhere : RegressionExecution
         {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ExprEnumMinByWhere());
-            return execs;
+            public void Run(RegressionEnvironment env)
+            {
+                var eplFragment =
+                    "@name('s0') select sales.where(x => x.buyer = persons.minBy(y => age)) as val from PersonSales";
+                env.CompileDeploy(eplFragment).AddListener("s0");
+
+                var bean = PersonSales.Make();
+                env.SendEventBean(bean);
+
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        var sales = (ICollection<Sale>)@event.Get("val");
+                        EPAssertionUtil.AssertEqualsExactOrder(new object[] { bean.Sales[0] }, sales.ToArray());
+                    });
+
+                env.UndeployAll();
+            }
         }
 
-        public static IList<RegressionExecution> WithEquivalentToMinByUncorrelated(IList<RegressionExecution> execs = null)
+        private class ExprEnumCorrelated : RegressionExecution
         {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ExprEnumEquivalentToMinByUncorrelated());
-            return execs;
+            public void Run(RegressionEnvironment env)
+            {
+                var eplFragment =
+                    "@name('s0') select contained.where(x => x = (contained.firstOf(y => y.p00 = x.p00 ))) as val from SupportBean_ST0_Container";
+                env.CompileDeploy(eplFragment).AddListener("s0");
+
+                var bean = SupportBean_ST0_Container.Make2Value("E1,2", "E2,1", "E3,3");
+                env.SendEventBean(bean);
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        var result = (ICollection<SupportBean_ST0>)@event.Get("val");
+                        Assert.AreEqual(3, result.Count); // this would be 1 if the cache is invalid
+                    });
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ExprEnumAnyOf : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // try "in" with "Set<String> multivalues"
+                env.CompileDeploy(
+                        "@name('s0') select * from SupportContainerLevelEvent(level1s.anyOf(x=>x.level2s.anyOf(y => 'A' in (y.multivalues))))")
+                    .AddListener("s0");
+                TryAssertionAnyOf(env);
+                env.UndeployAll();
+
+                // try "in" with "String singlevalue"
+                env.CompileDeploy(
+                        "@name('s0') select * from SupportContainerLevelEvent(level1s.anyOf(x=>x.level2s.anyOf(y => y.singlevalue = 'A')))")
+                    .AddListener("s0");
+                TryAssertionAnyOf(env);
+                env.UndeployAll();
+            }
         }
 
         private static void TryAssertionAnyOf(RegressionEnvironment env)
         {
             env.SendEventBean(MakeContainerEvent("A"));
-            Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
+            env.AssertListenerInvoked("s0");
 
             env.SendEventBean(MakeContainerEvent("B"));
-            Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
+            env.AssertListenerNotInvoked("s0");
         }
 
         private static SupportContainerLevelEvent MakeContainerEvent(string value)
@@ -80,83 +137,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 new SupportContainerLevel1Event(
                     Collections.SingletonSet(new SupportContainerLevel2Event(Collections.SingletonSet("X2"), "X2"))));
             return new SupportContainerLevelEvent(level1s);
-        }
-
-        internal class ExprEnumEquivalentToMinByUncorrelated : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var eplFragment =
-                    "@Name('s0') select Contained.where(x => (x.P00 = Contained.min(y -> y.P00))) as val from SupportBean_ST0_Container";
-                env.CompileDeploy(eplFragment).AddListener("s0");
-
-                var bean = SupportBean_ST0_Container.Make2Value("E1,2", "E2,1", "E3,2");
-                env.SendEventBean(bean);
-                var result = env.Listener("s0").AssertOneGetNewAndReset().Get("val").UnwrapIntoArray<SupportBean_ST0>();
-                EPAssertionUtil.AssertEqualsExactOrder(new object[] { bean.Contained[1] }, result);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ExprEnumMinByWhere : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var eplFragment =
-                    "@Name('s0') select Sales.where(x => x.Buyer = Persons.minBy(y -> Age)) as val from PersonSales";
-                env.CompileDeploy(eplFragment).AddListener("s0");
-
-                var bean = PersonSales.Make();
-                env.SendEventBean(bean);
-
-                var sales = env.Listener("s0")
-                    .AssertOneGetNewAndReset()
-                    .Get("val")
-                    .UnwrapIntoArray<Sale>();
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    new object[] { bean.Sales[0] },
-                    sales);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ExprEnumCorrelated : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var eplFragment =
-                    "@Name('s0') select Contained.where(x => x = (Contained.firstOf(y -> y.P00 = x.P00 ))) as val from SupportBean_ST0_Container";
-                env.CompileDeploy(eplFragment).AddListener("s0");
-
-                var bean = SupportBean_ST0_Container.Make2Value("E1,2", "E2,1", "E3,3");
-                env.SendEventBean(bean);
-                var result = env.Listener("s0").AssertOneGetNewAndReset().Get("val").Unwrap<SupportBean_ST0>();
-                Assert.AreEqual(3, result.Count); // this would be 1 if the cache is invalid
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ExprEnumAnyOf : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                // try "in" with "Set<String> multivalues"
-                env.CompileDeploy(
-                        "@Name('s0') select * from SupportContainerLevelEvent(Level1s.anyOf(x -> x.Level2s.anyOf(y -> 'A' in (y.Multivalues))))")
-                    .AddListener("s0");
-                TryAssertionAnyOf(env);
-                env.UndeployAll();
-
-                // try "in" with "String singlevalue"
-                env.CompileDeploy(
-                        "@Name('s0') select * from SupportContainerLevelEvent(Level1s.anyOf(x -> x.Level2s.anyOf(y -> y.Singlevalue = 'A')))")
-                    .AddListener("s0");
-                TryAssertionAnyOf(env);
-                env.UndeployAll();
-            }
         }
     }
 } // end of namespace

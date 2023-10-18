@@ -44,5 +44,12 @@ namespace com.espertech.esper.common.client.hook.aggmultifunc
         /// </summary>
         /// <returns>serde class</returns>
         public Type Serde { get; set; }
+
+        public AggregationMultiFunctionStateModeManaged WithInjectionStrategyAggregationStateFactory(
+            InjectionStrategy injectionStrategy)
+        {
+            InjectionStrategyAggregationStateFactory = injectionStrategy;
+            return this;
+        }
     }
 }

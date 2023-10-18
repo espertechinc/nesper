@@ -11,6 +11,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -73,8 +74,8 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
         {
             EPAssertionUtil.AssertPropsPerRow(
                 env.Runtime.DeploymentService.GetStatement(deploymentId, "create").GetEnumerator(),
-                new [] { "col1","myIdent" },
-                new[] {new object[] {"E1", ident}, new object[] {"E2", ident}});
+                new[] { "col1", "myIdent" },
+                new[] { new object[] { "E1", ident }, new object[] { "E2", ident } });
         }
 
         internal class ClientMultitenancyProtectedInfra : RegressionExecution
@@ -89,8 +90,8 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
             public void Run(RegressionEnvironment env)
             {
                 var eplInfra = namedWindow
-                    ? "@Name('create') create window MyInfra#keepall as (col1 string, myIdent string);\n"
-                    : "@Name('create') create table MyInfra(col1 string primary key, myIdent string);\n";
+                    ? "@name('create') create window MyInfra#keepall as (col1 string, myIdent string);\n"
+                    : "@name('create') create table MyInfra(col1 string primary key, myIdent string);\n";
                 var epl = eplInfra +
                           "insert into MyInfra select TheString as col1, $X as myIdent from SupportBean;\n";
                 var idOne = env.DeployGetId(env.Compile(epl.Replace("$X", "'A'")));
@@ -108,13 +109,24 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
                 env.Undeploy(idTwo);
                 Assert.IsNull(env.Runtime.DeploymentService.GetStatement(idTwo, "create"));
             }
+
+
+            public string Name()
+            {
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
         }
 
         internal class ClientMultitenancyProtectedVariable : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Name('create') create variable int myvar = $X;\n" +
+                var epl = "@name('create') create variable int myvar = $X;\n" +
                           "on pattern[every timer:interval(10)] set myvar = myvar + 1;\n";
                 env.AdvanceTime(0);
                 var idOne = env.DeployGetId(env.Compile(epl.Replace("$X", "10")));
@@ -138,6 +150,12 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
                 env.Undeploy(idTwo);
                 Assert.IsNull(env.Runtime.DeploymentService.GetStatement(idTwo, "create"));
             }
+
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
         }
 
         internal class ClientMultitenancyProtectedContext : RegressionExecution
@@ -145,8 +163,8 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Name('create') create context MyContext start SupportBean(TheString=$X) as sb end after 1 year;\n" +
-                    "@Name('s0') context MyContext select count(*) as cnt from SupportBean;\n";
+                    "@name('create') create context MyContext start SupportBean(TheString=$X) as sb end after 1 year;\n" +
+                    "@name('s0') context MyContext select count(*) as cnt from SupportBean;\n";
                 var idOne = env.DeployGetId(env.Compile(epl.Replace("$X", "'A'")));
                 var idTwo = env.DeployGetId(env.Compile(epl.Replace("$X", "'B'")));
 
@@ -171,6 +189,12 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
 
                 env.Undeploy(idTwo);
             }
+
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
         }
 
         internal class ClientMultitenancyProtectedEventType : RegressionExecution
@@ -179,12 +203,12 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
             {
                 var eplOne = "create schema MySchema as (col1 string);\n" +
                              "insert into MySchema select TheString as col1 from SupportBean;\n" +
-                             "@Name('s0') select count(*) as c0 from MySchema;\n";
+                             "@name('s0') select count(*) as c0 from MySchema;\n";
                 var idOne = env.DeployGetId(env.Compile(eplOne));
 
                 var eplTwo = "create schema MySchema as (totalme int);\n" +
                              "insert into MySchema select IntPrimitive as totalme from SupportBean;\n" +
-                             "@Name('s0') select sum(totalme) as c0 from MySchema;\n";
+                             "@name('s0') select sum(totalme) as c0 from MySchema;\n";
                 var idTwo = env.DeployGetId(env.Compile(eplTwo));
 
                 AssertSelect(env, idOne, 0L);
@@ -209,6 +233,11 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
 
                 env.Undeploy(idTwo);
             }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
         }
 
         internal class ClientMultitenancyProtectedExpr : RegressionExecution
@@ -216,11 +245,11 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
             public void Run(RegressionEnvironment env)
             {
                 var eplOne = "create expression my_expression { 1 } ;\n" +
-                             "@Name('s0') select my_expression as c0 from SupportBean#lastevent;\n";
+                             "@name('s0') select my_expression as c0 from SupportBean#lastevent;\n";
                 var idOne = env.DeployGetId(env.Compile(eplOne));
 
                 var eplTwo = "create expression my_expression { 2 } ;\n" +
-                             "@Name('s0') select my_expression as c0 from SupportBean#lastevent;\n";
+                             "@name('s0') select my_expression as c0 from SupportBean#lastevent;\n";
                 var idTwo = env.DeployGetId(env.Compile(eplTwo));
                 env.SendEventBean(new SupportBean());
 
@@ -233,6 +262,11 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
                 AssertSelect(env, idTwo, 2);
 
                 env.Undeploy(idTwo);
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
             }
         }
     }

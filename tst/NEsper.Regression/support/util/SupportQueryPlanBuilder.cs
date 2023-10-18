@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.support.util
             var index = queryPlan.IndexSpecs[stream];
             index.Items.Put(
                 new TableLookupIndexReqKey(indexName, null),
-                new QueryPlanIndexItemForge(new string[0], new Type[0], new string[0], new Type[0], false, null, null));
+                new QueryPlanIndexItemForge(Array.Empty<string>(), new Type[0], Array.Empty<string>(), new Type[0], false, null, null));
             return this;
         }
 
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.support.util
                 new QueryPlanIndexItemForge(
                     new[] {property},
                     new[] {typeof(string)},
-                    new string[0],
+                    Array.Empty<string>(),
                     new Type[0],
                     false,
                     null,
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.support.util
             index.Items.Put(
                 new TableLookupIndexReqKey(indexName, null),
                 new QueryPlanIndexItemForge(
-                    new string[0],
+                    Array.Empty<string>(),
                     new Type[0],
                     new[] {property},
                     new[] {typeof(string)},

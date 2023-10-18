@@ -6,8 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
 using System.Reflection;
 
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
@@ -18,13 +20,18 @@ namespace com.espertech.esper.regressionlib.suite.pattern
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.OBSERVEROPS);
+        }
+
         /// <summary>
         ///     Starting this statement fires an event and the listener starts a new statement (same expression) again,
         ///     causing a loop. This listener limits to 10 - this is a smoke test.
         /// </summary>
         public void Run(RegressionEnvironment env)
         {
-            var patternExpr = "@Name('s0') select * from pattern [not SupportBean]";
+            var patternExpr = "@name('s0') select * from pattern [not SupportBean]";
             env.CompileDeploy(patternExpr);
             env.Statement("s0").AddListener(new PatternUpdateListener(env));
             env.UndeployAll();
@@ -51,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 if (Count < 10) {
                     Count++;
-                    var patternExpr = "@Name('ST" + Count + "') select * from pattern[not SupportBean]";
+                    var patternExpr = "@name('ST" + Count + "') select * from pattern[not SupportBean]";
                     env.CompileDeploy(patternExpr).AddListener("ST" + Count);
                     env.UndeployModuleContaining("ST" + Count);
                     env.CompileDeploy(patternExpr).AddListener("ST" + Count);

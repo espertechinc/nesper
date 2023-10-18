@@ -178,21 +178,23 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             env.AdvanceTime(startTime);
 
-            var epl = "@Name('s0') select * from pattern[" + patternExpr + "]";
+            var epl = "@name('s0') select * from pattern[" + patternExpr + "]";
             env.CompileDeploy(epl).AddListener("s0");
 
             var count = 0;
             foreach (var flipTime in flipTimes) {
                 env.AdvanceTime(flipTime - 1);
+                env.AssertListener("s0", listener => Assert.IsFalse(listener.GetAndClearIsInvoked(), "Failed for flip " + count));
+
                 Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked(), "Failed for flip " + count);
 
                 env.AdvanceTime(flipTime);
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked(), "Failed for flip " + count);
+                env.AssertListener("s0", listener => Assert.IsTrue(listener.GetAndClearIsInvoked(), "Failed for flip " + count));
                 count++;
             }
 
             env.AdvanceTime(long.MaxValue);
-            Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked());
+            env.AssertListenerNotInvoked("s0");
 
             env.UndeployAll();
         }

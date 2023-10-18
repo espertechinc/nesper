@@ -20,12 +20,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public void Run(RegressionEnvironment env)
         {
             var buf = new StringBuilder();
-            buf.Append("@Name('s0') select * from ");
+            buf.Append("@name('s0') select * from ");
 
             var delimiter = "";
             for (var i = 0; i < 20; i++) {
                 buf.Append(delimiter);
-                buf.Append("SupportBean_S0(Id=" + i + ")#lastevent as s_" + i);
+                buf.Append($"SupportBean_S0(Id={i})#lastevent as s_{i}");
                 delimiter = ", ";
             }
 
@@ -35,9 +35,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.SendEventBean(new SupportBean_S0(i));
             }
 
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            env.AssertListenerNotInvoked("s0");
             env.SendEventBean(new SupportBean_S0(19));
-            Assert.IsTrue(env.Listener("s0").IsInvoked);
+            env.AssertListenerInvoked("s0");
 
             env.UndeployAll();
         }

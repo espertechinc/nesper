@@ -269,7 +269,7 @@ namespace com.espertech.esperio.regression.adapter
     
     	private void AssertEvent(int howManyBack, int? myInt, double? myDouble, String myString)
     	{
-    		Assert.IsTrue(_listener.IsInvoked());
+    		Assert.IsTrue(_listener.IsInvoked);
     		Assert.IsTrue(howManyBack < _listener.GetNewDataList().Count);
     		var data = _listener.GetNewDataList()[howManyBack];
     		Assert.AreEqual(1, data.Length);

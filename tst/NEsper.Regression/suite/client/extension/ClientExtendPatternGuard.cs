@@ -10,71 +10,57 @@ using com.espertech.esper.common.@internal.epl.pattern.guard;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
-    public class ClientExtendPatternGuard : RegressionExecution
-    {
-        public void Run(RegressionEnvironment env)
-        {
-            RunAssertionGuard(env);
-            RunAssertionGuardVariable(env);
-            RunAssertionInvalid(env);
-        }
+	public class ClientExtendPatternGuard : RegressionExecution {
 
-        private void RunAssertionGuard(RegressionEnvironment env)
-        {
-            if (env.IsHA) {
-                return;
-            }
+	    public void Run(RegressionEnvironment env) {
+	        RunAssertionGuard(env);
+	        RunAssertionGuardVariable(env);
+	        RunAssertionInvalid(env);
+	    }
 
-            var stmtText = "@Name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(10)]";
-            env.CompileDeploy(stmtText).AddListener("s0");
+	    private void RunAssertionGuard(RegressionEnvironment env) {
+	        if (env.IsHA) {
+	            return;
+	        }
+	        var stmtText = "@name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(10)]";
+	        env.CompileDeploy(stmtText).AddListener("s0");
 
-            for (var i = 0; i < 10; i++) {
-                env.SendEventBean(new SupportBean());
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
-            }
+	        for (var i = 0; i < 10; i++) {
+	            env.SendEventBean(new SupportBean());
+	            env.AssertListenerInvoked("s0");
+	        }
 
-            env.SendEventBean(new SupportBean());
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+	        env.SendEventBean(new SupportBean());
+	        env.AssertListenerNotInvoked("s0");
 
-            env.UndeployAll();
-        }
+	        env.UndeployAll();
+	    }
 
-        private void RunAssertionGuardVariable(RegressionEnvironment env)
-        {
-            if (env.IsHA) {
-                return;
-            }
+	    private void RunAssertionGuardVariable(RegressionEnvironment env) {
+	        if (env.IsHA) {
+	            return;
+	        }
+	        var path = new RegressionPath();
+	        env.CompileDeploy("@public create variable int COUNT_TO = 3", path);
+	        var stmtText = "@name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(COUNT_TO)]";
+	        env.CompileDeploy(stmtText, path).AddListener("s0");
 
-            var path = new RegressionPath();
-            env.CompileDeploy("create variable int COUNT_TO = 3", path);
-            var stmtText = "@Name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(COUNT_TO)]";
-            env.CompileDeploy(stmtText, path).AddListener("s0");
+	        for (var i = 0; i < 3; i++) {
+	            env.SendEventBean(new SupportBean());
+	            env.AssertListenerInvoked("s0");
+	        }
 
-            for (var i = 0; i < 3; i++) {
-                env.SendEventBean(new SupportBean());
-                Assert.IsTrue(env.Listener("s0").GetAndClearIsInvoked());
-            }
+	        env.SendEventBean(new SupportBean());
+	        env.AssertListenerNotInvoked("s0");
 
-            env.SendEventBean(new SupportBean());
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+	        env.UndeployAll();
+	    }
 
-            env.UndeployAll();
-        }
-
-        private void RunAssertionInvalid(RegressionEnvironment env)
-        {
-            TryInvalidCompile(
-                env,
-                "select * from pattern [every SupportBean where namespace:name(10)]",
-                "Failed to resolve pattern guard 'SupportBean where namespace:name(10)': Error casting guard forge instance to " +
-                nameof(GuardForge) +
-                " interface for guard 'name'");
-        }
-    }
+	    private void RunAssertionInvalid(RegressionEnvironment env) {
+	        env.TryInvalidCompile("select * from pattern [every SupportBean where namespace:name(10)]",
+	            "Failed to resolve pattern guard 'SupportBean where namespace:name(10)': Error casting guard forge instance to " + typeof(GuardForge).FullName + " interface for guard 'name'");
+	    }
+	}
 } // end of namespace
