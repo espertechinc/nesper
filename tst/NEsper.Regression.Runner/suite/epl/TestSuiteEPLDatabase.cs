@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDBWithPooledWithLRU100.ConnectionLifecycleEnum = ConnectionLifecycleEnum.POOLED;
-            configDBWithPooledWithLRU100.SetLRUCache(100);
+            configDBWithPooledWithLRU100.LRUCache = 100;
             configuration.Common.AddDatabaseReference("MyDBWithPooledWithLRU100", configDBWithPooledWithLRU100);
 
             var configDBWithTxnIso1WithReadOnly = new ConfigurationCommonDBRef();
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDBWithLRU100000.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
-            configDBWithLRU100000.SetLRUCache(100000);
+            configDBWithLRU100000.LRUCache = 100000;
             configuration.Common.AddDatabaseReference("MyDBWithLRU100000", configDBWithLRU100000);
 
             var configDBWithExpiryTime = new ConfigurationCommonDBRef();

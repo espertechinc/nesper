@@ -18,213 +18,265 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
-	/// <summary>
-	/// NOTE: More namedwindow-related tests in "nwtable"
-	/// </summary>
-	public class InfraNamedWindowOM {
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new InfraCompile());
-	        execs.Add(new InfraOM());
-	        execs.Add(new InfraOMCreateTableSyntax());
-	        return execs;
-	    }
+    /// <summary>
+    /// NOTE: More namedwindow-related tests in "nwtable"
+    /// </summary>
+    public class InfraNamedWindowOM
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithCompile(execs);
+            WithOM(execs);
+            WithOMCreateTableSyntax(execs);
+            return execs;
+        }
 
-	    private class InfraCompile : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            var fields = new string[]{"key", "value"};
-	            var stmtTextCreate = "@name('create') @public create window MyWindow#keepall as select theString as key, longBoxed as value from " + nameof(SupportBean);
-	            var modelCreate = env.EplToModel(stmtTextCreate);
-	            env.CompileDeploy(modelCreate, path).AddListener("create");
-	            Assert.AreEqual("@name('create') @public create window MyWindow#keepall as select theString as key, longBoxed as value from SupportBean", modelCreate.ToEPL());
+        public static IList<RegressionExecution> WithOMCreateTableSyntax(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraOMCreateTableSyntax());
+            return execs;
+        }
 
-	            var stmtTextOnSelect = "@name('onselect') on SupportBean_B select mywin.* from MyWindow as mywin";
-	            var modelOnSelect = env.EplToModel(stmtTextOnSelect);
-	            env.CompileDeploy(modelOnSelect, path).AddListener("onselect");
+        public static IList<RegressionExecution> WithOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraOM());
+            return execs;
+        }
 
-	            var stmtTextInsert = "@name('insert') insert into MyWindow select theString as key, longBoxed as value from SupportBean";
-	            var modelInsert = env.EplToModel(stmtTextInsert);
-	            env.CompileDeploy(modelInsert, path).AddListener("insert");
+        public static IList<RegressionExecution> WithCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCompile());
+            return execs;
+        }
 
-	            var stmtTextSelectOne = "@name('select') select irstream key, value*2 as value from MyWindow(key is not null)";
-	            var modelSelect = env.EplToModel(stmtTextSelectOne);
-	            env.CompileDeploy(modelSelect, path).AddListener("select");
-	            Assert.AreEqual(stmtTextSelectOne, modelSelect.ToEPL());
+        private class InfraCompile : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var fields = new string[] { "key", "value" };
+                var stmtTextCreate =
+                    "@name('create') @public create window MyWindow#keepall as select theString as key, longBoxed as value from " +
+                    nameof(SupportBean);
+                var modelCreate = env.EplToModel(stmtTextCreate);
+                env.CompileDeploy(modelCreate, path).AddListener("create");
+                Assert.AreEqual(
+                    "@name('create') @public create window MyWindow#keepall as select theString as key, longBoxed as value from SupportBean",
+                    modelCreate.ToEPL());
 
-	            // send events
-	            SendSupportBean(env, "E1", 10L);
-	            env.AssertPropsNew("select", fields, new object[]{"E1", 20L});
-	            env.AssertPropsNew("create", fields, new object[]{"E1", 10L});
+                var stmtTextOnSelect = "@name('onselect') on SupportBean_B select mywin.* from MyWindow as mywin";
+                var modelOnSelect = env.EplToModel(stmtTextOnSelect);
+                env.CompileDeploy(modelOnSelect, path).AddListener("onselect");
 
-	            SendSupportBean(env, "E2", 20L);
-	            env.AssertPropsNew("select", fields, new object[]{"E2", 40L});
-	            env.AssertPropsNew("create", fields, new object[]{"E2", 20L});
+                var stmtTextInsert =
+                    "@name('insert') insert into MyWindow select theString as key, longBoxed as value from SupportBean";
+                var modelInsert = env.EplToModel(stmtTextInsert);
+                env.CompileDeploy(modelInsert, path).AddListener("insert");
 
-	            // create delete stmt
-	            var stmtTextDelete = "@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol=s1.key";
-	            var modelDelete = env.EplToModel(stmtTextDelete);
-	            env.CompileDeploy(modelDelete, path).AddListener("delete");
-	            Assert.AreEqual("@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol=s1.key", modelDelete.ToEPL());
+                var stmtTextSelectOne =
+                    "@name('select') select irstream key, value*2 as value from MyWindow(key is not null)";
+                var modelSelect = env.EplToModel(stmtTextSelectOne);
+                env.CompileDeploy(modelSelect, path).AddListener("select");
+                Assert.AreEqual(stmtTextSelectOne, modelSelect.ToEPL());
 
-	            // send delete event
-	            SendMarketBean(env, "E1");
-	            env.AssertPropsOld("select", fields, new object[]{"E1", 20L});
-	            env.AssertPropsOld("create", fields, new object[]{"E1", 10L});
+                // send events
+                SendSupportBean(env, "E1", 10L);
+                env.AssertPropsNew("select", fields, new object[] { "E1", 20L });
+                env.AssertPropsNew("create", fields, new object[] { "E1", 10L });
 
-	            // send delete event again, none deleted now
-	            SendMarketBean(env, "E1");
-	            env.AssertListenerNotInvoked("select");
-	            env.AssertListenerNotInvoked("create");
+                SendSupportBean(env, "E2", 20L);
+                env.AssertPropsNew("select", fields, new object[] { "E2", 40L });
+                env.AssertPropsNew("create", fields, new object[] { "E2", 20L });
 
-	            // send delete event
-	            SendMarketBean(env, "E2");
-	            env.AssertPropsOld("select", fields, new object[]{"E2", 40L});
-	            env.AssertPropsOld("create", fields, new object[]{"E2", 20L});
+                // create delete stmt
+                var stmtTextDelete =
+                    "@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol=s1.key";
+                var modelDelete = env.EplToModel(stmtTextDelete);
+                env.CompileDeploy(modelDelete, path).AddListener("delete");
+                Assert.AreEqual(
+                    "@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol=s1.key",
+                    modelDelete.ToEPL());
 
-	            // trigger on-select on empty window
-	            env.AssertListenerNotInvoked("onselect");
-	            env.SendEventBean(new SupportBean_B("B1"));
-	            env.AssertListenerNotInvoked("onselect");
+                // send delete event
+                SendMarketBean(env, "E1");
+                env.AssertPropsOld("select", fields, new object[] { "E1", 20L });
+                env.AssertPropsOld("create", fields, new object[] { "E1", 10L });
 
-	            SendSupportBean(env, "E3", 30L);
-	            env.AssertPropsNew("select", fields, new object[]{"E3", 60L});
-	            env.AssertPropsNew("create", fields, new object[]{"E3", 30L});
+                // send delete event again, none deleted now
+                SendMarketBean(env, "E1");
+                env.AssertListenerNotInvoked("select");
+                env.AssertListenerNotInvoked("create");
 
-	            // trigger on-select on the filled window
-	            env.SendEventBean(new SupportBean_B("B2"));
-	            env.AssertPropsNew("onselect",  fields, new object[]{"E3", 30L});
+                // send delete event
+                SendMarketBean(env, "E2");
+                env.AssertPropsOld("select", fields, new object[] { "E2", 40L });
+                env.AssertPropsOld("create", fields, new object[] { "E2", 20L });
 
-	            env.UndeployModuleContaining("delete");
-	            env.UndeployModuleContaining("onselect");
-	            env.UndeployModuleContaining("select");
-	            env.UndeployModuleContaining("insert");
-	            env.UndeployModuleContaining("create");
-	        }
-	    }
+                // trigger on-select on empty window
+                env.AssertListenerNotInvoked("onselect");
+                env.SendEventBean(new SupportBean_B("B1"));
+                env.AssertListenerNotInvoked("onselect");
 
-	    private class InfraOM : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var fields = new string[]{"key", "value"};
-	            var path = new RegressionPath();
+                SendSupportBean(env, "E3", 30L);
+                env.AssertPropsNew("select", fields, new object[] { "E3", 60L });
+                env.AssertPropsNew("create", fields, new object[] { "E3", 30L });
 
-	            // create window object model
-	            var model = new EPStatementObjectModel();
-	            model.Annotations = Arrays.AsList(AnnotationPart.NameAnnotation("create"), new AnnotationPart("public"));
-	            model.CreateWindow = CreateWindowClause.Create("MyWindow").AddView("keepall").WithAsEventTypeName("SupportBean");
-	            model.SelectClause = SelectClause.Create()
-	                .AddWithAsProvidedName("theString", "key")
-	                .AddWithAsProvidedName("longBoxed", "value");
+                // trigger on-select on the filled window
+                env.SendEventBean(new SupportBean_B("B2"));
+                env.AssertPropsNew("onselect", fields, new object[] { "E3", 30L });
 
-	            var stmtTextCreate = "@name('create') @public create window MyWindow#keepall as select theString as key, longBoxed as value from SupportBean";
-	            Assert.AreEqual(stmtTextCreate, model.ToEPL());
-	            env.CompileDeploy(model, path).AddListener("create");
+                env.UndeployModuleContaining("delete");
+                env.UndeployModuleContaining("onselect");
+                env.UndeployModuleContaining("select");
+                env.UndeployModuleContaining("insert");
+                env.UndeployModuleContaining("create");
+            }
+        }
 
-	            var stmtTextInsert = "insert into MyWindow select theString as key, longBoxed as value from SupportBean";
-	            env.EplToModelCompileDeploy(stmtTextInsert, path);
+        private class InfraOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = new string[] { "key", "value" };
+                var path = new RegressionPath();
 
-	            // Consumer statement object model
-	            model = new EPStatementObjectModel();
-	            Expression multi = Expressions.Multiply(Expressions.Property("value"), Expressions.Constant(2));
-	            model.SelectClause = SelectClause.Create().SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
-	                .Add("key")
-	                .Add(multi, "value");
-	            model.FromClause = FromClause.Create(FilterStream.Create("MyWindow", Expressions.IsNotNull("value")));
-	            var eplSelect = "select irstream key, value*2 as value from MyWindow(value is not null)";
-	            Assert.AreEqual(eplSelect, model.ToEPL());
+                // create window object model
+                var model = new EPStatementObjectModel();
+                model.Annotations = Arrays.AsList(
+                    AnnotationPart.NameAnnotation("create"),
+                    new AnnotationPart("public"));
+                model.CreateWindow = CreateWindowClause.Create("MyWindow")
+                    .AddView("keepall")
+                    .WithAsEventTypeName("SupportBean");
+                model.SelectClause = SelectClause.Create()
+                    .AddWithAsProvidedName("theString", "key")
+                    .AddWithAsProvidedName("longBoxed", "value");
 
-	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("select"));
-	            env.CompileDeploy(model, path).AddListener("select");
+                var stmtTextCreate =
+                    "@name('create') @public create window MyWindow#keepall as select theString as key, longBoxed as value from SupportBean";
+                Assert.AreEqual(stmtTextCreate, model.ToEPL());
+                env.CompileDeploy(model, path).AddListener("create");
 
-	            // send events
-	            SendSupportBean(env, "E1", 10L);
-	            env.AssertPropsNew("select", fields, new object[]{"E1", 20L});
-	            env.AssertPropsNew("create", fields, new object[]{"E1", 10L});
+                var stmtTextInsert =
+                    "insert into MyWindow select theString as key, longBoxed as value from SupportBean";
+                env.EplToModelCompileDeploy(stmtTextInsert, path);
 
-	            SendSupportBean(env, "E2", 20L);
-	            env.AssertPropsNew("select", fields, new object[]{"E2", 40L});
-	            env.AssertPropsNew("create", fields, new object[]{"E2", 20L});
+                // Consumer statement object model
+                model = new EPStatementObjectModel();
+                Expression multi = Expressions.Multiply(Expressions.Property("value"), Expressions.Constant(2));
+                model.SelectClause = SelectClause.Create()
+                    .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
+                    .Add("key")
+                    .Add(multi, "value");
+                model.FromClause = FromClause.Create(FilterStream.Create("MyWindow", Expressions.IsNotNull("value")));
+                var eplSelect = "select irstream key, value*2 as value from MyWindow(value is not null)";
+                Assert.AreEqual(eplSelect, model.ToEPL());
 
-	            // create delete stmt
-	            model = new EPStatementObjectModel();
-	            model.OnExpr = OnClause.CreateOnDelete("MyWindow", "s1");
-	            model.FromClause = FromClause.Create(FilterStream.Create("SupportMarketDataBean", "s0"));
-	            model.WhereClause = Expressions.EqProperty("s0.symbol", "s1.key");
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("select"));
+                env.CompileDeploy(model, path).AddListener("select");
 
-	            var stmtTextDelete = "on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol=s1.key";
-	            Assert.AreEqual(stmtTextDelete, model.ToEPL());
+                // send events
+                SendSupportBean(env, "E1", 10L);
+                env.AssertPropsNew("select", fields, new object[] { "E1", 20L });
+                env.AssertPropsNew("create", fields, new object[] { "E1", 10L });
 
-	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("ondelete"));
-	            env.CompileDeploy(model, path).AddListener("ondelete");
+                SendSupportBean(env, "E2", 20L);
+                env.AssertPropsNew("select", fields, new object[] { "E2", 40L });
+                env.AssertPropsNew("create", fields, new object[] { "E2", 20L });
 
-	            // send delete event
-	            SendMarketBean(env, "E1");
-	            env.AssertPropsOld("select", fields, new object[]{"E1", 20L});
-	            env.AssertPropsOld("create", fields, new object[]{"E1", 10L});
+                // create delete stmt
+                model = new EPStatementObjectModel();
+                model.OnExpr = OnClause.CreateOnDelete("MyWindow", "s1");
+                model.FromClause = FromClause.Create(FilterStream.Create("SupportMarketDataBean", "s0"));
+                model.WhereClause = Expressions.EqProperty("s0.symbol", "s1.key");
 
-	            // send delete event again, none deleted now
-	            SendMarketBean(env, "E1");
-	            env.AssertListenerNotInvoked("select");
-	            env.AssertListenerNotInvoked("create");
+                var stmtTextDelete = "on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol=s1.key";
+                Assert.AreEqual(stmtTextDelete, model.ToEPL());
 
-	            // send delete event
-	            SendMarketBean(env, "E2");
-	            env.AssertPropsOld("select", fields, new object[]{"E2", 40L});
-	            env.AssertPropsOld("create", fields, new object[]{"E2", 20L});
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("ondelete"));
+                env.CompileDeploy(model, path).AddListener("ondelete");
 
-	            // On-select object model
-	            model = new EPStatementObjectModel();
-	            model.OnExpr = OnClause.CreateOnSelect("MyWindow", "s1");
-	            model.WhereClause = Expressions.EqProperty("s0.id", "s1.key");
-	            model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_B", "s0"));
-	            model.SelectClause = SelectClause.CreateStreamWildcard("s1");
+                // send delete event
+                SendMarketBean(env, "E1");
+                env.AssertPropsOld("select", fields, new object[] { "E1", 20L });
+                env.AssertPropsOld("create", fields, new object[] { "E1", 10L });
 
-	            var stmtTextOnSelect = "on SupportBean_B as s0 select s1.* from MyWindow as s1 where s0.id=s1.key";
-	            Assert.AreEqual(stmtTextOnSelect, model.ToEPL());
+                // send delete event again, none deleted now
+                SendMarketBean(env, "E1");
+                env.AssertListenerNotInvoked("select");
+                env.AssertListenerNotInvoked("create");
 
-	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("onselect"));
-	            env.CompileDeploy(model, path).AddListener("onselect");
+                // send delete event
+                SendMarketBean(env, "E2");
+                env.AssertPropsOld("select", fields, new object[] { "E2", 40L });
+                env.AssertPropsOld("create", fields, new object[] { "E2", 20L });
 
-	            // send some more events
-	            SendSupportBean(env, "E3", 30L);
-	            SendSupportBean(env, "E4", 40L);
+                // On-select object model
+                model = new EPStatementObjectModel();
+                model.OnExpr = OnClause.CreateOnSelect("MyWindow", "s1");
+                model.WhereClause = Expressions.EqProperty("s0.id", "s1.key");
+                model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_B", "s0"));
+                model.SelectClause = SelectClause.CreateStreamWildcard("s1");
 
-	            env.SendEventBean(new SupportBean_B("B1"));
-	            env.AssertListenerNotInvoked("onselect");
+                var stmtTextOnSelect = "on SupportBean_B as s0 select s1.* from MyWindow as s1 where s0.id=s1.key";
+                Assert.AreEqual(stmtTextOnSelect, model.ToEPL());
 
-	            // trigger on-select
-	            env.SendEventBean(new SupportBean_B("E3"));
-	            env.AssertPropsNew("onselect",  fields, new object[]{"E3", 30L});
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("onselect"));
+                env.CompileDeploy(model, path).AddListener("onselect");
 
-	            env.UndeployAll();
-	        }
-	    }
+                // send some more events
+                SendSupportBean(env, "E3", 30L);
+                SendSupportBean(env, "E4", 40L);
 
-	    private class InfraOMCreateTableSyntax : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var expected = "create window MyWindowOM#keepall as (a1 string, a2 double, a3 int)";
+                env.SendEventBean(new SupportBean_B("B1"));
+                env.AssertListenerNotInvoked("onselect");
 
-	            // create window object model
-	            var model = new EPStatementObjectModel();
-	            var clause = CreateWindowClause.Create("MyWindowOM").AddView("keepall");
-	            clause.WithColumn(new SchemaColumnDesc("a1", "string"));
-	            clause.WithColumn(new SchemaColumnDesc("a2", "double"));
-	            clause.WithColumn(new SchemaColumnDesc("a3", "int"));
-	            model.CreateWindow = clause;
-	            Assert.AreEqual(expected, model.ToEPL());
-	        }
-	    }
+                // trigger on-select
+                env.SendEventBean(new SupportBean_B("E3"));
+                env.AssertPropsNew("onselect", fields, new object[] { "E3", 30L });
 
-	    private static void SendSupportBean(RegressionEnvironment env, string theString, long? longBoxed) {
-	        var bean = new SupportBean();
-	        bean.TheString = theString;
-	        bean.LongBoxed = longBoxed;
-	        env.SendEventBean(bean);
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private static void SendMarketBean(RegressionEnvironment env, string symbol) {
-	        var bean = new SupportMarketDataBean(symbol, 0, 0L, "");
-	        env.SendEventBean(bean);
-	    }
-	}
+        private class InfraOMCreateTableSyntax : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var expected = "create window MyWindowOM#keepall as (a1 string, a2 double, a3 int)";
+
+                // create window object model
+                var model = new EPStatementObjectModel();
+                var clause = CreateWindowClause.Create("MyWindowOM").AddView("keepall");
+                clause.WithColumn(new SchemaColumnDesc("a1", "string"));
+                clause.WithColumn(new SchemaColumnDesc("a2", "double"));
+                clause.WithColumn(new SchemaColumnDesc("a3", "int"));
+                model.CreateWindow = clause;
+                Assert.AreEqual(expected, model.ToEPL());
+            }
+        }
+
+        private static void SendSupportBean(
+            RegressionEnvironment env,
+            string theString,
+            long? longBoxed)
+        {
+            var bean = new SupportBean();
+            bean.TheString = theString;
+            bean.LongBoxed = longBoxed;
+            env.SendEventBean(bean);
+        }
+
+        private static void SendMarketBean(
+            RegressionEnvironment env,
+            string symbol)
+        {
+            var bean = new SupportMarketDataBean(symbol, 0, 0L, "");
+            env.SendEventBean(bean);
+        }
+    }
 } // end of namespace

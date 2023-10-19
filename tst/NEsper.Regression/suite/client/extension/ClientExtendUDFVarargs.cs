@@ -27,179 +27,250 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
-	public class ClientExtendUDFVarargs {
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new ClientExtendUDFVarargsCombinations());
-	        execs.Add(new ClientExtendUDFVarargsCollOfEvent());
-	        return execs;
-	    }
+    public class ClientExtendUDFVarargs
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithCombinations(execs);
+            WithCollOfEvent(execs);
+            return execs;
+        }
 
-	    private class ClientExtendUDFVarargsCollOfEvent : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select " + typeof(ClientExtendUDFVarargs).FullName + ".mySupportVarArgsMethod(1, " +
-	                      "(select * from SupportBean#keepall), (select * from SupportBean#keepall).selectFrom(v => v)) as c0 from SupportBean_S0;\n";
-	            env.CompileDeploy(epl).AddListener("s0");
+        public static IList<RegressionExecution> WithCollOfEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendUDFVarargsCollOfEvent());
+            return execs;
+        }
 
-	            env.SendEventBean(new SupportBean("E1", 1));
-	            env.SendEventBean(new SupportBean_S0(0));
-	            env.AssertEventNew("s0", @event => {
-	                var data = (object[]) @event.Get("c0");
-	                Assert.AreEqual(1, data[0]);
-	                Assert.IsTrue(data[1] is SupportBean);
-	                Assert.IsTrue(((ICollection<SupportBean>) data[2]).First() is SupportBean);
-	            });
+        public static IList<RegressionExecution> WithCombinations(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientExtendUDFVarargsCombinations());
+            return execs;
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        private class ClientExtendUDFVarargsCollOfEvent : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select " +
+                          typeof(ClientExtendUDFVarargs).FullName +
+                          ".mySupportVarArgsMethod(1, " +
+                          "(select * from SupportBean#keepall), (select * from SupportBean#keepall).selectFrom(v => v)) as c0 from SupportBean_S0;\n";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	    private class ClientExtendUDFVarargsCombinations : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var milestone = new AtomicLong();
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.SendEventBean(new SupportBean_S0(0));
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        var data = (object[])@event.Get("c0");
+                        Assert.AreEqual(1, data[0]);
+                        Assert.IsTrue(data[1] is SupportBean);
+                        Assert.IsTrue(((ICollection<SupportBean>)data[2]).First() is SupportBean);
+                    });
 
-	            RunVarargAssertion(env,
-	                    milestone, MakePair("varargsOnlyInt(1, 2, 3, 4)", "1,2,3,4"),
-	                    MakePair("varargsOnlyInt(1, 2, 3)", "1,2,3"),
-	                    MakePair("varargsOnlyInt(1, 2)", "1,2"),
-	                    MakePair("varargsOnlyInt(1)", "1"),
-	                    MakePair("varargsOnlyInt()", ""));
+                env.UndeployAll();
+            }
+        }
 
-	            RunVarargAssertion(
-	                    env, milestone,
-	                    MakePair("varargsW1Param('abc', 1.0, 2.0)", "abc,1.0,2.0"),
-	                    MakePair("varargsW1Param('abc', 1, 2)", "abc,1.0,2.0"),
-	                    MakePair("varargsW1Param('abc', 1)", "abc,1.0"),
-	                    MakePair("varargsW1Param('abc')", "abc")
-	            );
+        private class ClientExtendUDFVarargsCombinations : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var milestone = new AtomicLong();
 
-	            RunVarargAssertion(
-	                    env, milestone, MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
-	                    MakePair("varargsW2Param(1, 2.0, 3L)", "1,2.0,3"),
-	                    MakePair("varargsW2Param(1, 2.0)", "1,2.0"),
-	                    MakePair("varargsW2Param(1, 2.0, 3, 4L)", "1,2.0,3,4"),
-	                    MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
-	                    MakePair("varargsW2Param(1, 2.0, 3, 4)", "1,2.0,3,4"),
-	                    MakePair("varargsW2Param(1, 2.0, 3L, 4)", "1,2.0,3,4"));
+                RunVarargAssertion(
+                    env,
+                    milestone,
+                    MakePair("varargsOnlyInt(1, 2, 3, 4)", "1,2,3,4"),
+                    MakePair("varargsOnlyInt(1, 2, 3)", "1,2,3"),
+                    MakePair("varargsOnlyInt(1, 2)", "1,2"),
+                    MakePair("varargsOnlyInt(1)", "1"),
+                    MakePair("varargsOnlyInt()", ""));
 
-	            RunVarargAssertion(
-	                    env, milestone, MakePair("varargsOnlyWCtx(1, 2, 3)", "CTX+1,2,3"),
-	                    MakePair("varargsOnlyWCtx(1, 2)", "CTX+1,2"),
-	                    MakePair("varargsOnlyWCtx(1)", "CTX+1"),
-	                    MakePair("varargsOnlyWCtx()", "CTX+"));
+                RunVarargAssertion(
+                    env,
+                    milestone,
+                    MakePair("varargsW1Param('abc', 1.0, 2.0)", "abc,1.0,2.0"),
+                    MakePair("varargsW1Param('abc', 1, 2)", "abc,1.0,2.0"),
+                    MakePair("varargsW1Param('abc', 1)", "abc,1.0"),
+                    MakePair("varargsW1Param('abc')", "abc")
+                );
 
-	            RunVarargAssertion(
-	                    env, milestone, MakePair("varargsW1ParamWCtx('a', 1, 2, 3)", "CTX+a,1,2,3"),
-	                    MakePair("varargsW1ParamWCtx('a', 1, 2)", "CTX+a,1,2"),
-	                    MakePair("varargsW1ParamWCtx('a', 1)", "CTX+a,1"),
-	                    MakePair("varargsW1ParamWCtx('a')", "CTX+a,"));
+                RunVarargAssertion(
+                    env,
+                    milestone,
+                    MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
+                    MakePair("varargsW2Param(1, 2.0, 3L)", "1,2.0,3"),
+                    MakePair("varargsW2Param(1, 2.0)", "1,2.0"),
+                    MakePair("varargsW2Param(1, 2.0, 3, 4L)", "1,2.0,3,4"),
+                    MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
+                    MakePair("varargsW2Param(1, 2.0, 3, 4)", "1,2.0,3,4"),
+                    MakePair("varargsW2Param(1, 2.0, 3L, 4)", "1,2.0,3,4"));
 
-	            RunVarargAssertion(
-	                    env, milestone, MakePair("varargsW2ParamWCtx('a', 'b', 1, 2, 3)", "CTX+a,b,1,2,3"),
-	                    MakePair("varargsW2ParamWCtx('a', 'b', 1, 2)", "CTX+a,b,1,2"),
-	                    MakePair("varargsW2ParamWCtx('a', 'b', 1)", "CTX+a,b,1"),
-	                    MakePair("varargsW2ParamWCtx('a', 'b')", "CTX+a,b,"),
-	                    MakePair(typeof(SupportSingleRowFunction).FullName + ".varargsW2ParamWCtx('a', 'b')", "CTX+a,b,"));
+                RunVarargAssertion(
+                    env,
+                    milestone,
+                    MakePair("varargsOnlyWCtx(1, 2, 3)", "CTX+1,2,3"),
+                    MakePair("varargsOnlyWCtx(1, 2)", "CTX+1,2"),
+                    MakePair("varargsOnlyWCtx(1)", "CTX+1"),
+                    MakePair("varargsOnlyWCtx()", "CTX+"));
 
-	            RunVarargAssertion(
-	                    env, milestone, MakePair("varargsOnlyObject('a', 1, new BigInteger('2'))", "a,1,2"),
-	                    MakePair("varargsOnlyNumber(1f, 2L, 3, new BigInteger('4'))", "1.0,2,3,4"));
+                RunVarargAssertion(
+                    env,
+                    milestone,
+                    MakePair("varargsW1ParamWCtx('a', 1, 2, 3)", "CTX+a,1,2,3"),
+                    MakePair("varargsW1ParamWCtx('a', 1, 2)", "CTX+a,1,2"),
+                    MakePair("varargsW1ParamWCtx('a', 1)", "CTX+a,1"),
+                    MakePair("varargsW1ParamWCtx('a')", "CTX+a,"));
 
-	            RunVarargAssertion(
-	                    env, milestone, MakePair("varargsOnlyNumber(1f, 2L, 3, new BigInteger('4'))", "1.0,2,3,4"));
+                RunVarargAssertion(
+                    env,
+                    milestone,
+                    MakePair("varargsW2ParamWCtx('a', 'b', 1, 2, 3)", "CTX+a,b,1,2,3"),
+                    MakePair("varargsW2ParamWCtx('a', 'b', 1, 2)", "CTX+a,b,1,2"),
+                    MakePair("varargsW2ParamWCtx('a', 'b', 1)", "CTX+a,b,1"),
+                    MakePair("varargsW2ParamWCtx('a', 'b')", "CTX+a,b,"),
+                    MakePair(typeof(SupportSingleRowFunction).FullName + ".varargsW2ParamWCtx('a', 'b')", "CTX+a,b,"));
 
-	            RunVarargAssertion(
-	                    env, milestone, MakePair("varargsOnlyISupportBaseAB(new " + typeof(ISupportBImpl).FullName + "('a', 'b'))", "ISupportBImpl{valueB='a', valueBaseAB='b'}"));
+                RunVarargAssertion(
+                    env,
+                    milestone,
+                    MakePair("varargsOnlyObject('a', 1, new BigInteger('2'))", "a,1,2"),
+                    MakePair("varargsOnlyNumber(1f, 2L, 3, new BigInteger('4'))", "1.0,2,3,4"));
 
-	            // tests for array-passthru
-	            RunVarargAssertion(
-	                    env, milestone, MakePair("varargsOnlyString({'a'})", "a"),
-	                    MakePair("varargsOnlyString({'a', 'b'})", "a,b"),
-	                    MakePair("varargsOnlyObject({'a', 'b'})", "a,b"),
-	                    MakePair("varargsOnlyObject({})", ""),
-	                    MakePair("varargsObjectsWCtx({1, 'a'})", "CTX+1,a"),
-	                    MakePair("varargsW1ParamObjectsWCtx(1, new object[] {'a', 1})", "CTX+,1,a,1")
-	            );
+                RunVarargAssertion(
+                    env,
+                    milestone,
+                    MakePair("varargsOnlyNumber(1f, 2L, 3, new BigInteger('4'))", "1.0,2,3,4"));
 
-	            // try Arrays.asList
-	            TryAssertionArraysAsList(env, milestone);
+                RunVarargAssertion(
+                    env,
+                    milestone,
+                    MakePair(
+                        "varargsOnlyISupportBaseAB(new " + typeof(ISupportBImpl).FullName + "('a', 'b'))",
+                        "ISupportBImpl{valueB='a', valueBaseAB='b'}"));
 
-	            env.TryInvalidCompile("select varargsOnlyInt(1, null) from SupportBean", "Failed to validate select-clause expression 'varargsOnlyInt(1,null)': Could not find static method");
+                // tests for array-passthru
+                RunVarargAssertion(
+                    env,
+                    milestone,
+                    MakePair("varargsOnlyString({'a'})", "a"),
+                    MakePair("varargsOnlyString({'a', 'b'})", "a,b"),
+                    MakePair("varargsOnlyObject({'a', 'b'})", "a,b"),
+                    MakePair("varargsOnlyObject({})", ""),
+                    MakePair("varargsObjectsWCtx({1, 'a'})", "CTX+1,a"),
+                    MakePair("varargsW1ParamObjectsWCtx(1, new object[] {'a', 1})", "CTX+,1,a,1")
+                );
 
-	            RunVarargAssertion(env, milestone, MakePair("varargsOnlyBoxedFloat(cast(1, byte), cast(2, short), null, 3)", "1.0,2.0,null,3.0"));
-	            RunVarargAssertion(env, milestone, MakePair("varargsOnlyBoxedShort(null, cast(1, byte))", "null,1"));
-	            RunVarargAssertion(env, milestone, MakePair("varargsOnlyBoxedByte(null, cast(1, byte))", "null,1"));
+                // try Arrays.asList
+                TryAssertionArraysAsList(env, milestone);
 
-	            // test excact match takes priority over varargs
-	            RunVarargAssertion(env, milestone,
-	                    MakePair("varargOverload()", "many"),
-	                    MakePair("varargOverload(1)", "p1"),
-	                    MakePair("varargOverload(1, 2)", "p2"),
-	                    MakePair("varargOverload(1, 2, 3)", "p3"),
-	                    MakePair("varargOverload(1, 2, 3, 4)", "many")
-	            );
-	        }
-	    }
+                env.TryInvalidCompile(
+                    "select varargsOnlyInt(1, null) from SupportBean",
+                    "Failed to validate select-clause expression 'varargsOnlyInt(1,null)': Could not find static method");
 
-	    private static void RunVarargAssertion(RegressionEnvironment env, AtomicLong milestone, params UniformPair<string>[] pairs) {
-	        var buf = new StringWriter();
-	        buf.Write("@name('test') select ");
-	        var count = 0;
-	        foreach (var pair in pairs) {
-	            buf.Write(pair.First);
-	            buf.Write(" as c");
-	            buf.Write(Convert.ToString(count));
-	            count++;
-	            buf.Write(",");
-	        }
-	        buf.Write("intPrimitive from SupportBean");
+                RunVarargAssertion(
+                    env,
+                    milestone,
+                    MakePair("varargsOnlyBoxedFloat(cast(1, byte), cast(2, short), null, 3)", "1.0,2.0,null,3.0"));
+                RunVarargAssertion(env, milestone, MakePair("varargsOnlyBoxedShort(null, cast(1, byte))", "null,1"));
+                RunVarargAssertion(env, milestone, MakePair("varargsOnlyBoxedByte(null, cast(1, byte))", "null,1"));
 
-	        env.CompileDeployAddListenerMile(buf.ToString(), "test", milestone.GetAndIncrement());
+                // test excact match takes priority over varargs
+                RunVarargAssertion(
+                    env,
+                    milestone,
+                    MakePair("varargOverload()", "many"),
+                    MakePair("varargOverload(1)", "p1"),
+                    MakePair("varargOverload(1, 2)", "p2"),
+                    MakePair("varargOverload(1, 2, 3)", "p3"),
+                    MakePair("varargOverload(1, 2, 3, 4)", "many")
+                );
+            }
+        }
 
-	        env.SendEventBean(new SupportBean());
-	        env.AssertEventNew("test", @event => {
-	            var index = 0;
-	            foreach (var pair in pairs) {
-	                Assert.AreEqual(pair.Second, @event.Get("c" + index), "failed for '" + pair.First + "'");
-	                index++;
-	            }
-	        });
+        private static void RunVarargAssertion(
+            RegressionEnvironment env,
+            AtomicLong milestone,
+            params UniformPair<string>[] pairs)
+        {
+            var buf = new StringWriter();
+            buf.Write("@name('test') select ");
+            var count = 0;
+            foreach (var pair in pairs) {
+                buf.Write(pair.First);
+                buf.Write(" as c");
+                buf.Write(Convert.ToString(count));
+                count++;
+                buf.Write(",");
+            }
 
-	        env.UndeployAll();
-	    }
+            buf.Write("intPrimitive from SupportBean");
 
-	    private static UniformPair<string> MakePair(string expression, string expected) {
-	        return new UniformPair<string>(expression, expected);
-	    }
+            env.CompileDeployAddListenerMile(buf.ToString(), "test", milestone.GetAndIncrement());
 
-	    private static void TryAssertionArraysAsList(RegressionEnvironment env, AtomicLong milestone) {
-	        var epl = "@name('s0') select " +
-	                  "java.util.Arrays.asList('a') as c0, " +
-	                  "java.util.Arrays.asList({'a'}) as c1, " +
-	                  "java.util.Arrays.asList('a', 'b') as c2, " +
-	                  "java.util.Arrays.asList({'a', 'b'}) as c3 " +
-	                  "from SupportBean";
-	        env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
+            env.SendEventBean(new SupportBean());
+            env.AssertEventNew(
+                "test",
+                @event => {
+                    var index = 0;
+                    foreach (var pair in pairs) {
+                        Assert.AreEqual(pair.Second, @event.Get("c" + index), "failed for '" + pair.First + "'");
+                        index++;
+                    }
+                });
 
-	        env.SendEventBean(new SupportBean());
-	        env.AssertEventNew("s0", @event => {
-	            AssertEqualsColl(@event, "c0", "a");
-	            AssertEqualsColl(@event, "c1", "a");
-	            AssertEqualsColl(@event, "c2", "a", "b");
-	            AssertEqualsColl(@event, "c3", "a", "b");
-	        });
+            env.UndeployAll();
+        }
 
-	        env.UndeployAll();
-	    }
+        private static UniformPair<string> MakePair(
+            string expression,
+            string expected)
+        {
+            return new UniformPair<string>(expression, expected);
+        }
 
-	    private static void AssertEqualsColl(EventBean @event, string property, params string[] values)
-	    {
-		    var data = @event.Get(property).UnwrapIntoArray<object>();
-	        EPAssertionUtil.AssertEqualsExactOrder(values, data);
-	    }
+        private static void TryAssertionArraysAsList(
+            RegressionEnvironment env,
+            AtomicLong milestone)
+        {
+            var epl = "@name('s0') select " +
+                      "java.util.Arrays.asList('a') as c0, " +
+                      "java.util.Arrays.asList({'a'}) as c1, " +
+                      "java.util.Arrays.asList('a', 'b') as c2, " +
+                      "java.util.Arrays.asList({'a', 'b'}) as c3 " +
+                      "from SupportBean";
+            env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
-	    public static object[] MySupportVarArgsMethod(params object[] varargs) {
-	        return varargs;
-	    }
-	}
+            env.SendEventBean(new SupportBean());
+            env.AssertEventNew(
+                "s0",
+                @event => {
+                    AssertEqualsColl(@event, "c0", "a");
+                    AssertEqualsColl(@event, "c1", "a");
+                    AssertEqualsColl(@event, "c2", "a", "b");
+                    AssertEqualsColl(@event, "c3", "a", "b");
+                });
+
+            env.UndeployAll();
+        }
+
+        private static void AssertEqualsColl(
+            EventBean @event,
+            string property,
+            params string[] values)
+        {
+            var data = @event.Get(property).UnwrapIntoArray<object>();
+            EPAssertionUtil.AssertEqualsExactOrder(values, data);
+        }
+
+        public static object[] MySupportVarArgsMethod(params object[] varargs)
+        {
+            return varargs;
+        }
+    }
 } // end of namespace

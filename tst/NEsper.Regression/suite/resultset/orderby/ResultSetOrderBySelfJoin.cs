@@ -19,6 +19,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            Withe(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetOrderBySelfJoinSimple());
             return execs;
         }
@@ -37,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"prio", "cnt"};
+                string[] fields = { "prio", "cnt" };
                 var epl = "@name('s0') select c1.Event_criteria_id as ecId, " +
                           "c1.Priority as priority, " +
                           "c2.Priority as prio, cast(count(*), int) as cnt from " +

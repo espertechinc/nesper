@@ -21,7 +21,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithNestedClassEnum(execs);
+#if REGRESSION_EXECUTIONS
+            With(NestedClassEnum)(execs);
+#endif
             return execs;
         }
 
@@ -51,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
             }
         }
-        
+
         [Serializable]
         public class MyEventWithColorEnum
         {

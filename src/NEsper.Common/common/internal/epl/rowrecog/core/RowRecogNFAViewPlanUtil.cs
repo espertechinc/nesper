@@ -384,9 +384,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             int[] multimatchStreamNumToVariable;
             int[] multimatchVariableToStreamNum;
             if (variablesSingle.Count == variableStreams.Count) {
-                multimatchVariablesArray = new string[0];
-                multimatchStreamNumToVariable = new int[0];
-                multimatchVariableToStreamNum = new int[0];
+                multimatchVariablesArray = Array.Empty<string>();
+                multimatchStreamNumToVariable = Array.Empty<int>();
+                multimatchVariableToStreamNum = Array.Empty<int>();
             }
             else {
                 multimatchVariablesArray = new string[variableStreams.Count - variablesSingle.Count];

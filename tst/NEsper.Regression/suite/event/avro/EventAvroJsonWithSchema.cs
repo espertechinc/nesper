@@ -34,9 +34,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             var eventOneJson = "{\"name\": \"Jane\", \"favorite_number\": 256, \"favorite_color\": \"red\"}";
             var record = Parse(schema, eventOneJson);
             env.SendEventAvro(record, "User");
-            env.AssertPropsNew("s0",
+            env.AssertPropsNew(
+                "s0",
                 fields.SplitCsv(),
-                new object[] {"Jane", 256, "red"});
+                new object[] { "Jane", 256, "red" });
 
             var eventTwoJson = "{\"name\": \"Hans\", \"favorite_number\": -1, \"favorite_color\": \"green\"}";
             record = Parse(schema, eventTwoJson);
@@ -44,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             env.AssertPropsNew(
                 "s0",
                 fields.SplitCsv(),
-                new object[] {"Hans", -1, "green"});
+                new object[] { "Hans", -1, "green" });
 
             env.UndeployAll();
         }
@@ -53,10 +54,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             Schema schema,
             string json)
         {
-            var jsonEntity = (JToken) JsonConvert.DeserializeObject(json);
+            var jsonEntity = (JToken)JsonConvert.DeserializeObject(json);
             var avroEntity = schema.DecodeAny(jsonEntity);
             if (avroEntity is GenericRecord) {
-                return (GenericRecord) avroEntity;
+                return (GenericRecord)avroEntity;
             }
 
             throw new ArgumentException("schema was not a record");

@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                       "SupportBean_S1#keepall S1, " +
                       "SupportBean_S2#keepall S2 " +
                       "where P00 in (P10, P20)";
-            var fields = new[] {"val"};
+            var fields = new[] { "val" };
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             for (var i = 0; i < 10000; i++) {
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.AssertPropsPerRowLastNew(
                     "s0",
                     fields,
-                    new[] {new object[] {6541}});
+                    new[] { new object[] { 6541 } });
             }
 
             var delta = PerformanceObserver.MilliTime - startTime;

@@ -325,7 +325,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             public void WithSumArray() => RegressionRunner.Run(_session, ExprEnumSumOf.WithSumArray());
 
             [Test, RunInApplicationDomain]
-            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumSumOf.WithInvalid());
+            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumSumOf.WithSumInvalid());
 
             [Test, RunInApplicationDomain]
             public void WithSumScalarStringValue() => RegressionRunner.Run(_session, ExprEnumSumOf.WithSumScalarStringValue());
@@ -378,16 +378,16 @@ namespace com.espertech.esper.regressionrun.suite.expr
             public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumOrderBy.WithInvalid());
 
             [Test, RunInApplicationDomain]
-            public void WithOrderByScalarWithParam() => RegressionRunner.Run(_session, ExprEnumOrderBy.WithOrderByScalarWithParam());
+            public void WithOrderByScalarWithParam() => RegressionRunner.Run(_session, ExprEnumOrderBy.WithScalarWithParam());
 
             [Test, RunInApplicationDomain]
-            public void WithOrderByScalar() => RegressionRunner.Run(_session, ExprEnumOrderBy.WithOrderByScalar());
+            public void WithOrderByScalar() => RegressionRunner.Run(_session, ExprEnumOrderBy.WithScalar());
 
             [Test, RunInApplicationDomain]
-            public void WithOrderByEventsPlus() => RegressionRunner.Run(_session, ExprEnumOrderBy.WithOrderByEventsPlus());
+            public void WithOrderByEventsPlus() => RegressionRunner.Run(_session, ExprEnumOrderBy.WithEventsPlus());
 
             [Test, RunInApplicationDomain]
-            public void WithOrderByEvents() => RegressionRunner.Run(_session, ExprEnumOrderBy.WithOrderByEvents());
+            public void WithOrderByEvents() => RegressionRunner.Run(_session, ExprEnumOrderBy.WithEvents());
         }
         
         /// <summary>
@@ -431,19 +431,19 @@ namespace com.espertech.esper.regressionrun.suite.expr
             public TestExprEnumArrayOf() : base(Configure) { }
 
             [Test, RunInApplicationDomain]
-            public void WithScalar() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithScalar());
+            public void WithScalar() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithEnumScalar());
 
             [Test, RunInApplicationDomain]
-            public void WithEvents() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithEvents());
+            public void WithEvents() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithEnumEvents());
 
             [Test, RunInApplicationDomain]
-            public void WithWSelectFromEvent() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithWSelectFromEvent());
+            public void WithWSelectFromEvent() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithEnumWSelectFromEvent());
 
             [Test, RunInApplicationDomain]
-            public void WithWSelectFromScalarWIndex() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithWSelectFromScalarWIndex());
+            public void WithWSelectFromScalarWIndex() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithEnumWSelectFromScalarWIndex());
 
             [Test, RunInApplicationDomain]
-            public void WithWSelectFromScalar() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithWSelectFromScalar());
+            public void WithWSelectFromScalar() => RegressionRunner.Run(_session, ExprEnumArrayOf.WithEnumWSelectFromScalar());
         }
         
         /// <summary>
@@ -497,7 +497,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             public TestExprEnumAverage() : base(Configure) { }
 
             [Test, RunInApplicationDomain]
-            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumAverage.WithInvalid());
+            public void WithInvalid() => RegressionRunner.Run(_session, ExprEnumAverage.WithAverageInvalid());
 
             [Test, RunInApplicationDomain]
             public void WithAverageScalarMore() => RegressionRunner.Run(_session, ExprEnumAverage.WithAverageScalarMore());

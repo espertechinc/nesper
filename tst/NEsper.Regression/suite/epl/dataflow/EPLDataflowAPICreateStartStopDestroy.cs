@@ -26,8 +26,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-    WithCreateStartStop(execs);
-    WithDeploymentAdmin(execs);
+#if REGRESSION_EXECUTIONS
+            WithCreateStartStop(execs);
+            With(DeploymentAdmin)(execs);
+#endif
             return execs;
         }
 
@@ -83,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 var dfruntime = env.Runtime.DataFlowService;
                 EPAssertionUtil.AssertEqualsAnyOrder(
-                    new[] {new DeploymentIdNamePair(env.DeploymentId("flow"), "MyGraph")},
+                    new[] { new DeploymentIdNamePair(env.DeploymentId("flow"), "MyGraph") },
                     dfruntime.DataFlows);
                 var desc = dfruntime.GetDataFlow("DEP1", "MyGraph");
                 Assert.AreEqual("MyGraph", desc.DataFlowName);
@@ -118,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 dfruntime.Instantiate(env.DeploymentId("flow"), "MyGraph");
                 env.UndeployAll();
             }
-            
+
             public ISet<RegressionFlag> Flags()
             {
                 return Collections.Set(RegressionFlag.DATAFLOW);

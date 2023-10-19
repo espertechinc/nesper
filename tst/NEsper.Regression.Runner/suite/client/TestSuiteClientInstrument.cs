@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionrun.suite.client
         public void TestClientInstrumentMetricsReportingStmtGroups()
         {
             using (var session = RegressionRunner.Session(Container)) {
-                session.Configuration.Compiler.ByteCode.AllowSubscriber = true;
+                session.Configuration.Compiler.ByteCode.IsAllowSubscriber =true;
 
                 ApplyMetricsConfig(session.Configuration, -1, 7000);
 

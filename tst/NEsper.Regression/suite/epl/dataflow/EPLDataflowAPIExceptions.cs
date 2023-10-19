@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.CompileDeploy(
                 "@name('flow') create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}");
 
-            var op = new DefaultSupportSourceOp(new object[] {new EPRuntimeException("My-Exception-Is-Here")});
+            var op = new DefaultSupportSourceOp(new object[] { new EPRuntimeException("My-Exception-Is-Here") });
             var options = new EPDataFlowInstantiationOptions();
             options.WithOperatorProvider(new DefaultSupportGraphOpProvider(op));
             var handler = new MyExceptionHandler();
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 "@name('flow') create dataflow MyDataFlow DefaultSupportSourceOp -> outstream<SupportBean> {}" +
                 "MyExceptionOp(outstream) {}");
 
-            var opTwo = new DefaultSupportSourceOp(new object[] {new SupportBean("E1", 1)});
+            var opTwo = new DefaultSupportSourceOp(new object[] { new SupportBean("E1", 1) });
             var optionsTwo = new EPDataFlowInstantiationOptions();
             optionsTwo.WithOperatorProvider(new DefaultSupportGraphOpProvider(opTwo));
             var handlerTwo = new MyExceptionHandler();
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             return Collections.Set(RegressionFlag.DATAFLOW);
         }
-        
+
         public class MyExceptionHandler : EPDataFlowExceptionHandler
         {
             public static IList<EPDataFlowExceptionContext> Contexts { get; set; } =

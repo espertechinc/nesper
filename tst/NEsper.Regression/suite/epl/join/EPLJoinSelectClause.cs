@@ -15,53 +15,65 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
-	public class EPLJoinSelectClause : RegressionExecution {
+    public class EPLJoinSelectClause : RegressionExecution
+    {
+        public void Run(RegressionEnvironment env)
+        {
+            var epl = "@name('s0') select s0.doubleBoxed, s1.intPrimitive*s1.intBoxed/2.0 as div from " +
+                      "SupportBean(theString='s0')#length(3) as s0," +
+                      "SupportBean(theString='s1')#length(3) as s1" +
+                      " where s0.doubleBoxed = s1.doubleBoxed";
+            env.CompileDeployAddListenerMileZero(epl, "s0");
 
-	    public void Run(RegressionEnvironment env) {
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    var result = statement.EventType;
+                    Assert.AreEqual(typeof(double?), result.GetPropertyType("s0.doubleBoxed"));
+                    Assert.AreEqual(typeof(double?), result.GetPropertyType("div"));
+                    Assert.AreEqual(2, statement.EventType.PropertyNames.Length);
+                });
+            env.AssertListenerNotInvoked("s0");
 
-	        var epl = "@name('s0') select s0.doubleBoxed, s1.intPrimitive*s1.intBoxed/2.0 as div from " +
-	                  "SupportBean(theString='s0')#length(3) as s0," +
-	                  "SupportBean(theString='s1')#length(3) as s1" +
-	                  " where s0.doubleBoxed = s1.doubleBoxed";
-	        env.CompileDeployAddListenerMileZero(epl, "s0");
+            SendEvent(env, "s0", 1, 4, 5);
 
-	        env.AssertStatement("s0", statement => {
-	            var result = statement.EventType;
-	            Assert.AreEqual(typeof(double?), result.GetPropertyType("s0.doubleBoxed"));
-	            Assert.AreEqual(typeof(double?), result.GetPropertyType("div"));
-	            Assert.AreEqual(2, statement.EventType.PropertyNames.Length);
-	        });
-	        env.AssertListenerNotInvoked("s0");
+            env.Milestone(1);
 
-	        SendEvent(env, "s0", 1, 4, 5);
+            SendEvent(env, "s1", 1, 3, 2);
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var newEvents = listener.LastNewData;
+                    Assert.AreEqual(1d, newEvents[0].Get("s0.doubleBoxed"));
+                    Assert.AreEqual(3d, newEvents[0].Get("div"));
+                });
 
-	        env.Milestone(1);
+            env.Milestone(2);
 
-	        SendEvent(env, "s1", 1, 3, 2);
-	        env.AssertListener("s0", listener => {
-	            var newEvents = listener.LastNewData;
-	            Assert.AreEqual(1d, newEvents[0].Get("s0.doubleBoxed"));
-	            Assert.AreEqual(3d, newEvents[0].Get("div"));
-	        });
+            env.AssertIterator(
+                "s0",
+                iterator => {
+                    var theEvent = iterator.Advance();
+                    Assert.AreEqual(1d, theEvent.Get("s0.doubleBoxed"));
+                    Assert.AreEqual(3d, theEvent.Get("div"));
+                });
 
-	        env.Milestone(2);
+            env.UndeployAll();
+        }
 
-	        env.AssertIterator("s0", iterator => {
-	            var theEvent = iterator.Advance();
-	            Assert.AreEqual(1d, theEvent.Get("s0.doubleBoxed"));
-	            Assert.AreEqual(3d, theEvent.Get("div"));
-	        });
-
-	        env.UndeployAll();
-	    }
-
-	    private static void SendEvent(RegressionEnvironment env, string s, double doubleBoxed, int intPrimitive, int intBoxed) {
-	        var bean = new SupportBean();
-	        bean.TheString = s;
-	        bean.DoubleBoxed = doubleBoxed;
-	        bean.IntPrimitive = intPrimitive;
-	        bean.IntBoxed = intBoxed;
-	        env.SendEventBean(bean);
-	    }
-	}
+        private static void SendEvent(
+            RegressionEnvironment env,
+            string s,
+            double doubleBoxed,
+            int intPrimitive,
+            int intBoxed)
+        {
+            var bean = new SupportBean();
+            bean.TheString = s;
+            bean.DoubleBoxed = doubleBoxed;
+            bean.IntPrimitive = intPrimitive;
+            bean.IntBoxed = intBoxed;
+            env.SendEventBean(bean);
+        }
+    }
 } // end of namespace

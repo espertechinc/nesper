@@ -21,8 +21,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -70,7 +72,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             env.CompileDeploy(epl).AddListener("s0");
 
-            SendXMLEvent(env, "<event type=\"a-f-G\" uid=\"terminal.55\" time=\"2007-04-19T13:05:20.22Z\" version=\"2.0\"></event>", eventTypeName);
+            SendXMLEvent(
+                env,
+                "<event type=\"a-f-G\" uid=\"terminal.55\" time=\"2007-04-19T13:05:20.22Z\" version=\"2.0\"></event>",
+                eventTypeName);
 
             env.AssertEventNew(
                 "s0",

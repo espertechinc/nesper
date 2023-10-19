@@ -24,194 +24,250 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
-	public class EPLDataflowOpEventBusSource {
+    public class EPLDataflowOpEventBusSource
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithAllTypes(execs);
+            WithSchemaObjectArray(execs);
+            return execs;
+        }
 
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EPLDataflowAllTypes());
-	        execs.Add(new EPLDataflowSchemaObjectArray());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithSchemaObjectArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowSchemaObjectArray());
+            return execs;
+        }
 
-	    private class EPLDataflowAllTypes : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            RunAssertionAllTypes(env, DefaultSupportGraphEventUtil.EVENTTYPENAME, DefaultSupportGraphEventUtil.GetPONOEventsSendable());
-	            RunAssertionAllTypes(env, "MyMapEvent", DefaultSupportGraphEventUtil.GetMapEventsSendable());
-	            RunAssertionAllTypes(env, "MyXMLEvent", DefaultSupportGraphEventUtil.GetXMLEventsSendable());
-	            RunAssertionAllTypes(env, "MyOAEvent", DefaultSupportGraphEventUtil.GetOAEventsSendable());
+        public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowAllTypes());
+            return execs;
+        }
 
-	            // invalid: no output stream
-	            env.TryInvalidCompile("create dataflow DF1 EventBusSource {}",
-	                "Failed to obtain operator 'EventBusSource': EventBusSource operator requires one output stream but produces 0 streams");
+        private class EPLDataflowAllTypes : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertionAllTypes(
+                    env,
+                    DefaultSupportGraphEventUtil.EVENTTYPENAME,
+                    DefaultSupportGraphEventUtil.GetPONOEventsSendable());
+                RunAssertionAllTypes(env, "MyMapEvent", DefaultSupportGraphEventUtil.GetMapEventsSendable());
+                RunAssertionAllTypes(env, "MyXMLEvent", DefaultSupportGraphEventUtil.GetXMLEventsSendable());
+                RunAssertionAllTypes(env, "MyOAEvent", DefaultSupportGraphEventUtil.GetOAEventsSendable());
 
-	            // invalid: type not found
-	            env.TryInvalidCompile("create dataflow DF1 EventBusSource -> ABC {}",
-	                "Failed to obtain operator 'EventBusSource': EventBusSource operator requires an event type declated for the output stream");
+                // invalid: no output stream
+                env.TryInvalidCompile(
+                    "create dataflow DF1 EventBusSource {}",
+                    "Failed to obtain operator 'EventBusSource': EventBusSource operator requires one output stream but produces 0 streams");
 
-	            // test doc samples
-	            var path = new RegressionPath();
-	            env.CompileDeploy("@public create schema SampleSchema(tagId string, locX double, locY double)", path);
-	            var epl = "@name('flow') create dataflow MyDataFlow\n" +
-	                      "\n" +
-	                      "  // Receive all SampleSchema events from the event bus.\n" +
-	                      "  // No transformation.\n" +
-	                      "  EventBusSource -> stream.one<SampleSchema> {}\n" +
-	                      "  \n" +
-	                      "  // Receive all SampleSchema events with tag id '001' from the event bus.\n" +
-	                      "  // No transformation.\n" +
-	                      "  EventBusSource -> stream.one<SampleSchema> {\n" +
-	                      "    filter : tagId = '001'\n" +
-	                      "  }\n" +
-	                      "\n" +
-	                      "  // Receive all SampleSchema events from the event bus.\n" +
-	                      "  // With collector that performs transformation.\n" +
-	                      "  EventBusSource -> stream.two<SampleSchema> {\n" +
-	                      "    collector : {\n" +
-	                      "      class : '" + typeof(MyDummyCollector).FullName + "'\n" +
-	                      "    },\n" +
-	                      "  }";
-	            env.CompileDeploy(epl, path);
-	            env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow");
+                // invalid: type not found
+                env.TryInvalidCompile(
+                    "create dataflow DF1 EventBusSource -> ABC {}",
+                    "Failed to obtain operator 'EventBusSource': EventBusSource operator requires an event type declated for the output stream");
 
-	            env.UndeployAll();
-	        }
+                // test doc samples
+                var path = new RegressionPath();
+                env.CompileDeploy("@public create schema SampleSchema(tagId string, locX double, locY double)", path);
+                var epl = "@name('flow') create dataflow MyDataFlow\n" +
+                          "\n" +
+                          "  // Receive all SampleSchema events from the event bus.\n" +
+                          "  // No transformation.\n" +
+                          "  EventBusSource -> stream.one<SampleSchema> {}\n" +
+                          "  \n" +
+                          "  // Receive all SampleSchema events with tag id '001' from the event bus.\n" +
+                          "  // No transformation.\n" +
+                          "  EventBusSource -> stream.one<SampleSchema> {\n" +
+                          "    filter : tagId = '001'\n" +
+                          "  }\n" +
+                          "\n" +
+                          "  // Receive all SampleSchema events from the event bus.\n" +
+                          "  // With collector that performs transformation.\n" +
+                          "  EventBusSource -> stream.two<SampleSchema> {\n" +
+                          "    collector : {\n" +
+                          "      class : '" +
+                          typeof(MyDummyCollector).FullName +
+                          "'\n" +
+                          "    },\n" +
+                          "  }";
+                env.CompileDeploy(epl, path);
+                env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow");
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.DATAFLOW);
-	        }
-	    }
+                env.UndeployAll();
+            }
 
-	    private static void RunAssertionAllTypes(RegressionEnvironment env, string typeName, SendableEvent[] events) {
-	        env.CompileDeploy("@name('flow') create dataflow MyDataFlowOne " +
-	            "EventBusSource -> ReceivedStream<" + typeName + "> {} " +
-	            "DefaultSupportCaptureOp(ReceivedStream) {}");
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
+        }
 
-	        var future = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
-	        var options = new EPDataFlowInstantiationOptions()
-	            .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
-	        var eventService = (EventServiceSendEventCommon) env.EventService;
+        private static void RunAssertionAllTypes(
+            RegressionEnvironment env,
+            string typeName,
+            SendableEvent[] events)
+        {
+            env.CompileDeploy(
+                "@name('flow') create dataflow MyDataFlowOne " +
+                "EventBusSource -> ReceivedStream<" +
+                typeName +
+                "> {} " +
+                "DefaultSupportCaptureOp(ReceivedStream) {}");
 
-	        events[0].Send(eventService);
-	        Assert.AreEqual(0, future.Current.Length);
+            var future = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
+            var options = new EPDataFlowInstantiationOptions()
+                .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
+            var eventService = (EventServiceSendEventCommon)env.EventService;
 
-	        var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
+            events[0].Send(eventService);
+            Assert.AreEqual(0, future.Current.Length);
 
-	        events[0].Send(eventService);
-	        Assert.AreEqual(0, future.Current.Length);
+            var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
 
-	        df.Start();
+            events[0].Send(eventService);
+            Assert.AreEqual(0, future.Current.Length);
 
-	        // send events
-	        for (var i = 0; i < events.Length; i++) {
-	            events[i].Send(eventService);
-	        }
+            df.Start();
 
-	        // assert
-	        future.WaitForInvocation(200, events.Length);
-	        var rows = future.GetCurrentAndReset();
-	        Assert.AreEqual(events.Length, rows.Length);
-	        for (var i = 0; i < events.Length; i++) {
-	            Assert.AreSame(events[i].Underlying, rows[i]);
-	        }
+            // send events
+            for (var i = 0; i < events.Length; i++) {
+                events[i].Send(eventService);
+            }
 
-	        df.Cancel();
+            // assert
+            future.WaitForInvocation(200, events.Length);
+            var rows = future.GetCurrentAndReset();
+            Assert.AreEqual(events.Length, rows.Length);
+            for (var i = 0; i < events.Length; i++) {
+                Assert.AreSame(events[i].Underlying, rows[i]);
+            }
 
-	        events[0].Send(eventService);
-	        Sleep(50);
-	        Assert.AreEqual(0, future.Current.Length);
+            df.Cancel();
 
-	        env.UndeployAll();
-	    }
+            events[0].Send(eventService);
+            Sleep(50);
+            Assert.AreEqual(0, future.Current.Length);
 
-	    private class EPLDataflowSchemaObjectArray : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            var compiled = env.Compile("@public @buseventtype create objectarray schema MyEventOA(p0 string, p1 long)");
-	            env.Deploy(compiled);
-	            path.Add(compiled);
+            env.UndeployAll();
+        }
 
-	            RunAssertionOA(env, path, false);
-	            RunAssertionOA(env, path, true);
+        private class EPLDataflowSchemaObjectArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var compiled = env.Compile(
+                    "@public @buseventtype create objectarray schema MyEventOA(p0 string, p1 long)");
+                env.Deploy(compiled);
+                path.Add(compiled);
 
-	            // test collector
-	            env.CompileDeploy("@name('flow') create dataflow MyDataFlowOne " +
-	                "EventBusSource -> ReceivedStream<MyEventOA> {filter: p0 like 'A%'} " +
-	                "DefaultSupportCaptureOp(ReceivedStream) {}", path);
+                RunAssertionOA(env, path, false);
+                RunAssertionOA(env, path, true);
 
-	            var collector = new MyCollector();
-	            var future = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
-	            var options = new EPDataFlowInstantiationOptions()
-	                .WithOperatorProvider(new DefaultSupportGraphOpProvider(future))
-	                .WithParameterProvider(new DefaultSupportGraphParamProvider(Collections.SingletonDataMap("collector", collector)));
+                // test collector
+                env.CompileDeploy(
+                    "@name('flow') create dataflow MyDataFlowOne " +
+                    "EventBusSource -> ReceivedStream<MyEventOA> {filter: p0 like 'A%'} " +
+                    "DefaultSupportCaptureOp(ReceivedStream) {}",
+                    path);
 
-	            var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
-	            instance.Start();
+                var collector = new MyCollector();
+                var future = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
+                var options = new EPDataFlowInstantiationOptions()
+                    .WithOperatorProvider(new DefaultSupportGraphOpProvider(future))
+                    .WithParameterProvider(
+                        new DefaultSupportGraphParamProvider(Collections.SingletonDataMap("collector", collector)));
 
-	            env.SendEventObjectArray(new object[]{"B", 100L}, "MyEventOA");
-	            Sleep(50);
-	            Assert.IsNull(collector.Last);
+                var instance = env.Runtime.DataFlowService.Instantiate(
+                    env.DeploymentId("flow"),
+                    "MyDataFlowOne",
+                    options);
+                instance.Start();
 
-	            env.SendEventObjectArray(new object[]{"A", 101L}, "MyEventOA");
-	            future.WaitForInvocation(100, 1);
-	            Assert.IsNotNull(collector.Last.Emitter);
-	            Assert.AreEqual("MyEventOA", collector.Last.Event.EventType.Name);
-	            Assert.AreEqual(false, collector.Last.IsSubmitEventBean);
+                env.SendEventObjectArray(new object[] { "B", 100L }, "MyEventOA");
+                Sleep(50);
+                Assert.IsNull(collector.Last);
 
-	            instance.Cancel();
+                env.SendEventObjectArray(new object[] { "A", 101L }, "MyEventOA");
+                future.WaitForInvocation(100, 1);
+                Assert.IsNotNull(collector.Last.Emitter);
+                Assert.AreEqual("MyEventOA", collector.Last.Event.EventType.Name);
+                Assert.AreEqual(false, collector.Last.IsSubmitEventBean);
 
-	            env.UndeployAll();
-	        }
+                instance.Cancel();
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.DATAFLOW);
-	        }
-	    }
+                env.UndeployAll();
+            }
 
-	    private static void RunAssertionOA(RegressionEnvironment env, RegressionPath path, bool underlying) {
-	        env.CompileDeploy("@name('flow') create dataflow MyDataFlowOne " +
-	            "EventBusSource -> ReceivedStream<" + (underlying ? "MyEventOA" : "EventBean<MyEventOA>") + "> {} " +
-	            "DefaultSupportCaptureOp(ReceivedStream) {}", path);
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
+        }
 
-	        var future = new DefaultSupportCaptureOp<object>(1, env.Container.LockManager());
-	        var options = new EPDataFlowInstantiationOptions()
-	            .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
+        private static void RunAssertionOA(
+            RegressionEnvironment env,
+            RegressionPath path,
+            bool underlying)
+        {
+            env.CompileDeploy(
+                "@name('flow') create dataflow MyDataFlowOne " +
+                "EventBusSource -> ReceivedStream<" +
+                (underlying ? "MyEventOA" : "EventBean<MyEventOA>") +
+                "> {} " +
+                "DefaultSupportCaptureOp(ReceivedStream) {}",
+                path);
 
-	        var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
-	        instance.Start();
+            var future = new DefaultSupportCaptureOp<object>(1, env.Container.LockManager());
+            var options = new EPDataFlowInstantiationOptions()
+                .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
 
-	        env.SendEventObjectArray(new object[]{"abc", 100L}, "MyEventOA");
-	        var rows = Array.Empty<object>();
-	        try {
-	            rows = future.GetValue(1, TimeUnit.SECONDS);
-	        } catch (Exception t) {
-	            throw new EPRuntimeException(t);
-	        }
-	        Assert.AreEqual(1, rows.Length);
-	        if (underlying) {
-	            EPAssertionUtil.AssertEqualsExactOrder((object[]) rows[0], new object[]{"abc", 100L});
-	        } else {
-	            EPAssertionUtil.AssertProps((EventBean) rows[0], "p0,p1".SplitCsv(), new object[]{"abc", 100L});
-	        }
+            var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
+            instance.Start();
 
-	        instance.Cancel();
-	        env.UndeployModuleContaining("flow");
-	    }
+            env.SendEventObjectArray(new object[] { "abc", 100L }, "MyEventOA");
+            var rows = Array.Empty<object>();
+            try {
+                rows = future.GetValue(1, TimeUnit.SECONDS);
+            }
+            catch (Exception t) {
+                throw new EPRuntimeException(t);
+            }
 
-	    public class MyCollector : EPDataFlowEventBeanCollector {
-	        private EPDataFlowEventBeanCollectorContext last;
+            Assert.AreEqual(1, rows.Length);
+            if (underlying) {
+                EPAssertionUtil.AssertEqualsExactOrder((object[])rows[0], new object[] { "abc", 100L });
+            }
+            else {
+                EPAssertionUtil.AssertProps((EventBean)rows[0], "p0,p1".SplitCsv(), new object[] { "abc", 100L });
+            }
 
-	        public void Collect(EPDataFlowEventBeanCollectorContext context) {
-	            this.last = context;
-	            context.Emitter.Submit(context.Event);
-	        }
+            instance.Cancel();
+            env.UndeployModuleContaining("flow");
+        }
 
-	        public EPDataFlowEventBeanCollectorContext Last => last;
-	    }
+        public class MyCollector : EPDataFlowEventBeanCollector
+        {
+            private EPDataFlowEventBeanCollectorContext last;
 
-	    public class MyDummyCollector : EPDataFlowEventBeanCollector {
-	        public void Collect(EPDataFlowEventBeanCollectorContext context) {
+            public void Collect(EPDataFlowEventBeanCollectorContext context)
+            {
+                this.last = context;
+                context.Emitter.Submit(context.Event);
+            }
 
-	        }
-	    }
-	}
+            public EPDataFlowEventBeanCollectorContext Last => last;
+        }
+
+        public class MyDummyCollector : EPDataFlowEventBeanCollector
+        {
+            public void Collect(EPDataFlowEventBeanCollectorContext context)
+            {
+            }
+        }
+    }
 } // end of namespace

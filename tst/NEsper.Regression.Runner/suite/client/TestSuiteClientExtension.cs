@@ -264,7 +264,7 @@ namespace com.espertech.esper.regressionrun.suite.client
         [Test, RunInApplicationDomain]
         public void TestClientExtendUDFVarargs()
         {
-            RegressionRunner.Run(_session, new ClientExtendUDFVarargs());
+            RegressionRunner.Run(_session, ClientExtendUDFVarargs.Executions());
         }
 
         [Test, RunInApplicationDomain]

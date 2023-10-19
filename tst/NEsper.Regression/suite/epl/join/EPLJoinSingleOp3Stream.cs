@@ -23,9 +23,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             Withd(execs);
             WithdOM(execs);
-            WithdCompile(execs);
+            With(dCompile)(execs);
+#endif
             return execs;
         }
 
@@ -69,14 +71,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             AssertEventsReceived(env, eventsA[0], eventsB[0], eventsC[0]);
 
             // Test sending a B event
-            SendEvent(env, new object[] {eventsA[1], eventsB[2], eventsC[3]});
+            SendEvent(env, new object[] { eventsA[1], eventsB[2], eventsC[3] });
             SendEvent(env, eventsC[1]);
             env.AssertListenerNotInvoked("s0");
             SendEvent(env, eventsB[1]);
             AssertEventsReceived(env, eventsA[1], eventsB[1], eventsC[1]);
 
             // Test sending a C event
-            SendEvent(env, new object[] {eventsA[4], eventsA[5], eventsB[4], eventsB[3]});
+            SendEvent(env, new object[] { eventsA[4], eventsA[5], eventsB[4], eventsB[3] });
             env.AssertListenerNotInvoked("s0");
             SendEvent(env, eventsC[4]);
             AssertEventsReceived(env, eventsA[4], eventsB[4], eventsC[4]);

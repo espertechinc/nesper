@@ -184,12 +184,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             var count = 0;
             foreach (var flipTime in flipTimes) {
                 env.AdvanceTime(flipTime - 1);
-                env.AssertListener("s0", listener => Assert.IsFalse(listener.GetAndClearIsInvoked(), "Failed for flip " + count));
+                env.AssertListener(
+                    "s0",
+                    listener => Assert.IsFalse(listener.GetAndClearIsInvoked(), "Failed for flip " + count));
 
                 Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked(), "Failed for flip " + count);
 
                 env.AdvanceTime(flipTime);
-                env.AssertListener("s0", listener => Assert.IsTrue(listener.GetAndClearIsInvoked(), "Failed for flip " + count));
+                env.AssertListener(
+                    "s0",
+                    listener => Assert.IsTrue(listener.GetAndClearIsInvoked(), "Failed for flip " + count));
                 count++;
             }
 

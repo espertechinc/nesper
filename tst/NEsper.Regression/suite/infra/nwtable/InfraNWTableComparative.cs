@@ -21,11 +21,20 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            WithGroupByTopLevelSingleAgg(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithGroupByTopLevelSingleAgg(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            
             var eplNamedWindow =
                 "create window TotalsWindow#unique(TheString) as (TheString string, total int);" +
                 "insert into TotalsWindow select TheString, sum(IntPrimitive) as total from SupportBean group by TheString;" +
                 "@name('s0') select P00 as c0, " +
                 "    (select total from TotalsWindow tw where tw.TheString = S0.P00) as c1 from SupportBean_S0 as S0;";
+
             execs.Add(new InfraNWTableComparativeGroupByTopLevelSingleAgg("named window", 1000, eplNamedWindow, 1));
 
             var eplTable =
@@ -62,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = new [] { "c0", "c1" };
+                var fields = new[] { "c0", "c1" };
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var startLoad = PerformanceObserver.NanoTime;
@@ -80,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         env.AssertPropsNew(
                             "s0",
                             fields,
-                            new object[] {key, i});
+                            new object[] { key, i });
                     }
                 }
 
@@ -89,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // Console.WriteLine(caseName + ": Load " + deltaLoad/1000000d +
                 // " Query " + deltaQuery / 1000000d +
                 // " Total " + (deltaQuery+deltaLoad) / 1000000d );
-                
+
                 env.UndeployAll();
             }
 

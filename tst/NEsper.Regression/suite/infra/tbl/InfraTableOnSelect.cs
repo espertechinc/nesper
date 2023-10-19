@@ -33,15 +33,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.CompileDeploy("@name('s0') on SupportBean_S0 select total as value from varagg where key = P00", path)
                 .AddListener("s0");
 
-            AssertValues(env, "G1,G2", new int?[] {null, null});
+            AssertValues(env, "G1,G2", new int?[] { null, null });
 
             env.SendEventBean(new SupportBean("G1", 100));
-            AssertValues(env, "G1,G2", new int?[] {100, null});
+            AssertValues(env, "G1,G2", new int?[] { 100, null });
 
             env.Milestone(0);
 
             env.SendEventBean(new SupportBean("G2", 200));
-            AssertValues(env, "G1,G2", new int?[] {100, 200});
+            AssertValues(env, "G1,G2", new int?[] { 100, 200 });
 
             env.CompileDeploy("@name('i1') on SupportBean_S1 select total from varagg where key = P10", path)
                 .AddListener("i1");
@@ -69,8 +69,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 }
                 else {
                     var index = i;
-                    env.AssertEventNew("s0", @event => Assert.AreEqual(
-                        values[index], @event.Get("value"), $"Failed for key '{keyarr[index]}'"));
+                    env.AssertEventNew(
+                        "s0",
+                        @event => Assert.AreEqual(
+                            values[index],
+                            @event.Get("value"),
+                            $"Failed for key '{keyarr[index]}'"));
                 }
             }
         }

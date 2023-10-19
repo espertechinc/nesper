@@ -20,8 +20,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithExistsWhereAndUDF(execs);
-            WithRowWhereAndUDF(execs);
+            With(RowWhereAndUDF)(execs);
+#endif
             return execs;
         }
 

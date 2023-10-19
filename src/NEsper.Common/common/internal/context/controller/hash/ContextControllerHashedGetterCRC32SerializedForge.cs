@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.container;
@@ -56,7 +57,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             Serializer[] serializers)
         {
             return SerializeAndCRC32Hash(
-                SerializerFactory.Instance,
+                container.SerializerFactory(),
                 objectMayArray,
                 granularity,
                 serializers);
@@ -78,7 +79,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             byte[] bytes;
             try {
                 if (objectMayArray is object[] array) {
-                    bytes = serializerFactory.Serialize(serializers, array);
+                    bytes = serializerFactory.SerializeAndFlatten(serializers, array);
                 }
                 else {
                     bytes = serializerFactory.Serialize(serializers[0], objectMayArray);
@@ -86,7 +87,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             }
             catch (IOException e) {
                 Log.Error("Exception serializing parameters for computing consistent hash: " + e.Message, e);
-                bytes = new byte[0];
+                bytes = Array.Empty<byte>();
             }
 
             long value = bytes.GetCrc32();

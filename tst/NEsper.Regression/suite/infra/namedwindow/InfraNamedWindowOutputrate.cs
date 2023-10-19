@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             env.AdvanceTime(0);
 
-            string[] fields = {"TheString", "c"};
+            string[] fields = { "TheString", "c" };
             env.CompileDeploy(
                     "@name('s0') select irstream TheString, count(*) as c from MyWindowOne group by TheString output snapshot every 1 second",
                     path)
@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             env.AssertPropsPerRowLastNew(
                 "s0",
                 fields,
-                new[] {new object[] {"A", 2L}, new object[] {"B", 1L}});
+                new[] { new object[] { "A", 2L }, new object[] { "B", 1L } });
 
             env.SendEventBean(new SupportBean("B", 5));
             env.AdvanceTime(2000);
@@ -48,14 +48,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             env.AssertPropsPerRowLastNew(
                 "s0",
                 fields,
-                new[] {new object[] {"A", 2L}, new object[] {"B", 2L}});
+                new[] { new object[] { "A", 2L }, new object[] { "B", 2L } });
 
             env.AdvanceTime(3000);
 
             env.AssertPropsPerRowLastNew(
                 "s0",
                 fields,
-                new[] {new object[] {"A", 2L}, new object[] {"B", 2L}});
+                new[] { new object[] { "A", 2L }, new object[] { "B", 2L } });
 
             env.SendEventBean(new SupportBean("A", 5));
             env.SendEventBean(new SupportBean("C", 1));
@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             env.AssertPropsPerRowLastNew(
                 "s0",
                 fields,
-                new[] {new object[] {"A", 3L}, new object[] {"B", 2L}, new object[] {"C", 1L}});
+                new[] { new object[] { "A", 3L }, new object[] { "B", 2L }, new object[] { "C", 1L } });
 
             env.UndeployAll();
         }

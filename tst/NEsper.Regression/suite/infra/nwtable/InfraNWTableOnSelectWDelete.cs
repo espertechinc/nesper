@@ -16,74 +16,99 @@ using com.espertech.esper.regressionlib.support.util;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
-	public class InfraNWTableOnSelectWDelete : IndexBackingTableInfo {
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new InfraNWTableOnSelectWDeleteAssertion(true));
-	        execs.Add(new InfraNWTableOnSelectWDeleteAssertion(false));
-	        return execs;
-	    }
+    public class InfraNWTableOnSelectWDelete : IndexBackingTableInfo
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withn(execs);
+            return execs;
+        }
 
-	    private class InfraNWTableOnSelectWDeleteAssertion : RegressionExecution {
-	        private readonly bool namedWindow;
+        public static IList<RegressionExecution> Withn(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraNWTableOnSelectWDeleteAssertion(true));
+            execs.Add(new InfraNWTableOnSelectWDeleteAssertion(false));
+            return execs;
+        }
 
-	        public InfraNWTableOnSelectWDeleteAssertion(bool namedWindow) {
-	            this.namedWindow = namedWindow;
-	        }
+        private class InfraNWTableOnSelectWDeleteAssertion : RegressionExecution
+        {
+            private readonly bool namedWindow;
 
-	        public void Run(RegressionEnvironment env) {
-	            var fieldsWin = "theString,intPrimitive".SplitCsv();
-	            var fieldsSelect = "c0".SplitCsv();
-	            var path = new RegressionPath();
+            public InfraNWTableOnSelectWDeleteAssertion(bool namedWindow)
+            {
+                this.namedWindow = namedWindow;
+            }
 
-	            var eplCreate = namedWindow ?
-	                "@name('create') @public create window MyInfra#keepall as SupportBean" :
-	                "@name('create') @public create table MyInfra (theString string primary key, intPrimitive int primary key)";
-	            env.CompileDeploy(eplCreate, path);
+            public void Run(RegressionEnvironment env)
+            {
+                var fieldsWin = "theString,intPrimitive".SplitCsv();
+                var fieldsSelect = "c0".SplitCsv();
+                var path = new RegressionPath();
 
-	            env.CompileDeploy("insert into MyInfra select theString, intPrimitive from SupportBean", path);
+                var eplCreate = namedWindow
+                    ? "@name('create') @public create window MyInfra#keepall as SupportBean"
+                    : "@name('create') @public create table MyInfra (theString string primary key, intPrimitive int primary key)";
+                env.CompileDeploy(eplCreate, path);
 
-	            var eplSelectDelete = "@name('s0') on SupportBean_S0 as s0 " +
-	                                  "select and delete window(win.*).aggregate(0,(result,value) => result+value.intPrimitive) as c0 " +
-	                                  "from MyInfra as win where s0.p00=win.theString";
-	            env.CompileDeploy(eplSelectDelete, path).AddListener("s0");
+                env.CompileDeploy("insert into MyInfra select theString, intPrimitive from SupportBean", path);
 
-	            env.SendEventBean(new SupportBean("E1", 1));
-	            env.SendEventBean(new SupportBean("E2", 2));
-	            if (namedWindow) {
-	                env.AssertPropsPerRowIterator("create", fieldsWin, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
-	            } else {
-	                env.AssertPropsPerRowIteratorAnyOrder("create", fieldsWin, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 2}});
-	            }
+                var eplSelectDelete = "@name('s0') on SupportBean_S0 as s0 " +
+                                      "select and delete window(win.*).aggregate(0,(result,value) => result+value.intPrimitive) as c0 " +
+                                      "from MyInfra as win where s0.p00=win.theString";
+                env.CompileDeploy(eplSelectDelete, path).AddListener("s0");
 
-	            // select and delete bean E1
-	            env.SendEventBean(new SupportBean_S0(100, "E1"));
-	            env.AssertPropsNew("s0", fieldsSelect, new object[]{1});
-	            env.AssertPropsPerRowIteratorAnyOrder("create", fieldsWin, new object[][]{new object[] {"E2", 2}});
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.SendEventBean(new SupportBean("E2", 2));
+                if (namedWindow) {
+                    env.AssertPropsPerRowIterator(
+                        "create",
+                        fieldsWin,
+                        new object[][] { new object[] { "E1", 1 }, new object[] { "E2", 2 } });
+                }
+                else {
+                    env.AssertPropsPerRowIteratorAnyOrder(
+                        "create",
+                        fieldsWin,
+                        new object[][] { new object[] { "E1", 1 }, new object[] { "E2", 2 } });
+                }
 
-	            env.Milestone(0);
+                // select and delete bean E1
+                env.SendEventBean(new SupportBean_S0(100, "E1"));
+                env.AssertPropsNew("s0", fieldsSelect, new object[] { 1 });
+                env.AssertPropsPerRowIteratorAnyOrder("create", fieldsWin, new object[][] { new object[] { "E2", 2 } });
 
-	            // add some E2 events
-	            env.SendEventBean(new SupportBean("E2", 3));
-	            env.SendEventBean(new SupportBean("E2", 4));
-	            env.AssertPropsPerRowIteratorAnyOrder("create", fieldsWin, new object[][]{new object[] {"E2", 2}, new object[] {"E2", 3}, new object[] {"E2", 4}});
+                env.Milestone(0);
 
-	            // select and delete beans E2
-	            env.SendEventBean(new SupportBean_S0(101, "E2"));
-	            env.AssertPropsNew("s0", fieldsSelect, new object[]{2 + 3 + 4});
-	            env.AssertPropsPerRowIteratorAnyOrder("create", fieldsWin, Array.Empty<object[]>());
+                // add some E2 events
+                env.SendEventBean(new SupportBean("E2", 3));
+                env.SendEventBean(new SupportBean("E2", 4));
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "create",
+                    fieldsWin,
+                    new object[][] { new object[] { "E2", 2 }, new object[] { "E2", 3 }, new object[] { "E2", 4 } });
 
-	            // test SODA
-	            env.EplToModelCompileDeploy(eplSelectDelete, path);
+                // select and delete beans E2
+                env.SendEventBean(new SupportBean_S0(101, "E2"));
+                env.AssertPropsNew("s0", fieldsSelect, new object[] { 2 + 3 + 4 });
+                env.AssertPropsPerRowIteratorAnyOrder("create", fieldsWin, Array.Empty<object[]>());
 
-	            env.UndeployAll();
-	        }
+                // test SODA
+                env.EplToModelCompileDeploy(eplSelectDelete, path);
 
-	        public string Name() {
-	            return this.GetType().Name + "{" +
-	                "namedWindow=" + namedWindow +
-	                '}';
-	        }
-	    }
-	}
+                env.UndeployAll();
+            }
+
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "namedWindow=" +
+                       namedWindow +
+                       '}';
+            }
+        }
+    }
 } // end of namespace

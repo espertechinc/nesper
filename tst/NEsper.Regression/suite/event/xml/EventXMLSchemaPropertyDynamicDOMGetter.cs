@@ -40,8 +40,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -93,15 +95,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var stmtText = "@name('s0') select type?,dyn[1]?,nested.nes2?,map('a')? from " + eventTypeName;
             env.CompileDeploy(stmtText, path).AddListener("s0");
 
-            env.AssertStatement("s0", statement => {
-                SupportEventPropUtil.AssertPropsEquals(
-                    statement.EventType.PropertyDescriptors.ToArray(),
-                    new SupportEventPropDesc("type?", typeof(XmlNode)),
-                new SupportEventPropDesc("dyn[1]?", typeof(XmlNode)),
-                new SupportEventPropDesc("nested.nes2?", typeof(XmlNode)),
-                new SupportEventPropDesc("map('a')?", typeof(XmlNode)));
-                SupportEventTypeAssertionUtil.AssertConsistency(statement.EventType);
-            });
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    SupportEventPropUtil.AssertPropsEquals(
+                        statement.EventType.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("type?", typeof(XmlNode)),
+                        new SupportEventPropDesc("dyn[1]?", typeof(XmlNode)),
+                        new SupportEventPropDesc("nested.nes2?", typeof(XmlNode)),
+                        new SupportEventPropDesc("map('a')?", typeof(XmlNode)));
+                    SupportEventTypeAssertionUtil.AssertConsistency(statement.EventType);
+                });
 
             var root = SupportXML.GetDocument(SCHEMA_XML);
             env.SendEventXMLDOM(root, eventTypeName);

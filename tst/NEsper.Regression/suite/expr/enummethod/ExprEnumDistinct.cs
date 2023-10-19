@@ -29,10 +29,38 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumDistinctEvents());
-            execs.Add(new ExprEnumDistinctScalar());
-            execs.Add(new ExprEnumDistinctEventsMultikeyWArray());
+            WithEvents(execs);
+            WithScalar(execs);
+            WithEventsMultikeyWArray(execs);
+            WithScalarMultikeyWArray(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithScalarMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprEnumDistinctScalarMultikeyWArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventsMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumDistinctEventsMultikeyWArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumDistinctScalar());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumDistinctEvents());
             return execs;
         }
 

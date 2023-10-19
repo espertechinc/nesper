@@ -25,8 +25,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -94,7 +96,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 theEvent => {
                     Assert.AreEqual(root.DocumentElement.ChildNodes.Item(0), theEvent.Get("type?"));
                     Assert.AreEqual(root.DocumentElement.ChildNodes.Item(2), theEvent.Get("dyn[1]?"));
-                    Assert.AreEqual(root.DocumentElement.ChildNodes.Item(3).ChildNodes.Item(0), theEvent.Get("nested.nes2?"));
+                    Assert.AreEqual(
+                        root.DocumentElement.ChildNodes.Item(3).ChildNodes.Item(0),
+                        theEvent.Get("nested.nes2?"));
                     Assert.AreEqual(root.DocumentElement.ChildNodes.Item(4), theEvent.Get("map('a')?"));
                     Assert.IsNull(theEvent.Get("other?"));
                     SupportEventTypeAssertionUtil.AssertConsistency(theEvent);

@@ -20,9 +20,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithNoMetaLexAnalysis(execs);
             WithNoMetaLexAnalysisGroup(execs);
-            WithPlaceholderWhere(execs);
+            With(PlaceholderWhere)(execs);
+#endif
             return execs;
         }
 
@@ -58,7 +60,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                            "SupportBean#length(100) as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            env.AssertStatement("s0", statement=> Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mydouble")));
+            env.AssertStatement(
+                "s0",
+                statement => Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mydouble")));
 
             SendSupportBeanEvent(env, 10);
             env.AssertEqualsNew("s0", "mydouble", 1.2);

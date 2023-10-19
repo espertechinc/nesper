@@ -28,7 +28,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithRuntimeExHandlerInvalidAgg(execs);
+#if REGRESSION_EXECUTIONS
+            With(RuntimeExHandlerInvalidAgg)(execs);
+#endif
             return execs;
         }
 
@@ -56,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 env.UndeployAll();
             }
-            
+
             public ISet<RegressionFlag> Flags()
             {
                 return Collections.Set(RegressionFlag.RUNTIMEOPS);

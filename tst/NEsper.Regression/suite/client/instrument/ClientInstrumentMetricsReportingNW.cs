@@ -25,7 +25,8 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
         {
             var path = new RegressionPath();
             env.AdvanceTime(0);
-            env.CompileDeploy("@name('0') @public create schema StatementMetric as " + typeof(StatementMetric).FullName);
+            env.CompileDeploy(
+                "@name('0') @public create schema StatementMetric as " + typeof(StatementMetric).FullName);
             env.CompileDeploy("@name('A') @public create window MyWindow#lastevent as select * from SupportBean", path);
             env.CompileDeploy("@name('B1') insert into MyWindow select * from SupportBean", path);
             env.CompileDeploy("@name('B2') insert into MyWindow select * from SupportBean", path);
@@ -46,8 +47,8 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             env.CompileDeploy(appModuleTwo, path);
 
             env.CompileDeploy("@name('X') select * from " + typeof(StatementMetric).FullName).AddListener("X");
-            var fields = new [] { "StatementName","NumInput" };
-            
+            var fields = new[] { "StatementName", "NumInput" };
+
             env.SendEventBean(new SupportBean("E1", 1));
             env.AdvanceTime(1000);
 

@@ -28,196 +28,275 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
-	public class ClientRuntimeItself {
-	    public const string TEST_SERVICE_NAME = "TEST_SERVICE_NAME";
-	    public const int TEST_SECRET_VALUE = 12345;
+    public class ClientRuntimeItself
+    {
+        public const string TEST_SERVICE_NAME = "TEST_SERVICE_NAME";
+        public const int TEST_SECRET_VALUE = 12345;
 
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new ClientRuntimeItselfTransientConfiguration());
-	        execs.Add(new ClientRuntimeSPICompileReflective());
-	        execs.Add(new ClientRuntimeSPIStatementSelection());
-	        execs.Add(new ClientRuntimeSPIBeanAnonymousType());
-	        execs.Add(new ClientRuntimeWrongCompileMethod());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithItselfTransientConfiguration(execs);
+            WithSPICompileReflective(execs);
+            WithSPIStatementSelection(execs);
+            WithSPIBeanAnonymousType(execs);
+            WithWrongCompileMethod(execs);
+            return execs;
+        }
 
-	    private class ClientRuntimeSPIBeanAnonymousType : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var beanEventType = new EPRuntimeBeanAnonymousTypeService(env.Container)
-		            .MakeBeanEventTypeAnonymous(typeof(MyBeanAnonymousType));
-	            Assert.AreEqual(typeof(int), beanEventType.GetPropertyType("prop"));
-	        }
-	    }
+        public static IList<RegressionExecution> WithWrongCompileMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeWrongCompileMethod());
+            return execs;
+        }
 
-	    private class ClientRuntimeSPIStatementSelection : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            env.CompileDeploy(
-	                "@name('a') select * from SupportBean;\n" +
-	                    "@name('b') select * from SupportBean(theString='xxx');\n");
-	            var spi = (EPRuntimeSPI) env.Runtime;
+        public static IList<RegressionExecution> WithSPIBeanAnonymousType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSPIBeanAnonymousType());
+            return execs;
+        }
 
-	            var myTraverse = new MyStatementTraverse();
-	            spi.TraverseStatements(myTraverse.Accept);
-	            myTraverse.AssertAndReset(env.Statement("a"), env.Statement("b"));
+        public static IList<RegressionExecution> WithSPIStatementSelection(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSPIStatementSelection());
+            return execs;
+        }
 
-	            var filter = spi.StatementSelectionSvc.CompileFilterExpression("name='b'");
-	            spi.StatementSelectionSvc.TraverseStatementsFilterExpr(myTraverse.Accept, filter);
-	            myTraverse.AssertAndReset(env.Statement("b"));
-	            spi.StatementSelectionSvc.CompileFilterExpression("deploymentId like 'x'");
+        public static IList<RegressionExecution> WithSPICompileReflective(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSPICompileReflective());
+            return execs;
+        }
 
-	            spi.StatementSelectionSvc.TraverseStatementsContains(myTraverse.Accept, "xxx");
-	            myTraverse.AssertAndReset(env.Statement("b"));
+        public static IList<RegressionExecution> WithItselfTransientConfiguration(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeItselfTransientConfiguration());
+            return execs;
+        }
 
-	            env.UndeployAll();
-	        }
+        private class ClientRuntimeSPIBeanAnonymousType : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var beanEventType = new EPRuntimeBeanAnonymousTypeService(env.Container)
+                    .MakeBeanEventTypeAnonymous(typeof(MyBeanAnonymousType));
+                Assert.AreEqual(typeof(int), beanEventType.GetPropertyType("prop"));
+            }
+        }
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.RUNTIMEOPS);
-	        }
-	    }
+        private class ClientRuntimeSPIStatementSelection : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy(
+                    "@name('a') select * from SupportBean;\n" +
+                    "@name('b') select * from SupportBean(theString='xxx');\n");
+                var spi = (EPRuntimeSPI)env.Runtime;
 
-	    private class ClientRuntimeWrongCompileMethod : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            env.CompileDeploy("@public create window SomeWindow#keepall as SupportBean", path);
+                var myTraverse = new MyStatementTraverse();
+                spi.TraverseStatements(myTraverse.Accept);
+                myTraverse.AssertAndReset(env.Statement("a"), env.Statement("b"));
 
-	            var compiledFAF = env.CompileFAF("select * from SomeWindow", path);
-	            var compiledModule = env.Compile("select * from SomeWindow", path);
+                var filter = spi.StatementSelectionSvc.CompileFilterExpression("name='b'");
+                spi.StatementSelectionSvc.TraverseStatementsFilterExpr(myTraverse.Accept, filter);
+                myTraverse.AssertAndReset(env.Statement("b"));
+                spi.StatementSelectionSvc.CompileFilterExpression("deploymentId like 'x'");
 
-	            var msgInvalidDeployFAF = "Cannot deploy EPL that was compiled as a fire-and-forget query, make sure to use the 'compile' method of the compiler";
-	            try {
-	                env.Runtime.DeploymentService.Deploy(compiledFAF);
-	                Assert.Fail();
-	            } catch (EPDeployException ex) {
-	                Assert.AreEqual(msgInvalidDeployFAF, ex.Message);
-	            }
-	            try {
-	                env.Runtime.DeploymentService.Rollout(Collections.SingletonList(new EPDeploymentRolloutCompiled(compiledFAF)));
-	                Assert.Fail();
-	            } catch (EPDeployException ex) {
-	                Assert.AreEqual(msgInvalidDeployFAF, ex.Message);
-	            }
+                spi.StatementSelectionSvc.TraverseStatementsContains(myTraverse.Accept, "xxx");
+                myTraverse.AssertAndReset(env.Statement("b"));
 
-	            try {
-	                env.Runtime.FireAndForgetService.ExecuteQuery(compiledModule);
-	                Assert.Fail();
-	            } catch (EPException ex) {
-	                Assert.AreEqual("Cannot execute a fire-and-forget query that was compiled as module EPL, make sure to use the 'compileQuery' method of the compiler", ex.Message);
-	            }
+                env.UndeployAll();
+            }
 
-	            env.UndeployAll();
-	        }
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
+        }
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.RUNTIMEOPS);
-	        }
-	    }
+        private class ClientRuntimeWrongCompileMethod : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy("@public create window SomeWindow#keepall as SupportBean", path);
 
-	    private class ClientRuntimeSPICompileReflective : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            env.CompileDeploy(
-	                "@public create window MyWindow#keepall as SupportBean;\n" +
-	                    "insert into MyWindow select * from SupportBean;\n");
-	            env.SendEventBean(new SupportBean("E1", 10));
+                var compiledFAF = env.CompileFAF("select * from SomeWindow", path);
+                var compiledModule = env.Compile("select * from SomeWindow", path);
 
-	            var spi = (EPRuntimeSPI) env.Runtime;
-	            var svc = spi.ReflectiveCompileSvc;
-	            Assert.IsTrue(svc.IsCompilerAvailable);
+                var msgInvalidDeployFAF =
+                    "Cannot deploy EPL that was compiled as a fire-and-forget query, make sure to use the 'compile' method of the compiler";
+                try {
+                    env.Runtime.DeploymentService.Deploy(compiledFAF);
+                    Assert.Fail();
+                }
+                catch (EPDeployException ex) {
+                    Assert.AreEqual(msgInvalidDeployFAF, ex.Message);
+                }
 
-	            var compiledFAF = svc.ReflectiveCompileFireAndForget("select * from MyWindow");
-	            var result = env.Runtime.FireAndForgetService.ExecuteQuery(compiledFAF);
-	            EPAssertionUtil.AssertPropsPerRow(result.GetEnumerator(), new string[]{"theString"}, new object[][]{new object[] {"E1"}});
+                try {
+                    env.Runtime.DeploymentService.Rollout(
+                        Collections.SingletonList(new EPDeploymentRolloutCompiled(compiledFAF)));
+                    Assert.Fail();
+                }
+                catch (EPDeployException ex) {
+                    Assert.AreEqual(msgInvalidDeployFAF, ex.Message);
+                }
 
-	            var compiledFromEPL = svc.ReflectiveCompile("@name('s0') select * from MyWindow");
-	            env.Deploy(compiledFromEPL);
-	            env.AssertPropsPerRowIterator("s0", new string[]{"theString"}, new object[][]{new object[] {"E1"}});
+                try {
+                    env.Runtime.FireAndForgetService.ExecuteQuery(compiledModule);
+                    Assert.Fail();
+                }
+                catch (EPException ex) {
+                    Assert.AreEqual(
+                        "Cannot execute a fire-and-forget query that was compiled as module EPL, make sure to use the 'compileQuery' method of the compiler",
+                        ex.Message);
+                }
 
-	            var module = new Module();
-	            module.Items.Add(new ModuleItem("@name('s1') select * from MyWindow"));
-	            var compiledFromModule = svc.ReflectiveCompile(module);
-	            env.Deploy(compiledFromModule);
-	            env.AssertPropsPerRowIterator("s1", new string[]{"theString"}, new object[][]{new object[] {"E1"}});
+                env.UndeployAll();
+            }
 
-	            var node = svc.ReflectiveCompileExpression("1*1", null, null);
-	            Assert.AreEqual(1, node.Forge.ExprEvaluator.Evaluate(null, true, null));
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
+        }
 
-	            var model = spi.ReflectiveCompileSvc.ReflectiveEPLToModel("select * from MyWindow");
-	            Assert.IsNotNull(model);
+        private class ClientRuntimeSPICompileReflective : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy(
+                    "@public create window MyWindow#keepall as SupportBean;\n" +
+                    "insert into MyWindow select * from SupportBean;\n");
+                env.SendEventBean(new SupportBean("E1", 10));
 
-	            var moduleParsed = spi.ReflectiveCompileSvc.ReflectiveParseModule("select * from MyWindow");
-	            Assert.AreEqual(1, moduleParsed.Items.Count);
-	            Assert.AreEqual("select * from MyWindow", moduleParsed.Items[0].Expression);
+                var spi = (EPRuntimeSPI)env.Runtime;
+                var svc = spi.ReflectiveCompileSvc;
+                Assert.IsTrue(svc.IsCompilerAvailable);
 
-	            env.UndeployAll();
-	        }
+                var compiledFAF = svc.ReflectiveCompileFireAndForget("select * from MyWindow");
+                var result = env.Runtime.FireAndForgetService.ExecuteQuery(compiledFAF);
+                EPAssertionUtil.AssertPropsPerRow(
+                    result.GetEnumerator(),
+                    new string[] { "theString" },
+                    new object[][] { new object[] { "E1" } });
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.RUNTIMEOPS);
-	        }
-	    }
+                var compiledFromEPL = svc.ReflectiveCompile("@name('s0') select * from MyWindow");
+                env.Deploy(compiledFromEPL);
+                env.AssertPropsPerRowIterator(
+                    "s0",
+                    new string[] { "theString" },
+                    new object[][] { new object[] { "E1" } });
 
-	    private class ClientRuntimeItselfTransientConfiguration : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            env.CompileDeploy("@name('s0') select * from SupportBean");
-	            var listener = new MyListener();
-	            env.Statement("s0").AddListener(listener);
+                var module = new Module();
+                module.Items.Add(new ModuleItem("@name('s1') select * from MyWindow"));
+                var compiledFromModule = svc.ReflectiveCompile(module);
+                env.Deploy(compiledFromModule);
+                env.AssertPropsPerRowIterator(
+                    "s1",
+                    new string[] { "theString" },
+                    new object[][] { new object[] { "E1" } });
 
-	            env.SendEventBean(new SupportBean());
-	            Assert.AreEqual(TEST_SECRET_VALUE, listener.SecretValue);
+                var node = svc.ReflectiveCompileExpression("1*1", null, null);
+                Assert.AreEqual(1, node.Forge.ExprEvaluator.Evaluate(null, true, null));
 
-	            env.UndeployAll();
-	        }
+                var model = spi.ReflectiveCompileSvc.ReflectiveEPLToModel("select * from MyWindow");
+                Assert.IsNotNull(model);
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.OBSERVEROPS);
-	        }
-	    }
+                var moduleParsed = spi.ReflectiveCompileSvc.ReflectiveParseModule("select * from MyWindow");
+                Assert.AreEqual(1, moduleParsed.Items.Count);
+                Assert.AreEqual("select * from MyWindow", moduleParsed.Items[0].Expression);
 
-	    public class MyLocalService {
-		    public MyLocalService(int secretValue) {
-	            this.SecretValue = secretValue;
-	        }
+                env.UndeployAll();
+            }
 
-	        internal int SecretValue { get; }
-	    }
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
+        }
 
-	    public class MyListener : UpdateListener {
-	        private int secretValue;
+        private class ClientRuntimeItselfTransientConfiguration : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy("@name('s0') select * from SupportBean");
+                var listener = new MyListener();
+                env.Statement("s0").AddListener(listener);
 
-	        public void Update(
-		        object sender,
-		        UpdateEventArgs eventArgs)
-	        {
-		        var runtime = eventArgs.Runtime;
-	            var svc = (MyLocalService) runtime.ConfigurationTransient.Get(TEST_SERVICE_NAME);
-	            secretValue = svc.SecretValue;
-	        }
+                env.SendEventBean(new SupportBean());
+                Assert.AreEqual(TEST_SECRET_VALUE, listener.SecretValue);
 
-	        internal int SecretValue => secretValue;
-	    }
+                env.UndeployAll();
+            }
 
-	    private class MyStatementTraverse {
-	        IList<EPStatement> statements = new List<EPStatement>();
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
 
-	        public void Accept(EPDeployment epDeployment, EPStatement epStatement) {
-	            statements.Add(epStatement);
-	        }
+        public class MyLocalService
+        {
+            public MyLocalService(int secretValue)
+            {
+                this.SecretValue = secretValue;
+            }
 
-	        public IList<EPStatement> Statements => statements;
+            internal int SecretValue { get; }
+        }
 
-	        public void AssertAndReset(params EPStatement[] expected) {
-	            EPAssertionUtil.AssertEqualsExactOrder(statements.ToArray(), expected);
-	            statements.Clear();
-	        }
-	    }
+        public class MyListener : UpdateListener
+        {
+            private int secretValue;
 
-	    public class MyBeanAnonymousType {
-	        private int prop;
+            public void Update(
+                object sender,
+                UpdateEventArgs eventArgs)
+            {
+                var runtime = eventArgs.Runtime;
+                var svc = (MyLocalService)runtime.ConfigurationTransient.Get(TEST_SERVICE_NAME);
+                secretValue = svc.SecretValue;
+            }
 
-	        public int GetProp() {
-	            return prop;
-	        }
-	    }
-	}
+            internal int SecretValue => secretValue;
+        }
+
+        private class MyStatementTraverse
+        {
+            IList<EPStatement> statements = new List<EPStatement>();
+
+            public void Accept(
+                EPDeployment epDeployment,
+                EPStatement epStatement)
+            {
+                statements.Add(epStatement);
+            }
+
+            public IList<EPStatement> Statements => statements;
+
+            public void AssertAndReset(params EPStatement[] expected)
+            {
+                EPAssertionUtil.AssertEqualsExactOrder(statements.ToArray(), expected);
+                statements.Clear();
+            }
+        }
+
+        public class MyBeanAnonymousType
+        {
+            private int prop;
+
+            public int GetProp()
+            {
+                return prop;
+            }
+        }
+    }
 } // end of namespace

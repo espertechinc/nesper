@@ -30,11 +30,46 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumSelectFromEventsPlain());
-            execs.Add(new ExprEnumSelectFromEventsWIndexWSize());
-            execs.Add(new ExprEnumSelectFromEventsWithNew());
-            execs.Add(new ExprEnumSelectFromScalarPlain());
+            WithEventsPlain(execs);
+            WithEventsWIndexWSize(execs);
+            WithEventsWithNew(execs);
+            WithScalarPlain(execs);
+            WithScalarWIndexWSize(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithScalarWIndexWSize(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprEnumSelectFromScalarWIndexWSize());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithScalarPlain(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSelectFromScalarPlain());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventsWithNew(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSelectFromEventsWithNew());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventsWIndexWSize(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSelectFromEventsWIndexWSize());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventsPlain(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSelectFromEventsPlain());
             return execs;
         }
 

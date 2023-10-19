@@ -21,263 +21,373 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
-	public class EPLJoinMultiKeyAndRange {
+    public class EPLJoinMultiKeyAndRange
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithRangeNullAndDupAndInvalid(execs);
+            WithMultikeyWArrayHashJoinArray(execs);
+            WithMultikeyWArrayHashJoin2Prop(execs);
+            WithMultikeyWArrayCompositeArray(execs);
+            WithMultikeyWArrayComposite2Prop(execs);
+            return execs;
+        }
 
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EPLJoinRangeNullAndDupAndInvalid());
-	        execs.Add(new EPLJoinMultikeyWArrayHashJoinArray());
-	        execs.Add(new EPLJoinMultikeyWArrayHashJoin2Prop());
-	        execs.Add(new EPLJoinMultikeyWArrayCompositeArray());
-	        execs.Add(new EPLJoinMultikeyWArrayComposite2Prop());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithMultikeyWArrayComposite2Prop(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinMultikeyWArrayComposite2Prop());
+            return execs;
+        }
 
-	    private class EPLJoinMultikeyWArrayComposite2Prop : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var eplOne = "@name('s0') select * " +
-	                         "from SupportBean_S0#keepall as s0, SupportBean_S1#keepall as s1 " +
-	                         "where s0.p00 = s1.p10 and s0.p01 = s1.p11 and s0.p02 > s1.p12";
-	            env.CompileDeploy(eplOne).AddListener("s0");
+        public static IList<RegressionExecution> WithMultikeyWArrayCompositeArray(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinMultikeyWArrayCompositeArray());
+            return execs;
+        }
 
-	            SendS0(env, 10, "a0", "b0", "X");
-	            SendS1(env, 20, "a0", "b0", "F");
-	            AssertReceived(env, new object[][] {new object[] {10, 20}});
+        public static IList<RegressionExecution> WithMultikeyWArrayHashJoin2Prop(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinMultikeyWArrayHashJoin2Prop());
+            return execs;
+        }
 
-	            env.Milestone(0);
+        public static IList<RegressionExecution> WithMultikeyWArrayHashJoinArray(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinMultikeyWArrayHashJoinArray());
+            return execs;
+        }
 
-	            SendS0(env, 11, "a1", "b0", "X");
-	            SendS1(env, 22, "a0", "b1", "F");
-	            SendS0(env, 12, "a0", "b1", "A");
-	            env.AssertListenerNotInvoked("s0");
+        public static IList<RegressionExecution> WithRangeNullAndDupAndInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLJoinRangeNullAndDupAndInvalid());
+            return execs;
+        }
 
-	            SendS0(env, 13, "a0", "b1", "Z");
-	            AssertReceived(env, new object[][] {new object[] {13, 22}});
+        private class EPLJoinMultikeyWArrayComposite2Prop : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var eplOne = "@name('s0') select * " +
+                             "from SupportBean_S0#keepall as s0, SupportBean_S1#keepall as s1 " +
+                             "where s0.p00 = s1.p10 and s0.p01 = s1.p11 and s0.p02 > s1.p12";
+                env.CompileDeploy(eplOne).AddListener("s0");
 
-	            SendS1(env, 23, "a1", "b0", "A");
-	            AssertReceived(env, new object[][] {new object[] {11, 23}});
+                SendS0(env, 10, "a0", "b0", "X");
+                SendS1(env, 20, "a0", "b0", "F");
+                AssertReceived(env, new object[][] { new object[] { 10, 20 } });
 
-	            env.UndeployAll();
-	        }
+                env.Milestone(0);
 
-	        private void AssertReceived(RegressionEnvironment env, object[][] expected) {
-	            var fields = "s0.id,s1.id".SplitCsv();
-	            env.AssertPropsPerRowLastNew("s0", fields, expected);
-	        }
+                SendS0(env, 11, "a1", "b0", "X");
+                SendS1(env, 22, "a0", "b1", "F");
+                SendS0(env, 12, "a0", "b1", "A");
+                env.AssertListenerNotInvoked("s0");
 
-	        private void SendS0(RegressionEnvironment env, int id, string p00, string p01, string p02) {
-	            env.SendEventBean(new SupportBean_S0(id, p00, p01, p02));
-	        }
+                SendS0(env, 13, "a0", "b1", "Z");
+                AssertReceived(env, new object[][] { new object[] { 13, 22 } });
 
-	        private void SendS1(RegressionEnvironment env, int id, string p10, string p11, string p12) {
-	            env.SendEventBean(new SupportBean_S1(id, p10, p11, p12));
-	        }
-	    }
+                SendS1(env, 23, "a1", "b0", "A");
+                AssertReceived(env, new object[][] { new object[] { 11, 23 } });
 
-	    private class EPLJoinMultikeyWArrayCompositeArray : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var eplOne = "@name('s0') select * " +
-	                         "from SupportEventWithIntArray#keepall as si, SupportEventWithManyArray#keepall as sm " +
-	                         "where si.array = sm.intOne and si.value > sm.value";
-	            env.CompileDeploy(eplOne).AddListener("s0");
+                env.UndeployAll();
+            }
 
-	            SendIntArray(env, "I1", new int[] {1, 2}, 10);
-	            SendManyArray(env, "M1", new int[] {1, 2}, 5);
-	            AssertReceived(env, new object[][] {new object[] {"I1", "M1"}});
+            private void AssertReceived(
+                RegressionEnvironment env,
+                object[][] expected)
+            {
+                var fields = "s0.id,s1.id".SplitCsv();
+                env.AssertPropsPerRowLastNew("s0", fields, expected);
+            }
 
-	            env.Milestone(0);
+            private void SendS0(
+                RegressionEnvironment env,
+                int id,
+                string p00,
+                string p01,
+                string p02)
+            {
+                env.SendEventBean(new SupportBean_S0(id, p00, p01, p02));
+            }
 
-	            SendIntArray(env, "I2", new int[] {1, 2}, 20);
-	            AssertReceived(env, new object[][] {new object[] {"I2", "M1"}});
+            private void SendS1(
+                RegressionEnvironment env,
+                int id,
+                string p10,
+                string p11,
+                string p12)
+            {
+                env.SendEventBean(new SupportBean_S1(id, p10, p11, p12));
+            }
+        }
 
-	            SendManyArray(env, "M2", new int[] {1, 2}, 1);
-	            AssertReceived(env, new object[][] {new object[] {"I1", "M2"}, new object[] {"I2", "M2"}});
+        private class EPLJoinMultikeyWArrayCompositeArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var eplOne = "@name('s0') select * " +
+                             "from SupportEventWithIntArray#keepall as si, SupportEventWithManyArray#keepall as sm " +
+                             "where si.array = sm.intOne and si.value > sm.value";
+                env.CompileDeploy(eplOne).AddListener("s0");
 
-	            SendManyArray(env, "M3", new int[] {1}, 1);
-	            env.AssertListenerNotInvoked("s0");
+                SendIntArray(env, "I1", new int[] { 1, 2 }, 10);
+                SendManyArray(env, "M1", new int[] { 1, 2 }, 5);
+                AssertReceived(env, new object[][] { new object[] { "I1", "M1" } });
 
-	            SendIntArray(env, "I3", new int[] {2}, 30);
-	            env.AssertListenerNotInvoked("s0");
+                env.Milestone(0);
 
-	            SendIntArray(env, "I4", new int[] {1}, 40);
-	            AssertReceived(env, new object[][] {new object[] {"I4", "M3"}});
+                SendIntArray(env, "I2", new int[] { 1, 2 }, 20);
+                AssertReceived(env, new object[][] { new object[] { "I2", "M1" } });
 
-	            SendManyArray(env, "M4", new int[] {2}, 2);
-	            AssertReceived(env, new object[][] {new object[] {"I3", "M4"}});
+                SendManyArray(env, "M2", new int[] { 1, 2 }, 1);
+                AssertReceived(env, new object[][] { new object[] { "I1", "M2" }, new object[] { "I2", "M2" } });
 
-	            env.UndeployAll();
-	        }
+                SendManyArray(env, "M3", new int[] { 1 }, 1);
+                env.AssertListenerNotInvoked("s0");
 
-	        private void AssertReceived(RegressionEnvironment env, object[][] expected) {
-	            var fields = "si.id,sm.id".SplitCsv();
-	            env.AssertPropsPerRowLastNewAnyOrder("s0", fields, expected);
-	        }
+                SendIntArray(env, "I3", new int[] { 2 }, 30);
+                env.AssertListenerNotInvoked("s0");
 
-	        private void SendManyArray(RegressionEnvironment env, string id, int[] ints, int value) {
-	            env.SendEventBean(new SupportEventWithManyArray(id).WithIntOne(ints).WithValue(value));
-	        }
+                SendIntArray(env, "I4", new int[] { 1 }, 40);
+                AssertReceived(env, new object[][] { new object[] { "I4", "M3" } });
 
-	        private void SendIntArray(RegressionEnvironment env, string id, int[] array, int value) {
-	            env.SendEventBean(new SupportEventWithIntArray(id, array, value));
-	        }
-	    }
+                SendManyArray(env, "M4", new int[] { 2 }, 2);
+                AssertReceived(env, new object[][] { new object[] { "I3", "M4" } });
 
-	    private class EPLJoinMultikeyWArrayHashJoinArray : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var eplOne = "@name('s0') select * " +
-	                         "from SupportEventWithIntArray#keepall as si, SupportEventWithManyArray#keepall as sm " +
-	                         "where si.array = sm.intOne";
-	            env.CompileDeploy(eplOne).AddListener("s0");
+                env.UndeployAll();
+            }
 
-	            SendIntArray(env, "I1", new int[] {1, 2});
-	            SendManyArray(env, "M1", new int[] {1, 2});
-	            AssertReceived(env, new object[][] {new object[] {"I1", "M1"}});
+            private void AssertReceived(
+                RegressionEnvironment env,
+                object[][] expected)
+            {
+                var fields = "si.id,sm.id".SplitCsv();
+                env.AssertPropsPerRowLastNewAnyOrder("s0", fields, expected);
+            }
 
-	            env.Milestone(0);
+            private void SendManyArray(
+                RegressionEnvironment env,
+                string id,
+                int[] ints,
+                int value)
+            {
+                env.SendEventBean(new SupportEventWithManyArray(id).WithIntOne(ints).WithValue(value));
+            }
 
-	            SendIntArray(env, "I2", new int[] {1, 2});
-	            AssertReceived(env, new object[][] {new object[] {"I2", "M1"}});
+            private void SendIntArray(
+                RegressionEnvironment env,
+                string id,
+                int[] array,
+                int value)
+            {
+                env.SendEventBean(new SupportEventWithIntArray(id, array, value));
+            }
+        }
 
-	            SendManyArray(env, "M2", new int[] {1, 2});
-	            AssertReceived(env, new object[][] {new object[] {"I1", "M2"}, new object[] {"I2", "M2"}});
+        private class EPLJoinMultikeyWArrayHashJoinArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var eplOne = "@name('s0') select * " +
+                             "from SupportEventWithIntArray#keepall as si, SupportEventWithManyArray#keepall as sm " +
+                             "where si.array = sm.intOne";
+                env.CompileDeploy(eplOne).AddListener("s0");
 
-	            SendManyArray(env, "M3", new int[] {1});
-	            env.AssertListenerNotInvoked("s0");
+                SendIntArray(env, "I1", new int[] { 1, 2 });
+                SendManyArray(env, "M1", new int[] { 1, 2 });
+                AssertReceived(env, new object[][] { new object[] { "I1", "M1" } });
 
-	            SendIntArray(env, "I3", new int[] {2});
-	            env.AssertListenerNotInvoked("s0");
+                env.Milestone(0);
 
-	            SendIntArray(env, "I4", new int[] {1});
-	            AssertReceived(env, new object[][] {new object[] {"I4", "M3"}});
+                SendIntArray(env, "I2", new int[] { 1, 2 });
+                AssertReceived(env, new object[][] { new object[] { "I2", "M1" } });
 
-	            SendManyArray(env, "M4", new int[] {2});
-	            AssertReceived(env, new object[][] {new object[] {"I3", "M4"}});
+                SendManyArray(env, "M2", new int[] { 1, 2 });
+                AssertReceived(env, new object[][] { new object[] { "I1", "M2" }, new object[] { "I2", "M2" } });
 
-	            env.UndeployAll();
-	        }
+                SendManyArray(env, "M3", new int[] { 1 });
+                env.AssertListenerNotInvoked("s0");
 
-	        private void AssertReceived(RegressionEnvironment env, object[][] expected) {
-	            var fields = "si.id,sm.id".SplitCsv();
-	            env.AssertPropsPerRowLastNew("s0", fields, expected);
-	        }
+                SendIntArray(env, "I3", new int[] { 2 });
+                env.AssertListenerNotInvoked("s0");
 
-	        private void SendManyArray(RegressionEnvironment env, string id, int[] ints) {
-	            env.SendEventBean(new SupportEventWithManyArray(id).WithIntOne(ints));
-	        }
+                SendIntArray(env, "I4", new int[] { 1 });
+                AssertReceived(env, new object[][] { new object[] { "I4", "M3" } });
 
-	        private void SendIntArray(RegressionEnvironment env, string id, int[] array) {
-	            env.SendEventBean(new SupportEventWithIntArray(id, array));
-	        }
-	    }
+                SendManyArray(env, "M4", new int[] { 2 });
+                AssertReceived(env, new object[][] { new object[] { "I3", "M4" } });
 
-	    private class EPLJoinRangeNullAndDupAndInvalid : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var eplOne = "@name('s0') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where intBoxed between rangeStart and rangeEnd";
-	            env.CompileDeploy(eplOne).AddListener("s0");
+                env.UndeployAll();
+            }
 
-	            var eplTwo = "@name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where theString = key and intBoxed in [rangeStart: rangeEnd]";
-	            env.CompileDeploy(eplTwo).AddListener("s1");
+            private void AssertReceived(
+                RegressionEnvironment env,
+                object[][] expected)
+            {
+                var fields = "si.id,sm.id".SplitCsv();
+                env.AssertPropsPerRowLastNew("s0", fields, expected);
+            }
 
-	            // null join lookups
-	            SendEvent(env, new SupportBeanRange("R1", "G", (int?) null, null));
-	            SendEvent(env, new SupportBeanRange("R2", "G", null, 10));
-	            SendEvent(env, new SupportBeanRange("R3", "G", 10, null));
-	            SendSupportBean(env, "G", -1, null);
+            private void SendManyArray(
+                RegressionEnvironment env,
+                string id,
+                int[] ints)
+            {
+                env.SendEventBean(new SupportEventWithManyArray(id).WithIntOne(ints));
+            }
 
-	            // range invalid
-	            SendEvent(env, new SupportBeanRange("R4", "G", 10, 0));
-	            env.AssertListenerNotInvoked("s0");
-	            env.AssertListenerNotInvoked("s1");
+            private void SendIntArray(
+                RegressionEnvironment env,
+                string id,
+                int[] array)
+            {
+                env.SendEventBean(new SupportEventWithIntArray(id, array));
+            }
+        }
 
-	            // duplicates
-	            object eventOne = SendSupportBean(env, "G", 100, 5);
-	            object eventTwo = SendSupportBean(env, "G", 101, 5);
-	            SendEvent(env, new SupportBeanRange("R4", "G", 0, 10));
-	            env.AssertListener("s0", listener => {
-	                var events = listener.GetAndResetLastNewData();
-	                EPAssertionUtil.AssertEqualsAnyOrder(new object[]{eventOne, eventTwo}, EPAssertionUtil.GetUnderlying(events));
-	            });
-	            env.AssertListener("s1", listener => {
-	                var events = listener.GetAndResetLastNewData();
-	                EPAssertionUtil.AssertEqualsAnyOrder(new object[]{eventOne, eventTwo}, EPAssertionUtil.GetUnderlying(events));
-	            });
+        private class EPLJoinRangeNullAndDupAndInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var eplOne =
+                    "@name('s0') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where intBoxed between rangeStart and rangeEnd";
+                env.CompileDeploy(eplOne).AddListener("s0");
 
-	            // test string compare
-	            var eplThree = "@name('s2') select sb.* from SupportBeanRange#keepall sb, SupportBean#lastevent where theString in [rangeStartStr:rangeEndStr]";
-	            env.CompileDeploy(eplThree).AddListener("s2");
+                var eplTwo =
+                    "@name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where theString = key and intBoxed in [rangeStart: rangeEnd]";
+                env.CompileDeploy(eplTwo).AddListener("s1");
 
-	            SendSupportBean(env, "P", 1, 1);
-	            SendEvent(env, new SupportBeanRange("R5", "R5", "O", "Q"));
-	            env.AssertListenerInvoked("s0");
+                // null join lookups
+                SendEvent(env, new SupportBeanRange("R1", "G", (int?)null, null));
+                SendEvent(env, new SupportBeanRange("R2", "G", null, 10));
+                SendEvent(env, new SupportBeanRange("R3", "G", 10, null));
+                SendSupportBean(env, "G", -1, null);
 
-	            env.UndeployAll();
-	        }
-	    }
+                // range invalid
+                SendEvent(env, new SupportBeanRange("R4", "G", 10, 0));
+                env.AssertListenerNotInvoked("s0");
+                env.AssertListenerNotInvoked("s1");
 
-	    private class EPLJoinMultikeyWArrayHashJoin2Prop : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
+                // duplicates
+                object eventOne = SendSupportBean(env, "G", 100, 5);
+                object eventTwo = SendSupportBean(env, "G", 101, 5);
+                SendEvent(env, new SupportBeanRange("R4", "G", 0, 10));
+                env.AssertListener(
+                    "s0",
+                    listener => {
+                        var events = listener.GetAndResetLastNewData();
+                        EPAssertionUtil.AssertEqualsAnyOrder(
+                            new object[] { eventOne, eventTwo },
+                            EPAssertionUtil.GetUnderlying(events));
+                    });
+                env.AssertListener(
+                    "s1",
+                    listener => {
+                        var events = listener.GetAndResetLastNewData();
+                        EPAssertionUtil.AssertEqualsAnyOrder(
+                            new object[] { eventOne, eventTwo },
+                            EPAssertionUtil.GetUnderlying(events));
+                    });
 
-	            var joinStatement = "@name('s0') select * from " +
-	                                "SupportBean(theString like 'A%')#length(3) as streamA," +
-	                                "SupportBean(theString like 'B%')#length(3) as streamB" +
-	                                " where streamA.intPrimitive = streamB.intPrimitive " +
-	                                "and streamA.intBoxed = streamB.intBoxed";
-	            env.CompileDeploy(joinStatement).AddListener("s0");
-	            var fields = "streamA.theString,streamB.theString".SplitCsv();
+                // test string compare
+                var eplThree =
+                    "@name('s2') select sb.* from SupportBeanRange#keepall sb, SupportBean#lastevent where theString in [rangeStartStr:rangeEndStr]";
+                env.CompileDeploy(eplThree).AddListener("s2");
 
-	            env.AssertStatement("s0", statement => {
-	                Assert.AreEqual(typeof(SupportBean), statement.EventType.GetPropertyType("streamA"));
-	                Assert.AreEqual(typeof(SupportBean), statement.EventType.GetPropertyType("streamB"));
-	                Assert.AreEqual(2, statement.EventType.PropertyNames.Length);
-	            });
+                SendSupportBean(env, "P", 1, 1);
+                SendEvent(env, new SupportBeanRange("R5", "R5", "O", "Q"));
+                env.AssertListenerInvoked("s0");
 
-	            int[][] eventData = new int[][] {
-		            new int[] {1, 100},
-	                new int[] {2, 100},
-	                new int[] {1, 200},
-	                new int[] {2, 200}};
-	            var eventsA = new SupportBean[eventData.Length];
-	            var eventsB = new SupportBean[eventData.Length];
+                env.UndeployAll();
+            }
+        }
 
-	            for (var i = 0; i < eventData.Length; i++) {
-	                eventsA[i] = new SupportBean();
-	                eventsA[i].TheString = $"A{i}";
-	                eventsA[i].IntPrimitive = eventData[i][0];
-	                eventsA[i].IntBoxed = eventData[i][1];
+        private class EPLJoinMultikeyWArrayHashJoin2Prop : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var joinStatement = "@name('s0') select * from " +
+                                    "SupportBean(theString like 'A%')#length(3) as streamA," +
+                                    "SupportBean(theString like 'B%')#length(3) as streamB" +
+                                    " where streamA.intPrimitive = streamB.intPrimitive " +
+                                    "and streamA.intBoxed = streamB.intBoxed";
+                env.CompileDeploy(joinStatement).AddListener("s0");
+                var fields = "streamA.theString,streamB.theString".SplitCsv();
 
-	                eventsB[i] = new SupportBean();
-	                eventsB[i].TheString = $"B{i}";
-	                eventsB[i].IntPrimitive = eventData[i][0];
-	                eventsB[i].IntBoxed = eventData[i][1];
-	            }
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        Assert.AreEqual(typeof(SupportBean), statement.EventType.GetPropertyType("streamA"));
+                        Assert.AreEqual(typeof(SupportBean), statement.EventType.GetPropertyType("streamB"));
+                        Assert.AreEqual(2, statement.EventType.PropertyNames.Length);
+                    });
 
-	            SendEvent(env, eventsA[0]);
-	            SendEvent(env, eventsB[1]);
-	            SendEvent(env, eventsB[2]);
-	            SendEvent(env, eventsB[3]);
-	            env.AssertListener("s0", listener => Assert.IsNull(listener.LastNewData));    // No events expected
+                int[][] eventData = new int[][] {
+                    new int[] { 1, 100 },
+                    new int[] { 2, 100 },
+                    new int[] { 1, 200 },
+                    new int[] { 2, 200 }
+                };
+                var eventsA = new SupportBean[eventData.Length];
+                var eventsB = new SupportBean[eventData.Length];
 
-	            env.Milestone(0);
+                for (var i = 0; i < eventData.Length; i++) {
+                    eventsA[i] = new SupportBean();
+                    eventsA[i].TheString = $"A{i}";
+                    eventsA[i].IntPrimitive = eventData[i][0];
+                    eventsA[i].IntBoxed = eventData[i][1];
 
-	            SendSupportBean(env, "AX", 2, 100);
-	            env.AssertPropsNew("s0", fields, new object[] {"AX", "B1"});
+                    eventsB[i] = new SupportBean();
+                    eventsB[i].TheString = $"B{i}";
+                    eventsB[i].IntPrimitive = eventData[i][0];
+                    eventsB[i].IntBoxed = eventData[i][1];
+                }
 
-	            SendSupportBean(env, "BX", 1, 100);
-	            env.AssertPropsNew("s0", fields, new object[] {"A0", "BX"});
+                SendEvent(env, eventsA[0]);
+                SendEvent(env, eventsB[1]);
+                SendEvent(env, eventsB[2]);
+                SendEvent(env, eventsB[3]);
+                env.AssertListener("s0", listener => Assert.IsNull(listener.LastNewData)); // No events expected
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.Milestone(0);
 
-	    private static void SendEvent(RegressionEnvironment env, object theEvent) {
-	        env.SendEventBean(theEvent);
-	    }
+                SendSupportBean(env, "AX", 2, 100);
+                env.AssertPropsNew("s0", fields, new object[] { "AX", "B1" });
 
-	    private static SupportBean SendSupportBean(RegressionEnvironment env, string theString, int intPrimitive, int? intBoxed) {
-	        var bean = new SupportBean(theString, intPrimitive);
-	        bean.IntBoxed = intBoxed;
-	        env.SendEventBean(bean);
-	        return bean;
-	    }
-	}
+                SendSupportBean(env, "BX", 1, 100);
+                env.AssertPropsNew("s0", fields, new object[] { "A0", "BX" });
+
+                env.UndeployAll();
+            }
+        }
+
+        private static void SendEvent(
+            RegressionEnvironment env,
+            object theEvent)
+        {
+            env.SendEventBean(theEvent);
+        }
+
+        private static SupportBean SendSupportBean(
+            RegressionEnvironment env,
+            string theString,
+            int intPrimitive,
+            int? intBoxed)
+        {
+            var bean = new SupportBean(theString, intPrimitive);
+            bean.IntBoxed = intBoxed;
+            env.SendEventBean(bean);
+            return bean;
+        }
+    }
 } // end of namespace

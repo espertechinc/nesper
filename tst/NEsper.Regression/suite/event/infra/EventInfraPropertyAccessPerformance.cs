@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             var methodName = ".testPerfPropertyAccess";

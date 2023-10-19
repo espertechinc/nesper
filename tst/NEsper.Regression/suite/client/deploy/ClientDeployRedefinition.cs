@@ -21,10 +21,39 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientDeployRedefinitionCreateSchemaNamedWindowInsert());
-            execs.Add(new ClientDeployRedefinitionNamedWindow());
-            execs.Add(new ClientDeployRedefinitionInsertInto());
+            WithCreateSchemaNamedWindowInsert(execs);
+            WithNamedWindow(execs);
+            WithInsertInto(execs);
+            WithVariables(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithVariables(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientDeployRedefinitionVariables());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInsertInto(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientDeployRedefinitionInsertInto());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientDeployRedefinitionNamedWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchemaNamedWindowInsert(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientDeployRedefinitionCreateSchemaNamedWindowInsert());
             return execs;
         }
 
@@ -59,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 var moduleTableTwo = "create table MyTable(c0 string, c1 string, c2 string)";
                 env.CompileDeploy(moduleTableTwo).UndeployAll();
             }
-            
+
             public ISet<RegressionFlag> Flags()
             {
                 return Collections.Set(RegressionFlag.RUNTIMEOPS);

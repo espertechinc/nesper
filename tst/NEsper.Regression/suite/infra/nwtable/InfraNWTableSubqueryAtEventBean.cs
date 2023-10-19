@@ -23,6 +23,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            Withr(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSubSelStar(true));
             execs.Add(new InfraSubSelStar(false));
             return execs;
@@ -33,13 +40,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             object[][] values)
         {
             var @event = listener.AssertOneGetNewAndReset();
-            var events = (EventBean[]) @event.GetFragment("detail");
+            var events = (EventBean[])@event.GetFragment("detail");
             if (values == null) {
                 Assert.IsNull(events);
                 return;
             }
 
-            EPAssertionUtil.AssertPropsPerRowAnyOrder(events, new [] { "c0", "c1" }, values);
+            EPAssertionUtil.AssertPropsPerRowAnyOrder(events, new[] { "c0", "c1" }, values);
         }
 
         internal class InfraSubSelStar : RegressionExecution
@@ -74,16 +81,20 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean("E1", 1));
 
                 env.SendEventBean(new SupportBean_S0(0));
-                env.AssertListener("s0", listener => AssertReceived(
-                    listener,
-                    new[] {new object[] {"E1", 1}}));
+                env.AssertListener(
+                    "s0",
+                    listener => AssertReceived(
+                        listener,
+                        new[] { new object[] { "E1", 1 } }));
 
                 env.SendEventBean(new SupportBean("E2", 2));
 
                 env.SendEventBean(new SupportBean_S0(0));
-                env.AssertListener("s0", listener => AssertReceived(
-                    listener,
-                    new[] {new object[] {"E1", 1}, new object[] {"E2", 2}}));
+                env.AssertListener(
+                    "s0",
+                    listener => AssertReceived(
+                        listener,
+                        new[] { new object[] { "E1", 1 }, new object[] { "E2", 2 } }));
 
                 env.UndeployAll();
             }

@@ -59,23 +59,24 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             SendEvent(env, "E4", 4, TOTAL_GOAL_TWO);
 
             var result = new Dictionary<string, IDictionary<string, StatementMetric>>();
-            env.Runtime.MetricsService.EnumerateStatementGroups(group => {
-                var resultGroup = new Dictionary<string, StatementMetric>();
-                result[group.Name] = resultGroup;
-                group.IterateStatements(metric => {
-                    resultGroup[metric.Metric.StatementName] = metric.Metric;
+            env.Runtime.MetricsService.EnumerateStatementGroups(
+                group => {
+                    var resultGroup = new Dictionary<string, StatementMetric>();
+                    result[group.Name] = resultGroup;
+                    group.IterateStatements(metric => { resultGroup[metric.Metric.StatementName] = metric.Metric; });
                 });
-            });
             Assert.AreEqual(0, result.Get("group-default").Count);
             Assert.AreEqual(0, result.Get("group-2").Count);
             var group = result.Get("group-1");
-            EPAssertionUtil.AssertEqualsAnyOrder(group.Keys, new string[] {"cpuStmtTwo", "wallStmtFour", "cpuStmtOne", "wallStmtThree"});
+            EPAssertionUtil.AssertEqualsAnyOrder(
+                group.Keys,
+                new string[] { "cpuStmtTwo", "wallStmtFour", "cpuStmtOne", "wallStmtThree" });
             var metric = group.Get("cpuStmtOne");
             Assert.AreEqual(1, metric.NumInput);
 
             var runtimeMetric = env.Runtime.MetricsService.GetRuntimeMetric();
             Assert.AreEqual(4, runtimeMetric.InputCount);
-            
+
             var listener = env.Listener("stmt_metrics");
             SendTimer(env, 10999);
             Assert.IsFalse(env.Listener("stmt_metrics").IsInvoked);
@@ -98,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
 
             SendTimer(env, 31000);
             Assert.IsFalse(env.Listener("stmt_metrics").IsInvoked);
-            
+
             env.UndeployAll();
         }
 
@@ -111,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             RegressionEnvironment env,
             long timestamp)
         {
-            var fields = new [] { "RuntimeURI","StatementName" };
+            var fields = new[] { "RuntimeURI", "StatementName" };
 
             var listener = env.Listener("stmt_metrics");
             Assert.AreEqual(4, listener.NewDataList.Count);
@@ -120,19 +121,19 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             EPAssertionUtil.AssertProps(
                 received[0],
                 fields,
-                new object[] {"default", "cpuStmtOne"});
+                new object[] { "default", "cpuStmtOne" });
             EPAssertionUtil.AssertProps(
                 received[1],
                 fields,
-                new object[] {"default", "cpuStmtTwo"});
+                new object[] { "default", "cpuStmtTwo" });
             EPAssertionUtil.AssertProps(
                 received[2],
                 fields,
-                new object[] {"default", "wallStmtThree"});
+                new object[] { "default", "wallStmtThree" });
             EPAssertionUtil.AssertProps(
                 received[3],
                 fields,
-                new object[] {"default", "wallStmtFour"});
+                new object[] { "default", "wallStmtFour" });
 
 #if !NETCORE
             var userOne = (TimeSpan) received[0].Get("PerformanceMetrics.UserTime");
@@ -170,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             int intPrimitive,
             TimeSpan timeSpan)
         {
-            var longPrimitive = (long) timeSpan.TotalMilliseconds;
+            var longPrimitive = (long)timeSpan.TotalMilliseconds;
             var bean = new SupportBean(id, intPrimitive);
             bean.LongPrimitive = longPrimitive;
             env.SendEventBean(bean);

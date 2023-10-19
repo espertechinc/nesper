@@ -25,168 +25,207 @@ using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.S
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
-	public class PatternStartStop {
+    public class PatternStartStop
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithStartStopOne(execs);
+            WithAddRemoveListener(execs);
+            WithStartStopTwo(execs);
+            return execs;
+        }
 
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new PatternStartStopOne());
-	        execs.Add(new PatternAddRemoveListener());
-	        execs.Add(new PatternStartStopTwo());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithStartStopTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternStartStopTwo());
+            return execs;
+        }
 
-	    private class PatternStartStopTwo : RegressionExecution {
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.OBSERVEROPS);
-	        }
+        public static IList<RegressionExecution> WithAddRemoveListener(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternAddRemoveListener());
+            return execs;
+        }
 
-	        public void Run(RegressionEnvironment env) {
-	            var stmtText = "@name('s0') select * from pattern [every(a=SupportBean or b=SupportBeanComplexProps)]";
-	            var compiled = env.Compile(stmtText);
-	            env.Deploy(compiled).AddListener("s0");
+        public static IList<RegressionExecution> WithStartStopOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new PatternStartStopOne());
+            return execs;
+        }
 
-	            for (var i = 0; i < 100; i++) {
-	                SendAndAssert(env);
+        private class PatternStartStopTwo : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.OBSERVEROPS);
+            }
 
-	                var listener = env.Listener("s0");
-	                listener.Reset();
-	                env.UndeployModuleContaining("s0");
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText = "@name('s0') select * from pattern [every(a=SupportBean or b=SupportBeanComplexProps)]";
+                var compiled = env.Compile(stmtText);
+                env.Deploy(compiled).AddListener("s0");
 
-	                env.SendEventBean(new SupportBean());
-	                env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
-	                Assert.IsFalse(listener.IsInvoked);
+                for (var i = 0; i < 100; i++) {
+                    SendAndAssert(env);
 
-	                env.Deploy(compiled).AddListener("s0");
-	            }
+                    var listener = env.Listener("s0");
+                    listener.Reset();
+                    env.UndeployModuleContaining("s0");
 
-	            env.UndeployAll();
-	        }
-	    }
+                    env.SendEventBean(new SupportBean());
+                    env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
+                    Assert.IsFalse(listener.IsInvoked);
 
-	    private class PatternStartStopOne : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') @IterableUnbound select * from pattern[every tag=SupportBean]";
-	            var compiled = env.Compile(epl);
-	            env.Deploy(compiled).AddListener("s0");
-	            var stmt = env.Statement("s0");
-	            Assert.AreEqual(StatementType.SELECT, stmt.GetProperty(StatementProperty.STATEMENTTYPE));
-	            Assert.IsNull(stmt.GetProperty(StatementProperty.CONTEXTNAME));
-	            Assert.IsNull(stmt.GetProperty(StatementProperty.CONTEXTDEPLOYMENTID));
+                    env.Deploy(compiled).AddListener("s0");
+                }
 
-	            // Pattern started when created
-	            Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
-	            var safe = env.Statement("s0").GetSafeEnumerator();
-	            Assert.IsFalse(safe.MoveNext());
-	            safe.Dispose();
+                env.UndeployAll();
+            }
+        }
 
-	            // Stop pattern
-	            var listener = env.Listener("s0");
-	            listener.Reset();
+        private class PatternStartStopOne : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') @IterableUnbound select * from pattern[every tag=SupportBean]";
+                var compiled = env.Compile(epl);
+                env.Deploy(compiled).AddListener("s0");
+                var stmt = env.Statement("s0");
+                Assert.AreEqual(StatementType.SELECT, stmt.GetProperty(StatementProperty.STATEMENTTYPE));
+                Assert.IsNull(stmt.GetProperty(StatementProperty.CONTEXTNAME));
+                Assert.IsNull(stmt.GetProperty(StatementProperty.CONTEXTDEPLOYMENTID));
 
-	            env.UndeployModuleContaining("s0");
-	            SendEvent(env);
-	            Assert.IsFalse(listener.IsInvoked);
+                // Pattern started when created
+                Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
+                var safe = env.Statement("s0").GetSafeEnumerator();
+                Assert.IsFalse(safe.MoveNext());
+                safe.Dispose();
 
-	            // Start pattern
-	            env.Deploy(compiled).AddListener("s0");
-	            Assert.IsFalse(env.GetEnumerator("s0").MoveNext());
+                // Stop pattern
+                var listener = env.Listener("s0");
+                listener.Reset();
 
-	            // Send event
-	            var theEvent = SendEvent(env);
-	            Assert.AreSame(theEvent, env.GetEnumerator("s0").Advance().Get("tag"));
-	            safe = env.Statement("s0").GetSafeEnumerator();
-	            Assert.AreSame(theEvent, safe.Advance().Get("tag"));
-	            safe.Dispose();
+                env.UndeployModuleContaining("s0");
+                SendEvent(env);
+                Assert.IsFalse(listener.IsInvoked);
 
-	            // Stop pattern
-	            listener = env.Listener("s0");
-	            listener.Reset();
-	            stmt = env.Statement("s0");
-	            env.UndeployModuleContaining("s0");
-	            SendEvent(env);
-	            try {
-	                stmt.GetEnumerator();
-	            } catch (IllegalStateException ex) {
-	                Assert.AreEqual("Statement has already been undeployed", ex.Message);
-	            }
-	            Assert.IsFalse(listener.IsInvoked);
+                // Start pattern
+                env.Deploy(compiled).AddListener("s0");
+                Assert.IsFalse(env.GetEnumerator("s0").MoveNext());
 
-	            // Start again, iterator is zero
-	            env.Deploy(compiled);
-	            Assert.IsFalse(env.GetEnumerator("s0").MoveNext());
-	            env.UndeployAll();
-	        }
+                // Send event
+                var theEvent = SendEvent(env);
+                Assert.AreSame(theEvent, env.GetEnumerator("s0").Advance().Get("tag"));
+                safe = env.Statement("s0").GetSafeEnumerator();
+                Assert.AreSame(theEvent, safe.Advance().Get("tag"));
+                safe.Dispose();
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.OBSERVEROPS);
-	        }
-	    }
+                // Stop pattern
+                listener = env.Listener("s0");
+                listener.Reset();
+                stmt = env.Statement("s0");
+                env.UndeployModuleContaining("s0");
+                SendEvent(env);
+                try {
+                    stmt.GetEnumerator();
+                }
+                catch (IllegalStateException ex) {
+                    Assert.AreEqual("Statement has already been undeployed", ex.Message);
+                }
 
-	    private class PatternAddRemoveListener : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') @IterableUnbound select * from pattern[every tag=SupportBean]";
-	            env.CompileDeploy(epl);
+                Assert.IsFalse(listener.IsInvoked);
 
-	            // Pattern started when created
+                // Start again, iterator is zero
+                env.Deploy(compiled);
+                Assert.IsFalse(env.GetEnumerator("s0").MoveNext());
+                env.UndeployAll();
+            }
 
-	            // Add listener
-	            var listener = new SupportUpdateListener();
-	            env.Statement("s0").AddListener(listener);
-	            Assert.IsNull(env.Listener("s0").LastNewData);
-	            Assert.IsFalse(env.GetEnumerator("s0").MoveNext());
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
 
-	            // Send event
-	            var theEvent = SendEvent(env);
-	            Assert.AreEqual(theEvent, listener.GetAndResetLastNewData()[0].Get("tag"));
-	            Assert.AreSame(theEvent, env.Statement("s0").First().Get("tag"));
+        private class PatternAddRemoveListener : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') @IterableUnbound select * from pattern[every tag=SupportBean]";
+                env.CompileDeploy(epl);
 
-	            // Remove listener
-	            env.Statement("s0").RemoveListener(listener);
-	            theEvent = SendEvent(env);
-	            Assert.AreSame(theEvent, env.GetEnumerator("s0").Advance().Get("tag"));
-	            Assert.IsNull(listener.LastNewData);
+                // Pattern started when created
 
-	            // Add listener back
-	            env.Statement("s0").AddListener(listener);
-	            theEvent = SendEvent(env);
-	            Assert.AreSame(theEvent, env.GetEnumerator("s0").Advance().Get("tag"));
-	            Assert.AreEqual(theEvent, listener.GetAndResetLastNewData()[0].Get("tag"));
+                // Add listener
+                var listener = new SupportUpdateListener();
+                env.Statement("s0").AddListener(listener);
+                Assert.IsNull(env.Listener("s0").LastNewData);
+                Assert.IsFalse(env.GetEnumerator("s0").MoveNext());
 
-	            env.UndeployAll();
-	        }
+                // Send event
+                var theEvent = SendEvent(env);
+                Assert.AreEqual(theEvent, listener.GetAndResetLastNewData()[0].Get("tag"));
+                Assert.AreSame(theEvent, env.Statement("s0").First().Get("tag"));
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.OBSERVEROPS);
-	        }
-	    }
+                // Remove listener
+                env.Statement("s0").RemoveListener(listener);
+                theEvent = SendEvent(env);
+                Assert.AreSame(theEvent, env.GetEnumerator("s0").Advance().Get("tag"));
+                Assert.IsNull(listener.LastNewData);
 
-	    private static void SendAndAssert(RegressionEnvironment env) {
-	        for (var i = 0; i < 1000; i++) {
-	            object theEvent;
-	            if (i % 3 == 0) {
-	                theEvent = new SupportBean();
-	            } else {
-	                theEvent = SupportBeanComplexProps.MakeDefaultBean();
-	            }
+                // Add listener back
+                env.Statement("s0").AddListener(listener);
+                theEvent = SendEvent(env);
+                Assert.AreSame(theEvent, env.GetEnumerator("s0").Advance().Get("tag"));
+                Assert.AreEqual(theEvent, listener.GetAndResetLastNewData()[0].Get("tag"));
 
-	            env.SendEventBean(theEvent);
+                env.UndeployAll();
+            }
 
-	            env.AssertEventNew("s0", eventBean => {
-	                if (theEvent is SupportBean) {
-	                    Assert.AreSame(theEvent, eventBean.Get("a"));
-	                    Assert.IsNull(eventBean.Get("b"));
-	                } else {
-	                    Assert.AreSame(theEvent, eventBean.Get("b"));
-	                    Assert.IsNull(eventBean.Get("a"));
-	                }
-	            });
-	        }
-	    }
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
 
-	    private static SupportBean SendEvent(RegressionEnvironment env) {
-	        var theEvent = new SupportBean();
-	        env.SendEventBean(theEvent);
-	        return theEvent;
-	    }
-	}
+        private static void SendAndAssert(RegressionEnvironment env)
+        {
+            for (var i = 0; i < 1000; i++) {
+                object theEvent;
+                if (i % 3 == 0) {
+                    theEvent = new SupportBean();
+                }
+                else {
+                    theEvent = SupportBeanComplexProps.MakeDefaultBean();
+                }
+
+                env.SendEventBean(theEvent);
+
+                env.AssertEventNew(
+                    "s0",
+                    eventBean => {
+                        if (theEvent is SupportBean) {
+                            Assert.AreSame(theEvent, eventBean.Get("a"));
+                            Assert.IsNull(eventBean.Get("b"));
+                        }
+                        else {
+                            Assert.AreSame(theEvent, eventBean.Get("b"));
+                            Assert.IsNull(eventBean.Get("a"));
+                        }
+                    });
+            }
+        }
+
+        private static SupportBean SendEvent(RegressionEnvironment env)
+        {
+            var theEvent = new SupportBean();
+            env.SendEventBean(theEvent);
+            return theEvent;
+        }
+    }
 } // end of namespace

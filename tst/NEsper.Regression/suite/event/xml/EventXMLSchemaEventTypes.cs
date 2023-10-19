@@ -22,8 +22,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfigured(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -111,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                         Assert.AreEqual(expected, desc.PropertyType, "Failed for " + name);
                     }
                 });
-            
+
             env.UndeployAll();
         }
     }

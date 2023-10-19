@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.util
         public void TestCopyEnum()
         {
             SupportEnum enumOne = SupportEnum.ENUM_VALUE_2;
-            var objectCopier  =SerializableObjectCopier.GetInstance(container);
+            var objectCopier = SerializableObjectCopier.GetInstance(container);
             object result = objectCopier.Copy(enumOne);
             Assert.That(result, Is.Not.Null);
             Assert.That(result, Is.InstanceOf<SupportEnum>());

@@ -22,231 +22,265 @@ using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil; //
 
 namespace com.espertech.esper.regressionlib.suite.epl.database
 {
-	public class EPLDatabaseNoJoinIterate
-	{
+    public class EPLDatabaseNoJoinIterate
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithExpressionPoll(execs);
+            WithVariablesPoll(execs);
+            WithNullSelect(execs);
+            WithSubstitutionParameter(execs);
+            WithSQLTextParamSubquery(execs);
+            return execs;
+        }
 
-		public static IList<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new EPLDatabaseExpressionPoll());
-			execs.Add(new EPLDatabaseVariablesPoll());
-			execs.Add(new EPLDatabaseNullSelect());
-			execs.Add(new EPLDatabaseSubstitutionParameter());
-			execs.Add(new EPLDatabaseSQLTextParamSubquery());
-			return execs;
-		}
+        public static IList<RegressionExecution> WithSQLTextParamSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseSQLTextParamSubquery());
+            return execs;
+        }
 
-		private class EPLDatabaseNullSelect : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var epl =
-					"@name('s0') select * from sql:MyDBPlain ['select null as a from mytesttable where myint = 1']";
-				env.CompileDeploy(epl);
+        public static IList<RegressionExecution> WithSubstitutionParameter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseSubstitutionParameter());
+            return execs;
+        }
 
-				env.AssertPropsPerRowIterator("s0", new string[] { "a" }, null);
+        public static IList<RegressionExecution> WithNullSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseNullSelect());
+            return execs;
+        }
 
-				env.UndeployAll();
-			}
-		}
+        public static IList<RegressionExecution> WithVariablesPoll(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseVariablesPoll());
+            return execs;
+        }
 
-		private class EPLDatabaseExpressionPoll : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var path = new RegressionPath();
-				env.CompileDeploy("@public create variable boolean queryvar_bool", path);
-				env.CompileDeploy("@public create variable int queryvar_int", path);
-				env.CompileDeploy("@public create variable int lower", path);
-				env.CompileDeploy("@public create variable int upper", path);
-				env.CompileDeploy(
-					"on SupportBean set queryvar_int=intPrimitive, queryvar_bool=boolPrimitive, lower=intPrimitive,upper=intBoxed",
-					path);
+        public static IList<RegressionExecution> WithExpressionPoll(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseExpressionPoll());
+            return execs;
+        }
 
-				// Test int and singlerow
-				var stmtText =
-					"@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where ${queryvar_int -2} = mytesttable.mybigint']";
-				env.CompileDeploy(stmtText, path).AddListener("s0");
-				AssertStatelessStmt(env, "s0", false);
+        private class EPLDatabaseNullSelect : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('s0') select * from sql:MyDBPlain ['select null as a from mytesttable where myint = 1']";
+                env.CompileDeploy(epl);
 
-				env.AssertPropsPerRowIteratorAnyOrder("s0", new string[] { "myint" }, null);
+                env.AssertPropsPerRowIterator("s0", new string[] { "a" }, null);
 
-				SendSupportBeanEvent(env, 5);
-				env.AssertPropsPerRowIteratorAnyOrder(
-					"s0",
-					new string[] { "myint" },
-					new object[][] { new object[] { 30 } });
+                env.UndeployAll();
+            }
+        }
 
-				env.AssertListenerNotInvoked("s0");
-				env.UndeployModuleContaining("s0");
+        private class EPLDatabaseExpressionPoll : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy("@public create variable boolean queryvar_bool", path);
+                env.CompileDeploy("@public create variable int queryvar_int", path);
+                env.CompileDeploy("@public create variable int lower", path);
+                env.CompileDeploy("@public create variable int upper", path);
+                env.CompileDeploy(
+                    "on SupportBean set queryvar_int=intPrimitive, queryvar_bool=boolPrimitive, lower=intPrimitive,upper=intBoxed",
+                    path);
 
-				// Test multi-parameter and multi-row
-				stmtText =
-					"@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where mytesttable.mybigint between ${queryvar_int-2} and ${queryvar_int+2}'] order by myint";
-				env.CompileDeploy(stmtText, path);
-				env.AssertPropsPerRowIteratorAnyOrder(
-					"s0",
-					new string[] { "myint" },
-					new object[][] {
-						new object[] { 30 }, new object[] { 40 }, new object[] { 50 }, new object[] { 60 },
-						new object[] { 70 }
-					});
-				env.UndeployAll();
-			}
-		}
+                // Test int and singlerow
+                var stmtText =
+                    "@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where ${queryvar_int -2} = mytesttable.mybigint']";
+                env.CompileDeploy(stmtText, path).AddListener("s0");
+                AssertStatelessStmt(env, "s0", false);
 
-		private class EPLDatabaseVariablesPoll : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var path = new RegressionPath();
-				env.CompileDeploy("@public create variable boolean queryvar_bool", path);
-				env.CompileDeploy("@public create variable int queryvar_int", path);
-				env.CompileDeploy("@public create variable int lower", path);
-				env.CompileDeploy("@public create variable int upper", path);
-				env.CompileDeploy(
-					"on SupportBean set queryvar_int=intPrimitive, queryvar_bool=boolPrimitive, lower=intPrimitive,upper=intBoxed",
-					path);
+                env.AssertPropsPerRowIteratorAnyOrder("s0", new string[] { "myint" }, null);
 
-				// Test int and singlerow
-				var stmtText =
-					"@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where ${queryvar_int} = mytesttable.mybigint']";
-				env.CompileDeploy(stmtText, path).AddListener("s0");
+                SendSupportBeanEvent(env, 5);
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    new string[] { "myint" },
+                    new object[][] { new object[] { 30 } });
 
-				env.AssertPropsPerRowIteratorAnyOrder("s0", new string[] { "myint" }, null);
+                env.AssertListenerNotInvoked("s0");
+                env.UndeployModuleContaining("s0");
 
-				SendSupportBeanEvent(env, 5);
-				env.AssertPropsPerRowIteratorAnyOrder(
-					"s0",
-					new string[] { "myint" },
-					new object[][] { new object[] { 50 } });
+                // Test multi-parameter and multi-row
+                stmtText =
+                    "@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where mytesttable.mybigint between ${queryvar_int-2} and ${queryvar_int+2}'] order by myint";
+                env.CompileDeploy(stmtText, path);
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    new string[] { "myint" },
+                    new object[][] {
+                        new object[] { 30 }, new object[] { 40 }, new object[] { 50 }, new object[] { 60 },
+                        new object[] { 70 }
+                    });
+                env.UndeployAll();
+            }
+        }
 
-				env.AssertListenerNotInvoked("s0");
-				env.UndeployModuleContaining("s0");
+        private class EPLDatabaseVariablesPoll : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy("@public create variable boolean queryvar_bool", path);
+                env.CompileDeploy("@public create variable int queryvar_int", path);
+                env.CompileDeploy("@public create variable int lower", path);
+                env.CompileDeploy("@public create variable int upper", path);
+                env.CompileDeploy(
+                    "on SupportBean set queryvar_int=intPrimitive, queryvar_bool=boolPrimitive, lower=intPrimitive,upper=intBoxed",
+                    path);
 
-				// Test boolean and multirow
-				stmtText =
-					"@name('s0') select * from sql:MyDBWithTxnIso1WithReadOnly ['select mybigint, mybool from mytesttable where ${queryvar_bool} = mytesttable.mybool and myint between ${lower} and ${upper} order by mybigint']";
-				env.CompileDeploy(stmtText, path).AddListener("s0");
+                // Test int and singlerow
+                var stmtText =
+                    "@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where ${queryvar_int} = mytesttable.mybigint']";
+                env.CompileDeploy(stmtText, path).AddListener("s0");
 
-				var fields = new string[] { "mybigint", "mybool" };
-				env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
+                env.AssertPropsPerRowIteratorAnyOrder("s0", new string[] { "myint" }, null);
 
-				SendSupportBeanEvent(env, true, 10, 40);
-				env.AssertPropsPerRowIteratorAnyOrder(
-					"s0",
-					fields,
-					new object[][] { new object[] { 1L, true }, new object[] { 4L, true } });
+                SendSupportBeanEvent(env, 5);
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    new string[] { "myint" },
+                    new object[][] { new object[] { 50 } });
 
-				SendSupportBeanEvent(env, false, 30, 80);
-				env.AssertPropsPerRowIteratorAnyOrder(
-					"s0",
-					fields,
-					new object[][]
-						{ new object[] { 3L, false }, new object[] { 5L, false }, new object[] { 6L, false } });
+                env.AssertListenerNotInvoked("s0");
+                env.UndeployModuleContaining("s0");
 
-				SendSupportBeanEvent(env, true, 20, 30);
-				env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
+                // Test boolean and multirow
+                stmtText =
+                    "@name('s0') select * from sql:MyDBWithTxnIso1WithReadOnly ['select mybigint, mybool from mytesttable where ${queryvar_bool} = mytesttable.mybool and myint between ${lower} and ${upper} order by mybigint']";
+                env.CompileDeploy(stmtText, path).AddListener("s0");
 
-				SendSupportBeanEvent(env, true, 20, 60);
-				env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { 4L, true } });
+                var fields = new string[] { "mybigint", "mybool" };
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
 
-				env.UndeployAll();
-			}
-		}
+                SendSupportBeanEvent(env, true, 10, 40);
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { 1L, true }, new object[] { 4L, true } });
 
-		private class EPLDatabaseSubstitutionParameter : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var epl =
-					"@name('s0') select * from sql:MyDBPlain['select * from mytesttable where myint = ${?:myint:int}']";
-				var model = env.EplToModel(epl);
-				var compiledFromSODA = env.Compile(
-					model,
-					new CompilerArguments().SetConfiguration(env.Configuration));
-				var compiled = env.Compile(epl);
+                SendSupportBeanEvent(env, false, 30, 80);
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][]
+                        { new object[] { 3L, false }, new object[] { 5L, false }, new object[] { 6L, false } });
 
-				AssertDeploy(env, compiled, 10, "A");
-				AssertDeploy(env, compiledFromSODA, 50, "E");
-				AssertDeploy(env, compiled, 30, "C");
-			}
+                SendSupportBeanEvent(env, true, 20, 30);
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
 
-			private void AssertDeploy(
-				RegressionEnvironment env,
-				EPCompiled compiled,
-				int myint,
-				string expected)
-			{
-				var values = new SupportPortableDeploySubstitutionParams().Add("myint", myint);
-				var options =
-					new DeploymentOptions().WithStatementSubstitutionParameter(values.SetStatementParameters);
-				env.Deploy(compiled, options);
+                SendSupportBeanEvent(env, true, 20, 60);
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { 4L, true } });
 
-				env.AssertPropsPerRowIterator(
-					"s0",
-					new string[] { "myvarchar" },
-					new object[][] { new object[] { expected } });
+                env.UndeployAll();
+            }
+        }
 
-				env.UndeployAll();
-			}
-		}
+        private class EPLDatabaseSubstitutionParameter : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('s0') select * from sql:MyDBPlain['select * from mytesttable where myint = ${?:myint:int}']";
+                var model = env.EplToModel(epl);
+                var compiledFromSODA = env.Compile(
+                    model,
+                    new CompilerArguments().SetConfiguration(env.Configuration));
+                var compiled = env.Compile(epl);
 
-		private class EPLDatabaseSQLTextParamSubquery : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var path = new RegressionPath();
-				env.CompileDeploy(
-					"@public create window MyWindow#lastevent as SupportBean;\n" +
-					"on SupportBean merge MyWindow insert select *",
-					path);
+                AssertDeploy(env, compiled, 10, "A");
+                AssertDeploy(env, compiledFromSODA, 50, "E");
+                AssertDeploy(env, compiled, 30, "C");
+            }
 
-				var epl =
-					"@name('s0') select * from sql:MyDBPlain['select * from mytesttable where myint = ${(select intPrimitive from MyWindow)}']";
-				env.CompileDeploy(epl, path);
+            private void AssertDeploy(
+                RegressionEnvironment env,
+                EPCompiled compiled,
+                int myint,
+                string expected)
+            {
+                var values = new SupportPortableDeploySubstitutionParams().Add("myint", myint);
+                var options =
+                    new DeploymentOptions().WithStatementSubstitutionParameter(values.SetStatementParameters);
+                env.Deploy(compiled, options);
 
-				env.AssertPropsPerRowIterator("s0", new string[] { "myvarchar" }, Array.Empty<object[]>());
+                env.AssertPropsPerRowIterator(
+                    "s0",
+                    new string[] { "myvarchar" },
+                    new object[][] { new object[] { expected } });
 
-				SendAssert(env, 30, "C");
-				SendAssert(env, 10, "A");
+                env.UndeployAll();
+            }
+        }
 
-				env.UndeployAll();
-			}
+        private class EPLDatabaseSQLTextParamSubquery : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@public create window MyWindow#lastevent as SupportBean;\n" +
+                    "on SupportBean merge MyWindow insert select *",
+                    path);
 
-			private void SendAssert(
-				RegressionEnvironment env,
-				int intPrimitive,
-				string expected)
-			{
-				env.SendEventBean(new SupportBean("", intPrimitive));
-				env.AssertPropsPerRowIterator(
-					"s0",
-					new string[] { "myvarchar" },
-					new object[][] { new object[] { expected } });
-			}
-		}
+                var epl =
+                    "@name('s0') select * from sql:MyDBPlain['select * from mytesttable where myint = ${(select intPrimitive from MyWindow)}']";
+                env.CompileDeploy(epl, path);
 
-		private static void SendSupportBeanEvent(
-			RegressionEnvironment env,
-			int intPrimitive)
-		{
-			var bean = new SupportBean();
-			bean.IntPrimitive = intPrimitive;
-			env.SendEventBean(bean);
-		}
+                env.AssertPropsPerRowIterator("s0", new string[] { "myvarchar" }, Array.Empty<object[]>());
 
-		private static void SendSupportBeanEvent(
-			RegressionEnvironment env,
-			bool boolPrimitive,
-			int intPrimitive,
-			int intBoxed)
-		{
-			var bean = new SupportBean();
-			bean.BoolPrimitive = boolPrimitive;
-			bean.IntPrimitive = intPrimitive;
-			bean.IntBoxed = intBoxed;
-			env.SendEventBean(bean);
-		}
-	}
+                SendAssert(env, 30, "C");
+                SendAssert(env, 10, "A");
+
+                env.UndeployAll();
+            }
+
+            private void SendAssert(
+                RegressionEnvironment env,
+                int intPrimitive,
+                string expected)
+            {
+                env.SendEventBean(new SupportBean("", intPrimitive));
+                env.AssertPropsPerRowIterator(
+                    "s0",
+                    new string[] { "myvarchar" },
+                    new object[][] { new object[] { expected } });
+            }
+        }
+
+        private static void SendSupportBeanEvent(
+            RegressionEnvironment env,
+            int intPrimitive)
+        {
+            var bean = new SupportBean();
+            bean.IntPrimitive = intPrimitive;
+            env.SendEventBean(bean);
+        }
+
+        private static void SendSupportBeanEvent(
+            RegressionEnvironment env,
+            bool boolPrimitive,
+            int intPrimitive,
+            int intBoxed)
+        {
+            var bean = new SupportBean();
+            bean.BoolPrimitive = boolPrimitive;
+            bean.IntPrimitive = intPrimitive;
+            bean.IntBoxed = intBoxed;
+            env.SendEventBean(bean);
+        }
+    }
 } // end of namespace

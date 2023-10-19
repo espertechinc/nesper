@@ -12,50 +12,55 @@ using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
-	public class ResultSetAggregateLeaving : RegressionExecution {
+    public class ResultSetAggregateLeaving : RegressionExecution
+    {
+        public void Run(RegressionEnvironment env)
+        {
+            var milestone = new AtomicLong();
 
-	    public void Run(RegressionEnvironment env) {
-	        var milestone = new AtomicLong();
+            var epl = "@name('s0') select leaving() as val from SupportBean#length(3)";
+            env.CompileDeploy(epl).AddListener("s0");
+            RunAssertion(env, milestone);
 
-	        var epl = "@name('s0') select leaving() as val from SupportBean#length(3)";
-	        env.CompileDeploy(epl).AddListener("s0");
-	        RunAssertion(env, milestone);
+            env.UndeployAll();
 
-	        env.UndeployAll();
+            env.EplToModelCompileDeploy(epl).AddListener("s0");
 
-	        env.EplToModelCompileDeploy(epl).AddListener("s0");
+            RunAssertion(env, milestone);
 
-	        RunAssertion(env, milestone);
+            env.UndeployAll();
 
-	        env.UndeployAll();
+            env.TryInvalidCompile(
+                "select leaving(1) from SupportBean",
+                "Failed to validate select-clause expression 'leaving(1)': The 'leaving' function expects no parameters");
+        }
 
-	        env.TryInvalidCompile("select leaving(1) from SupportBean",
-	            "Failed to validate select-clause expression 'leaving(1)': The 'leaving' function expects no parameters");
-	    }
+        private static void RunAssertion(
+            RegressionEnvironment env,
+            AtomicLong milestone)
+        {
+            var fields = "val".SplitCsv();
 
-	    private static void RunAssertion(RegressionEnvironment env, AtomicLong milestone) {
-	        var fields = "val".SplitCsv();
+            env.SendEventBean(new SupportBean("E1", 1));
+            env.AssertPropsNew("s0", fields, new object[] { false });
 
-	        env.SendEventBean(new SupportBean("E1", 1));
-	        env.AssertPropsNew("s0", fields, new object[]{false});
+            env.MilestoneInc(milestone);
 
-	        env.MilestoneInc(milestone);
+            env.SendEventBean(new SupportBean("E2", 2));
+            env.AssertPropsNew("s0", fields, new object[] { false });
 
-	        env.SendEventBean(new SupportBean("E2", 2));
-	        env.AssertPropsNew("s0", fields, new object[]{false});
+            env.SendEventBean(new SupportBean("E3", 3));
+            env.AssertPropsNew("s0", fields, new object[] { false });
 
-	        env.SendEventBean(new SupportBean("E3", 3));
-	        env.AssertPropsNew("s0", fields, new object[]{false});
+            env.MilestoneInc(milestone);
 
-	        env.MilestoneInc(milestone);
+            env.SendEventBean(new SupportBean("E4", 4));
+            env.AssertPropsNew("s0", fields, new object[] { true });
 
-	        env.SendEventBean(new SupportBean("E4", 4));
-	        env.AssertPropsNew("s0", fields, new object[]{true});
+            env.MilestoneInc(milestone);
 
-	        env.MilestoneInc(milestone);
-
-	        env.SendEventBean(new SupportBean("E5", 5));
-	        env.AssertPropsNew("s0", fields, new object[]{true});
-	    }
-	}
+            env.SendEventBean(new SupportBean("E5", 5));
+            env.AssertPropsNew("s0", fields, new object[] { true });
+        }
+    }
 } // end of namespace

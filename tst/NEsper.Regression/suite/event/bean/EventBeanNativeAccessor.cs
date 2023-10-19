@@ -24,13 +24,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             var theEvent = new SupportLegacyBeanInt(10);
             env.SendEventBean(theEvent, "MyLegacyTwo");
 
-            env.AssertEventNew("s0", @event => {
-                var eventType = @event.EventType;
-                foreach (var name in new[] { "IntPrimitive", "explicitFInt", "explicitMGetInt", "explicitMReadInt" }) {
-                    Assert.AreEqual(typeof(int?), eventType.GetPropertyType(name));
-                    Assert.AreEqual(10, @event.Get(name));
-                }
-            });
+            env.AssertEventNew(
+                "s0",
+                @event => {
+                    var eventType = @event.EventType;
+                    foreach (var name in new[]
+                                 { "IntPrimitive", "explicitFInt", "explicitMGetInt", "explicitMReadInt" }) {
+                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType(name));
+                        Assert.AreEqual(10, @event.Get(name));
+                    }
+                });
 
             env.UndeployAll();
         }

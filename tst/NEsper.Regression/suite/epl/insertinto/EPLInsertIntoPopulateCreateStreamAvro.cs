@@ -31,8 +31,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithCompatExisting(execs);
-            WithNewSchema(execs);
+            With(NewSchema)(execs);
+#endif
             return execs;
         }
 
@@ -52,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public static byte[] MakeByteArray()
         {
-            return new byte[] {1, 2, 3};
+            return new byte[] { 1, 2, 3 };
         }
 
         public static IDictionary<string, string> MakeMapStringString()
@@ -76,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 env.AssertStmtTypes(
                     "s0",
-                    new[] { "MyLong","MyLongArray","MyByteArray","MyMap" },
+                    new[] { "MyLong", "MyLongArray", "MyByteArray", "MyMap" },
                     new[] {
                         typeof(long?),
                         typeof(ICollection<long?>),

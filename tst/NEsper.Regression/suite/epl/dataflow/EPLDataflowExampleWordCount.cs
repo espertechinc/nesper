@@ -50,14 +50,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             }
 
             Assert.AreEqual(1, received.Length);
-            var stats = (MyWordCountStats) received[0];
+            var stats = (MyWordCountStats)received[0];
             Assert.AreEqual(2, stats.Lines);
             Assert.AreEqual(6, stats.Words);
             Assert.AreEqual(23, stats.Chars);
 
             env.UndeployAll();
         }
-        
+
         public ISet<RegressionFlag> Flags()
         {
             return Collections.Set(RegressionFlag.DATAFLOW);

@@ -15,115 +15,175 @@ using com.espertech.esper.regressionlib.support.bean;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
-	public class ViewParameterizedByContext {
+    public class ViewParameterizedByContext
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithLengthWindow(execs);
+            WithDocSample(execs);
+            WithMoreWindows(execs);
+            return execs;
+        }
 
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new ViewParameterizedByContextLengthWindow());
-	        execs.Add(new ViewParameterizedByContextDocSample());
-	        execs.Add(new ViewParameterizedByContextMoreWindows());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithMoreWindows(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewParameterizedByContextMoreWindows());
+            return execs;
+        }
 
-	    private class ViewParameterizedByContextMoreWindows : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var milestone = new AtomicLong();
-	            RunAssertionWindow(env, "length_batch(context.miewl.intSize)", milestone);
-	            RunAssertionWindow(env, "time(context.miewl.intSize)", milestone);
-	            RunAssertionWindow(env, "ext_timed(longPrimitive, context.miewl.intSize)", milestone);
-	            RunAssertionWindow(env, "time_batch(context.miewl.intSize)", milestone);
-	            RunAssertionWindow(env, "ext_timed_batch(longPrimitive, context.miewl.intSize)", milestone);
-	            RunAssertionWindow(env, "time_length_batch(context.miewl.intSize, context.miewl.intSize)", milestone);
-	            RunAssertionWindow(env, "time_accum(context.miewl.intSize)", milestone);
-	            RunAssertionWindow(env, "firstlength(context.miewl.intSize)", milestone);
-	            RunAssertionWindow(env, "firsttime(context.miewl.intSize)", milestone);
-	            RunAssertionWindow(env, "sort(context.miewl.intSize, intPrimitive)", milestone);
-	            RunAssertionWindow(env, "rank(theString, context.miewl.intSize, theString)", milestone);
-	            RunAssertionWindow(env, "time_order(longPrimitive, context.miewl.intSize)", milestone);
-	        }
-	    }
+        public static IList<RegressionExecution> WithDocSample(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewParameterizedByContextDocSample());
+            return execs;
+        }
 
-	    private class ViewParameterizedByContextLengthWindow : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
+        public static IList<RegressionExecution> WithLengthWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewParameterizedByContextLengthWindow());
+            return execs;
+        }
 
-	            var epl = "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
-	                      "@name('s0') context CtxInitToTerm select context.miewl.id as id, count(*) as cnt from SupportBean(theString=context.miewl.id)#length(context.miewl.intSize)";
-	            env.CompileDeploy(epl).AddListener("s0");
-	            var fields = "id,cnt".SplitCsv();
+        private class ViewParameterizedByContextMoreWindows : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var milestone = new AtomicLong();
+                RunAssertionWindow(env, "length_batch(context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "time(context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "ext_timed(longPrimitive, context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "time_batch(context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "ext_timed_batch(longPrimitive, context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "time_length_batch(context.miewl.intSize, context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "time_accum(context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "firstlength(context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "firsttime(context.miewl.intSize)", milestone);
+                RunAssertionWindow(env, "sort(context.miewl.intSize, intPrimitive)", milestone);
+                RunAssertionWindow(env, "rank(theString, context.miewl.intSize, theString)", milestone);
+                RunAssertionWindow(env, "time_order(longPrimitive, context.miewl.intSize)", milestone);
+            }
+        }
 
-	            SendInitEvent(env, "P1", 2);
-	            SendInitEvent(env, "P2", 4);
-	            SendInitEvent(env, "P3", 3);
-	            SendValueEvent(env, "P2");
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"P1", 0L}, new object[] {"P2", 1L}, new object[] {"P3", 0L}});
+        private class ViewParameterizedByContextLengthWindow : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
+                    "@name('s0') context CtxInitToTerm select context.miewl.id as id, count(*) as cnt from SupportBean(theString=context.miewl.id)#length(context.miewl.intSize)";
+                env.CompileDeploy(epl).AddListener("s0");
+                var fields = "id,cnt".SplitCsv();
 
-	            env.Milestone(0);
+                SendInitEvent(env, "P1", 2);
+                SendInitEvent(env, "P2", 4);
+                SendInitEvent(env, "P3", 3);
+                SendValueEvent(env, "P2");
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "P1", 0L }, new object[] { "P2", 1L }, new object[] { "P3", 0L } });
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"P1", 0L}, new object[] {"P2", 1L}, new object[] {"P3", 0L}});
+                env.Milestone(0);
 
-	            for (var i = 0; i < 10; i++) {
-	                SendValueEvent(env, "P1");
-	                SendValueEvent(env, "P2");
-	                SendValueEvent(env, "P3");
-	            }
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "P1", 0L }, new object[] { "P2", 1L }, new object[] { "P3", 0L } });
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"P1", 2L}, new object[] {"P2", 4L}, new object[] {"P3", 3L}});
+                for (var i = 0; i < 10; i++) {
+                    SendValueEvent(env, "P1");
+                    SendValueEvent(env, "P2");
+                    SendValueEvent(env, "P3");
+                }
 
-	            env.Milestone(1);
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "P1", 2L }, new object[] { "P2", 4L }, new object[] { "P3", 3L } });
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"P1", 2L}, new object[] {"P2", 4L}, new object[] {"P3", 3L}});
-	            SendValueEvent(env, "P1");
-	            SendValueEvent(env, "P2");
-	            SendValueEvent(env, "P3");
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"P1", 2L}, new object[] {"P2", 4L}, new object[] {"P3", 3L}});
+                env.Milestone(1);
 
-	            env.UndeployAll();
-	        }
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "P1", 2L }, new object[] { "P2", 4L }, new object[] { "P3", 3L } });
+                SendValueEvent(env, "P1");
+                SendValueEvent(env, "P2");
+                SendValueEvent(env, "P3");
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "P1", 2L }, new object[] { "P2", 4L }, new object[] { "P3", 3L } });
 
-	        private void SendValueEvent(RegressionEnvironment env, string id) {
-	            env.SendEventBean(new SupportBean(id, -1));
-	        }
+                env.UndeployAll();
+            }
 
-	        private void SendInitEvent(RegressionEnvironment env, string id, int intSize) {
-	            env.SendEventBean(new SupportContextInitEventWLength(id, intSize));
-	        }
-	    }
+            private void SendValueEvent(
+                RegressionEnvironment env,
+                string id)
+            {
+                env.SendEventBean(new SupportBean(id, -1));
+            }
 
-	    private static void RunAssertionWindow(RegressionEnvironment env, string window, AtomicLong milestone) {
-	        var epl = "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
-	                  "context CtxInitToTerm select * from SupportBean#" + window;
-	        env.CompileDeploy(epl);
-	        env.SendEventBean(new SupportContextInitEventWLength("P1", 2));
+            private void SendInitEvent(
+                RegressionEnvironment env,
+                string id,
+                int intSize)
+            {
+                env.SendEventBean(new SupportContextInitEventWLength(id, intSize));
+            }
+        }
 
-	        env.MilestoneInc(milestone);
+        private static void RunAssertionWindow(
+            RegressionEnvironment env,
+            string window,
+            AtomicLong milestone)
+        {
+            var epl =
+                "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
+                "context CtxInitToTerm select * from SupportBean#" +
+                window;
+            env.CompileDeploy(epl);
+            env.SendEventBean(new SupportContextInitEventWLength("P1", 2));
 
-	        env.SendEventBean(new SupportContextInitEventWLength("P2", 20));
+            env.MilestoneInc(milestone);
 
-	        env.UndeployAll();
-	    }
+            env.SendEventBean(new SupportContextInitEventWLength("P2", 20));
 
-	    private class ViewParameterizedByContextDocSample : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
-	                      "@name('s0') context CtxInitToTerm select context.miewl.id as id, count(*) as cnt from SupportBean(theString=context.miewl.id)#length(context.miewl.intSize);\n";
-	            env.CompileDeploy(epl).Milestone(0);
+            env.UndeployAll();
+        }
 
-	            env.SendEventBean(new SupportContextInitEventWLength("P1", 2));
-	            env.SendEventBean(new SupportContextInitEventWLength("P2", 4));
-	            env.SendEventBean(new SupportContextInitEventWLength("P3", 3));
+        private class ViewParameterizedByContextDocSample : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "create context CtxInitToTerm initiated by SupportContextInitEventWLength as miewl terminated after 1 year;\n" +
+                    "@name('s0') context CtxInitToTerm select context.miewl.id as id, count(*) as cnt from SupportBean(theString=context.miewl.id)#length(context.miewl.intSize);\n";
+                env.CompileDeploy(epl).Milestone(0);
 
-	            env.Milestone(1);
+                env.SendEventBean(new SupportContextInitEventWLength("P1", 2));
+                env.SendEventBean(new SupportContextInitEventWLength("P2", 4));
+                env.SendEventBean(new SupportContextInitEventWLength("P3", 3));
 
-	            for (var i = 0; i < 10; i++) {
-	                env.SendEventBean(new SupportBean("P1", 0));
-	                env.SendEventBean(new SupportBean("P2", 0));
-	                env.SendEventBean(new SupportBean("P3", 0));
-	            }
+                env.Milestone(1);
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", "id,cnt".SplitCsv(), new object[][]{new object[] {"P1", 2L}, new object[] {"P2", 4L}, new object[] {"P3", 3L}});
+                for (var i = 0; i < 10; i++) {
+                    env.SendEventBean(new SupportBean("P1", 0));
+                    env.SendEventBean(new SupportBean("P2", 0));
+                    env.SendEventBean(new SupportBean("P3", 0));
+                }
 
-	            env.UndeployAll();
-	        }
-	    }
-	}
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    "id,cnt".SplitCsv(),
+                    new object[][] { new object[] { "P1", 2L }, new object[] { "P2", 4L }, new object[] { "P3", 3L } });
+
+                env.UndeployAll();
+            }
+        }
+    }
 } // end of namespace

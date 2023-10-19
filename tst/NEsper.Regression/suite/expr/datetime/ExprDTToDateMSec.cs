@@ -26,8 +26,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithToDateTimeExChain(execs);
-            WithDTToDateTimeExMSecValue(execs);
+            With(DTToDateTimeExMSecValue)(execs);
+#endif
             return execs;
         }
 
@@ -50,7 +52,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                env.CompileDeploy("@name('s0') select current_timestamp.toDateTimeEx().AddDays(1) as c from SupportBean");
+                env.CompileDeploy(
+                    "@name('s0') select current_timestamp.toDateTimeEx().AddDays(1) as c from SupportBean");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));

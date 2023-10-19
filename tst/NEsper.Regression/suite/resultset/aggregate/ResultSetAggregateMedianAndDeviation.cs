@@ -23,247 +23,350 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
-	public class ResultSetAggregateMedianAndDeviation {
-	    private const string SYMBOL_DELL = "DELL";
-	    private const string SYMBOL_IBM = "IBM";
+    public class ResultSetAggregateMedianAndDeviation
+    {
+        private const string SYMBOL_DELL = "DELL";
+        private const string SYMBOL_IBM = "IBM";
 
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new ResultSetAggregateStmt());
-	        execs.Add(new ResultSetAggregateStmtJoinOM());
-	        execs.Add(new ResultSetAggregateStmtJoin());
-	        return execs;
-	    }
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Witht(execs);
+            WithtJoinOM(execs);
+            WithtJoin(execs);
+            return execs;
+        }
 
-	    private class ResultSetAggregateStmt : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var milestone = new AtomicLong();
+        public static IList<RegressionExecution> WithtJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateStmtJoin());
+            return execs;
+        }
 
-	            var epl = "@name('s0') select irstream symbol," +
-	                      "median(all price) as myMedian," +
-	                      "median(distinct price) as myDistMedian," +
-	                      "stddev(all price) as myStdev," +
-	                      "avedev(all price) as myAvedev " +
-	                      "from SupportMarketDataBean#length(5) " +
-	                      "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
-	                      "group by symbol";
-	            env.CompileDeploy(epl).AddListener("s0");
+        public static IList<RegressionExecution> WithtJoinOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateStmtJoinOM());
+            return execs;
+        }
 
-	            TryAssertionStmt(env, milestone);
+        public static IList<RegressionExecution> Witht(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateStmt());
+            return execs;
+        }
 
-	            // Test NaN sensitivity
-	            env.UndeployAll();
+        private class ResultSetAggregateStmt : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var milestone = new AtomicLong();
 
-	            epl = "@name('s0') select stddev(price) as val from SupportMarketDataBean#length(3)";
-	            env.CompileDeploy(epl).AddListener("s0");
+                var epl = "@name('s0') select irstream symbol," +
+                          "median(all price) as myMedian," +
+                          "median(distinct price) as myDistMedian," +
+                          "stddev(all price) as myStdev," +
+                          "avedev(all price) as myAvedev " +
+                          "from SupportMarketDataBean#length(5) " +
+                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
+                          "group by symbol";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	            SendEvent(env, "A", double.NaN);
-	            SendEvent(env, "B", double.NaN);
-	            SendEvent(env, "C", double.NaN);
+                TryAssertionStmt(env, milestone);
 
-	            env.MilestoneInc(milestone);
+                // Test NaN sensitivity
+                env.UndeployAll();
 
-	            SendEvent(env, "D", 1d);
-	            SendEvent(env, "E", 2d);
-	            env.ListenerReset("s0");
+                epl = "@name('s0') select stddev(price) as val from SupportMarketDataBean#length(3)";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	            env.MilestoneInc(milestone);
+                SendEvent(env, "A", double.NaN);
+                SendEvent(env, "B", double.NaN);
+                SendEvent(env, "C", double.NaN);
 
-	            SendEvent(env, "F", 3d);
-	            env.AssertEventNew("s0", @event => {
-		            var result = @event.Get("val");
-		            Assert.That(result, Is.Not.Null);
-		            Assert.That(result, Is.InstanceOf<double>());
-		            var resultValue = (double) result;
-		            Assert.That(resultValue, Is.Not.NaN);
-	            });
+                env.MilestoneInc(milestone);
 
-	            env.UndeployAll();
-	        }
-	    }
+                SendEvent(env, "D", 1d);
+                SendEvent(env, "E", 2d);
+                env.ListenerReset("s0");
 
-	    private class ResultSetAggregateStmtJoinOM : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var model = new EPStatementObjectModel();
-	            model.SelectClause = SelectClause.Create("symbol")
-		            .Add(Expressions.Median("price"), "myMedian")
-		            .Add(Expressions.MedianDistinct("price"), "myDistMedian")
-		            .Add(Expressions.Stddev("price"), "myStdev")
-		            .Add(Expressions.Avedev("price"), "myAvedev")
-		            .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH);
+                env.MilestoneInc(milestone);
 
-	            var fromClause = FromClause.Create(
-	                FilterStream.Create(nameof(SupportBeanString), "one").AddView(View.Create("length", Expressions.Constant(100))),
-	                FilterStream.Create(nameof(SupportMarketDataBean), "two").AddView(View.Create("length", Expressions.Constant(5))));
-	            model.FromClause = fromClause;
-	            model.WhereClause = Expressions.And().Add(
-	                Expressions.Or()
-	                    .Add(Expressions.Eq("symbol", "DELL"))
-	                    .Add(Expressions.Eq("symbol", "IBM"))
-	                    .Add(Expressions.Eq("symbol", "GE"))
-	            )
-	                .Add(Expressions.EqProperty("one.theString", "two.symbol"));
-	            model.GroupByClause = GroupByClause.Create("symbol");
-	            model = env.CopyMayFail(model);
+                SendEvent(env, "F", 3d);
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        var result = @event.Get("val");
+                        Assert.That(result, Is.Not.Null);
+                        Assert.That(result, Is.InstanceOf<double>());
+                        var resultValue = (double)result;
+                        Assert.That(resultValue, Is.Not.NaN);
+                    });
 
-	            var epl = "select irstream symbol, " +
-	                      "median(price) as myMedian, " +
-	                      "median(distinct price) as myDistMedian, " +
-	                      "stddev(price) as myStdev, " +
-	                      "avedev(price) as myAvedev " +
-	                      "from SupportBeanString#length(100) as one, " +
-	                      "SupportMarketDataBean#length(5) as two " +
-	                      "where (symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\") " +
-	                      "and one.theString=two.symbol " +
-	                      "group by symbol";
-	            Assert.AreEqual(epl, model.ToEPL());
+                env.UndeployAll();
+            }
+        }
 
-	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-	            env.CompileDeploy(model).AddListener("s0");
+        private class ResultSetAggregateStmtJoinOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var model = new EPStatementObjectModel();
+                model.SelectClause = SelectClause.Create("symbol")
+                    .Add(Expressions.Median("price"), "myMedian")
+                    .Add(Expressions.MedianDistinct("price"), "myDistMedian")
+                    .Add(Expressions.Stddev("price"), "myStdev")
+                    .Add(Expressions.Avedev("price"), "myAvedev")
+                    .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH);
 
-	            env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
-	            env.SendEventBean(new SupportBeanString(SYMBOL_IBM));
-	            env.SendEventBean(new SupportBeanString("AAA"));
+                var fromClause = FromClause.Create(
+                    FilterStream.Create(nameof(SupportBeanString), "one")
+                        .AddView(View.Create("length", Expressions.Constant(100))),
+                    FilterStream.Create(nameof(SupportMarketDataBean), "two")
+                        .AddView(View.Create("length", Expressions.Constant(5))));
+                model.FromClause = fromClause;
+                model.WhereClause = Expressions.And()
+                    .Add(
+                        Expressions.Or()
+                            .Add(Expressions.Eq("symbol", "DELL"))
+                            .Add(Expressions.Eq("symbol", "IBM"))
+                            .Add(Expressions.Eq("symbol", "GE"))
+                    )
+                    .Add(Expressions.EqProperty("one.theString", "two.symbol"));
+                model.GroupByClause = GroupByClause.Create("symbol");
+                model = env.CopyMayFail(model);
 
-	            TryAssertionStmt(env, new AtomicLong());
+                var epl = "select irstream symbol, " +
+                          "median(price) as myMedian, " +
+                          "median(distinct price) as myDistMedian, " +
+                          "stddev(price) as myStdev, " +
+                          "avedev(price) as myAvedev " +
+                          "from SupportBeanString#length(100) as one, " +
+                          "SupportMarketDataBean#length(5) as two " +
+                          "where (symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\") " +
+                          "and one.theString=two.symbol " +
+                          "group by symbol";
+                Assert.AreEqual(epl, model.ToEPL());
 
-	            env.UndeployAll();
-	        }
-	    }
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                env.CompileDeploy(model).AddListener("s0");
 
-	    private class ResultSetAggregateStmtJoin : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select irstream symbol," +
-	                      "median(price) as myMedian," +
-	                      "median(distinct price) as myDistMedian," +
-	                      "stddev(price) as myStdev," +
-	                      "avedev(price) as myAvedev " +
-	                      "from SupportBeanString#length(100) as one, " +
-	                      "SupportMarketDataBean#length(5) as two " +
-	                      "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-	                      "       and one.theString = two.symbol " +
-	                      "group by symbol";
-	            env.CompileDeploy(epl).AddListener("s0");
+                env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
+                env.SendEventBean(new SupportBeanString(SYMBOL_IBM));
+                env.SendEventBean(new SupportBeanString("AAA"));
 
-	            env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
-	            env.SendEventBean(new SupportBeanString(SYMBOL_IBM));
-	            env.SendEventBean(new SupportBeanString("AAA"));
+                TryAssertionStmt(env, new AtomicLong());
 
-	            TryAssertionStmt(env, new AtomicLong());
+                env.UndeployAll();
+            }
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        private class ResultSetAggregateStmtJoin : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select irstream symbol," +
+                          "median(price) as myMedian," +
+                          "median(distinct price) as myDistMedian," +
+                          "stddev(price) as myStdev," +
+                          "avedev(price) as myAvedev " +
+                          "from SupportBeanString#length(100) as one, " +
+                          "SupportMarketDataBean#length(5) as two " +
+                          "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
+                          "       and one.theString = two.symbol " +
+                          "group by symbol";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	    private static void TryAssertionStmt(RegressionEnvironment env, AtomicLong milestone) {
-	        // assert select result type
-	        env.AssertStatement("s0", statement => {
-	            Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("symbol"));
-	            Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myMedian"));
-	            Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myDistMedian"));
-	            Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myStdev"));
-	            Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myAvedev"));
-	        });
+                env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
+                env.SendEventBean(new SupportBeanString(SYMBOL_IBM));
+                env.SendEventBean(new SupportBeanString("AAA"));
 
-	        SendEvent(env, SYMBOL_DELL, 10);
-	        AssertEvents(env, SYMBOL_DELL,
-	            null, null, null, null,
-	            10d, 10d, null, 0d);
+                TryAssertionStmt(env, new AtomicLong());
 
-	        env.MilestoneInc(milestone);
+                env.UndeployAll();
+            }
+        }
 
-	        SendEvent(env, SYMBOL_DELL, 20);
-	        AssertEvents(env, SYMBOL_DELL,
-	            10d, 10d, null, 0d,
-	            15d, 15d, 7.071067812d, 5d);
+        private static void TryAssertionStmt(
+            RegressionEnvironment env,
+            AtomicLong milestone)
+        {
+            // assert select result type
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("symbol"));
+                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myMedian"));
+                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myDistMedian"));
+                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myStdev"));
+                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myAvedev"));
+                });
 
-	        SendEvent(env, SYMBOL_DELL, 20);
-	        AssertEvents(env, SYMBOL_DELL,
-	            15d, 15d, 7.071067812d, 5d,
-	            20d, 15d, 5.773502692, 4.444444444444444);
+            SendEvent(env, SYMBOL_DELL, 10);
+            AssertEvents(
+                env,
+                SYMBOL_DELL,
+                null,
+                null,
+                null,
+                null,
+                10d,
+                10d,
+                null,
+                0d);
 
-	        env.MilestoneInc(milestone);
+            env.MilestoneInc(milestone);
 
-	        SendEvent(env, SYMBOL_DELL, 90);
-	        AssertEvents(env, SYMBOL_DELL,
-	            20d, 15d, 5.773502692, 4.444444444444444,
-	            20d, 20d, 36.96845502d, 27.5d);
+            SendEvent(env, SYMBOL_DELL, 20);
+            AssertEvents(
+                env,
+                SYMBOL_DELL,
+                10d,
+                10d,
+                null,
+                0d,
+                15d,
+                15d,
+                7.071067812d,
+                5d);
 
-	        SendEvent(env, SYMBOL_DELL, 5);
-	        AssertEvents(env, SYMBOL_DELL,
-	            20d, 20d, 36.96845502d, 27.5d,
-	            20d, 15d, 34.71310992d, 24.4d);
+            SendEvent(env, SYMBOL_DELL, 20);
+            AssertEvents(
+                env,
+                SYMBOL_DELL,
+                15d,
+                15d,
+                7.071067812d,
+                5d,
+                20d,
+                15d,
+                5.773502692,
+                4.444444444444444);
 
-	        SendEvent(env, SYMBOL_DELL, 90);
-	        AssertEvents(env, SYMBOL_DELL,
-	            20d, 15d, 34.71310992d, 24.4d,
-	            20d, 20d, 41.53311931d, 36d);
+            env.MilestoneInc(milestone);
 
-	        env.MilestoneInc(milestone);
+            SendEvent(env, SYMBOL_DELL, 90);
+            AssertEvents(
+                env,
+                SYMBOL_DELL,
+                20d,
+                15d,
+                5.773502692,
+                4.444444444444444,
+                20d,
+                20d,
+                36.96845502d,
+                27.5d);
 
-	        SendEvent(env, SYMBOL_DELL, 30);
-	        AssertEvents(env, SYMBOL_DELL,
-	            20d, 20d, 41.53311931d, 36d,
-	            30d, 25d, 40.24922359d, 34.4d);
-	    }
+            SendEvent(env, SYMBOL_DELL, 5);
+            AssertEvents(
+                env,
+                SYMBOL_DELL,
+                20d,
+                20d,
+                36.96845502d,
+                27.5d,
+                20d,
+                15d,
+                34.71310992d,
+                24.4d);
 
-	    private static void AssertEvents(
-		    RegressionEnvironment env,
-		    string symbol,
-		    double? oldMedian,
-		    double? oldDistMedian,
-		    double? oldStdev,
-		    double? oldAvedev,
-		    double? newMedian,
-		    double? newDistMedian,
-		    double? newStdev,
-		    double? newAvedev)
-	    {
-	        env.AssertListener("s0", listener => {
-	            var oldData = listener.LastOldData;
-	            var newData = listener.LastNewData;
+            SendEvent(env, SYMBOL_DELL, 90);
+            AssertEvents(
+                env,
+                SYMBOL_DELL,
+                20d,
+                15d,
+                34.71310992d,
+                24.4d,
+                20d,
+                20d,
+                41.53311931d,
+                36d);
 
-	            Assert.AreEqual(1, oldData.Length);
-	            Assert.AreEqual(1, newData.Length);
+            env.MilestoneInc(milestone);
 
-	            Assert.AreEqual(symbol, oldData[0].Get("symbol"));
-	            Assert.AreEqual(oldMedian, oldData[0].Get("myMedian"), "oldData.myMedian wrong");
-	            Assert.AreEqual(oldDistMedian, oldData[0].Get("myDistMedian"), "oldData.myDistMedian wrong");
-	            Assert.AreEqual(oldAvedev, oldData[0].Get("myAvedev"), "oldData.myAvedev wrong");
+            SendEvent(env, SYMBOL_DELL, 30);
+            AssertEvents(
+                env,
+                SYMBOL_DELL,
+                20d,
+                20d,
+                41.53311931d,
+                36d,
+                30d,
+                25d,
+                40.24922359d,
+                34.4d);
+        }
 
-	            var oldStdevResult = (double?) oldData[0].Get("myStdev");
-	            if (oldStdevResult == null) {
-	                Assert.IsNull(oldStdev);
-	            } else {
-		            Assert.AreEqual(
-			            Math.Round(oldStdev!.Value * 1000),
-			            Math.Round(oldStdevResult.Value * 1000),
-			            "oldData.myStdev wrong");
-	            }
+        private static void AssertEvents(
+            RegressionEnvironment env,
+            string symbol,
+            double? oldMedian,
+            double? oldDistMedian,
+            double? oldStdev,
+            double? oldAvedev,
+            double? newMedian,
+            double? newDistMedian,
+            double? newStdev,
+            double? newAvedev)
+        {
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var oldData = listener.LastOldData;
+                    var newData = listener.LastNewData;
 
-	            Assert.AreEqual(symbol, newData[0].Get("symbol"));
-	            Assert.AreEqual(newMedian, newData[0].Get("myMedian"), "newData.myMedian wrong");
-	            Assert.AreEqual(newDistMedian, newData[0].Get("myDistMedian"), "newData.myDistMedian wrong");
-	            Assert.AreEqual(newAvedev, newData[0].Get("myAvedev"), "newData.myAvedev wrong");
+                    Assert.AreEqual(1, oldData.Length);
+                    Assert.AreEqual(1, newData.Length);
 
-	            var newStdevResult = (double?) newData[0].Get("myStdev");
-	            if (newStdevResult == null) {
-	                Assert.IsNull(newStdev);
-	            } else {
-		            Assert.That(newStdevResult, Is.InstanceOf<double>());
-		            Assert.AreEqual(
-			            Math.Round(newStdev!.Value * 1000),
-			            Math.Round(newStdevResult.Value * 1000),
-			            "newData.myStdev wrong");
-	            }
+                    Assert.AreEqual(symbol, oldData[0].Get("symbol"));
+                    Assert.AreEqual(oldMedian, oldData[0].Get("myMedian"), "oldData.myMedian wrong");
+                    Assert.AreEqual(oldDistMedian, oldData[0].Get("myDistMedian"), "oldData.myDistMedian wrong");
+                    Assert.AreEqual(oldAvedev, oldData[0].Get("myAvedev"), "oldData.myAvedev wrong");
 
-	            listener.Reset();
-	        });
-	    }
+                    var oldStdevResult = (double?)oldData[0].Get("myStdev");
+                    if (oldStdevResult == null) {
+                        Assert.IsNull(oldStdev);
+                    }
+                    else {
+                        Assert.AreEqual(
+                            Math.Round(oldStdev!.Value * 1000),
+                            Math.Round(oldStdevResult.Value * 1000),
+                            "oldData.myStdev wrong");
+                    }
 
-	    private static void SendEvent(RegressionEnvironment env, string symbol, double price) {
-	        var bean = new SupportMarketDataBean(symbol, price, 0L, null);
-	        env.SendEventBean(bean);
-	    }
-	}
+                    Assert.AreEqual(symbol, newData[0].Get("symbol"));
+                    Assert.AreEqual(newMedian, newData[0].Get("myMedian"), "newData.myMedian wrong");
+                    Assert.AreEqual(newDistMedian, newData[0].Get("myDistMedian"), "newData.myDistMedian wrong");
+                    Assert.AreEqual(newAvedev, newData[0].Get("myAvedev"), "newData.myAvedev wrong");
+
+                    var newStdevResult = (double?)newData[0].Get("myStdev");
+                    if (newStdevResult == null) {
+                        Assert.IsNull(newStdev);
+                    }
+                    else {
+                        Assert.That(newStdevResult, Is.InstanceOf<double>());
+                        Assert.AreEqual(
+                            Math.Round(newStdev!.Value * 1000),
+                            Math.Round(newStdevResult.Value * 1000),
+                            "newData.myStdev wrong");
+                    }
+
+                    listener.Reset();
+                });
+        }
+
+        private static void SendEvent(
+            RegressionEnvironment env,
+            string symbol,
+            double price)
+        {
+            var bean = new SupportMarketDataBean(symbol, price, 0L, null);
+            env.SendEventBean(bean);
+        }
+    }
 } // end of namespace

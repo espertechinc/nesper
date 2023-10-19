@@ -23,163 +23,174 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
-	public class EPLDataflowOpFilter
-	{
+    public class EPLDataflowOpFilter
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithInvalid(execs);
+            WithAllTypes(execs);
+            return execs;
+        }
 
-		public static ICollection<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new EPLDataflowInvalid());
-			execs.Add(new EPLDataflowAllTypes());
-			return execs;
-		}
+        public static IList<RegressionExecution> WithAllTypes(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowAllTypes());
+            return execs;
+        }
 
-		private class EPLDataflowInvalid : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowInvalid());
+            return execs;
+        }
 
-				// invalid: no filter
-				env.TryInvalidCompile(
-					"create dataflow DF1 BeaconSource -> instream<SupportBean> {} Filter(instream) -> abc {}",
-					"Failed to obtain operator 'Filter': Required parameter 'filter' providing the filter expression is not provided");
+        private class EPLDataflowInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // invalid: no filter
+                env.TryInvalidCompile(
+                    "create dataflow DF1 BeaconSource -> instream<SupportBean> {} Filter(instream) -> abc {}",
+                    "Failed to obtain operator 'Filter': Required parameter 'filter' providing the filter expression is not provided");
 
-				// invalid: too many output streams
-				env.TryInvalidCompile(
-					"create dataflow DF1 BeaconSource -> instream<SupportBean> {} Filter(instream) -> abc,def,efg { filter : true }",
-					"Failed to obtain operator 'Filter': Filter operator requires one or two output stream(s) but produces 3 streams");
+                // invalid: too many output streams
+                env.TryInvalidCompile(
+                    "create dataflow DF1 BeaconSource -> instream<SupportBean> {} Filter(instream) -> abc,def,efg { filter : true }",
+                    "Failed to obtain operator 'Filter': Filter operator requires one or two output stream(s) but produces 3 streams");
 
-				// invalid: too few output streams
-				env.TryInvalidCompile(
-					"create dataflow DF1 BeaconSource -> instream<SupportBean> {} Filter(instream) { filter : true }",
-					"Failed to obtain operator 'Filter': Filter operator requires one or two output stream(s) but produces 0 streams");
+                // invalid: too few output streams
+                env.TryInvalidCompile(
+                    "create dataflow DF1 BeaconSource -> instream<SupportBean> {} Filter(instream) { filter : true }",
+                    "Failed to obtain operator 'Filter': Filter operator requires one or two output stream(s) but produces 0 streams");
 
-				// invalid filter expressions
-				TryInvalidFilter(
-					env,
-					"theString = 1",
-					"Failed to obtain operator 'Filter': Failed to validate filter dataflow operator expression 'theString=1': Implicit conversion from datatype 'Integer' to 'String' is not allowed");
+                // invalid filter expressions
+                TryInvalidFilter(
+                    env,
+                    "theString = 1",
+                    "Failed to obtain operator 'Filter': Failed to validate filter dataflow operator expression 'theString=1': Implicit conversion from datatype 'Integer' to 'String' is not allowed");
 
-				TryInvalidFilter(
-					env,
-					"prev(theString, 1) = 'abc'",
-					"Failed to obtain operator 'Filter': Invalid filter dataflow operator expression 'prev(theString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");
-			}
+                TryInvalidFilter(
+                    env,
+                    "prev(theString, 1) = 'abc'",
+                    "Failed to obtain operator 'Filter': Invalid filter dataflow operator expression 'prev(theString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");
+            }
 
-			public ISet<RegressionFlag> Flags()
-			{
-				return Collections.Set(RegressionFlag.DATAFLOW, RegressionFlag.INVALIDITY);
-			}
-		}
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW, RegressionFlag.INVALIDITY);
+            }
+        }
 
-		private class EPLDataflowAllTypes : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
+        private class EPLDataflowAllTypes : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertionAllTypes(
+                    env,
+                    DefaultSupportGraphEventUtil.EVENTTYPENAME,
+                    DefaultSupportGraphEventUtil.GetPONOEvents());
+                RunAssertionAllTypes(env, "MyXMLEvent", DefaultSupportGraphEventUtil.GetXMLEvents());
+                RunAssertionAllTypes(env, "MyOAEvent", DefaultSupportGraphEventUtil.GetOAEvents());
+                RunAssertionAllTypes(env, "MyMapEvent", DefaultSupportGraphEventUtil.GetMapEvents());
 
-				RunAssertionAllTypes(
-					env,
-					DefaultSupportGraphEventUtil.EVENTTYPENAME,
-					DefaultSupportGraphEventUtil.GetPONOEvents());
-				RunAssertionAllTypes(env, "MyXMLEvent", DefaultSupportGraphEventUtil.GetXMLEvents());
-				RunAssertionAllTypes(env, "MyOAEvent", DefaultSupportGraphEventUtil.GetOAEvents());
-				RunAssertionAllTypes(env, "MyMapEvent", DefaultSupportGraphEventUtil.GetMapEvents());
+                // test doc sample
+                var epl = "@name('flow') create dataflow MyDataFlow\n" +
+                          "  create schema SampleSchema(tagId string, locX double),\t// sample type\n" +
+                          "  BeaconSource -> samplestream<SampleSchema> {}\n" +
+                          "  \n" +
+                          "  // Filter all events that have a tag id of '001'\n" +
+                          "  Filter(samplestream) -> tags_001 {\n" +
+                          "    filter : tagId = '001' \n" +
+                          "  }\n" +
+                          "  \n" +
+                          "  // Filter all events that have a tag id of '001', putting all other tags into the second stream\n" +
+                          "  Filter(samplestream) -> tags_001, tags_other {\n" +
+                          "    filter : tagId = '001' \n" +
+                          "  }";
+                env.CompileDeploy(epl);
+                env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow");
+                env.UndeployAll();
 
-				// test doc sample
-				var epl = "@name('flow') create dataflow MyDataFlow\n" +
-				          "  create schema SampleSchema(tagId string, locX double),\t// sample type\n" +
-				          "  BeaconSource -> samplestream<SampleSchema> {}\n" +
-				          "  \n" +
-				          "  // Filter all events that have a tag id of '001'\n" +
-				          "  Filter(samplestream) -> tags_001 {\n" +
-				          "    filter : tagId = '001' \n" +
-				          "  }\n" +
-				          "  \n" +
-				          "  // Filter all events that have a tag id of '001', putting all other tags into the second stream\n" +
-				          "  Filter(samplestream) -> tags_001, tags_other {\n" +
-				          "    filter : tagId = '001' \n" +
-				          "  }";
-				env.CompileDeploy(epl);
-				env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow");
-				env.UndeployAll();
+                // test two streams
+                DefaultSupportCaptureOpStatic<object>.Instances.Clear();
+                var graph = "@name('flow') create dataflow MyFilter\n" +
+                            "Emitter -> sb<SupportBean> {name : 'e1'}\n" +
+                            "Filter(sb) -> out.ok, out.fail {filter: theString = 'x'}\n" +
+                            "DefaultSupportCaptureOpStatic(out.ok) {}" +
+                            "DefaultSupportCaptureOpStatic(out.fail) {}";
+                env.CompileDeploy(graph);
 
-				// test two streams
-				DefaultSupportCaptureOpStatic<object>.Instances.Clear();
-				var graph = "@name('flow') create dataflow MyFilter\n" +
-				            "Emitter -> sb<SupportBean> {name : 'e1'}\n" +
-				            "Filter(sb) -> out.ok, out.fail {filter: theString = 'x'}\n" +
-				            "DefaultSupportCaptureOpStatic(out.ok) {}" +
-				            "DefaultSupportCaptureOpStatic(out.fail) {}";
-				env.CompileDeploy(graph);
+                var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyFilter");
+                var captive = instance.StartCaptive();
 
-				var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyFilter");
-				var captive = instance.StartCaptive();
+                captive.Emitters.Get("e1").Submit(new SupportBean("x", 10));
+                captive.Emitters.Get("e1").Submit(new SupportBean("y", 11));
+                Assert.AreEqual(
+                    10,
+                    ((SupportBean)DefaultSupportCaptureOpStatic<object>.Instances[0].Current[0]).IntPrimitive);
+                Assert.AreEqual(
+                    11,
+                    ((SupportBean)DefaultSupportCaptureOpStatic<object>.Instances[1].Current[0]).IntPrimitive);
+                DefaultSupportCaptureOpStatic<object>.Instances.Clear();
 
-				captive.Emitters.Get("e1").Submit(new SupportBean("x", 10));
-				captive.Emitters.Get("e1").Submit(new SupportBean("y", 11));
-				Assert.AreEqual(
-					10,
-					((SupportBean)DefaultSupportCaptureOpStatic<object>.Instances[0].Current[0]).IntPrimitive);
-				Assert.AreEqual(
-					11,
-					((SupportBean)DefaultSupportCaptureOpStatic<object>.Instances[1].Current[0]).IntPrimitive);
-				DefaultSupportCaptureOpStatic<object>.Instances.Clear();
+                env.UndeployAll();
+            }
 
-				env.UndeployAll();
-			}
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.DATAFLOW);
+            }
+        }
 
-			public ISet<RegressionFlag> Flags()
-			{
-				return Collections.Set(RegressionFlag.DATAFLOW);
-			}
-		}
+        private static void TryInvalidFilter(
+            RegressionEnvironment env,
+            string filter,
+            string message)
+        {
+            var graph = "@name('flow') create dataflow MySelect\n" +
+                        "DefaultSupportSourceOp -> instream<SupportBean>{}\n" +
+                        "Filter(instream as ME) -> outstream {filter: " +
+                        filter +
+                        "}\n" +
+                        "DefaultSupportCaptureOp(outstream) {}";
+            env.TryInvalidCompile(graph, message);
+        }
 
-		private static void TryInvalidFilter(
-			RegressionEnvironment env,
-			string filter,
-			string message)
-		{
-			var graph = "@name('flow') create dataflow MySelect\n" +
-			            "DefaultSupportSourceOp -> instream<SupportBean>{}\n" +
-			            "Filter(instream as ME) -> outstream {filter: " +
-			            filter +
-			            "}\n" +
-			            "DefaultSupportCaptureOp(outstream) {}";
-			env.TryInvalidCompile(graph, message);
-		}
+        private static void RunAssertionAllTypes(
+            RegressionEnvironment env,
+            string typeName,
+            object[] events)
+        {
+            var graph = "@name('flow') create dataflow MySelect\n" +
+                        "DefaultSupportSourceOp -> instream.with.dot<" +
+                        typeName +
+                        ">{}\n" +
+                        "Filter(instream.with.dot) -> outstream.dot {filter: myString = 'two'}\n" +
+                        "DefaultSupportCaptureOp(outstream.dot) {}";
+            env.CompileDeploy(graph);
 
-		private static void RunAssertionAllTypes(
-			RegressionEnvironment env,
-			string typeName,
-			object[] events)
-		{
-			var graph = "@name('flow') create dataflow MySelect\n" +
-			            "DefaultSupportSourceOp -> instream.with.dot<" +
-			            typeName +
-			            ">{}\n" +
-			            "Filter(instream.with.dot) -> outstream.dot {filter: myString = 'two'}\n" +
-			            "DefaultSupportCaptureOp(outstream.dot) {}";
-			env.CompileDeploy(graph);
+            var source = new DefaultSupportSourceOp(events);
+            var capture = new DefaultSupportCaptureOp<object>(2, env.Container.LockManager());
+            var options = new EPDataFlowInstantiationOptions();
+            options.DataFlowInstanceUserObject = "myuserobject";
+            options.DataFlowInstanceId = "myinstanceid";
+            options.WithOperatorProvider(new DefaultSupportGraphOpProvider(source, capture));
+            var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MySelect", options);
+            Assert.AreEqual("myuserobject", instance.UserObject);
+            Assert.AreEqual("myinstanceid", instance.InstanceId);
 
-			var source = new DefaultSupportSourceOp(events);
-			var capture = new DefaultSupportCaptureOp<object>(2, env.Container.LockManager());
-			var options = new EPDataFlowInstantiationOptions();
-			options.DataFlowInstanceUserObject = "myuserobject";
-			options.DataFlowInstanceId = "myinstanceid";
-			options.WithOperatorProvider(new DefaultSupportGraphOpProvider(source, capture));
-			var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MySelect", options);
-			Assert.AreEqual("myuserobject", instance.UserObject);
-			Assert.AreEqual("myinstanceid", instance.InstanceId);
+            instance.Run();
 
-			instance.Run();
+            var result = capture.GetAndReset()[0].ToArray();
+            Assert.AreEqual(1, result.Length);
+            Assert.AreSame(events[1], result[0]);
 
-			var result = capture.GetAndReset()[0].ToArray();
-			Assert.AreEqual(1, result.Length);
-			Assert.AreSame(events[1], result[0]);
+            instance.Cancel();
 
-			instance.Cancel();
-
-			env.UndeployAll();
-		}
-	}
+            env.UndeployAll();
+        }
+    }
 } // end of namespace

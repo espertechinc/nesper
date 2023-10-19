@@ -26,7 +26,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                            "SupportBean#length(100) as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            env.AssertStatement("s0", statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("MYINT")));
+            env.AssertStatement(
+                "s0",
+                statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("MYINT")));
 
             SendSupportBeanEvent(env, "A");
             env.AssertEqualsNew("s0", "MYINT", 10);

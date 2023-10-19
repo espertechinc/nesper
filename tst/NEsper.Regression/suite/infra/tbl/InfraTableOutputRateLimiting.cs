@@ -50,8 +50,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.AdvanceTime(currentTime.Get());
             env.AssertPropsPerRowLastNewAnyOrder(
                 "s0",
-                new[] {"key", "thesum"},
-                new[] {new object[] {"E1", 40}, new object[] {"E2", 20}});
+                new[] { "key", "thesum" },
+                new[] { new object[] { "E1", 40 }, new object[] { "E2", 20 } });
 
             env.Milestone(1);
 

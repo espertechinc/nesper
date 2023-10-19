@@ -22,6 +22,13 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Witht(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Witht(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientDeployStatementNameResolveContext());
             return execs;
         }
@@ -47,9 +54,9 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                         Assert.AreEqual(epl, ctx.Epl);
                         Assert.AreEqual("hello", env.Statement("hello").Name);
                     });
-                
+
                 env.Milestone(0);
-                
+
                 env.AssertStatement("hello", statement => Assert.AreEqual("hello", statement.Name));
 
                 env.UndeployAll();

@@ -23,22 +23,86 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 {
     public class ClientCompileLargeWConfig
     {
-
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ClientCompileLargeTableAggregationReset(1000));
-            execs.Add(new ClientCompileLargeTableAggregationEnterLeaveMethod(1000));
-            execs.Add(new ClientCompileLargeTableAggregationEnterLeaveAccessAgg(1000));
-            execs.Add(new ClientCompileLargeAggregation(5000));
-            execs.Add(new ClientCompileLargeAggregationAccess(1000));
-            execs.Add(new ClientCompileLargeSubstitutionParams(5000));
-            execs.Add(new ClientCompileLargeSubstitutionParamsFAF(5000));
-            execs.Add(new ClientCompileLargeSelectCol(EventRepresentationChoice.MAP, 5000));
-            execs.Add(new ClientCompileLargeSelectCol(EventRepresentationChoice.OBJECTARRAY, 5000));
+            WithTableAggregationReset(execs);
+            WithTableAggregationEnterLeaveMethod(execs);
+            WithTableAggregationEnterLeaveAccessAgg(execs);
+            WithAggregation(execs);
+            WithAggregationAccess(execs);
+            WithSubstitutionParams(execs);
+            WithSubstitutionParamsFAF(execs);
+            WithSelectCol(execs);
+            WithCreateSchemaAndInsert(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCreateSchemaAndInsert(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileLargeCreateSchemaAndInsert(EventRepresentationChoice.MAP, 5000, false));
             execs.Add(new ClientCompileLargeCreateSchemaAndInsert(EventRepresentationChoice.MAP, 5000, true));
             execs.Add(new ClientCompileLargeCreateSchemaAndInsert(EventRepresentationChoice.OBJECTARRAY, 5000, false));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSelectCol(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileLargeSelectCol(EventRepresentationChoice.MAP, 5000));
+            execs.Add(new ClientCompileLargeSelectCol(EventRepresentationChoice.OBJECTARRAY, 5000));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstitutionParamsFAF(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileLargeSubstitutionParamsFAF(5000));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstitutionParams(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileLargeSubstitutionParams(5000));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggregationAccess(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileLargeAggregationAccess(1000));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileLargeAggregation(5000));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableAggregationEnterLeaveAccessAgg(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileLargeTableAggregationEnterLeaveAccessAgg(1000));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableAggregationEnterLeaveMethod(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileLargeTableAggregationEnterLeaveMethod(1000));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableAggregationReset(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileLargeTableAggregationReset(1000));
             return execs;
         }
 
@@ -62,12 +126,12 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var path = new RegressionPath();
                 env.AdvanceTime(1000000);
-                
+
                 var eplSchema = new StringWriter();
                 eplSchema.Write("@name('schema') @public @buseventtype create ");
                 eplSchema.Write(representation.GetName());
                 eplSchema.Write(" schema MyEvent (");
-                
+
                 var delimiter = "";
                 for (var i = 0; i < numColumns; i++) {
                     // create-schema goes back from pN-1 to p0
@@ -101,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     eplInsert.Write(adder);
                     eplInsert.Write(" as p");
                     eplInsert.Write(i.ToString());
-                        
+
                     delimiter = ",";
                 }
 
@@ -176,11 +240,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.Deploy(compiled, options).AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
-                env.AssertEventNew("s0",  @event => {
-                    for (var i = 0; i < numColumns; i++) {
-                        Assert.AreEqual("v" + i,  @event.Get("c" + i));
-                    }
-                });
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        for (var i = 0; i < numColumns; i++) {
+                            Assert.AreEqual("v" + i, @event.Get("c" + i));
+                        }
+                    });
 
                 env.UndeployAll();
             }
@@ -232,7 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var @event = result.Array[0];
 
                 for (var i = 0; i < numColumns; i++) {
-                    Assert.AreEqual("xv" + i,  @event.Get("c" + i));
+                    Assert.AreEqual("xv" + i, @event.Get("c" + i));
                 }
 
                 env.UndeployAll();
@@ -277,11 +343,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 var sbOne = new SupportBean("E1", 10);
                 env.SendEventBean(sbOne);
-                env.AssertEventNew("s0",  @event => {
-                    for (var i = 0; i < numColumns; i++) {
-                        Assert.AreEqual(sbOne,  @event.Get("c" + i));
-                    }
-                });
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        for (var i = 0; i < numColumns; i++) {
+                            Assert.AreEqual(sbOne, @event.Get("c" + i));
+                        }
+                    });
 
                 env.UndeployAll();
             }
@@ -334,12 +402,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 int intPrimitive)
             {
                 env.SendEventBean(new SupportBean("x", intPrimitive));
-                env.AssertEventNew("s0",  @event => {
-                    for (var i = 0; i < numColumns; i++) {
-                        Assert.IsTrue(@event.EventType.IsProperty("c" + i));
-                        Assert.AreEqual(intPrimitive + i,  @event.Get("c" + i));
-                    }
-                });
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        for (var i = 0; i < numColumns; i++) {
+                            Assert.IsTrue(@event.EventType.IsProperty("c" + i));
+                            Assert.AreEqual(intPrimitive + i, @event.Get("c" + i));
+                        }
+                    });
             }
         }
 
@@ -398,7 +468,6 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     (
                         writer,
                         index) => {
-                        
                         writer.Write("sum(intPrimitive + ");
                         writer.Write(index.ToString());
                         writer.Write(")");
@@ -438,7 +507,6 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     (
                         writer,
                         index) => {
-                        
                         writer.Write("sum(intPrimitive + ");
                         writer.Write(index.ToString());
                         writer.Write(")");
@@ -512,12 +580,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.CompileDeploy(epl.ToString()).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("x", 0));
-                env.AssertEventNew("s0",  @event => {
-                    for (var i = 0; i < numColumns; i++) {
-                        Assert.IsTrue(@event.EventType.IsProperty("c" + i));
-                        Assert.AreEqual("x" + i,  @event.Get("c" + i));
-                    }
-                });
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        for (var i = 0; i < numColumns; i++) {
+                            Assert.IsTrue(@event.EventType.IsProperty("c" + i));
+                            Assert.AreEqual("x" + i, @event.Get("c" + i));
+                        }
+                    });
 
                 env.UndeployAll();
             }
@@ -567,7 +637,9 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 delimiter = ",";
             }
 
-            epl.Write(" from "); epl.Write(selector); epl.Write(";\n");
+            epl.Write(" from ");
+            epl.Write(selector);
+            epl.Write(";\n");
             return epl;
         }
 

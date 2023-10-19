@@ -24,10 +24,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithScalar(execs);
             WithEventProperty(execs);
             WithEvent(execs);
-            WithEventWithPredicate(execs);
+            With(EventWithPredicate)(execs);
+#endif
             return execs;
         }
 

@@ -28,12 +28,54 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumSumEvents());
-            execs.Add(new ExprEnumSumEventsPlus());
-            execs.Add(new ExprEnumSumScalar());
-            execs.Add(new ExprEnumSumScalarStringValue());
-            execs.Add(new ExprEnumSumInvalid());
+            WithSumEvents(execs);
+            WithSumEventsPlus(execs);
+            WithSumScalar(execs);
+            WithSumScalarStringValue(execs);
+            WithSumInvalid(execs);
+            WithSumArray(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprEnumSumArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSumInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumScalarStringValue(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSumScalarStringValue());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumScalar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSumScalar());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumEventsPlus(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSumEventsPlus());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSumEvents(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSumEvents());
             return execs;
         }
 

@@ -9,6 +9,7 @@
 using System;
 
 using com.espertech.esper.common.client.scopetest;
+using com.espertech.esper.common.@internal.util.serde;
 
 using NUnit.Framework;
 
@@ -65,7 +66,7 @@ namespace com.espertech.esper.common.@internal.util
                 classes[i] = expected.GetType();
             }
 
-            var serializerFactory = SerializerFactory.Instance;
+            var serializerFactory = new SerializerFactory(container);
             var serializers = serializerFactory.GetSerializers(classes);
             var bytes = serializerFactory.Serialize(serializers, expected);
 

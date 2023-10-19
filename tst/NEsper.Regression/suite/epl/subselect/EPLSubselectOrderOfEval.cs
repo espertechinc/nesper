@@ -22,12 +22,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithCorrelatedSubqueryOrder(execs);
-            WithOrderOfEvaluationSubselectFirst(execs);
+            With(OrderOfEvaluationSubselectFirst)(execs);
+#endif
             return execs;
         }
 
-        public static IList<RegressionExecution> WithOrderOfEvaluationSubselectFirst(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithOrderOfEvaluationSubselectFirst(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSubselectOrderOfEvaluationSubselectFirst());

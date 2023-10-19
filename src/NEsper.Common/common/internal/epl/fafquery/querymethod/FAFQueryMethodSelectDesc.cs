@@ -235,7 +235,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 resultSetSpec,
                 typeService,
                 null,
-                new bool[0],
+                Array.Empty<bool>(),
                 true,
                 null,
                 true,

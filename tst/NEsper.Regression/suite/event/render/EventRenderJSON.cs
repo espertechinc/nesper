@@ -25,187 +25,254 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.@event.render
 {
-	public class EventRenderJSON {
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EventRenderRenderSimple());
-	        execs.Add(new EventRenderMapAndNestedArray());
-	        execs.Add(new EventRenderEmptyMap());
-	        execs.Add(new EventRenderEnquote());
-	        execs.Add(new EventRenderJsonEventType());
-	        return execs;
-	    }
+    public class EventRenderJSON
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithRenderSimple(execs);
+            WithMapAndNestedArray(execs);
+            WithEmptyMap(execs);
+            WithEnquote(execs);
+            WithJsonEventType(execs);
+            return execs;
+        }
 
-	    private class EventRenderJsonEventType : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@public @buseventtype create json schema MyJsonEvent(p0 string, p1 int);\n" +
-	                      "@name('s0') select * from MyJsonEvent#keepall;\n";
-	            env.CompileDeploy(epl).AddListener("s0");
-	            env.SendEventJson(
-		            new JObject(
-			            new JProperty("p0", "abc"),
-			            new JProperty("p1", 10)).ToString(),
-		            "MyJsonEvent");
+        public static IList<RegressionExecution> WithJsonEventType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderJsonEventType());
+            return execs;
+        }
 
-	            var expected = "{\"p0\":\"abc\",\"p1\":10}";
-	            var expectedWithTitle = "{\"thetitle\":{\"p0\":\"abc\",\"p1\":10}}";
-	            env.AssertStatement("s0", statement => {
-	                var @event = statement.First();
+        public static IList<RegressionExecution> WithEnquote(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderEnquote());
+            return execs;
+        }
 
-	                var result = env.Runtime.RenderEventService.RenderJSON("thetitle", @event);
-	                Assert.AreEqual(expectedWithTitle, result);
+        public static IList<RegressionExecution> WithEmptyMap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderEmptyMap());
+            return execs;
+        }
 
-	                result = env.Runtime.RenderEventService.RenderJSON("thetitle", @event);
-	                Assert.AreEqual(expectedWithTitle, result);
+        public static IList<RegressionExecution> WithMapAndNestedArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderMapAndNestedArray());
+            return execs;
+        }
 
-	                var renderer = env.Runtime.RenderEventService.GetJSONRenderer(statement.EventType);
-	                result = renderer.Render("thetitle", @event);
-	                Assert.AreEqual(expectedWithTitle, result);
-	                result = renderer.Render(@event);
-	                Assert.AreEqual(expected, result);
-	            });
+        public static IList<RegressionExecution> WithRenderSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventRenderRenderSimple());
+            return execs;
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        private class EventRenderJsonEventType : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@public @buseventtype create json schema MyJsonEvent(p0 string, p1 int);\n" +
+                          "@name('s0') select * from MyJsonEvent#keepall;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+                env.SendEventJson(
+                    new JObject(
+                        new JProperty("p0", "abc"),
+                        new JProperty("p1", 10)).ToString(),
+                    "MyJsonEvent");
 
-	    private class EventRenderRenderSimple : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var bean = new SupportBean();
-	            bean.TheString = "a\nc>";
-	            bean.IntPrimitive = 1;
-	            bean.IntBoxed = 992;
-	            bean.CharPrimitive = 'x';
-	            bean.EnumValue = SupportEnum.ENUM_VALUE_1;
+                var expected = "{\"p0\":\"abc\",\"p1\":10}";
+                var expectedWithTitle = "{\"thetitle\":{\"p0\":\"abc\",\"p1\":10}}";
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        var @event = statement.First();
 
-	            env.CompileDeploy("@name('s0') select * from SupportBean").AddListener("s0");
-	            env.SendEventBean(bean);
+                        var result = env.Runtime.RenderEventService.RenderJSON("thetitle", @event);
+                        Assert.AreEqual(expectedWithTitle, result);
 
-	            env.AssertStatement("s0", statement => {
-	                var result = env.Runtime.RenderEventService.RenderJSON("supportBean", statement.First());
+                        result = env.Runtime.RenderEventService.RenderJSON("thetitle", @event);
+                        Assert.AreEqual(expectedWithTitle, result);
 
-	                //Console.WriteLine(result);
-	                var valuesOnly = "{ \"bigDecimal\": null, \"bigInteger\": null, \"boolBoxed\": null, \"boolPrimitive\": false, \"byteBoxed\": null, \"bytePrimitive\": 0, \"charBoxed\": null, \"charPrimitive\": \"x\", \"doubleBoxed\": null, \"doublePrimitive\": 0.0, \"enumValue\": \"ENUM_VALUE_1\", \"floatBoxed\": null, \"floatPrimitive\": 0.0, \"intBoxed\": 992, \"intPrimitive\": 1, \"longBoxed\": null, \"longPrimitive\": 0, \"shortBoxed\": null, \"shortPrimitive\": 0, \"theString\": \"a\\nc>\" }";
-	                var expected = "{ \"supportBean\": " + valuesOnly + " }";
-	                Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                        var renderer = env.Runtime.RenderEventService.GetJSONRenderer(statement.EventType);
+                        result = renderer.Render("thetitle", @event);
+                        Assert.AreEqual(expectedWithTitle, result);
+                        result = renderer.Render(@event);
+                        Assert.AreEqual(expected, result);
+                    });
 
-	                var renderer = env.Runtime.RenderEventService.GetJSONRenderer(statement.EventType);
-	                var jsonEvent = renderer.Render("supportBean", statement.First());
-	                Assert.AreEqual(RemoveNewline(expected), RemoveNewline(jsonEvent));
+                env.UndeployAll();
+            }
+        }
 
-	                jsonEvent = renderer.Render(statement.First());
-	                Assert.AreEqual(RemoveNewline(valuesOnly), RemoveNewline(jsonEvent));
-	            });
+        private class EventRenderRenderSimple : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var bean = new SupportBean();
+                bean.TheString = "a\nc>";
+                bean.IntPrimitive = 1;
+                bean.IntBoxed = 992;
+                bean.CharPrimitive = 'x';
+                bean.EnumValue = SupportEnum.ENUM_VALUE_1;
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.CompileDeploy("@name('s0') select * from SupportBean").AddListener("s0");
+                env.SendEventBean(bean);
 
-	    private class EventRenderMapAndNestedArray : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            env.CompileDeploy("@name('s0') select * from OuterMap").AddListener("s0");
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        var result = env.Runtime.RenderEventService.RenderJSON("supportBean", statement.First());
 
-	            IDictionary<string, object> dataInner = new LinkedHashMap<string, object>();
-	            dataInner.Put("stringarr", new string[]{"a", "b"});
-	            dataInner.Put("prop1", "");
-	            IDictionary<string, object> dataInnerTwo = new LinkedHashMap<string, object>();
-	            dataInnerTwo.Put("stringarr", Array.Empty<string>());
-	            dataInnerTwo.Put("prop1", "abcdef");
-	            IDictionary<string, object> dataOuter = new LinkedHashMap<string, object>();
-	            dataOuter.Put("intarr", new int[]{1, 2});
-	            dataOuter.Put("innersimple", dataInner);
-	            dataOuter.Put("innerarray", new IDictionary<string, object>[]{dataInner, dataInnerTwo});
-	            dataOuter.Put("prop0", new SupportBean_A("A1"));
-	            env.SendEventMap(dataOuter, "OuterMap");
+                        //Console.WriteLine(result);
+                        var valuesOnly =
+                            "{ \"bigDecimal\": null, \"bigInteger\": null, \"boolBoxed\": null, \"boolPrimitive\": false, \"byteBoxed\": null, \"bytePrimitive\": 0, \"charBoxed\": null, \"charPrimitive\": \"x\", \"doubleBoxed\": null, \"doublePrimitive\": 0.0, \"enumValue\": \"ENUM_VALUE_1\", \"floatBoxed\": null, \"floatPrimitive\": 0.0, \"intBoxed\": 992, \"intPrimitive\": 1, \"longBoxed\": null, \"longPrimitive\": 0, \"shortBoxed\": null, \"shortPrimitive\": 0, \"theString\": \"a\\nc>\" }";
+                        var expected = "{ \"supportBean\": " + valuesOnly + " }";
+                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
 
-	            env.AssertThat(() => {
-	                var result = env.Runtime.RenderEventService.RenderJSON("outerMap", env.GetEnumerator("s0").Advance());
-	                var expected = "{\n" +
-	                               "  \"outerMap\": {\n" +
-	                               "    \"intarr\": [1, 2],\n" +
-	                               "    \"innersimple\": {\n" +
-	                               "      \"prop1\": \"\",\n" +
-	                               "      \"stringarr\": [\"a\", \"b\"]\n" +
-	                               "    },\n" +
-	                               "    \"innerarray\": [{\n" +
-	                               "        \"prop1\": \"\",\n" +
-	                               "        \"stringarr\": [\"a\", \"b\"]\n" +
-	                               "      },\n" +
-	                               "      {\n" +
-	                               "        \"prop1\": \"abcdef\",\n" +
-	                               "        \"stringarr\": []\n" +
-	                               "      }],\n" +
-	                               "    \"prop0\": {\n" +
-	                               "      \"id\": \"A1\"\n" +
-	                               "    }\n" +
-	                               "  }\n" +
-	                               "}";
-	                Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
-	            });
+                        var renderer = env.Runtime.RenderEventService.GetJSONRenderer(statement.EventType);
+                        var jsonEvent = renderer.Render("supportBean", statement.First());
+                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(jsonEvent));
 
-	            env.UndeployAll();
-	        }
-	    }
+                        jsonEvent = renderer.Render(statement.First());
+                        Assert.AreEqual(RemoveNewline(valuesOnly), RemoveNewline(jsonEvent));
+                    });
 
-	    private class EventRenderEmptyMap : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            env.CompileDeploy("@name('s0') select * from EmptyMapEvent");
+                env.UndeployAll();
+            }
+        }
 
-	            env.SendEventBean(new EmptyMapEvent(null));
-	            env.AssertThat(() => {
-	                var result = env.Runtime.RenderEventService.RenderJSON("outer", env.GetEnumerator("s0").Advance());
-	                var expected = "{ \"outer\": { \"props\": null } }";
-	                Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
-	            });
+        private class EventRenderMapAndNestedArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy("@name('s0') select * from OuterMap").AddListener("s0");
 
-	            env.SendEventBean(new EmptyMapEvent(Collections.GetEmptyMap<string, string>()));
-	            env.AssertThat(() => {
-	                var result = env.Runtime.RenderEventService.RenderJSON("outer", env.GetEnumerator("s0").Advance());
-	                var expected = "{ \"outer\": { \"props\": {} } }";
-	                Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
-	            });
+                IDictionary<string, object> dataInner = new LinkedHashMap<string, object>();
+                dataInner.Put("stringarr", new string[] { "a", "b" });
+                dataInner.Put("prop1", "");
+                IDictionary<string, object> dataInnerTwo = new LinkedHashMap<string, object>();
+                dataInnerTwo.Put("stringarr", Array.Empty<string>());
+                dataInnerTwo.Put("prop1", "abcdef");
+                IDictionary<string, object> dataOuter = new LinkedHashMap<string, object>();
+                dataOuter.Put("intarr", new int[] { 1, 2 });
+                dataOuter.Put("innersimple", dataInner);
+                dataOuter.Put("innerarray", new IDictionary<string, object>[] { dataInner, dataInnerTwo });
+                dataOuter.Put("prop0", new SupportBean_A("A1"));
+                env.SendEventMap(dataOuter, "OuterMap");
 
-	            env.SendEventBean(new EmptyMapEvent(Collections.SingletonMap("a", "b")));
-	            env.AssertThat(() => {
-	                var result = env.Runtime.RenderEventService.RenderJSON("outer", env.GetEnumerator("s0").Advance());
-	                var expected = "{ \"outer\": { \"props\": { \"a\": \"b\" } } }";
-	                Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
-	            });
+                env.AssertThat(
+                    () => {
+                        var result = env.Runtime.RenderEventService.RenderJSON(
+                            "outerMap",
+                            env.GetEnumerator("s0").Advance());
+                        var expected = "{\n" +
+                                       "  \"outerMap\": {\n" +
+                                       "    \"intarr\": [1, 2],\n" +
+                                       "    \"innersimple\": {\n" +
+                                       "      \"prop1\": \"\",\n" +
+                                       "      \"stringarr\": [\"a\", \"b\"]\n" +
+                                       "    },\n" +
+                                       "    \"innerarray\": [{\n" +
+                                       "        \"prop1\": \"\",\n" +
+                                       "        \"stringarr\": [\"a\", \"b\"]\n" +
+                                       "      },\n" +
+                                       "      {\n" +
+                                       "        \"prop1\": \"abcdef\",\n" +
+                                       "        \"stringarr\": []\n" +
+                                       "      }],\n" +
+                                       "    \"prop0\": {\n" +
+                                       "      \"id\": \"A1\"\n" +
+                                       "    }\n" +
+                                       "  }\n" +
+                                       "}";
+                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                    });
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private class EventRenderEnquote : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var testdata = new string[][]{
-	                new string[] {"\t", "\"\\t\""},
-	                new string[] {"\n", "\"\\n\""},
-	                new string[] {"\r", "\"\\r\""},
-	                new string[] {Convert.ToString((char) 0), "\"\\u0000\""},
-	            };
+        private class EventRenderEmptyMap : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy("@name('s0') select * from EmptyMapEvent");
 
-	            for (var i = 0; i < testdata.Length; i++) {
-	                var buf = new StringBuilder();
-	                OutputValueRendererJSONString.Enquote(testdata[i][0], buf);
-	                Assert.AreEqual(testdata[i][1], buf.ToString());
-	            }
-	        }
-	    }
+                env.SendEventBean(new EmptyMapEvent(null));
+                env.AssertThat(
+                    () => {
+                        var result = env.Runtime.RenderEventService.RenderJSON(
+                            "outer",
+                            env.GetEnumerator("s0").Advance());
+                        var expected = "{ \"outer\": { \"props\": null } }";
+                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                    });
 
-	    private static string RemoveNewline(string text) {
-	        return text.RegexReplaceAll("\\s\\s+|\\n|\\r", " ").Trim();
-	    }
+                env.SendEventBean(new EmptyMapEvent(Collections.GetEmptyMap<string, string>()));
+                env.AssertThat(
+                    () => {
+                        var result = env.Runtime.RenderEventService.RenderJSON(
+                            "outer",
+                            env.GetEnumerator("s0").Advance());
+                        var expected = "{ \"outer\": { \"props\": {} } }";
+                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                    });
 
-	    [Serializable]
-	    public class EmptyMapEvent {
-	        private IDictionary<string, string> props;
+                env.SendEventBean(new EmptyMapEvent(Collections.SingletonMap("a", "b")));
+                env.AssertThat(
+                    () => {
+                        var result = env.Runtime.RenderEventService.RenderJSON(
+                            "outer",
+                            env.GetEnumerator("s0").Advance());
+                        var expected = "{ \"outer\": { \"props\": { \"a\": \"b\" } } }";
+                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                    });
 
-	        public EmptyMapEvent(IDictionary<string, string> props) {
-	            this.props = props;
-	        }
+                env.UndeployAll();
+            }
+        }
 
-	        public IDictionary<string, string> Props => props;
-	    }
-	}
+        private class EventRenderEnquote : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var testdata = new string[][] {
+                    new string[] { "\t", "\"\\t\"" },
+                    new string[] { "\n", "\"\\n\"" },
+                    new string[] { "\r", "\"\\r\"" },
+                    new string[] { Convert.ToString((char)0), "\"\\u0000\"" },
+                };
+
+                for (var i = 0; i < testdata.Length; i++) {
+                    var buf = new StringBuilder();
+                    OutputValueRendererJSONString.Enquote(testdata[i][0], buf);
+                    Assert.AreEqual(testdata[i][1], buf.ToString());
+                }
+            }
+        }
+
+        private static string RemoveNewline(string text)
+        {
+            return text.RegexReplaceAll("\\s\\s+|\\n|\\r", " ").Trim();
+        }
+
+        [Serializable]
+        public class EmptyMapEvent
+        {
+            private IDictionary<string, string> props;
+
+            public EmptyMapEvent(IDictionary<string, string> props)
+            {
+                this.props = props;
+            }
+
+            public IDictionary<string, string> Props => props;
+        }
+    }
 } // end of namespace

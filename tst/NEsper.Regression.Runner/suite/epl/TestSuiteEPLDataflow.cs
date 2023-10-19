@@ -126,7 +126,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
         [Test, RunInApplicationDomain]
         public void TestEPLDataflowOpLogSink()
         {
-            RegressionRunner.Run(_session, new EPLDataflowOpLogSink());
+            RegressionRunner.Run(_session, EPLDataflowOpLogSink.Executions());
         }
 
         /// <summary>

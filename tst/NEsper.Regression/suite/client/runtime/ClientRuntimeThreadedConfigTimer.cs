@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             return Collections.Set(RegressionFlag.OBSERVEROPS);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             SendTimer(0, env);

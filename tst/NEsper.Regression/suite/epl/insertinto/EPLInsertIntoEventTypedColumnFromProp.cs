@@ -23,8 +23,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithEventTypedColumnOnMerge(execs);
-            WithPONOTypedColumnOnMerge(execs);
+            With(PONOTypedColumnOnMerge)(execs);
+#endif
             return execs;
         }
 
@@ -128,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             string carId)
         {
             Assert.AreEqual(status, received.Get("Status"));
-            Assert.AreEqual(carId, ((SupportBean) received.Get("outputevent")).TheString);
+            Assert.AreEqual(carId, ((SupportBean)received.Get("outputevent")).TheString);
         }
 
         private static void SendCarMap(

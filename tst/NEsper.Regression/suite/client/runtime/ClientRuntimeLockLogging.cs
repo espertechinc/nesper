@@ -19,39 +19,39 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
-	public class ClientRuntimeLockLogging : RegressionExecutionWithConfigure
-	{
-		public void Configure(Configuration configuration)
-		{
-			configuration.Runtime.Threading.IsInternalTimerEnabled = false;
-			configuration.Common.AddEventType("SupportBean", typeof(SupportBean));
-			configuration.Runtime.Logging.IsEnableLockActivity = true;
-		}
+    public class ClientRuntimeLockLogging : RegressionExecutionWithConfigure
+    {
+        public void Configure(Configuration configuration)
+        {
+            configuration.Runtime.Threading.IsInternalTimerEnabled = false;
+            configuration.Common.AddEventType("SupportBean", typeof(SupportBean));
+            configuration.Runtime.Logging.IsEnableLockActivity = true;
+        }
 
-		public ISet<RegressionFlag> Flags()
-		{
-			return Collections.Set(RegressionFlag.RUNTIMEOPS);
-		}
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.RUNTIMEOPS);
+        }
 
-		public void Run(RegressionEnvironment env)
-		{
-			RunAssertionLockLogging(env);
-		}
+        public void Run(RegressionEnvironment env)
+        {
+            RunAssertionLockLogging(env);
+        }
 
-		private void RunAssertionLockLogging(RegressionEnvironment env)
-		{
-			var epl = "@name('s0') select count(*) as c0 from SupportBean";
-			env.CompileDeploy(epl);
+        private void RunAssertionLockLogging(RegressionEnvironment env)
+        {
+            var epl = "@name('s0') select count(*) as c0 from SupportBean";
+            env.CompileDeploy(epl);
 
-			env.SendEventBean(new SupportBean());
-			env.AssertSafeEnumerator(
-				"s0",
-				en => {
-					Assert.AreEqual(1L, en.Advance().Get("c0"));
-					en.Dispose();
-				});
+            env.SendEventBean(new SupportBean());
+            env.AssertSafeEnumerator(
+                "s0",
+                en => {
+                    Assert.AreEqual(1L, en.Advance().Get("c0"));
+                    en.Dispose();
+                });
 
-			env.UndeployAll();
-		}
-	}
+            env.UndeployAll();
+        }
+    }
 } // end of namespace

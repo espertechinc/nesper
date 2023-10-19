@@ -68,10 +68,16 @@ namespace com.espertech.esper.container
             return container.Resolve<IResourceManager>();
         }
 
-        public static TypeResolverProvider ClassLoaderProvider(this IContainer container)
+        public static TypeResolverProvider TypeResolverProvider(this IContainer container)
         {
             container.CheckContainer();
             return container.Resolve<TypeResolverProvider>();
+        }
+
+        public static TypeResolver TypeResolver(this IContainer container)
+        {
+            container.CheckContainer();
+            return container.Resolve<TypeResolver>();
         }
 
         private static bool TryCreateInstance<T>(this IContainer container, ConstructorInfo constructor, out T instanceValue)

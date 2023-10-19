@@ -22,9 +22,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithSendEvent(execs);
             WithCreateStatement(execs);
-            WithInsertInto(execs);
+            With(InsertInto)(execs);
+#endif
             return execs;
         }
 

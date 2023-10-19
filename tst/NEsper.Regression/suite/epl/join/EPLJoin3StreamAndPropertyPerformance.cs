@@ -26,9 +26,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithAllProps(execs);
             WithPartialProps(execs);
-            WithPartialStreams(execs);
+            With(PartialStreams)(execs);
+#endif
             return execs;
         }
 
@@ -94,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
             }
-            
+
             public void Run(RegressionEnvironment env)
             {
                 // Statement where all streams are reachable from each other via properties
@@ -113,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
             }
-            
+
             public void Run(RegressionEnvironment env)
             {
                 // Statement where the s1 stream is not reachable by joining s2 to s3 and s3 to s1
@@ -132,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
             }
-            
+
             public void Run(RegressionEnvironment env)
             {
                 var methodName = ".testPerfPartialStreams";

@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                 groupKeyEvaluators = ExprNodeUtilityQuery.GetForges(ChildNodes);
             }
             else {
-                groupKeyEvaluators = new ExprForge[0];
+                groupKeyEvaluators = Array.Empty<ExprForge>();
             }
 
             var typesReturned = ExprNodeUtilityQuery.GetExprResultTypes(ChildNodes);

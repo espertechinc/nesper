@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     return false;
                 }
 
-                return Equals((EventTwoArrayOfObject) obj);
+                return Equals((EventTwoArrayOfObject)obj);
             }
 
             public override int GetHashCode()

@@ -40,13 +40,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
             var oaValue = new object[] {
                 "E1",
-                Collections.SingletonDataMap("im", "IM1"), 
+                Collections.SingletonDataMap("im", "IM1"),
                 new[] {
                     Collections.SingletonDataMap("im", "IM2")
                 },
                 Collections.SingletonDataMap("om", "OM1")
             };
-            
+
             env.SendEventObjectArray(
                 oaValue,
                 "OAType");
@@ -55,12 +55,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
             // test inserting from array to map
             env.CompileDeploy("@name('s0') insert into MapType(im) select p0 from OAType").AddListener("s0");
-            env.SendEventObjectArray(new object[] {"E1", null, null, null}, "OAType");
-            env.AssertEventNew("s0", @event => {
-                Assert.That(@event, Is.InstanceOf<MappedEventBean>());
-                Assert.AreEqual("E1", @event.Get("im"));
-            });
-            
+            env.SendEventObjectArray(new object[] { "E1", null, null, null }, "OAType");
+            env.AssertEventNew(
+                "s0",
+                @event => {
+                    Assert.That(@event, Is.InstanceOf<MappedEventBean>());
+                    Assert.AreEqual("E1", @event.Get("im"));
+                });
+
             env.UndeployAll();
         }
 
@@ -79,13 +81,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             env.AddListener("s0");
 
             IDictionary<string, object> data = new Dictionary<string, object>();
-            data.Put("oa1", new object[] {"A", 100});
-            data.Put("oa2", new[] { new object[] {"B", 200}, new object[] {"C", 300} });
+            data.Put("oa1", new object[] { "A", 100 });
+            data.Put("oa2", new[] { new object[] { "B", 200 }, new object[] { "C", 300 } });
             env.SendEventMap(data, "MapTypeWOA");
             env.AssertPropsNew(
-                "s0", 
-                new [] { "c0", "c1", "c2", "c3" },
-                new object[] {"A", 100, "B", 300});
+                "s0",
+                new[] { "c0", "c1", "c2", "c3" },
+                new object[] { "A", 100, "B", 300 });
             env.UndeployModuleContaining("s0");
 
             // test inserting from map to array

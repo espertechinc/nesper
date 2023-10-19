@@ -49,6 +49,7 @@ using com.espertech.esper.common.@internal.@event.xml;
 using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -288,6 +289,8 @@ namespace com.espertech.esper.compiler.@internal.util
 			IList<EPCompiled> path,
 			out ICompileArtifact artifact)
 		{
+			var serializerFactory = compileTimeServices.Container.SerializerFactory();
+			
 			// write code to create an implementation of StatementResource
 			var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(
 				typeof(StatementFields),
@@ -322,7 +325,7 @@ namespace com.espertech.esper.compiler.@internal.util
 					typeof(EPCompilerImpl),
 					CodegenSymbolProviderEmpty.INSTANCE,
 					classScope);
-				MakeModuleProperties(moduleProperties, modulePropertiesProp);
+				MakeModuleProperties(serializerFactory, moduleProperties, modulePropertiesProp);
 			}
 
 			// provide module dependencies
@@ -546,15 +549,15 @@ namespace com.espertech.esper.compiler.@internal.util
 				return null;
 			}
 
+			var serializerFactory = compileTimeServices.Container.SerializerFactory();
 			var symbols = new ModuleExpressionDeclaredInitializeSymbol();
 			var method = CodegenMethod
 				.MakeParentNode(typeof(void), typeof(EPCompilerImpl), symbols, classScope)
 				.AddParam(
 					typeof(EPModuleExprDeclaredInitServices),
 					ModuleExpressionDeclaredInitializeSymbol.REF_INITSVC.Ref);
-			foreach (var expression in compileTimeServices
-				         .ExprDeclaredCompileTimeRegistry.Expressions) {
-				var addExpression = RegisterExprDeclaredCodegen(expression, method, classScope, symbols);
+			foreach (var expression in compileTimeServices.ExprDeclaredCompileTimeRegistry.Expressions) {
+				var addExpression = RegisterExprDeclaredCodegen(serializerFactory, expression, method, classScope, symbols);
 				method.Block.Expression(LocalMethod(addExpression));
 			}
 
@@ -732,6 +735,7 @@ namespace com.espertech.esper.compiler.@internal.util
 		}
 
 		private static void MakeModuleProperties(
+			SerializerFactory serializerFactory,
 			IDictionary<ModuleProperty, object> props,
 			CodegenProperty property)
 		{
@@ -759,7 +763,7 @@ namespace com.espertech.esper.compiler.@internal.util
 							typeof(object)
 						},
 						MakeModulePropKey(entry.Key),
-						MakeModulePropValue(entry.Value)));
+						MakeModulePropValue(serializerFactory, entry.Value)));
 				return;
 			}
 
@@ -773,7 +777,7 @@ namespace com.espertech.esper.compiler.@internal.util
 					Ref("props"),
 					"Put",
 					MakeModulePropKey(entry.Key),
-					MakeModulePropValue(entry.Value));
+					MakeModulePropValue(serializerFactory, entry.Value));
 			}
 
 			property.GetterBlock.BlockReturn(Ref("props"));
@@ -784,9 +788,11 @@ namespace com.espertech.esper.compiler.@internal.util
 			return EnumValue(typeof(ModuleProperty), key.GetName());
 		}
 
-		private static CodegenExpression MakeModulePropValue(object value)
+		private static CodegenExpression MakeModulePropValue(
+			SerializerFactory serializerFactory,
+			object value)
 		{
-			return SerializerUtil.ExpressionForUserObject(value);
+			return SerializerUtil.ExpressionForUserObject(serializerFactory, value);
 		}
 
 		private static CodegenMethod RegisterClassProvidedCodegen(
@@ -824,6 +830,7 @@ namespace com.espertech.esper.compiler.@internal.util
 		}
 
 		private static CodegenMethod RegisterExprDeclaredCodegen(
+			SerializerFactory serializerFactory,
 			KeyValuePair<string, ExpressionDeclItem> expression,
 			CodegenMethod parent,
 			CodegenClassScope classScope,
@@ -832,7 +839,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
 
 			var item = expression.Value;
-			var bytes = SerializerUtil.ObjectToByteArr(item.OptionalSoda);
+			var bytes = SerializerUtil.ObjectToByteArr(serializerFactory, item.OptionalSoda);
 			item.OptionalSodaBytes = () => bytes;
 
 			method.Block

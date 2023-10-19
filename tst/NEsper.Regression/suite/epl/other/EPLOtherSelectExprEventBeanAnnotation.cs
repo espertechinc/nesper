@@ -28,155 +28,224 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
-	public class EPLOtherSelectExprEventBeanAnnotation {
+    public class EPLOtherSelectExprEventBeanAnnotation
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
+            WithSimple(execs);
+            With(WSubquery)(execs);
+#endif
+            return execs;
+        }
 
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EPLOtherSelectExprEventBeanAnnoSimple());
-	        execs.Add(new EPLOtherSelectExprEventBeanAnnoWSubquery());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithWSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSelectExprEventBeanAnnoWSubquery());
+            return execs;
+        }
 
-	    private class EPLOtherSelectExprEventBeanAnnoSimple : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-	                RunAssertionEventBeanAnnotation(env, rep);
-	            }
-	        }
+        public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherSelectExprEventBeanAnnoSimple());
+            return execs;
+        }
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.OBSERVEROPS);
-	        }
-	    }
+        private class EPLOtherSelectExprEventBeanAnnoSimple : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
+                    RunAssertionEventBeanAnnotation(env, rep);
+                }
+            }
 
-	    private class EPLOtherSelectExprEventBeanAnnoWSubquery : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            // test non-named-window
-	            var path = new RegressionPath();
-	            env.CompileDeploy("@public @buseventtype create objectarray schema MyEvent(col1 string, col2 string)", path);
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
 
-	            var eplInsert = "@name('insert') @public insert into DStream select " +
-	                            "(select * from MyEvent#keepall) @eventbean as c0 " +
-	                            "from SupportBean";
-	            env.CompileDeploy(eplInsert, path);
+        private class EPLOtherSelectExprEventBeanAnnoWSubquery : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // test non-named-window
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@public @buseventtype create objectarray schema MyEvent(col1 string, col2 string)",
+                    path);
 
-	            env.AssertStatement("insert", statement => {
-	                foreach (var prop in "c0".SplitCsv()) {
-	                    AssertFragment(prop, statement.EventType, "MyEvent", true);
-	                }
-	            });
+                var eplInsert = "@name('insert') @public insert into DStream select " +
+                                "(select * from MyEvent#keepall) @eventbean as c0 " +
+                                "from SupportBean";
+                env.CompileDeploy(eplInsert, path);
 
-	            // test consuming statement
-	            var fields = "f0,f1".SplitCsv();
-	            env.CompileDeploy("@name('s0') select " +
-	                "c0 as f0, " +
-	                "c0.lastOf().col1 as f1 " +
-	                "from DStream", path).AddListener("s0");
+                env.AssertStatement(
+                    "insert",
+                    statement => {
+                        foreach (var prop in "c0".SplitCsv()) {
+                            AssertFragment(prop, statement.EventType, "MyEvent", true);
+                        }
+                    });
 
-	            var eventOne = new object[]{"E1", null};
-	            env.SendEventObjectArray(eventOne, "MyEvent");
-	            env.SendEventBean(new SupportBean());
-	            env.AssertPropsNew("s0", fields, new object[]{new object[]{eventOne}, "E1"});
+                // test consuming statement
+                var fields = "f0,f1".SplitCsv();
+                env.CompileDeploy(
+                        "@name('s0') select " +
+                        "c0 as f0, " +
+                        "c0.lastOf().col1 as f1 " +
+                        "from DStream",
+                        path)
+                    .AddListener("s0");
 
-	            var eventTwo = new object[]{"E2", null};
-	            env.SendEventObjectArray(eventTwo, "MyEvent");
-	            env.SendEventBean(new SupportBean());
-	            env.AssertPropsNew("s0", fields, new object[]{new object[]{eventOne, eventTwo}, "E2"});
+                var eventOne = new object[] { "E1", null };
+                env.SendEventObjectArray(eventOne, "MyEvent");
+                env.SendEventBean(new SupportBean());
+                env.AssertPropsNew("s0", fields, new object[] { new object[] { eventOne }, "E1" });
 
-	            env.UndeployAll();
-	        }
-	    }
+                var eventTwo = new object[] { "E2", null };
+                env.SendEventObjectArray(eventTwo, "MyEvent");
+                env.SendEventBean(new SupportBean());
+                env.AssertPropsNew("s0", fields, new object[] { new object[] { eventOne, eventTwo }, "E2" });
 
-	    private static void RunAssertionEventBeanAnnotation(RegressionEnvironment env, EventRepresentationChoice rep) {
-	        var path = new RegressionPath();
-	        env.CompileDeploy(rep.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedMyEvent)) + "@name('schema') @buseventtype @public create schema MyEvent(col1 string)", path);
+                env.UndeployAll();
+            }
+        }
 
-	        var eplInsert = "@name('insert') @public insert into DStream select " +
-	                        "last(*) @eventbean as c0, " +
-	                        "window(*) @eventbean as c1, " +
-	                        "prevwindow(s0) @eventbean as c2 " +
-	                        "from MyEvent#length(2) as s0";
-	        env.CompileDeploy(eplInsert, path).AddListener("insert");
+        private static void RunAssertionEventBeanAnnotation(
+            RegressionEnvironment env,
+            EventRepresentationChoice rep)
+        {
+            var path = new RegressionPath();
+            env.CompileDeploy(
+                rep.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedMyEvent)) +
+                "@name('schema') @buseventtype @public create schema MyEvent(col1 string)",
+                path);
 
-	        env.AssertStatement("insert", statement => {
-	            foreach (var prop in "c0,c1,c2".SplitCsv()) {
-	                AssertFragment(prop, statement.EventType, "MyEvent", prop.Equals("c1") || prop.Equals("c2"));
-	            }
-	        });
+            var eplInsert = "@name('insert') @public insert into DStream select " +
+                            "last(*) @eventbean as c0, " +
+                            "window(*) @eventbean as c1, " +
+                            "prevwindow(s0) @eventbean as c2 " +
+                            "from MyEvent#length(2) as s0";
+            env.CompileDeploy(eplInsert, path).AddListener("insert");
 
-	        // test consuming statement
-	        var fields = "f0,f1,f2,f3,f4,f5".SplitCsv();
-	        env.CompileDeploy("@name('s0') select " +
-	            "c0 as f0, " +
-	            "c0.col1 as f1, " +
-	            "c1 as f2, " +
-	            "c1.lastOf().col1 as f3, " +
-	            "c1 as f4, " +
-	            "c1.lastOf().col1 as f5 " +
-	            "from DStream", path).AddListener("s0");
-	        env.CompileDeploy("@name('s1') select * from MyEvent", path).AddListener("s1");
+            env.AssertStatement(
+                "insert",
+                statement => {
+                    foreach (var prop in "c0,c1,c2".SplitCsv()) {
+                        AssertFragment(prop, statement.EventType, "MyEvent", prop.Equals("c1") || prop.Equals("c2"));
+                    }
+                });
 
-	        var eventOne = SendEvent(env, rep, "E1");
-	        if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
-	            eventOne = env.Listener("s1").AssertOneGetNewAndReset().Underlying;
-	        }
-	        Assert.IsTrue(((IDictionary<string, object>) env.Listener("insert").AssertOneGetNewAndReset().Underlying).Get("c0") is EventBean);
-	        env.AssertPropsNew("s0", fields, new object[]{eventOne, "E1", new object[]{eventOne}, "E1", new object[]{eventOne}, "E1"});
+            // test consuming statement
+            var fields = "f0,f1,f2,f3,f4,f5".SplitCsv();
+            env.CompileDeploy(
+                    "@name('s0') select " +
+                    "c0 as f0, " +
+                    "c0.col1 as f1, " +
+                    "c1 as f2, " +
+                    "c1.lastOf().col1 as f3, " +
+                    "c1 as f4, " +
+                    "c1.lastOf().col1 as f5 " +
+                    "from DStream",
+                    path)
+                .AddListener("s0");
+            env.CompileDeploy("@name('s1') select * from MyEvent", path).AddListener("s1");
 
-	        var eventTwo = SendEvent(env, rep, "E2");
-	        if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
-	            eventTwo = env.Listener("s1").AssertOneGetNewAndReset().Underlying;
-	        }
-	        env.AssertPropsNew("s0", fields, new object[]{eventTwo, "E2", new object[]{eventOne, eventTwo}, "E2", new object[]{eventOne, eventTwo}, "E2"});
+            var eventOne = SendEvent(env, rep, "E1");
+            if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+                eventOne = env.Listener("s1").AssertOneGetNewAndReset().Underlying;
+            }
 
-	        // test SODA
-	        env.EplToModelCompileDeploy(eplInsert, path);
+            Assert.IsTrue(
+                ((IDictionary<string, object>)env.Listener("insert").AssertOneGetNewAndReset().Underlying).Get("c0") is
+                EventBean);
+            env.AssertPropsNew(
+                "s0",
+                fields,
+                new object[] { eventOne, "E1", new object[] { eventOne }, "E1", new object[] { eventOne }, "E1" });
 
-	        // test invalid
-	        env.TryInvalidCompile(path, "@name('s0') select last(*) @xxx from MyEvent",
-	            "Failed to recognize select-expression annotation 'xxx', expected 'eventbean' in text 'last(*) @xxx'");
+            var eventTwo = SendEvent(env, rep, "E2");
+            if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+                eventTwo = env.Listener("s1").AssertOneGetNewAndReset().Underlying;
+            }
 
-	        env.UndeployAll();
-	    }
+            env.AssertPropsNew(
+                "s0",
+                fields,
+                new object[] {
+                    eventTwo, "E2", new object[] { eventOne, eventTwo }, "E2", new object[] { eventOne, eventTwo }, "E2"
+                });
 
-	    private static void AssertFragment(string prop, EventType eventType, string fragmentTypeName, bool indexed) {
-	        var desc = eventType.GetPropertyDescriptor(prop);
-	        Assert.AreEqual(true, desc.IsFragment);
-	        var fragment = eventType.GetFragmentType(prop);
-	        Assert.AreEqual(fragmentTypeName, fragment.FragmentType.Name);
-	        Assert.AreEqual(false, fragment.IsNative);
-	        Assert.AreEqual(indexed, fragment.IsIndexed);
-	    }
+            // test SODA
+            env.EplToModelCompileDeploy(eplInsert, path);
 
-	    private static object SendEvent(RegressionEnvironment env, EventRepresentationChoice rep, string value) {
-	        object eventOne;
-	        if (rep.IsMapEvent()) {
-	            var @event = Collections.SingletonDataMap("col1", value);
-	            env.SendEventMap(@event, "MyEvent");
-	            eventOne = @event;
-	        } else if (rep.IsObjectArrayEvent()) {
-	            var @event = new object[]{value};
-	            env.SendEventObjectArray(@event, "MyEvent");
-	            eventOne = @event;
-	        } else if (rep.IsAvroEvent()) {
-	            var schema = env.RuntimeAvroSchemaByDeployment("schema", "MyEvent");
-	            var @event = new GenericRecord(schema.AsRecordSchema());
-	            @event.Put("col1", value);
-	            env.SendEventAvro(@event, "MyEvent");
-	            eventOne = @event;
-	        } else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
-	            var @object = new JObject(new JProperty("col1", value));
-	            env.SendEventJson(@object.ToString(), "MyEvent");
-	            eventOne = @object.ToString();
-	        } else {
-	            throw new IllegalStateException();
-	        }
-	        return eventOne;
-	    }
+            // test invalid
+            env.TryInvalidCompile(
+                path,
+                "@name('s0') select last(*) @xxx from MyEvent",
+                "Failed to recognize select-expression annotation 'xxx', expected 'eventbean' in text 'last(*) @xxx'");
 
-	    [Serializable]
-	    public class MyLocalJsonProvidedMyEvent {
-	        public string col1;
-	    }
-	}
+            env.UndeployAll();
+        }
+
+        private static void AssertFragment(
+            string prop,
+            EventType eventType,
+            string fragmentTypeName,
+            bool indexed)
+        {
+            var desc = eventType.GetPropertyDescriptor(prop);
+            Assert.AreEqual(true, desc.IsFragment);
+            var fragment = eventType.GetFragmentType(prop);
+            Assert.AreEqual(fragmentTypeName, fragment.FragmentType.Name);
+            Assert.AreEqual(false, fragment.IsNative);
+            Assert.AreEqual(indexed, fragment.IsIndexed);
+        }
+
+        private static object SendEvent(
+            RegressionEnvironment env,
+            EventRepresentationChoice rep,
+            string value)
+        {
+            object eventOne;
+            if (rep.IsMapEvent()) {
+                var @event = Collections.SingletonDataMap("col1", value);
+                env.SendEventMap(@event, "MyEvent");
+                eventOne = @event;
+            }
+            else if (rep.IsObjectArrayEvent()) {
+                var @event = new object[] { value };
+                env.SendEventObjectArray(@event, "MyEvent");
+                eventOne = @event;
+            }
+            else if (rep.IsAvroEvent()) {
+                var schema = env.RuntimeAvroSchemaByDeployment("schema", "MyEvent");
+                var @event = new GenericRecord(schema.AsRecordSchema());
+                @event.Put("col1", value);
+                env.SendEventAvro(@event, "MyEvent");
+                eventOne = @event;
+            }
+            else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
+                var @object = new JObject(new JProperty("col1", value));
+                env.SendEventJson(@object.ToString(), "MyEvent");
+                eventOne = @object.ToString();
+            }
+            else {
+                throw new IllegalStateException();
+            }
+
+            return eventOne;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedMyEvent
+        {
+            public string col1;
+        }
+    }
 } // end of namespace

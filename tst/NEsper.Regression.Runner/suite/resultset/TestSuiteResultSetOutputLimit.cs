@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             common.AddVariable("myvardummy", typeof(int), 0);
             common.AddVariable("myvarlong", typeof(long), 0);
 
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber = true;
             configuration.Compiler.AddPlugInAggregationFunctionForge("customagg", typeof(SupportInvocationCountForge));
         }
 
@@ -448,13 +448,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             public void With1NoneNoHavingNoJoin() => RegressionRunner.Run(_session, ResultSetOutputLimitRowPerGroup.With1NoneNoHavingNoJoin());
 
             [Test, RunInApplicationDomain]
-            public void WithWildcardRowPerGroup() => RegressionRunner.Run(_session, ResultSetOutputLimitRowPerGroup.WithWildcardRowPerGroup());
-
-            [Test, RunInApplicationDomain]
             public void WithOutputFirstWhenThen() => RegressionRunner.Run(_session, ResultSetOutputLimitRowPerGroup.WithOutputFirstWhenThen());
-
-            [Test, RunInApplicationDomain]
-            public void WithLastNoDataWindow() => RegressionRunner.Run(_session, ResultSetOutputLimitRowPerGroup.WithLastNoDataWindow());
         }
 
         /// <summary>

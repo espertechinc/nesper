@@ -59,7 +59,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numSeconds)
         {
             var path = new RegressionPath();
-            var eplCreateVariable = "@public create table vartotal (topgroup int primary key, subgroup int primary key)";
+            var eplCreateVariable =
+                "@public create table vartotal (topgroup int primary key, subgroup int primary key)";
             env.CompileDeploy(eplCreateVariable, path);
 
             var eplCreateIndex = "create index myindex on vartotal (topgroup)";
@@ -191,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     while (!shutdown) {
                         env.SendEventBean(new SupportBean(null, 0));
                         var value = listener.AssertOneGetNewAndReset().Get("c0");
-                        Assert.IsTrue((long?) value >= 1);
+                        Assert.IsTrue((long?)value >= 1);
                         numQueries++;
                     }
                 }

@@ -43,8 +43,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -76,8 +78,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             {
                 var epl = "@public @buseventtype " +
                           "@XMLSchema(RootElementName='myevent'," +
-                          "  XPathFunctionResolver='" + typeof(SupportXPathFunctionResolver).MaskTypeName() + "'," +
-                          "  XPathVariableResolver='" + typeof(SupportXPathVariableResolver).MaskTypeName() + "')" +
+                          "  XPathFunctionResolver='" +
+                          typeof(SupportXPathFunctionResolver).MaskTypeName() +
+                          "'," +
+                          "  XPathVariableResolver='" +
+                          typeof(SupportXPathVariableResolver).MaskTypeName() +
+                          "')" +
                           "@XMLSchemaField(Name='xpathElement1', XPath='/myevent/element1', Type='STRING')" +
                           "@XMLSchemaField(Name='xpathCountE21', XPath='count(/myevent/element2/element21)', Type='NUMBER')" +
                           "@XMLSchemaField(Name='xpathAttrString', XPath='/myevent/element3/@attrString', Type='STRING')" +

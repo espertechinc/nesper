@@ -28,10 +28,38 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumGroupByOneParamEvent());
-            execs.Add(new ExprEnumGroupByOneParamScalar());
-            execs.Add(new ExprEnumGroupByTwoParamEvent());
+            WithOneParamEvent(execs);
+            WithOneParamScalar(execs);
+            WithTwoParamEvent(execs);
+            WithTwoParamScalar(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTwoParamScalar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprEnumGroupByTwoParamScalar());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTwoParamEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumGroupByTwoParamEvent());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOneParamScalar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumGroupByOneParamScalar());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOneParamEvent(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumGroupByOneParamEvent());
             return execs;
         }
 

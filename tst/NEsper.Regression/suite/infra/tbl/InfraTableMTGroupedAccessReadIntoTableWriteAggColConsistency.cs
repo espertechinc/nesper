@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         /// <summary>
         ///     Table:
         ///     create table vartotal (key string primary key, tc0 sum(int), tc1 sum(int) ... tc9 sum(int))
@@ -214,7 +214,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         var groupNum = numQueries % groups.Length;
                         env.SendEventBean(new SupportBean(groups[groupNum], 0));
                         var @event = listener.AssertOneGetNewAndReset();
-                        AssertEvent((IDictionary<string, object>) @event.Get("out"));
+                        AssertEvent((IDictionary<string, object>)@event.Get("out"));
                         numQueries++;
                     }
                 }

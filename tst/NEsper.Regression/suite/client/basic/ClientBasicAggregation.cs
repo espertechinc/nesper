@@ -37,9 +37,10 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
             long expected)
         {
             env.SendEventBean(new SupportBean("E1", 0));
-            env.AssertPropsNew("s0",
-                new [] { "cnt" },
-                new object[] {expected});
+            env.AssertPropsNew(
+                "s0",
+                new[] { "cnt" },
+                new object[] { expected });
         }
     }
 } // end of namespace

@@ -51,14 +51,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             RunAssertionPatternFollowedBy(FilterServiceProfile.READWRITE, _configuration);
         }
 
-        public void RunReadMostly(Configuration configuration)
+        public void RunReadMostly()
         {
-            RunAssertionPatternFollowedBy(FilterServiceProfile.READMOSTLY, configuration);
+            RunAssertionPatternFollowedBy(FilterServiceProfile.READMOSTLY, _configuration);
         }
 
-        public void RunReadWrite(Configuration configuration)
+        public void RunReadWrite()
         {
-            RunAssertionPatternFollowedBy(FilterServiceProfile.READWRITE, configuration);
+            RunAssertionPatternFollowedBy(FilterServiceProfile.READWRITE, _configuration);
         }
 
         private void RunAssertionPatternFollowedBy(

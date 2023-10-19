@@ -13,167 +13,210 @@ using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.context
 {
-	public class ContextInitTermWithNow {
+    public class ContextInitTermWithNow
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithStartStopWNow(execs);
+            WithInitTermWithPattern(execs);
+            WithInitTermWNowInvalid(execs);
+            WithInitTermWNowNoEnd(execs);
+            return execs;
+        }
 
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new ContextStartStopWNow());
-	        execs.Add(new ContextInitTermWithPattern());
-	        execs.Add(new ContextInitTermWNowInvalid());
-	        execs.Add(new ContextInitTermWNowNoEnd());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithInitTermWNowNoEnd(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermWNowNoEnd());
+            return execs;
+        }
 
-	    private class ContextInitTermWNowNoEnd : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "create context StartNowAndNeverEnd start @now;\n" +
-	                      "@name('s0') context StartNowAndNeverEnd select count(*) as c0 from SupportBean;\n";
-	            env.CompileDeploy(epl).AddListener("s0");
+        public static IList<RegressionExecution> WithInitTermWNowInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermWNowInvalid());
+            return execs;
+        }
 
-	            env.Milestone(0);
+        public static IList<RegressionExecution> WithInitTermWithPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermWithPattern());
+            return execs;
+        }
 
-	            AssertSendCount(env, 1);
-	            AssertSendCount(env, 2);
+        public static IList<RegressionExecution> WithStartStopWNow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextStartStopWNow());
+            return execs;
+        }
 
-	            env.Milestone(1);
+        private class ContextInitTermWNowNoEnd : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "create context StartNowAndNeverEnd start @now;\n" +
+                          "@name('s0') context StartNowAndNeverEnd select count(*) as c0 from SupportBean;\n";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	            AssertSendCount(env, 3);
+                env.Milestone(0);
 
-	            env.Milestone(2);
+                AssertSendCount(env, 1);
+                AssertSendCount(env, 2);
 
-	            AssertSendCount(env, 4);
+                env.Milestone(1);
 
-	            env.UndeployAll();
-	        }
+                AssertSendCount(env, 3);
 
-	        private void AssertSendCount(RegressionEnvironment env, long expected) {
-	            env.SendEventBean(new SupportBean());
-	            env.AssertEqualsNew("s0", "c0", expected);
-	        }
-	    }
+                env.Milestone(2);
 
-	    private class ContextStartStopWNow : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            env.AdvanceTime(0);
-	            var path = new RegressionPath();
-	            var contextExpr = "@public create context MyContext " +
-	                              "as start @now end after 10 seconds";
-	            env.CompileDeploy(contextExpr, path);
+                AssertSendCount(env, 4);
 
-	            var fields = new string[]{"cnt"};
-	            var streamExpr = "@name('s0') context MyContext " +
-	                             "select count(*) as cnt from SupportBean output last when terminated";
-	            env.CompileDeploy(streamExpr, path).AddListener("s0");
+                env.UndeployAll();
+            }
 
-	            env.SendEventBean(new SupportBean("E1", 1));
+            private void AssertSendCount(
+                RegressionEnvironment env,
+                long expected)
+            {
+                env.SendEventBean(new SupportBean());
+                env.AssertEqualsNew("s0", "c0", expected);
+            }
+        }
 
-	            env.Milestone(0);
+        private class ContextStartStopWNow : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                var path = new RegressionPath();
+                var contextExpr = "@public create context MyContext " +
+                                  "as start @now end after 10 seconds";
+                env.CompileDeploy(contextExpr, path);
 
-	            env.SendEventBean(new SupportBean("E2", 2));
-	            env.AdvanceTime(8000);
+                var fields = new string[] { "cnt" };
+                var streamExpr = "@name('s0') context MyContext " +
+                                 "select count(*) as cnt from SupportBean output last when terminated";
+                env.CompileDeploy(streamExpr, path).AddListener("s0");
 
-	            env.Milestone(1);
+                env.SendEventBean(new SupportBean("E1", 1));
 
-	            env.SendEventBean(new SupportBean("E3", 3));
-	            env.AdvanceTime(10000);
-	            env.AssertPropsNew("s0", fields, new object[]{3L});
+                env.Milestone(0);
 
-	            env.Milestone(2);
+                env.SendEventBean(new SupportBean("E2", 2));
+                env.AdvanceTime(8000);
 
-	            env.SendEventBean(new SupportBean("E4", 4));
-	            env.AdvanceTime(19999);
-	            env.AssertListenerNotInvoked("s0");
-	            env.AdvanceTime(20000);
-	            env.AssertPropsNew("s0", fields, new object[]{1L});
+                env.Milestone(1);
 
-	            env.Milestone(3);
+                env.SendEventBean(new SupportBean("E3", 3));
+                env.AdvanceTime(10000);
+                env.AssertPropsNew("s0", fields, new object[] { 3L });
 
-	            env.AdvanceTime(30000);
-	            env.AssertPropsNew("s0", fields, new object[]{0L});
+                env.Milestone(2);
 
-	            env.EplToModelCompileDeploy(streamExpr, path);
+                env.SendEventBean(new SupportBean("E4", 4));
+                env.AdvanceTime(19999);
+                env.AssertListenerNotInvoked("s0");
+                env.AdvanceTime(20000);
+                env.AssertPropsNew("s0", fields, new object[] { 1L });
 
-	            env.UndeployAll();
+                env.Milestone(3);
 
-	            env.EplToModelCompileDeploy(contextExpr);
-	            env.UndeployAll();
-	        }
-	    }
+                env.AdvanceTime(30000);
+                env.AssertPropsNew("s0", fields, new object[] { 0L });
 
-	    private class ContextInitTermWithPattern : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            env.AdvanceTime(0);
-	            var path = new RegressionPath();
-	            var contextExpr = "@public create context MyContext " +
-	                              "initiated by @Now and pattern [every timer:interval(10)] terminated after 10 sec";
-	            env.CompileDeploy(contextExpr, path);
+                env.EplToModelCompileDeploy(streamExpr, path);
 
-	            var fields = new string[]{"cnt"};
-	            var streamExpr = "@name('s0') context MyContext " +
-	                             "select count(*) as cnt from SupportBean output last when terminated";
-	            env.CompileDeploy(streamExpr, path).AddListener("s0");
+                env.UndeployAll();
 
-	            env.SendEventBean(new SupportBean("E1", 1));
-	            env.SendEventBean(new SupportBean("E2", 2));
+                env.EplToModelCompileDeploy(contextExpr);
+                env.UndeployAll();
+            }
+        }
 
-	            env.Milestone(0);
+        private class ContextInitTermWithPattern : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.AdvanceTime(0);
+                var path = new RegressionPath();
+                var contextExpr = "@public create context MyContext " +
+                                  "initiated by @Now and pattern [every timer:interval(10)] terminated after 10 sec";
+                env.CompileDeploy(contextExpr, path);
 
-	            env.AdvanceTime(8000);
-	            env.SendEventBean(new SupportBean("E3", 3));
+                var fields = new string[] { "cnt" };
+                var streamExpr = "@name('s0') context MyContext " +
+                                 "select count(*) as cnt from SupportBean output last when terminated";
+                env.CompileDeploy(streamExpr, path).AddListener("s0");
 
-	            env.Milestone(1);
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.SendEventBean(new SupportBean("E2", 2));
 
-	            env.AdvanceTime(9999);
-	            env.AssertListenerNotInvoked("s0");
-	            env.AdvanceTime(10000);
-	            env.AssertPropsNew("s0", fields, new object[]{3L});
+                env.Milestone(0);
 
-	            env.Milestone(2);
+                env.AdvanceTime(8000);
+                env.SendEventBean(new SupportBean("E3", 3));
 
-	            env.SendEventBean(new SupportBean("E4", 4));
-	            env.AdvanceTime(10100);
+                env.Milestone(1);
 
-	            env.Milestone(3);
+                env.AdvanceTime(9999);
+                env.AssertListenerNotInvoked("s0");
+                env.AdvanceTime(10000);
+                env.AssertPropsNew("s0", fields, new object[] { 3L });
 
-	            env.SendEventBean(new SupportBean("E5", 5));
-	            env.AdvanceTime(19999);
-	            env.AssertListenerNotInvoked("s0");
+                env.Milestone(2);
 
-	            env.AdvanceTime(20000);
-	            env.AssertPropsNew("s0", fields, new object[]{2L});
+                env.SendEventBean(new SupportBean("E4", 4));
+                env.AdvanceTime(10100);
 
-	            env.Milestone(4);
+                env.Milestone(3);
 
-	            env.AdvanceTime(30000);
-	            env.AssertPropsNew("s0", fields, new object[]{0L});
+                env.SendEventBean(new SupportBean("E5", 5));
+                env.AdvanceTime(19999);
+                env.AssertListenerNotInvoked("s0");
 
-	            env.Milestone(5);
+                env.AdvanceTime(20000);
+                env.AssertPropsNew("s0", fields, new object[] { 2L });
 
-	            env.SendEventBean(new SupportBean("E6", 6));
+                env.Milestone(4);
 
-	            env.AdvanceTime(40000);
-	            env.AssertPropsNew("s0", fields, new object[]{1L});
+                env.AdvanceTime(30000);
+                env.AssertPropsNew("s0", fields, new object[] { 0L });
 
-	            env.EplToModelCompileDeploy(streamExpr, path);
+                env.Milestone(5);
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.SendEventBean(new SupportBean("E6", 6));
 
-	    private class ContextInitTermWNowInvalid : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            // for overlapping contexts, @now without condition is not allowed
-	            env.TryInvalidCompile("create context TimedImmediate initiated @now terminated after 10 seconds",
-	                "Incorrect syntax near 'terminated' (a reserved keyword) expecting 'and' but found 'terminated' at line 1 column 45 [create context TimedImmediate initiated @now terminated after 10 seconds]");
+                env.AdvanceTime(40000);
+                env.AssertPropsNew("s0", fields, new object[] { 1L });
 
-	            // for non-overlapping contexts, @now with condition is not allowed
-	            env.TryInvalidCompile("create context TimedImmediate start @now and after 5 seconds end after 10 seconds",
-	                "Incorrect syntax near 'and' (a reserved keyword) at line 1 column 41 [create context TimedImmediate start @now and after 5 seconds end after 10 seconds]");
+                env.EplToModelCompileDeploy(streamExpr, path);
 
-	            // for overlapping contexts, @now together with a filter condition is not allowed
-	            env.TryInvalidCompile("create context TimedImmediate initiated @now and SupportBean terminated after 10 seconds",
-	                "Invalid use of 'now' with initiated-by stream, this combination is not supported [create context TimedImmediate initiated @now and SupportBean terminated after 10 seconds]");
-	        }
-	    }
-	}
+                env.UndeployAll();
+            }
+        }
+
+        private class ContextInitTermWNowInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // for overlapping contexts, @now without condition is not allowed
+                env.TryInvalidCompile(
+                    "create context TimedImmediate initiated @now terminated after 10 seconds",
+                    "Incorrect syntax near 'terminated' (a reserved keyword) expecting 'and' but found 'terminated' at line 1 column 45 [create context TimedImmediate initiated @now terminated after 10 seconds]");
+
+                // for non-overlapping contexts, @now with condition is not allowed
+                env.TryInvalidCompile(
+                    "create context TimedImmediate start @now and after 5 seconds end after 10 seconds",
+                    "Incorrect syntax near 'and' (a reserved keyword) at line 1 column 41 [create context TimedImmediate start @now and after 5 seconds end after 10 seconds]");
+
+                // for overlapping contexts, @now together with a filter condition is not allowed
+                env.TryInvalidCompile(
+                    "create context TimedImmediate initiated @now and SupportBean terminated after 10 seconds",
+                    "Invalid use of 'now' with initiated-by stream, this combination is not supported [create context TimedImmediate initiated @now and SupportBean terminated after 10 seconds]");
+            }
+        }
+    }
 } // end of namespace

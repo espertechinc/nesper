@@ -16,69 +16,75 @@ using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.instrument
 {
-	public class ClientInstrumentMetricsReportingStmtGroups : RegressionExecution {
+    public class ClientInstrumentMetricsReportingStmtGroups : RegressionExecution
+    {
+        public void Run(RegressionEnvironment env)
+        {
+            SendTimer(env, 0);
 
-	    public void Run(RegressionEnvironment env) {
+            env.CompileDeploy("@name('GroupOne') select * from SupportBean(intPrimitive = 1)#keepall");
+            env.CompileDeploy("@name('GroupTwo') select * from SupportBean(intPrimitive = 2)#keepall")
+                .SetSubscriber("GroupTwo");
+            env.CompileDeploy("@name('Default') select * from SupportBean(intPrimitive = 3)#keepall"); // no listener
 
-	        SendTimer(env, 0);
+            env.CompileDeploy("@name('StmtMetrics') select * from " + typeof(StatementMetric).FullName)
+                .AddListener("StmtMetrics");
 
-	        env.CompileDeploy("@name('GroupOne') select * from SupportBean(intPrimitive = 1)#keepall");
-	        env.CompileDeploy("@name('GroupTwo') select * from SupportBean(intPrimitive = 2)#keepall").SetSubscriber("GroupTwo");
-	        env.CompileDeploy("@name('Default') select * from SupportBean(intPrimitive = 3)#keepall");   // no listener
+            SendTimer(env, 6000);
+            SendTimer(env, 7000);
+            env.AssertListenerNotInvoked("StmtMetrics");
 
-	        env.CompileDeploy("@name('StmtMetrics') select * from " + typeof(StatementMetric).FullName).AddListener("StmtMetrics");
+            SendTimer(env, 8000);
+            var fields = "statementName,numOutputIStream,numInput".SplitCsv();
+            env.AssertPropsNew("StmtMetrics", fields, new object[] { "GroupOne", 0L, 0L });
 
-	        SendTimer(env, 6000);
-	        SendTimer(env, 7000);
-	        env.AssertListenerNotInvoked("StmtMetrics");
+            SendTimer(env, 12000);
+            SendTimer(env, 14000);
+            SendTimer(env, 15999);
+            env.AssertListenerNotInvoked("StmtMetrics");
 
-	        SendTimer(env, 8000);
-	        var fields = "statementName,numOutputIStream,numInput".SplitCsv();
-	        env.AssertPropsNew("StmtMetrics", fields, new object[]{"GroupOne", 0L, 0L});
+            SendTimer(env, 16000);
+            env.AssertPropsNew("StmtMetrics", fields, new object[] { "GroupOne", 0L, 0L });
 
-	        SendTimer(env, 12000);
-	        SendTimer(env, 14000);
-	        SendTimer(env, 15999);
-	        env.AssertListenerNotInvoked("StmtMetrics");
+            // should report as groupTwo
+            env.SendEventBean(new SupportBean("E1", 2));
+            SendTimer(env, 17999);
+            env.AssertListenerNotInvoked("StmtMetrics");
 
-	        SendTimer(env, 16000);
-	        env.AssertPropsNew("StmtMetrics", fields, new object[]{"GroupOne", 0L, 0L});
+            SendTimer(env, 18000);
+            env.AssertPropsNew("StmtMetrics", fields, new object[] { "GroupTwo", 1L, 1L });
 
-	        // should report as groupTwo
-	        env.SendEventBean(new SupportBean("E1", 2));
-	        SendTimer(env, 17999);
-	        env.AssertListenerNotInvoked("StmtMetrics");
+            // should report as groupTwo
+            env.SendEventBean(new SupportBean("E1", 3));
+            SendTimer(env, 20999);
+            env.AssertListenerNotInvoked("StmtMetrics");
 
-	        SendTimer(env, 18000);
-	        env.AssertPropsNew("StmtMetrics", fields, new object[]{"GroupTwo", 1L, 1L});
+            SendTimer(env, 21000);
+            env.AssertPropsNew("StmtMetrics", fields, new object[] { "Default", 0L, 1L });
 
-	        // should report as groupTwo
-	        env.SendEventBean(new SupportBean("E1", 3));
-	        SendTimer(env, 20999);
-	        env.AssertListenerNotInvoked("StmtMetrics");
+            // turn off group 1
+            env.Runtime.MetricsService.SetMetricsReportingInterval("GroupOneStatements", -1);
+            SendTimer(env, 24000);
+            env.AssertListenerNotInvoked("StmtMetrics");
 
-	        SendTimer(env, 21000);
-	        env.AssertPropsNew("StmtMetrics", fields, new object[]{"Default", 0L, 1L});
+            // turn on group 1
+            env.Runtime.MetricsService.SetMetricsReportingInterval("GroupOneStatements", 1000);
+            SendTimer(env, 25000);
+            env.AssertPropsNew("StmtMetrics", fields, new object[] { "GroupOne", 0L, 0L });
 
-	        // turn off group 1
-	        env.Runtime.MetricsService.SetMetricsReportingInterval("GroupOneStatements", -1);
-	        SendTimer(env, 24000);
-	        env.AssertListenerNotInvoked("StmtMetrics");
+            env.UndeployAll();
+        }
 
-	        // turn on group 1
-	        env.Runtime.MetricsService.SetMetricsReportingInterval("GroupOneStatements", 1000);
-	        SendTimer(env, 25000);
-	        env.AssertPropsNew("StmtMetrics", fields, new object[]{"GroupOne", 0L, 0L});
+        private void SendTimer(
+            RegressionEnvironment env,
+            long currentTime)
+        {
+            env.AdvanceTime(currentTime);
+        }
 
-	        env.UndeployAll();
-	    }
-
-	    private void SendTimer(RegressionEnvironment env, long currentTime) {
-	        env.AdvanceTime(currentTime);
-	    }
-
-	    public ISet<RegressionFlag> Flags() {
-	        return Collections.Set(RegressionFlag.RUNTIMEOPS);
-	    }
-	}
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.RUNTIMEOPS);
+        }
+    }
 } // end of namespace

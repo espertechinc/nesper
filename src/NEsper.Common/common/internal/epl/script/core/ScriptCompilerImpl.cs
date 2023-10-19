@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         /// </summary>
         private void InitializeScriptingEngines()
         {
-            var typeResolver = _container.ClassLoaderProvider().TypeResolver;
+            var typeResolver = _container.TypeResolverProvider().TypeResolver;
             foreach (var engineTypeName in _configuration.Engines) {
                 var engineType = typeResolver.ResolveType(engineTypeName, false);
                 if (engineType != null) {

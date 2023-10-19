@@ -28,22 +28,75 @@ using static com.espertech.esper.regressionlib.support.util.SupportSpatialUtil;
 
 namespace com.espertech.esper.regressionlib.suite.epl.spatial
 {
-    public class EPLSpatialPointRegionQuadTreeFilterIndex {
-        public static List<RegressionExecution> Executions(){
+    public class EPLSpatialPointRegionQuadTreeFilterIndex
+    {
+        public static List<RegressionExecution> Executions()
+        {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLSpatialPRFilterIndexPerfStatement());
-            execs.Add(new EPLSpatialPRFilterIndexPerfContextPartition());
-            execs.Add(new EPLSpatialPRFilterIndexPerfPattern());
-            execs.Add(new EPLSpatialPrFilterIndexUnoptimized());
-            execs.Add(new EPLSpatialPRFilterIndexTypeAssertion());
-            execs.Add(new EPLSpatialPRFilterIndexPatternSimple());
+            WithFilterIndexPerfStatement(execs);
+            WithFilterIndexPerfContextPartition(execs);
+            WithFilterIndexPerfPattern(execs);
+            WithFilterIndexUnoptimized(execs);
+            WithFilterIndexTypeAssertion(execs);
+            WithFilterIndexPatternSimple(execs);
+            WithFilterIndexContext(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFilterIndexContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLSpatialPRFilterIndexContext());
             return execs;
         }
 
-        private class EPLSpatialPRFilterIndexTypeAssertion : RegressionExecution{
+        public static IList<RegressionExecution> WithFilterIndexPatternSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialPRFilterIndexPatternSimple());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFilterIndexTypeAssertion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialPRFilterIndexTypeAssertion());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFilterIndexUnoptimized(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialPrFilterIndexUnoptimized());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFilterIndexPerfPattern(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialPRFilterIndexPerfPattern());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFilterIndexPerfContextPartition(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialPRFilterIndexPerfContextPartition());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFilterIndexPerfStatement(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSpatialPRFilterIndexPerfStatement());
+            return execs;
+        }
+
+        private class EPLSpatialPRFilterIndexTypeAssertion : RegressionExecution
+        {
             public void Run(RegressionEnvironment env)
-             {
+            {
                 var eplNoIndex =
                     "@name('s0') select * from SupportSpatialAABB(point(0, 0).inside(rectangle(x, y, width, height)))";
                 env.CompileDeploy(eplNoIndex);
@@ -71,10 +124,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
                 env.UndeployAll();
             }
-
         }
 
-        private class EPLSpatialPrFilterIndexUnoptimized : RegressionExecution{
+        private class EPLSpatialPrFilterIndexUnoptimized : RegressionExecution
+        {
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
@@ -89,7 +142,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             }
         }
 
-        private class EPLSpatialPRFilterIndexPerfStatement : RegressionExecution{
+        private class EPLSpatialPRFilterIndexPerfStatement : RegressionExecution
+        {
             public ISet<RegressionFlag> Flags()
             {
                 return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
@@ -128,7 +182,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             }
         }
 
-        private class EPLSpatialPRFilterIndexPerfPattern : RegressionExecution{
+        private class EPLSpatialPRFilterIndexPerfPattern : RegressionExecution
+        {
             public ISet<RegressionFlag> Flags()
             {
                 return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
@@ -148,7 +203,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             }
         }
 
-        private class EPLSpatialPRFilterIndexPerfContextPartition : RegressionExecution{
+        private class EPLSpatialPRFilterIndexPerfContextPartition : RegressionExecution
+        {
             public ISet<RegressionFlag> Flags()
             {
                 return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
@@ -156,7 +212,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
             public void Run(RegressionEnvironment env)
             {
-
                 var path = new RegressionPath();
                 env.CompileDeploy("@public create context PerPointCtx initiated by SupportSpatialPoint ssp", path);
                 env.CompileDeploy(
@@ -172,7 +227,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             }
         }
 
-        public class EPLSpatialPRFilterIndexPatternSimple : RegressionExecution{
+        public class EPLSpatialPRFilterIndexPatternSimple : RegressionExecution
+        {
             private static readonly IList<BoundingBox> BOXES = Arrays.AsList(
                 new BoundingBox(0, 0, 50, 50),
                 new BoundingBox(50, 0, 100, 50),
@@ -183,7 +239,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
             public void Run(RegressionEnvironment env)
             {
-
                 var epl = "@name('s0') expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
                           "select p.id as c0 from pattern [every p=SupportSpatialPoint -> every SupportSpatialAABB(point(p.px, p.py, filterindex:myindex).inside(rectangle(x, y, width, height)))]";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -208,7 +263,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             }
         }
 
-        public class EPLSpatialPRFilterIndexContext : RegressionExecution{
+        public class EPLSpatialPRFilterIndexContext : RegressionExecution
+        {
             private static readonly int WIDTH = 10;
             private static readonly int HEIGHT = 10;
             private static readonly int NUM_POINTS = 100;
@@ -222,7 +278,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
             public void Run(RegressionEnvironment env)
             {
-
                 var epl =
                     "create context PointContext initiated by SupportSpatialPoint ssp terminated by SupportBean(theString=ssp.id);\n" +
                     "@name('s0') expression myindex {pointregionquadtree(0, 0, 10, 10)}" +
@@ -233,7 +288,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var count = 0;
                 var milestone = new AtomicLong();
                 for (var iteration = 0; iteration < NUM_ITERATIONS; iteration++) {
-
                     Query(env, points);
                     AddPoints(env, points, milestone);
                     Query(env, points);
@@ -257,6 +311,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 foreach (var point in points) {
                     env.SendEventBean(new SupportBean(point.Id, 0));
                 }
+
                 points.Clear();
             }
 

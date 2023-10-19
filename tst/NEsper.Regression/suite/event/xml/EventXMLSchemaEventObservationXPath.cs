@@ -26,8 +26,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -81,17 +83,23 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             string eventTypeName,
             RegressionPath path)
         {
-            env.CompileDeploy("@name('s0') select countTags, countTagsInt, idarray, tagArray, tagOne from " + eventTypeName, path);
-            env.CompileDeploy("@name('e0') @public insert into TagOneStream select tagOne.* from " + eventTypeName, path);
+            env.CompileDeploy(
+                "@name('s0') select countTags, countTagsInt, idarray, tagArray, tagOne from " + eventTypeName,
+                path);
+            env.CompileDeploy(
+                "@name('e0') @public insert into TagOneStream select tagOne.* from " + eventTypeName,
+                path);
             env.CompileDeploy("@name('e1') select ID from TagOneStream", path);
-            env.CompileDeploy("@name('e2') @public insert into TagArrayStream select tagArray as mytags from " + eventTypeName, path);
+            env.CompileDeploy(
+                "@name('e2') @public insert into TagArrayStream select tagArray as mytags from " + eventTypeName,
+                path);
             env.CompileDeploy("@name('e3') select mytags[1].ID from TagArrayStream", path);
 
             var doc = SupportXML.GetDocument(OBSERVATION_XML);
             env.SendEventXMLDOM(doc, eventTypeName);
 
             env.Milestone(0);
-            
+
             env.AssertIterator("s0", en => SupportEventTypeAssertionUtil.AssertConsistency(en.Advance()));
             env.AssertIterator("e0", en => SupportEventTypeAssertionUtil.AssertConsistency(en.Advance()));
             env.AssertIterator("e1", en => SupportEventTypeAssertionUtil.AssertConsistency(en.Advance()));

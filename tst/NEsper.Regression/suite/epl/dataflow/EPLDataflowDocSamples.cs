@@ -23,8 +23,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithDocSamplesRun(execs);
-            WithSODA(execs);
+            With(SODA)(execs);
+#endif
             return execs;
         }
 
@@ -147,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "  }\n" +
                     "}");
             }
-            
+
             public ISet<RegressionFlag> Flags()
             {
                 return Collections.Set(RegressionFlag.DATAFLOW);
@@ -176,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var model = env.EplToModel(soda);
                 EPAssertionUtil.AssertEqualsIgnoreNewline(soda, model.ToEPL(new EPStatementFormatter(true)));
             }
-            
+
             public ISet<RegressionFlag> Flags()
             {
                 return Collections.Set(RegressionFlag.DATAFLOW);

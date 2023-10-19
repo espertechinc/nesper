@@ -21,105 +21,142 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
-	public class EventXMLSchemaXPathBacked {
+    public class EventXMLSchemaXPathBacked
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithPreconfig(execs);
+            WithCreateSchema(execs);
+            return execs;
+        }
 
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EventXMLSchemaXPathBackedPreconfig());
-	        execs.Add(new EventXMLSchemaXPathBackedCreateSchema());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithCreateSchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaXPathBackedCreateSchema());
+            return execs;
+        }
 
-	    public class EventXMLSchemaXPathBackedPreconfig : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            RunAssertion(env, true, "XMLSchemaConfigOne", new RegressionPath());
-	        }
-	    }
+        public static IList<RegressionExecution> WithPreconfig(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventXMLSchemaXPathBackedPreconfig());
+            return execs;
+        }
 
-	    public class EventXMLSchemaXPathBackedCreateSchema : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var schemaUriSimpleSchema = env.Container.ResourceManager().ResolveResourceURL("regression/simpleSchema.xsd").ToString();
-	            var epl = "@public @buseventtype " +
-	                      "@XMLSchema(rootElementName='simpleEvent', schemaResource='" + schemaUriSimpleSchema + "', xpathPropertyExpr=true)" +
-	                      "@XMLSchemaNamespacePrefix(prefix='ss', namespace='samples:schemas:simpleSchema')" +
-	                      "@XMLSchemaField(name='customProp', xpath='count(/ss:simpleEvent/ss:nested3/ss:nested4)', type='number')" +
-	                      "create xml schema MyEventCreateSchema()";
-	            var path = new RegressionPath();
-	            env.CompileDeploy(epl, path);
-	            RunAssertion(env, true, "MyEventCreateSchema", path);
-	        }
-	    }
+        public class EventXMLSchemaXPathBackedPreconfig : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertion(env, true, "XMLSchemaConfigOne", new RegressionPath());
+            }
+        }
 
-	    internal static void RunAssertion(RegressionEnvironment env, bool xpath, string typeName, RegressionPath path) {
+        public class EventXMLSchemaXPathBackedCreateSchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var schemaUriSimpleSchema = env.Container.ResourceManager()
+                    .ResolveResourceURL("regression/simpleSchema.xsd")
+                    .ToString();
+                var epl = "@public @buseventtype " +
+                          "@XMLSchema(rootElementName='simpleEvent', schemaResource='" +
+                          schemaUriSimpleSchema +
+                          "', xpathPropertyExpr=true)" +
+                          "@XMLSchemaNamespacePrefix(prefix='ss', namespace='samples:schemas:simpleSchema')" +
+                          "@XMLSchemaField(name='customProp', xpath='count(/ss:simpleEvent/ss:nested3/ss:nested4)', type='number')" +
+                          "create xml schema MyEventCreateSchema()";
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                RunAssertion(env, true, "MyEventCreateSchema", path);
+            }
+        }
 
-	        var stmtSelectWild = "@name('s0') select * from " + typeName;
-	        env.CompileDeploy(stmtSelectWild, path).AddListener("s0");
-	        env.AssertStatement("s0", statement => {
-	            var type = statement.EventType;
-	            SupportEventTypeAssertionUtil.AssertConsistency(type);
+        internal static void RunAssertion(
+            RegressionEnvironment env,
+            bool xpath,
+            string typeName,
+            RegressionPath path)
+        {
+            var stmtSelectWild = "@name('s0') select * from " + typeName;
+            env.CompileDeploy(stmtSelectWild, path).AddListener("s0");
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    var type = statement.EventType;
+                    SupportEventTypeAssertionUtil.AssertConsistency(type);
 
-	            SupportEventPropUtil.AssertPropsEquals(type.PropertyDescriptors.ToArray(),
-	                new SupportEventPropDesc("nested1", typeof(XmlNode)).WithFragment(!xpath),
-	                new SupportEventPropDesc("prop4", typeof(string)),
-	                new SupportEventPropDesc("nested3", typeof(XmlNode)).WithFragment(!xpath),
-	                new SupportEventPropDesc("customProp", typeof(double?)));
-	        });
-	        env.UndeployModuleContaining("s0");
+                    SupportEventPropUtil.AssertPropsEquals(
+                        type.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("nested1", typeof(XmlNode)).WithFragment(!xpath),
+                        new SupportEventPropDesc("prop4", typeof(string)),
+                        new SupportEventPropDesc("nested3", typeof(XmlNode)).WithFragment(!xpath),
+                        new SupportEventPropDesc("customProp", typeof(double?)));
+                });
+            env.UndeployModuleContaining("s0");
 
-	        var stmt = "@name('s0') select nested1 as nodeProp," +
-	                   "prop4 as nested1Prop," +
-	                   "nested1.prop2 as nested2Prop," +
-	                   "nested3.nested4('a').prop5[1] as complexProp," +
-	                   "nested1.nested2.prop3[2] as indexedProp," +
-	                   "customProp," +
-	                   "prop4.attr2 as attrOneProp," +
-	                   "nested3.nested4[2].id as attrTwoProp" +
-	                   " from " + typeName + "#length(100)";
+            var stmt = "@name('s0') select nested1 as nodeProp," +
+                       "prop4 as nested1Prop," +
+                       "nested1.prop2 as nested2Prop," +
+                       "nested3.nested4('a').prop5[1] as complexProp," +
+                       "nested1.nested2.prop3[2] as indexedProp," +
+                       "customProp," +
+                       "prop4.attr2 as attrOneProp," +
+                       "nested3.nested4[2].id as attrTwoProp" +
+                       " from " +
+                       typeName +
+                       "#length(100)";
 
-	        env.CompileDeploy(stmt, path).AddListener("s0");
-	        env.AssertStatement("s0", statement => {
-	            var type = statement.EventType;
-	            SupportEventTypeAssertionUtil.AssertConsistency(type);
-	            SupportEventPropUtil.AssertPropsEquals(type.PropertyDescriptors.ToArray(),
-	                new SupportEventPropDesc("nodeProp", typeof(XmlNode)).WithFragment(!xpath),
-	                new SupportEventPropDesc("nested1Prop", typeof(string)),
-	                new SupportEventPropDesc("nested2Prop", typeof(bool?)),
-	                new SupportEventPropDesc("complexProp", typeof(string)),
-	                new SupportEventPropDesc("indexedProp", typeof(int?)),
-	                new SupportEventPropDesc("customProp", typeof(double?)),
-	                new SupportEventPropDesc("attrOneProp", typeof(bool?)),
-	                new SupportEventPropDesc("attrTwoProp", typeof(string)));
-	        });
+            env.CompileDeploy(stmt, path).AddListener("s0");
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    var type = statement.EventType;
+                    SupportEventTypeAssertionUtil.AssertConsistency(type);
+                    SupportEventPropUtil.AssertPropsEquals(
+                        type.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("nodeProp", typeof(XmlNode)).WithFragment(!xpath),
+                        new SupportEventPropDesc("nested1Prop", typeof(string)),
+                        new SupportEventPropDesc("nested2Prop", typeof(bool?)),
+                        new SupportEventPropDesc("complexProp", typeof(string)),
+                        new SupportEventPropDesc("indexedProp", typeof(int?)),
+                        new SupportEventPropDesc("customProp", typeof(double?)),
+                        new SupportEventPropDesc("attrOneProp", typeof(bool?)),
+                        new SupportEventPropDesc("attrTwoProp", typeof(string)));
+                });
 
-	        var doc = SupportXML.MakeDefaultEvent("test");
-	        env.SendEventXMLDOM(doc, typeName);
+            var doc = SupportXML.MakeDefaultEvent("test");
+            env.SendEventXMLDOM(doc, typeName);
 
-	        env.AssertListener("s0", listener => {
-	            Assert.IsNotNull(listener.LastNewData);
-	            var theEvent = listener.LastNewData[0];
+            env.AssertListener(
+                "s0",
+                listener => {
+                    Assert.IsNotNull(listener.LastNewData);
+                    var theEvent = listener.LastNewData[0];
 
-	            Assert.AreSame(doc.DocumentElement.ChildNodes.Item(1), theEvent.Get("nodeProp"));
-	            Assert.AreEqual("SAMPLE_V6", theEvent.Get("nested1Prop"));
-	            Assert.AreEqual(true, theEvent.Get("nested2Prop"));
-	            Assert.AreEqual("SAMPLE_V8", theEvent.Get("complexProp"));
-	            Assert.AreEqual(5, theEvent.Get("indexedProp"));
-	            Assert.AreEqual(3.0, theEvent.Get("customProp"));
-	            Assert.AreEqual(true, theEvent.Get("attrOneProp"));
-	            Assert.AreEqual("c", theEvent.Get("attrTwoProp"));
-	        });
+                    Assert.AreSame(doc.DocumentElement.ChildNodes.Item(1), theEvent.Get("nodeProp"));
+                    Assert.AreEqual("SAMPLE_V6", theEvent.Get("nested1Prop"));
+                    Assert.AreEqual(true, theEvent.Get("nested2Prop"));
+                    Assert.AreEqual("SAMPLE_V8", theEvent.Get("complexProp"));
+                    Assert.AreEqual(5, theEvent.Get("indexedProp"));
+                    Assert.AreEqual(3.0, theEvent.Get("customProp"));
+                    Assert.AreEqual(true, theEvent.Get("attrOneProp"));
+                    Assert.AreEqual("c", theEvent.Get("attrTwoProp"));
+                });
 
-	        /// <summary>
-	        /// Comment-in for performance testing
-	        /// long start = System.nanoTime();
-	        /// {
-	        /// sendEvent("test");
-	        /// }
-	        /// long end = System.nanoTime();
-	        /// double delta = (end - start) / 1000d / 1000d / 1000d;
-	        /// Console.WriteLine(delta);
-	        /// </summary>
+            /// <summary>
+            /// Comment-in for performance testing
+            /// long start = System.nanoTime();
+            /// {
+            /// sendEvent("test");
+            /// }
+            /// long end = System.nanoTime();
+            /// double delta = (end - start) / 1000d / 1000d / 1000d;
+            /// Console.WriteLine(delta);
+            /// </summary>
 
-	        env.UndeployAll();
-	    }
-	}
+            env.UndeployAll();
+        }
+    }
 } // end of namespace

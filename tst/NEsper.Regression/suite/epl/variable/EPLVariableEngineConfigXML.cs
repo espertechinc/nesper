@@ -20,10 +20,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
     {
         public void Run(RegressionEnvironment env)
         {
-            var stmtTextSet = "@name('set') on SupportBean set p_1 = TheString, p_2 = BoolBoxed, p_3 = IntBoxed, p_4 = IntBoxed";
+            var stmtTextSet =
+                "@name('set') on SupportBean set p_1 = TheString, p_2 = BoolBoxed, p_3 = IntBoxed, p_4 = IntBoxed";
             env.CompileDeploy(stmtTextSet).AddListener("set");
-            string[] fieldsVar = {"p_1", "p_2", "p_3", "p_4"};
-            env.AssertPropsPerRowIterator("set", fieldsVar, new object[][]{ new object[] {null, true, 10L, 11.1d}});
+            string[] fieldsVar = { "p_1", "p_2", "p_3", "p_4" };
+            env.AssertPropsPerRowIterator("set", fieldsVar, new object[][] { new object[] { null, true, 10L, 11.1d } });
 
             env.AssertStatement(
                 "set",
@@ -37,19 +38,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     Array.Sort(typeSet.PropertyNames);
                     CollectionAssert.AreEquivalent(fieldsVar, typeSet.PropertyNames);
                 });
-            
+
             var bean = new SupportBean();
             bean.TheString = "text";
             bean.BoolBoxed = false;
             bean.IntBoxed = 200;
             env.SendEventBean(bean);
-            env.AssertPropsNew("set", fieldsVar, new object[]{"text", false, 200L, 200d});
-            env.AssertPropsPerRowIterator("set", fieldsVar, new object[][]{new object[] {"text", false, 200L, 200d}});
-            
+            env.AssertPropsNew("set", fieldsVar, new object[] { "text", false, 200L, 200d });
+            env.AssertPropsPerRowIterator(
+                "set",
+                fieldsVar,
+                new object[][] { new object[] { "text", false, 200L, 200d } });
+
             bean = new SupportBean(); // leave all fields null
             env.SendEventBean(bean);
-            env.AssertPropsNew("set", fieldsVar, new object[]{null, null, null, null});
-            env.AssertPropsPerRowIterator("set", fieldsVar, new object[][]{new object[] {null, null, null, null}});
+            env.AssertPropsNew("set", fieldsVar, new object[] { null, null, null, null });
+            env.AssertPropsPerRowIterator("set", fieldsVar, new object[][] { new object[] { null, null, null, null } });
 
             env.UndeployAll();
         }

@@ -21,320 +21,461 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 
-
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.variable
 {
-	public class EPLVariablesCreate {
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EPLVariableOM());
-	        execs.Add(new EPLVariableCompileStartStop());
-	        execs.Add(new EPLVariableSubscribeAndIterate());
-	        execs.Add(new EPLVariableDeclarationAndSelect());
-	        execs.Add(new EPLVariableInvalid());
-	        execs.Add(new EPLVariableDimensionAndPrimitive());
-	        execs.Add(new EPLVariableGenericType());
-	        return execs;
-	    }
+    public class EPLVariablesCreate
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithOM(execs);
+            WithCompileStartStop(execs);
+            WithSubscribeAndIterate(execs);
+            WithDeclarationAndSelect(execs);
+            WithInvalid(execs);
+            WithDimensionAndPrimitive(execs);
+            WithGenericType(execs);
+            return execs;
+        }
 
-	    private class EPLVariableGenericType : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('var') create variable List<String> mylist = Arrays.asList('a', 'b');\n" +
-	                      "@name('s0') select mylist as c0, mylist.where(v => v = 'a') as c1 from SupportBean;\n";
-	            env.CompileDeploy(epl).AddListener("s0");
+        public static IList<RegressionExecution> WithGenericType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableGenericType());
+            return execs;
+        }
 
-	            env.AssertStmtTypes("s0", "c0,c1".SplitCsv(), new Type[] {
-	                typeof(IList<string>), typeof(ICollection<string>)
-	            });
+        public static IList<RegressionExecution> WithDimensionAndPrimitive(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableDimensionAndPrimitive());
+            return execs;
+        }
 
-	            env.Milestone(0);
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableInvalid());
+            return execs;
+        }
 
-	            env.AssertThat(() => {
-	                var list = (IList<string>) env.Runtime.VariableService.GetVariableValue(env.DeploymentId("var"), "mylist");
-	                EPAssertionUtil.AssertEqualsExactOrder("a,b".SplitCsv(), list.ToArray());
-	            });
+        public static IList<RegressionExecution> WithDeclarationAndSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableDeclarationAndSelect());
+            return execs;
+        }
 
-	            env.SendEventBean(new SupportBean());
-	            env.AssertEventNew("s0", received => {
-	                EPAssertionUtil.AssertEqualsExactOrder("a,b".SplitCsv(), received.Get("c0").UnwrapIntoArray<object>());
-	                EPAssertionUtil.AssertEqualsExactOrder("a".SplitCsv(), received.Get("c1").UnwrapIntoArray<object>());
-	            });
+        public static IList<RegressionExecution> WithSubscribeAndIterate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableSubscribeAndIterate());
+            return execs;
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        public static IList<RegressionExecution> WithCompileStartStop(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableCompileStartStop());
+            return execs;
+        }
 
-	    private class EPLVariableDimensionAndPrimitive : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl =
-	                "@name('vars') create variable int[primitive] int_prim = null;\n" +
-	                    "create variable int[] int_boxed = null;\n" +
-	                    "create variable System.Object[] objectarray = null;\n" +
-	                    "create variable System.Object[][] objectarray_2dim = null;\n";
-	            var id = env.CompileDeploy(epl).DeploymentId("vars");
+        public static IList<RegressionExecution> WithOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableOM());
+            return execs;
+        }
 
-	            RunAssertionSetGet(env, id, "int_prim", new int[]{1, 2},
-	                (expected, received) => EPAssertionUtil.AssertEqualsExactOrder((int[]) expected, (int[]) received));
-	            RunAssertionGetSetInvalid(env, id, "int_prim", Array.Empty<string>());
+        private class EPLVariableGenericType : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('var') create variable List<String> mylist = Arrays.asList('a', 'b');\n" +
+                          "@name('s0') select mylist as c0, mylist.where(v => v = 'a') as c1 from SupportBean;\n";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	            RunAssertionSetGet(env, id, "int_boxed", new int?[]{1, 2},
-	                (expected, received) => EPAssertionUtil.AssertEqualsExactOrder((object[]) expected, (object[]) received));
-	            RunAssertionGetSetInvalid(env, id, "int_boxed", Array.Empty<int>());
+                env.AssertStmtTypes(
+                    "s0",
+                    "c0,c1".SplitCsv(),
+                    new Type[] {
+                        typeof(IList<string>), typeof(ICollection<string>)
+                    });
 
-	            RunAssertionSetGet(env, id, "objectarray", new int?[]{1, 2},
-	                (expected, received) => EPAssertionUtil.AssertEqualsExactOrder((object[]) expected, (object[]) received));
-	            RunAssertionGetSetInvalid(env, id, "objectarray", Array.Empty<int>());
+                env.Milestone(0);
 
-	            RunAssertionSetGet(env, id, "objectarray_2dim", new object[][]{new object[] {1, 2}},
-	                (expected, received) => EPAssertionUtil.AssertEqualsExactOrder((object[]) expected, (object[]) received));
-	            RunAssertionGetSetInvalid(env, id, "objectarray_2dim", Array.Empty<int>());
+                env.AssertThat(
+                    () => {
+                        var list = (IList<string>)env.Runtime.VariableService.GetVariableValue(
+                            env.DeploymentId("var"),
+                            "mylist");
+                        EPAssertionUtil.AssertEqualsExactOrder("a,b".SplitCsv(), list.ToArray());
+                    });
 
-	            env.UndeployAll();
-	        }
+                env.SendEventBean(new SupportBean());
+                env.AssertEventNew(
+                    "s0",
+                    received => {
+                        EPAssertionUtil.AssertEqualsExactOrder(
+                            "a,b".SplitCsv(),
+                            received.Get("c0").UnwrapIntoArray<object>());
+                        EPAssertionUtil.AssertEqualsExactOrder(
+                            "a".SplitCsv(),
+                            received.Get("c1").UnwrapIntoArray<object>());
+                    });
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.RUNTIMEOPS);
-	        }
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private static void RunAssertionSetGet(RegressionEnvironment env, string deploymentId, string variableName, object value, BiConsumer<object, object> assertion) {
-	        env.Runtime.VariableService.SetVariableValue(deploymentId, variableName, value);
-	        var returned = env.Runtime.VariableService.GetVariableValue(deploymentId, variableName);
-	        assertion.Invoke(value, returned);
-	    }
+        private class EPLVariableDimensionAndPrimitive : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('vars') create variable int[primitive] int_prim = null;\n" +
+                    "create variable int[] int_boxed = null;\n" +
+                    "create variable System.Object[] objectarray = null;\n" +
+                    "create variable System.Object[][] objectarray_2dim = null;\n";
+                var id = env.CompileDeploy(epl).DeploymentId("vars");
 
-	    private static void RunAssertionGetSetInvalid(RegressionEnvironment env, string id, string variableName, object value) {
-	        try {
-	            env.Runtime.VariableService.SetVariableValue(id, variableName, value);
-	            Assert.Fail();
-	        } catch (VariableValueException ex) {
-	            // expected
-	        }
-	    }
+                RunAssertionSetGet(
+                    env,
+                    id,
+                    "int_prim",
+                    new int[] { 1, 2 },
+                    (
+                        expected,
+                        received) => EPAssertionUtil.AssertEqualsExactOrder((int[])expected, (int[])received));
+                RunAssertionGetSetInvalid(env, id, "int_prim", Array.Empty<string>());
 
-	    private class EPLVariableOM : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            var model = new EPStatementObjectModel();
-	            model.Annotations = Collections.SingletonList(new AnnotationPart("public"));
-	            model.CreateVariable = CreateVariableClause.Create("long", "var1OMCreate", null);
-	            env.CompileDeploy(model, path);
-	            Assert.AreEqual("@public create variable long var1OMCreate", model.ToEPL());
+                RunAssertionSetGet(
+                    env,
+                    id,
+                    "int_boxed",
+                    new int?[] { 1, 2 },
+                    (
+                        expected,
+                        received) => EPAssertionUtil.AssertEqualsExactOrder((object[])expected, (object[])received));
+                RunAssertionGetSetInvalid(env, id, "int_boxed", Array.Empty<int>());
 
-	            model = new EPStatementObjectModel();
-	            model.Annotations = Collections.SingletonList(new AnnotationPart("public"));
-	            model.CreateVariable = CreateVariableClause.Create("string", "var2OMCreate", Expressions.Constant("abc"));
-	            env.CompileDeploy(model, path);
-	            Assert.AreEqual("@public create variable string var2OMCreate = \"abc\"", model.ToEPL());
+                RunAssertionSetGet(
+                    env,
+                    id,
+                    "objectarray",
+                    new int?[] { 1, 2 },
+                    (
+                        expected,
+                        received) => EPAssertionUtil.AssertEqualsExactOrder((object[])expected, (object[])received));
+                RunAssertionGetSetInvalid(env, id, "objectarray", Array.Empty<int>());
 
-	            var stmtTextSelect = "@name('s0') select var1OMCreate, var2OMCreate from SupportBean";
-	            env.CompileDeploy(stmtTextSelect, path).AddListener("s0");
+                RunAssertionSetGet(
+                    env,
+                    id,
+                    "objectarray_2dim",
+                    new object[][] { new object[] { 1, 2 } },
+                    (
+                        expected,
+                        received) => EPAssertionUtil.AssertEqualsExactOrder((object[])expected, (object[])received));
+                RunAssertionGetSetInvalid(env, id, "objectarray_2dim", Array.Empty<int>());
 
-	            var fieldsVar = new string[]{"var1OMCreate", "var2OMCreate"};
-	            SendSupportBean(env, "E1", 10);
-	            env.AssertPropsNew("s0", fieldsVar, new object[]{null, "abc"});
+                env.UndeployAll();
+            }
 
-	            env.CompileDeploy("create variable double[] arrdouble = {1.0d,2.0d}");
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.RUNTIMEOPS);
+            }
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        private static void RunAssertionSetGet(
+            RegressionEnvironment env,
+            string deploymentId,
+            string variableName,
+            object value,
+            BiConsumer<object, object> assertion)
+        {
+            env.Runtime.VariableService.SetVariableValue(deploymentId, variableName, value);
+            var returned = env.Runtime.VariableService.GetVariableValue(deploymentId, variableName);
+            assertion.Invoke(value, returned);
+        }
 
-	    private class EPLVariableCompileStartStop : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
+        private static void RunAssertionGetSetInvalid(
+            RegressionEnvironment env,
+            string id,
+            string variableName,
+            object value)
+        {
+            try {
+                env.Runtime.VariableService.SetVariableValue(id, variableName, value);
+                Assert.Fail();
+            }
+            catch (VariableValueException ex) {
+                // expected
+            }
+        }
 
-	            var text = "@public create variable long var1CSS";
-	            env.EplToModelCompileDeploy(text, path);
+        private class EPLVariableOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var model = new EPStatementObjectModel();
+                model.Annotations = Collections.SingletonList(new AnnotationPart("public"));
+                model.CreateVariable = CreateVariableClause.Create("long", "var1OMCreate", null);
+                env.CompileDeploy(model, path);
+                Assert.AreEqual("@public create variable long var1OMCreate", model.ToEPL());
 
-	            text = "@public create variable string var2CSS = \"abc\"";
-	            env.EplToModelCompileDeploy(text, path);
+                model = new EPStatementObjectModel();
+                model.Annotations = Collections.SingletonList(new AnnotationPart("public"));
+                model.CreateVariable = CreateVariableClause.Create(
+                    "string",
+                    "var2OMCreate",
+                    Expressions.Constant("abc"));
+                env.CompileDeploy(model, path);
+                Assert.AreEqual("@public create variable string var2OMCreate = \"abc\"", model.ToEPL());
 
-	            var stmtTextSelect = "@name('s0') select var1CSS, var2CSS from SupportBean";
-	            env.CompileDeploy(stmtTextSelect, path).AddListener("s0");
+                var stmtTextSelect = "@name('s0') select var1OMCreate, var2OMCreate from SupportBean";
+                env.CompileDeploy(stmtTextSelect, path).AddListener("s0");
 
-	            var fieldsVar = new string[]{"var1CSS", "var2CSS"};
-	            SendSupportBean(env, "E1", 10);
-	            env.AssertPropsNew("s0", fieldsVar, new object[]{null, "abc"});
+                var fieldsVar = new string[] { "var1OMCreate", "var2OMCreate" };
+                SendSupportBean(env, "E1", 10);
+                env.AssertPropsNew("s0", fieldsVar, new object[] { null, "abc" });
 
-	            // ESPER-545
-	            var createText = "@name('create') @public create variable int FOO = 0";
-	            env.CompileDeploy(createText, path);
-	            env.CompileDeploy("on pattern [every SupportBean] set FOO = FOO + 1", path);
-	            env.SendEventBean(new SupportBean());
-	            env.AssertThat(() => Assert.AreEqual(1, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "FOO")));
+                env.CompileDeploy("create variable double[] arrdouble = {1.0d,2.0d}");
 
-	            env.UndeployAll();
+                env.UndeployAll();
+            }
+        }
 
-	            env.CompileDeploy(createText);
-	            env.AssertThat(() => Assert.AreEqual(0, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "FOO")));
+        private class EPLVariableCompileStartStop : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
 
-	            // cleanup of variable when statement exception occurs
-	            env.CompileDeploy("@private create variable int x = 123");
-	            env.TryInvalidCompile("select missingScript(x) from SupportBean", "skip");
-	            env.CompileDeploy("@private create variable int x = 123");
+                var text = "@public create variable long var1CSS";
+                env.EplToModelCompileDeploy(text, path);
 
-	            env.UndeployAll();
-	        }
-	    }
+                text = "@public create variable string var2CSS = \"abc\"";
+                env.EplToModelCompileDeploy(text, path);
 
-	    private class EPLVariableSubscribeAndIterate : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            var stmtCreateTextOne = "@name('create-one') @public create variable long var1SAI = null";
-	            env.CompileDeploy(stmtCreateTextOne, path).AddListener("create-one");
-	            env.AssertStatement("create-one", statement => {
-	                Assert.AreEqual(StatementType.CREATE_VARIABLE, statement.GetProperty(StatementProperty.STATEMENTTYPE));
-	                Assert.AreEqual("var1SAI", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
-	            });
+                var stmtTextSelect = "@name('s0') select var1CSS, var2CSS from SupportBean";
+                env.CompileDeploy(stmtTextSelect, path).AddListener("s0");
 
-	            var fieldsVar1 = new string[]{"var1SAI"};
-	            env.AssertPropsPerRowIterator("create-one", fieldsVar1, new object[][]{new object[] {null}});
-	            env.AssertListenerNotInvoked("create-one");
+                var fieldsVar = new string[] { "var1CSS", "var2CSS" };
+                SendSupportBean(env, "E1", 10);
+                env.AssertPropsNew("s0", fieldsVar, new object[] { null, "abc" });
 
-	            env.AssertStatement("create-one", statement => {
-	                var typeCreateOne = statement.EventType;
-	                Assert.AreEqual(typeof(long?), typeCreateOne.GetPropertyType("var1SAI"));
-	                Assert.AreEqual(typeof(IDictionary<string, object>), typeCreateOne.UnderlyingType);
-	                CollectionAssert.AreEqual(typeCreateOne.PropertyNames, new string[]{"var1SAI"});
-	            });
+                // ESPER-545
+                var createText = "@name('create') @public create variable int FOO = 0";
+                env.CompileDeploy(createText, path);
+                env.CompileDeploy("on pattern [every SupportBean] set FOO = FOO + 1", path);
+                env.SendEventBean(new SupportBean());
+                env.AssertThat(
+                    () => Assert.AreEqual(
+                        1,
+                        env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "FOO")));
 
-	            var stmtCreateTextTwo = "@name('create-two') @public create variable long var2SAI = 20";
-	            env.CompileDeploy(stmtCreateTextTwo, path).AddListener("create-two");
-	            var fieldsVar2 = new string[]{"var2SAI"};
-	            env.AssertPropsPerRowIterator("create-two", fieldsVar2, new object[][]{new object[] {20L}});
-	            env.AssertListenerNotInvoked("create-two");
+                env.UndeployAll();
 
-	            var stmtTextSet = "@name('set') on SupportBean set var1SAI = intPrimitive * 2, var2SAI = var1SAI + 1";
-	            env.CompileDeploy(stmtTextSet, path);
+                env.CompileDeploy(createText);
+                env.AssertThat(
+                    () => Assert.AreEqual(
+                        0,
+                        env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "FOO")));
 
-	            SendSupportBean(env, "E1", 100);
-	            env.AssertPropsIRPair("create-one", fieldsVar1, new object[]{200L}, new object[]{null});
-	            env.AssertPropsIRPair("create-two", fieldsVar2, new object[]{201L}, new object[]{20L});
-	            env.AssertPropsPerRowIterator("create-one", fieldsVar1, new object[][]{new object[] {200L}});
-	            env.AssertPropsPerRowIterator("create-two", fieldsVar2, new object[][]{new object[] {201L}});
+                // cleanup of variable when statement exception occurs
+                env.CompileDeploy("@private create variable int x = 123");
+                env.TryInvalidCompile("select missingScript(x) from SupportBean", "skip");
+                env.CompileDeploy("@private create variable int x = 123");
 
-	            env.Milestone(0);
+                env.UndeployAll();
+            }
+        }
 
-	            SendSupportBean(env, "E2", 200);
-	            env.AssertPropsIRPair("create-one", fieldsVar1, new object[]{400L}, new object[]{200L});
-	            env.AssertPropsIRPair("create-two", fieldsVar2, new object[]{401L}, new object[]{201L});
-	            env.AssertPropsPerRowIterator("create-one", fieldsVar1, new object[][]{new object[] {400L}});
-	            env.AssertPropsPerRowIterator("create-two", fieldsVar2, new object[][]{new object[] {401L}});
+        private class EPLVariableSubscribeAndIterate : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var stmtCreateTextOne = "@name('create-one') @public create variable long var1SAI = null";
+                env.CompileDeploy(stmtCreateTextOne, path).AddListener("create-one");
+                env.AssertStatement(
+                    "create-one",
+                    statement => {
+                        Assert.AreEqual(
+                            StatementType.CREATE_VARIABLE,
+                            statement.GetProperty(StatementProperty.STATEMENTTYPE));
+                        Assert.AreEqual("var1SAI", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
+                    });
 
-	            env.UndeployModuleContaining("set");
-	            env.UndeployModuleContaining("create-two");
-	            env.CompileDeploy(stmtCreateTextTwo);
+                var fieldsVar1 = new string[] { "var1SAI" };
+                env.AssertPropsPerRowIterator("create-one", fieldsVar1, new object[][] { new object[] { null } });
+                env.AssertListenerNotInvoked("create-one");
 
-	            env.AssertPropsPerRowIterator("create-one", fieldsVar1, new object[][]{new object[] {400L}});
-	            env.AssertPropsPerRowIterator("create-two", fieldsVar2, new object[][]{new object[] {20L}});
-	            env.UndeployAll();
-	        }
-	    }
+                env.AssertStatement(
+                    "create-one",
+                    statement => {
+                        var typeCreateOne = statement.EventType;
+                        Assert.AreEqual(typeof(long?), typeCreateOne.GetPropertyType("var1SAI"));
+                        Assert.AreEqual(typeof(IDictionary<string, object>), typeCreateOne.UnderlyingType);
+                        CollectionAssert.AreEqual(typeCreateOne.PropertyNames, new string[] { "var1SAI" });
+                    });
 
-	    private class EPLVariableDeclarationAndSelect : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var variables = new object[][]{
-	                new object[] {"varX1", "int", "1", 1},
-	                new object[] {"varX2", "int", "'2'", 2},
-	                new object[] {"varX3", "INTEGER", " 3+2 ", 5},
-	                new object[] {"varX4", "bool", " true|false ", true},
-	                new object[] {"varX5", "boolean", " varX1=1 ", true},
-	                new object[] {"varX6", "double", " 1.11 ", 1.11d},
-	                new object[] {"varX7", "double", " 1.20d ", 1.20d},
-	                new object[] {"varX8", "Double", " ' 1.12 ' ", 1.12d},
-	                new object[] {"varX9", "float", " 1.13f*2f ", 2.26f},
-	                new object[] {"varX10", "FLOAT", " -1.14f ", -1.14f},
-	                new object[] {"varX11", "string", " ' XXXX ' ", " XXXX "},
-	                new object[] {"varX12", "string", " \"a\" ", "a"},
-	                new object[] {"varX13", "character", "'a'", 'a'},
-	                new object[] {"varX14", "char", "'x'", 'x'},
-	                new object[] {"varX15", "short", " 20 ", (short) 20},
-	                new object[] {"varX16", "SHORT", " ' 9 ' ", (short) 9},
-	                new object[] {"varX17", "long", " 20*2 ", (long) 40},
-	                new object[] {"varX18", "LONG", " ' 9 ' ", (long) 9},
-	                new object[] {"varX19", "byte", " 20*2 ", (byte) 40},
-	                new object[] {"varX20", "BYTE", "9+1", (byte) 10},
-	                new object[] {"varX21", "int", null, null},
-	                new object[] {"varX22", "bool", null, null},
-	                new object[] {"varX23", "double", null, null},
-	                new object[] {"varX24", "float", null, null},
-	                new object[] {"varX25", "string", null, null},
-	                new object[] {"varX26", "char", null, null},
-	                new object[] {"varX27", "short", null, null},
-	                new object[] {"varX28", "long", null, null},
-	                new object[] {"varX29", "BYTE", null, null},
-	            };
+                var stmtCreateTextTwo = "@name('create-two') @public create variable long var2SAI = 20";
+                env.CompileDeploy(stmtCreateTextTwo, path).AddListener("create-two");
+                var fieldsVar2 = new string[] { "var2SAI" };
+                env.AssertPropsPerRowIterator("create-two", fieldsVar2, new object[][] { new object[] { 20L } });
+                env.AssertListenerNotInvoked("create-two");
 
-	            var path = new RegressionPath();
-	            for (var i = 0; i < variables.Length; i++) {
-	                var text = "@public create variable " + variables[i][1] + " " + variables[i][0];
-	                if (variables[i][2] != null) {
-	                    text += " = " + variables[i][2];
-	                }
-	                env.CompileDeploy(text, path);
-	            }
+                var stmtTextSet = "@name('set') on SupportBean set var1SAI = intPrimitive * 2, var2SAI = var1SAI + 1";
+                env.CompileDeploy(stmtTextSet, path);
 
-	            env.Milestone(0);
+                SendSupportBean(env, "E1", 100);
+                env.AssertPropsIRPair("create-one", fieldsVar1, new object[] { 200L }, new object[] { null });
+                env.AssertPropsIRPair("create-two", fieldsVar2, new object[] { 201L }, new object[] { 20L });
+                env.AssertPropsPerRowIterator("create-one", fieldsVar1, new object[][] { new object[] { 200L } });
+                env.AssertPropsPerRowIterator("create-two", fieldsVar2, new object[][] { new object[] { 201L } });
 
-	            // select all variables
-	            var buf = new StringBuilder();
-	            var delimiter = "";
-	            buf.Append("@name('s0') select ");
-	            for (var i = 0; i < variables.Length; i++) {
-	                buf.Append(delimiter);
-	                buf.Append(variables[i][0]);
-	                delimiter = ",";
-	            }
-	            buf.Append(" from SupportBean");
-	            env.CompileDeploy(buf.ToString(), path).AddListener("s0");
+                env.Milestone(0);
 
-	            // assert initialization values
-	            SendSupportBean(env, "E1", 1);
-	            env.AssertEventNew("s0", received => {
-	                for (var i = 0; i < variables.Length; i++) {
-		                Assert.AreEqual(
-			                variables[i][3],
-			                received.Get((string)variables[i][0]),
-			                "Failed for " + CompatExtensions.Render(variables[i]));
-	                }
-	            });
+                SendSupportBean(env, "E2", 200);
+                env.AssertPropsIRPair("create-one", fieldsVar1, new object[] { 400L }, new object[] { 200L });
+                env.AssertPropsIRPair("create-two", fieldsVar2, new object[] { 401L }, new object[] { 201L });
+                env.AssertPropsPerRowIterator("create-one", fieldsVar1, new object[][] { new object[] { 400L } });
+                env.AssertPropsPerRowIterator("create-two", fieldsVar2, new object[][] { new object[] { 401L } });
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.UndeployModuleContaining("set");
+                env.UndeployModuleContaining("create-two");
+                env.CompileDeploy(stmtCreateTextTwo);
 
-	    private class EPLVariableInvalid : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var stmt = "create variable somedummy myvar = 10";
-	            env.TryInvalidCompile(stmt, "Cannot create variable 'myvar', type 'somedummy' is not a recognized type [create variable somedummy myvar = 10]");
+                env.AssertPropsPerRowIterator("create-one", fieldsVar1, new object[][] { new object[] { 400L } });
+                env.AssertPropsPerRowIterator("create-two", fieldsVar2, new object[][] { new object[] { 20L } });
+                env.UndeployAll();
+            }
+        }
 
-	            stmt = "create variable string myvar = 5";
-	            env.TryInvalidCompile(stmt, "Variable 'myvar' of declared type String cannot be initialized by a value of type Integer [create variable string myvar = 5]");
+        private class EPLVariableDeclarationAndSelect : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var variables = new object[][] {
+                    new object[] { "varX1", "int", "1", 1 },
+                    new object[] { "varX2", "int", "'2'", 2 },
+                    new object[] { "varX3", "INTEGER", " 3+2 ", 5 },
+                    new object[] { "varX4", "bool", " true|false ", true },
+                    new object[] { "varX5", "boolean", " varX1=1 ", true },
+                    new object[] { "varX6", "double", " 1.11 ", 1.11d },
+                    new object[] { "varX7", "double", " 1.20d ", 1.20d },
+                    new object[] { "varX8", "Double", " ' 1.12 ' ", 1.12d },
+                    new object[] { "varX9", "float", " 1.13f*2f ", 2.26f },
+                    new object[] { "varX10", "FLOAT", " -1.14f ", -1.14f },
+                    new object[] { "varX11", "string", " ' XXXX ' ", " XXXX " },
+                    new object[] { "varX12", "string", " \"a\" ", "a" },
+                    new object[] { "varX13", "character", "'a'", 'a' },
+                    new object[] { "varX14", "char", "'x'", 'x' },
+                    new object[] { "varX15", "short", " 20 ", (short)20 },
+                    new object[] { "varX16", "SHORT", " ' 9 ' ", (short)9 },
+                    new object[] { "varX17", "long", " 20*2 ", (long)40 },
+                    new object[] { "varX18", "LONG", " ' 9 ' ", (long)9 },
+                    new object[] { "varX19", "byte", " 20*2 ", (byte)40 },
+                    new object[] { "varX20", "BYTE", "9+1", (byte)10 },
+                    new object[] { "varX21", "int", null, null },
+                    new object[] { "varX22", "bool", null, null },
+                    new object[] { "varX23", "double", null, null },
+                    new object[] { "varX24", "float", null, null },
+                    new object[] { "varX25", "string", null, null },
+                    new object[] { "varX26", "char", null, null },
+                    new object[] { "varX27", "short", null, null },
+                    new object[] { "varX28", "long", null, null },
+                    new object[] { "varX29", "BYTE", null, null },
+                };
 
-	            stmt = "@public create variable string myvar = 'a'";
-	            var path = new RegressionPath();
-	            env.CompileDeploy("@public create variable string myvar = 'a'", path);
-	            env.TryInvalidCompile(path, stmt, "A variable by name 'myvar' has already been declared");
+                var path = new RegressionPath();
+                for (var i = 0; i < variables.Length; i++) {
+                    var text = "@public create variable " + variables[i][1] + " " + variables[i][0];
+                    if (variables[i][2] != null) {
+                        text += " = " + variables[i][2];
+                    }
 
-	            env.TryInvalidCompile("select * from SupportBean output every somevar events",
-	                "Failed to validate the output rate limiting clause: Variable named 'somevar' has not been declared [");
+                    env.CompileDeploy(text, path);
+                }
 
-	            env.TryInvalidCompile("create variable SupportBean<Integer> sb",
-	                "Cannot create variable 'sb', type 'SupportBean' cannot be declared as an array type and cannot receive type parameters as it is an event type");
+                env.Milestone(0);
 
-	            env.UndeployAll();
-	        }
-	    }
+                // select all variables
+                var buf = new StringBuilder();
+                var delimiter = "";
+                buf.Append("@name('s0') select ");
+                for (var i = 0; i < variables.Length; i++) {
+                    buf.Append(delimiter);
+                    buf.Append(variables[i][0]);
+                    delimiter = ",";
+                }
 
-	    private static void SendSupportBean(RegressionEnvironment env, string theString, int intPrimitive) {
-	        var bean = new SupportBean();
-	        bean.TheString = theString;
-	        bean.IntPrimitive = intPrimitive;
-	        env.SendEventBean(bean);
-	    }
-	}
+                buf.Append(" from SupportBean");
+                env.CompileDeploy(buf.ToString(), path).AddListener("s0");
+
+                // assert initialization values
+                SendSupportBean(env, "E1", 1);
+                env.AssertEventNew(
+                    "s0",
+                    received => {
+                        for (var i = 0; i < variables.Length; i++) {
+                            Assert.AreEqual(
+                                variables[i][3],
+                                received.Get((string)variables[i][0]),
+                                "Failed for " + CompatExtensions.Render(variables[i]));
+                        }
+                    });
+
+                env.UndeployAll();
+            }
+        }
+
+        private class EPLVariableInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmt = "create variable somedummy myvar = 10";
+                env.TryInvalidCompile(
+                    stmt,
+                    "Cannot create variable 'myvar', type 'somedummy' is not a recognized type [create variable somedummy myvar = 10]");
+
+                stmt = "create variable string myvar = 5";
+                env.TryInvalidCompile(
+                    stmt,
+                    "Variable 'myvar' of declared type String cannot be initialized by a value of type Integer [create variable string myvar = 5]");
+
+                stmt = "@public create variable string myvar = 'a'";
+                var path = new RegressionPath();
+                env.CompileDeploy("@public create variable string myvar = 'a'", path);
+                env.TryInvalidCompile(path, stmt, "A variable by name 'myvar' has already been declared");
+
+                env.TryInvalidCompile(
+                    "select * from SupportBean output every somevar events",
+                    "Failed to validate the output rate limiting clause: Variable named 'somevar' has not been declared [");
+
+                env.TryInvalidCompile(
+                    "create variable SupportBean<Integer> sb",
+                    "Cannot create variable 'sb', type 'SupportBean' cannot be declared as an array type and cannot receive type parameters as it is an event type");
+
+                env.UndeployAll();
+            }
+        }
+
+        private static void SendSupportBean(
+            RegressionEnvironment env,
+            string theString,
+            int intPrimitive)
+        {
+            var bean = new SupportBean();
+            bean.TheString = theString;
+            bean.IntPrimitive = intPrimitive;
+            env.SendEventBean(bean);
+        }
+    }
 } // end of namespace

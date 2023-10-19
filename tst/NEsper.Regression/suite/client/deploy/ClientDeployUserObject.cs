@@ -25,8 +25,22 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientDeployUserObjectValues());
+            WithValues(execs);
+            WithResolveContext(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithResolveContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientDeployUserObjectResolveContext());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithValues(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientDeployUserObjectValues());
             return execs;
         }
 

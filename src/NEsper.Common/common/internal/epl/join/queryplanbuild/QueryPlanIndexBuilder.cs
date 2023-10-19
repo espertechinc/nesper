@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                             var indexItem = new QueryPlanIndexItemForge(
                                 new string[] { indexedProp },
                                 new Type[] { indexedType },
-                                new string[0],
+                                Array.Empty<string>(),
                                 Type.EmptyTypes,
                                 false,
                                 null,
@@ -105,7 +105,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                                 var indexItem = new QueryPlanIndexItemForge(
                                     new string[] { identNode.ResolvedPropertyName },
                                     new Type[] { type },
-                                    new string[0],
+                                    Array.Empty<string>(),
                                     Type.EmptyTypes,
                                     false,
                                     null,
@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                         hashIndexProps = reduced.PropertyNames;
                         hashCoercionTypeArr = reduced.CoercionTypes;
                         unique = true;
-                        rangeIndexProps = new string[0];
+                        rangeIndexProps = Array.Empty<string>();
                         rangeCoercionTypeArr = Type.EmptyTypes;
                     }
 
@@ -147,9 +147,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 if (indexesSet.IsEmpty()) {
                     indexesSet.Add(
                         new QueryPlanIndexItemForge(
-                            new string[0],
+                            Array.Empty<string>(),
                             Type.EmptyTypes,
-                            new string[0],
+                            Array.Empty<string>(),
                             Type.EmptyTypes,
                             false,
                             null,

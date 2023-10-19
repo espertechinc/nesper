@@ -20,224 +20,355 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
-	public class ViewUnique {
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new ViewLastUniqueSceneOne(null));
-	        execs.Add(new ViewLastUniqueSceneTwo(null));
-	        execs.Add(new ViewLastUniqueWithAnnotationPrefix(null));
-	        execs.Add(new ViewUniqueExpressionParameter());
-	        execs.Add(new ViewUniqueTwoWindows());
-	        return execs;
-	    }
+    public class ViewUnique
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithLastUniqueSceneOne(execs);
+            WithLastUniqueSceneTwo(execs);
+            WithLastUniqueWithAnnotationPrefix(execs);
+            WithUniqueExpressionParameter(execs);
+            WithUniqueTwoWindows(execs);
+            return execs;
+        }
 
-	    public class ViewLastUniqueSceneOne : RegressionExecution {
+        public static IList<RegressionExecution> WithUniqueTwoWindows(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUniqueTwoWindows());
+            return execs;
+        }
 
-	        private readonly string optionalAnnotation;
+        public static IList<RegressionExecution> WithUniqueExpressionParameter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewUniqueExpressionParameter());
+            return execs;
+        }
 
-	        public ViewLastUniqueSceneOne(string optionalAnnotation) {
-	            this.optionalAnnotation = optionalAnnotation;
-	        }
+        public static IList<RegressionExecution> WithLastUniqueWithAnnotationPrefix(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLastUniqueWithAnnotationPrefix(null));
+            return execs;
+        }
 
-	        public void Run(RegressionEnvironment env) {
-	            var text = "@name('s0') select irstream symbol, price from SupportMarketDataBean#unique(symbol) order by symbol";
-	            if (optionalAnnotation != null) {
-	                text = optionalAnnotation + text;
-	            }
-	            env.CompileDeployAddListenerMileZero(text, "s0");
+        public static IList<RegressionExecution> WithLastUniqueSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLastUniqueSceneTwo(null));
+            return execs;
+        }
 
-	            env.SendEventBean(MakeMarketDataEvent("S1", 100));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "S1"}, new object[] {"price", 100.0}}, null);
+        public static IList<RegressionExecution> WithLastUniqueSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewLastUniqueSceneOne(null));
+            return execs;
+        }
 
-	            env.Milestone(1);
+        public class ViewLastUniqueSceneOne : RegressionExecution
+        {
+            private readonly string optionalAnnotation;
 
-	            env.SendEventBean(MakeMarketDataEvent("S2", 5));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "S2"}, new object[] {"price", 5.0}}, null);
+            public ViewLastUniqueSceneOne(string optionalAnnotation)
+            {
+                this.optionalAnnotation = optionalAnnotation;
+            }
 
-	            env.Milestone(2);
+            public void Run(RegressionEnvironment env)
+            {
+                var text =
+                    "@name('s0') select irstream symbol, price from SupportMarketDataBean#unique(symbol) order by symbol";
+                if (optionalAnnotation != null) {
+                    text = optionalAnnotation + text;
+                }
 
-	            env.SendEventBean(MakeMarketDataEvent("S1", 101));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "S1"}, new object[] {"price", 101.0}},
-	                new object[][]{new object[] {"symbol", "S1"}, new object[] {"price", 100.0}});
+                env.CompileDeployAddListenerMileZero(text, "s0");
 
-	            env.Milestone(3);
+                env.SendEventBean(MakeMarketDataEvent("S1", 100));
+                env.AssertPropsNV(
+                    "s0",
+                    new object[][] { new object[] { "symbol", "S1" }, new object[] { "price", 100.0 } },
+                    null);
 
-	            env.SendEventBean(MakeMarketDataEvent("S1", 102));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "S1"}, new object[] {"price", 102.0}},
-	                new object[][]{new object[] {"symbol", "S1"}, new object[] {"price", 101.0}});
+                env.Milestone(1);
 
-	            // test iterator
-	            env.AssertPropsPerRowIterator("s0", new string[]{"price"}, new object[][]{new object[] {102.0}, new object[] {5.0}});
+                env.SendEventBean(MakeMarketDataEvent("S2", 5));
+                env.AssertPropsNV(
+                    "s0",
+                    new object[][] { new object[] { "symbol", "S2" }, new object[] { "price", 5.0 } },
+                    null);
 
-	            env.Milestone(4);
+                env.Milestone(2);
 
-	            env.SendEventBean(MakeMarketDataEvent("S2", 6));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "S2"}, new object[] {"price", 6.0}},
-	                new object[][]{new object[] {"symbol", "S2"}, new object[] {"price", 5.0}});
+                env.SendEventBean(MakeMarketDataEvent("S1", 101));
+                env.AssertPropsNV(
+                    "s0",
+                    new object[][] { new object[] { "symbol", "S1" }, new object[] { "price", 101.0 } },
+                    new object[][] { new object[] { "symbol", "S1" }, new object[] { "price", 100.0 } });
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.Milestone(3);
 
-	    public class ViewLastUniqueSceneTwo : RegressionExecution {
-	        private readonly string optionalAnnotation;
+                env.SendEventBean(MakeMarketDataEvent("S1", 102));
+                env.AssertPropsNV(
+                    "s0",
+                    new object[][] { new object[] { "symbol", "S1" }, new object[] { "price", 102.0 } },
+                    new object[][] { new object[] { "symbol", "S1" }, new object[] { "price", 101.0 } });
 
-	        public ViewLastUniqueSceneTwo(string optionalAnnotation) {
-	            this.optionalAnnotation = optionalAnnotation;
-	        }
+                // test iterator
+                env.AssertPropsPerRowIterator(
+                    "s0",
+                    new string[] { "price" },
+                    new object[][] { new object[] { 102.0 }, new object[] { 5.0 } });
 
-	        public void Run(RegressionEnvironment env) {
-	            var text = "@name('s0') select irstream symbol, feed, price from  SupportMarketDataBean#unique(symbol, feed) order by symbol, feed";
-	            if (optionalAnnotation != null) {
-	                text = optionalAnnotation + text;
-	            }
-	            env.CompileDeployAddListenerMileZero(text, "s0");
+                env.Milestone(4);
 
-	            env.SendEventBean(MakeMarketDataEvent("S1", "F1", 100));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "S1"}, new object[] {"feed", "F1"}, new object[] {"price", 100.0}}, null);
+                env.SendEventBean(MakeMarketDataEvent("S2", 6));
+                env.AssertPropsNV(
+                    "s0",
+                    new object[][] { new object[] { "symbol", "S2" }, new object[] { "price", 6.0 } },
+                    new object[][] { new object[] { "symbol", "S2" }, new object[] { "price", 5.0 } });
 
-	            env.Milestone(1);
+                env.UndeployAll();
+            }
+        }
 
-	            env.SendEventBean(MakeMarketDataEvent("S2", "F1", 5));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "S2"}, new object[] {"feed", "F1"}, new object[] {"price", 5.0}}, null);
+        public class ViewLastUniqueSceneTwo : RegressionExecution
+        {
+            private readonly string optionalAnnotation;
 
-	            env.Milestone(2);
+            public ViewLastUniqueSceneTwo(string optionalAnnotation)
+            {
+                this.optionalAnnotation = optionalAnnotation;
+            }
 
-	            env.SendEventBean(MakeMarketDataEvent("S1", "F1", 101));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "S1"}, new object[] {"feed", "F1"}, new object[] {"price", 101.0}},
-	                new object[][]{new object[] {"symbol", "S1"}, new object[] {"feed", "F1"}, new object[] {"price", 100.0}});
+            public void Run(RegressionEnvironment env)
+            {
+                var text =
+                    "@name('s0') select irstream symbol, feed, price from  SupportMarketDataBean#unique(symbol, feed) order by symbol, feed";
+                if (optionalAnnotation != null) {
+                    text = optionalAnnotation + text;
+                }
 
-	            env.Milestone(3);
+                env.CompileDeployAddListenerMileZero(text, "s0");
 
-	            env.SendEventBean(MakeMarketDataEvent("S2", "F1", 102));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "S2"}, new object[] {"feed", "F1"}, new object[] {"price", 102.0}},
-	                new object[][]{new object[] {"symbol", "S2"}, new object[] {"feed", "F1"}, new object[] {"price", 5.0}});
+                env.SendEventBean(MakeMarketDataEvent("S1", "F1", 100));
+                env.AssertPropsNV(
+                    "s0",
+                    new object[][] {
+                        new object[] { "symbol", "S1" }, new object[] { "feed", "F1" }, new object[] { "price", 100.0 }
+                    },
+                    null);
 
-	            // test iterator
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", new string[]{"price"}, new object[][]{new object[] {101.0}, new object[] {102.0}});
+                env.Milestone(1);
 
-	            env.Milestone(4);
+                env.SendEventBean(MakeMarketDataEvent("S2", "F1", 5));
+                env.AssertPropsNV(
+                    "s0",
+                    new object[][] {
+                        new object[] { "symbol", "S2" }, new object[] { "feed", "F1" }, new object[] { "price", 5.0 }
+                    },
+                    null);
 
-	            env.SendEventBean(MakeMarketDataEvent("S1", "F2", 6));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "S1"}, new object[] {"feed", "F2"}, new object[] {"price", 6.0}}, null);
+                env.Milestone(2);
 
-	            // test iterator
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", new string[]{"price"}, new object[][]{new object[] {101.0}, new object[] {6.0}, new object[] {102.0}});
+                env.SendEventBean(MakeMarketDataEvent("S1", "F1", 101));
+                env.AssertPropsNV(
+                    "s0",
+                    new object[][] {
+                        new object[] { "symbol", "S1" }, new object[] { "feed", "F1" }, new object[] { "price", 101.0 }
+                    },
+                    new object[][] {
+                        new object[] { "symbol", "S1" }, new object[] { "feed", "F1" }, new object[] { "price", 100.0 }
+                    });
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.Milestone(3);
 
-	    public class ViewLastUniqueWithAnnotationPrefix : RegressionExecution {
-	        private readonly string optionalAnnotations;
+                env.SendEventBean(MakeMarketDataEvent("S2", "F1", 102));
+                env.AssertPropsNV(
+                    "s0",
+                    new object[][] {
+                        new object[] { "symbol", "S2" }, new object[] { "feed", "F1" }, new object[] { "price", 102.0 }
+                    },
+                    new object[][] {
+                        new object[] { "symbol", "S2" }, new object[] { "feed", "F1" }, new object[] { "price", 5.0 }
+                    });
 
-	        public ViewLastUniqueWithAnnotationPrefix(string optionalAnnotations) {
-	            this.optionalAnnotations = optionalAnnotations;
-	        }
+                // test iterator
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    new string[] { "price" },
+                    new object[][] { new object[] { 101.0 }, new object[] { 102.0 } });
 
-	        public void Run(RegressionEnvironment env) {
-	            var fields = "c0,c1".SplitCsv();
-	            var epl = "@name('s0') select irstream theString as c0, intPrimitive as c1 from SupportBean#unique(theString)";
-	            if (optionalAnnotations != null) {
-	                epl = optionalAnnotations + epl;
-	            }
-	            env.CompileDeployAddListenerMileZero(epl, "s0");
+                env.Milestone(4);
 
-	            env.Milestone(1);
+                env.SendEventBean(MakeMarketDataEvent("S1", "F2", 6));
+                env.AssertPropsNV(
+                    "s0",
+                    new object[][] {
+                        new object[] { "symbol", "S1" }, new object[] { "feed", "F2" }, new object[] { "price", 6.0 }
+                    },
+                    null);
 
-	            env.AssertPropsPerRowIterator("s0", fields, Array.Empty<object[]>());
-	            SendSupportBean(env, "E1", 1);
-	            env.AssertPropsNew("s0", fields, new object[]{"E1", 1});
+                // test iterator
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    new string[] { "price" },
+                    new object[][] { new object[] { 101.0 }, new object[] { 6.0 }, new object[] { 102.0 } });
 
-	            env.Milestone(2);
+                env.UndeployAll();
+            }
+        }
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E1", 1}});
-	            SendSupportBean(env, "E2", 20);
-	            env.AssertPropsNew("s0", fields, new object[]{"E2", 20});
+        public class ViewLastUniqueWithAnnotationPrefix : RegressionExecution
+        {
+            private readonly string optionalAnnotations;
 
-	            env.Milestone(3);
+            public ViewLastUniqueWithAnnotationPrefix(string optionalAnnotations)
+            {
+                this.optionalAnnotations = optionalAnnotations;
+            }
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E1", 1}, new object[] {"E2", 20}});
-	            SendSupportBean(env, "E1", 2);
-	            env.AssertPropsIRPair("s0", fields, new object[]{"E1", 2}, new object[]{"E1", 1});
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "c0,c1".SplitCsv();
+                var epl =
+                    "@name('s0') select irstream theString as c0, intPrimitive as c1 from SupportBean#unique(theString)";
+                if (optionalAnnotations != null) {
+                    epl = optionalAnnotations + epl;
+                }
 
-	            env.Milestone(4);
+                env.CompileDeployAddListenerMileZero(epl, "s0");
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E1", 2}, new object[] {"E2", 20}});
-	            SendSupportBean(env, "E2", 21);
-	            env.AssertPropsIRPair("s0", fields, new object[]{"E2", 21}, new object[]{"E2", 20});
+                env.Milestone(1);
 
-	            env.Milestone(5);
-	            env.Milestone(6);
+                env.AssertPropsPerRowIterator("s0", fields, Array.Empty<object[]>());
+                SendSupportBean(env, "E1", 1);
+                env.AssertPropsNew("s0", fields, new object[] { "E1", 1 });
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E1", 2}, new object[] {"E2", 21}});
-	            SendSupportBean(env, "E2", 22);
-	            env.AssertPropsIRPair("s0", fields, new object[]{"E2", 22}, new object[]{"E2", 21});
-	            SendSupportBean(env, "E1", 3);
-	            env.AssertPropsIRPair("s0", fields, new object[]{"E1", 3}, new object[]{"E1", 2});
+                env.Milestone(2);
 
-	            SendSupportBean(env, "E3", 30);
-	            env.AssertPropsNew("s0", fields, new object[]{"E3", 30});
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { "E1", 1 } });
+                SendSupportBean(env, "E2", 20);
+                env.AssertPropsNew("s0", fields, new object[] { "E2", 20 });
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.Milestone(3);
 
-	    private class ViewUniqueExpressionParameter : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select * from SupportBean#unique(Math.abs(intPrimitive))";
-	            env.CompileDeployAddListenerMileZero(epl, "s0");
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E1", 1 }, new object[] { "E2", 20 } });
+                SendSupportBean(env, "E1", 2);
+                env.AssertPropsIRPair("s0", fields, new object[] { "E1", 2 }, new object[] { "E1", 1 });
 
-	            SendSupportBean(env, "E1", 10);
-	            SendSupportBean(env, "E2", -10);
-	            SendSupportBean(env, "E3", -5);
-	            SendSupportBean(env, "E4", 5);
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", "theString".SplitCsv(), new object[][]{new object[] {"E2"}, new object[] {"E4"}});
+                env.Milestone(4);
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E1", 2 }, new object[] { "E2", 20 } });
+                SendSupportBean(env, "E2", 21);
+                env.AssertPropsIRPair("s0", fields, new object[] { "E2", 21 }, new object[] { "E2", 20 });
 
-	    private class ViewUniqueTwoWindows : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select irstream * from SupportBean#unique(intBoxed)";
-	            env.CompileDeployAddListenerMileZero(epl, "s0");
+                env.Milestone(5);
+                env.Milestone(6);
 
-	            var beanOne = new SupportBean("E1", 1);
-	            env.SendEventBean(beanOne);
-	            env.AssertListenerInvoked("s0");
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E1", 2 }, new object[] { "E2", 21 } });
+                SendSupportBean(env, "E2", 22);
+                env.AssertPropsIRPair("s0", fields, new object[] { "E2", 22 }, new object[] { "E2", 21 });
+                SendSupportBean(env, "E1", 3);
+                env.AssertPropsIRPair("s0", fields, new object[] { "E1", 3 }, new object[] { "E1", 2 });
 
-	            var eplTwo = "@name('s1') select irstream * from SupportBean#unique(intBoxed)";
-	            env.CompileDeployAddListenerMile(eplTwo, "s1", 1);
+                SendSupportBean(env, "E3", 30);
+                env.AssertPropsNew("s0", fields, new object[] { "E3", 30 });
 
-	            var beanTwo = new SupportBean("E2", 2);
-	            env.SendEventBean(beanTwo);
+                env.UndeployAll();
+            }
+        }
 
-	            env.AssertListener("s0", listener => {
-	                Assert.AreEqual(beanTwo, listener.LastNewData[0].Underlying);
-	                Assert.AreEqual(beanOne, listener.LastOldData[0].Underlying);
-	            });
-	            env.AssertListener("s1", listener => {
-	                Assert.AreEqual(beanTwo, listener.LastNewData[0].Underlying);
-	                Assert.IsNull(listener.LastOldData);
-	            });
+        private class ViewUniqueExpressionParameter : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select * from SupportBean#unique(Math.abs(intPrimitive))";
+                env.CompileDeployAddListenerMileZero(epl, "s0");
 
-	            env.UndeployAll();
-	        }
-	    }
+                SendSupportBean(env, "E1", 10);
+                SendSupportBean(env, "E2", -10);
+                SendSupportBean(env, "E3", -5);
+                SendSupportBean(env, "E4", 5);
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    "theString".SplitCsv(),
+                    new object[][] { new object[] { "E2" }, new object[] { "E4" } });
 
-	    private static void SendSupportBean(RegressionEnvironment env, string theString, int intPrimitive) {
-	        env.SendEventBean(new SupportBean(theString, intPrimitive));
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private static SupportMarketDataBean MakeMarketDataEvent(string symbol, string feed, double price) {
-	        var bean = new SupportMarketDataBean(symbol, price, 0L, feed);
-	        return bean;
-	    }
+        private class ViewUniqueTwoWindows : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select irstream * from SupportBean#unique(intBoxed)";
+                env.CompileDeployAddListenerMileZero(epl, "s0");
 
-	    private static SupportMarketDataBean MakeMarketDataEvent(string symbol, double price) {
-	        var bean = new SupportMarketDataBean(symbol, price, 0L, "");
-	        return bean;
-	    }
-	}
+                var beanOne = new SupportBean("E1", 1);
+                env.SendEventBean(beanOne);
+                env.AssertListenerInvoked("s0");
+
+                var eplTwo = "@name('s1') select irstream * from SupportBean#unique(intBoxed)";
+                env.CompileDeployAddListenerMile(eplTwo, "s1", 1);
+
+                var beanTwo = new SupportBean("E2", 2);
+                env.SendEventBean(beanTwo);
+
+                env.AssertListener(
+                    "s0",
+                    listener => {
+                        Assert.AreEqual(beanTwo, listener.LastNewData[0].Underlying);
+                        Assert.AreEqual(beanOne, listener.LastOldData[0].Underlying);
+                    });
+                env.AssertListener(
+                    "s1",
+                    listener => {
+                        Assert.AreEqual(beanTwo, listener.LastNewData[0].Underlying);
+                        Assert.IsNull(listener.LastOldData);
+                    });
+
+                env.UndeployAll();
+            }
+        }
+
+        private static void SendSupportBean(
+            RegressionEnvironment env,
+            string theString,
+            int intPrimitive)
+        {
+            env.SendEventBean(new SupportBean(theString, intPrimitive));
+        }
+
+        private static SupportMarketDataBean MakeMarketDataEvent(
+            string symbol,
+            string feed,
+            double price)
+        {
+            var bean = new SupportMarketDataBean(symbol, price, 0L, feed);
+            return bean;
+        }
+
+        private static SupportMarketDataBean MakeMarketDataEvent(
+            string symbol,
+            double price)
+        {
+            var bean = new SupportMarketDataBean(symbol, price, 0L, "");
+            return bean;
+        }
+    }
 } // end of namespace

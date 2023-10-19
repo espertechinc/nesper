@@ -28,9 +28,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithRemoveStream(execs);
             With2Properties(execs);
-            With3Properties(execs);
+            With(3Properties)(execs);
+#endif
             return execs;
         }
 
@@ -155,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
             }
-            
+
             public void Run(RegressionEnvironment env)
             {
                 var methodName = ".testPerformanceJoinNoResults";
@@ -197,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 string b)
             {
                 try {
-                    Thread.Sleep((int) WaitTimeMSec);
+                    Thread.Sleep((int)WaitTimeMSec);
                     CountCalled++;
                 }
                 catch (ThreadInterruptedException) {

@@ -20,8 +20,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -86,8 +88,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
             env.AssertPropsNew(
                 "s0",
-                new[] {"A"},
-                new object[] {new object[] {"987654321", "9876543210"}});
+                new[] { "A" },
+                new object[] { new object[] { "987654321", "9876543210" } });
 
             env.UndeployAll();
         }

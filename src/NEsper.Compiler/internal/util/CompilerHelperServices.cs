@@ -585,7 +585,7 @@ namespace com.espertech.esper.compiler.@internal.util
 				importServiceCompileTime);
 			var viewRegistry = new PluggableObjectRegistryImpl(
 				new PluggableObjectCollection[] { ViewEnumHelper.BuiltinViews, plugInViews });
-			ViewResolutionService viewResolutionService = new ViewResolutionServiceImpl(viewRegistry);
+			ViewResolutionService viewResolutionService = new ViewResolutionServiceImpl(container, viewRegistry);
 
 			var plugInPatternObj = new PluggableObjectCollection();
 			plugInPatternObj.AddPatternObjects(

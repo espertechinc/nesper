@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             configuration.Common.Logging.IsEnableQueryPlan = true;
             configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
 
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber =true;
         }
 
         [Test, RunInApplicationDomain]

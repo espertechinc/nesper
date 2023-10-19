@@ -185,7 +185,7 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
                 props[i] = new IndexedPropDesc(KeyColumns[i], KeyTypes[i]);
             }
 
-            KeyIndexMultiKey = new IndexMultiKey(true, props, new IndexedPropDesc[0], null);
+            KeyIndexMultiKey = new IndexMultiKey(true, props, Array.Empty<IndexedPropDesc>(), null);
             try {
                 IndexMetadata.AddIndexExplicit(true, KeyIndexMultiKey, TableName, TableModuleName, null, "");
             }

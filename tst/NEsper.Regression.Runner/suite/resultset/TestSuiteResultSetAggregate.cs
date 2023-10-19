@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionrun.suite.resultset
 
             configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
             configuration.Common.AddImportType(typeof(HashableMultiKey));
-            configuration.Compiler.ByteCode.IncludeDebugSymbols = true;
+            configuration.Compiler.ByteCode.IsIncludeDebugSymbols = true;
 
             configuration.Compiler.AddPlugInAggregationFunctionForge(
                 "concatMethodAgg",

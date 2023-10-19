@@ -27,9 +27,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             env.AssertThat(
                 () => Assert.AreEqual(1d, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("s0"), "v")));
-            env.AssertPropsNew("s0",
-                new[] {"c0", "c1"},
-                new object[] {-10, -1d});
+            env.AssertPropsNew(
+                "s0",
+                new[] { "c0", "c1" },
+                new object[] { -10, -1d });
 
             env.UndeployAll();
         }

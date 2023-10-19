@@ -109,7 +109,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 new ClientRuntimeItself.MyLocalService(ClientRuntimeItself.TEST_SECRET_VALUE));
             configuration.Common.TransientConfiguration = transients;
 
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber =true;
             configuration.Runtime.Execution.IsPrioritized = true;
         }
 
@@ -317,7 +317,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             public void WithSingleModuleTwoStatementsNoDep() => RegressionRunner.Run(_session, ClientRuntimeStatementName.WithSingleModuleTwoStatementsNoDep());
 
             [Test, RunInApplicationDomain]
-            public void WithStatementNameDuplicate() => RegressionRunner.Run(_session, ClientRuntimeStatementName.WithStatementNameDuplicate());
+            public void WithStatementAllowNameDuplicate() => RegressionRunner.Run(_session, ClientRuntimeStatementName.WithStatementAllowNameDuplicate());
         }
 
         /// <summary>

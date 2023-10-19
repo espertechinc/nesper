@@ -28,8 +28,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             env.AssertPropsNew(
                 "s0",
-                new[] {"mybyte", "myunicode", "zero8", "zero9", "zeroZero8"},
-                new object[] {(byte) 35, "A", 8, 9, 8});
+                new[] { "mybyte", "myunicode", "zero8", "zero9", "zeroZero8" },
+                new object[] { (byte)35, "A", 8, 9, 8 });
 
             env.UndeployAll();
         }

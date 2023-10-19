@@ -27,8 +27,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -83,13 +85,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             // Therefore property transposal is disabled for Property-XPath expressions.
 
             // note class not a fragment
-            env.CompileDeploy("@name('s0') insert into MyNestedStream select nested1 from " + eventTypeName + "#lastevent", path);
-            env.AssertStatement("s0", statement => {
-                SupportEventPropUtil.AssertPropsEquals(
-                    statement.EventType.PropertyDescriptors.ToArray(),
-                    new SupportEventPropDesc("nested1", typeof(XmlNode)));
-                SupportEventTypeAssertionUtil.AssertConsistency(statement.EventType);
-            });
+            env.CompileDeploy(
+                "@name('s0') insert into MyNestedStream select nested1 from " + eventTypeName + "#lastevent",
+                path);
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    SupportEventPropUtil.AssertPropsEquals(
+                        statement.EventType.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("nested1", typeof(XmlNode)));
+                    SupportEventTypeAssertionUtil.AssertConsistency(statement.EventType);
+                });
 
             env.AssertThat(
                 () => {
@@ -102,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             var doc = SupportXML.MakeDefaultEvent("ABC");
             env.SendEventXMLDOM(doc, eventTypeName);
             env.AssertIterator("s0", en => SupportEventTypeAssertionUtil.AssertConsistency(en.Advance()));
-            
+
             env.UndeployAll();
         }
     }

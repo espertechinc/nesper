@@ -20,8 +20,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithRegularJoin(execs);
-            WithOuterJoin(execs);
+            With(OuterJoin)(execs);
+#endif
             return execs;
         }
 

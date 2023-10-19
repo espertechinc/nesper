@@ -26,11 +26,46 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumOrderByEvents());
-            execs.Add(new ExprEnumOrderByEventsPlus());
-            execs.Add(new ExprEnumOrderByScalar());
-            execs.Add(new ExprEnumOrderByScalarWithParam());
+            WithEvents(execs);
+            WithEventsPlus(execs);
+            WithScalar(execs);
+            WithScalarWithParam(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprEnumOrderByInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithScalarWithParam(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumOrderByScalarWithParam());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumOrderByScalar());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventsPlus(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumOrderByEventsPlus());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumOrderByEvents());
             return execs;
         }
 

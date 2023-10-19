@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             SendEvent(env, "E3", 3, CPUGOALONENANO);
             Assert.IsFalse(env.Listener("stmtmetric").GetAndClearIsInvoked());
             Assert.IsFalse(env.Listener("runtimemetric").GetAndClearIsInvoked());
-            
+
             env.Runtime.MetricsService.SetMetricsReportingEnabled();
             SendEvent(env, "E4", 4, CPUGOALONENANO);
             SendTimer(env, 41000);

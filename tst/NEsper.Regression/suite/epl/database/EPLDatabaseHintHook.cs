@@ -18,105 +18,144 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.epl.database
 {
-	public class EPLDatabaseHintHook {
+    public class EPLDatabaseHintHook
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithOutputColumnConversion(execs);
+            WithInputParameterConversion(execs);
+            WithOutputRowConversion(execs);
+            return execs;
+        }
 
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EPLDatabaseOutputColumnConversion());
-	        execs.Add(new EPLDatabaseInputParameterConversion());
-	        execs.Add(new EPLDatabaseOutputRowConversion());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithOutputRowConversion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseOutputRowConversion());
+            return execs;
+        }
 
-	    //@Hook(type=HookType.SQLCOL, hook="this is a sample and not used")
-	    private class EPLDatabaseOutputColumnConversion : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            SupportSQLColumnTypeConversion.Reset();
+        public static IList<RegressionExecution> WithInputParameterConversion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseInputParameterConversion());
+            return execs;
+        }
 
-	            var fields = new string[]{"myint"};
-	            var columnTypeName = typeof(SupportSQLColumnTypeConversion).FullName;
-	            var stmtText =
-		            $"@name('s0') @Hook(type=HookType.SQLCOL, hook='{columnTypeName}')select * from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where myint = ${{myvariableOCC}}']";
-	            env.CompileDeploy(stmtText);
+        public static IList<RegressionExecution> WithOutputColumnConversion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseOutputColumnConversion());
+            return execs;
+        }
 
-	            env.AssertStatement("s0", statement =>  Assert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("myint")));
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {false}});
+        //@Hook(type=HookType.SQLCOL, hook="this is a sample and not used")
+        private class EPLDatabaseOutputColumnConversion : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                SupportSQLColumnTypeConversion.Reset();
 
-	            // assert contexts
-	            env.AssertThat(() => {
-	                var type = SupportSQLColumnTypeConversion.TypeContexts[0];
-	                Assert.AreEqual("System.Int32", type.ColumnSqlType);
-	                Assert.AreEqual("MyDBWithTxnIso1WithReadOnly", type.Db);
-	                Assert.AreEqual("select myint from mytesttable where myint = ${myvariableOCC}", type.Sql);
-	                Assert.AreEqual("myint", type.ColumnName);
-	                Assert.AreEqual(1, type.ColumnNumber);
-	                Assert.AreEqual(typeof(int?), type.ColumnClassType);
+                var fields = new string[] { "myint" };
+                var columnTypeName = typeof(SupportSQLColumnTypeConversion).FullName;
+                var stmtText =
+                    $"@name('s0') @Hook(type=HookType.SQLCOL, hook='{columnTypeName}')select * from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where myint = ${{myvariableOCC}}']";
+                env.CompileDeploy(stmtText);
 
-	                var val = SupportSQLColumnTypeConversion.ValueContexts[0];
-	                Assert.AreEqual(10, val.ColumnValue);
-	                Assert.AreEqual("myint", val.ColumnName);
-	                Assert.AreEqual(1, val.ColumnNumber);
-	            });
+                env.AssertStatement(
+                    "s0",
+                    statement => Assert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("myint")));
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { false } });
 
-	            env.RuntimeSetVariable(null, "myvariableOCC", 60);    // greater 50 turns true
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {true}});
+                // assert contexts
+                env.AssertThat(
+                    () => {
+                        var type = SupportSQLColumnTypeConversion.TypeContexts[0];
+                        Assert.AreEqual("System.Int32", type.ColumnSqlType);
+                        Assert.AreEqual("MyDBWithTxnIso1WithReadOnly", type.Db);
+                        Assert.AreEqual("select myint from mytesttable where myint = ${myvariableOCC}", type.Sql);
+                        Assert.AreEqual("myint", type.ColumnName);
+                        Assert.AreEqual(1, type.ColumnNumber);
+                        Assert.AreEqual(typeof(int?), type.ColumnClassType);
 
-	            env.UndeployAll();
-	        }
-	    }
+                        var val = SupportSQLColumnTypeConversion.ValueContexts[0];
+                        Assert.AreEqual(10, val.ColumnValue);
+                        Assert.AreEqual("myint", val.ColumnName);
+                        Assert.AreEqual(1, val.ColumnNumber);
+                    });
 
-	    private class EPLDatabaseInputParameterConversion : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            SupportSQLColumnTypeConversion.Reset();
+                env.RuntimeSetVariable(null, "myvariableOCC", 60); // greater 50 turns true
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { true } });
 
-	            var fields = new string[]{"myint"};
-	            var stmtText = "@name('s0') @Hook(type=HookType.SQLCOL, hook='" + typeof(SupportSQLColumnTypeConversion).FullName + "')" +
-	                           "select * from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where myint = ${myvariableIPC}']";
-	            env.CompileDeploy(stmtText);
+                env.UndeployAll();
+            }
+        }
 
-	            env.RuntimeSetVariable(null, "myvariableIPC", "x60");    // greater 50 turns true
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {true}});
+        private class EPLDatabaseInputParameterConversion : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                SupportSQLColumnTypeConversion.Reset();
 
-	            env.AssertThat(() => {
-	                var param = SupportSQLColumnTypeConversion.ParamContexts[0];
-	                Assert.AreEqual(1, param.ParameterNumber);
-	                Assert.AreEqual("x60", param.ParameterValue);
-	            });
+                var fields = new string[] { "myint" };
+                var stmtText = "@name('s0') @Hook(type=HookType.SQLCOL, hook='" +
+                               typeof(SupportSQLColumnTypeConversion).FullName +
+                               "')" +
+                               "select * from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where myint = ${myvariableIPC}']";
+                env.CompileDeploy(stmtText);
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.RuntimeSetVariable(null, "myvariableIPC", "x60"); // greater 50 turns true
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { true } });
 
-	    private class EPLDatabaseOutputRowConversion : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            SupportSQLColumnTypeConversion.Reset();
+                env.AssertThat(
+                    () => {
+                        var param = SupportSQLColumnTypeConversion.ParamContexts[0];
+                        Assert.AreEqual(1, param.ParameterNumber);
+                        Assert.AreEqual("x60", param.ParameterValue);
+                    });
 
-	            var fields = "theString,intPrimitive".SplitCsv();
-	            var stmtText = "@name('s0') @Hook(type=HookType.SQLROW, hook='" + typeof(SupportSQLOutputRowConversion).FullName + "')" +
-	                           "select * from sql:MyDBWithTxnIso1WithReadOnly ['select * from mytesttable where myint = ${myvariableORC}']";
-	            env.CompileDeploy(stmtText);
+                env.UndeployAll();
+            }
+        }
 
-	            env.AssertStatement("s0", statement => Assert.AreEqual(typeof(SupportBean), statement.EventType.UnderlyingType));
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {">10<", 99010}});
+        private class EPLDatabaseOutputRowConversion : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                SupportSQLColumnTypeConversion.Reset();
 
-	            env.AssertThat(() => {
-	                var type = SupportSQLOutputRowConversion.TypeContexts[0];
-	                Assert.AreEqual("MyDBWithTxnIso1WithReadOnly", type.Db);
-	                Assert.AreEqual("select * from mytesttable where myint = ${myvariableORC}", type.Sql);
-	                Assert.AreEqual(typeof(int?), type.Fields.Get("myint"));
+                var fields = "theString,intPrimitive".SplitCsv();
+                var stmtText = "@name('s0') @Hook(type=HookType.SQLROW, hook='" +
+                               typeof(SupportSQLOutputRowConversion).FullName +
+                               "')" +
+                               "select * from sql:MyDBWithTxnIso1WithReadOnly ['select * from mytesttable where myint = ${myvariableORC}']";
+                env.CompileDeploy(stmtText);
 
-	                var val = SupportSQLOutputRowConversion.ValueContexts[0];
-	                Assert.AreEqual(10, val.Values.Get("myint"));
-	            });
+                env.AssertStatement(
+                    "s0",
+                    statement => Assert.AreEqual(typeof(SupportBean), statement.EventType.UnderlyingType));
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { ">10<", 99010 } });
 
-	            env.RuntimeSetVariable(null, "myvariableORC", 60);    // greater 50 turns true
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {">60<", 99060}});
+                env.AssertThat(
+                    () => {
+                        var type = SupportSQLOutputRowConversion.TypeContexts[0];
+                        Assert.AreEqual("MyDBWithTxnIso1WithReadOnly", type.Db);
+                        Assert.AreEqual("select * from mytesttable where myint = ${myvariableORC}", type.Sql);
+                        Assert.AreEqual(typeof(int?), type.Fields.Get("myint"));
 
-	            env.RuntimeSetVariable(null, "myvariableORC", 90);    // greater 50 turns true
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
+                        var val = SupportSQLOutputRowConversion.ValueContexts[0];
+                        Assert.AreEqual(10, val.Values.Get("myint"));
+                    });
 
-	            env.UndeployAll();
-	        }
-	    }
-	}
+                env.RuntimeSetVariable(null, "myvariableORC", 60); // greater 50 turns true
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { ">60<", 99060 } });
+
+                env.RuntimeSetVariable(null, "myvariableORC", 90); // greater 50 turns true
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
+
+                env.UndeployAll();
+            }
+        }
+    }
 } // end of namespace

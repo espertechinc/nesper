@@ -79,12 +79,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new GenericRecord(fake),
                 new GenericRecord(fake),
                 new GenericRecord(fake));
-            
+
             // Json
             var schemas = "@public @buseventtype @name('schema') create json schema Json_Type_Root();\n" +
-                             "@public @buseventtype create json schema Json_Type_1() inherits Json_Type_Root;\n" +
-                             "@public @buseventtype create json schema Json_Type_2() inherits Json_Type_Root;\n" +
-                             "@public @buseventtype create json schema Json_Type_2_1() inherits Json_Type_2;\n";
+                          "@public @buseventtype create json schema Json_Type_1() inherits Json_Type_Root;\n" +
+                          "@public @buseventtype create json schema Json_Type_2() inherits Json_Type_Root;\n" +
+                          "@public @buseventtype create json schema Json_Type_2_1() inherits Json_Type_2;\n";
             env.CompileDeploy(schemas, path);
             RunAssertion(
                 env,
@@ -95,7 +95,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "{}",
                 "{}",
                 "{}");
-
         }
 
         private void RunAssertion(
@@ -108,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             object type2,
             object type21)
         {
-            var typeNames = new [] { "Type_Root","Type_1","Type_2","Type_2_1" };
+            var typeNames = new[] { "Type_Root", "Type_1", "Type_2", "Type_2_1" };
             var statements = new EPStatement[4];
             var listeners = new SupportUpdateListener[4];
             for (var i = 0; i < typeNames.Length; i++) {
@@ -120,21 +119,23 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             sender.Invoke(env, root, typePrefix + "_" + typeNames[0]);
             EPAssertionUtil.AssertEqualsExactOrder(
-                new[] {true, false, false, false},
+                new[] { true, false, false, false },
                 GetInvokedFlagsAndReset(listeners));
 
             sender.Invoke(env, type1, typePrefix + "_" + typeNames[1]);
             EPAssertionUtil.AssertEqualsExactOrder(
-                new[] {true, true, false, false},
+                new[] { true, true, false, false },
                 GetInvokedFlagsAndReset(listeners));
 
             sender.Invoke(env, type2, typePrefix + "_" + typeNames[2]);
             EPAssertionUtil.AssertEqualsExactOrder(
-                new[] {true, false, true, false},
+                new[] { true, false, true, false },
                 GetInvokedFlagsAndReset(listeners));
 
             sender.Invoke(env, type21, typePrefix + "_" + typeNames[3]);
-            EPAssertionUtil.AssertEqualsExactOrder(new[] {true, false, true, true}, GetInvokedFlagsAndReset(listeners));
+            EPAssertionUtil.AssertEqualsExactOrder(
+                new[] { true, false, true, true },
+                GetInvokedFlagsAndReset(listeners));
 
             env.UndeployAll();
         }

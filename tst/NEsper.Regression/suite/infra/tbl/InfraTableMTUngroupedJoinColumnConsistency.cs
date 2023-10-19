@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         /// <summary>
         ///     Tests column-consistency for joins:
         ///     create table MyTable(p0 string, p1 string, ..., p4 string)   (5 props)

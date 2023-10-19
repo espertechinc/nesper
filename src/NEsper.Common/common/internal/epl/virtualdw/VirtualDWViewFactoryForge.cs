@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
 using com.espertech.esper.compat.collections;
@@ -29,6 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
     public class VirtualDWViewFactoryForge : ViewFactoryForge,
         DataWindowViewForge
     {
+        private readonly SerializerFactory _serializerFactory;
         private readonly object _customConfigs;
         private readonly VirtualDataWindowForge _forge;
         private readonly string _namedWindowName;
@@ -46,6 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
         public string ViewName => "virtual-data-window";
 
         public VirtualDWViewFactoryForge(
+            SerializerFactory serializerFactory,
             Type clazz,
             string namedWindowName,
             object customConfigs)
@@ -61,6 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             _forge = TypeHelper.Instantiate<VirtualDataWindowForge>(clazz);
             _namedWindowName = namedWindowName;
             _customConfigs = customConfigs;
+            _serializerFactory = serializerFactory;
         }
 
         public virtual IList<ViewFactoryForge> InnerForges => EmptyList<ViewFactoryForge>.Instance;
@@ -176,7 +180,7 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
                 .Constant("NamedWindowName", _namedWindowName)
                 .Expression(
                     "compileTimeConfiguration",
-                    SerializerUtil.ExpressionForUserObject(_customConfigs));
+                    SerializerUtil.ExpressionForUserObject(_serializerFactory, _customConfigs));
             return builder.Build();
         }
 

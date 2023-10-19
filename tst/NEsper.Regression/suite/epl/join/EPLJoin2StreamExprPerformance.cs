@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             string epl;
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             object theEvent,
             object expected)
         {
-            var fields = new[] {"val"};
+            var fields = new[] { "val" };
             env.CompileDeploy(epl).AddListener("s0");
 
             // preload
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.AssertPropsNew(
                     "s0",
                     fields,
-                    new[] {expected});
+                    new[] { expected });
             }
 
             var delta = PerformanceObserver.MilliTime - startTime;

@@ -365,7 +365,7 @@ namespace com.espertech.esper.regressionrun.suite.client
             [Test, RunInApplicationDomain]
             public void WithODAInvalidConstantUseSubsParamsInstead() => RegressionRunner.Run(
                 _session,
-                ClientCompileSubstitutionParams.WithODAInvalidConstantUseSubsParamsInstead());
+                ClientCompileSubstitutionParams.WithSODAInvalidConstantUseSubsParamsInstead());
 
             [Test, RunInApplicationDomain]
             public void WithSubstParamArray() => RegressionRunner.Run(

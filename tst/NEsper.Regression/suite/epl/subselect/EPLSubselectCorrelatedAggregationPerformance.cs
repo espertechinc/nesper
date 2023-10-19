@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             var stmtText = "@name('s0') select P00, " +
@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                            "from SupportBean_S0 as S0";
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var fields = new[] {"P00", "sumP00"};
+            var fields = new[] { "P00", "sumP00" };
 
             // preload
             var max = 50000;
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertPropsNew(
                     "s0",
                     fields,
-                    new object[] {"T" + index, -index + 10});
+                    new object[] { "T" + index, -index + 10 });
             }
 
             var end = PerformanceObserver.MilliTime;

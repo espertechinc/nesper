@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.context.module
 {
     public class ModuleIndexMeta
     {
-        public static readonly ModuleIndexMeta[] EMPTY_ARRAY = new ModuleIndexMeta[0];
+        public static readonly ModuleIndexMeta[] EMPTY_ARRAY = Array.Empty<ModuleIndexMeta>();
         
         private readonly bool namedWindow;
         private readonly string infraName;

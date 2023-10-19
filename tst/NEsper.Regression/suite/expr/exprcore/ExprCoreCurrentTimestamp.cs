@@ -19,96 +19,114 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
-	public class ExprCoreCurrentTimestamp {
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> executions = new List<RegressionExecution>();
-	        executions.Add(new ExprCoreCurrentTimestampGet());
-	        executions.Add(new ExprCoreCurrentTimestampOM());
-	        executions.Add(new ExprCoreCurrentTimestampCompile());
-	        return executions;
-	    }
+    public class ExprCoreCurrentTimestamp
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> exec = new List<RegressionExecution>();
+            exec.Add(new ExprCoreCurrentTimestampGet());
+            exec.Add(new ExprCoreCurrentTimestampOM());
+            exec.Add(new ExprCoreCurrentTimestampCompile());
+            return exec;
+        }
 
-	    private class ExprCoreCurrentTimestampGet : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            SendTimer(env, 0);
-	            var stmtText = "@name('s0') select current_timestamp(), " +
-	                           " current_timestamp as t0, " +
-	                           " current_timestamp() as t1, " +
-	                           " current_timestamp + 1 as t2 " +
-	                           " from SupportBean";
-	            env.CompileDeploy(stmtText).AddListener("s0");
+        private class ExprCoreCurrentTimestampGet : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                SendTimer(env, 0);
+                var stmtText = "@name('s0') select current_timestamp(), " +
+                               " current_timestamp as t0, " +
+                               " current_timestamp() as t1, " +
+                               " current_timestamp + 1 as t2 " +
+                               " from SupportBean";
+                env.CompileDeploy(stmtText).AddListener("s0");
 
-	            env.AssertStatement("s0", statement => {
-	                var type = statement.EventType;
-	                Assert.AreEqual(typeof(long?), type.GetPropertyType("current_timestamp()"));
-	                Assert.AreEqual(typeof(long?), type.GetPropertyType("t0"));
-	                Assert.AreEqual(typeof(long?), type.GetPropertyType("t1"));
-	                Assert.AreEqual(typeof(long?), type.GetPropertyType("t2"));
-	            });
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        var type = statement.EventType;
+                        Assert.AreEqual(typeof(long?), type.GetPropertyType("current_timestamp()"));
+                        Assert.AreEqual(typeof(long?), type.GetPropertyType("t0"));
+                        Assert.AreEqual(typeof(long?), type.GetPropertyType("t1"));
+                        Assert.AreEqual(typeof(long?), type.GetPropertyType("t2"));
+                    });
 
-	            SendTimer(env, 100);
-	            env.SendEventBean(new SupportBean());
-	            env.AssertEventNew("s0", @event => AssertResults(@event, new object[]{100L, 100L, 101L}));
+                SendTimer(env, 100);
+                env.SendEventBean(new SupportBean());
+                env.AssertEventNew("s0", @event => AssertResults(@event, new object[] { 100L, 100L, 101L }));
 
-	            SendTimer(env, 999);
-	            env.SendEventBean(new SupportBean());
-	            env.AssertEventNew("s0", theEvent => {
-	                AssertResults(theEvent, new object[]{999L, 999L, 1000L});
-	                Assert.AreEqual(theEvent.Get("current_timestamp()"), theEvent.Get("t0"));
-	            });
+                SendTimer(env, 999);
+                env.SendEventBean(new SupportBean());
+                env.AssertEventNew(
+                    "s0",
+                    theEvent => {
+                        AssertResults(theEvent, new object[] { 999L, 999L, 1000L });
+                        Assert.AreEqual(theEvent.Get("current_timestamp()"), theEvent.Get("t0"));
+                    });
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private class ExprCoreCurrentTimestampOM : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            SendTimer(env, 0);
-	            var stmtText = "select current_timestamp() as t0 from SupportBean";
+        private class ExprCoreCurrentTimestampOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                SendTimer(env, 0);
+                var stmtText = "select current_timestamp() as t0 from SupportBean";
 
-	            var model = new EPStatementObjectModel();
-	            model.SelectClause = SelectClause.Create().Add(Expressions.CurrentTimestamp(), "t0");
-	            model.FromClause = FromClause.Create().Add(FilterStream.Create(nameof(SupportBean)));
-	            model = env.CopyMayFail(model);
-	            Assert.AreEqual(stmtText, model.ToEPL());
+                var model = new EPStatementObjectModel();
+                model.SelectClause = SelectClause.Create().Add(Expressions.CurrentTimestamp(), "t0");
+                model.FromClause = FromClause.Create().Add(FilterStream.Create(nameof(SupportBean)));
+                model = env.CopyMayFail(model);
+                Assert.AreEqual(stmtText, model.ToEPL());
 
-	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-	            env.CompileDeploy(model).AddListener("s0").Milestone(0);
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                env.CompileDeploy(model).AddListener("s0").Milestone(0);
 
-	            env.AssertStmtType("s0", "t0", typeof(long?));
+                env.AssertStmtType("s0", "t0", typeof(long?));
 
-	            SendTimer(env, 777);
-	            env.SendEventBean(new SupportBean());
-	            env.AssertEventNew("s0", @event => AssertResults(@event, new object[]{777L}));
+                SendTimer(env, 777);
+                env.SendEventBean(new SupportBean());
+                env.AssertEventNew("s0", @event => AssertResults(@event, new object[] { 777L }));
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private class ExprCoreCurrentTimestampCompile : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            SendTimer(env, 0);
-	            var stmtText = "@name('s0') select current_timestamp() as t0 from SupportBean";
-	            env.EplToModelCompileDeploy(stmtText).AddListener("s0").Milestone(0);
+        private class ExprCoreCurrentTimestampCompile : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                SendTimer(env, 0);
+                var stmtText = "@name('s0') select current_timestamp() as t0 from SupportBean";
+                env.EplToModelCompileDeploy(stmtText).AddListener("s0").Milestone(0);
 
-	            env.AssertStmtType("s0", "t0", typeof(long?));
+                env.AssertStmtType("s0", "t0", typeof(long?));
 
-	            SendTimer(env, 777);
-	            env.SendEventBean(new SupportBean());
-	            env.AssertEventNew("s0", @event => AssertResults(@event, new object[]{777L}));
+                SendTimer(env, 777);
+                env.SendEventBean(new SupportBean());
+                env.AssertEventNew("s0", @event => AssertResults(@event, new object[] { 777L }));
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private static void SendTimer(RegressionEnvironment env, long timeInMSec) {
-	        env.AdvanceTime(timeInMSec);
-	    }
+        private static void SendTimer(
+            RegressionEnvironment env,
+            long timeInMSec)
+        {
+            env.AdvanceTime(timeInMSec);
+        }
 
-	    private static void AssertResults(EventBean theEvent, object[] result) {
-	        for (var i = 0; i < result.Length; i++) {
-	            Assert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
-	        }
-	    }
-	}
+        private static void AssertResults(
+            EventBean theEvent,
+            object[] result)
+        {
+            for (var i = 0; i < result.Length; i++) {
+                Assert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
+            }
+        }
+    }
 } // end of namespace

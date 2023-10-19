@@ -27,8 +27,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -84,16 +86,21 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             RegressionPath path)
         {
             // try array property in select
-            env.CompileDeploy("@name('s0') select * from " + eventTypeNameNested + "#lastevent", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from " + eventTypeNameNested + "#lastevent", path)
+                .AddListener("s0");
 
-            env.AssertStatement("s0", statement => {
-                SupportEventPropUtil.AssertPropsEquals(
-                    statement.EventType.PropertyDescriptors.ToArray(),
-                    new SupportEventPropDesc("prop3", typeof(int?[])).WithIndexed());
-                SupportEventTypeAssertionUtil.AssertConsistency(statement.EventType);
-            });
-            
-            env.SendEventXMLDOM(SupportXML.GetDocument("<nested2><prop3>2</prop3><prop3></prop3><prop3>4</prop3></nested2>"), eventTypeNameNested);
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    SupportEventPropUtil.AssertPropsEquals(
+                        statement.EventType.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("prop3", typeof(int?[])).WithIndexed());
+                    SupportEventTypeAssertionUtil.AssertConsistency(statement.EventType);
+                });
+
+            env.SendEventXMLDOM(
+                SupportXML.GetDocument("<nested2><prop3>2</prop3><prop3></prop3><prop3>4</prop3></nested2>"),
+                eventTypeNameNested);
             env.AssertIterator(
                 "s0",
                 iterator => {
@@ -104,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                         new object[] { 2, null, 4 });
                     SupportEventTypeAssertionUtil.AssertConsistency(theEvent);
                 });
-            
+
             env.UndeployModuleContaining("s0");
 
             // try array property nested
@@ -129,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     Assert.AreEqual("SAMPLE_V11", fragmentNested4.Get("prop5[1]"));
                     SupportEventTypeAssertionUtil.AssertConsistency(fragmentNested4);
                 });
-            
+
             env.UndeployAll();
         }
     }

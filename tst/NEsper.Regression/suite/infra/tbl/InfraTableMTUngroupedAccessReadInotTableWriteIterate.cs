@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         /// <summary>
         ///     Proof that multiple threads iterating the same statement
         ///     can safely access a row that is currently changing.
@@ -199,8 +199,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         using (var iterator = iterateStatement.GetSafeEnumerator()) {
                             var @event = iterator.Advance();
                             var c0 = @event.Get("c0").AsInt32();
-                            Assert.AreEqual((double) c0, @event.Get("c1"));
-                            Assert.AreEqual((long) c0, @event.Get("c2"));
+                            Assert.AreEqual((double)c0, @event.Get("c1"));
+                            Assert.AreEqual((long)c0, @event.Get("c2"));
                         }
 
                         numQueries++;

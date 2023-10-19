@@ -248,7 +248,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
             var eventType = new JsonEventType(
                 metadata,
                 properties,
-                superTypes == null ? new EventType[0] : superTypes.First,
+                superTypes == null ? Array.Empty<EventType>() : superTypes.First,
                 superTypes == null ? EmptySet<EventType>.Instance : superTypes.Second,
                 config?.StartTimestampPropertyName,
                 config?.EndTimestampPropertyName,

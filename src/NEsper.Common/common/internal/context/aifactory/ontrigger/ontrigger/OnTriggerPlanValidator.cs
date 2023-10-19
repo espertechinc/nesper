@@ -162,7 +162,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                 new ResultSetSpec(@base.StatementSpec),
                 typeService,
                 null,
-                new bool[0],
+                Array.Empty<bool>(),
                 true,
                 @base.ContextPropertyRegistry,
                 false,

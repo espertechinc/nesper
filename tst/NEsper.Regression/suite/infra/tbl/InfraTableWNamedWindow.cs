@@ -20,7 +20,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@name('var') @public create table varagg (key string primary key, total sum(int))", path);
+            env.CompileDeploy(
+                "@name('var') @public create table varagg (key string primary key, total sum(int))",
+                path);
             env.CompileDeploy("@name('win') @public create window MyWindow#keepall as SupportBean", path);
             env.CompileDeploy("@name('insert') insert into MyWindow select * from SupportBean", path);
             env.CompileDeploy(
@@ -30,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@name('s0') on SupportBean_S0 select TheString, varagg[P00].total as c0 from MyWindow where TheString = P00",
                     path)
                 .AddListener("s0");
-            var fields = new[] {"TheString", "c0"};
+            var fields = new[] { "TheString", "c0" };
 
             env.SendEventBean(new SupportBean("E1", 10));
 
@@ -40,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.AssertPropsNew(
                 "s0",
                 fields,
-                new object[] {"E1", 10});
+                new object[] { "E1", 10 });
 
             env.UndeployAll();
         }

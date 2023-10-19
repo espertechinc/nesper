@@ -20,6 +20,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            Withe(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNWTableJoinSimple(true));
             execs.Add(new InfraNWTableJoinSimple(false));
             return execs;
@@ -36,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                string[] fields = {"c0", "c1"};
+                string[] fields = { "c0", "c1" };
                 var path = new RegressionPath();
 
                 // create window
@@ -66,13 +73,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.AssertPropsNew(
                     "s0",
                     fields,
-                    new object[] {"C2", 1});
+                    new object[] { "C2", 1 });
 
                 env.SendEventBean(new SupportBean("C1", 4));
                 env.AssertPropsNew(
                     "s0",
                     fields,
-                    new object[] {"C1", 4});
+                    new object[] { "C1", 4 });
 
                 env.UndeployAll();
             }

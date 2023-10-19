@@ -28,12 +28,12 @@ namespace com.espertech.esper.regressionrun.suite.epl
             using var session = RegressionRunner.Session(Container);
             var configDB = GetDefaultConfig(session.Container);
             if (exec.IsLru) {
-                configDB.SetLRUCache(exec.LruSize.Value);
+                configDB.LRUCache = exec.LruSize!.Value;
             }
             else {
                 configDB.SetExpiryTimeCache(
-                    exec.ExpiryMaxAgeSeconds.Value,
-                    exec.ExpiryPurgeIntervalSeconds.Value);
+                    exec.ExpiryMaxAgeSeconds!.Value,
+                    exec.ExpiryPurgeIntervalSeconds!.Value);
             }
 
             session.Configuration.Common.AddDatabaseReference("MyDB", configDB);

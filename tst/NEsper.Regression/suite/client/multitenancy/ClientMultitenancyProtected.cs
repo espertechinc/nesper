@@ -23,12 +23,47 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithInfra(execs);
+            WithVariable(execs);
+            WithContext(execs);
+            WithEventType(execs);
+            WithExpr(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExpr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientMultitenancyProtectedExpr());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEventType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientMultitenancyProtectedEventType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithContext(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientMultitenancyProtectedContext());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientMultitenancyProtectedVariable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInfra(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientMultitenancyProtectedInfra(true));
             execs.Add(new ClientMultitenancyProtectedInfra(false));
-            execs.Add(new ClientMultitenancyProtectedVariable());
-            execs.Add(new ClientMultitenancyProtectedContext());
-            execs.Add(new ClientMultitenancyProtectedEventType());
-            execs.Add(new ClientMultitenancyProtectedExpr());
             return execs;
         }
 

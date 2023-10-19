@@ -18,226 +18,318 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
 {
-	public class EPLSubselectExists {
+    public class EPLSubselectExists
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithExistsInSelect(execs);
+            WithExistsInSelectOM(execs);
+            WithExistsInSelectCompile(execs);
+            WithExistsSceneOne(execs);
+            WithExistsFiltered(execs);
+            WithTwoExistsFiltered(execs);
+            WithNotExistsOM(execs);
+            WithNotExistsCompile(execs);
+            WithNotExists(execs);
+            return execs;
+        }
 
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EPLSubselectExistsInSelect());
-	        execs.Add(new EPLSubselectExistsInSelectOM());
-	        execs.Add(new EPLSubselectExistsInSelectCompile());
-	        execs.Add(new EPLSubselectExistsSceneOne());
-	        execs.Add(new EPLSubselectExistsFiltered());
-	        execs.Add(new EPLSubselectTwoExistsFiltered());
-	        execs.Add(new EPLSubselectNotExistsOM());
-	        execs.Add(new EPLSubselectNotExistsCompile());
-	        execs.Add(new EPLSubselectNotExists());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithNotExists(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectNotExists());
+            return execs;
+        }
 
-	    private class EPLSubselectExistsInSelect : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var stmtText = "@name('s0') select exists (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0";
-	            env.CompileDeployAddListenerMileZero(stmtText, "s0");
+        public static IList<RegressionExecution> WithNotExistsCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectNotExistsCompile());
+            return execs;
+        }
 
-	            RunTestExistsInSelect(env);
+        public static IList<RegressionExecution> WithNotExistsOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectNotExistsOM());
+            return execs;
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        public static IList<RegressionExecution> WithTwoExistsFiltered(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectTwoExistsFiltered());
+            return execs;
+        }
 
-	    private class EPLSubselectExistsInSelectOM : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var subquery = new EPStatementObjectModel();
-	            subquery.SelectClause = SelectClause.CreateWildcard();
-	            subquery.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S1").AddView(View.Create("length", Expressions.Constant(1000))));
+        public static IList<RegressionExecution> WithExistsFiltered(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectExistsFiltered());
+            return execs;
+        }
 
-	            var model = new EPStatementObjectModel();
-	            model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
-	            model.SelectClause = SelectClause.Create().Add(Expressions.SubqueryExists(subquery), "value");
-	            model = env.CopyMayFail(model);
+        public static IList<RegressionExecution> WithExistsSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectExistsSceneOne());
+            return execs;
+        }
 
-	            var stmtText = "select exists (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0";
-	            Assert.AreEqual(stmtText, model.ToEPL());
+        public static IList<RegressionExecution> WithExistsInSelectCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectExistsInSelectCompile());
+            return execs;
+        }
 
-	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-	            env.CompileDeploy(model).AddListener("s0");
+        public static IList<RegressionExecution> WithExistsInSelectOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectExistsInSelectOM());
+            return execs;
+        }
 
-	            RunTestExistsInSelect(env);
+        public static IList<RegressionExecution> WithExistsInSelect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectExistsInSelect());
+            return execs;
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        private class EPLSubselectExistsInSelect : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@name('s0') select exists (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
-	    private class EPLSubselectExistsInSelectCompile : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var stmtText = "@name('s0') select exists (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0";
-	            env.EplToModelCompileDeploy(stmtText).AddListener("s0").Milestone(1);
+                RunTestExistsInSelect(env);
 
-	            RunTestExistsInSelect(env);
+                env.UndeployAll();
+            }
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        private class EPLSubselectExistsInSelectOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var subquery = new EPStatementObjectModel();
+                subquery.SelectClause = SelectClause.CreateWildcard();
+                subquery.FromClause = FromClause.Create(
+                    FilterStream.Create("SupportBean_S1").AddView(View.Create("length", Expressions.Constant(1000))));
 
-	    private class EPLSubselectExistsSceneOne : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var stmtText = "@name('s0') select id from SupportBean_S0 where exists (select * from SupportBean_S1#length(1000))";
-	            env.CompileDeploy(stmtText).AddListener("s0");
+                var model = new EPStatementObjectModel();
+                model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
+                model.SelectClause = SelectClause.Create().Add(Expressions.SubqueryExists(subquery), "value");
+                model = env.CopyMayFail(model);
 
-	            env.SendEventBean(new SupportBean_S0(2));
-	            env.AssertListenerNotInvoked("s0");
+                var stmtText = "select exists (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                Assert.AreEqual(stmtText, model.ToEPL());
 
-	            env.SendEventBean(new SupportBean_S1(-1));
-	            env.SendEventBean(new SupportBean_S0(2));
-	            env.AssertEqualsNew("s0", "id", 2);
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                env.CompileDeploy(model).AddListener("s0");
 
-	            env.SendEventBean(new SupportBean_S1(-2));
-	            env.SendEventBean(new SupportBean_S0(3));
-	            env.AssertEqualsNew("s0", "id", 3);
+                RunTestExistsInSelect(env);
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private class EPLSubselectExistsFiltered : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var stmtText = "@name('s0') select id from SupportBean_S0 as s0 where exists (select * from SupportBean_S1#length(1000) as s1 where s1.id=s0.id)";
-	            env.CompileDeploy(stmtText).AddListener("s0");
+        private class EPLSubselectExistsInSelectCompile : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@name('s0') select exists (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                env.EplToModelCompileDeploy(stmtText).AddListener("s0").Milestone(1);
 
-	            env.SendEventBean(new SupportBean_S0(2));
-	            env.AssertListenerNotInvoked("s0");
+                RunTestExistsInSelect(env);
 
-	            env.SendEventBean(new SupportBean_S1(-1));
-	            env.SendEventBean(new SupportBean_S0(2));
-	            env.AssertListenerNotInvoked("s0");
+                env.UndeployAll();
+            }
+        }
 
-	            env.SendEventBean(new SupportBean_S1(-2));
-	            env.SendEventBean(new SupportBean_S0(-2));
-	            env.AssertEqualsNew("s0", "id", -2);
+        private class EPLSubselectExistsSceneOne : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@name('s0') select id from SupportBean_S0 where exists (select * from SupportBean_S1#length(1000))";
+                env.CompileDeploy(stmtText).AddListener("s0");
 
-	            env.SendEventBean(new SupportBean_S1(1));
-	            env.SendEventBean(new SupportBean_S1(2));
-	            env.SendEventBean(new SupportBean_S1(3));
-	            env.SendEventBean(new SupportBean_S0(3));
-	            env.AssertEqualsNew("s0", "id", 3);
+                env.SendEventBean(new SupportBean_S0(2));
+                env.AssertListenerNotInvoked("s0");
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.SendEventBean(new SupportBean_S1(-1));
+                env.SendEventBean(new SupportBean_S0(2));
+                env.AssertEqualsNew("s0", "id", 2);
 
-	    private class EPLSubselectTwoExistsFiltered : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var stmtText = "@name('s0') select id from SupportBean_S0 as s0 where " +
-	                           "exists (select * from SupportBean_S1#length(1000) as s1 where s1.id=s0.id) " +
-	                           "and " +
-	                           "exists (select * from SupportBean_S2#length(1000) as s2 where s2.id=s0.id) ";
-	            env.CompileDeploy(stmtText).AddListener("s0");
+                env.SendEventBean(new SupportBean_S1(-2));
+                env.SendEventBean(new SupportBean_S0(3));
+                env.AssertEqualsNew("s0", "id", 3);
 
-	            env.SendEventBean(new SupportBean_S0(2));
-	            env.AssertListenerNotInvoked("s0");
+                env.UndeployAll();
+            }
+        }
 
-	            env.SendEventBean(new SupportBean_S2(3));
-	            env.SendEventBean(new SupportBean_S0(3));
-	            env.AssertListenerNotInvoked("s0");
+        private class EPLSubselectExistsFiltered : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@name('s0') select id from SupportBean_S0 as s0 where exists (select * from SupportBean_S1#length(1000) as s1 where s1.id=s0.id)";
+                env.CompileDeploy(stmtText).AddListener("s0");
 
-	            env.SendEventBean(new SupportBean_S1(3));
-	            env.SendEventBean(new SupportBean_S0(3));
-	            env.AssertEqualsNew("s0", "id", 3);
+                env.SendEventBean(new SupportBean_S0(2));
+                env.AssertListenerNotInvoked("s0");
 
-	            env.SendEventBean(new SupportBean_S1(1));
-	            env.SendEventBean(new SupportBean_S1(2));
-	            env.SendEventBean(new SupportBean_S2(1));
-	            env.SendEventBean(new SupportBean_S0(1));
-	            env.AssertEqualsNew("s0", "id", 1);
+                env.SendEventBean(new SupportBean_S1(-1));
+                env.SendEventBean(new SupportBean_S0(2));
+                env.AssertListenerNotInvoked("s0");
 
-	            env.SendEventBean(new SupportBean_S0(2));
-	            env.SendEventBean(new SupportBean_S0(0));
-	            env.AssertListenerNotInvoked("s0");
+                env.SendEventBean(new SupportBean_S1(-2));
+                env.SendEventBean(new SupportBean_S0(-2));
+                env.AssertEqualsNew("s0", "id", -2);
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.SendEventBean(new SupportBean_S1(1));
+                env.SendEventBean(new SupportBean_S1(2));
+                env.SendEventBean(new SupportBean_S1(3));
+                env.SendEventBean(new SupportBean_S0(3));
+                env.AssertEqualsNew("s0", "id", 3);
 
-	    private class EPLSubselectNotExistsOM : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var subquery = new EPStatementObjectModel();
-	            subquery.SelectClause = SelectClause.CreateWildcard();
-	            subquery.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S1").AddView("length", Expressions.Constant(1000)));
+                env.UndeployAll();
+            }
+        }
 
-	            var model = new EPStatementObjectModel();
-	            model.SelectClause = SelectClause.Create("id");
-	            model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
-	            model.WhereClause = Expressions.Not(Expressions.SubqueryExists(subquery));
-	            model = env.CopyMayFail(model);
+        private class EPLSubselectTwoExistsFiltered : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText = "@name('s0') select id from SupportBean_S0 as s0 where " +
+                               "exists (select * from SupportBean_S1#length(1000) as s1 where s1.id=s0.id) " +
+                               "and " +
+                               "exists (select * from SupportBean_S2#length(1000) as s2 where s2.id=s0.id) ";
+                env.CompileDeploy(stmtText).AddListener("s0");
 
-	            var stmtText = "select id from SupportBean_S0 where not exists (select * from SupportBean_S1#length(1000))";
-	            Assert.AreEqual(stmtText, model.ToEPL());
+                env.SendEventBean(new SupportBean_S0(2));
+                env.AssertListenerNotInvoked("s0");
 
-	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-	            env.CompileDeploy(model).AddListener("s0");
+                env.SendEventBean(new SupportBean_S2(3));
+                env.SendEventBean(new SupportBean_S0(3));
+                env.AssertListenerNotInvoked("s0");
 
-	            env.SendEventBean(new SupportBean_S0(2));
-	            env.AssertEqualsNew("s0", "id", 2);
+                env.SendEventBean(new SupportBean_S1(3));
+                env.SendEventBean(new SupportBean_S0(3));
+                env.AssertEqualsNew("s0", "id", 3);
 
-	            env.SendEventBean(new SupportBean_S1(-1));
-	            env.SendEventBean(new SupportBean_S0(1));
-	            env.AssertListenerNotInvoked("s0");
+                env.SendEventBean(new SupportBean_S1(1));
+                env.SendEventBean(new SupportBean_S1(2));
+                env.SendEventBean(new SupportBean_S2(1));
+                env.SendEventBean(new SupportBean_S0(1));
+                env.AssertEqualsNew("s0", "id", 1);
 
-	            env.SendEventBean(new SupportBean_S1(-2));
-	            env.SendEventBean(new SupportBean_S0(3));
-	            env.AssertListenerNotInvoked("s0");
+                env.SendEventBean(new SupportBean_S0(2));
+                env.SendEventBean(new SupportBean_S0(0));
+                env.AssertListenerNotInvoked("s0");
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private class EPLSubselectNotExistsCompile : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var stmtText = "@name('s0') select id from SupportBean_S0 where not exists (select * from SupportBean_S1#length(1000))";
-	            env.EplToModelCompileDeploy(stmtText).AddListener("s0");
+        private class EPLSubselectNotExistsOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var subquery = new EPStatementObjectModel();
+                subquery.SelectClause = SelectClause.CreateWildcard();
+                subquery.FromClause = FromClause.Create(
+                    FilterStream.Create("SupportBean_S1").AddView("length", Expressions.Constant(1000)));
 
-	            env.SendEventBean(new SupportBean_S0(2));
-	            env.AssertEqualsNew("s0", "id", 2);
+                var model = new EPStatementObjectModel();
+                model.SelectClause = SelectClause.Create("id");
+                model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
+                model.WhereClause = Expressions.Not(Expressions.SubqueryExists(subquery));
+                model = env.CopyMayFail(model);
 
-	            env.SendEventBean(new SupportBean_S1(-1));
-	            env.SendEventBean(new SupportBean_S0(1));
-	            env.AssertListenerNotInvoked("s0");
+                var stmtText =
+                    "select id from SupportBean_S0 where not exists (select * from SupportBean_S1#length(1000))";
+                Assert.AreEqual(stmtText, model.ToEPL());
 
-	            env.SendEventBean(new SupportBean_S1(-2));
-	            env.SendEventBean(new SupportBean_S0(3));
-	            env.AssertListenerNotInvoked("s0");
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                env.CompileDeploy(model).AddListener("s0");
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.SendEventBean(new SupportBean_S0(2));
+                env.AssertEqualsNew("s0", "id", 2);
 
-	    private class EPLSubselectNotExists : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var stmtText = "@name('s0') select id from SupportBean_S0 where not exists (select * from SupportBean_S1#length(1000))";
-	            env.CompileDeployAddListenerMileZero(stmtText, "s0");
+                env.SendEventBean(new SupportBean_S1(-1));
+                env.SendEventBean(new SupportBean_S0(1));
+                env.AssertListenerNotInvoked("s0");
 
-	            env.SendEventBean(new SupportBean_S0(2));
-	            env.AssertEqualsNew("s0", "id", 2);
+                env.SendEventBean(new SupportBean_S1(-2));
+                env.SendEventBean(new SupportBean_S0(3));
+                env.AssertListenerNotInvoked("s0");
 
-	            env.SendEventBean(new SupportBean_S1(-1));
-	            env.SendEventBean(new SupportBean_S0(1));
-	            env.AssertListenerNotInvoked("s0");
+                env.UndeployAll();
+            }
+        }
 
-	            env.SendEventBean(new SupportBean_S1(-2));
-	            env.SendEventBean(new SupportBean_S0(3));
-	            env.AssertListenerNotInvoked("s0");
+        private class EPLSubselectNotExistsCompile : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@name('s0') select id from SupportBean_S0 where not exists (select * from SupportBean_S1#length(1000))";
+                env.EplToModelCompileDeploy(stmtText).AddListener("s0");
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.SendEventBean(new SupportBean_S0(2));
+                env.AssertEqualsNew("s0", "id", 2);
 
-	    private static void RunTestExistsInSelect(RegressionEnvironment env) {
-	        env.SendEventBean(new SupportBean_S0(2));
-	        env.AssertEqualsNew("s0", "value", false);
+                env.SendEventBean(new SupportBean_S1(-1));
+                env.SendEventBean(new SupportBean_S0(1));
+                env.AssertListenerNotInvoked("s0");
 
-	        env.SendEventBean(new SupportBean_S1(-1));
-	        env.SendEventBean(new SupportBean_S0(2));
-	        env.AssertEqualsNew("s0", "value", true);
-	    }
-	}
+                env.SendEventBean(new SupportBean_S1(-2));
+                env.SendEventBean(new SupportBean_S0(3));
+                env.AssertListenerNotInvoked("s0");
+
+                env.UndeployAll();
+            }
+        }
+
+        private class EPLSubselectNotExists : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@name('s0') select id from SupportBean_S0 where not exists (select * from SupportBean_S1#length(1000))";
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
+
+                env.SendEventBean(new SupportBean_S0(2));
+                env.AssertEqualsNew("s0", "id", 2);
+
+                env.SendEventBean(new SupportBean_S1(-1));
+                env.SendEventBean(new SupportBean_S0(1));
+                env.AssertListenerNotInvoked("s0");
+
+                env.SendEventBean(new SupportBean_S1(-2));
+                env.SendEventBean(new SupportBean_S0(3));
+                env.AssertListenerNotInvoked("s0");
+
+                env.UndeployAll();
+            }
+        }
+
+        private static void RunTestExistsInSelect(RegressionEnvironment env)
+        {
+            env.SendEventBean(new SupportBean_S0(2));
+            env.AssertEqualsNew("s0", "value", false);
+
+            env.SendEventBean(new SupportBean_S1(-1));
+            env.SendEventBean(new SupportBean_S0(2));
+            env.AssertEqualsNew("s0", "value", true);
+        }
+    }
 } // end of namespace

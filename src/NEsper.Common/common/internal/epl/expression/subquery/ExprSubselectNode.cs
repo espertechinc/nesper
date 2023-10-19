@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             FULLY_AGGREGATED_WPROPS
         }
 
-        public static readonly ExprSubselectNode[] EMPTY_SUBSELECT_ARRAY = new ExprSubselectNode[0];
+        public static readonly ExprSubselectNode[] EMPTY_SUBSELECT_ARRAY = Array.Empty<ExprSubselectNode>();
 
         internal ExprForge filterExpr;
         internal ExprForge havingExpr;

@@ -21,231 +21,293 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
-	public class EventBeanSchemaGenericType {
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EventBeanSchemaParamsSingleParameter());
-	        execs.Add(new EventBeanSchemaParamsTwoParameter());
-	        execs.Add(new EventBeanSchemaParamsInvalid());
-	        return execs;
-	    }
+    public class EventBeanSchemaGenericType
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithSingleParameter(execs);
+            WithTwoParameter(execs);
+            WithInvalid(execs);
+            return execs;
+        }
 
-	    private class EventBeanSchemaParamsInvalid : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            string epl;
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventBeanSchemaParamsInvalid());
+            return execs;
+        }
 
-	            epl = "create schema MyEvent as " + typeof(MyLocalUnparameterized).FullName + "<Integer>";
-	            env.TryInvalidCompile(epl,
-	                "Number of type parameters mismatch, the class '" + typeof(MyLocalUnparameterized).FullName + "' has 0 type parameters but specified are 1 type parameters");
+        public static IList<RegressionExecution> WithTwoParameter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventBeanSchemaParamsTwoParameter());
+            return execs;
+        }
 
-	            epl = "create schema MyEvent as " + typeof(MyLocalOneParameter<>).FullName + "<Integer, String>";
-	            env.TryInvalidCompile(epl,
-	                "Number of type parameters mismatch, the class '" + typeof(MyLocalOneParameter<>).FullName + "' has 1 type parameters but specified are 2 type parameters");
+        public static IList<RegressionExecution> WithSingleParameter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventBeanSchemaParamsSingleParameter());
+            return execs;
+        }
 
-	            epl = "create schema MyEvent as " + typeof(MyLocalUnparameterized).FullName + "[]";
-	            env.TryInvalidCompile(epl,
-	                "Array dimensions are not allowed");
+        private class EventBeanSchemaParamsInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl;
 
-	            epl = "create schema MyEvent as " + typeof(MyLocalOneParameter<>).FullName + "<Dummy>";
-	            env.TryInvalidCompile(epl,
-	                "Failed to resolve type parameter 0 of type 'Dummy': Could not load class by name 'Dummy', please check imports");
+                epl = "create schema MyEvent as " + typeof(MyLocalUnparameterized).FullName + "<Integer>";
+                env.TryInvalidCompile(
+                    epl,
+                    "Number of type parameters mismatch, the class '" +
+                    typeof(MyLocalUnparameterized).FullName +
+                    "' has 0 type parameters but specified are 1 type parameters");
 
-	            epl = "create schema MyEvent as " + typeof(MyLocalBoundParameter<>).FullName + "<String>";
-	            env.TryInvalidCompile(epl,
-	                "Bound type parameters 0 named 'T' expects 'java.lang.Number' but receives 'java.lang.String'");
+                epl = "create schema MyEvent as " + typeof(MyLocalOneParameter<>).FullName + "<Integer, String>";
+                env.TryInvalidCompile(
+                    epl,
+                    "Number of type parameters mismatch, the class '" +
+                    typeof(MyLocalOneParameter<>).FullName +
+                    "' has 1 type parameters but specified are 2 type parameters");
 
-	            epl = "create schema MyEvent as " + typeof(MyLocalBoundParameter<>).FullName + "<int>";
-	            env.TryInvalidCompile(epl,
-	                "Failed to resolve type parameter 0 of type 'int': Could not load class by name 'int', please check imports");
-	        }
+                epl = "create schema MyEvent as " + typeof(MyLocalUnparameterized).FullName + "[]";
+                env.TryInvalidCompile(
+                    epl,
+                    "Array dimensions are not allowed");
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.INVALIDITY);
-	        }
-	    }
+                epl = "create schema MyEvent as " + typeof(MyLocalOneParameter<>).FullName + "<Dummy>";
+                env.TryInvalidCompile(
+                    epl,
+                    "Failed to resolve type parameter 0 of type 'Dummy': Could not load class by name 'Dummy', please check imports");
 
-	    public class EventBeanSchemaParamsSingleParameter : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var single = typeof(SupportBeanParameterizedSingle<>).FullName;
+                epl = "create schema MyEvent as " + typeof(MyLocalBoundParameter<>).FullName + "<String>";
+                env.TryInvalidCompile(
+                    epl,
+                    "Bound type parameters 0 named 'T' expects 'java.lang.Number' but receives 'java.lang.String'");
 
-	            RunAssertionSingleParam(
-		            env,
-		            single + "<Integer>",
-		            typeof(SupportBeanParameterizedSingle<int?>),
-		            typeof(int?),
-		            new SupportBeanParameterizedSingle<int?>(10),
-		            10);
+                epl = "create schema MyEvent as " + typeof(MyLocalBoundParameter<>).FullName + "<int>";
+                env.TryInvalidCompile(
+                    epl,
+                    "Failed to resolve type parameter 0 of type 'int': Could not load class by name 'int', please check imports");
+            }
 
-	            RunAssertionSingleParam(
-		            env,
-		            single + "<String>",
-		            typeof(SupportBeanParameterizedSingle<string>),
-		            (typeof(string)),
-		            new SupportBeanParameterizedSingle<string>("x"),
-		            "x");
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
+        }
 
-	            var data = "a,b".Split(",");
+        public class EventBeanSchemaParamsSingleParameter : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var single = typeof(SupportBeanParameterizedSingle<>).FullName;
 
-	            RunAssertionSingleParam(
-		            env,
-		            single + "<String[]>",
-		            typeof(SupportBeanParameterizedSingle<string[]>),
-		            typeof(string[]),
-		            new SupportBeanParameterizedSingle<string[]>(data),
-		            data);
+                RunAssertionSingleParam(
+                    env,
+                    single + "<Integer>",
+                    typeof(SupportBeanParameterizedSingle<int?>),
+                    typeof(int?),
+                    new SupportBeanParameterizedSingle<int?>(10),
+                    10);
 
-	            RunAssertionSingleParam(
-		            env,
-		            single,
-		            typeof(SupportBeanParameterizedSingle<object>),
-		            typeof(object),
-		            new SupportBeanParameterizedSingle<object>(100L),
-		            100L);
+                RunAssertionSingleParam(
+                    env,
+                    single + "<String>",
+                    typeof(SupportBeanParameterizedSingle<string>),
+                    (typeof(string)),
+                    new SupportBeanParameterizedSingle<string>("x"),
+                    "x");
 
-	            Nullable<long> optionalLongValue = 10L;
-	            RunAssertionSingleParam(
-		            env,
-		            single + "<" + typeof(long?).CleanName() + ">",
-		            typeof(SupportBeanParameterizedSingle<long?>),
-		            typeof(long?),
-		            new SupportBeanParameterizedSingle<long?>(optionalLongValue),
-		            optionalLongValue);
+                var data = "a,b".Split(",");
 
-	            RunAssertionSingleParam(
-		            env,
-		            typeof(MyLocalBoundParameter<>).FullName + "<Long>",
-		            (typeof(MyLocalBoundParameter<long?>)),
-		            (typeof(long?)),
-		            new MyLocalBoundParameter<long?>(100L),
-		            100L);
-	        }
+                RunAssertionSingleParam(
+                    env,
+                    single + "<String[]>",
+                    typeof(SupportBeanParameterizedSingle<string[]>),
+                    typeof(string[]),
+                    new SupportBeanParameterizedSingle<string[]>(data),
+                    data);
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.SERDEREQUIRED);
-	        }
-	    }
+                RunAssertionSingleParam(
+                    env,
+                    single,
+                    typeof(SupportBeanParameterizedSingle<object>),
+                    typeof(object),
+                    new SupportBeanParameterizedSingle<object>(100L),
+                    100L);
 
-	    public class EventBeanSchemaParamsTwoParameter : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var two = typeof(SupportBeanParameterizedTwo<,>).FullName;
+                Nullable<long> optionalLongValue = 10L;
+                RunAssertionSingleParam(
+                    env,
+                    single + "<" + typeof(long?).CleanName() + ">",
+                    typeof(SupportBeanParameterizedSingle<long?>),
+                    typeof(long?),
+                    new SupportBeanParameterizedSingle<long?>(optionalLongValue),
+                    optionalLongValue);
 
-	            RunAssertionTwoParam(
-		            env, two + "<Double, String>",
-		            typeof(SupportBeanParameterizedTwo<double?, string>),
-	                typeof(double?), typeof(string),
-		            new SupportBeanParameterizedTwo<double?, string>(10d, "A"), 10d, "A");
+                RunAssertionSingleParam(
+                    env,
+                    typeof(MyLocalBoundParameter<>).FullName + "<Long>",
+                    (typeof(MyLocalBoundParameter<long?>)),
+                    (typeof(long?)),
+                    new MyLocalBoundParameter<long?>(100L),
+                    100L);
+            }
 
-	            var dtx = DateTimeEx.NowUtc();
-	            var buf = new ByteBuffer(Array.Empty<byte>());
-	            RunAssertionTwoParam(
-		            env,
-		            $"{two}<{typeof(ByteBuffer).FullName}, {typeof(DateTimeEx).FullName}>",
-		            typeof(SupportBeanParameterizedTwo<ByteBuffer, DateTimeEx>),
-	                typeof(ByteBuffer),
-		            typeof(DateTimeEx),
-		            new SupportBeanParameterizedTwo<ByteBuffer, DateTimeEx>(buf, dtx), buf, dtx);
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.SERDEREQUIRED);
+            }
+        }
 
-	            RunAssertionTwoParam(
-		            env,
-		            two,
-		            typeof(SupportBeanParameterizedTwo<int, string>),
-		            typeof(object),
-		            typeof(object),
-		            new SupportBeanParameterizedTwo<int, string>(1, "a"),
-		            1,
-		            "a");
-	        }
+        public class EventBeanSchemaParamsTwoParameter : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var two = typeof(SupportBeanParameterizedTwo<,>).FullName;
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.SERDEREQUIRED);
-	        }
-	    }
+                RunAssertionTwoParam(
+                    env,
+                    two + "<Double, String>",
+                    typeof(SupportBeanParameterizedTwo<double?, string>),
+                    typeof(double?),
+                    typeof(string),
+                    new SupportBeanParameterizedTwo<double?, string>(10d, "A"),
+                    10d,
+                    "A");
 
-	    private static void RunAssertionSingleParam(RegressionEnvironment env, string typeName, Type expectedUnderlying, Type expectedProperty, object @event, object expected) {
-	        var epl =
-	            "@name('schema') @public @buseventtype create schema MyEvent as " + typeName + ";\n" +
-	                "@name('s0') select simpleProperty as c0 from MyEvent;\n";
-	        env.CompileDeploy(epl).AddListener("s0");
+                var dtx = DateTimeEx.NowUtc();
+                var buf = new ByteBuffer(Array.Empty<byte>());
+                RunAssertionTwoParam(
+                    env,
+                    $"{two}<{typeof(ByteBuffer).FullName}, {typeof(DateTimeEx).FullName}>",
+                    typeof(SupportBeanParameterizedTwo<ByteBuffer, DateTimeEx>),
+                    typeof(ByteBuffer),
+                    typeof(DateTimeEx),
+                    new SupportBeanParameterizedTwo<ByteBuffer, DateTimeEx>(buf, dtx),
+                    buf,
+                    dtx);
 
-	        env.AssertStatement("schema", statement => {
-	            var schemaType = statement.EventType;
-	            Assert.AreEqual(expectedUnderlying, schemaType.UnderlyingType);
-	            var received = schemaType.PropertyDescriptors.ToArray();
-	            var fragment = received[0].IsFragment; // ignore fragment, mapped, indexed flags
-	            var indexed = received[0].IsIndexed; // ignore fragment, mapped, indexed flags
-	            var mapped = received[0].IsMapped; // ignore fragment, mapped, indexed flags
-	            SupportEventPropUtil.AssertPropsEquals(received, new SupportEventPropDesc("simpleProperty", expectedProperty)
-		            .WithFragment(fragment)
-		            .WithIndexed(indexed)
-		            .WithMapped(mapped));
+                RunAssertionTwoParam(
+                    env,
+                    two,
+                    typeof(SupportBeanParameterizedTwo<int, string>),
+                    typeof(object),
+                    typeof(object),
+                    new SupportBeanParameterizedTwo<int, string>(1, "a"),
+                    1,
+                    "a");
+            }
 
-	            SupportEventPropUtil.AssertPropsEquals(
-		            env.Statement("s0").EventType.PropertyDescriptors.ToArray(),
-	                new SupportEventPropDesc("c0", expectedProperty)
-		                .WithFragment(fragment)
-		                .WithIndexed(indexed)
-		                .WithMapped(mapped));
-	        });
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.SERDEREQUIRED);
+            }
+        }
 
-	        env.SendEventBean(@event, "MyEvent");
-	        env.AssertEqualsNew("s0", "c0", expected);
+        private static void RunAssertionSingleParam(
+            RegressionEnvironment env,
+            string typeName,
+            Type expectedUnderlying,
+            Type expectedProperty,
+            object @event,
+            object expected)
+        {
+            var epl =
+                "@name('schema') @public @buseventtype create schema MyEvent as " +
+                typeName +
+                ";\n" +
+                "@name('s0') select simpleProperty as c0 from MyEvent;\n";
+            env.CompileDeploy(epl).AddListener("s0");
 
-	        env.UndeployAll();
-	    }
+            env.AssertStatement(
+                "schema",
+                statement => {
+                    var schemaType = statement.EventType;
+                    Assert.AreEqual(expectedUnderlying, schemaType.UnderlyingType);
+                    var received = schemaType.PropertyDescriptors.ToArray();
+                    var fragment = received[0].IsFragment; // ignore fragment, mapped, indexed flags
+                    var indexed = received[0].IsIndexed; // ignore fragment, mapped, indexed flags
+                    var mapped = received[0].IsMapped; // ignore fragment, mapped, indexed flags
+                    SupportEventPropUtil.AssertPropsEquals(
+                        received,
+                        new SupportEventPropDesc("simpleProperty", expectedProperty)
+                            .WithFragment(fragment)
+                            .WithIndexed(indexed)
+                            .WithMapped(mapped));
 
-	    private static void RunAssertionTwoParam(
-		    RegressionEnvironment env,
-		    string typeName,
-		    Type expectedUnderlying,
-		    Type expectedOne,
-		    Type expectedTwo,
-		    object @event,
-		    object valueOne,
-		    object valueTwo)
-	    {
-		    var epl =
-			    "@name('schema') @public @buseventtype create schema MyEvent as " +
-			    typeName +
-			    ";\n" +
-			    "@name('s0') select one as c0, two as c1 from MyEvent;\n";
-		    env.CompileDeploy(epl).AddListener("s0");
+                    SupportEventPropUtil.AssertPropsEquals(
+                        env.Statement("s0").EventType.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("c0", expectedProperty)
+                            .WithFragment(fragment)
+                            .WithIndexed(indexed)
+                            .WithMapped(mapped));
+                });
 
-		    env.AssertStatement(
-			    "s0",
-			    statement => {
-				    var schemaType = env.Statement("schema").EventType;
-				    Assert.AreEqual(expectedUnderlying, schemaType.UnderlyingType);
-				    Assert.AreEqual(expectedOne, schemaType.GetPropertyType("one"));
-				    Assert.AreEqual(expectedTwo, schemaType.GetPropertyType("two"));
+            env.SendEventBean(@event, "MyEvent");
+            env.AssertEqualsNew("s0", "c0", expected);
 
-				    var s0Type = statement.EventType;
-				    Assert.AreEqual(expectedOne, s0Type.GetPropertyType("c0"));
-				    Assert.AreEqual(expectedTwo, s0Type.GetPropertyType("c1"));
-			    });
+            env.UndeployAll();
+        }
 
-		    env.SendEventBean(@event, "MyEvent");
-		    env.AssertPropsNew("s0", "c0,c1".Split(","), new object[] { valueOne, valueTwo });
+        private static void RunAssertionTwoParam(
+            RegressionEnvironment env,
+            string typeName,
+            Type expectedUnderlying,
+            Type expectedOne,
+            Type expectedTwo,
+            object @event,
+            object valueOne,
+            object valueTwo)
+        {
+            var epl =
+                "@name('schema') @public @buseventtype create schema MyEvent as " +
+                typeName +
+                ";\n" +
+                "@name('s0') select one as c0, two as c1 from MyEvent;\n";
+            env.CompileDeploy(epl).AddListener("s0");
 
-		    env.UndeployAll();
-	    }
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    var schemaType = env.Statement("schema").EventType;
+                    Assert.AreEqual(expectedUnderlying, schemaType.UnderlyingType);
+                    Assert.AreEqual(expectedOne, schemaType.GetPropertyType("one"));
+                    Assert.AreEqual(expectedTwo, schemaType.GetPropertyType("two"));
 
-	    public class MyLocalUnparameterized {
-	    }
+                    var s0Type = statement.EventType;
+                    Assert.AreEqual(expectedOne, s0Type.GetPropertyType("c0"));
+                    Assert.AreEqual(expectedTwo, s0Type.GetPropertyType("c1"));
+                });
 
-	    public class MyLocalOneParameter<T>
-	    {
-	    }
+            env.SendEventBean(@event, "MyEvent");
+            env.AssertPropsNew("s0", "c0,c1".Split(","), new object[] { valueOne, valueTwo });
 
-	    public class MyLocalBoundParameter<T>
-	    {
-		    private T simpleProperty;
+            env.UndeployAll();
+        }
 
-		    public MyLocalBoundParameter(T simpleProperty)
-		    {
-			    this.simpleProperty = simpleProperty;
-		    }
+        public class MyLocalUnparameterized
+        {
+        }
 
-		    public T SimpleProperty => simpleProperty;
-	    }
-	}
+        public class MyLocalOneParameter<T>
+        {
+        }
+
+        public class MyLocalBoundParameter<T>
+        {
+            private T simpleProperty;
+
+            public MyLocalBoundParameter(T simpleProperty)
+            {
+                this.simpleProperty = simpleProperty;
+            }
+
+            public T SimpleProperty => simpleProperty;
+        }
+    }
 } // end of namespace

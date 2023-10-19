@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 try {
                     eventManufacturer = EventTypeUtility.GetManufacturer(
                         eventType,
-                        new WriteablePropertyDescriptor[0],
+                        Array.Empty<WriteablePropertyDescriptor>(),
                         importService,
                         true,
                         eventTypeAvroHandler);

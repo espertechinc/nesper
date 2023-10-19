@@ -28,216 +28,268 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
-	public class EventInfraGetterNestedSimpleDeep : RegressionExecution {
-	    public void Run(RegressionEnvironment env) {
-	        // Bean
-	        Consumer<Nullable2Lvl> bean = val => {
-	            LocalEvent @event;
-	            if (val.IsNullAtRoot) {
-	                @event = new LocalEvent(null);
-	            } else if (val.IsNullAtInner) {
-	                @event = new LocalEvent(new LocalInnerEvent(null));
-	            } else {
-	                @event = new LocalEvent(new LocalInnerEvent(new LocalLeafEvent(val.Id)));
-	            }
-	            env.SendEventBean(@event);
-	        };
-	        var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).FullName + ";\n";
-	        RunAssertion(env, beanepl, bean);
+    public class EventInfraGetterNestedSimpleDeep : RegressionExecution
+    {
+        public void Run(RegressionEnvironment env)
+        {
+            // Bean
+            Consumer<Nullable2Lvl> bean = val => {
+                LocalEvent @event;
+                if (val.IsNullAtRoot) {
+                    @event = new LocalEvent(null);
+                }
+                else if (val.IsNullAtInner) {
+                    @event = new LocalEvent(new LocalInnerEvent(null));
+                }
+                else {
+                    @event = new LocalEvent(new LocalInnerEvent(new LocalLeafEvent(val.Id)));
+                }
 
-	        // Map
-	        Consumer<Nullable2Lvl> map = val => {
-	            IDictionary<string, object> @event = new LinkedHashMap<string, object>();
-	            if (val.IsNullAtRoot) {
-	                // no change
-	            } else if (val.IsNullAtInner) {
-	                var inner = Collections.SingletonDataMap("leaf", null);
-	                @event.Put("property", inner);
-	            } else {
-	                var leaf = Collections.SingletonDataMap("id", val.Id);
-	                var inner = Collections.SingletonDataMap("leaf", leaf);
-	                @event.Put("property", inner);
-	            }
-	            env.SendEventMap(@event, "LocalEvent");
-	        };
-	        RunAssertion(env, GetEpl("map"), map);
+                env.SendEventBean(@event);
+            };
+            var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).FullName + ";\n";
+            RunAssertion(env, beanepl, bean);
 
-	        // Object-array
-	        Consumer<Nullable2Lvl> oa = val => {
-	            var @event = new object[1];
-	            if (val.IsNullAtRoot) {
-	                // no change
-	            } else if (val.IsNullAtInner) {
-	                var inner = new object[]{null};
-	                @event[0] = inner;
-	            } else {
-	                var leaf = new object[]{val.Id};
-	                var inner = new object[]{leaf};
-	                @event[0] = inner;
-	            }
-	            env.SendEventObjectArray(@event, "LocalEvent");
-	        };
-	        RunAssertion(env, GetEpl("objectarray"), oa);
+            // Map
+            Consumer<Nullable2Lvl> map = val => {
+                IDictionary<string, object> @event = new LinkedHashMap<string, object>();
+                if (val.IsNullAtRoot) {
+                    // no change
+                }
+                else if (val.IsNullAtInner) {
+                    var inner = Collections.SingletonDataMap("leaf", null);
+                    @event.Put("property", inner);
+                }
+                else {
+                    var leaf = Collections.SingletonDataMap("id", val.Id);
+                    var inner = Collections.SingletonDataMap("leaf", leaf);
+                    @event.Put("property", inner);
+                }
 
-	        // Json
-	        Consumer<Nullable2Lvl> json = val => {
-	            var @event = new JObject();
-	            if (val.IsNullAtRoot) {
-	                // no change
-	            } else if (val.IsNullAtInner) {
-		            @event.Add("property", new JObject(new JProperty("leaf")));
-	            } else {
-		            var leaf = new JObject(new JProperty("id", val.Id));
-		            var inner = new JObject(new JProperty("leaf", leaf));
-	                @event.Add("property", inner);
-	            }
-	            env.SendEventJson(@event.ToString(), "LocalEvent");
-	        };
-	        RunAssertion(env, GetEpl("json"), json);
+                env.SendEventMap(@event, "LocalEvent");
+            };
+            RunAssertion(env, GetEpl("map"), map);
 
-	        // Json-Class-Provided
-	        var eplJsonProvided = "@JsonSchema(className='" + typeof(MyLocalJsonProvided).FullName + "') @public @buseventtype create json schema LocalEvent();\n";
-	        RunAssertion(env, eplJsonProvided, json);
+            // Object-array
+            Consumer<Nullable2Lvl> oa = val => {
+                var @event = new object[1];
+                if (val.IsNullAtRoot) {
+                    // no change
+                }
+                else if (val.IsNullAtInner) {
+                    var inner = new object[] { null };
+                    @event[0] = inner;
+                }
+                else {
+                    var leaf = new object[] { val.Id };
+                    var inner = new object[] { leaf };
+                    @event[0] = inner;
+                }
 
-	        // Avro
-	        Consumer<Nullable2Lvl> avro = val => {
-	            var schema = env.RuntimeAvroSchemaByDeployment("schema", "LocalEvent").AsRecordSchema();
-	            var @event = new GenericRecord(schema);
-	            if (val.IsNullAtRoot) {
-	                // no change
-	            } else if (val.IsNullAtInner) {
-	                var inner = new GenericRecord(schema.GetField("property").Schema.AsRecordSchema());
-	                @event.Put("property", inner);
-	            } else {
-	                var leaf = new GenericRecord(
-		                schema.GetField("property")
-			                .Schema
-			                .GetField("leaf")
-			                .Schema.AsRecordSchema());
-	                
-	                leaf.Put("id", val.Id);
-	                var inner = new GenericRecord(schema.GetField("property").Schema.AsRecordSchema());
-	                inner.Put("leaf", leaf);
-	                @event.Put("property", inner);
-	            }
-	            env.SendEventAvro(@event, "LocalEvent");
-	        };
-	        env.AssertThat(() => RunAssertion(env, GetEpl("avro"), avro));
-	    }
+                env.SendEventObjectArray(@event, "LocalEvent");
+            };
+            RunAssertion(env, GetEpl("objectarray"), oa);
 
-	    public void RunAssertion(RegressionEnvironment env,
-	                             string createSchemaEPL,
-	                             Consumer<Nullable2Lvl> sender) {
+            // Json
+            Consumer<Nullable2Lvl> json = val => {
+                var @event = new JObject();
+                if (val.IsNullAtRoot) {
+                    // no change
+                }
+                else if (val.IsNullAtInner) {
+                    @event.Add("property", new JObject(new JProperty("leaf")));
+                }
+                else {
+                    var leaf = new JObject(new JProperty("id", val.Id));
+                    var inner = new JObject(new JProperty("leaf", leaf));
+                    @event.Add("property", inner);
+                }
 
-	        var epl = createSchemaEPL +
-	                  "@name('s0') select * from LocalEvent;\n" +
-	                  "@name('s1') select property.leaf.id as c0, exists(property.leaf.id) as c1, typeof(property.leaf.id) as c2 from LocalEvent;\n";
-	        env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
+                env.SendEventJson(@event.ToString(), "LocalEvent");
+            };
+            RunAssertion(env, GetEpl("json"), json);
 
-	        sender.Invoke(new Nullable2Lvl(false, false, "a"));
-	        env.AssertEventNew("s0", @event => AssertGetter(@event, true, "a"));
-	        AssertProps(env, true, "a");
+            // Json-Class-Provided
+            var eplJsonProvided = "@JsonSchema(className='" +
+                                  typeof(MyLocalJsonProvided).FullName +
+                                  "') @public @buseventtype create json schema LocalEvent();\n";
+            RunAssertion(env, eplJsonProvided, json);
 
-	        sender.Invoke(new Nullable2Lvl(false, false, null));
-	        env.AssertEventNew("s0", @event => AssertGetter(@event, true, null));
-	        AssertProps(env, true, null);
+            // Avro
+            Consumer<Nullable2Lvl> avro = val => {
+                var schema = env.RuntimeAvroSchemaByDeployment("schema", "LocalEvent").AsRecordSchema();
+                var @event = new GenericRecord(schema);
+                if (val.IsNullAtRoot) {
+                    // no change
+                }
+                else if (val.IsNullAtInner) {
+                    var inner = new GenericRecord(schema.GetField("property").Schema.AsRecordSchema());
+                    @event.Put("property", inner);
+                }
+                else {
+                    var leaf = new GenericRecord(
+                        schema.GetField("property")
+                            .Schema
+                            .GetField("leaf")
+                            .Schema.AsRecordSchema());
 
-	        sender.Invoke(new Nullable2Lvl(false, true, null));
-	        env.AssertEventNew("s0", @event => AssertGetter(@event, false, null));
-	        AssertProps(env, false, null);
+                    leaf.Put("id", val.Id);
+                    var inner = new GenericRecord(schema.GetField("property").Schema.AsRecordSchema());
+                    inner.Put("leaf", leaf);
+                    @event.Put("property", inner);
+                }
 
-	        sender.Invoke(new Nullable2Lvl(true, false, null));
-	        env.AssertEventNew("s0", @event => AssertGetter(@event, false, null));
-	        AssertProps(env, false, null);
+                env.SendEventAvro(@event, "LocalEvent");
+            };
+            env.AssertThat(() => RunAssertion(env, GetEpl("avro"), avro));
+        }
 
-	        env.UndeployAll();
-	    }
+        public void RunAssertion(
+            RegressionEnvironment env,
+            string createSchemaEPL,
+            Consumer<Nullable2Lvl> sender)
+        {
+            var epl = createSchemaEPL +
+                      "@name('s0') select * from LocalEvent;\n" +
+                      "@name('s1') select property.leaf.id as c0, exists(property.leaf.id) as c1, typeof(property.leaf.id) as c2 from LocalEvent;\n";
+            env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
-	    private void AssertProps(RegressionEnvironment env, bool exists, string expected) {
-	        env.AssertPropsNew("s1", "c0,c1,c2".SplitCsv(),
-	            new object[]{expected, exists, expected != null ? nameof(String) : null});
-	    }
+            sender.Invoke(new Nullable2Lvl(false, false, "a"));
+            env.AssertEventNew("s0", @event => AssertGetter(@event, true, "a"));
+            AssertProps(env, true, "a");
 
-	    private void AssertGetter(EventBean @event, bool exists, string value) {
-	        var getter = @event.EventType.GetGetter("property.leaf.id");
-	        Assert.AreEqual(exists, getter.IsExistsProperty(@event));
-	        Assert.AreEqual(value, getter.Get(@event));
-	        Assert.IsNull(getter.GetFragment(@event));
-	    }
+            sender.Invoke(new Nullable2Lvl(false, false, null));
+            env.AssertEventNew("s0", @event => AssertGetter(@event, true, null));
+            AssertProps(env, true, null);
 
-	    private string GetEpl(string underlying) {
-	        return "@public @buseventtype create " + underlying + " schema LocalLeafEvent(id string);\n" +
-	            "@public @buseventtype create " + underlying + " schema LocalInnerEvent(leaf LocalLeafEvent);\n" +
-	            "@name('schema') @public @buseventtype create " + underlying + " schema LocalEvent(property LocalInnerEvent);\n";
-	    }
+            sender.Invoke(new Nullable2Lvl(false, true, null));
+            env.AssertEventNew("s0", @event => AssertGetter(@event, false, null));
+            AssertProps(env, false, null);
 
-	    [Serializable]
-	    public class LocalLeafEvent {
-	        private readonly string id;
+            sender.Invoke(new Nullable2Lvl(true, false, null));
+            env.AssertEventNew("s0", @event => AssertGetter(@event, false, null));
+            AssertProps(env, false, null);
 
-	        public LocalLeafEvent(string id) {
-	            this.id = id;
-	        }
+            env.UndeployAll();
+        }
 
-	        public string Id => id;
-	    }
+        private void AssertProps(
+            RegressionEnvironment env,
+            bool exists,
+            string expected)
+        {
+            env.AssertPropsNew(
+                "s1",
+                "c0,c1,c2".SplitCsv(),
+                new object[] { expected, exists, expected != null ? nameof(String) : null });
+        }
 
-	    [Serializable]
-	    public class LocalInnerEvent {
-	        private readonly LocalLeafEvent leaf;
+        private void AssertGetter(
+            EventBean @event,
+            bool exists,
+            string value)
+        {
+            var getter = @event.EventType.GetGetter("property.leaf.id");
+            Assert.AreEqual(exists, getter.IsExistsProperty(@event));
+            Assert.AreEqual(value, getter.Get(@event));
+            Assert.IsNull(getter.GetFragment(@event));
+        }
 
-	        public LocalInnerEvent(LocalLeafEvent leaf) {
-	            this.leaf = leaf;
-	        }
+        private string GetEpl(string underlying)
+        {
+            return "@public @buseventtype create " +
+                   underlying +
+                   " schema LocalLeafEvent(id string);\n" +
+                   "@public @buseventtype create " +
+                   underlying +
+                   " schema LocalInnerEvent(leaf LocalLeafEvent);\n" +
+                   "@name('schema') @public @buseventtype create " +
+                   underlying +
+                   " schema LocalEvent(property LocalInnerEvent);\n";
+        }
 
-	        public LocalLeafEvent GetLeaf() {
-	            return leaf;
-	        }
-	    }
+        [Serializable]
+        public class LocalLeafEvent
+        {
+            private readonly string id;
 
-	    [Serializable]
-	    public class LocalEvent {
-	        private LocalInnerEvent property;
+            public LocalLeafEvent(string id)
+            {
+                this.id = id;
+            }
 
-	        public LocalEvent(LocalInnerEvent property) {
-	            this.property = property;
-	        }
+            public string Id => id;
+        }
 
-	        public LocalInnerEvent Property => property;
-	    }
+        [Serializable]
+        public class LocalInnerEvent
+        {
+            private readonly LocalLeafEvent leaf;
 
-	    [Serializable]
-	    public class Nullable2Lvl {
-	        private readonly bool nullAtRoot;
-	        private readonly bool nullAtInner;
-	        private readonly string id;
+            public LocalInnerEvent(LocalLeafEvent leaf)
+            {
+                this.leaf = leaf;
+            }
 
-	        public Nullable2Lvl(bool nullAtRoot, bool nullAtInner, string id) {
-	            this.nullAtRoot = nullAtRoot;
-	            this.nullAtInner = nullAtInner;
-	            this.id = id;
-	        }
+            public LocalLeafEvent GetLeaf()
+            {
+                return leaf;
+            }
+        }
 
-	        public bool IsNullAtRoot => nullAtRoot;
+        [Serializable]
+        public class LocalEvent
+        {
+            private LocalInnerEvent property;
 
-	        public bool IsNullAtInner => nullAtInner;
+            public LocalEvent(LocalInnerEvent property)
+            {
+                this.property = property;
+            }
 
-	        public string Id => id;
-	    }
+            public LocalInnerEvent Property => property;
+        }
 
-	    [Serializable]
-	    public class MyLocalJsonProvided {
-	        public MyLocalJsonProvidedInnerEvent property;
-	    }
+        [Serializable]
+        public class Nullable2Lvl
+        {
+            private readonly bool nullAtRoot;
+            private readonly bool nullAtInner;
+            private readonly string id;
 
-	    [Serializable]
-	    public class MyLocalJsonProvidedInnerEvent {
-	        public MyLocalJsonProvidedLeafEvent leaf;
-	    }
+            public Nullable2Lvl(
+                bool nullAtRoot,
+                bool nullAtInner,
+                string id)
+            {
+                this.nullAtRoot = nullAtRoot;
+                this.nullAtInner = nullAtInner;
+                this.id = id;
+            }
 
-	    [Serializable]
-	    public class MyLocalJsonProvidedLeafEvent {
-	        public string id;
-	    }
-	}
+            public bool IsNullAtRoot => nullAtRoot;
+
+            public bool IsNullAtInner => nullAtInner;
+
+            public string Id => id;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvided
+        {
+            public MyLocalJsonProvidedInnerEvent property;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedInnerEvent
+        {
+            public MyLocalJsonProvidedLeafEvent leaf;
+        }
+
+        [Serializable]
+        public class MyLocalJsonProvidedLeafEvent
+        {
+            public string id;
+        }
+    }
 } // end of namespace

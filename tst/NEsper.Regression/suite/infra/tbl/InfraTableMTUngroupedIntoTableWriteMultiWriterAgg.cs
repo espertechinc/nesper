@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         /// <summary>
         ///     For a given number of seconds:
         ///     Configurable number of into-writers update a shared aggregation.
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.CompileDeploy("@name('s0') select varagg.theEvents as c0 from SupportBean_S0", path).AddListener("s0");
             env.SendEventBean(new SupportBean_S0(0));
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
-            var window = (SupportBean[]) @event.Get("c0");
+            var window = (SupportBean[])@event.Get("c0");
             Assert.AreEqual(numThreads * 3, window.Length);
 
             env.UndeployAll();

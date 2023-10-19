@@ -19,21 +19,28 @@ using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
-	public class ClientCompileToolCompiler
-	{
-		private static readonly ILog Log = LogManager.GetLogger(typeof(ClientCompileToolCompiler));
+    public class ClientCompileToolCompiler
+    {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ClientCompileToolCompiler));
 
-		public static IList<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ClientCompileToolCompilerBasic());
-			return execs;
-		}
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withc(execs);
+            return execs;
+        }
 
-		private class ClientCompileToolCompilerBasic : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
+        public static IList<RegressionExecution> Withc(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientCompileToolCompilerBasic());
+            return execs;
+        }
+
+        private class ClientCompileToolCompilerBasic : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
 #if BROKEN
 				var compiler = ToolProvider.SystemJavaCompiler;
 				if (compiler == null) {
@@ -51,12 +58,12 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 					throw new EPRuntimeException(e);
 				}
 #endif
-			}
+            }
 
-			public ISet<RegressionFlag> Flags()
-			{
-				return Collections.Set(RegressionFlag.COMPILEROPS);
-			}
-		}
-	}
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.COMPILEROPS);
+            }
+        }
+    }
 } // end of namespace

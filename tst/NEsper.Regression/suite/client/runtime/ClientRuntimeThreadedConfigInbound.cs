@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED,
                 true);
         }
-        
+
         public ISet<RegressionFlag> Flags()
         {
             return Collections.Set(RegressionFlag.RUNTIMEOPS);
@@ -104,10 +104,18 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             var listenerXML = new SupportListenerTimerHRes();
             var listenerOA = new SupportListenerTimerHRes();
             var listenerJson = new SupportListenerTimerHRes();
-            env.CompileDeploy("@name('s0') select SupportStaticMethodLib.Sleep(100) from MyMap").Statement("s0").AddListener(listenerMap);
-            env.CompileDeploy("@name('s1') select SupportStaticMethodLib.Sleep(100) from SupportBean").Statement("s1").AddListener(listenerBean);
-            env.CompileDeploy("@name('s2') select SupportStaticMethodLib.Sleep(100) from XMLType").Statement("s2").AddListener(listenerXML);
-            env.CompileDeploy("@name('s3') select SupportStaticMethodLib.Sleep(100) from MyOA").Statement("s3").AddListener(listenerOA);
+            env.CompileDeploy("@name('s0') select SupportStaticMethodLib.Sleep(100) from MyMap")
+                .Statement("s0")
+                .AddListener(listenerMap);
+            env.CompileDeploy("@name('s1') select SupportStaticMethodLib.Sleep(100) from SupportBean")
+                .Statement("s1")
+                .AddListener(listenerBean);
+            env.CompileDeploy("@name('s2') select SupportStaticMethodLib.Sleep(100) from XMLType")
+                .Statement("s2")
+                .AddListener(listenerXML);
+            env.CompileDeploy("@name('s3') select SupportStaticMethodLib.Sleep(100) from MyOA")
+                .Statement("s3")
+                .AddListener(listenerOA);
             env.CompileDeploy(
                     "@public @buseventtype create json schema JsonEvent();\n" +
                     "@name('s4') select SupportStaticMethodLib.Sleep(100) from JsonEvent")
@@ -144,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 Assert.AreEqual(4, listener.NewEvents.Count);
             }
 
-            var spi = (EPRuntimeSPI) env.Runtime;
+            var spi = (EPRuntimeSPI)env.Runtime;
             Assert.AreEqual(0, spi.ServicesContext.ThreadingService.InboundQueue.Count);
             Assert.IsNotNull(spi.ServicesContext.ThreadingService.InboundThreadPool);
 

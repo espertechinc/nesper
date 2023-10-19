@@ -24,8 +24,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EPLVariableManageDependency());
+            WithManageDependency(execs);
+            WithDestroyReCreateChangeType(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDestroyReCreateChangeType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLVariableDestroyReCreateChangeType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithManageDependency(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLVariableManageDependency());
             return execs;
         }
 
@@ -141,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 env.UndeployAll();
             }
-            
+
             public ISet<RegressionFlag> Flags()
             {
                 return Collections.Set(RegressionFlag.RUNTIMEOPS);

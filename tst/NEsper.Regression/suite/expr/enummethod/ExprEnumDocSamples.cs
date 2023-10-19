@@ -27,16 +27,86 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumExpressions());
-            execs.Add(new ExprEnumHowToUse());
-            execs.Add(new ExprEnumSubquery());
-            execs.Add(new ExprEnumNamedWindow());
-            execs.Add(new ExprEnumAccessAggWindow());
-            execs.Add(new ExprEnumPrevWindow());
-            execs.Add(new ExprEnumProperties());
-            execs.Add(new ExprEnumUDFSingleRow());
-            execs.Add(new ExprEnumScalarArray());
+            WithExpressions(execs);
+            WithHowToUse(execs);
+            WithSubquery(execs);
+            WithNamedWindow(execs);
+            WithAccessAggWindow(execs);
+            WithPrevWindow(execs);
+            WithProperties(execs);
+            WithUDFSingleRow(execs);
+            WithScalarArray(execs);
+            WithDeclared(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithDeclared(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprEnumDeclared());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithScalarArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumScalarArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUDFSingleRow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumUDFSingleRow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithProperties(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumProperties());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrevWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPrevWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAccessAggWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumAccessAggWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumNamedWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSubquery());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithHowToUse(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumHowToUse());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithExpressions(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumExpressions());
             return execs;
         }
 

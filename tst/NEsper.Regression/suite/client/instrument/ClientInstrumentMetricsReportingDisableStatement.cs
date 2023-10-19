@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
 
         public void Run(RegressionEnvironment env)
         {
-            string[] fields = {"StatementName"};
+            string[] fields = { "StatementName" };
             var statements = new EPStatement[5];
 
             SendTimer(env, 1000);
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("MyStatement@METRIC").NewDataListFlattened,
                 fields,
-                new[] {new object[] {"stmtone"}, new object[] {"stmttwo"}});
+                new[] { new object[] { "stmtone" }, new object[] { "stmttwo" } });
             env.Listener("MyStatement@METRIC").Reset();
 
             SendEvent(env, "E1", 1, CPUGOALONENANO);
@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("MyStatement@METRIC").NewDataListFlattened,
                 fields,
-                new[] {new object[] {"stmtone"}, new object[] {"stmttwo"}});
+                new[] { new object[] { "stmtone" }, new object[] { "stmttwo" } });
             env.Listener("MyStatement@METRIC").Reset();
 
             env.Runtime.MetricsService.SetMetricsReportingStmtDisabled(env.DeploymentId("stmtone"), "stmtone");
@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("MyStatement@METRIC").NewDataListFlattened,
                 fields,
-                new[] {new object[] {"stmttwo"}});
+                new[] { new object[] { "stmttwo" } });
             env.Listener("MyStatement@METRIC").Reset();
 
             env.Runtime.MetricsService.SetMetricsReportingStmtEnabled(env.DeploymentId("stmtone"), "stmtone");
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             EPAssertionUtil.AssertPropsPerRow(
                 env.Listener("MyStatement@METRIC").NewDataListFlattened,
                 fields,
-                new[] {new object[] {"stmtone"}});
+                new[] { new object[] { "stmtone" } });
 
             env.UndeployAll();
         }

@@ -26,8 +26,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         public static List<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithPreconfig(execs);
-            WithCreateSchema(execs);
+            With(CreateSchema)(execs);
+#endif
             return execs;
         }
 
@@ -58,7 +60,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             public void Run(RegressionEnvironment env)
             {
                 var resourceManager = env.Container.ResourceManager();
-                var schemaUriSimpleSchemaWithAll = resourceManager.ResolveResourceURL("regression/simpleSchemaWithAll.xsd");
+                var schemaUriSimpleSchemaWithAll =
+                    resourceManager.ResolveResourceURL("regression/simpleSchemaWithAll.xsd");
                 var epl = "@public @buseventtype " +
                           "@XMLSchema(RootElementName='event-page-visit', SchemaResource='" +
                           schemaUriSimpleSchemaWithAll +
@@ -88,11 +91,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 "<url>page1</url>" +
                 "</event-page-visit>",
                 eventTypeName);
-            env.AssertListener("s0", listener => {
-                var theEvent = listener.LastNewData[0];
-                Assert.AreEqual("page1", theEvent.Get("sesja"));
-                listener.Reset();
-            });
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var theEvent = listener.LastNewData[0];
+                    Assert.AreEqual("page1", theEvent.Get("sesja"));
+                    listener.Reset();
+                });
             SupportXML.SendXMLEvent(
                 env,
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
@@ -103,15 +108,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.AssertListenerNotInvoked("s0");
 
             env.CompileDeploy("@name('s1') select * from " + eventTypeName, path);
-            env.AssertStatement("s1", statement => {
-                var type = statement.EventType;
-                SupportEventPropUtil.AssertPropsEquals(
-                    type.PropertyDescriptors.ToArray(),
-                    new SupportEventPropDesc("sessionId", typeof(XmlNode)).WithFragment(),
-                new SupportEventPropDesc("customerId", typeof(XmlNode)).WithFragment(),
-                new SupportEventPropDesc("url", typeof(string)),
-                new SupportEventPropDesc("method", typeof(XmlNode)).WithFragment());
-            });
+            env.AssertStatement(
+                "s1",
+                statement => {
+                    var type = statement.EventType;
+                    SupportEventPropUtil.AssertPropsEquals(
+                        type.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("sessionId", typeof(XmlNode)).WithFragment(),
+                        new SupportEventPropDesc("customerId", typeof(XmlNode)).WithFragment(),
+                        new SupportEventPropDesc("url", typeof(string)),
+                        new SupportEventPropDesc("method", typeof(XmlNode)).WithFragment());
+                });
 
             env.UndeployAll();
         }

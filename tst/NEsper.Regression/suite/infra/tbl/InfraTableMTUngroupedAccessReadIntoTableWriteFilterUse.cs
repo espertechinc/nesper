@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         /// <summary>
         ///     For a given number of seconds:
         ///     Single writer updates a total sum, continuously adding 1 and subtracting 1.

@@ -70,8 +70,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             var future = new DefaultSupportCaptureOp(1, env.Container.LockManager());
             var source = new MyObjectArrayGraphSource(
                 Arrays.AsList(
-                        new object[] {"trade", "GE", 100d, 1000L, null, null}, // vwap = 100, minPrice=100
-                        new object[] {"quote", "GE", null, null, 99.5d, 2000L} //
+                        new object[] { "trade", "GE", 100d, 1000L, null, null }, // vwap = 100, minPrice=100
+                        new object[] { "quote", "GE", null, null, 99.5d, 2000L } //
                     )
                     .GetEnumerator());
 
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             return Collections.Set(RegressionFlag.DATAFLOW);
         }
-        
+
         private string RemoveNewlines(string text)
         {
             return text.Replace("\n", "").Replace("\r", "");

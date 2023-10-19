@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         /// <summary>
         ///     Tests fire-and-forget lock cleanup:
         ///     create table MyTable(key int primary key, p0 int)   (5 props)

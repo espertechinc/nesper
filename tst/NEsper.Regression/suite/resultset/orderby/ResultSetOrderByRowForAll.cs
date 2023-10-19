@@ -17,106 +17,120 @@ using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A
 
 namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 {
-	public class ResultSetOrderByRowForAll
-	{
-		public static ICollection<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ResultSetNoOutputRateJoin());
-			execs.Add(new ResultSetOutputDefault(false));
-			execs.Add(new ResultSetOutputDefault(true));
-			return execs;
-		}
+    public class ResultSetOrderByRowForAll
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithNoOutputRateJoin(execs);
+            WithOutputDefault(execs);
+            return execs;
+        }
 
-		private class ResultSetOutputDefault : RegressionExecution
-		{
-			private readonly bool join;
+        public static IList<RegressionExecution> WithOutputDefault(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputDefault(false));
+            execs.Add(new ResultSetOutputDefault(true));
+            return execs;
+        }
 
-			public ResultSetOutputDefault(bool join)
-			{
-				this.join = join;
-			}
+        public static IList<RegressionExecution> WithNoOutputRateJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetNoOutputRateJoin());
+            return execs;
+        }
 
-			public void Run(RegressionEnvironment env)
-			{
-				var epl =
-					"@name('s0') select irstream sum(intPrimitive) as c0, last(theString) as c1 from SupportBean#length(2) " +
-					(join ? ",SupportBean_A#keepall " : "") +
-					"output every 3 events order by sum(intPrimitive) desc";
-				env.CompileDeploy(epl).AddListener("s0");
+        private class ResultSetOutputDefault : RegressionExecution
+        {
+            private readonly bool join;
 
-				env.SendEventBean(new SupportBean_A("A1"));
-				env.SendEventBean(new SupportBean("E1", 10));
-				env.SendEventBean(new SupportBean("E2", 11));
-				env.AssertListenerNotInvoked("s0");
+            public ResultSetOutputDefault(bool join)
+            {
+                this.join = join;
+            }
 
-				env.SendEventBean(new SupportBean("E3", 12));
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('s0') select irstream sum(intPrimitive) as c0, last(theString) as c1 from SupportBean#length(2) " +
+                    (join ? ",SupportBean_A#keepall " : "") +
+                    "output every 3 events order by sum(intPrimitive) desc";
+                env.CompileDeploy(epl).AddListener("s0");
 
-				var fields = "c0,c1".SplitCsv();
-				env.AssertPropsPerRowIRPair(
-					"s0",
-					fields,
-					new object[][] {
-						new object[] { 23, "E3" }, new object[] { 21, "E2" }, new object[] { 10, "E1" }
-					},
-					new object[][]
-						{ new object[] { 21, "E2" }, new object[] { 10, "E1" }, new object[] { null, null } });
+                env.SendEventBean(new SupportBean_A("A1"));
+                env.SendEventBean(new SupportBean("E1", 10));
+                env.SendEventBean(new SupportBean("E2", 11));
+                env.AssertListenerNotInvoked("s0");
 
-				env.UndeployAll();
-			}
+                env.SendEventBean(new SupportBean("E3", 12));
 
-			public string Name()
-			{
-				return this.GetType().Name +
-				       "{" +
-				       "join=" +
-				       join +
-				       '}';
-			}
-		}
+                var fields = "c0,c1".SplitCsv();
+                env.AssertPropsPerRowIRPair(
+                    "s0",
+                    fields,
+                    new object[][] {
+                        new object[] { 23, "E3" }, new object[] { 21, "E2" }, new object[] { 10, "E1" }
+                    },
+                    new object[][]
+                        { new object[] { 21, "E2" }, new object[] { 10, "E1" }, new object[] { null, null } });
 
-		private class ResultSetNoOutputRateJoin : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var fields = new string[] { "sumPrice" };
-				var epl = "@name('s0')select sum(price) as sumPrice from " +
-				          "SupportMarketDataBean#length(10) as one, " +
-				          "SupportBeanString#length(100) as two " +
-				          "where one.symbol = two.theString " +
-				          "order by price";
-				env.CompileDeploy(epl).AddListener("s0");
+                env.UndeployAll();
+            }
 
-				SendJoinEvents(env);
-				SendEvent(env, "CAT", 50);
-				SendEvent(env, "IBM", 49);
-				SendEvent(env, "CAT", 15);
-				SendEvent(env, "IBM", 100);
-				env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 214d } });
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "join=" +
+                       join +
+                       '}';
+            }
+        }
 
-				SendEvent(env, "KGB", 75);
-				env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 289d } });
+        private class ResultSetNoOutputRateJoin : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = new string[] { "sumPrice" };
+                var epl = "@name('s0')select sum(price) as sumPrice from " +
+                          "SupportMarketDataBean#length(10) as one, " +
+                          "SupportBeanString#length(100) as two " +
+                          "where one.symbol = two.theString " +
+                          "order by price";
+                env.CompileDeploy(epl).AddListener("s0");
 
-				env.UndeployAll();
-			}
-		}
+                SendJoinEvents(env);
+                SendEvent(env, "CAT", 50);
+                SendEvent(env, "IBM", 49);
+                SendEvent(env, "CAT", 15);
+                SendEvent(env, "IBM", 100);
+                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 214d } });
 
-		private static void SendEvent(
-			RegressionEnvironment env,
-			string symbol,
-			double price)
-		{
-			var bean = new SupportMarketDataBean(symbol, price, 0L, null);
-			env.SendEventBean(bean);
-		}
+                SendEvent(env, "KGB", 75);
+                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 289d } });
 
-		private static void SendJoinEvents(RegressionEnvironment env)
-		{
-			env.SendEventBean(new SupportBeanString("CAT"));
-			env.SendEventBean(new SupportBeanString("IBM"));
-			env.SendEventBean(new SupportBeanString("CMU"));
-			env.SendEventBean(new SupportBeanString("KGB"));
-			env.SendEventBean(new SupportBeanString("DOG"));
-		}
-	}
+                env.UndeployAll();
+            }
+        }
+
+        private static void SendEvent(
+            RegressionEnvironment env,
+            string symbol,
+            double price)
+        {
+            var bean = new SupportMarketDataBean(symbol, price, 0L, null);
+            env.SendEventBean(bean);
+        }
+
+        private static void SendJoinEvents(RegressionEnvironment env)
+        {
+            env.SendEventBean(new SupportBeanString("CAT"));
+            env.SendEventBean(new SupportBeanString("IBM"));
+            env.SendEventBean(new SupportBeanString("CMU"));
+            env.SendEventBean(new SupportBeanString("KGB"));
+            env.SendEventBean(new SupportBeanString("DOG"));
+        }
+    }
 } // end of namespace

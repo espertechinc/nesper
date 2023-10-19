@@ -24,8 +24,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         public static IList<RegressionExecution> Executions(bool isMicrosecond)
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithResolutionEventTime(isMicrosecond, execs);
             WithLongProperty(isMicrosecond, execs);
+#endif
             return execs;
         }
 
@@ -86,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             env.SendEventObjectArray(new object[] { "A", flipTimeEndtsA, flipTimeEndtsA }, "MyEvent");
             env.AssertListenerNotInvoked("s0");
-            
+
             env.UndeployAll();
         }
 

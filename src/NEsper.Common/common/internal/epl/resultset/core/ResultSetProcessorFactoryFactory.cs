@@ -1210,7 +1210,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 var combination = GetGroupExprCombination(groupByNodes, groupingNodePair.Second.ChildNodes);
 
                 var found = false;
-                var rollupIndexes = level.IsAggregationTop ? new int[0] : level.RollupKeys;
+                var rollupIndexes = level.IsAggregationTop ? Array.Empty<int>() : level.RollupKeys;
                 foreach (var index in rollupIndexes) {
                     if (index == combination[0]) {
                         found = true;
@@ -1237,7 +1237,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     var index = combination[i];
 
                     var found = false;
-                    var rollupIndexes = level.IsAggregationTop ? new int[0] : level.RollupKeys;
+                    var rollupIndexes = level.IsAggregationTop ? Array.Empty<int>() : level.RollupKeys;
                     foreach (var rollupIndex in rollupIndexes) {
                         if (index == rollupIndex) {
                             found = true;

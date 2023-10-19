@@ -35,11 +35,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             var legacyBean = EventBeanPublicAccessors.MakeSampleEvent();
             env.SendEventBean(legacyBean, "MyLegacyEvent");
 
-            
-            env.AssertEventNew("s0", @event => {
-                Assert.AreEqual(legacyBean.fieldNested.ReadNestedValue(), @event.Get("fnested"));
-                Assert.AreEqual(legacyBean.fieldNested.ReadNestedValue(), @event.Get("mnested"));
-            });
+
+            env.AssertEventNew(
+                "s0",
+                @event => {
+                    Assert.AreEqual(legacyBean.fieldNested.ReadNestedValue(), @event.Get("fnested"));
+                    Assert.AreEqual(legacyBean.fieldNested.ReadNestedValue(), @event.Get("mnested"));
+                });
 
             env.TryInvalidCompile("select IntPrimitive from MySupportBean#length(5)", "skip");
 

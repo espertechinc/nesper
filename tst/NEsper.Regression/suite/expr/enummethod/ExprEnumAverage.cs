@@ -27,10 +27,38 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumAverageEvents());
-            execs.Add(new ExprEnumAverageScalar());
-            execs.Add(new ExprEnumAverageScalarMore());
+            WithAverageEvents(execs);
+            WithAverageScalar(execs);
+            WithAverageScalarMore(execs);
+            WithAverageInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAverageInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprEnumAverageInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAverageScalarMore(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumAverageScalarMore());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAverageScalar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumAverageScalar());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAverageEvents(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumAverageEvents());
             return execs;
         }
 

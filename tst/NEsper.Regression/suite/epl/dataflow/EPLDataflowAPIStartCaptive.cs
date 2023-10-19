@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = new [] { "p0","p1" };
+            var fields = new[] { "p0", "p1" };
 
             env.CompileDeploy(
                 "@name('flow') create dataflow MyDataFlow " +
@@ -42,19 +42,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             var emitter = captiveStart.Emitters.Get("src1");
             Assert.AreEqual(EPDataFlowState.RUNNING, instance.State);
 
-            emitter.Submit(new object[] {"E1", 10});
+            emitter.Submit(new object[] { "E1", 10 });
             EPAssertionUtil.AssertPropsPerRow(
                 env.Container,
                 captureOp.Current,
                 fields,
-                new[] {new object[] {"E1", 10}});
+                new[] { new object[] { "E1", 10 } });
 
-            emitter.Submit(new object[] {"E2", 20});
+            emitter.Submit(new object[] { "E2", 20 });
             EPAssertionUtil.AssertPropsPerRow(
                 env.Container,
                 captureOp.Current,
                 fields,
-                new[] {new object[] {"E1", 10}, new object[] {"E2", 20}});
+                new[] { new object[] { "E1", 10 }, new object[] { "E2", 20 } });
 
             emitter.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
             EPAssertionUtil.AssertPropsPerRow(
@@ -66,14 +66,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.Container,
                 captureOp.GetAndReset()[0].UnwrapIntoArray<object>(),
                 fields,
-                new[] {new object[] {"E1", 10}, new object[] {"E2", 20}});
+                new[] { new object[] { "E1", 10 }, new object[] { "E2", 20 } });
 
-            emitter.Submit(new object[] {"E3", 30});
+            emitter.Submit(new object[] { "E3", 30 });
             EPAssertionUtil.AssertPropsPerRow(
                 env.Container,
                 captureOp.Current,
                 fields,
-                new[] {new object[] {"E3", 30}});
+                new[] { new object[] { "E3", 30 } });
 
             // stays running until cancelled (no transition to complete)
             Assert.AreEqual(EPDataFlowState.RUNNING, instance.State);
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             env.UndeployAll();
         }
-        
+
         public ISet<RegressionFlag> Flags()
         {
             return Collections.Set(RegressionFlag.DATAFLOW);

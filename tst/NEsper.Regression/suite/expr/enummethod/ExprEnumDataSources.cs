@@ -35,33 +35,219 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumProperty());
-            execs.Add(new ExprEnumSubstitutionParameter());
-            execs.Add(new ExprEnumEnumObject());
-            execs.Add(new ExprEnumSortedMaxMinBy());
-            execs.Add(new ExprEnumJoin());
-            execs.Add(new ExprEnumPrevWindowSorted());
-            execs.Add(new ExprEnumNamedWindow());
-            execs.Add(new ExprEnumSubselect());
-            execs.Add(new ExprEnumAccessAggregation());
-            execs.Add(new ExprEnumPrevFuncs());
-            execs.Add(new ExprEnumUDFStaticMethod());
-            execs.Add(new ExprEnumPropertySchema());
-            execs.Add(new ExprEnumPropertyInsertIntoAtEventBean());
-            execs.Add(new ExprEnumPatternInsertIntoAtEventBean());
-            execs.Add(new ExprEnumPatternFilter());
-            execs.Add(new ExprEnumVariable());
-            execs.Add(new ExprEnumTableRow());
-            execs.Add(new ExprEnumMatchRecognizeDefine());
+            WithProperty(execs);
+            WithSubstitutionParameter(execs);
+            WithEnumObject(execs);
+            WithSortedMaxMinBy(execs);
+            WithJoin(execs);
+            WithPrevWindowSorted(execs);
+            WithNamedWindow(execs);
+            WithSubselect(execs);
+            WithAccessAggregation(execs);
+            WithPrevFuncs(execs);
+            WithUDFStaticMethod(execs);
+            WithPropertySchema(execs);
+            WithPropertyInsertIntoAtEventBean(execs);
+            WithPatternInsertIntoAtEventBean(execs);
+            WithPatternFilter(execs);
+            WithVariable(execs);
+            WithTableRow(execs);
+            WithMatchRecognizeDefine(execs);
+            WithMatchRecognizeMeasures(execs);
+            WithCast(execs);
+            WithPropertyGenericComponentType(execs);
+            WithUDFStaticMethodGeneric(execs);
+            WithSubqueryGenericComponentType(execs);
+            WithBeanWithMap(execs);
+            WithContextPropUnnested(execs);
+            WithContextPropNested(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithContextPropNested(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumContextPropNested());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithContextPropUnnested(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumContextPropUnnested());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithBeanWithMap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumBeanWithMap());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubqueryGenericComponentType(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSubqueryGenericComponentType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUDFStaticMethodGeneric(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumUDFStaticMethodGeneric());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPropertyGenericComponentType(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPropertyGenericComponentType());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithCast(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumCast());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMatchRecognizeMeasures(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprEnumMatchRecognizeMeasures(false));
             execs.Add(new ExprEnumMatchRecognizeMeasures(true));
-            execs.Add(new ExprEnumCast());
-            execs.Add(new ExprEnumPropertyGenericComponentType());
-            execs.Add(new ExprEnumUDFStaticMethodGeneric());
-            execs.Add(new ExprEnumSubqueryGenericComponentType());
-            execs.Add(new ExprEnumBeanWithMap());
-            execs.Add(new ExprEnumContextPropUnnested());
-            execs.Add(new ExprEnumContextPropNested());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMatchRecognizeDefine(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumMatchRecognizeDefine());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTableRow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumTableRow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumVariable());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternFilter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPatternFilter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPatternInsertIntoAtEventBean(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPatternInsertIntoAtEventBean());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPropertyInsertIntoAtEventBean(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPropertyInsertIntoAtEventBean());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPropertySchema(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPropertySchema());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUDFStaticMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumUDFStaticMethod());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrevFuncs(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPrevFuncs());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithAccessAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumAccessAggregation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubselect(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSubselect());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNamedWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumNamedWindow());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithPrevWindowSorted(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumPrevWindowSorted());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumJoin());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSortedMaxMinBy(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSortedMaxMinBy());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnumObject(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumEnumObject());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSubstitutionParameter(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSubstitutionParameter());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithProperty(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumProperty());
             return execs;
         }
 
@@ -260,7 +446,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@public @buseventtype create schema MyLocalEvent as " + typeof(MyLocalEvent).MaskTypeName() + ";\n" +
+                    "@public @buseventtype create schema MyLocalEvent as " +
+                    typeof(MyLocalEvent).MaskTypeName() +
+                    ";\n" +
                     "@name('s0') select cast(value.someCollection?, `System.Collections.Generic.ICollection<object>`).countOf() as cnt from MyLocalEvent";
                 env.CompileDeploy(epl).AddListener("s0");
 

@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
     {
         public void Run(RegressionEnvironment env)
         {
-            var fields = new [] { "c0", "c1" };
+            var fields = new[] { "c0", "c1" };
             var epl = "@name('s0') select * from SupportBean match_recognize (" +
                       "partition by TheString " +
                       "measures A.TheString as c0, C.IntPrimitive as c1 " +
@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.AssertPropsNew(
                 "s0",
                 fields,
-                new object[] {"E2", 12});
+                new object[] { "E2", 12 });
 
             env.UndeployAll();
         }

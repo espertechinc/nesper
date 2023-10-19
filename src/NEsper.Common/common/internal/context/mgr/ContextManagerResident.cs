@@ -399,7 +399,7 @@ namespace com.espertech.esper.common.@internal.context.mgr
         {
             var agentInstanceIds = GetAgentInstanceIds(selector);
             if (agentInstanceIds == null || agentInstanceIds.IsEmpty()) {
-                return new AgentInstance[0];
+                return Array.Empty<AgentInstance>();
             }
 
             foreach (var entry in Statements) {

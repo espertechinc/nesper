@@ -18,11 +18,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
     public class EPLDataflowOpLogSink
     {
-        public static ICollection<RegressionExecution> Executions() {
+        public static ICollection<RegressionExecution> Executions()
+        {
             var execs = new List<RegressionExecution>();
-            execs.Add(new EPLDataflowOpLogSinkSettings());
+            WithSettings(execs);
+            WithWWrapper(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWWrapper(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLDataflowOpLogSinkWWrapper(false));
             execs.Add(new EPLDataflowOpLogSinkWWrapper(true));
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSettings(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDataflowOpLogSinkSettings());
             return execs;
         }
 

@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         /// <summary>
         ///     For a given number of seconds:
         ///     Multiple writer threads each update their thread-id into a shared ungrouped row with plain props,
@@ -167,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 try {
                     while (!shutdown) {
-                        var fields = new[] {"c1", "c2", "c3", "c4", "c5"};
+                        var fields = new[] { "c1", "c2", "c3", "c4", "c5" };
                         env.SendEventBean(new SupportBean_S1(0));
                         var @event = listener.AssertOneGetNewAndReset();
                         var valueOne = @event.Get("c0");

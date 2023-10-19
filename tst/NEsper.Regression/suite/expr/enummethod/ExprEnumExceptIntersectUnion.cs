@@ -27,13 +27,62 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumStringArrayIntersection());
-            execs.Add(new ExprEnumSetLogicWithContained());
-            execs.Add(new ExprEnumSetLogicWithScalar());
-            execs.Add(new ExprEnumInheritance());
-            execs.Add(new ExprEnumInvalid());
-            execs.Add(new ExprEnumSetLogicWithEvents());
+            WithStringArrayIntersection(execs);
+            WithSetLogicWithContained(execs);
+            WithSetLogicWithScalar(execs);
+            WithInheritance(execs);
+            WithInvalid(execs);
+            WithSetLogicWithEvents(execs);
+            WithUnionWhere(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithUnionWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprEnumUnionWhere());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSetLogicWithEvents(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSetLogicWithEvents());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInheritance(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumInheritance());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSetLogicWithScalar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSetLogicWithScalar());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSetLogicWithContained(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumSetLogicWithContained());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStringArrayIntersection(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumStringArrayIntersection());
             return execs;
         }
 

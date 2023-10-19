@@ -250,7 +250,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 stream = new NamedWindowConsumerStreamSpec(
                     namedWindow,
                     null,
-                    new ViewSpec[0],
+                    Array.Empty<ViewSpec>(),
                     EmptyList<ExprNode>.Instance,
                     StreamSpecOptions.DEFAULT,
                     null);
@@ -258,7 +258,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             else {
                 stream = new TableQueryStreamSpec(
                     null,
-                    new ViewSpec[0],
+                    Array.Empty<ViewSpec>(),
                     StreamSpecOptions.DEFAULT,
                     table,
                     EmptyList<ExprNode>.Instance);

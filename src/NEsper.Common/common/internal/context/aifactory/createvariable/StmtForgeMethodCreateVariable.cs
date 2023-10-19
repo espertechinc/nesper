@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -66,9 +67,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
             if (createDesc.Assignment != null) {
                 // Evaluate assignment expression
                 StreamTypeService typeService = new StreamTypeServiceImpl(
-                    new EventType[0],
-                    new string[0],
-                    new bool[0],
+                    Array.Empty<EventType>(),
+                    Array.Empty<string>(),
+                    Array.Empty<bool>(),
                     false,
                     false);
                 var validationContext =

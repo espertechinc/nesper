@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         /// <summary>
         ///     For a given number of seconds:
         ///     Single writer updates the group (round-robin) count, sum and avg.
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         var result = env.Runtime.FireAndForgetService.ExecuteQuery(compiled);
                         var count = result.Array[0].Get("c0").AsInt64();
                         var sumint = result.Array[0].Get("c1").AsInt32();
-                        var avgint = (double) result.Array[0].Get("c2");
+                        var avgint = (double)result.Array[0].Get("c2");
                         Assert.AreEqual(2d, avgint, 0);
                         Assert.AreEqual(sumint, count * 2);
                         numQueries++;

@@ -17,96 +17,159 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
-	public class ExprCoreEventIdentityEquals {
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new ExprCoreEventIdentityEqualsSimple());
-	        execs.Add(new ExprCoreEventIdentityEqualsDocSample());
-	        execs.Add(new ExprCoreEventIdentityEqualsSubquery());
-	        execs.Add(new ExprCoreEventIdentityEqualsEnumMethod());
-	        execs.Add(new ExprCoreEventIdentityEqualsInvalid());
-	        return execs;
-	    }
+    public class ExprCoreEventIdentityEquals
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithSimple(execs);
+            WithDocSample(execs);
+            WithSubquery(execs);
+            WithEnumMethod(execs);
+            WithInvalid(execs);
+            return execs;
+        }
 
-	    public class ExprCoreEventIdentityEqualsSimple : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var fields = new string[]{"event_identity_equals(e,e)"};
-	            var builder = new SupportEvalBuilder("SupportBean", "e")
-	                .WithExpressions(fields, fields[0]);
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprCoreEventIdentityEqualsInvalid());
+            return execs;
+        }
 
-	            builder.WithAssertion(new SupportBean()).Expect(fields, true);
+        public static IList<RegressionExecution> WithEnumMethod(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprCoreEventIdentityEqualsEnumMethod());
+            return execs;
+        }
 
-	            builder.Run(env);
-	            env.UndeployAll();
-	        }
-	    }
+        public static IList<RegressionExecution> WithSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprCoreEventIdentityEqualsSubquery());
+            return execs;
+        }
 
-	    public class ExprCoreEventIdentityEqualsDocSample : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var docSample = "create schema OrderEvent(orderId string, amount double);\n" +
-	                            "select * from OrderEvent as arrivingEvent \n" +
-	                            "  where exists (select * from OrderEvent#time(5) as last5 where not event_identity_equals(arrivingEvent, last5) and arrivingEvent.orderId = last5.orderId);\n" +
-	                            "select orderId, window(*).aggregate(0d, (result, e) => result + (case when event_identity_equals(oe, e) then 0d else e.amount end)) as c0 from OrderEvent#time(10) as oe";
-	            env.CompileDeploy(docSample).UndeployAll();
-	        }
-	    }
+        public static IList<RegressionExecution> WithDocSample(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprCoreEventIdentityEqualsDocSample());
+            return execs;
+        }
 
-	    public class ExprCoreEventIdentityEqualsSubquery : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var text = "@name('s0') select * from SupportBean as e where exists (select * from SupportBean#keepall as ka where not event_identity_equals(e, ka) and e.theString = ka.theString)";
-	            env.CompileDeploy(text).AddListener("s0");
+        public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprCoreEventIdentityEqualsSimple());
+            return execs;
+        }
 
-	            SendAssertNotReceived(env, "E1");
-	            SendAssertReceived(env, "E1");
+        public class ExprCoreEventIdentityEqualsSimple : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = new string[] { "event_identity_equals(e,e)" };
+                var builder = new SupportEvalBuilder("SupportBean", "e")
+                    .WithExpressions(fields, fields[0]);
 
-	            SendAssertNotReceived(env, "E2");
-	            SendAssertReceived(env, "E2");
-	            SendAssertReceived(env, "E2");
+                builder.WithAssertion(new SupportBean()).Expect(fields, true);
 
-	            env.UndeployAll();
-	        }
-	    }
+                builder.Run(env);
+                env.UndeployAll();
+            }
+        }
 
-	    public class ExprCoreEventIdentityEqualsEnumMethod : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var text = "@name('s0') select theString, window(*).aggregate(0, (result, e) => result + (case when event_identity_equals(sb, e) then 0 else e.intPrimitive end)) as c0 from SupportBean#time(10) as sb";
-	            env.CompileDeploy(text).AddListener("s0");
+        public class ExprCoreEventIdentityEqualsDocSample : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var docSample = "create schema OrderEvent(orderId string, amount double);\n" +
+                                "select * from OrderEvent as arrivingEvent \n" +
+                                "  where exists (select * from OrderEvent#time(5) as last5 where not event_identity_equals(arrivingEvent, last5) and arrivingEvent.orderId = last5.orderId);\n" +
+                                "select orderId, window(*).aggregate(0d, (result, e) => result + (case when event_identity_equals(oe, e) then 0d else e.amount end)) as c0 from OrderEvent#time(10) as oe";
+                env.CompileDeploy(docSample).UndeployAll();
+            }
+        }
 
-	            SendAssert(env, "E1", 10, 0);
-	            SendAssert(env, "E2", 11, 10);
-	            SendAssert(env, "E3", 12, 10 + 11);
-	            SendAssert(env, "E4", 13, 10 + 11 + 12);
+        public class ExprCoreEventIdentityEqualsSubquery : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var text =
+                    "@name('s0') select * from SupportBean as e where exists (select * from SupportBean#keepall as ka where not event_identity_equals(e, ka) and e.theString = ka.theString)";
+                env.CompileDeploy(text).AddListener("s0");
 
-	            env.UndeployAll();
-	        }
-	    }
+                SendAssertNotReceived(env, "E1");
+                SendAssertReceived(env, "E1");
 
-	    public class ExprCoreEventIdentityEqualsInvalid : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            env.TryInvalidCompile("select event_identity_equals(e) from SupportBean as e",
-	                "Failed to validate select-clause expression 'event_identity_equals(e)': event_identity_equalsrequires two parameters");
+                SendAssertNotReceived(env, "E2");
+                SendAssertReceived(env, "E2");
+                SendAssertReceived(env, "E2");
 
-	            env.TryInvalidCompile("select event_identity_equals(e, 1) from SupportBean as e",
-	                "Failed to validate select-clause expression 'event_identity_equals(e,1)': event_identity_equals requires a parameter that resolves to an event but received '1'");
+                env.UndeployAll();
+            }
+        }
 
-	            env.TryInvalidCompile("select event_identity_equals(e, s0) from SupportBean#lastevent as e, SupportBean_S0#lastevent as s0",
-	                "Failed to validate select-clause expression 'event_identity_equals(e,s0)': event_identity_equals received two different event types as parameter, type 'SupportBean' is not the same as type 'SupportBean_S0'");
-	        }
-	    }
+        public class ExprCoreEventIdentityEqualsEnumMethod : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var text =
+                    "@name('s0') select theString, window(*).aggregate(0, (result, e) => result + (case when event_identity_equals(sb, e) then 0 else e.intPrimitive end)) as c0 from SupportBean#time(10) as sb";
+                env.CompileDeploy(text).AddListener("s0");
 
-	    private static void SendAssert(RegressionEnvironment env, string theString, int intPrimitive, int expected) {
-	        env.SendEventBean(new SupportBean(theString, intPrimitive));
-	        env.AssertPropsNew("s0", "theString,c0".SplitCsv(), new object[]{theString, expected});
-	    }
+                SendAssert(env, "E1", 10, 0);
+                SendAssert(env, "E2", 11, 10);
+                SendAssert(env, "E3", 12, 10 + 11);
+                SendAssert(env, "E4", 13, 10 + 11 + 12);
 
-	    private static void SendAssertNotReceived(RegressionEnvironment env, string theString) {
-	        env.SendEventBean(new SupportBean(theString, 0));
-	        env.AssertListenerNotInvoked("s0");
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private static void SendAssertReceived(RegressionEnvironment env, string theString) {
-	        env.SendEventBean(new SupportBean(theString, 0));
-	        env.AssertEventNew("s0", _ => Assert.NotNull(_));
-	    }
-	}
+        public class ExprCoreEventIdentityEqualsInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.TryInvalidCompile(
+                    "select event_identity_equals(e) from SupportBean as e",
+                    "Failed to validate select-clause expression 'event_identity_equals(e)': event_identity_equalsrequires two parameters");
+
+                env.TryInvalidCompile(
+                    "select event_identity_equals(e, 1) from SupportBean as e",
+                    "Failed to validate select-clause expression 'event_identity_equals(e,1)': event_identity_equals requires a parameter that resolves to an event but received '1'");
+
+                env.TryInvalidCompile(
+                    "select event_identity_equals(e, s0) from SupportBean#lastevent as e, SupportBean_S0#lastevent as s0",
+                    "Failed to validate select-clause expression 'event_identity_equals(e,s0)': event_identity_equals received two different event types as parameter, type 'SupportBean' is not the same as type 'SupportBean_S0'");
+            }
+        }
+
+        private static void SendAssert(
+            RegressionEnvironment env,
+            string theString,
+            int intPrimitive,
+            int expected)
+        {
+            env.SendEventBean(new SupportBean(theString, intPrimitive));
+            env.AssertPropsNew("s0", "theString,c0".SplitCsv(), new object[] { theString, expected });
+        }
+
+        private static void SendAssertNotReceived(
+            RegressionEnvironment env,
+            string theString)
+        {
+            env.SendEventBean(new SupportBean(theString, 0));
+            env.AssertListenerNotInvoked("s0");
+        }
+
+        private static void SendAssertReceived(
+            RegressionEnvironment env,
+            string theString)
+        {
+            env.SendEventBean(new SupportBean(theString, 0));
+            env.AssertEventNew("s0", _ => Assert.NotNull(_));
+        }
+    }
 } // end of namespace

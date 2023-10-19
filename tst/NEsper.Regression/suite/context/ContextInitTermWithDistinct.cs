@@ -18,291 +18,376 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.context
 {
-	public class ContextInitTermWithDistinct {
-
-	    public static ICollection<RegressionExecution> Executions() {
-	        var execs = new List<RegressionExecution>();
-	        execs.Add(new ContextInitTermWithDistinctInvalid());
-	        execs.Add(new ContextInitTermWithDistinctNullSingleKey());
-	        execs.Add(new ContextInitTermWithDistinctNullKeyMultiKey());
-	        execs.Add(new ContextInitTermWithDistinctOverlappingSingleKey());
-	        execs.Add(new ContextInitTermWithDistinctOverlappingMultiKey());
-	        execs.Add(new ContextInitTermWithDistinctMultikeyWArray());
-	        return execs;
-	    }
-
-	    private class ContextInitTermWithDistinctMultikeyWArray : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            env.CompileDeploy("@public create context MyContext initiated by distinct(array) SupportEventWithIntArray as se", path);
-	            env.CompileDeploy("@name('s0') context MyContext select context.se.id as id, sum(intPrimitive) as thesum from SupportBean", path);
-	            env.AddListener("s0");
-	            var fields = "id,thesum".SplitCsv();
-
-	            env.SendEventBean(new SupportEventWithIntArray("SE1", new int[] {1, 2}, 0));
-	            env.SendEventBean(new SupportBean("E1", 1));
-	            env.AssertPropsPerRowLastNewAnyOrder("s0", fields, new object[][] {new object[] {"SE1", 1}});
+    public class ContextInitTermWithDistinct
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            var execs = new List<RegressionExecution>();
+            WithInvalid(execs);
+            WithNullSingleKey(execs);
+            WithNullKeyMultiKey(execs);
+            WithOverlappingSingleKey(execs);
+            WithOverlappingMultiKey(execs);
+            WithMultikeyWArray(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMultikeyWArray(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermWithDistinctMultikeyWArray());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOverlappingMultiKey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermWithDistinctOverlappingMultiKey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOverlappingSingleKey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermWithDistinctOverlappingSingleKey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNullKeyMultiKey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermWithDistinctNullKeyMultiKey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithNullSingleKey(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermWithDistinctNullSingleKey());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextInitTermWithDistinctInvalid());
+            return execs;
+        }
+
+        private class ContextInitTermWithDistinctMultikeyWArray : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@public create context MyContext initiated by distinct(array) SupportEventWithIntArray as se",
+                    path);
+                env.CompileDeploy(
+                    "@name('s0') context MyContext select context.se.id as id, sum(intPrimitive) as thesum from SupportBean",
+                    path);
+                env.AddListener("s0");
+                var fields = "id,thesum".SplitCsv();
+
+                env.SendEventBean(new SupportEventWithIntArray("SE1", new int[] { 1, 2 }, 0));
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.AssertPropsPerRowLastNewAnyOrder("s0", fields, new object[][] { new object[] { "SE1", 1 } });
+
+                env.SendEventBean(new SupportEventWithIntArray("SE2", new int[] { 1 }, 0));
+                env.SendEventBean(new SupportEventWithIntArray("SE2", new int[] { 1 }, 0));
+                env.SendEventBean(new SupportEventWithIntArray("SE1", new int[] { 1, 2 }, 0));
+                env.SendEventBean(new SupportBean("E2", 2));
+                env.AssertPropsPerRowLastNewAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "SE1", 3 }, new object[] { "SE2", 2 } });
+
+                env.Milestone(0);
+
+                env.SendEventBean(new SupportEventWithIntArray("SE1", new int[] { 1, 2 }, 0));
+                env.SendEventBean(new SupportEventWithIntArray("SE2", new int[] { 1 }, 0));
+                env.SendEventBean(new SupportEventWithIntArray("SE3", new int[] { }, 0));
+                env.SendEventBean(new SupportBean("E3", 4));
+                env.AssertPropsPerRowLastNewAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "SE1", 7 }, new object[] { "SE2", 6 }, new object[] { "SE3", 4 } });
+
+                env.UndeployAll();
+            }
+        }
+
+        private class ContextInitTermWithDistinctInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // require stream name assignment using 'as'
+                env.TryInvalidCompile(
+                    "create context MyContext initiated by distinct(theString) SupportBean terminated after 15 seconds",
+                    "Distinct-expressions require that a stream name is assigned to the stream using 'as' [create context MyContext initiated by distinct(theString) SupportBean terminated after 15 seconds]");
 
-	            env.SendEventBean(new SupportEventWithIntArray("SE2", new int[] {1}, 0));
-	            env.SendEventBean(new SupportEventWithIntArray("SE2", new int[] {1}, 0));
-	            env.SendEventBean(new SupportEventWithIntArray("SE1", new int[] {1, 2}, 0));
-	            env.SendEventBean(new SupportBean("E2", 2));
-	            env.AssertPropsPerRowLastNewAnyOrder("s0", fields,
-	                new object[][] {new object[] {"SE1", 3}, new object[] {"SE2", 2}});
+                // require stream
+                env.TryInvalidCompile(
+                    "create context MyContext initiated by distinct(a.theString) pattern [a=SupportBean] terminated after 15 seconds",
+                    "Distinct-expressions require a stream as the initiated-by condition [create context MyContext initiated by distinct(a.theString) pattern [a=SupportBean] terminated after 15 seconds]");
 
-	            env.Milestone(0);
+                // invalid distinct-clause expression
+                env.TryInvalidCompile(
+                    "create context MyContext initiated by distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds",
+                    "Invalid context distinct-clause expression 'subselect_0': Aggregation, sub-select, previous or prior functions are not supported in this context [create context MyContext initiated by distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds]");
 
-	            env.SendEventBean(new SupportEventWithIntArray("SE1", new int[] {1, 2}, 0));
-	            env.SendEventBean(new SupportEventWithIntArray("SE2", new int[] {1}, 0));
-	            env.SendEventBean(new SupportEventWithIntArray("SE3", new int[] {}, 0));
-	            env.SendEventBean(new SupportBean("E3", 4));
-	            env.AssertPropsPerRowLastNewAnyOrder("s0", fields,
-	                new object[][] {new object[] {"SE1", 7}, new object[] {"SE2", 6}, new object[] {"SE3", 4}});
+                // empty list of expressions
+                env.TryInvalidCompile(
+                    "create context MyContext initiated by distinct() SupportBean terminated after 15 seconds",
+                    "Distinct-expressions have not been provided [create context MyContext initiated by distinct() SupportBean terminated after 15 seconds]");
 
-	            env.UndeployAll();
-	        }
-	    }
+                // non-overlapping context not allowed with distinct
+                env.TryInvalidCompile(
+                    "create context MyContext start distinct(theString) SupportBean end after 15 seconds",
+                    "Incorrect syntax near 'distinct' (a reserved keyword) at line 1 column 31 [create context MyContext start distinct(theString) SupportBean end after 15 seconds]");
+            }
+        }
 
-	    private class ContextInitTermWithDistinctInvalid : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            // require stream name assignment using 'as'
-	            env.TryInvalidCompile("create context MyContext initiated by distinct(theString) SupportBean terminated after 15 seconds",
-	                "Distinct-expressions require that a stream name is assigned to the stream using 'as' [create context MyContext initiated by distinct(theString) SupportBean terminated after 15 seconds]");
+        private class ContextInitTermWithDistinctOverlappingSingleKey : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@public create context MyContext " +
+                    "  initiated by distinct(s0.theString) SupportBean(intPrimitive = 0) s0" +
+                    "  terminated by SupportBean(theString = s0.theString and intPrimitive = 1)",
+                    path);
 
-	            // require stream
-	            env.TryInvalidCompile("create context MyContext initiated by distinct(a.theString) pattern [a=SupportBean] terminated after 15 seconds",
-	                "Distinct-expressions require a stream as the initiated-by condition [create context MyContext initiated by distinct(a.theString) pattern [a=SupportBean] terminated after 15 seconds]");
+                var fields = "theString,longPrimitive,cnt".SplitCsv();
+                env.CompileDeploy(
+                    "@name('s0') context MyContext " +
+                    "select theString, longPrimitive, count(*) as cnt from SupportBean(theString = context.s0.theString)",
+                    path);
+                env.AddListener("s0");
 
-	            // invalid distinct-clause expression
-	            env.TryInvalidCompile("create context MyContext initiated by distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds",
-	                "Invalid context distinct-clause expression 'subselect_0': Aggregation, sub-select, previous or prior functions are not supported in this context [create context MyContext initiated by distinct((select * from MyWindow)) SupportBean as sb terminated after 15 seconds]");
+                SendEvent(env, "A", -1, 10);
 
-	            // empty list of expressions
-	            env.TryInvalidCompile("create context MyContext initiated by distinct() SupportBean terminated after 15 seconds",
-	                "Distinct-expressions have not been provided [create context MyContext initiated by distinct() SupportBean terminated after 15 seconds]");
+                env.Milestone(0);
 
-	            // non-overlapping context not allowed with distinct
-	            env.TryInvalidCompile("create context MyContext start distinct(theString) SupportBean end after 15 seconds",
-	                "Incorrect syntax near 'distinct' (a reserved keyword) at line 1 column 31 [create context MyContext start distinct(theString) SupportBean end after 15 seconds]");
-	        }
-	    }
+                SendEvent(env, "A", 1, 11);
+                env.AssertListenerNotInvoked("s0");
 
-	    private class ContextInitTermWithDistinctOverlappingSingleKey : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            env.CompileDeploy(
-	                "@public create context MyContext " +
-	                    "  initiated by distinct(s0.theString) SupportBean(intPrimitive = 0) s0" +
-	                    "  terminated by SupportBean(theString = s0.theString and intPrimitive = 1)", path);
+                env.Milestone(1);
 
-	            var fields = "theString,longPrimitive,cnt".SplitCsv();
-	            env.CompileDeploy(
-	                "@name('s0') context MyContext " +
-	                    "select theString, longPrimitive, count(*) as cnt from SupportBean(theString = context.s0.theString)", path);
-	            env.AddListener("s0");
+                SendEvent(env, "A", 0, 12); // allocate context
+                env.AssertPropsNew("s0", fields, new object[] { "A", 12L, 1L });
 
-	            SendEvent(env, "A", -1, 10);
+                SendEvent(env, "A", 0, 13); // counts towards the existing context, not having a new one
+                env.AssertPropsNew("s0", fields, new object[] { "A", 13L, 2L });
 
-	            env.Milestone(0);
+                env.Milestone(2);
 
-	            SendEvent(env, "A", 1, 11);
-	            env.AssertListenerNotInvoked("s0");
+                SendEvent(env, "A", -1, 14);
+                env.AssertPropsNew("s0", fields, new object[] { "A", 14L, 3L });
 
-	            env.Milestone(1);
+                SendEvent(env, "A", 1, 15); // context termination
+                SendEvent(env, "A", -1, 16);
+                env.AssertListenerNotInvoked("s0");
 
-	            SendEvent(env, "A", 0, 12);   // allocate context
-	            env.AssertPropsNew("s0", fields, new object[]{"A", 12L, 1L});
+                env.Milestone(3);
 
-	            SendEvent(env, "A", 0, 13);   // counts towards the existing context, not having a new one
-	            env.AssertPropsNew("s0", fields, new object[]{"A", 13L, 2L});
+                SendEvent(env, "A", 0, 17); // allocate context
+                env.AssertPropsNew("s0", fields, new object[] { "A", 17L, 1L });
 
-	            env.Milestone(2);
+                env.Milestone(4);
 
-	            SendEvent(env, "A", -1, 14);
-	            env.AssertPropsNew("s0", fields, new object[]{"A", 14L, 3L});
+                SendEvent(env, "A", -1, 18);
+                env.AssertPropsNew("s0", fields, new object[] { "A", 18L, 2L });
 
-	            SendEvent(env, "A", 1, 15);   // context termination
-	            SendEvent(env, "A", -1, 16);
-	            env.AssertListenerNotInvoked("s0");
+                env.Milestone(5);
 
-	            env.Milestone(3);
+                SendEvent(env, "B", 0, 19); // allocate context
+                env.AssertPropsNew("s0", fields, new object[] { "B", 19L, 1L });
 
-	            SendEvent(env, "A", 0, 17);   // allocate context
-	            env.AssertPropsNew("s0", fields, new object[]{"A", 17L, 1L});
+                env.Milestone(6);
 
-	            env.Milestone(4);
+                SendEvent(env, "B", -1, 20);
+                env.AssertPropsNew("s0", fields, new object[] { "B", 20L, 2L });
 
-	            SendEvent(env, "A", -1, 18);
-	            env.AssertPropsNew("s0", fields, new object[]{"A", 18L, 2L});
+                SendEvent(env, "A", 1, 21); // context termination
 
-	            env.Milestone(5);
+                env.Milestone(7);
 
-	            SendEvent(env, "B", 0, 19);   // allocate context
-	            env.AssertPropsNew("s0", fields, new object[]{"B", 19L, 1L});
+                SendEvent(env, "B", 1, 22); // context termination
+                SendEvent(env, "A", -1, 23);
 
-	            env.Milestone(6);
+                env.Milestone(8);
 
-	            SendEvent(env, "B", -1, 20);
-	            env.AssertPropsNew("s0", fields, new object[]{"B", 20L, 2L});
+                SendEvent(env, "B", -1, 24);
+                env.AssertListenerNotInvoked("s0");
 
-	            SendEvent(env, "A", 1, 21);   // context termination
+                SendEvent(env, "A", 0, 25); // allocate context
+                env.AssertPropsNew("s0", fields, new object[] { "A", 25L, 1L });
 
-	            env.Milestone(7);
+                env.Milestone(9);
 
-	            SendEvent(env, "B", 1, 22);   // context termination
-	            SendEvent(env, "A", -1, 23);
+                SendEvent(env, "B", 0, 26); // allocate context
+                env.AssertPropsNew("s0", fields, new object[] { "B", 26L, 1L });
 
-	            env.Milestone(8);
+                env.UndeployAll();
+            }
+        }
 
-	            SendEvent(env, "B", -1, 24);
-	            env.AssertListenerNotInvoked("s0");
+        private class ContextInitTermWithDistinctOverlappingMultiKey : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var epl = "@public create context MyContext as " +
+                          "initiated by distinct(theString, intPrimitive) SupportBean as sb " +
+                          "terminated SupportBean_S1"; // any S1 ends the contexts
+                env.EplToModelCompileDeploy(epl, path);
 
-	            SendEvent(env, "A", 0, 25);   // allocate context
-	            env.AssertPropsNew("s0", fields, new object[]{"A", 25L, 1L});
+                var fields = "id,p00,p01,cnt".SplitCsv();
+                env.CompileDeploy(
+                    "@name('s0') context MyContext " +
+                    "select id, p00, p01, count(*) as cnt " +
+                    "from SupportBean_S0(id = context.sb.intPrimitive and p00 = context.sb.theString)",
+                    path);
+                env.AddListener("s0");
 
-	            env.Milestone(9);
+                env.SendEventBean(new SupportBean_S0(1, "A"));
 
-	            SendEvent(env, "B", 0, 26);   // allocate context
-	            env.AssertPropsNew("s0", fields, new object[]{"B", 26L, 1L});
+                env.Milestone(0);
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.SendEventBean(new SupportBean("A", 1));
+                env.AssertListenerNotInvoked("s0");
 
-	    private class ContextInitTermWithDistinctOverlappingMultiKey : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            var epl = "@public create context MyContext as " +
-	                      "initiated by distinct(theString, intPrimitive) SupportBean as sb " +
-	                      "terminated SupportBean_S1";         // any S1 ends the contexts
-	            env.EplToModelCompileDeploy(epl, path);
+                env.SendEventBean(new SupportBean_S0(1, "A", "E1"));
+                env.AssertPropsNew("s0", fields, new object[] { 1, "A", "E1", 1L });
 
-	            var fields = "id,p00,p01,cnt".SplitCsv();
-	            env.CompileDeploy(
-	                "@name('s0') context MyContext " +
-	                    "select id, p00, p01, count(*) as cnt " +
-	                    "from SupportBean_S0(id = context.sb.intPrimitive and p00 = context.sb.theString)", path);
-	            env.AddListener("s0");
+                env.Milestone(1);
 
-	            env.SendEventBean(new SupportBean_S0(1, "A"));
+                env.SendEventBean(new SupportBean_S0(1, "A", "E2"));
+                env.AssertPropsNew("s0", fields, new object[] { 1, "A", "E2", 2L });
 
-	            env.Milestone(0);
+                env.SendEventBean(new SupportBean_S1(-1)); // terminate all
+                env.SendEventBean(new SupportBean_S0(1, "A", "E3"));
 
-	            env.SendEventBean(new SupportBean("A", 1));
-	            env.AssertListenerNotInvoked("s0");
+                env.Milestone(2);
 
-	            env.SendEventBean(new SupportBean_S0(1, "A", "E1"));
-	            env.AssertPropsNew("s0", fields, new object[]{1, "A", "E1", 1L});
+                env.SendEventBean(new SupportBean("A", 1));
+                env.SendEventBean(new SupportBean("B", 2));
+                env.SendEventBean(new SupportBean("B", 1));
+                env.AssertListenerNotInvoked("s0");
 
-	            env.Milestone(1);
+                env.Milestone(3);
 
-	            env.SendEventBean(new SupportBean_S0(1, "A", "E2"));
-	            env.AssertPropsNew("s0", fields, new object[]{1, "A", "E2", 2L});
+                env.SendEventBean(new SupportBean_S0(1, "A", "E4"));
+                env.AssertPropsNew("s0", fields, new object[] { 1, "A", "E4", 1L });
 
-	            env.SendEventBean(new SupportBean_S1(-1)); // terminate all
-	            env.SendEventBean(new SupportBean_S0(1, "A", "E3"));
+                env.SendEventBean(new SupportBean_S0(2, "B", "E5"));
+                env.AssertPropsNew("s0", fields, new object[] { 2, "B", "E5", 1L });
 
-	            env.Milestone(2);
+                env.Milestone(4);
 
-	            env.SendEventBean(new SupportBean("A", 1));
-	            env.SendEventBean(new SupportBean("B", 2));
-	            env.SendEventBean(new SupportBean("B", 1));
-	            env.AssertListenerNotInvoked("s0");
+                env.SendEventBean(new SupportBean_S0(1, "B", "E6"));
+                env.AssertPropsNew("s0", fields, new object[] { 1, "B", "E6", 1L });
 
-	            env.Milestone(3);
+                env.SendEventBean(new SupportBean_S0(2, "B", "E7"));
+                env.AssertPropsNew("s0", fields, new object[] { 2, "B", "E7", 2L });
 
-	            env.SendEventBean(new SupportBean_S0(1, "A", "E4"));
-	            env.AssertPropsNew("s0", fields, new object[]{1, "A", "E4", 1L});
+                env.Milestone(5);
 
-	            env.SendEventBean(new SupportBean_S0(2, "B", "E5"));
-	            env.AssertPropsNew("s0", fields, new object[]{2, "B", "E5", 1L});
+                env.SendEventBean(new SupportBean_S1(-1)); // terminate all
 
-	            env.Milestone(4);
+                env.Milestone(6);
 
-	            env.SendEventBean(new SupportBean_S0(1, "B", "E6"));
-	            env.AssertPropsNew("s0", fields, new object[]{1, "B", "E6", 1L});
+                env.SendEventBean(new SupportBean_S0(2, "B", "E8"));
+                env.SendEventBean(new SupportBean("B", 2));
+                env.AssertListenerNotInvoked("s0");
 
-	            env.SendEventBean(new SupportBean_S0(2, "B", "E7"));
-	            env.AssertPropsNew("s0", fields, new object[]{2, "B", "E7", 2L});
+                env.SendEventBean(new SupportBean_S0(2, "B", "E9"));
+                env.AssertPropsNew("s0", fields, new object[] { 2, "B", "E9", 1L });
 
-	            env.Milestone(5);
+                env.Milestone(7);
 
-	            env.SendEventBean(new SupportBean_S1(-1)); // terminate all
+                env.SendEventBean(new SupportBean_S0(2, "B", "E10"));
+                env.AssertPropsNew("s0", fields, new object[] { 2, "B", "E10", 2L });
 
-	            env.Milestone(6);
+                env.UndeployAll();
+            }
+        }
 
-	            env.SendEventBean(new SupportBean_S0(2, "B", "E8"));
-	            env.SendEventBean(new SupportBean("B", 2));
-	            env.AssertListenerNotInvoked("s0");
+        private class ContextInitTermWithDistinctNullSingleKey : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@public create context MyContext initiated by distinct(theString) SupportBean as sb terminated after 24 hours",
+                    path);
+                env.CompileDeploy("@name('s0') context MyContext select count(*) as cnt from SupportBean", path);
+                env.AddListener("s0");
 
-	            env.SendEventBean(new SupportBean_S0(2, "B", "E9"));
-	            env.AssertPropsNew("s0", fields, new object[]{2, "B", "E9", 1L});
+                env.SendEventBean(new SupportBean(null, 10));
+                env.AssertEqualsNew("s0", "cnt", 1L);
 
-	            env.Milestone(7);
+                env.Milestone(0);
 
-	            env.SendEventBean(new SupportBean_S0(2, "B", "E10"));
-	            env.AssertPropsNew("s0", fields, new object[]{2, "B", "E10", 2L});
+                env.SendEventBean(new SupportBean(null, 20));
+                env.AssertEqualsNew("s0", "cnt", 2L);
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.Milestone(1);
 
-	    private class ContextInitTermWithDistinctNullSingleKey : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            env.CompileDeploy("@public create context MyContext initiated by distinct(theString) SupportBean as sb terminated after 24 hours", path);
-	            env.CompileDeploy("@name('s0') context MyContext select count(*) as cnt from SupportBean", path);
-	            env.AddListener("s0");
+                env.SendEventBean(new SupportBean("A", 30));
+                env.AssertListener("s0", listener => Assert.AreEqual(2, listener.GetAndResetLastNewData().Length));
 
-	            env.SendEventBean(new SupportBean(null, 10));
-	            env.AssertEqualsNew("s0", "cnt", 1L);
+                env.UndeployAll();
+            }
+        }
 
-	            env.Milestone(0);
+        private class ContextInitTermWithDistinctNullKeyMultiKey : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@public create context MyContext initiated by distinct(theString, intBoxed, intPrimitive) SupportBean as sb terminated after 100 hours",
+                    path);
+                env.CompileDeploy("@name('s0') context MyContext select count(*) as cnt from SupportBean", path);
+                env.AddListener("s0");
 
-	            env.SendEventBean(new SupportBean(null, 20));
-	            env.AssertEqualsNew("s0", "cnt", 2L);
+                SendSBEvent(env, "A", null, 1);
+                env.AssertEqualsNew("s0", "cnt", 1L);
 
-	            env.Milestone(1);
+                SendSBEvent(env, "A", null, 1);
+                env.AssertEqualsNew("s0", "cnt", 2L);
 
-	            env.SendEventBean(new SupportBean("A", 30));
-	            env.AssertListener("s0", listener => Assert.AreEqual(2, listener.GetAndResetLastNewData().Length));
+                env.Milestone(0);
 
-	            env.UndeployAll();
-	        }
-	    }
+                SendSBEvent(env, "A", 10, 1);
+                env.AssertListener("s0", listener => Assert.AreEqual(2, listener.GetAndResetLastNewData().Length));
 
-	    private class ContextInitTermWithDistinctNullKeyMultiKey : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            env.CompileDeploy("@public create context MyContext initiated by distinct(theString, intBoxed, intPrimitive) SupportBean as sb terminated after 100 hours", path);
-	            env.CompileDeploy("@name('s0') context MyContext select count(*) as cnt from SupportBean", path);
-	            env.AddListener("s0");
+                env.UndeployAll();
+            }
+        }
 
-	            SendSBEvent(env, "A", null, 1);
-	            env.AssertEqualsNew("s0", "cnt", 1L);
+        private static void SendEvent(
+            RegressionEnvironment env,
+            string theString,
+            int intPrimitive,
+            long longPrimitive)
+        {
+            var @event = new SupportBean(theString, intPrimitive);
+            @event.LongPrimitive = longPrimitive;
+            env.SendEventBean(@event);
+        }
 
-	            SendSBEvent(env, "A", null, 1);
-	            env.AssertEqualsNew("s0", "cnt", 2L);
-
-	            env.Milestone(0);
-
-	            SendSBEvent(env, "A", 10, 1);
-	            env.AssertListener("s0", listener => Assert.AreEqual(2, listener.GetAndResetLastNewData().Length));
-
-	            env.UndeployAll();
-	        }
-	    }
-
-	    private static void SendEvent(RegressionEnvironment env, string theString, int intPrimitive, long longPrimitive) {
-	        var @event = new SupportBean(theString, intPrimitive);
-	        @event.LongPrimitive = longPrimitive;
-	        env.SendEventBean(@event);
-	    }
-
-	    private static void SendSBEvent(RegressionEnvironment env, string @string, int? intBoxed, int intPrimitive) {
-	        var bean = new SupportBean(@string, intPrimitive);
-	        bean.IntBoxed = intBoxed;
-	        env.SendEventBean(bean);
-	    }
-	}
+        private static void SendSBEvent(
+            RegressionEnvironment env,
+            string @string,
+            int? intBoxed,
+            int intPrimitive)
+        {
+            var bean = new SupportBean(@string, intPrimitive);
+            bean.IntBoxed = intBoxed;
+            env.SendEventBean(bean);
+        }
+    }
 } // end of namespace

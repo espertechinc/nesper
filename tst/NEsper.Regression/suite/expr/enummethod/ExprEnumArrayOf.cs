@@ -30,12 +30,57 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumArrayOfWSelectFromScalar());
-            execs.Add(new ExprEnumArrayOfWSelectFromScalarWIndex());
-            execs.Add(new ExprEnumArrayOfWSelectFromEvent());
-            execs.Add(new ExprEnumArrayOfEvents());
-            execs.Add(new ExprEnumArrayOfScalar());
+            WithEnumWSelectFromScalar(execs);
+            WithEnumWSelectFromScalarWIndex(execs);
+            WithEnumWSelectFromEvent(execs);
+            WithEnumEvents(execs);
+            WithEnumScalar(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprArrayOfInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnumScalar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumArrayOfScalar());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnumEvents(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumArrayOfEvents());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnumWSelectFromEvent(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumArrayOfWSelectFromEvent());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnumWSelectFromScalarWIndex(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumArrayOfWSelectFromScalarWIndex());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEnumWSelectFromScalar(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumArrayOfWSelectFromScalar());
             return execs;
         }
 

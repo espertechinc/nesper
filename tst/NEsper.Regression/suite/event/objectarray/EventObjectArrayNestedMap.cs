@@ -21,8 +21,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
     {
         public void Run(RegressionEnvironment env)
         {
-            env.AssertThat(() => 
-                Assert.AreEqual(typeof(object[]), env.Runtime.EventTypeService.GetEventTypePreconfigured("MyMapNestedObjectArray").UnderlyingType));
+            env.AssertThat(
+                () =>
+                    Assert.AreEqual(
+                        typeof(object[]),
+                        env.Runtime.EventTypeService.GetEventTypePreconfigured("MyMapNestedObjectArray")
+                            .UnderlyingType));
             env.CompileDeploy("@name('s0') select lev0name.lev1name.sb.TheString as val from MyMapNestedObjectArray")
                 .AddListener("s0");
 
@@ -31,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             IDictionary<string, object> lev1data = new Dictionary<string, object>();
             lev1data.Put("lev1name", lev2data);
 
-            env.SendEventObjectArray(new object[] {lev1data}, "MyMapNestedObjectArray");
+            env.SendEventObjectArray(new object[] { lev1data }, "MyMapNestedObjectArray");
             env.AssertEqualsNew("s0", "val", "E1");
 
             env.AssertThat(

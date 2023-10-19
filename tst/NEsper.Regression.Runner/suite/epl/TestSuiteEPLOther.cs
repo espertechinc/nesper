@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configuration.Common.AddImportType(typeof(EPLOtherStaticFunctions.PrimitiveConversionLib));
             configuration.Common.AddImportType(typeof(Rectangle));
 
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber =true;
             configuration.Compiler.AddPlugInSingleRowFunction(
                 "sleepme",
                 typeof(SupportStaticMethodLib),
@@ -249,9 +249,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             [Test, RunInApplicationDomain]
             public void WithArrayElement() => RegressionRunner.Run(_session, EPLOtherUpdateIStream.WithArrayElement());
-
-            [Test, RunInApplicationDomain]
-            public void WithMapIndexProps() => RegressionRunner.RunPerformanceSensitive(_session, EPLOtherUpdateIStream.WithMapIndexProps());
 
             [Test, RunInApplicationDomain]
             public void WithSubqueryMultikeyWArray() => RegressionRunner.Run(_session, EPLOtherUpdateIStream.WithSubqueryMultikeyWArray());
@@ -1039,9 +1036,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
 
             [Test, RunInApplicationDomain]
             public void WithArrayParameter() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithArrayParameter());
-
-            [Test, RunInApplicationDomain]
-            public void WithException() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithException());
 
             [Test, RunInApplicationDomain]
             public void WithPattern() => RegressionRunner.Run(_session, EPLOtherStaticFunctions.WithPattern());

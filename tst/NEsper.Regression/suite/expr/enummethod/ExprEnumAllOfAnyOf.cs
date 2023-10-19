@@ -22,9 +22,30 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumAllOfAnyOfEvents());
-            execs.Add(new ExprEnumAllOfAnyOfScalar());
+            WithEvents(execs);
+            WithScalar(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprEnumAllOfAnyOfInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithScalar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumAllOfAnyOfScalar());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithEvents(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumAllOfAnyOfEvents());
             return execs;
         }
 
@@ -63,7 +84,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 builder.WithExpression(fields[4], "Contained.allof((v, i, s) => P00 = (7 + i*10 + s*100))");
                 builder.WithExpression(fields[5], "Contained.anyof((v, i, s) => P00 = (7 + i*10 + s*100))");
 
-                builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
+                builder.WithStatementConsumer(
+                    stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
 
                 builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E2,7", "E3,2"))
                     .Expect(fields, false, true, false, false, false, false);
@@ -107,7 +129,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     fields[5],
                     "Strvals.anyof((v, i, s) => (v='A' and i < s - 2) or (v='C' and i >= s - 2))");
 
-                builder.WithStatementConsumer(stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
+                builder.WithStatementConsumer(
+                    stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
 
                 builder.WithAssertion(SupportCollection.MakeString("B,A,C"))
                     .Expect(fields, false, true, false, true, false, true);

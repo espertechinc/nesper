@@ -27,8 +27,10 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithListenerWReplay(execs);
-            WithAlreadyDestroyed(execs);
+            With(AlreadyDestroyed)(execs);
+#endif
             return execs;
         }
 
@@ -93,10 +95,10 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.Statement("s0").AddListenerWithReplay(listener);
                 EPAssertionUtil.AssertPropsPerRow(
                     listener.LastNewData,
-                    new[] {"TheString"},
+                    new[] { "TheString" },
                     new[] {
-                        new object[] {"E1"},
-                        new object[] {"E2"}
+                        new object[] { "E1" },
+                        new object[] { "E2" }
                     });
                 env.UndeployAll();
                 listener.Reset();

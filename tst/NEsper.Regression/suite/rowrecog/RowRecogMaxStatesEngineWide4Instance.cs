@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         public void Run(RegressionEnvironment env)
         {
             handler = SupportConditionHandlerFactory.LastHandler;
-            var fields = new [] { "c0" };
+            var fields = new[] { "c0" };
 
             var eplOne = "@name('S1') select * from SupportBean(TheString = 'A') " +
                          "match_recognize (" +
@@ -78,14 +78,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.AssertPropsNew(
                 "S2",
                 fields,
-                new object[] {400});
+                new object[] { 400 });
 
             // terminate one of A
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("A", 100, 2));
             env.AssertPropsNew(
                 "S1",
                 fields,
-                new object[] {100});
+                new object[] { 100 });
 
             // fill up A
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("A", 300, 1));

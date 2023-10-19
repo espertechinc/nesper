@@ -13,6 +13,8 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Runtime.Serialization.Formatters.Binary;
 
+using com.espertech.esper.common.@internal.util.serde;
+using com.espertech.esper.compat;
 using com.espertech.esper.container;
 
 namespace com.espertech.esper.common.@internal.util
@@ -54,6 +56,15 @@ namespace com.espertech.esper.common.@internal.util
         /// <throws>TypeLoadException if the de-serialize fails</throws>
         public T Copy<T>(T orig)
         {
+#if NET6_0_OR_GREATER
+            
+            var typeResolver = container.TypeResolver() ??
+                               container.TypeResolverProvider()?.TypeResolver;
+            var serializer = new ObjectSerializer(typeResolver);
+            var serialized = serializer.SerializeAny(orig);
+            var deserialized = serializer.DeserializeAny(serialized);
+            return (T)deserialized;
+#else
             // Create the formatter
             var formatter = new BinaryFormatter();
             formatter.FilterLevel = TypeFilterLevel.Full;
@@ -71,6 +82,7 @@ namespace com.espertech.esper.common.@internal.util
                 // Deserialize the object graph from the stream
                 return (T)formatter.Deserialize(stream);
             }
+#endif
         }
 
         public static IObjectCopier GetInstance(IContainer container)

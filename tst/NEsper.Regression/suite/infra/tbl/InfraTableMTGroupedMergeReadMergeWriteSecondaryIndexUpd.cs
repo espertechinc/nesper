@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         /// <summary>
         ///     Primary key is composite: {topgroup, subgroup}. Secondary index on {topgroup}.
         ///     For a given number of seconds:
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportTopGroupSubGroupEvent(0, 0));
 
             // select/read
-            var eplMergeSelect = 
+            var eplMergeSelect =
                 "@public on SupportBean merge vartotal as vt " +
                 "where vt.topgroup = IntPrimitive and vt.thecnt > 0 " +
                 "when matched then insert into MyOutputStream select *";

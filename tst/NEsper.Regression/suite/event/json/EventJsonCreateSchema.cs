@@ -18,53 +18,80 @@ using Newtonsoft.Json.Linq;
 
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
-	public class EventJsonCreateSchema {
+    public class EventJsonCreateSchema
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithSpecialName(execs);
+            WithInvalid(execs);
+            return execs;
+        }
 
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EventJsonCreateSchemaSpecialName());
-	        execs.Add(new EventJsonCreateSchemaInvalid());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventJsonCreateSchemaInvalid());
+            return execs;
+        }
 
-	    private class EventJsonCreateSchemaSpecialName : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            env.CompileDeploy(
-	                "@public @buseventtype create json schema JsonEvent(`p q` string, ABC string, abc string, AbC string);\n" +
-	                    "@name('s0') select * from JsonEvent#keepall").AddListener("s0");
+        public static IList<RegressionExecution> WithSpecialName(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventJsonCreateSchemaSpecialName());
+            return execs;
+        }
 
-	            env.SendEventJson(
-		            new JObject(
-			            new JProperty("p q", "v1"),
-			            new JProperty("ABC", "v2"),
-			            new JProperty("abc", "v3"),
-			            new JProperty("AbC", "v4")).ToString(),
-		            "JsonEvent");
-	            env.AssertEventNew("s0", this.AssertEvent);
+        private class EventJsonCreateSchemaSpecialName : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.CompileDeploy(
+                        "@public @buseventtype create json schema JsonEvent(`p q` string, ABC string, abc string, AbC string);\n" +
+                        "@name('s0') select * from JsonEvent#keepall")
+                    .AddListener("s0");
 
-	            env.Milestone(0);
+                env.SendEventJson(
+                    new JObject(
+                        new JProperty("p q", "v1"),
+                        new JProperty("ABC", "v2"),
+                        new JProperty("abc", "v3"),
+                        new JProperty("AbC", "v4")).ToString(),
+                    "JsonEvent");
+                env.AssertEventNew("s0", this.AssertEvent);
 
-	            env.AssertIterator("s0", iterator => AssertEvent(iterator.Advance()));
+                env.Milestone(0);
 
-	            env.UndeployAll();
-	        }
+                env.AssertIterator("s0", iterator => AssertEvent(iterator.Advance()));
 
-	        private void AssertEvent(EventBean @event) {
-	            EPAssertionUtil.AssertProps(@event, "p q,ABC,abc,AbC".SplitCsv(), new object[] {"v1", "v2", "v3", "v4"});
-	        }
-	    }
+                env.UndeployAll();
+            }
 
-	    private class EventJsonCreateSchemaInvalid : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            env.TryInvalidCompile("create objectarray schema InnerEvent();\n create json schema JsonEvent(innervent InnerEvent);\n",
-	                    "Failed to validate event type 'InnerEvent', expected a Json or Map event type");
+            private void AssertEvent(EventBean @event)
+            {
+                EPAssertionUtil.AssertProps(
+                    @event,
+                    "p q,ABC,abc,AbC".SplitCsv(),
+                    new object[] { "v1", "v2", "v3", "v4" });
+            }
+        }
 
-	            env.TryInvalidCompile("create json schema InvalidDecl(int fieldname)",
-	                "Nestable type configuration encountered an unexpected property type name 'fieldname' for property 'int', expected System.Type or java.util.Map or the name of a previously-declared event type");
+        private class EventJsonCreateSchemaInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                env.TryInvalidCompile(
+                    "create objectarray schema InnerEvent();\n create json schema JsonEvent(innervent InnerEvent);\n",
+                    "Failed to validate event type 'InnerEvent', expected a Json or Map event type");
 
-	            env.TryInvalidCompile("create json schema InvalidDecl(comparable java.lang.Comparable)",
-	                "Unsupported type 'java.lang.Comparable' for property 'comparable' (use @JsonSchemaField to declare additional information)");
-	        }
-	    }
-	}
+                env.TryInvalidCompile(
+                    "create json schema InvalidDecl(int fieldname)",
+                    "Nestable type configuration encountered an unexpected property type name 'fieldname' for property 'int', expected System.Type or java.util.Map or the name of a previously-declared event type");
+
+                env.TryInvalidCompile(
+                    "create json schema InvalidDecl(comparable java.lang.Comparable)",
+                    "Unsupported type 'java.lang.Comparable' for property 'comparable' (use @JsonSchemaField to declare additional information)");
+            }
+        }
+    }
 } // end of namespace

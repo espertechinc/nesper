@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             log.Info(".testPerfAllProps Preloading events");
             var startTime = PerformanceObserver.MilliTime;
             for (var i = 0; i < 1000; i++) {
-                SendEvents(env, new[] {0, 0, 0, 0, 0}, new[] { $"s0{i}", $"s1{i}", $"s2{i}", $"s3{i}", $"s4{i}" });
+                SendEvents(env, new[] { 0, 0, 0, 0, 0 }, new[] { $"s0{i}", $"s1{i}", $"s2{i}", $"s3{i}", $"s4{i}" });
             }
 
             var endTime = PerformanceObserver.MilliTime;
@@ -75,11 +75,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             Assert.AreEqual(1, updateListener.LastNewData.Length);
             Assert.IsNull(updateListener.LastOldData);
             var theEvent = updateListener.LastNewData[0];
-            Assert.AreEqual(expectedIds[0], ((SupportBean_S0) theEvent.Get("S0")).Id);
-            Assert.AreEqual(expectedIds[1], ((SupportBean_S1) theEvent.Get("S1")).Id);
-            Assert.AreEqual(expectedIds[2], ((SupportBean_S2) theEvent.Get("S2")).Id);
-            Assert.AreEqual(expectedIds[3], ((SupportBean_S3) theEvent.Get("S3")).Id);
-            Assert.AreEqual(expectedIds[4], ((SupportBean_S4) theEvent.Get("S4")).Id);
+            Assert.AreEqual(expectedIds[0], ((SupportBean_S0)theEvent.Get("S0")).Id);
+            Assert.AreEqual(expectedIds[1], ((SupportBean_S1)theEvent.Get("S1")).Id);
+            Assert.AreEqual(expectedIds[2], ((SupportBean_S2)theEvent.Get("S2")).Id);
+            Assert.AreEqual(expectedIds[3], ((SupportBean_S3)theEvent.Get("S3")).Id);
+            Assert.AreEqual(expectedIds[4], ((SupportBean_S4)theEvent.Get("S4")).Id);
         }
 
         private static void SendEvent(

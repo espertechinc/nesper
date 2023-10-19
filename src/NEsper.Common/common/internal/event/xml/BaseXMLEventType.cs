@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
@@ -265,7 +266,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             return null;
         }
 
-        public override EventPropertyDescriptor[] WriteableProperties => new EventPropertyDescriptor[0];
+        public override EventPropertyDescriptor[] WriteableProperties => Array.Empty<EventPropertyDescriptor>();
 
         public override EventBeanCopyMethodForge GetCopyMethodForge(string[] properties)
         {

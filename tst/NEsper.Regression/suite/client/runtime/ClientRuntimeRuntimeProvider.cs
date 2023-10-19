@@ -28,7 +28,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            Withk(execs);
+#if REGRESSION_EXECUTIONS
+            With(k)(execs);
+#endif
             return execs;
         }
 
@@ -47,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     // some action here
                 }
             }
-            
+
             public ISet<RegressionFlag> Flags()
             {
                 return Collections.Set(RegressionFlag.RUNTIMEOPS);

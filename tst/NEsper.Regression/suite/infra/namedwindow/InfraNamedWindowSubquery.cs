@@ -23,9 +23,30 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new InfraSubqueryTwoConsumerWindow());
-            execs.Add(new InfraSubqueryLateConsumerAggregation());
+            WithTwoConsumerWindow(execs);
+            WithLateConsumerAggregation(execs);
+            WithWithFilterInParens(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithWithFilterInParens(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSubqueryWithFilterInParens());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithLateConsumerAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSubqueryLateConsumerAggregation());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTwoConsumerWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraSubqueryTwoConsumerWindow());
             return execs;
         }
 
@@ -70,8 +91,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportBean("E1", 1));
-                env.AssertRuntime(runtime => Assert.AreEqual(1L, runtime.VariableService.GetVariableValue(
-                    env.DeploymentId("assign"), "myvar")));   // if the subquery-consumer executes first, this will be null
+                env.AssertRuntime(
+                    runtime => Assert.AreEqual(
+                        1L,
+                        runtime.VariableService.GetVariableValue(
+                            env.DeploymentId("assign"),
+                            "myvar"))); // if the subquery-consumer executes first, this will be null
 
                 env.UndeployAll();
             }

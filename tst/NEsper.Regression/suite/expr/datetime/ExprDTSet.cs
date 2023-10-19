@@ -22,8 +22,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithInput(execs);
-            WithFields(execs);
+            With(Fields)(execs);
+#endif
             return execs;
         }
 

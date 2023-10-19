@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                         "{\"type\":\"record\",\"name\":\"stmt0_out0\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
                         schemaJson.ToString(Newtonsoft.Json.Formatting.None));
                 });
-            
+
             env.UndeployAll();
 
             // schema to-string Avro
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
 
             env.CompileDeploy("@name('s0') select count(*) from CarLocUpdateEvent(direction = 1)#time(1 min)")
                 .AddListener("s0");
-            
+
             var schemaCarLocUpd = env.RuntimeAvroSchemaPreconfigured("CarLocUpdateEvent")
                 .AsRecordSchema();
             var @event = new GenericRecord(schemaCarLocUpd);

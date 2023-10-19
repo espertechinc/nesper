@@ -24,8 +24,22 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientMultitenancyInsertIntoSingleModuleTwoStatements());
+            WithSingleModuleTwoStatements(execs);
+            WithTwoModule(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithTwoModule(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientMultitenancyInsertIntoTwoModule());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingleModuleTwoStatements(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientMultitenancyInsertIntoSingleModuleTwoStatements());
             return execs;
         }
 
@@ -61,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
                 if (received) {
                     env.AssertPropsNew(
                         "s1",
-                        new [] { "TheString","IntPrimitive" },
+                        new[] { "TheString", "IntPrimitive" },
                         new object[] { theString, intPrimitive });
                 }
                 else {
@@ -105,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
                 int intPrimitive)
             {
                 env.SendEventBean(new SupportBean(theString, intPrimitive));
-                env.AssertPropsNew("s1", new [] { "a","b" }, new object[] {theString, intPrimitive});
+                env.AssertPropsNew("s1", new[] { "a", "b" }, new object[] { theString, intPrimitive });
             }
 
             public ISet<RegressionFlag> Flags()

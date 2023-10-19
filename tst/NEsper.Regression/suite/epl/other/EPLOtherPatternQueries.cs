@@ -20,268 +20,376 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
-	public class EPLOtherPatternQueries {
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EPLOtherWhereOM());
-	        execs.Add(new EPLOtherWhereCompile());
-	        execs.Add(new EPLOtherWhere());
-	        execs.Add(new EPLOtherAggregation());
-	        execs.Add(new EPLOtherFollowedByAndWindow());
-	        execs.Add(new EPLOtherPatternWindow());
-	        return execs;
-	    }
+    public class EPLOtherPatternQueries
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
+            WithWhereOM(execs);
+            WithWhereCompile(execs);
+            WithWhere(execs);
+            WithAggregation(execs);
+            WithFollowedByAndWindow(execs);
+            With(PatternWindow)(execs);
+#endif
+            return execs;
+        }
 
-	    private class EPLOtherWhereOM : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var model = new EPStatementObjectModel();
-	            model.SelectClause = SelectClause.Create().AddWithAsProvidedName("s0.id", "idS0").AddWithAsProvidedName("s1.id", "idS1");
-	            PatternExpr pattern = Patterns.Or()
-	                .Add(Patterns.EveryFilter("SupportBean_S0", "s0"))
-	                .Add(Patterns.EveryFilter("SupportBean_S1", "s1")
-	                );
-	            model.FromClause = FromClause.Create(PatternStream.Create(pattern));
-	            model.WhereClause = Expressions.Or()
-	                .Add(Expressions.And()
-	                    .Add(Expressions.IsNotNull("s0.id"))
-	                    .Add(Expressions.Lt("s0.id", 100))
-	                )
-	                .Add(Expressions.And()
-	                    .Add(Expressions.IsNotNull("s1.id"))
-	                    .Add(Expressions.Ge("s1.id", 100))
-	                );
-	            model = env.CopyMayFail(model);
+        public static IList<RegressionExecution> WithPatternWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherPatternWindow());
+            return execs;
+        }
 
-	            var reverse = model.ToEPL();
-	            var stmtText = "select s0.id as idS0, s1.id as idS1 " +
-	                           "from pattern [every s0=SupportBean_S0" +
-	                           " or every s1=SupportBean_S1] " +
-	                           "where s0.id is not null and s0.id<100 or s1.id is not null and s1.id>=100";
-	            Assert.AreEqual(stmtText, reverse);
+        public static IList<RegressionExecution> WithFollowedByAndWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherFollowedByAndWindow());
+            return execs;
+        }
 
-	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-	            env.CompileDeploy(model).AddListener("s0");
+        public static IList<RegressionExecution> WithAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherAggregation());
+            return execs;
+        }
 
-	            SendEventS0(env, 1);
-	            AssertEventIds(env, 1, null);
+        public static IList<RegressionExecution> WithWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherWhere());
+            return execs;
+        }
 
-	            SendEventS0(env, 101);
-	            env.AssertListenerNotInvoked("s0");
+        public static IList<RegressionExecution> WithWhereCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherWhereCompile());
+            return execs;
+        }
 
-	            SendEventS1(env, 1);
-	            env.AssertListenerNotInvoked("s0");
+        public static IList<RegressionExecution> WithWhereOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherWhereOM());
+            return execs;
+        }
 
-	            SendEventS1(env, 100);
-	            AssertEventIds(env, null, 100);
+        private class EPLOtherWhereOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var model = new EPStatementObjectModel();
+                model.SelectClause = SelectClause.Create()
+                    .AddWithAsProvidedName("s0.id", "idS0")
+                    .AddWithAsProvidedName("s1.id", "idS1");
+                PatternExpr pattern = Patterns.Or()
+                    .Add(Patterns.EveryFilter("SupportBean_S0", "s0"))
+                    .Add(
+                        Patterns.EveryFilter("SupportBean_S1", "s1")
+                    );
+                model.FromClause = FromClause.Create(PatternStream.Create(pattern));
+                model.WhereClause = Expressions.Or()
+                    .Add(
+                        Expressions.And()
+                            .Add(Expressions.IsNotNull("s0.id"))
+                            .Add(Expressions.Lt("s0.id", 100))
+                    )
+                    .Add(
+                        Expressions.And()
+                            .Add(Expressions.IsNotNull("s1.id"))
+                            .Add(Expressions.Ge("s1.id", 100))
+                    );
+                model = env.CopyMayFail(model);
 
-	            env.UndeployAll();
-	        }
-	    }
+                var reverse = model.ToEPL();
+                var stmtText = "select s0.id as idS0, s1.id as idS1 " +
+                               "from pattern [every s0=SupportBean_S0" +
+                               " or every s1=SupportBean_S1] " +
+                               "where s0.id is not null and s0.id<100 or s1.id is not null and s1.id>=100";
+                Assert.AreEqual(stmtText, reverse);
 
-	    private class EPLOtherWhereCompile : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var stmtText = "@name('s0') select s0.id as idS0, s1.id as idS1 " +
-	                           "from pattern [every s0=SupportBean_S0" +
-	                           " or every s1=SupportBean_S1] " +
-	                           "where s0.id is not null and s0.id<100 or s1.id is not null and s1.id>=100";
-	            var model = env.EplToModel(stmtText);
-	            model = env.CopyMayFail(model);
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                env.CompileDeploy(model).AddListener("s0");
 
-	            var reverse = model.ToEPL();
-	            Assert.AreEqual(stmtText, reverse);
+                SendEventS0(env, 1);
+                AssertEventIds(env, 1, null);
 
-	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-	            env.CompileDeploy(model).AddListener("s0");
+                SendEventS0(env, 101);
+                env.AssertListenerNotInvoked("s0");
 
-	            SendEventS0(env, 1);
-	            AssertEventIds(env, 1, null);
+                SendEventS1(env, 1);
+                env.AssertListenerNotInvoked("s0");
 
-	            SendEventS0(env, 101);
-	            env.AssertListenerNotInvoked("s0");
+                SendEventS1(env, 100);
+                AssertEventIds(env, null, 100);
 
-	            SendEventS1(env, 1);
-	            env.AssertListenerNotInvoked("s0");
+                env.UndeployAll();
+            }
+        }
 
-	            SendEventS1(env, 100);
-	            AssertEventIds(env, null, 100);
+        private class EPLOtherWhereCompile : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText = "@name('s0') select s0.id as idS0, s1.id as idS1 " +
+                               "from pattern [every s0=SupportBean_S0" +
+                               " or every s1=SupportBean_S1] " +
+                               "where s0.id is not null and s0.id<100 or s1.id is not null and s1.id>=100";
+                var model = env.EplToModel(stmtText);
+                model = env.CopyMayFail(model);
 
-	            env.UndeployAll();
-	        }
-	    }
+                var reverse = model.ToEPL();
+                Assert.AreEqual(stmtText, reverse);
 
-	    private class EPLOtherWhere : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var stmtText = "@name('s0') select s0.id as idS0, s1.id as idS1 " +
-	                           "from pattern [every s0=SupportBean_S0" +
-	                           " or every s1=SupportBean_S1] " +
-	                           "where (s0.id is not null and s0.id < 100) or (s1.id is not null and s1.id >= 100)";
-	            env.CompileDeploy(stmtText).AddListener("s0");
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                env.CompileDeploy(model).AddListener("s0");
 
-	            SendEventS0(env, 1);
-	            AssertEventIds(env, 1, null);
+                SendEventS0(env, 1);
+                AssertEventIds(env, 1, null);
 
-	            SendEventS0(env, 101);
-	            env.AssertListenerNotInvoked("s0");
+                SendEventS0(env, 101);
+                env.AssertListenerNotInvoked("s0");
 
-	            SendEventS1(env, 1);
-	            env.AssertListenerNotInvoked("s0");
+                SendEventS1(env, 1);
+                env.AssertListenerNotInvoked("s0");
 
-	            SendEventS1(env, 100);
-	            AssertEventIds(env, null, 100);
+                SendEventS1(env, 100);
+                AssertEventIds(env, null, 100);
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private class EPLOtherAggregation : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var stmtText = "@name('s0') select sum(s0.id) as sumS0, sum(s1.id) as sumS1, sum(s0.id + s1.id) as sumS0S1 " +
-	                           "from pattern [every s0=SupportBean_S0" +
-	                           " or every s1=SupportBean_S1]";
-	            env.CompileDeploy(stmtText).AddListener("s0");
+        private class EPLOtherWhere : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText = "@name('s0') select s0.id as idS0, s1.id as idS1 " +
+                               "from pattern [every s0=SupportBean_S0" +
+                               " or every s1=SupportBean_S1] " +
+                               "where (s0.id is not null and s0.id < 100) or (s1.id is not null and s1.id >= 100)";
+                env.CompileDeploy(stmtText).AddListener("s0");
 
-	            SendEventS0(env, 1);
-	            AssertEventSums(env, 1, null, null);
+                SendEventS0(env, 1);
+                AssertEventIds(env, 1, null);
 
-	            SendEventS1(env, 2);
-	            AssertEventSums(env, 1, 2, null);
+                SendEventS0(env, 101);
+                env.AssertListenerNotInvoked("s0");
 
-	            SendEventS1(env, 10);
-	            AssertEventSums(env, 1, 12, null);
+                SendEventS1(env, 1);
+                env.AssertListenerNotInvoked("s0");
 
-	            SendEventS0(env, 20);
-	            AssertEventSums(env, 21, 12, null);
+                SendEventS1(env, 100);
+                AssertEventIds(env, null, 100);
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private class EPLOtherFollowedByAndWindow : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var stmtText = "@name('s0') select irstream a.id as idA, b.id as idB, " +
-	                           "a.p00 as p00A, b.p00 as p00B from pattern [every a=SupportBean_S0" +
-	                           " -> every b=SupportBean_S0(p00=a.p00)]#time(1)";
-	            env.CompileDeploy(stmtText).AddListener("s0");
-	            env.AdvanceTime(0);
+        private class EPLOtherAggregation : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@name('s0') select sum(s0.id) as sumS0, sum(s1.id) as sumS1, sum(s0.id + s1.id) as sumS0S1 " +
+                    "from pattern [every s0=SupportBean_S0" +
+                    " or every s1=SupportBean_S1]";
+                env.CompileDeploy(stmtText).AddListener("s0");
 
-	            SendEvent(env, 1, "e1a");
-	            env.AssertListenerNotInvoked("s0");
-	            SendEvent(env, 2, "e1a");
-	            AssertNewEvent(env, 1, 2, "e1a");
+                SendEventS0(env, 1);
+                AssertEventSums(env, 1, null, null);
 
-	            env.AdvanceTime(500);
-	            SendEvent(env, 10, "e2a");
-	            SendEvent(env, 11, "e2b");
-	            SendEvent(env, 12, "e2c");
-	            env.AssertListenerNotInvoked("s0");
-	            SendEvent(env, 13, "e2b");
-	            AssertNewEvent(env, 11, 13, "e2b");
+                SendEventS1(env, 2);
+                AssertEventSums(env, 1, 2, null);
 
-	            env.AdvanceTime(1000);
-	            AssertOldEvent(env, 1, 2, "e1a");
+                SendEventS1(env, 10);
+                AssertEventSums(env, 1, 12, null);
 
-	            env.AdvanceTime(1500);
-	            AssertOldEvent(env, 11, 13, "e2b");
+                SendEventS0(env, 20);
+                AssertEventSums(env, 21, 12, null);
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    public class EPLOtherPatternWindow : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var text = "@name('s0') select irstream * from pattern [every(s0=SupportMarketDataBean(symbol='S0') and " +
-	                       "s1=SupportMarketDataBean(symbol='S1'))]#length(1)";
-	            env.CompileDeploy(text).AddListener("s0");
+        private class EPLOtherFollowedByAndWindow : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText = "@name('s0') select irstream a.id as idA, b.id as idB, " +
+                               "a.p00 as p00A, b.p00 as p00B from pattern [every a=SupportBean_S0" +
+                               " -> every b=SupportBean_S0(p00=a.p00)]#time(1)";
+                env.CompileDeploy(stmtText).AddListener("s0");
+                env.AdvanceTime(0);
 
-	            env.Milestone(0);
+                SendEvent(env, 1, "e1a");
+                env.AssertListenerNotInvoked("s0");
+                SendEvent(env, 2, "e1a");
+                AssertNewEvent(env, 1, 2, "e1a");
 
-	            var eventOne = MakeMarketDataEvent("S0");
-	            env.SendEventBean(eventOne);
+                env.AdvanceTime(500);
+                SendEvent(env, 10, "e2a");
+                SendEvent(env, 11, "e2b");
+                SendEvent(env, 12, "e2c");
+                env.AssertListenerNotInvoked("s0");
+                SendEvent(env, 13, "e2b");
+                AssertNewEvent(env, 11, 13, "e2b");
 
-	            env.Milestone(1);
+                env.AdvanceTime(1000);
+                AssertOldEvent(env, 1, 2, "e1a");
 
-	            var eventTwo = MakeMarketDataEvent("S1");
-	            env.SendEventBean(eventTwo);
-	            env.AssertEventNew("s0", @event => {
-	                Assert.AreEqual(eventOne.Symbol, @event.Get("s0.symbol"));
-	                Assert.AreEqual(eventTwo.Symbol, @event.Get("s1.symbol"));
-	            });
+                env.AdvanceTime(1500);
+                AssertOldEvent(env, 11, 13, "e2b");
 
-	            env.Milestone(2);
+                env.UndeployAll();
+            }
+        }
 
-	            var eventThree = MakeMarketDataEvent("S1");
-	            env.SendEventBean(eventThree);
-	            env.AssertListenerNotInvoked("s0");
+        public class EPLOtherPatternWindow : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var text =
+                    "@name('s0') select irstream * from pattern [every(s0=SupportMarketDataBean(symbol='S0') and " +
+                    "s1=SupportMarketDataBean(symbol='S1'))]#length(1)";
+                env.CompileDeploy(text).AddListener("s0");
 
-	            var eventFour = MakeMarketDataEvent("S0");
-	            env.SendEventBean(eventFour);
+                env.Milestone(0);
 
-	            env.AssertListener("s0", listener => {
-	                var @event = listener.LastOldData[0];
-	                Assert.AreEqual(eventOne.Symbol, @event.Get("s0.symbol"));
-	                Assert.AreEqual(eventTwo.Symbol, @event.Get("s1.symbol"));
-	                @event = listener.LastNewData[0];
-	                Assert.AreEqual(eventFour.Symbol, @event.Get("s0.symbol"));
-	                Assert.AreEqual(eventThree.Symbol, @event.Get("s1.symbol"));
-	            });
+                var eventOne = MakeMarketDataEvent("S0");
+                env.SendEventBean(eventOne);
 
-	            env.UndeployAll();
-	        }
+                env.Milestone(1);
 
-	        private static SupportMarketDataBean MakeMarketDataEvent(string symbol) {
-	            var bean = new SupportMarketDataBean(symbol, 0, 0L, "");
-	            bean.Id = "1";
-	            return bean;
-	        }
-	    }
+                var eventTwo = MakeMarketDataEvent("S1");
+                env.SendEventBean(eventTwo);
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        Assert.AreEqual(eventOne.Symbol, @event.Get("s0.symbol"));
+                        Assert.AreEqual(eventTwo.Symbol, @event.Get("s1.symbol"));
+                    });
 
-	    private static void AssertNewEvent(RegressionEnvironment env, int idA, int idB, string p00) {
-	        env.AssertEventNew("s0", eventBean => CompareEvent(eventBean, idA, idB, p00));
-	    }
+                env.Milestone(2);
 
-	    private static void AssertOldEvent(RegressionEnvironment env, int idA, int idB, string p00) {
-	        env.AssertEventOld("s0", eventBean => CompareEvent(eventBean, idA, idB, p00));
-	    }
+                var eventThree = MakeMarketDataEvent("S1");
+                env.SendEventBean(eventThree);
+                env.AssertListenerNotInvoked("s0");
 
-	    private static void CompareEvent(EventBean eventBean, int idA, int idB, string p00) {
-	        Assert.AreEqual(idA, eventBean.Get("idA"));
-	        Assert.AreEqual(idB, eventBean.Get("idB"));
-	        Assert.AreEqual(p00, eventBean.Get("p00A"));
-	        Assert.AreEqual(p00, eventBean.Get("p00B"));
-	    }
+                var eventFour = MakeMarketDataEvent("S0");
+                env.SendEventBean(eventFour);
 
-	    private static void SendEvent(RegressionEnvironment env, int id, string p00) {
-	        var theEvent = new SupportBean_S0(id, p00);
-	        env.SendEventBean(theEvent);
-	    }
+                env.AssertListener(
+                    "s0",
+                    listener => {
+                        var @event = listener.LastOldData[0];
+                        Assert.AreEqual(eventOne.Symbol, @event.Get("s0.symbol"));
+                        Assert.AreEqual(eventTwo.Symbol, @event.Get("s1.symbol"));
+                        @event = listener.LastNewData[0];
+                        Assert.AreEqual(eventFour.Symbol, @event.Get("s0.symbol"));
+                        Assert.AreEqual(eventThree.Symbol, @event.Get("s1.symbol"));
+                    });
 
-	    private static void SendEventS0(RegressionEnvironment env, int id) {
-	        var theEvent = new SupportBean_S0(id);
-	        env.SendEventBean(theEvent);
-	    }
+                env.UndeployAll();
+            }
 
-	    private static void SendEventS1(RegressionEnvironment env, int id) {
-	        var theEvent = new SupportBean_S1(id);
-	        env.SendEventBean(theEvent);
-	    }
+            private static SupportMarketDataBean MakeMarketDataEvent(string symbol)
+            {
+                var bean = new SupportMarketDataBean(symbol, 0, 0L, "");
+                bean.Id = "1";
+                return bean;
+            }
+        }
 
-	    private static void AssertEventIds(RegressionEnvironment env, int? idS0, int? idS1) {
-	        env.AssertListener("s0", listener => {
-	            var eventBean = listener.GetAndResetLastNewData()[0];
-	            Assert.AreEqual(idS0, eventBean.Get("idS0"));
-	            Assert.AreEqual(idS1, eventBean.Get("idS1"));
-	            listener.Reset();
-	        });
-	    }
+        private static void AssertNewEvent(
+            RegressionEnvironment env,
+            int idA,
+            int idB,
+            string p00)
+        {
+            env.AssertEventNew("s0", eventBean => CompareEvent(eventBean, idA, idB, p00));
+        }
 
-	    private static void AssertEventSums(RegressionEnvironment env, int? sumS0, int? sumS1, int? sumS0S1) {
-	        env.AssertListener("s0", listener => {
-	            var eventBean = listener.GetAndResetLastNewData()[0];
-	            Assert.AreEqual(sumS0, eventBean.Get("sumS0"));
-	            Assert.AreEqual(sumS1, eventBean.Get("sumS1"));
-	            Assert.AreEqual(sumS0S1, eventBean.Get("sumS0S1"));
-	            listener.Reset();
-	        });
-	    }
-	}
+        private static void AssertOldEvent(
+            RegressionEnvironment env,
+            int idA,
+            int idB,
+            string p00)
+        {
+            env.AssertEventOld("s0", eventBean => CompareEvent(eventBean, idA, idB, p00));
+        }
+
+        private static void CompareEvent(
+            EventBean eventBean,
+            int idA,
+            int idB,
+            string p00)
+        {
+            Assert.AreEqual(idA, eventBean.Get("idA"));
+            Assert.AreEqual(idB, eventBean.Get("idB"));
+            Assert.AreEqual(p00, eventBean.Get("p00A"));
+            Assert.AreEqual(p00, eventBean.Get("p00B"));
+        }
+
+        private static void SendEvent(
+            RegressionEnvironment env,
+            int id,
+            string p00)
+        {
+            var theEvent = new SupportBean_S0(id, p00);
+            env.SendEventBean(theEvent);
+        }
+
+        private static void SendEventS0(
+            RegressionEnvironment env,
+            int id)
+        {
+            var theEvent = new SupportBean_S0(id);
+            env.SendEventBean(theEvent);
+        }
+
+        private static void SendEventS1(
+            RegressionEnvironment env,
+            int id)
+        {
+            var theEvent = new SupportBean_S1(id);
+            env.SendEventBean(theEvent);
+        }
+
+        private static void AssertEventIds(
+            RegressionEnvironment env,
+            int? idS0,
+            int? idS1)
+        {
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var eventBean = listener.GetAndResetLastNewData()[0];
+                    Assert.AreEqual(idS0, eventBean.Get("idS0"));
+                    Assert.AreEqual(idS1, eventBean.Get("idS1"));
+                    listener.Reset();
+                });
+        }
+
+        private static void AssertEventSums(
+            RegressionEnvironment env,
+            int? sumS0,
+            int? sumS1,
+            int? sumS0S1)
+        {
+            env.AssertListener(
+                "s0",
+                listener => {
+                    var eventBean = listener.GetAndResetLastNewData()[0];
+                    Assert.AreEqual(sumS0, eventBean.Get("sumS0"));
+                    Assert.AreEqual(sumS1, eventBean.Get("sumS1"));
+                    Assert.AreEqual(sumS0S1, eventBean.Get("sumS0S1"));
+                    listener.Reset();
+                });
+        }
+    }
 } // end of namespace

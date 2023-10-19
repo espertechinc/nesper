@@ -9,51 +9,64 @@
 using System;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.container;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.util
+namespace com.espertech.esper.common.@internal.util.serde
 {
     public class SerializerUtil
     {
+        public static byte[] ObjectToByteArr(
+            IContainer container,
+            object underlying)
+        {
+            return ObjectToByteArr(container.SerializerFactory(), underlying);
+        }
+
         /// <summary>Serialize object to byte array. </summary>
         /// <param name="underlying">to serialize</param>
         /// <returns>byte array</returns>
-        public static byte[] ObjectToByteArr(object underlying)
+        public static byte[] ObjectToByteArr(
+            SerializerFactory serializerFactory,
+            object underlying)
         {
-            return SerializerFactory.Instance.Serialize(
-                new[] { SerializerFactory.Instance.OBJECT_SERIALIZER },
-                new[] { underlying });
+            return serializerFactory.DefaultSerializer.SerializeAny(underlying);
         }
 
         /// <summary>Deserialize byte array to object. </summary>
         /// <param name="bytes">to read</param>
         /// <returns>object</returns>
-        public static object ByteArrToObject(byte[] bytes)
+        public static object ByteArrToObject(
+            SerializerFactory serializerFactory,
+            byte[] bytes)
         {
             if (bytes == null) {
                 return null;
             }
 
-            return SerializerFactory.Instance.Deserialize(
-                1,
-                bytes,
-                new[] { SerializerFactory.Instance.OBJECT_SERIALIZER })[0];
+            return serializerFactory.DefaultSerializer.DeserializeAny(bytes);
         }
 
-        public static object ByteArrBase64ToObject(string s)
+        public static object ByteArrBase64ToObject(
+            SerializerFactory serializerFactory,
+            string value)
         {
-            var bytes = Convert.FromBase64String(s);
-            return ByteArrToObject(bytes);
+            var bytes = Convert.FromBase64String(value);
+            return ByteArrToObject(serializerFactory, bytes);
         }
 
-        public static string ObjectToByteArrBase64(object userObject)
+        public static string ObjectToByteArrBase64(
+            SerializerFactory serializerFactory,
+            object userObject)
         {
-            var bytes = ObjectToByteArr(userObject);
+            var bytes = ObjectToByteArr(serializerFactory, userObject);
             return Convert.ToBase64String(bytes);
         }
 
-        public static CodegenExpression ExpressionForUserObject(object userObject)
+        public static CodegenExpression ExpressionForUserObject(
+            SerializerFactory serializerFactory,
+            object userObject)
         {
             if (userObject == null) {
                 return ConstantNull();
@@ -64,7 +77,7 @@ namespace com.espertech.esper.common.@internal.util
                 return Constant(userObject);
             }
 
-            var value = ObjectToByteArrBase64(userObject);
+            var value = ObjectToByteArrBase64(serializerFactory, userObject);
             return StaticMethod(typeof(SerializerUtil), "ByteArrBase64ToObject", Constant(value));
         }
 

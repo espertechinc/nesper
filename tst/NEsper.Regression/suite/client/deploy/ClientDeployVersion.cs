@@ -13,19 +13,26 @@ using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
-	public class ClientDeployVersion
-	{
-		public static IList<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new ClientDeployVersionMinorCheck());
-			return execs;
-		}
+    public class ClientDeployVersion
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withk(execs);
+            return execs;
+        }
 
-		private class ClientDeployVersionMinorCheck : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
+        public static IList<RegressionExecution> Withk(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientDeployVersionMinorCheck());
+            return execs;
+        }
+
+        private class ClientDeployVersionMinorCheck : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
 #if false
 				var resourceManager = env.Container.ResourceManager();
 				var resourceName = "regression/epcompiled_version_8.0.0.epl_dll_for_deployment";
@@ -54,12 +61,12 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 						() => env.Runtime.FireAndForgetService.ExecuteQuery(compiled)),
 					"Major or minor version of compiler and runtime mismatch; The runtime version is 8.9.0 and the compiler version of the compiled unit is 8.0.0");
 #endif
-			}
+            }
 
-			public ISet<RegressionFlag> Flags()
-			{
-				return Collections.Set(RegressionFlag.INVALIDITY);
-			}
-		}
-	}
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
+        }
+    }
 } // end of namespace

@@ -23,8 +23,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new EventBeanInheritAndInterfaceOverridingSubclass());
+            WithOverridingSubclass(execs);
+            WithImplementationClass(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithImplementationClass(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EventBeanInheritAndInterfaceImplementationClass());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithOverridingSubclass(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventBeanInheritAndInterfaceOverridingSubclass());
             return execs;
         }
 
@@ -43,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 env.SendEventBean(new SupportOverrideOneB("valB", "valTwo", "valBase2"));
                 env.AssertEqualsNew("s0", "value", "valB");
-                
+
                 env.SendEventBean(new SupportOverrideOne("valThree", "valBase3"));
                 env.AssertEqualsNew("s0", "value", "valThree");
 
@@ -65,12 +79,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 };
 
                 string[][] expected = {
-                    new[] {"BaseAB"},
-                    new[] {"BaseAB", "A"},
-                    new[] {"BaseAB", "B"},
-                    new[] {"C"},
-                    new[] {"BaseAB", "A", "G"},
-                    new[] {"BaseAB", "A", "B", "G", "C"}
+                    new[] { "BaseAB" },
+                    new[] { "BaseAB", "A" },
+                    new[] { "BaseAB", "B" },
+                    new[] { "C" },
+                    new[] { "BaseAB", "A", "G" },
+                    new[] { "BaseAB", "A", "B", "G", "C" }
                 };
 
                 var stmts = new EPStatement[epls.Length];

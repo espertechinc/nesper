@@ -14,192 +14,206 @@ using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
-	public class ResultSetAggregateRate
-	{
-		public static ICollection<RegressionExecution> Executions()
-		{
-			var execs = new List<RegressionExecution>();
-			execs.Add(new ResultSetAggregateRateDataNonWindowed());
-			execs.Add(new ResultSetAggregateRateDataWindowed());
-			return execs;
-		}
+    public class ResultSetAggregateRate
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            var execs = new List<RegressionExecution>();
+            WithNonWindowed(execs);
+            WithWindowed(execs);
+            return execs;
+        }
 
-		// rate implementation does not require a data window (may have one)
-		// advantage: not retaining events, only timestamp data points
-		// disadvantage: output rate limiting without snapshot may be less accurate rate
-		private class ResultSetAggregateRateDataNonWindowed : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				SendTimer(env, 0);
-				var milestone = new AtomicLong();
+        public static IList<RegressionExecution> WithWindowed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateRateDataWindowed());
+            return execs;
+        }
 
-				var epl = "@name('s0') select rate(10) as myrate from SupportBean";
-				env.CompileDeploy(epl).AddListener("s0");
+        public static IList<RegressionExecution> WithNonWindowed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAggregateRateDataNonWindowed());
+            return execs;
+        }
 
-				TryAssertion(env, milestone);
+        // rate implementation does not require a data window (may have one)
+        // advantage: not retaining events, only timestamp data points
+        // disadvantage: output rate limiting without snapshot may be less accurate rate
+        private class ResultSetAggregateRateDataNonWindowed : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                SendTimer(env, 0);
+                var milestone = new AtomicLong();
 
-				env.UndeployAll();
+                var epl = "@name('s0') select rate(10) as myrate from SupportBean";
+                env.CompileDeploy(epl).AddListener("s0");
 
-				env.EplToModelCompileDeploy(epl).AddListener("s0");
+                TryAssertion(env, milestone);
 
-				TryAssertion(env, milestone);
+                env.UndeployAll();
 
-				env.UndeployAll();
+                env.EplToModelCompileDeploy(epl).AddListener("s0");
 
-				env.TryInvalidCompile(
-					"select rate() from SupportBean",
-					"Failed to validate select-clause expression 'rate(*)': The rate aggregation function minimally requires a numeric constant or expression as a parameter. [select rate() from SupportBean]");
-				env.TryInvalidCompile(
-					"select rate(true) from SupportBean",
-					"Failed to validate select-clause expression 'rate(true)': The rate aggregation function requires a numeric constant or time period as the first parameter in the constant-value notation [select rate(true) from SupportBean]");
-			}
-		}
+                TryAssertion(env, milestone);
 
-		private class ResultSetAggregateRateDataWindowed : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var fields = "myrate,myqtyrate".SplitCsv();
-				var epl =
-					"@name('s0') select RATE(longPrimitive) as myrate, RATE(longPrimitive, intPrimitive) as myqtyrate from SupportBean#length(3)";
-				env.CompileDeploy(epl).AddListener("s0");
+                env.UndeployAll();
 
-				SendEvent(env, 1000, 10);
-				env.AssertPropsNew("s0", fields, new object[] { null, null });
+                env.TryInvalidCompile(
+                    "select rate() from SupportBean",
+                    "Failed to validate select-clause expression 'rate(*)': The rate aggregation function minimally requires a numeric constant or expression as a parameter. [select rate() from SupportBean]");
+                env.TryInvalidCompile(
+                    "select rate(true) from SupportBean",
+                    "Failed to validate select-clause expression 'rate(true)': The rate aggregation function requires a numeric constant or time period as the first parameter in the constant-value notation [select rate(true) from SupportBean]");
+            }
+        }
 
-				env.Milestone(0);
+        private class ResultSetAggregateRateDataWindowed : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "myrate,myqtyrate".SplitCsv();
+                var epl =
+                    "@name('s0') select RATE(longPrimitive) as myrate, RATE(longPrimitive, intPrimitive) as myqtyrate from SupportBean#length(3)";
+                env.CompileDeploy(epl).AddListener("s0");
 
-				SendEvent(env, 1200, 0);
-				env.AssertPropsNew("s0", fields, new object[] { null, null });
+                SendEvent(env, 1000, 10);
+                env.AssertPropsNew("s0", fields, new object[] { null, null });
 
-				SendEvent(env, 1300, 0);
-				env.AssertPropsNew("s0", fields, new object[] { null, null });
+                env.Milestone(0);
 
-				env.Milestone(1);
+                SendEvent(env, 1200, 0);
+                env.AssertPropsNew("s0", fields, new object[] { null, null });
 
-				SendEvent(env, 1500, 14);
-				env.AssertPropsNew("s0", fields, new object[] { 3 * 1000 / 500d, 14 * 1000 / 500d });
+                SendEvent(env, 1300, 0);
+                env.AssertPropsNew("s0", fields, new object[] { null, null });
 
-				env.Milestone(2);
+                env.Milestone(1);
 
-				SendEvent(env, 2000, 11);
-				env.AssertPropsNew("s0", fields, new object[] { 3 * 1000 / 800d, 25 * 1000 / 800d });
+                SendEvent(env, 1500, 14);
+                env.AssertPropsNew("s0", fields, new object[] { 3 * 1000 / 500d, 14 * 1000 / 500d });
 
-				env.TryInvalidCompile(
-					"select rate(longPrimitive) as myrate from SupportBean",
-					"Failed to validate select-clause expression 'rate(longPrimitive)': The rate aggregation function in the timestamp-property notation requires data windows [select rate(longPrimitive) as myrate from SupportBean]");
-				env.TryInvalidCompile(
-					"select rate(current_timestamp) as myrate from SupportBean#time(20)",
-					"Failed to validate select-clause expression 'rate(current_timestamp())': The rate aggregation function does not allow the current runtime timestamp as a parameter [select rate(current_timestamp) as myrate from SupportBean#time(20)]");
-				env.TryInvalidCompile(
-					"select rate(theString) as myrate from SupportBean#time(20)",
-					"Failed to validate select-clause expression 'rate(theString)': The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation [select rate(theString) as myrate from SupportBean#time(20)]");
+                env.Milestone(2);
 
-				env.UndeployAll();
-			}
-		}
+                SendEvent(env, 2000, 11);
+                env.AssertPropsNew("s0", fields, new object[] { 3 * 1000 / 800d, 25 * 1000 / 800d });
 
-		private static void TryAssertion(
-			RegressionEnvironment env,
-			AtomicLong milestone)
-		{
-			var fields = "myrate".SplitCsv();
+                env.TryInvalidCompile(
+                    "select rate(longPrimitive) as myrate from SupportBean",
+                    "Failed to validate select-clause expression 'rate(longPrimitive)': The rate aggregation function in the timestamp-property notation requires data windows [select rate(longPrimitive) as myrate from SupportBean]");
+                env.TryInvalidCompile(
+                    "select rate(current_timestamp) as myrate from SupportBean#time(20)",
+                    "Failed to validate select-clause expression 'rate(current_timestamp())': The rate aggregation function does not allow the current runtime timestamp as a parameter [select rate(current_timestamp) as myrate from SupportBean#time(20)]");
+                env.TryInvalidCompile(
+                    "select rate(theString) as myrate from SupportBean#time(20)",
+                    "Failed to validate select-clause expression 'rate(theString)': The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation [select rate(theString) as myrate from SupportBean#time(20)]");
 
-			SendTimer(env, 1000);
-			SendEvent(env);
-			env.AssertPropsNew("s0", fields, new object[] { null });
+                env.UndeployAll();
+            }
+        }
 
-			env.MilestoneInc(milestone);
+        private static void TryAssertion(
+            RegressionEnvironment env,
+            AtomicLong milestone)
+        {
+            var fields = "myrate".SplitCsv();
 
-			SendTimer(env, 1200);
-			SendEvent(env);
-			env.AssertPropsNew("s0", fields, new object[] { null });
+            SendTimer(env, 1000);
+            SendEvent(env);
+            env.AssertPropsNew("s0", fields, new object[] { null });
 
-			SendTimer(env, 1600);
-			SendEvent(env);
-			env.AssertPropsNew("s0", fields, new object[] { null });
+            env.MilestoneInc(milestone);
 
-			env.MilestoneInc(milestone);
+            SendTimer(env, 1200);
+            SendEvent(env);
+            env.AssertPropsNew("s0", fields, new object[] { null });
 
-			SendTimer(env, 1600);
-			SendEvent(env);
-			env.AssertPropsNew("s0", fields, new object[] { null });
+            SendTimer(env, 1600);
+            SendEvent(env);
+            env.AssertPropsNew("s0", fields, new object[] { null });
 
-			SendTimer(env, 9000);
-			SendEvent(env);
-			env.AssertPropsNew("s0", fields, new object[] { null });
+            env.MilestoneInc(milestone);
 
-			SendTimer(env, 9200);
-			SendEvent(env);
-			env.AssertPropsNew("s0", fields, new object[] { null });
+            SendTimer(env, 1600);
+            SendEvent(env);
+            env.AssertPropsNew("s0", fields, new object[] { null });
 
-			env.MilestoneInc(milestone);
+            SendTimer(env, 9000);
+            SendEvent(env);
+            env.AssertPropsNew("s0", fields, new object[] { null });
 
-			SendTimer(env, 10999);
-			SendEvent(env);
-			env.AssertPropsNew("s0", fields, new object[] { null });
+            SendTimer(env, 9200);
+            SendEvent(env);
+            env.AssertPropsNew("s0", fields, new object[] { null });
 
-			env.MilestoneInc(milestone);
+            env.MilestoneInc(milestone);
 
-			SendTimer(env, 11100);
-			SendEvent(env);
-			env.AssertPropsNew("s0", fields, new object[] { 0.7 });
+            SendTimer(env, 10999);
+            SendEvent(env);
+            env.AssertPropsNew("s0", fields, new object[] { null });
 
-			SendTimer(env, 11101);
-			SendEvent(env);
-			env.AssertPropsNew("s0", fields, new object[] { 0.8 });
+            env.MilestoneInc(milestone);
 
-			env.MilestoneInc(milestone);
+            SendTimer(env, 11100);
+            SendEvent(env);
+            env.AssertPropsNew("s0", fields, new object[] { 0.7 });
 
-			SendTimer(env, 11200);
-			SendEvent(env);
-			env.AssertPropsNew("s0", fields, new object[] { 0.8 });
+            SendTimer(env, 11101);
+            SendEvent(env);
+            env.AssertPropsNew("s0", fields, new object[] { 0.8 });
 
-			SendTimer(env, 11600);
-			SendEvent(env);
-			env.AssertPropsNew("s0", fields, new object[] { 0.7 });
-		}
+            env.MilestoneInc(milestone);
 
-		private static void SendTimer(
-			RegressionEnvironment env,
-			long timeInMSec)
-		{
-			env.AdvanceTime(timeInMSec);
-		}
+            SendTimer(env, 11200);
+            SendEvent(env);
+            env.AssertPropsNew("s0", fields, new object[] { 0.8 });
 
-		private static void SendEvent(
-			RegressionEnvironment env,
-			long longPrimitive,
-			int intPrimitive)
-		{
-			var bean = new SupportBean();
-			bean.LongPrimitive = longPrimitive;
-			bean.IntPrimitive = intPrimitive;
-			env.SendEventBean(bean);
-		}
+            SendTimer(env, 11600);
+            SendEvent(env);
+            env.AssertPropsNew("s0", fields, new object[] { 0.7 });
+        }
 
-		private static void SendEvent(RegressionEnvironment env)
-		{
-			var bean = new SupportBean();
-			env.SendEventBean(bean);
-		}
+        private static void SendTimer(
+            RegressionEnvironment env,
+            long timeInMSec)
+        {
+            env.AdvanceTime(timeInMSec);
+        }
 
-		public class RateSendRunnable
-		{
-			private readonly RegressionEnvironment env;
+        private static void SendEvent(
+            RegressionEnvironment env,
+            long longPrimitive,
+            int intPrimitive)
+        {
+            var bean = new SupportBean();
+            bean.LongPrimitive = longPrimitive;
+            bean.IntPrimitive = intPrimitive;
+            env.SendEventBean(bean);
+        }
 
-			public RateSendRunnable(RegressionEnvironment env)
-			{
-				this.env = env;
-			}
+        private static void SendEvent(RegressionEnvironment env)
+        {
+            var bean = new SupportBean();
+            env.SendEventBean(bean);
+        }
 
-			public void Run()
-			{
-				var bean = new SupportBean();
+        public class RateSendRunnable
+        {
+            private readonly RegressionEnvironment env;
+
+            public RateSendRunnable(RegressionEnvironment env)
+            {
+                this.env = env;
+            }
+
+            public void Run()
+            {
+                var bean = new SupportBean();
                 bean.LongPrimitive = DateTimeHelper.CurrentTimeMillis;
-				env.SendEventBean(bean);
-			}
-		}
-	}
+                env.SendEventBean(bean);
+            }
+        }
+    }
 } // end of namespace

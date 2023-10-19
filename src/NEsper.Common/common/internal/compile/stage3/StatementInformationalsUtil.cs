@@ -124,6 +124,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             }
 
             return new StatementInformationalsCompileTime(
+                services.Container,
                 @base.StatementName,
                 alwaysSynthesizeOutputEvents,
                 contextName,

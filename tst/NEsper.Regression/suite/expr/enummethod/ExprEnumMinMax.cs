@@ -27,11 +27,46 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ExprEnumMinMaxEvents());
-            execs.Add(new ExprEnumMinMaxScalar());
-            execs.Add(new ExprEnumMinMaxScalarWithPredicate());
-            execs.Add(new ExprEnumMinMaxScalarChain());
+            WithMinMaxEvents(execs);
+            WithMinMaxScalar(execs);
+            WithMinMaxScalarWithPredicate(execs);
+            WithMinMaxScalarChain(execs);
+            WithInvalid(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExprEnumInvalid());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMinMaxScalarChain(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumMinMaxScalarChain());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMinMaxScalarWithPredicate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumMinMaxScalarWithPredicate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMinMaxScalar(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumMinMaxScalar());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithMinMaxEvents(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprEnumMinMaxEvents());
             return execs;
         }
 

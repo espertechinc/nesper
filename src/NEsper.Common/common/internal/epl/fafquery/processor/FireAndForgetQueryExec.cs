@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                     return virtualDataWindow.GetFireAndForgetData(
                         pair.Second,
                         CollectionUtil.OBJECTARRAY_EMPTY,
-                        new RangeIndexLookupValue[0],
+                        Array.Empty<RangeIndexLookupValue>(),
                         annotations);
                 }
 

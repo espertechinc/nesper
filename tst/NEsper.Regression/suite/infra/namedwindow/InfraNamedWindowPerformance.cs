@@ -24,287 +24,418 @@ using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
-	/// <summary>
-	/// NOTE: More namedwindow-related tests in "nwtable"
-	/// </summary>
-	public class InfraNamedWindowPerformance {
+    /// <summary>
+    /// NOTE: More namedwindow-related tests in "nwtable"
+    /// </summary>
+    public class InfraNamedWindowPerformance
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithOnSelectInKeywordPerformance(execs);
+            WithOnSelectEqualsAndRangePerformance(execs);
+            WithDeletePerformance(execs);
+            WithDeletePerformanceCoercion(execs);
+            WithDeletePerformanceTwoDeleters(execs);
+            WithDeletePerformanceIndexReuse(execs);
+            return execs;
+        }
 
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new InfraOnSelectInKeywordPerformance());
-	        execs.Add(new InfraOnSelectEqualsAndRangePerformance());
-	        execs.Add(new InfraDeletePerformance());
-	        execs.Add(new InfraDeletePerformanceCoercion());
-	        execs.Add(new InfraDeletePerformanceTwoDeleters());
-	        execs.Add(new InfraDeletePerformanceIndexReuse());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithDeletePerformanceIndexReuse(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraDeletePerformanceIndexReuse());
+            return execs;
+        }
 
-	    private class InfraOnSelectInKeywordPerformance : RegressionExecution {
+        public static IList<RegressionExecution> WithDeletePerformanceTwoDeleters(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraDeletePerformanceTwoDeleters());
+            return execs;
+        }
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
-	        }
+        public static IList<RegressionExecution> WithDeletePerformanceCoercion(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraDeletePerformanceCoercion());
+            return execs;
+        }
 
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            env.CompileDeploy("@name('create') @public create window MyWindow#keepall as SupportBean_S0;\n" +
-	                "insert into MyWindow select * from SupportBean_S0;\n", path);
+        public static IList<RegressionExecution> WithDeletePerformance(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraDeletePerformance());
+            return execs;
+        }
 
-	            var maxRows = 10000;   // for performance testing change to int maxRows = 100000;
-	            for (var i = 0; i < maxRows; i++) {
-	                env.SendEventBean(new SupportBean_S0(i, "p00_" + i));
-	            }
+        public static IList<RegressionExecution> WithOnSelectEqualsAndRangePerformance(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraOnSelectEqualsAndRangePerformance());
+            return execs;
+        }
 
-	            var eplSingleIdx = "on SupportBean_S1 select sum(mw.id) as sumi from MyWindow mw where p00 in (p10, p11)";
-	            RunOnDemandAssertion(env, path, eplSingleIdx, 1, new SupportBean_S1(0, "x", "p00_6523"), 6523);
+        public static IList<RegressionExecution> WithOnSelectInKeywordPerformance(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraOnSelectInKeywordPerformance());
+            return execs;
+        }
 
-	            var eplMultiIndex = "on SupportBean_S1 select sum(mw.id) as sumi from MyWindow mw where p10 in (p00, p01)";
-	            RunOnDemandAssertion(env, path, eplMultiIndex, 2, new SupportBean_S1(0, "p00_6524"), 6524);
+        private class InfraOnSelectInKeywordPerformance : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
 
-	            env.UndeployAll();
-	        }
-	    }
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@name('create') @public create window MyWindow#keepall as SupportBean_S0;\n" +
+                    "insert into MyWindow select * from SupportBean_S0;\n",
+                    path);
 
-	    private class InfraOnSelectEqualsAndRangePerformance : RegressionExecution {
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
-	        }
+                var maxRows = 10000; // for performance testing change to int maxRows = 100000;
+                for (var i = 0; i < maxRows; i++) {
+                    env.SendEventBean(new SupportBean_S0(i, "p00_" + i));
+                }
 
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            env.CompileDeploy("@name('create') @public create window MyWindow#keepall as SupportBean;\n" +
-	                "insert into MyWindow select * from SupportBean", path);
+                var eplSingleIdx =
+                    "on SupportBean_S1 select sum(mw.id) as sumi from MyWindow mw where p00 in (p10, p11)";
+                RunOnDemandAssertion(env, path, eplSingleIdx, 1, new SupportBean_S1(0, "x", "p00_6523"), 6523);
 
-	            // insert X rows
-	            var maxRows = 10000;   //for performance testing change to int maxRows = 100000;
-	            for (var i = 0; i < maxRows; i++) {
-	                var bean = new SupportBean((i < 5000) ? "A" : "B", i);
-	                bean.LongPrimitive = i;
-	                bean.LongBoxed = (long) i + 1;
-	                env.SendEventBean(bean);
-	            }
-	            env.SendEventBean(new SupportBean("B", 100));
+                var eplMultiIndex =
+                    "on SupportBean_S1 select sum(mw.id) as sumi from MyWindow mw where p10 in (p00, p01)";
+                RunOnDemandAssertion(env, path, eplMultiIndex, 2, new SupportBean_S1(0, "p00_6524"), 6524);
 
-	            var eplIdx1One = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where intPrimitive = sbr.rangeStart";
-	            RunOnDemandAssertion(env, path, eplIdx1One, 1, new SupportBeanRange("R", 5501, 0), 5501);
+                env.UndeployAll();
+            }
+        }
 
-	            var eplIdx1Two = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where intPrimitive between sbr.rangeStart and sbr.rangeEnd";
-	            RunOnDemandAssertion(env, path, eplIdx1Two, 1, new SupportBeanRange("R", 5501, 5503), 5501 + 5502 + 5503);
+        private class InfraOnSelectEqualsAndRangePerformance : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
 
-	            var eplIdx1Three = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where theString = key and intPrimitive between sbr.rangeStart and sbr.rangeEnd";
-	            RunOnDemandAssertion(env, path, eplIdx1Three, 1, new SupportBeanRange("R", "A", 4998, 5503), 4998 + 4999);
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@name('create') @public create window MyWindow#keepall as SupportBean;\n" +
+                    "insert into MyWindow select * from SupportBean",
+                    path);
 
-	            var eplIdx1Four = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow " +
-	                              "where theString = key and longPrimitive = rangeStart and intPrimitive between rangeStart and rangeEnd " +
-	                              "and longBoxed between rangeStart and rangeEnd";
-	            RunOnDemandAssertion(env, path, eplIdx1Four, 1, new SupportBeanRange("R", "A", 4998, 5503), 4998);
+                // insert X rows
+                var maxRows = 10000; //for performance testing change to int maxRows = 100000;
+                for (var i = 0; i < maxRows; i++) {
+                    var bean = new SupportBean((i < 5000) ? "A" : "B", i);
+                    bean.LongPrimitive = i;
+                    bean.LongBoxed = (long)i + 1;
+                    env.SendEventBean(bean);
+                }
 
-	            var eplIdx1Five = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow " +
-	                              "where intPrimitive between rangeStart and rangeEnd " +
-	                              "and longBoxed between rangeStart and rangeEnd";
-	            RunOnDemandAssertion(env, path, eplIdx1Five, 1, new SupportBeanRange("R", "A", 4998, 5001), 4998 + 4999 + 5000);
+                env.SendEventBean(new SupportBean("B", 100));
 
-	            env.UndeployAll();
-	        }
-	    }
+                var eplIdx1One =
+                    "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where intPrimitive = sbr.rangeStart";
+                RunOnDemandAssertion(env, path, eplIdx1One, 1, new SupportBeanRange("R", 5501, 0), 5501);
 
-	    private class InfraDeletePerformance : RegressionExecution {
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
-	        }
+                var eplIdx1Two =
+                    "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where intPrimitive between sbr.rangeStart and sbr.rangeEnd";
+                RunOnDemandAssertion(
+                    env,
+                    path,
+                    eplIdx1Two,
+                    1,
+                    new SupportBeanRange("R", 5501, 5503),
+                    5501 + 5502 + 5503);
 
-	        public void Run(RegressionEnvironment env) {
+                var eplIdx1Three =
+                    "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where theString = key and intPrimitive between sbr.rangeStart and sbr.rangeEnd";
+                RunOnDemandAssertion(
+                    env,
+                    path,
+                    eplIdx1Three,
+                    1,
+                    new SupportBeanRange("R", "A", 4998, 5503),
+                    4998 + 4999);
 
-	            var epl = "@name('create') create window MyWindow#keepall as select theString as a, intPrimitive as b from SupportBean;\n" +
-	                      "on SupportBean_A delete from MyWindow where id = a;\n" +
-	                      "insert into MyWindow select theString as a, intPrimitive as b from SupportBean;\n";
-	            env.CompileDeploy(epl);
+                var eplIdx1Four = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow " +
+                                  "where theString = key and longPrimitive = rangeStart and intPrimitive between rangeStart and rangeEnd " +
+                                  "and longBoxed between rangeStart and rangeEnd";
+                RunOnDemandAssertion(env, path, eplIdx1Four, 1, new SupportBeanRange("R", "A", 4998, 5503), 4998);
 
-	            // load window
-	            for (var i = 0; i < 50000; i++) {
-	                SendSupportBean(env, "S" + i, i);
-	            }
+                var eplIdx1Five = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow " +
+                                  "where intPrimitive between rangeStart and rangeEnd " +
+                                  "and longBoxed between rangeStart and rangeEnd";
+                RunOnDemandAssertion(
+                    env,
+                    path,
+                    eplIdx1Five,
+                    1,
+                    new SupportBeanRange("R", "A", 4998, 5001),
+                    4998 + 4999 + 5000);
 
-	            // delete rows
-	            env.AddListener("create");
-	            var startTime = PerformanceObserver.MilliTime;
-	            for (var i = 0; i < 10000; i++) {
-	                SendSupportBean_A(env, "S" + i);
-	            }
-	            var endTime = PerformanceObserver.MilliTime;
-	            var delta = endTime - startTime;
-	            Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
+                env.UndeployAll();
+            }
+        }
 
-	            // assert they are deleted
-	            env.AssertIterator("create", iterator => Assert.AreEqual(50000 - 10000, EPAssertionUtil.EnumeratorCount(iterator)));
-	            env.AssertListener("create", listener => Assert.AreEqual(10000, listener.OldDataList.Count));
+        private class InfraDeletePerformance : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
 
-	            env.UndeployAll();
-	        }
-	    }
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('create') create window MyWindow#keepall as select theString as a, intPrimitive as b from SupportBean;\n" +
+                    "on SupportBean_A delete from MyWindow where id = a;\n" +
+                    "insert into MyWindow select theString as a, intPrimitive as b from SupportBean;\n";
+                env.CompileDeploy(epl);
 
-	    private class InfraDeletePerformanceCoercion : RegressionExecution {
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
-	        }
+                // load window
+                for (var i = 0; i < 50000; i++) {
+                    SendSupportBean(env, "S" + i, i);
+                }
 
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('create') create window MyWindow#keepall as select theString as a, longPrimitive as b from SupportBean;\n" +
-	                      "on SupportMarketDataBean delete from MyWindow where b = price;\n" +
-	                      "insert into MyWindow select theString as a, longPrimitive as b from SupportBean;\n";
-	            env.CompileDeploy(epl);
+                // delete rows
+                env.AddListener("create");
+                var startTime = PerformanceObserver.MilliTime;
+                for (var i = 0; i < 10000; i++) {
+                    SendSupportBean_A(env, "S" + i);
+                }
 
-	            // load window
-	            for (var i = 0; i < 50000; i++) {
-	                SendSupportBean(env, "S" + i, (long) i);
-	            }
+                var endTime = PerformanceObserver.MilliTime;
+                var delta = endTime - startTime;
+                Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 
-	            // delete rows
-	            env.AddListener("create");
-	            var startTime = PerformanceObserver.MilliTime;
-	            for (var i = 0; i < 10000; i++) {
-	                SendMarketBean(env, "S" + i, i);
-	            }
-	            var endTime = PerformanceObserver.MilliTime;
-	            var delta = endTime - startTime;
-	            Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
+                // assert they are deleted
+                env.AssertIterator(
+                    "create",
+                    iterator => Assert.AreEqual(50000 - 10000, EPAssertionUtil.EnumeratorCount(iterator)));
+                env.AssertListener("create", listener => Assert.AreEqual(10000, listener.OldDataList.Count));
 
-	            // assert they are deleted
-	            env.AssertIterator("create", iterator => Assert.AreEqual(50000 - 10000, EPAssertionUtil.EnumeratorCount(iterator)));
-	            env.AssertListener("create", listener => Assert.AreEqual(10000, listener.OldDataList.Count));
+                env.UndeployAll();
+            }
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        private class InfraDeletePerformanceCoercion : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
 
-	    private class InfraDeletePerformanceTwoDeleters : RegressionExecution {
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
-	        }
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('create') create window MyWindow#keepall as select theString as a, longPrimitive as b from SupportBean;\n" +
+                    "on SupportMarketDataBean delete from MyWindow where b = price;\n" +
+                    "insert into MyWindow select theString as a, longPrimitive as b from SupportBean;\n";
+                env.CompileDeploy(epl);
 
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('create') create window MyWindow#keepall as select theString as a, longPrimitive as b from SupportBean;\n" +
-	                      "on SupportMarketDataBean delete from MyWindow where b = price;\n" +
-	                      "on SupportBean_A delete from MyWindow where id = a;\n" +
-	                      "insert into MyWindow select theString as a, longPrimitive as b from SupportBean;\n";
-	            env.CompileDeploy(epl);
+                // load window
+                for (var i = 0; i < 50000; i++) {
+                    SendSupportBean(env, "S" + i, (long)i);
+                }
 
-	            // load window
-	            for (var i = 0; i < 20000; i++) {
-	                SendSupportBean(env, "S" + i, (long) i);
-	            }
+                // delete rows
+                env.AddListener("create");
+                var startTime = PerformanceObserver.MilliTime;
+                for (var i = 0; i < 10000; i++) {
+                    SendMarketBean(env, "S" + i, i);
+                }
 
-	            // delete all rows
-	            env.AddListener("create");
-	            var startTime = PerformanceObserver.MilliTime;
-	            for (var i = 0; i < 10000; i++) {
-	                SendMarketBean(env, "S" + i, i);
-	                SendSupportBean_A(env, "S" + (i + 10000));
-	            }
-	            var endTime = PerformanceObserver.MilliTime;
-	            var delta = endTime - startTime;
-	            Assert.That(delta, Is.LessThan(1500), "Delta=" + delta);
+                var endTime = PerformanceObserver.MilliTime;
+                var delta = endTime - startTime;
+                Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 
-	            // assert they are all deleted
-	            env.AssertIterator("create", iterator => Assert.AreEqual(0, EPAssertionUtil.EnumeratorCount(iterator)));
-	            env.AssertListener("create", listener => Assert.AreEqual(20000, listener.OldDataList.Count));
+                // assert they are deleted
+                env.AssertIterator(
+                    "create",
+                    iterator => Assert.AreEqual(50000 - 10000, EPAssertionUtil.EnumeratorCount(iterator)));
+                env.AssertListener("create", listener => Assert.AreEqual(10000, listener.OldDataList.Count));
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private class InfraDeletePerformanceIndexReuse : RegressionExecution {
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
-	        }
+        private class InfraDeletePerformanceTwoDeleters : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
 
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('create') create window MyWindow#keepall as select theString as a, longPrimitive as b from SupportBean;\n" +
+                    "on SupportMarketDataBean delete from MyWindow where b = price;\n" +
+                    "on SupportBean_A delete from MyWindow where id = a;\n" +
+                    "insert into MyWindow select theString as a, longPrimitive as b from SupportBean;\n";
+                env.CompileDeploy(epl);
 
-	            // create window
-	            var stmtTextCreate = "@name('create') @public create window MyWindow#keepall as select theString as a, longPrimitive as b from SupportBean";
-	            env.CompileDeploy(stmtTextCreate, path);
+                // load window
+                for (var i = 0; i < 20000; i++) {
+                    SendSupportBean(env, "S" + i, (long)i);
+                }
 
-	            // create delete stmt
-	            var statements = new string[50];
-	            for (var i = 0; i < statements.Length; i++) {
-	                var name = "s" + i;
-	                var stmtTextDelete = "@name('" + name + "') on SupportMarketDataBean delete from MyWindow where b = price";
-	                env.CompileDeploy(stmtTextDelete, path);
-	                statements[i] = name;
-	            }
+                // delete all rows
+                env.AddListener("create");
+                var startTime = PerformanceObserver.MilliTime;
+                for (var i = 0; i < 10000; i++) {
+                    SendMarketBean(env, "S" + i, i);
+                    SendSupportBean_A(env, "S" + (i + 10000));
+                }
 
-	            // create insert into
-	            var stmtTextInsertOne = "insert into MyWindow select theString as a, longPrimitive as b from SupportBean";
-	            env.CompileDeploy(stmtTextInsertOne, path);
+                var endTime = PerformanceObserver.MilliTime;
+                var delta = endTime - startTime;
+                Assert.That(delta, Is.LessThan(1500), "Delta=" + delta);
 
-	            // load window
-	            var startTime = PerformanceObserver.MilliTime;
-	            for (var i = 0; i < 10000; i++) {
-	                SendSupportBean(env, "S" + i, (long) i);
-	            }
-	            var endTime = PerformanceObserver.MilliTime;
-	            var delta = endTime - startTime;
-	            Assert.That(delta, Is.LessThan(1000), "Delta=" + delta);
-	            env.AssertIterator("create", iterator => Assert.AreEqual(10000, EPAssertionUtil.EnumeratorCount(iterator)));
+                // assert they are all deleted
+                env.AssertIterator("create", iterator => Assert.AreEqual(0, EPAssertionUtil.EnumeratorCount(iterator)));
+                env.AssertListener("create", listener => Assert.AreEqual(20000, listener.OldDataList.Count));
 
-	            // destroy all
-	            foreach (var statement in statements) {
-	                env.UndeployModuleContaining(statement);
-	            }
+                env.UndeployAll();
+            }
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        private class InfraDeletePerformanceIndexReuse : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
 
-	    private static void RunOnDemandAssertion(RegressionEnvironment env, RegressionPath path, string epl, int numIndexes, object theEvent, int? expected) {
-	        Assert.AreEqual(0, GetIndexCount(env));
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
 
-	        env.CompileDeploy("@name('s0')" + epl, path).AddListener("s0");
-	        Assert.AreEqual(numIndexes, GetIndexCount(env));
+                // create window
+                var stmtTextCreate =
+                    "@name('create') @public create window MyWindow#keepall as select theString as a, longPrimitive as b from SupportBean";
+                env.CompileDeploy(stmtTextCreate, path);
 
-	        var start = PerformanceObserver.MilliTime;
-	        var loops = 1000;
+                // create delete stmt
+                var statements = new string[50];
+                for (var i = 0; i < statements.Length; i++) {
+                    var name = "s" + i;
+                    var stmtTextDelete =
+                        "@name('" + name + "') on SupportMarketDataBean delete from MyWindow where b = price";
+                    env.CompileDeploy(stmtTextDelete, path);
+                    statements[i] = name;
+                }
 
-	        for (var i = 0; i < loops; i++) {
-	            env.SendEventBean(theEvent);
-	            env.AssertEqualsNew("s0", "sumi", expected);
-	        }
-	        var end = PerformanceObserver.MilliTime;
-	        var delta = end - start;
-	        Assert.That(delta, Is.LessThan(1000), "delta=" + delta);
+                // create insert into
+                var stmtTextInsertOne =
+                    "insert into MyWindow select theString as a, longPrimitive as b from SupportBean";
+                env.CompileDeploy(stmtTextInsertOne, path);
 
-	        env.UndeployModuleContaining("s0");
-	        Assert.AreEqual(0, GetIndexCount(env));
-	    }
+                // load window
+                var startTime = PerformanceObserver.MilliTime;
+                for (var i = 0; i < 10000; i++) {
+                    SendSupportBean(env, "S" + i, (long)i);
+                }
 
-	    private static int GetIndexCount(RegressionEnvironment env) {
-	        return SupportInfraUtil.GetIndexCountNoContext(env, true, "create", "MyWindow");
-	    }
+                var endTime = PerformanceObserver.MilliTime;
+                var delta = endTime - startTime;
+                Assert.That(delta, Is.LessThan(1000), "Delta=" + delta);
+                env.AssertIterator(
+                    "create",
+                    iterator => Assert.AreEqual(10000, EPAssertionUtil.EnumeratorCount(iterator)));
 
-	    private static void SendSupportBean_A(RegressionEnvironment env, string id) {
-	        var bean = new SupportBean_A(id);
-	        env.SendEventBean(bean);
-	    }
+                // destroy all
+                foreach (var statement in statements) {
+                    env.UndeployModuleContaining(statement);
+                }
 
-	    private static void SendMarketBean(RegressionEnvironment env, string symbol, double price) {
-	        var bean = new SupportMarketDataBean(symbol, price, 0L, null);
-	        env.SendEventBean(bean);
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private static void SendSupportBean(RegressionEnvironment env, string theString, long longPrimitive) {
-	        var bean = new SupportBean();
-	        bean.TheString = theString;
-	        bean.LongPrimitive = longPrimitive;
-	        env.SendEventBean(bean);
-	    }
+        private static void RunOnDemandAssertion(
+            RegressionEnvironment env,
+            RegressionPath path,
+            string epl,
+            int numIndexes,
+            object theEvent,
+            int? expected)
+        {
+            Assert.AreEqual(0, GetIndexCount(env));
 
-	    private static void SendSupportBean(RegressionEnvironment env, string theString, int intPrimitive) {
-	        var bean = new SupportBean();
-	        bean.TheString = theString;
-	        bean.IntPrimitive = intPrimitive;
-	        env.SendEventBean(bean);
-	    }
-	}
+            env.CompileDeploy("@name('s0')" + epl, path).AddListener("s0");
+            Assert.AreEqual(numIndexes, GetIndexCount(env));
+
+            var start = PerformanceObserver.MilliTime;
+            var loops = 1000;
+
+            for (var i = 0; i < loops; i++) {
+                env.SendEventBean(theEvent);
+                env.AssertEqualsNew("s0", "sumi", expected);
+            }
+
+            var end = PerformanceObserver.MilliTime;
+            var delta = end - start;
+            Assert.That(delta, Is.LessThan(1000), "delta=" + delta);
+
+            env.UndeployModuleContaining("s0");
+            Assert.AreEqual(0, GetIndexCount(env));
+        }
+
+        private static int GetIndexCount(RegressionEnvironment env)
+        {
+            return SupportInfraUtil.GetIndexCountNoContext(env, true, "create", "MyWindow");
+        }
+
+        private static void SendSupportBean_A(
+            RegressionEnvironment env,
+            string id)
+        {
+            var bean = new SupportBean_A(id);
+            env.SendEventBean(bean);
+        }
+
+        private static void SendMarketBean(
+            RegressionEnvironment env,
+            string symbol,
+            double price)
+        {
+            var bean = new SupportMarketDataBean(symbol, price, 0L, null);
+            env.SendEventBean(bean);
+        }
+
+        private static void SendSupportBean(
+            RegressionEnvironment env,
+            string theString,
+            long longPrimitive)
+        {
+            var bean = new SupportBean();
+            bean.TheString = theString;
+            bean.LongPrimitive = longPrimitive;
+            env.SendEventBean(bean);
+        }
+
+        private static void SendSupportBean(
+            RegressionEnvironment env,
+            string theString,
+            int intPrimitive)
+        {
+            var bean = new SupportBean();
+            bean.TheString = theString;
+            bean.IntPrimitive = intPrimitive;
+            env.SendEventBean(bean);
+        }
+    }
 } // end of namespace

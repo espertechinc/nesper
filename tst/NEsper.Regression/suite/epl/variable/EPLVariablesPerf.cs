@@ -17,48 +17,57 @@ using NUnit.Framework; // assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.epl.variable
 {
-	public class EPLVariablesPerf : RegressionExecution {
-	    public ISet<RegressionFlag> Flags() {
-	        return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
-	    }
+    public class EPLVariablesPerf : RegressionExecution
+    {
+        public ISet<RegressionFlag> Flags()
+        {
+            return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+        }
 
-	    public void Run(RegressionEnvironment env) {
-	        var path = new RegressionPath();
-	        env.CompileDeploy("@public create window MyWindow#keepall as SupportBean", path);
-	        env.CompileDeploy("insert into MyWindow select * from SupportBean", path);
-	        env.CompileDeploy("@public create const variable String MYCONST = 'E331'", path);
+        public void Run(RegressionEnvironment env)
+        {
+            var path = new RegressionPath();
+            env.CompileDeploy("@public create window MyWindow#keepall as SupportBean", path);
+            env.CompileDeploy("insert into MyWindow select * from SupportBean", path);
+            env.CompileDeploy("@public create const variable String MYCONST = 'E331'", path);
 
-	        for (var i = 0; i < 10000; i++) {
-	            env.SendEventBean(new SupportBean("E" + i, i * -1));
-	        }
+            for (var i = 0; i < 10000; i++) {
+                env.SendEventBean(new SupportBean("E" + i, i * -1));
+            }
 
-	        // test join
-	        env.CompileDeploy("@name('s0') select * from SupportBean_S0 s0 unidirectional, MyWindow sb where theString = MYCONST", path);
-	        env.AddListener("s0");
+            // test join
+            env.CompileDeploy(
+                "@name('s0') select * from SupportBean_S0 s0 unidirectional, MyWindow sb where theString = MYCONST",
+                path);
+            env.AddListener("s0");
 
-	        var start = PerformanceObserver.MilliTime;
-	        for (var i = 0; i < 10000; i++) {
-	            env.SendEventBean(new SupportBean_S0(i, "E" + i));
-	            env.AssertPropsNew("s0", "sb.theString,sb.intPrimitive".SplitCsv(), new object[]{"E331", -331});
-	        }
-	        var delta = PerformanceObserver.MilliTime - start;
-	        Assert.That(delta, Is.LessThan(500), "delta=" + delta);
-	        env.UndeployModuleContaining("s0");
+            var start = PerformanceObserver.MilliTime;
+            for (var i = 0; i < 10000; i++) {
+                env.SendEventBean(new SupportBean_S0(i, "E" + i));
+                env.AssertPropsNew("s0", "sb.theString,sb.intPrimitive".SplitCsv(), new object[] { "E331", -331 });
+            }
 
-	        // test subquery
-	        env.CompileDeploy("@name('s0') select * from SupportBean_S0 where exists (select * from MyWindow where theString = MYCONST)", path);
-	        env.AddListener("s0");
+            var delta = PerformanceObserver.MilliTime - start;
+            Assert.That(delta, Is.LessThan(500), "delta=" + delta);
+            env.UndeployModuleContaining("s0");
 
-	        start = PerformanceObserver.MilliTime;
-	        for (var i = 0; i < 10000; i++) {
-	            env.SendEventBean(new SupportBean_S0(i, "E" + i));
-	            env.AssertListenerInvoked("s0");
-	        }
-	        delta = PerformanceObserver.MilliTime - start;
-	        Assert.That(delta, Is.LessThan(500), "delta=" + delta);
+            // test subquery
+            env.CompileDeploy(
+                "@name('s0') select * from SupportBean_S0 where exists (select * from MyWindow where theString = MYCONST)",
+                path);
+            env.AddListener("s0");
 
-	        env.UndeployModuleContaining("s0");
-	        env.UndeployAll();
-	    }
-	}
+            start = PerformanceObserver.MilliTime;
+            for (var i = 0; i < 10000; i++) {
+                env.SendEventBean(new SupportBean_S0(i, "E" + i));
+                env.AssertListenerInvoked("s0");
+            }
+
+            delta = PerformanceObserver.MilliTime - start;
+            Assert.That(delta, Is.LessThan(500), "delta=" + delta);
+
+            env.UndeployModuleContaining("s0");
+            env.UndeployAll();
+        }
+    }
 } // end of namespace

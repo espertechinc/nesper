@@ -23,202 +23,357 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.database
 {
-	public class EPLDatabaseFAF {
+    public class EPLDatabaseFAF
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithSimple(execs);
+            WithHook(execs);
+            WithPrepareExecutePerformance(execs);
+            WithSubstitutionParam(execs);
+            WithDistinct(execs);
+            WithWhereClause(execs);
+            WithVariable(execs);
+            WithSODA(execs);
+            WithSQLTextParamSubquery(execs);
+            WithInvalid(execs);
+            return execs;
+        }
 
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EPLDatabaseFAFSimple());
-	        execs.Add(new EPLDatabaseFAFHook());
-	        execs.Add(new EPLDatabaseFAFPrepareExecutePerformance());
-	        execs.Add(new EPLDatabaseFAFSubstitutionParam());
-	        execs.Add(new EPLDatabaseFAFDistinct());
-	        execs.Add(new EPLDatabaseFAFWhereClause());
-	        execs.Add(new EPLDatabaseFAFVariable());
-	        execs.Add(new EPLDatabaseFAFSODA());
-	        execs.Add(new EPLDatabaseFAFSQLTextParamSubquery());
-	        execs.Add(new EPLDatabaseFAFInvalid());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseFAFInvalid());
+            return execs;
+        }
 
-	    private class EPLDatabaseFAFSimple : RegressionExecutionFAFOnly {
-	        public override void Run(RegressionEnvironment env) {
-	            var result = env.CompileExecuteFAF("select * from sql:MyDBPlain[\"select myint from mytesttable where myint between 5 and 15\"]");
-	            AssertSingleRowResult(result, "myint", 10);
-	        }
-	    }
+        public static IList<RegressionExecution> WithSQLTextParamSubquery(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseFAFSQLTextParamSubquery());
+            return execs;
+        }
 
-	    private class EPLDatabaseFAFHook : RegressionExecutionFAFOnly {
-	        public override void Run(RegressionEnvironment env) {
-	            var queryColummTypeConversion = "@name('s0') @Hook(type=HookType.SQLCOL, hook='" + typeof(SupportSQLColumnTypeConversion).Name + "')" +
-	                                            "select * from sql:MyDBPooled ['select myint as myintTurnedBoolean from mytesttable where myint = 50']";
-	            var resultColType = env.CompileExecuteFAF(queryColummTypeConversion);
-	            AssertSingleRowResult(resultColType, "myintTurnedBoolean", true);
+        public static IList<RegressionExecution> WithSODA(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseFAFSODA());
+            return execs;
+        }
 
-	            var queryRowConversion = "@name('s0') @Hook(type=HookType.SQLROW, hook='" + typeof(SupportSQLOutputRowConversion).Name + "')" +
-	                                     "select * from sql:MyDBPooled ['select * from mytesttable where myint = 10']";
-	            env.CompileDeploy(queryRowConversion);
-	            var resultRowConv = env.CompileExecuteFAF(queryRowConversion);
-	            EPAssertionUtil.AssertPropsPerRow(resultRowConv.Array, new string[]{"theString", "intPrimitive"}, new object[][]{new object[]{">10<", 99010}});
-	        }
-	    }
+        public static IList<RegressionExecution> WithVariable(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseFAFVariable());
+            return execs;
+        }
 
-	    private class EPLDatabaseFAFPrepareExecutePerformance : RegressionExecutionFAFOnly {
-	        public override void Run(RegressionEnvironment env) {
-	            var compiled = env.CompileFAF("select * from sql:MyDBPooled ['select * from mytesttable where myint = 10']", new RegressionPath());
+        public static IList<RegressionExecution> WithWhereClause(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseFAFWhereClause());
+            return execs;
+        }
 
-	            var start = PerformanceObserver.MilliTime;
-	            var prepared = env.Runtime.FireAndForgetService.PrepareQuery(compiled);
-	            try {
-	                for (var i = 0; i < 1000; i++) {
-	                    var result = prepared.Execute();
-	                    Assert.AreEqual(1, result.Array.Length);
-	                }
-	            } finally {
-	                prepared.Close();
-	            }
-	            var delta = PerformanceObserver.MilliTime - start;
-	            Assert.That(delta, Is.LessThan(2000), "delta=" + delta);
-	        }
-	    }
+        public static IList<RegressionExecution> WithDistinct(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseFAFDistinct());
+            return execs;
+        }
 
-	    private class EPLDatabaseFAFSubstitutionParam : RegressionExecutionFAFOnly {
-	        public override void Run(RegressionEnvironment env) {
+        public static IList<RegressionExecution> WithSubstitutionParam(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseFAFSubstitutionParam());
+            return execs;
+        }
 
-	            var epl = "select myvarchar as c0, ?:selectValue:int as c1 from sql:MyDBPooled ['select myvarchar from mytesttable where myint = ${?:filterValue:int}']";
-	            var compiled = env.CompileFAF(epl, new RegressionPath());
-	            var parameterized = env.Runtime.FireAndForgetService.PrepareQueryWithParameters(compiled);
+        public static IList<RegressionExecution> WithPrepareExecutePerformance(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseFAFPrepareExecutePerformance());
+            return execs;
+        }
 
-	            AssertQuery(env, parameterized, 1, 10, "A");
-	            AssertQuery(env, parameterized, 2, 60, "F");
+        public static IList<RegressionExecution> WithHook(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseFAFHook());
+            return execs;
+        }
 
-	            parameterized.Close();
-	        }
+        public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLDatabaseFAFSimple());
+            return execs;
+        }
 
-	        private void AssertQuery(RegressionEnvironment env, EPFireAndForgetPreparedQueryParameterized parameterized, int selectValue, int filterValue, string expected) {
-	            parameterized.SetObject("selectValue", selectValue);
-	            parameterized.SetObject("filterValue", filterValue);
-	            var row = env.Runtime.FireAndForgetService.ExecuteQuery(parameterized).Array[0];
-	            EPAssertionUtil.AssertProps(row, "c0,c1".Split(","), new object[] {expected, selectValue});
-	        }
-	    }
+        private class EPLDatabaseFAFSimple : RegressionExecutionFAFOnly
+        {
+            public override void Run(RegressionEnvironment env)
+            {
+                var result = env.CompileExecuteFAF(
+                    "select * from sql:MyDBPlain[\"select myint from mytesttable where myint between 5 and 15\"]");
+                AssertSingleRowResult(result, "myint", 10);
+            }
+        }
 
-	    private class EPLDatabaseFAFDistinct : RegressionExecutionFAFOnly {
-	        public override void Run(RegressionEnvironment env) {
-	            var sql = "select myint from mytesttable where myint = 10 union all select myint from mytesttable where myint = 10";
-	            var epl = "select distinct myint from sql:MyDBPooled ['" + sql + "']";
+        private class EPLDatabaseFAFHook : RegressionExecutionFAFOnly
+        {
+            public override void Run(RegressionEnvironment env)
+            {
+                var queryColummTypeConversion = "@name('s0') @Hook(type=HookType.SQLCOL, hook='" +
+                                                typeof(SupportSQLColumnTypeConversion).Name +
+                                                "')" +
+                                                "select * from sql:MyDBPooled ['select myint as myintTurnedBoolean from mytesttable where myint = 50']";
+                var resultColType = env.CompileExecuteFAF(queryColummTypeConversion);
+                AssertSingleRowResult(resultColType, "myintTurnedBoolean", true);
 
-	            var @out = env.CompileExecuteFAF(epl).Array;
-	            EPAssertionUtil.AssertPropsPerRow(@out, new string[] {"myint"}, new object[][] {new object[]{10}});
-	        }
-	    }
+                var queryRowConversion = "@name('s0') @Hook(type=HookType.SQLROW, hook='" +
+                                         typeof(SupportSQLOutputRowConversion).Name +
+                                         "')" +
+                                         "select * from sql:MyDBPooled ['select * from mytesttable where myint = 10']";
+                env.CompileDeploy(queryRowConversion);
+                var resultRowConv = env.CompileExecuteFAF(queryRowConversion);
+                EPAssertionUtil.AssertPropsPerRow(
+                    resultRowConv.Array,
+                    new string[] { "theString", "intPrimitive" },
+                    new object[][] { new object[] { ">10<", 99010 } });
+            }
+        }
 
-	    private class EPLDatabaseFAFWhereClause : RegressionExecutionFAFOnly {
-	        public override void Run(RegressionEnvironment env) {
-	            var epl = "select * from sql:MyDBPooled ['select myint, myvarchar from mytesttable'] where myvarchar in ('A', 'E')";
-	            var @out = env.CompileExecuteFAF(epl).Array;
-	            EPAssertionUtil.AssertPropsPerRow(@out, "myint,myvarchar".Split(","), new object[][] {new object[]{10, "A"}, new object[]{50, "E"}});
-	        }
-	    }
+        private class EPLDatabaseFAFPrepareExecutePerformance : RegressionExecutionFAFOnly
+        {
+            public override void Run(RegressionEnvironment env)
+            {
+                var compiled = env.CompileFAF(
+                    "select * from sql:MyDBPooled ['select * from mytesttable where myint = 10']",
+                    new RegressionPath());
 
-	    private class EPLDatabaseFAFVariable : RegressionExecutionFAFOnly {
-	        public override void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            env.CompileDeploy("@public create variable int myvar = 20;\n" +
-	                    "on SupportBean set myvar = intPrimitive;\n", path);
+                var start = PerformanceObserver.MilliTime;
+                var prepared = env.Runtime.FireAndForgetService.PrepareQuery(compiled);
+                try {
+                    for (var i = 0; i < 1000; i++) {
+                        var result = prepared.Execute();
+                        Assert.AreEqual(1, result.Array.Length);
+                    }
+                }
+                finally {
+                    prepared.Close();
+                }
 
-	            var epl = "@name('s0') select * from sql:MyDBPooled ['select * from mytesttable where myint = ${myvar}']";
-	            var compiled = env.CompileFAF(epl, path);
+                var delta = PerformanceObserver.MilliTime - start;
+                Assert.That(delta, Is.LessThan(2000), "delta=" + delta);
+            }
+        }
 
-	            var prepared = env.Runtime.FireAndForgetService.PrepareQuery(compiled);
-	            AssertSingleRow(prepared.Execute(), "B");
+        private class EPLDatabaseFAFSubstitutionParam : RegressionExecutionFAFOnly
+        {
+            public override void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "select myvarchar as c0, ?:selectValue:int as c1 from sql:MyDBPooled ['select myvarchar from mytesttable where myint = ${?:filterValue:int}']";
+                var compiled = env.CompileFAF(epl, new RegressionPath());
+                var parameterized = env.Runtime.FireAndForgetService.PrepareQueryWithParameters(compiled);
 
-	            env.SendEventBean(new SupportBean(null, 50));
-	            AssertSingleRow(prepared.Execute(), "E");
+                AssertQuery(env, parameterized, 1, 10, "A");
+                AssertQuery(env, parameterized, 2, 60, "F");
 
-	            env.SendEventBean(new SupportBean(null, 30));
-	            AssertSingleRow(prepared.Execute(), "C");
+                parameterized.Close();
+            }
 
-	            prepared.Close();
-	            env.UndeployAll();
-	        }
-	    }
+            private void AssertQuery(
+                RegressionEnvironment env,
+                EPFireAndForgetPreparedQueryParameterized parameterized,
+                int selectValue,
+                int filterValue,
+                string expected)
+            {
+                parameterized.SetObject("selectValue", selectValue);
+                parameterized.SetObject("filterValue", filterValue);
+                var row = env.Runtime.FireAndForgetService.ExecuteQuery(parameterized).Array[0];
+                EPAssertionUtil.AssertProps(row, "c0,c1".Split(","), new object[] { expected, selectValue });
+            }
+        }
 
-	    private class EPLDatabaseFAFSODA : RegressionExecutionFAFOnly {
-	        public override void Run(RegressionEnvironment env) {
-	            var epl = "select col as c0 from sql:MyDBPooled[\"select myvarchar as col from mytesttable where myint between 20 and 30\"]";
-	            var model = env.EplToModel(epl);
-	            Assert.AreEqual(epl, model.ToEPL());
-	            var rows = env.CompileExecuteFAF(model, new RegressionPath()).Array;
-	            EPAssertionUtil.AssertPropsPerRow(rows, new string[]{"c0"}, new object[][]{new object[]{"B"}, new object[]{"C"}});
-	        }
-	    }
+        private class EPLDatabaseFAFDistinct : RegressionExecutionFAFOnly
+        {
+            public override void Run(RegressionEnvironment env)
+            {
+                var sql =
+                    "select myint from mytesttable where myint = 10 union all select myint from mytesttable where myint = 10";
+                var epl = "select distinct myint from sql:MyDBPooled ['" + sql + "']";
 
-	    private class EPLDatabaseFAFSQLTextParamSubquery : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            env.CompileDeploy("@public create window MyWindow#lastevent as SupportBean;\n" +
-	                    "on SupportBean merge MyWindow insert select *", path);
+                var @out = env.CompileExecuteFAF(epl).Array;
+                EPAssertionUtil.AssertPropsPerRow(
+                    @out,
+                    new string[] { "myint" },
+                    new object[][] { new object[] { 10 } });
+            }
+        }
 
-	            var epl = "select * from sql:MyDBPlain['select * from mytesttable where myint = ${(select intPrimitive from MyWindow)}']";
-	            var compiled = env.CompileFAF(epl, path);
+        private class EPLDatabaseFAFWhereClause : RegressionExecutionFAFOnly
+        {
+            public override void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "select * from sql:MyDBPooled ['select myint, myvarchar from mytesttable'] where myvarchar in ('A', 'E')";
+                var @out = env.CompileExecuteFAF(epl).Array;
+                EPAssertionUtil.AssertPropsPerRow(
+                    @out,
+                    "myint,myvarchar".Split(","),
+                    new object[][] { new object[] { 10, "A" }, new object[] { 50, "E" } });
+            }
+        }
 
-	            var prepared = env.Runtime.FireAndForgetService.PrepareQuery(compiled);
+        private class EPLDatabaseFAFVariable : RegressionExecutionFAFOnly
+        {
+            public override void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@public create variable int myvar = 20;\n" +
+                    "on SupportBean set myvar = intPrimitive;\n",
+                    path);
 
-	            SendAssert(env, prepared, 30, "C");
-	            SendAssert(env, prepared, 10, "A");
+                var epl =
+                    "@name('s0') select * from sql:MyDBPooled ['select * from mytesttable where myint = ${myvar}']";
+                var compiled = env.CompileFAF(epl, path);
 
-	            env.UndeployAll();
-	            prepared.Close();
-	        }
+                var prepared = env.Runtime.FireAndForgetService.PrepareQuery(compiled);
+                AssertSingleRow(prepared.Execute(), "B");
 
-	        private void SendAssert(RegressionEnvironment env, EPFireAndForgetPreparedQuery prepared, int intPrimitive, string expected) {
-	            env.SendEventBean(new SupportBean("", intPrimitive));
-	            var result = prepared.Execute().Array;
-	            EPAssertionUtil.AssertPropsPerRow(result, new string[] {"myvarchar"}, new object[][] {new object[]{expected}});
-	        }
-	    }
+                env.SendEventBean(new SupportBean(null, 50));
+                AssertSingleRow(prepared.Execute(), "E");
 
-	    private class EPLDatabaseFAFInvalid : RegressionExecutionFAFOnly {
-	        public override void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            env.CompileDeploy("@public create context MyContext partition by theString from SupportBean", path);
+                env.SendEventBean(new SupportBean(null, 30));
+                AssertSingleRow(prepared.Execute(), "C");
 
-	            // invalid join
-	            var eplJoin = "select * from sql:MyDBPooled['select * from mytesttable'],sql:MyDBPooled['select * from mytesttable']";
-	            env.TryInvalidCompileFAF(path, eplJoin, "Join between SQL query results in fire-and-forget is not supported");
+                prepared.Close();
+                env.UndeployAll();
+            }
+        }
 
-	            // invalid join
-	            var eplContext = "context MyContext select * from sql:MyDBPooled['select * from mytesttable']";
-	            env.TryInvalidCompileFAF(path, eplContext, "Context specification for SQL queries in fire-and-forget is not supported");
+        private class EPLDatabaseFAFSODA : RegressionExecutionFAFOnly
+        {
+            public override void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "select col as c0 from sql:MyDBPooled[\"select myvarchar as col from mytesttable where myint between 20 and 30\"]";
+                var model = env.EplToModel(epl);
+                Assert.AreEqual(epl, model.ToEPL());
+                var rows = env.CompileExecuteFAF(model, new RegressionPath()).Array;
+                EPAssertionUtil.AssertPropsPerRow(
+                    rows,
+                    new string[] { "c0" },
+                    new object[][] { new object[] { "B" }, new object[] { "C" } });
+            }
+        }
 
-	            // invalid SQL
-	            var eplInvalidSQL = "select * from sql:MyDBPooled['select *']";
-	            env.TryInvalidCompileFAF(path, eplInvalidSQL, "Error in statement 'select *', failed to obtain result metadata, consider turning off metadata interrogation via configuration, please check the statement, reason: No tables used");
+        private class EPLDatabaseFAFSQLTextParamSubquery : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@public create window MyWindow#lastevent as SupportBean;\n" +
+                    "on SupportBean merge MyWindow insert select *",
+                    path);
 
-	            // closed called before execute
-	            var eplSimple = "select * from sql:MyDBPooled['select * from mytesttable']";
-	            var compiled = env.CompileFAF(eplSimple, path);
-	            var prepared = env.Runtime.FireAndForgetService.PrepareQuery(compiled);
-	            prepared.Close();
-	            try {
-	                prepared.Execute();
-	                Assert.Fail();
-	            } catch (EPException ex) {
-	                Assert.AreEqual("Prepared fire-and-forget query is already closed", ex.Message);
-	            }
+                var epl =
+                    "select * from sql:MyDBPlain['select * from mytesttable where myint = ${(select intPrimitive from MyWindow)}']";
+                var compiled = env.CompileFAF(epl, path);
 
-	            env.UndeployAll();
-	        }
-	    }
+                var prepared = env.Runtime.FireAndForgetService.PrepareQuery(compiled);
 
-	    private static void AssertSingleRow(EPFireAndForgetQueryResult result, string expected) {
-	        AssertSingleRowResult(result, "myvarchar", expected);
-	    }
+                SendAssert(env, prepared, 30, "C");
+                SendAssert(env, prepared, 10, "A");
 
-	    private static void AssertSingleRowResult(EPFireAndForgetQueryResult result, string columnName, object expected) {
-	        EPAssertionUtil.AssertPropsPerRow(result.Array, new string[]{columnName}, new object[][]{new object[]{expected}});
-	        Assert.AreEqual(expected.GetType(), result.Array[0].EventType.GetPropertyType(columnName));
-	    }
-	}
+                env.UndeployAll();
+                prepared.Close();
+            }
 
+            private void SendAssert(
+                RegressionEnvironment env,
+                EPFireAndForgetPreparedQuery prepared,
+                int intPrimitive,
+                string expected)
+            {
+                env.SendEventBean(new SupportBean("", intPrimitive));
+                var result = prepared.Execute().Array;
+                EPAssertionUtil.AssertPropsPerRow(
+                    result,
+                    new string[] { "myvarchar" },
+                    new object[][] { new object[] { expected } });
+            }
+        }
+
+        private class EPLDatabaseFAFInvalid : RegressionExecutionFAFOnly
+        {
+            public override void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy("@public create context MyContext partition by theString from SupportBean", path);
+
+                // invalid join
+                var eplJoin =
+                    "select * from sql:MyDBPooled['select * from mytesttable'],sql:MyDBPooled['select * from mytesttable']";
+                env.TryInvalidCompileFAF(
+                    path,
+                    eplJoin,
+                    "Join between SQL query results in fire-and-forget is not supported");
+
+                // invalid join
+                var eplContext = "context MyContext select * from sql:MyDBPooled['select * from mytesttable']";
+                env.TryInvalidCompileFAF(
+                    path,
+                    eplContext,
+                    "Context specification for SQL queries in fire-and-forget is not supported");
+
+                // invalid SQL
+                var eplInvalidSQL = "select * from sql:MyDBPooled['select *']";
+                env.TryInvalidCompileFAF(
+                    path,
+                    eplInvalidSQL,
+                    "Error in statement 'select *', failed to obtain result metadata, consider turning off metadata interrogation via configuration, please check the statement, reason: No tables used");
+
+                // closed called before execute
+                var eplSimple = "select * from sql:MyDBPooled['select * from mytesttable']";
+                var compiled = env.CompileFAF(eplSimple, path);
+                var prepared = env.Runtime.FireAndForgetService.PrepareQuery(compiled);
+                prepared.Close();
+                try {
+                    prepared.Execute();
+                    Assert.Fail();
+                }
+                catch (EPException ex) {
+                    Assert.AreEqual("Prepared fire-and-forget query is already closed", ex.Message);
+                }
+
+                env.UndeployAll();
+            }
+        }
+
+        private static void AssertSingleRow(
+            EPFireAndForgetQueryResult result,
+            string expected)
+        {
+            AssertSingleRowResult(result, "myvarchar", expected);
+        }
+
+        private static void AssertSingleRowResult(
+            EPFireAndForgetQueryResult result,
+            string columnName,
+            object expected)
+        {
+            EPAssertionUtil.AssertPropsPerRow(
+                result.Array,
+                new string[] { columnName },
+                new object[][] { new object[] { expected } });
+            Assert.AreEqual(expected.GetType(), result.Array[0].EventType.GetPropertyType(columnName));
+        }
+    }
 } // end of namespace

@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
         public void Run(RegressionEnvironment env)
         {
-            string[] fields = {"myint"};
+            string[] fields = { "myint" };
             var stmtText = "@name('s0') select istream myint from " +
                            " sql:MyDBWithPooledWithLRU100 ['select myint from mytesttable where ${IntPrimitive} = mytesttable.myBigint'] as S0," +
                            "SupportBean as S1";
@@ -34,13 +34,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             env.AssertPropsNew(
                 "s0",
                 fields,
-                new object[] {100});
+                new object[] { 100 });
 
             SendSupportBeanEvent(env, 6);
             env.AssertPropsNew(
                 "s0",
                 fields,
-                new object[] {60});
+                new object[] { 60 });
 
             var startTime = PerformanceObserver.MilliTime;
             // Send 100 events which all fireStatementStopped a join
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.AssertPropsNew(
                     "s0",
                     fields,
-                    new object[] {100});
+                    new object[] { 100 });
             }
 
             var endTime = PerformanceObserver.MilliTime;

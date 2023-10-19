@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                     Assert.AreEqual("P00001", ((Item)val2.Get("L00007")).AssetId);
                     Assert.AreEqual("P00001", ((Item)val2.Get("L00008")).AssetId);
                 });
-            
+
             env.UndeployAll();
         }
 

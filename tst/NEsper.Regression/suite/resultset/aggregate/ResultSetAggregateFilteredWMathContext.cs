@@ -26,7 +26,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.SendEventBean(new SupportBeanNumeric(null, MakeDecimal(0, 2, MidpointRounding.AwayFromZero)));
             env.SendEventBean(new SupportBeanNumeric(null, MakeDecimal(0, 2, MidpointRounding.AwayFromZero)));
             env.SendEventBean(new SupportBeanNumeric(null, MakeDecimal(1, 2, MidpointRounding.AwayFromZero)));
-            env.AssertListener("s0", listener => Assert.AreEqual(0.33m, listener.GetAndResetLastNewData()[0].Get("c0").AsDecimal()));
+            env.AssertListener(
+                "s0",
+                listener => Assert.AreEqual(0.33m, listener.GetAndResetLastNewData()[0].Get("c0").AsDecimal()));
 
             env.UndeployAll();
         }

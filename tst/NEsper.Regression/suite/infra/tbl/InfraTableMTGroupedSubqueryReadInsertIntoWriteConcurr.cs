@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         /// <summary>
         ///     Primary key is single: {id}
         ///     For a given number of seconds:
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     while (!shutdown) {
                         env.SendEventBean(new SupportBean_S0(0));
                         var value = listener.AssertOneGetNewAndReset().Get("c0");
-                        Assert.IsTrue((long?) value >= 1);
+                        Assert.IsTrue((long?)value >= 1);
                         numQueries++;
                     }
                 }

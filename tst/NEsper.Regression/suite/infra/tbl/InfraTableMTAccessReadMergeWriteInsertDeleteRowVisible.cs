@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         /// <summary>
         ///     Table:
         ///     create table MyTable(key string primary key, p0 int, p1 int, p2, int, p3 int, p4 int)
@@ -85,8 +85,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var readRunnable = new ReadRunnable(env, env.Listener("s0"));
 
             // start
-            var t1 = new Thread(writeRunnable.Run) { Name = nameof(InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible) + "::Write" };
-            var t2 = new Thread(readRunnable.Run) { Name = nameof(InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible) + "::Read" };
+            var t1 = new Thread(writeRunnable.Run)
+                { Name = nameof(InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible) + "::Write" };
+            var t2 = new Thread(readRunnable.Run)
+                { Name = nameof(InfraTableMTAccessReadMergeWriteInsertDeleteRowVisible) + "::Read" };
 
             t1.Start();
             t2.Start();
@@ -197,8 +199,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 log.Info("Started event send for read");
 
                 try {
-                    var fields = new[] {"c0", "c1", "c2", "c3", "c4", "c5"};
-                    object[] expected = {1, 1, 1, 1, 1, 1};
+                    var fields = new[] { "c0", "c1", "c2", "c3", "c4", "c5" };
+                    object[] expected = { 1, 1, 1, 1, 1, 1 };
                     while (!shutdown) {
                         env.SendEventBean(new SupportBean_S0(0));
                         var @event = listener.AssertOneGetNewAndReset();

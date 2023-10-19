@@ -17,49 +17,56 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
-	/// <summary>
-	/// Most getter tests can be found in Event+Infra.
-	/// </summary>
-	public class EventJsonGetter
-	{
-		public static IList<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new EventJsonGetterMapType());
-			return execs;
-		}
+    /// <summary>
+    /// Most getter tests can be found in Event+Infra.
+    /// </summary>
+    public class EventJsonGetter
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            Withe(execs);
+            return execs;
+        }
 
-		internal class EventJsonGetterMapType : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var mapType = typeof(Properties).FullName;
-				
-				env.CompileDeploy(
-						$"@public @buseventtype create json schema JsonEvent(prop {mapType});\n" +
-						"@name('s0') select * from JsonEvent")
-					.AddListener("s0");
+        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventJsonGetterMapType());
+            return execs;
+        }
 
-				env.SendEventJson(
-					new JObject(
-							new JProperty(
-								"prop",
-								new JObject(
-									new JProperty("x", "y"))))
-						.ToString(),
-					"JsonEvent");
+        internal class EventJsonGetterMapType : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var mapType = typeof(Properties).FullName;
 
-				env.AssertEventNew(
-					"s0",
-					@event => {
-						var getterMapped = @event.EventType.GetGetter("prop('x')");
+                env.CompileDeploy(
+                        $"@public @buseventtype create json schema JsonEvent(prop {mapType});\n" +
+                        "@name('s0') select * from JsonEvent")
+                    .AddListener("s0");
 
-						Assert.AreEqual("y", getterMapped.Get(@event));
-						Assert.IsNull(@event.EventType.GetGetter("prop.somefield?"));
-					});
-				
-				env.UndeployAll();
-			}
-		}
-	}
+                env.SendEventJson(
+                    new JObject(
+                            new JProperty(
+                                "prop",
+                                new JObject(
+                                    new JProperty("x", "y"))))
+                        .ToString(),
+                    "JsonEvent");
+
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        var getterMapped = @event.EventType.GetGetter("prop('x')");
+
+                        Assert.AreEqual("y", getterMapped.Get(@event));
+                        Assert.IsNull(@event.EventType.GetGetter("prop.somefield?"));
+                    });
+
+                env.UndeployAll();
+            }
+        }
+    }
 } // end of namespace

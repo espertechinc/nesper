@@ -43,10 +43,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             // finally create one
             var path = new RegressionPath();
-            var epl = 
+            var epl =
                 "@public create objectarray schema MyEvent ();\n" +
                 "@name('df') create dataflow MyDataflow " +
-                "BeaconSource -> outdata<MyEvent> {" + 
+                "BeaconSource -> outdata<MyEvent> {" +
                 "  iterations:1" +
                 "}" +
                 "EventBusSink(outdata) {};\n";
@@ -79,12 +79,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.CompileDeploy("@name('s0') select * from MyEvent", path).AddListener("s0");
             instance.Run();
             env.AssertListenerInvoked("s0");
-            EPAssertionUtil.AssertEqualsExactOrder(new[] {"MyFirstFlow"}, dataFlowRuntime.SavedConfigurations);
+            EPAssertionUtil.AssertEqualsExactOrder(new[] { "MyFirstFlow" }, dataFlowRuntime.SavedConfigurations);
             Assert.IsNotNull(dataFlowRuntime.GetSavedConfiguration("MyFirstFlow"));
 
             // add/remove instance
             dataFlowRuntime.SaveInstance("F1", instance);
-            EPAssertionUtil.AssertEqualsExactOrder(new[] {"F1"}, dataFlowRuntime.SavedInstances);
+            EPAssertionUtil.AssertEqualsExactOrder(new[] { "F1" }, dataFlowRuntime.SavedInstances);
             var instanceFromSvc = dataFlowRuntime.GetSavedInstance("F1");
             Assert.AreEqual("MyDataflow", instanceFromSvc.DataFlowName);
             try {

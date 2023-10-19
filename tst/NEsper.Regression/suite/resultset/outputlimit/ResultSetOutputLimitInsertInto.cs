@@ -21,8 +21,24 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            execs.Add(new ResultSetOutputLimitInsertFirst());
+#if TEMPORARY
+            WithFirst(execs);
+            WithSnapshot(execs);
+#endif
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSnapshot(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ResultSetOutputLimitInsertSnapshot());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithFirst(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetOutputLimitInsertFirst());
             return execs;
         }
 
@@ -30,9 +46,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             RegressionEnvironment env,
             object[][] props)
         {
-            string[] fields = {"TheString"};
+            string[] fields = { "TheString" };
             env.AssertPropsPerRowLastNew("s0", fields, props);
-            env.AssertListener("s1", listener => EPAssertionUtil.AssertPropsPerRow(listener.GetAndResetDataListsFlattened().First, fields, props));
+            env.AssertListener(
+                "s1",
+                listener => EPAssertionUtil.AssertPropsPerRow(
+                    listener.GetAndResetDataListsFlattened().First,
+                    fields,
+                    props));
         }
 
         internal class ResultSetOutputLimitInsertSnapshot : RegressionExecution
@@ -52,16 +73,16 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AdvanceTime(1000);
                 AssertReceivedS0AndS1(
                     env,
-                    new[] {new object[] {"E1"}});
+                    new[] { new object[] { "E1" } });
 
                 env.SendEventBean(new SupportBean("E2", 0));
                 env.AssertListenerNotInvoked("s0");
                 env.AssertListenerNotInvoked("s1");
-                
+
                 env.AdvanceTime(2000);
                 AssertReceivedS0AndS1(
                     env,
-                    new[] {new object[] {"E1"}, new object[] {"E2"}});
+                    new[] { new object[] { "E1" }, new object[] { "E2" } });
 
                 env.UndeployAll();
             }
@@ -82,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.SendEventBean(new SupportBean("E1", 0));
                 AssertReceivedS0AndS1(
                     env,
-                    new[] {new object[] {"E1"}});
+                    new[] { new object[] { "E1" } });
 
                 env.SendEventBean(new SupportBean("E2", 0));
                 env.AssertListenerNotInvoked("s0");
@@ -93,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.SendEventBean(new SupportBean("E2", 0));
                 AssertReceivedS0AndS1(
                     env,
-                    new[] {new object[] {"E2"}});
+                    new[] { new object[] { "E2" } });
 
                 env.UndeployAll();
             }

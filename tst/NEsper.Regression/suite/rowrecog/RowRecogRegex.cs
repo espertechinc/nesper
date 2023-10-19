@@ -30,29 +30,39 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             Run(
                 new SupportTestCaseHolder("a,b,c,d", "(A?) (B)? (C D)?")
-                    .Add("a", new[] {
-                        "\"a\",null,null,null"
-                    })
-                    .Add("b", new[] {
-                        "null,\"b\",null,null"
-                    })
+                    .Add(
+                        "a",
+                        new[] {
+                            "\"a\",null,null,null"
+                        })
+                    .Add(
+                        "b",
+                        new[] {
+                            "null,\"b\",null,null"
+                        })
                     .Add("x", null)
                     .Add("d", null)
                     .Add("c", null)
                     .Add("d,c", null)
-                    .Add("c,d", new[] {
-                        "null,null,\"c\",\"d\""
-                    })
-                    .Add("a,c,d", new[] {
-                        "\"a\",null,null,null",
-                        "\"a\",null,\"c\",\"d\"",
-                        "null,null,\"c\",\"d\""
-                    })
-                    .Add("b,c,d", new[] {
-                        "null,\"b\",null,null",
-                        "null,null,\"c\",\"d\"",
-                        "null,\"b\",\"c\",\"d\""
-                    })
+                    .Add(
+                        "c,d",
+                        new[] {
+                            "null,null,\"c\",\"d\""
+                        })
+                    .Add(
+                        "a,c,d",
+                        new[] {
+                            "\"a\",null,null,null",
+                            "\"a\",null,\"c\",\"d\"",
+                            "null,null,\"c\",\"d\""
+                        })
+                    .Add(
+                        "b,c,d",
+                        new[] {
+                            "null,\"b\",null,null",
+                            "null,null,\"c\",\"d\"",
+                            "null,\"b\",\"c\",\"d\""
+                        })
                     .Add(
                         "a,b,c,d",
                         new[] {
@@ -71,37 +81,55 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     .Add("c", null)
                     .Add("d,c", null)
                     .Add("a,b", null)
-                    .Add("a,d", new[] {
-                        "\"a\",null,null,\"d\""
-                    })
-                    .Add("a,d,c", new[] {
-                        "\"a\",null,null,\"d\""
-                    })
-                    .Add("b,c", new[] {
-                        "null,\"b\",\"c\",null"
-                    })
-                    .Add("b,d", new[] {
-                        "null,\"b\",null,\"d\""
-                    })
-                    .Add("b,a,d,c", new[] {
-                        "\"a\",null,null,\"d\""
-                    })
-                    .Add("x,a,x,b,x,b,c,x", new[] {
-                        "null,\"b\",\"c\",null"
-                    }),
+                    .Add(
+                        "a,d",
+                        new[] {
+                            "\"a\",null,null,\"d\""
+                        })
+                    .Add(
+                        "a,d,c",
+                        new[] {
+                            "\"a\",null,null,\"d\""
+                        })
+                    .Add(
+                        "b,c",
+                        new[] {
+                            "null,\"b\",\"c\",null"
+                        })
+                    .Add(
+                        "b,d",
+                        new[] {
+                            "null,\"b\",null,\"d\""
+                        })
+                    .Add(
+                        "b,a,d,c",
+                        new[] {
+                            "\"a\",null,null,\"d\""
+                        })
+                    .Add(
+                        "x,a,x,b,x,b,c,x",
+                        new[] {
+                            "null,\"b\",\"c\",null"
+                        }),
                 env);
 
             Run(
                 new SupportTestCaseHolder("a,b,c,d,e", "A ((B C)? | (D E)?)")
-                    .Add("a", new[] {
-                        "\"a\",null,null,null,null"
-                    })
-                    .Add("a,b,c", new[] {
-                        "\"a\",null,null,null,null", "\"a\",\"b\",\"c\",null,null"
-                    })
-                    .Add("a,d,e", new[] {
-                        "\"a\",null,null,null,null", "\"a\",null,null,\"d\",\"e\""
-                    })
+                    .Add(
+                        "a",
+                        new[] {
+                            "\"a\",null,null,null,null"
+                        })
+                    .Add(
+                        "a,b,c",
+                        new[] {
+                            "\"a\",null,null,null,null", "\"a\",\"b\",\"c\",null,null"
+                        })
+                    .Add(
+                        "a,d,e",
+                        new[] {
+                            "\"a\",null,null,null,null", "\"a\",null,null,\"d\",\"e\""
+                        })
                     .Add("b,c", null)
                     .Add("x,d,e", null),
                 env);
@@ -109,33 +137,47 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             Run(
                 new SupportTestCaseHolder("a,b,c", "(A? B) | (A? C)")
                     .Add("a", null)
-                    .Add("a,b", new[] {
-                        "\"a\",\"b\",null", "null,\"b\",null"
-                    })
-                    .Add("a,c", new[] {
-                        "\"a\",null,\"c\"", "null,null,\"c\""
-                    })
-                    .Add("b", new[] {
-                        "null,\"b\",null"
-                    })
-                    .Add("c", new[] {
-                        "null,null,\"c\""
-                    })
-                    .Add("a,x,b", new[] {
-                        "null,\"b\",null"
-                    }),
+                    .Add(
+                        "a,b",
+                        new[] {
+                            "\"a\",\"b\",null", "null,\"b\",null"
+                        })
+                    .Add(
+                        "a,c",
+                        new[] {
+                            "\"a\",null,\"c\"", "null,null,\"c\""
+                        })
+                    .Add(
+                        "b",
+                        new[] {
+                            "null,\"b\",null"
+                        })
+                    .Add(
+                        "c",
+                        new[] {
+                            "null,null,\"c\""
+                        })
+                    .Add(
+                        "a,x,b",
+                        new[] {
+                            "null,\"b\",null"
+                        }),
                 env);
 
             Run(
                 new SupportTestCaseHolder("a,b,c", "(A B? C)?")
                     .Add("x", null)
                     .Add("a", null)
-                    .Add("a,c", new[] {
-                        "\"a\",null,\"c\""
-                    })
-                    .Add("a,b,c", new[] {
-                        "\"a\",\"b\",\"c\""
-                    }),
+                    .Add(
+                        "a,c",
+                        new[] {
+                            "\"a\",null,\"c\""
+                        })
+                    .Add(
+                        "a,b,c",
+                        new[] {
+                            "\"a\",\"b\",\"c\""
+                        }),
                 env);
 
             Run(
@@ -143,29 +185,39 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     .Add("x", null)
                     .Add("a", null)
                     .Add("a,c", null)
-                    .Add("b", new[] {
-                        "null,\"b\",null"
-                    })
-                    .Add("a,b,c", new[] {
-                        "\"a\",\"b\",null",
-                        "null,\"b\",null",
-                        "\"a\",\"b\",\"c\"",
-                        "null,\"b\",\"c\""
-                    }),
+                    .Add(
+                        "b",
+                        new[] {
+                            "null,\"b\",null"
+                        })
+                    .Add(
+                        "a,b,c",
+                        new[] {
+                            "\"a\",\"b\",null",
+                            "null,\"b\",null",
+                            "\"a\",\"b\",\"c\"",
+                            "null,\"b\",\"c\""
+                        }),
                 env);
 
             Run(
                 new SupportTestCaseHolder("a[0],b[0],a[1],b[1],c,d", "(A B)* C D")
-                    .Add("c,d", new[] {
-                        "null,null,null,null,\"c\",\"d\""
-                    })
-                    .Add("a1,b1,c,d", new[] {
-                        "\"a1\",\"b1\",null,null,\"c\",\"d\"",
-                        "null,null,null,null,\"c\",\"d\""
-                    })
-                    .Add("a2,b2,x,c,d", new[] {
-                        "null,null,null,null,\"c\",\"d\""
-                    })
+                    .Add(
+                        "c,d",
+                        new[] {
+                            "null,null,null,null,\"c\",\"d\""
+                        })
+                    .Add(
+                        "a1,b1,c,d",
+                        new[] {
+                            "\"a1\",\"b1\",null,null,\"c\",\"d\"",
+                            "null,null,null,null,\"c\",\"d\""
+                        })
+                    .Add(
+                        "a2,b2,x,c,d",
+                        new[] {
+                            "null,null,null,null,\"c\",\"d\""
+                        })
                     .Add(
                         "a1,b1,a2,b2,c,d",
                         new[] {
@@ -178,9 +230,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             Run(
                 new SupportTestCaseHolder("a[0],b[0],c[0],a[1],b[1],c[1],d[0],e[0],d[1],e[1]", "(A (B C))* (D E)+")
                     .Add("a,b,c", null)
-                    .Add("d,e", new[] {
-                        "null,null,null,null,null,null,\"d\",\"e\",null,null"
-                    })
+                    .Add(
+                        "d,e",
+                        new[] {
+                            "null,null,null,null,null,null,\"d\",\"e\",null,null"
+                        })
                     .Add(
                         "a,b,c,d,e",
                         new[] {
@@ -206,32 +260,44 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             Run(
                 new SupportTestCaseHolder("a[0],a[1],d[0],e[0],d[1],e[1]", "A+ (D E)+")
                     .Add("a,e,a,d,d,e,a,e,e,a,d,d,e,d,e", null)
-                    .Add("a,d,e", new[] {
-                        "\"a\",null,\"d\",\"e\",null,null"
-                    })
-                    .Add("a1,a2,d,e", new[] {
-                        "\"a1\",\"a2\",\"d\",\"e\",null,null",
-                        "\"a2\",null,\"d\",\"e\",null,null"
-                    })
-                    .Add("a1,d1,e1,d2,e2", new[] {
-                        "\"a1\",null,\"d1\",\"e1\",null,null",
-                        "\"a1\",null,\"d1\",\"e1\",\"d2\",\"e2\""
-                    }),
+                    .Add(
+                        "a,d,e",
+                        new[] {
+                            "\"a\",null,\"d\",\"e\",null,null"
+                        })
+                    .Add(
+                        "a1,a2,d,e",
+                        new[] {
+                            "\"a1\",\"a2\",\"d\",\"e\",null,null",
+                            "\"a2\",null,\"d\",\"e\",null,null"
+                        })
+                    .Add(
+                        "a1,d1,e1,d2,e2",
+                        new[] {
+                            "\"a1\",null,\"d1\",\"e1\",null,null",
+                            "\"a1\",null,\"d1\",\"e1\",\"d2\",\"e2\""
+                        }),
                 env);
 
             Run(
                 new SupportTestCaseHolder("a,b,c,d,e,f", "(A (B | C)) | (D (E | F))")
                     .Add("a,e,d,b,a,f,f,d,c,a", null)
-                    .Add("a,f,c,b,a,d,f", new[] {
-                        "null,null,null,\"d\",null,\"f\""
-                    })
-                    .Add("c,b,d,a,b,x,y", new[] {
-                        "\"a\",\"b\",null,null,null,null"
-                    })
-                    .Add("a,d,c,f,d,e,x,a,c", new[] {
-                        "null,null,null,\"d\",\"e\",null",
-                        "\"a\",null,\"c\",null,null,null"
-                    }),
+                    .Add(
+                        "a,f,c,b,a,d,f",
+                        new[] {
+                            "null,null,null,\"d\",null,\"f\""
+                        })
+                    .Add(
+                        "c,b,d,a,b,x,y",
+                        new[] {
+                            "\"a\",\"b\",null,null,null,null"
+                        })
+                    .Add(
+                        "a,d,c,f,d,e,x,a,c",
+                        new[] {
+                            "null,null,null,\"d\",\"e\",null",
+                            "\"a\",null,\"c\",null,null,null"
+                        }),
                 env);
 
             Run(
@@ -245,20 +311,26 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                             "null,null,null,null,null,\"f2\"",
                             "null,null,null,\"d\",null,\"f2\""
                         })
-                    .Add("d,f", new[] {
-                        "null,null,null,\"d\",null,\"f\"",
-                        "null,null,null,null,null,\"f\""
-                    }),
+                    .Add(
+                        "d,f",
+                        new[] {
+                            "null,null,null,\"d\",null,\"f\"",
+                            "null,null,null,null,null,\"f\""
+                        }),
                 env);
 
             Run(
                 new SupportTestCaseHolder("a[0],a[1],b,c,d", "(A B C) | (A+ B D)")
-                    .Add("a1,c,a2,b,d", new[] {
-                        "\"a2\",null,\"b\",null,\"d\""
-                    })
-                    .Add("a1,b1,x,a2,b2,c1", new[] {
-                        "\"a2\",null,\"b2\",\"c1\",null"
-                    }),
+                    .Add(
+                        "a1,c,a2,b,d",
+                        new[] {
+                            "\"a2\",null,\"b\",null,\"d\""
+                        })
+                    .Add(
+                        "a1,b1,x,a2,b2,c1",
+                        new[] {
+                            "\"a2\",null,\"b2\",\"c1\",null"
+                        }),
                 env);
         }
 
@@ -316,16 +388,20 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     env.SendEventBean(new SupportRecogBean(testchar, count++));
                 }
 
-                env.AssertIterator("s0", enumerator => {
-                    var iteratorData = EPAssertionUtil.EnumeratorToArray(enumerator);
-                    Compare(testcase.Testdata, iteratorData, testDesc.Measures, testcase);
-                });
+                env.AssertIterator(
+                    "s0",
+                    enumerator => {
+                        var iteratorData = EPAssertionUtil.EnumeratorToArray(enumerator);
+                        Compare(testcase.Testdata, iteratorData, testDesc.Measures, testcase);
+                    });
 
-                env.AssertListener("s0", listener => {
-                    var listenerData = listener.NewDataListFlattened;
-                    listener.Reset();
-                    Compare(testcase.Testdata, listenerData, testDesc.Measures, testcase);
-                });
+                env.AssertListener(
+                    "s0",
+                    listener => {
+                        var listenerData = listener.NewDataListFlattened;
+                        listener.Reset();
+                        Compare(testcase.Testdata, listenerData, testDesc.Measures, testcase);
+                    });
 
                 env.UndeployModuleContaining("s0");
             }

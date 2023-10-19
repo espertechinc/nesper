@@ -19,111 +19,124 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
-	public class ExprFilterWhereClause
-	{
+    public class ExprFilterWhereClause
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithSimple(execs);
+            WithNumericType(execs);
+            return execs;
+        }
 
-		public static ICollection<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> executions = new List<RegressionExecution>();
-			executions.Add(new ExprFilterWhereClauseSimple());
-			executions.Add(new ExprFilterWhereClauseNumericType());
-			return executions;
-		}
+        public static IList<RegressionExecution> WithNumericType(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterWhereClauseNumericType());
+            return execs;
+        }
 
-		private class ExprFilterWhereClauseSimple : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var epl = "@name('s0') select * from SupportMarketDataBean#length(3) where symbol='CSCO'";
-				env.CompileDeployAddListenerMileZero(epl, "s0");
+        public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterWhereClauseSimple());
+            return execs;
+        }
 
-				SendMarketDataEvent(env, "IBM");
-				env.AssertListenerNotInvoked("s0");
+        private class ExprFilterWhereClauseSimple : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select * from SupportMarketDataBean#length(3) where symbol='CSCO'";
+                env.CompileDeployAddListenerMileZero(epl, "s0");
 
-				SendMarketDataEvent(env, "CSCO");
-				env.AssertListenerInvoked("s0");
+                SendMarketDataEvent(env, "IBM");
+                env.AssertListenerNotInvoked("s0");
 
-				SendMarketDataEvent(env, "IBM");
-				env.AssertListenerNotInvoked("s0");
+                SendMarketDataEvent(env, "CSCO");
+                env.AssertListenerInvoked("s0");
 
-				SendMarketDataEvent(env, "CSCO");
-				env.AssertListenerInvoked("s0");
+                SendMarketDataEvent(env, "IBM");
+                env.AssertListenerNotInvoked("s0");
 
-				// invalid return type for filter during compilation time
-				env.TryInvalidCompile(
-					"Select theString From SupportBean#time(30 seconds) where intPrimitive group by theString",
-					"Failed to validate expression: The where-clause filter expression must return a boolean value");
+                SendMarketDataEvent(env, "CSCO");
+                env.AssertListenerInvoked("s0");
 
-				// invalid return type for filter at eventService
-				epl = "select * From MapEventWithCriteriaBool#time(30 seconds) where criteria";
-				env.CompileDeploy(epl);
+                // invalid return type for filter during compilation time
+                env.TryInvalidCompile(
+                    "Select theString From SupportBean#time(30 seconds) where intPrimitive group by theString",
+                    "Failed to validate expression: The where-clause filter expression must return a boolean value");
 
-				env.AssertThat(
-					() => {
-						try {
-							env.SendEventMap(Collections.SingletonDataMap("criteria", 15), "MapEventWithCriteriaBool");
-							Assert.Fail(); // ensure exception handler rethrows
-						}
-						catch (EPException ex) {
-							// fine
-						}
-					});
-				env.UndeployAll();
-			}
-		}
+                // invalid return type for filter at eventService
+                epl = "select * From MapEventWithCriteriaBool#time(30 seconds) where criteria";
+                env.CompileDeploy(epl);
 
-		private class ExprFilterWhereClauseNumericType : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var epl = "@name('s0') select " +
-				          " intPrimitive + longPrimitive as p1," +
-				          " intPrimitive * doublePrimitive as p2," +
-				          " floatPrimitive / doublePrimitive as p3" +
-				          " from SupportBean#length(3) where " +
-				          "intPrimitive=longPrimitive and intPrimitive=doublePrimitive and floatPrimitive=doublePrimitive";
-				env.CompileDeployAddListenerMileZero(epl, "s0");
+                env.AssertThat(
+                    () => {
+                        try {
+                            env.SendEventMap(Collections.SingletonDataMap("criteria", 15), "MapEventWithCriteriaBool");
+                            Assert.Fail(); // ensure exception handler rethrows
+                        }
+                        catch (EPException ex) {
+                            // fine
+                        }
+                    });
+                env.UndeployAll();
+            }
+        }
 
-				SendSupportBeanEvent(env, 1, 2, 3, 4);
-				env.AssertListenerNotInvoked("s0");
+        private class ExprFilterWhereClauseNumericType : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select " +
+                          " intPrimitive + longPrimitive as p1," +
+                          " intPrimitive * doublePrimitive as p2," +
+                          " floatPrimitive / doublePrimitive as p3" +
+                          " from SupportBean#length(3) where " +
+                          "intPrimitive=longPrimitive and intPrimitive=doublePrimitive and floatPrimitive=doublePrimitive";
+                env.CompileDeployAddListenerMileZero(epl, "s0");
 
-				SendSupportBeanEvent(env, 2, 2, 2, 2);
-				env.AssertEventNew(
-					"s0",
-					@event => {
-						Assert.AreEqual(typeof(long?), @event.EventType.GetPropertyType("p1"));
-						Assert.AreEqual(4L, @event.Get("p1"));
-						Assert.AreEqual(typeof(double?), @event.EventType.GetPropertyType("p2"));
-						Assert.AreEqual(4d, @event.Get("p2"));
-						Assert.AreEqual(typeof(double?), @event.EventType.GetPropertyType("p3"));
-						Assert.AreEqual(1d, @event.Get("p3"));
-					});
+                SendSupportBeanEvent(env, 1, 2, 3, 4);
+                env.AssertListenerNotInvoked("s0");
 
-				env.UndeployAll();
-			}
-		}
+                SendSupportBeanEvent(env, 2, 2, 2, 2);
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        Assert.AreEqual(typeof(long?), @event.EventType.GetPropertyType("p1"));
+                        Assert.AreEqual(4L, @event.Get("p1"));
+                        Assert.AreEqual(typeof(double?), @event.EventType.GetPropertyType("p2"));
+                        Assert.AreEqual(4d, @event.Get("p2"));
+                        Assert.AreEqual(typeof(double?), @event.EventType.GetPropertyType("p3"));
+                        Assert.AreEqual(1d, @event.Get("p3"));
+                    });
 
-		private static void SendMarketDataEvent(
-			RegressionEnvironment env,
-			string symbol)
-		{
-			var theEvent = new SupportMarketDataBean(symbol, 0, 0L, "");
-			env.SendEventBean(theEvent);
-		}
+                env.UndeployAll();
+            }
+        }
 
-		private static void SendSupportBeanEvent(
-			RegressionEnvironment env,
-			int intPrimitive,
-			long longPrimitive,
-			float floatPrimitive,
-			double doublePrimitive)
-		{
-			var theEvent = new SupportBean();
-			theEvent.IntPrimitive = intPrimitive;
-			theEvent.LongPrimitive = longPrimitive;
-			theEvent.FloatPrimitive = floatPrimitive;
-			theEvent.DoublePrimitive = doublePrimitive;
-			env.SendEventBean(theEvent);
-		}
-	}
+        private static void SendMarketDataEvent(
+            RegressionEnvironment env,
+            string symbol)
+        {
+            var theEvent = new SupportMarketDataBean(symbol, 0, 0L, "");
+            env.SendEventBean(theEvent);
+        }
+
+        private static void SendSupportBeanEvent(
+            RegressionEnvironment env,
+            int intPrimitive,
+            long longPrimitive,
+            float floatPrimitive,
+            double doublePrimitive)
+        {
+            var theEvent = new SupportBean();
+            theEvent.IntPrimitive = intPrimitive;
+            theEvent.LongPrimitive = longPrimitive;
+            theEvent.FloatPrimitive = floatPrimitive;
+            theEvent.DoublePrimitive = doublePrimitive;
+            env.SendEventBean(theEvent);
+        }
+    }
 } // end of namespace

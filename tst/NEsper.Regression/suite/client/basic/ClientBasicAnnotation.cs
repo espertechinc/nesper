@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
                     Assert.AreEqual(typeof(AnnotationName), annotations[0].GetType());
                     Assert.AreEqual("abc", ((AnnotationName)annotations[0]).Value);
                 });
-            
+
             env.UndeployAll();
         }
     }

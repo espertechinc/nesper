@@ -19,217 +19,321 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
-	public class ViewExternallyTimedWin {
-	    public static ICollection<RegressionExecution> Executions() {
-	        var execs = new List<RegressionExecution>();
-	        execs.Add(new ViewExternallyTimedWindowSceneOne());
-	        execs.Add(new ViewExternallyTimedBatchSceneTwo());
-	        execs.Add(new ViewExternallyTimedWinSceneShort());
-	        execs.Add(new ViewExternallyTimedTimedMonthScoped());
-	        execs.Add(new ViewExternallyTimedWindowPrev());
-	        return execs;
-	    }
+    public class ViewExternallyTimedWin
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            var execs = new List<RegressionExecution>();
+            WithWindowSceneOne(execs);
+            WithBatchSceneTwo(execs);
+            WithWinSceneShort(execs);
+            WithTimedMonthScoped(execs);
+            WithWindowPrev(execs);
+            return execs;
+        }
 
-	    public class ViewExternallyTimedWindowSceneOne : RegressionExecution {
+        public static IList<RegressionExecution> WithWindowPrev(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExternallyTimedWindowPrev());
+            return execs;
+        }
 
-	        public void Run(RegressionEnvironment env) {
-	            var fields = "symbol".SplitCsv();
-	            var text = "@name('s0') select irstream * from  SupportMarketDataBean#ext_timed(volume, 1 sec)";
-	            env.CompileDeployAddListenerMileZero(text, "s0");
+        public static IList<RegressionExecution> WithTimedMonthScoped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExternallyTimedTimedMonthScoped());
+            return execs;
+        }
 
-	            env.SendEventBean(MakeMarketDataEvent("E1", 500));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "E1"}}, null);
-	            env.Milestone(1);
+        public static IList<RegressionExecution> WithWinSceneShort(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExternallyTimedWinSceneShort());
+            return execs;
+        }
 
-	            env.SendEventBean(MakeMarketDataEvent("E2", 600));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "E2"}}, null);
-	            env.Milestone(2);
+        public static IList<RegressionExecution> WithBatchSceneTwo(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExternallyTimedBatchSceneTwo());
+            return execs;
+        }
 
-	            env.SendEventBean(MakeMarketDataEvent("E3", 1500));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "E3"}}, new object[][]{new object[] {"symbol", "E1"}});
+        public static IList<RegressionExecution> WithWindowSceneOne(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewExternallyTimedWindowSceneOne());
+            return execs;
+        }
 
-	            env.Milestone(3);
+        public class ViewExternallyTimedWindowSceneOne : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "symbol".SplitCsv();
+                var text = "@name('s0') select irstream * from  SupportMarketDataBean#ext_timed(volume, 1 sec)";
+                env.CompileDeployAddListenerMileZero(text, "s0");
 
-	            env.SendEventBean(MakeMarketDataEvent("E4", 1600));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "E4"}}, new object[][]{new object[] {"symbol", "E2"}});
+                env.SendEventBean(MakeMarketDataEvent("E1", 500));
+                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E1" } }, null);
+                env.Milestone(1);
 
-	            env.Milestone(4);
+                env.SendEventBean(MakeMarketDataEvent("E2", 600));
+                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E2" } }, null);
+                env.Milestone(2);
 
-	            env.SendEventBean(MakeMarketDataEvent("E5", 1700));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "E5"}}, null);
+                env.SendEventBean(MakeMarketDataEvent("E3", 1500));
+                env.AssertPropsNV(
+                    "s0",
+                    new object[][] { new object[] { "symbol", "E3" } },
+                    new object[][] { new object[] { "symbol", "E1" } });
 
-	            env.Milestone(5);
+                env.Milestone(3);
 
-	            env.SendEventBean(MakeMarketDataEvent("E6", 1800));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "E6"}}, null);
+                env.SendEventBean(MakeMarketDataEvent("E4", 1600));
+                env.AssertPropsNV(
+                    "s0",
+                    new object[][] { new object[] { "symbol", "E4" } },
+                    new object[][] { new object[] { "symbol", "E2" } });
 
-	            env.Milestone(6);
+                env.Milestone(4);
 
-	            env.SendEventBean(MakeMarketDataEvent("E7", 1900));
-	            env.AssertPropsNV("s0", new object[][]{new object[] {"symbol", "E7"}}, null);
+                env.SendEventBean(MakeMarketDataEvent("E5", 1700));
+                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E5" } }, null);
 
-	            env.Milestone(7);
+                env.Milestone(5);
 
-	            // test iterator
-	            env.AssertPropsPerRowIterator("s0", fields, new object[][]{new object[] {"E3"}, new object[] {"E4"}, new object[] {"E5"}, new object[] {"E6"}, new object[] {"E7"}});
+                env.SendEventBean(MakeMarketDataEvent("E6", 1800));
+                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E6" } }, null);
 
-	            env.SendEventBean(MakeMarketDataEvent("E8", 2700));
-	            env.AssertPropsPerRowIRPair("s0", fields, new object[][]{new object[] {"E8"}}, new object[][]{new object[] {"E3"}, new object[] {"E4"}, new object[] {"E5"}});
+                env.Milestone(6);
 
-	            env.Milestone(8);
+                env.SendEventBean(MakeMarketDataEvent("E7", 1900));
+                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E7" } }, null);
 
-	            env.SendEventBean(MakeMarketDataEvent("E9", 3700));
-	            env.AssertPropsPerRowIRPair("s0", fields, new object[][]{new object[] {"E9"}}, new object[][]{new object[] {"E6"}, new object[] {"E7"}, new object[] {"E8"}});
+                env.Milestone(7);
 
-	            env.Milestone(9);
+                // test iterator
+                env.AssertPropsPerRowIterator(
+                    "s0",
+                    fields,
+                    new object[][] {
+                        new object[] { "E3" }, new object[] { "E4" }, new object[] { "E5" }, new object[] { "E6" },
+                        new object[] { "E7" }
+                    });
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.SendEventBean(MakeMarketDataEvent("E8", 2700));
+                env.AssertPropsPerRowIRPair(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E8" } },
+                    new object[][] { new object[] { "E3" }, new object[] { "E4" }, new object[] { "E5" } });
 
-	    public class ViewExternallyTimedBatchSceneTwo : RegressionExecution {
+                env.Milestone(8);
 
-	        public void Run(RegressionEnvironment env) {
+                env.SendEventBean(MakeMarketDataEvent("E9", 3700));
+                env.AssertPropsPerRowIRPair(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E9" } },
+                    new object[][] { new object[] { "E6" }, new object[] { "E7" }, new object[] { "E8" } });
 
-	            var fields = "c0".SplitCsv();
-	            var epl = "@name('s0') select irstream theString as c0 from SupportBean#ext_timed(longPrimitive, 10 sec)";
-	            env.CompileDeployAddListenerMileZero(epl, "s0");
+                env.Milestone(9);
 
-	            env.AssertPropsPerRowIterator("s0", fields, Array.Empty<object[]>());
-	            SendSupportBeanWLong(env, "E1", 1000);
-	            env.AssertPropsNew("s0", fields, new object[]{"E1"});
+                env.UndeployAll();
+            }
+        }
 
-	            env.Milestone(1);
+        public class ViewExternallyTimedBatchSceneTwo : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "c0".SplitCsv();
+                var epl =
+                    "@name('s0') select irstream theString as c0 from SupportBean#ext_timed(longPrimitive, 10 sec)";
+                env.CompileDeployAddListenerMileZero(epl, "s0");
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E1"}});
-	            SendSupportBeanWLong(env, "E2", 5000);
-	            env.AssertPropsNew("s0", fields, new object[]{"E2"});
+                env.AssertPropsPerRowIterator("s0", fields, Array.Empty<object[]>());
+                SendSupportBeanWLong(env, "E1", 1000);
+                env.AssertPropsNew("s0", fields, new object[] { "E1" });
 
-	            env.Milestone(2);
+                env.Milestone(1);
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}});
-	            SendSupportBeanWLong(env, "E3", 11000);
-	            env.AssertPropsIRPair("s0", fields, new object[]{"E3"}, new object[]{"E1"});
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { "E1" } });
+                SendSupportBeanWLong(env, "E2", 5000);
+                env.AssertPropsNew("s0", fields, new object[] { "E2" });
 
-	            env.Milestone(3);
+                env.Milestone(2);
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E2"}, new object[] {"E3"}});
-	            SendSupportBeanWLong(env, "E4", 14000);
-	            env.AssertPropsNew("s0", fields, new object[]{"E4"});
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E1" }, new object[] { "E2" } });
+                SendSupportBeanWLong(env, "E3", 11000);
+                env.AssertPropsIRPair("s0", fields, new object[] { "E3" }, new object[] { "E1" });
 
-	            env.Milestone(4);
-	            env.Milestone(5);
+                env.Milestone(3);
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E2"}, new object[] {"E3"}, new object[] {"E4"}});
-	            SendSupportBeanWLong(env, "E5", 21000);
-	            env.AssertPropsPerRowIRPair("s0", fields, new object[][]{new object[] {"E5"}}, new object[][]{new object[] {"E2"}, new object[] {"E3"}});
-	            SendSupportBeanWLong(env, "E6", 24000);
-	            env.AssertPropsPerRowIRPair("s0", fields, new object[][]{new object[] {"E6"}}, new object[][]{new object[] {"E4"}});
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E2" }, new object[] { "E3" } });
+                SendSupportBeanWLong(env, "E4", 14000);
+                env.AssertPropsNew("s0", fields, new object[] { "E4" });
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.Milestone(4);
+                env.Milestone(5);
 
-	    private class ViewExternallyTimedWinSceneShort : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select irstream * from SupportBean#ext_timed(longPrimitive, 10 minutes)";
-	            env.CompileDeployAddListenerMileZero(epl, "s0");
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E2" }, new object[] { "E3" }, new object[] { "E4" } });
+                SendSupportBeanWLong(env, "E5", 21000);
+                env.AssertPropsPerRowIRPair(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E5" } },
+                    new object[][] { new object[] { "E2" }, new object[] { "E3" } });
+                SendSupportBeanWLong(env, "E6", 24000);
+                env.AssertPropsPerRowIRPair(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E6" } },
+                    new object[][] { new object[] { "E4" } });
 
-	            SendExtTimeEvent(env, 0);
+                env.UndeployAll();
+            }
+        }
 
-	            SendExtTimeEvent(env, 10 * 60 * 1000 - 1);
-	            env.AssertListener("s0", listener => {
-	                Assert.IsNull(listener.OldDataList[0]);
-	                listener.Reset();
-	            });
+        private class ViewExternallyTimedWinSceneShort : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select irstream * from SupportBean#ext_timed(longPrimitive, 10 minutes)";
+                env.CompileDeployAddListenerMileZero(epl, "s0");
 
-	            SendExtTimeEvent(env, 10 * 60 * 1000 + 1);
-	            env.AssertListener("s0", listener => Assert.AreEqual(1, listener.OldDataList[0].Length));
+                SendExtTimeEvent(env, 0);
 
-	            env.UndeployAll();
-	        }
-	    }
+                SendExtTimeEvent(env, 10 * 60 * 1000 - 1);
+                env.AssertListener(
+                    "s0",
+                    listener => {
+                        Assert.IsNull(listener.OldDataList[0]);
+                        listener.Reset();
+                    });
 
-	    private class ViewExternallyTimedTimedMonthScoped : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select rstream * from SupportBean#ext_timed(longPrimitive, 1 month)";
-	            env.CompileDeployAddListenerMileZero(epl, "s0");
+                SendExtTimeEvent(env, 10 * 60 * 1000 + 1);
+                env.AssertListener("s0", listener => Assert.AreEqual(1, listener.OldDataList[0].Length));
 
-	            SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-02-01T09:00:00.000"), "E1");
-	            SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-03-01T09:00:00.000") - 1, "E2");
-	            env.AssertListenerNotInvoked("s0");
+                env.UndeployAll();
+            }
+        }
 
-	            SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-03-01T09:00:00.000"), "E3");
-	            env.AssertPropsNew("s0", "theString".SplitCsv(), new object[]{"E1"});
+        private class ViewExternallyTimedTimedMonthScoped : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select rstream * from SupportBean#ext_timed(longPrimitive, 1 month)";
+                env.CompileDeployAddListenerMileZero(epl, "s0");
 
-	            env.UndeployAll();
-	        }
-	    }
+                SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-02-01T09:00:00.000"), "E1");
+                SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-03-01T09:00:00.000") - 1, "E2");
+                env.AssertListenerNotInvoked("s0");
 
-	    public class ViewExternallyTimedWindowPrev : RegressionExecution {
+                SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-03-01T09:00:00.000"), "E3");
+                env.AssertPropsNew("s0", "theString".SplitCsv(), new object[] { "E1" });
 
-	        public void Run(RegressionEnvironment env) {
-	            var text = "@name('s0') select irstream symbol," +
-	                       "prev(1, symbol) as prev1, " +
-	                       "prevtail(0, symbol) as prevTail0, " +
-	                       "prevtail(1, symbol) as prevTail1, " +
-	                       "prevcount(symbol) as prevCountSym, " +
-	                       "prevwindow(symbol) as prevWindowSym " +
-	                       "from SupportMarketDataBean#ext_timed(volume, 1 sec)";
-	            env.CompileDeployAddListenerMileZero(text, "s0");
-	            var fields = new string[]{"symbol", "prev1", "prevTail0", "prevTail1", "prevCountSym", "prevWindowSym"};
+                env.UndeployAll();
+            }
+        }
 
-	            env.SendEventBean(MakeMarketDataEvent("E1", 500));
-	            env.AssertPropsPerRowNewFlattened("s0", fields,
-	                new object[][]{new object[] {"E1", null, "E1", null, 1L, new object[]{"E1"}}});
-	            env.AssertListener("s0", listener => {
-	                Assert.IsNull(env.Listener("s0").GetAndResetLastOldData());
-	            });
+        public class ViewExternallyTimedWindowPrev : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var text = "@name('s0') select irstream symbol," +
+                           "prev(1, symbol) as prev1, " +
+                           "prevtail(0, symbol) as prevTail0, " +
+                           "prevtail(1, symbol) as prevTail1, " +
+                           "prevcount(symbol) as prevCountSym, " +
+                           "prevwindow(symbol) as prevWindowSym " +
+                           "from SupportMarketDataBean#ext_timed(volume, 1 sec)";
+                env.CompileDeployAddListenerMileZero(text, "s0");
+                var fields = new string[]
+                    { "symbol", "prev1", "prevTail0", "prevTail1", "prevCountSym", "prevWindowSym" };
 
-	            env.Milestone(1);
+                env.SendEventBean(MakeMarketDataEvent("E1", 500));
+                env.AssertPropsPerRowNewFlattened(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E1", null, "E1", null, 1L, new object[] { "E1" } } });
+                env.AssertListener("s0", listener => { Assert.IsNull(env.Listener("s0").GetAndResetLastOldData()); });
 
-	            env.SendEventBean(MakeMarketDataEvent("E2", 600));
-	            env.AssertPropsPerRowNewFlattened("s0", fields,
-	                new object[][]{new object[] {"E2", "E1", "E1", "E2", 2L, new object[]{"E2", "E1"}}});
+                env.Milestone(1);
 
-	            env.Milestone(2);
+                env.SendEventBean(MakeMarketDataEvent("E2", 600));
+                env.AssertPropsPerRowNewFlattened(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E2", "E1", "E1", "E2", 2L, new object[] { "E2", "E1" } } });
 
-	            env.SendEventBean(MakeMarketDataEvent("E3", 1500));
-	            env.AssertPropsPerRowNewFlattened("s0", fields,
-	                new object[][]{new object[] {"E3", "E2", "E2", "E3", 2L, new object[]{"E3", "E2"}}});
+                env.Milestone(2);
 
-	            env.Milestone(3);
+                env.SendEventBean(MakeMarketDataEvent("E3", 1500));
+                env.AssertPropsPerRowNewFlattened(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E3", "E2", "E2", "E3", 2L, new object[] { "E3", "E2" } } });
 
-	            env.SendEventBean(MakeMarketDataEvent("E4", 1600));
-	            env.AssertPropsPerRowNewFlattened("s0", fields,
-	                new object[][]{new object[] {"E4", "E3", "E3", "E4", 2L, new object[]{"E4", "E3"}}});
+                env.Milestone(3);
 
-	            env.Milestone(4);
+                env.SendEventBean(MakeMarketDataEvent("E4", 1600));
+                env.AssertPropsPerRowNewFlattened(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E4", "E3", "E3", "E4", 2L, new object[] { "E4", "E3" } } });
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.Milestone(4);
 
-	    private static void SendExtTimeEvent(RegressionEnvironment env, long longPrimitive) {
-	        var theEvent = new SupportBean(null, 0);
-	        theEvent.LongPrimitive = longPrimitive;
-	        env.SendEventBean(theEvent);
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private static void SendExtTimeEvent(RegressionEnvironment env, long longPrimitive, string name) {
-	        var theEvent = new SupportBean(name, 0);
-	        theEvent.LongPrimitive = longPrimitive;
-	        env.SendEventBean(theEvent);
-	    }
+        private static void SendExtTimeEvent(
+            RegressionEnvironment env,
+            long longPrimitive)
+        {
+            var theEvent = new SupportBean(null, 0);
+            theEvent.LongPrimitive = longPrimitive;
+            env.SendEventBean(theEvent);
+        }
 
-	    private static SupportMarketDataBean MakeMarketDataEvent(string symbol, long volume) {
-	        return new SupportMarketDataBean(symbol, 0, volume, null);
-	    }
+        private static void SendExtTimeEvent(
+            RegressionEnvironment env,
+            long longPrimitive,
+            string name)
+        {
+            var theEvent = new SupportBean(name, 0);
+            theEvent.LongPrimitive = longPrimitive;
+            env.SendEventBean(theEvent);
+        }
 
-	    private static void SendSupportBeanWLong(RegressionEnvironment env, string @string, long longPrimitive) {
-	        var sb = new SupportBean(@string, 0);
-	        sb.LongPrimitive = longPrimitive;
-	        env.SendEventBean(sb);
-	    }
-	}
+        private static SupportMarketDataBean MakeMarketDataEvent(
+            string symbol,
+            long volume)
+        {
+            return new SupportMarketDataBean(symbol, 0, volume, null);
+        }
+
+        private static void SendSupportBeanWLong(
+            RegressionEnvironment env,
+            string @string,
+            long longPrimitive)
+        {
+            var sb = new SupportBean(@string, 0);
+            sb.LongPrimitive = longPrimitive;
+            env.SendEventBean(sb);
+        }
+    }
 } // end of namespace

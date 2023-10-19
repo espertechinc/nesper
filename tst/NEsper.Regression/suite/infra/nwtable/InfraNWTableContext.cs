@@ -19,6 +19,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+            Witht(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> Witht(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraContext(true));
             execs.Add(new InfraContext(false));
             return execs;
@@ -113,40 +120,40 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.AssertPropsPerRowLastNewAnyOrder(
                     "s1",
-                    new[] {"pkey0", "pkey1", "c0"},
+                    new[] { "pkey0", "pkey1", "c0" },
                     new[] {
-                        new object[] {"E1", 10, 100L}, new object[] {"E2", 20, 200L}
+                        new object[] { "E1", 10, 100L }, new object[] { "E2", 20, 200L }
                     });
                 env.AssertPropsNew(
                     "s2",
-                    new[] {"thecnt"},
+                    new[] { "thecnt" },
                     new object[] {
                         2L
                     });
                 env.AssertPropsPerRowLastNewAnyOrder(
                     "s3",
-                    new[] {"pkey0", "thecnt"},
+                    new[] { "pkey0", "thecnt" },
                     new[] {
-                        new object[] {"E1", 2L}, new object[] {"E2", 2L}
+                        new object[] { "E1", 2L }, new object[] { "E2", 2L }
                     });
                 env.AssertPropsPerRowLastNewAnyOrder(
                     "s4",
-                    new[] {"pkey0", "thecnt"},
+                    new[] { "pkey0", "thecnt" },
                     new[] {
-                        new object[] {"E1", 1L}, new object[] {"E2", 1L}
+                        new object[] { "E1", 1L }, new object[] { "E2", 1L }
                     });
                 env.AssertPropsPerRowLastNewAnyOrder(
                     "s5",
-                    new[] {"pkey0", "pkey1", "thecnt"},
+                    new[] { "pkey0", "pkey1", "thecnt" },
                     new[] {
-                        new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}
+                        new object[] { "E1", 10, 1L }, new object[] { "E2", 20, 1L }
                     });
                 env.AssertPropsPerRowLastNewAnyOrder(
                     "s6",
-                    new[] {"pkey0", "pkey1", "thecnt"},
+                    new[] { "pkey0", "pkey1", "thecnt" },
                     new[] {
-                        new object[] {"E1", 10, 1L}, new object[] {"E2", 20, 1L}, new object[] {"E1", null, 1L},
-                        new object[] {"E2", null, 1L}, new object[] {null, null, 2L}
+                        new object[] { "E1", 10, 1L }, new object[] { "E2", 20, 1L }, new object[] { "E1", null, 1L },
+                        new object[] { "E2", null, 1L }, new object[] { null, null, 2L }
                     });
 
                 env.UndeployAll();

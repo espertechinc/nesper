@@ -17,176 +17,217 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.define
 {
-	public class ExprDefineEventParameterNonStream
-	{
+    public class ExprDefineEventParameterNonStream
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            var execs = new List<RegressionExecution>();
+            WithPatternPONO(execs);
+            WithPatternMap(execs);
+            WithContextProperty(execs);
+            WithSubqueryPONO(execs);
+            WithSubqueryMap(execs);
+            WithSubqueryMapWithWhere(execs);
+            return execs;
+        }
 
-		public static ICollection<RegressionExecution> Executions()
-		{
-			var execs = new List<RegressionExecution>();
-			execs.Add(new ExprDefineEventParamPatternPONO());
-			execs.Add(new ExprDefineEventParamPatternMap());
-			execs.Add(new ExprDefineEventParamContextProperty());
-			execs.Add(new ExprDefineEventParamSubqueryPONO());
-			execs.Add(new ExprDefineEventParamSubqueryMap());
-			execs.Add(new ExprDefineEventParamSubqueryMapWithWhere());
-			return execs;
-		}
+        public static IList<RegressionExecution> WithSubqueryMapWithWhere(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineEventParamSubqueryMapWithWhere());
+            return execs;
+        }
 
-		private class ExprDefineEventParamSubqueryPONO : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var epl =
-					"@name('s0') expression combineProperties {v -> v.P00 || v.P01} select combineProperties((select * from SupportBean_S0#keepall)) as c0 from SupportBean_S1 as p";
-				env.CompileDeploy(epl).AddListener("s0");
+        public static IList<RegressionExecution> WithSubqueryMap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineEventParamSubqueryMap());
+            return execs;
+        }
 
-				SendAssertS1(env, null);
+        public static IList<RegressionExecution> WithSubqueryPONO(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineEventParamSubqueryPONO());
+            return execs;
+        }
 
-				SendS0(env, "a", "b");
-				SendAssertS1(env, "ab");
+        public static IList<RegressionExecution> WithContextProperty(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineEventParamContextProperty());
+            return execs;
+        }
 
-				SendS0(env, "d", "e");
-				SendAssertS1(env, null); // since subquery returns two rows
+        public static IList<RegressionExecution> WithPatternMap(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineEventParamPatternMap());
+            return execs;
+        }
 
-				env.UndeployAll();
-			}
-		}
+        public static IList<RegressionExecution> WithPatternPONO(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprDefineEventParamPatternPONO());
+            return execs;
+        }
 
-		private class ExprDefineEventParamSubqueryMap : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var epl =
-					"@public @buseventtype create schema EventOne(p0 string, p1 string);\n" +
-					"@public @buseventtype create schema EventTwo();\n" +
-					"@name('s0') expression combineProperties {v -> v.p0 || v.p1} select combineProperties((select * from EventOne#lastevent)) as c0 from EventTwo as p";
-				env.CompileDeploy(epl).AddListener("s0");
+        private class ExprDefineEventParamSubqueryPONO : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('s0') expression combineProperties {v -> v.P00 || v.P01} select combineProperties((select * from SupportBean_S0#keepall)) as c0 from SupportBean_S1 as p";
+                env.CompileDeploy(epl).AddListener("s0");
 
-				SendAssertEventTwo(env, null);
+                SendAssertS1(env, null);
 
-				SendEventOne(env, "a", "b");
-				SendAssertEventTwo(env, "ab");
+                SendS0(env, "a", "b");
+                SendAssertS1(env, "ab");
 
-				SendEventOne(env, "c", "d");
-				SendAssertEventTwo(env, "cd");
+                SendS0(env, "d", "e");
+                SendAssertS1(env, null); // since subquery returns two rows
 
-				env.UndeployAll();
-			}
-		}
+                env.UndeployAll();
+            }
+        }
 
-		private class ExprDefineEventParamSubqueryMapWithWhere : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var epl =
-					"@public @buseventtype create schema EventOne(p0 string, p1 string);\n" +
-					"@public @buseventtype create schema EventTwo();\n" +
-					"@name('s0') expression combineProperties {v -> v.p0 || v.p1} select combineProperties((select * from EventOne#keepall where p0='a')) as c0 from EventTwo as p";
-				env.CompileDeploy(epl).AddListener("s0");
+        private class ExprDefineEventParamSubqueryMap : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@public @buseventtype create schema EventOne(p0 string, p1 string);\n" +
+                    "@public @buseventtype create schema EventTwo();\n" +
+                    "@name('s0') expression combineProperties {v -> v.p0 || v.p1} select combineProperties((select * from EventOne#lastevent)) as c0 from EventTwo as p";
+                env.CompileDeploy(epl).AddListener("s0");
 
-				SendAssertEventTwo(env, null);
+                SendAssertEventTwo(env, null);
 
-				SendEventOne(env, "c", "d");
-				SendAssertEventTwo(env, null);
+                SendEventOne(env, "a", "b");
+                SendAssertEventTwo(env, "ab");
 
-				SendEventOne(env, "a", "d");
-				SendAssertEventTwo(env, "ad");
+                SendEventOne(env, "c", "d");
+                SendAssertEventTwo(env, "cd");
 
-				SendEventOne(env, "a", "e");
-				SendAssertEventTwo(env, null);
+                env.UndeployAll();
+            }
+        }
 
-				env.UndeployAll();
-			}
-		}
+        private class ExprDefineEventParamSubqueryMapWithWhere : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@public @buseventtype create schema EventOne(p0 string, p1 string);\n" +
+                    "@public @buseventtype create schema EventTwo();\n" +
+                    "@name('s0') expression combineProperties {v -> v.p0 || v.p1} select combineProperties((select * from EventOne#keepall where p0='a')) as c0 from EventTwo as p";
+                env.CompileDeploy(epl).AddListener("s0");
 
-		private class ExprDefineEventParamContextProperty : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var epl =
-					"@public @buseventtype create schema EventOne(p0 string, p1 string);\n" +
-					"@public @buseventtype create schema EventTwo();\n" +
-					"create context PerEventOne initiated by EventOne e1;\n" +
-					"@name('s0') expression combineProperties {v -> v.p0 || v.p1} \n" +
-					"context PerEventOne select combineProperties(context.e1) as c0 from EventTwo;\n";
-				env.CompileDeploy(epl).AddListener("s0");
+                SendAssertEventTwo(env, null);
 
-				SendEventOne(env, "a", "b");
-				SendAssertEventTwo(env, "ab");
+                SendEventOne(env, "c", "d");
+                SendAssertEventTwo(env, null);
 
-				env.UndeployAll();
-			}
-		}
+                SendEventOne(env, "a", "d");
+                SendAssertEventTwo(env, "ad");
 
-		private class ExprDefineEventParamPatternMap : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var epl =
-					"@public @buseventtype create schema EventOne(p0 string, p1 string);\n" +
-					"@public @buseventtype create schema EventTwo();\n" +
-					"@name('s0') expression combineProperties {v -> v.p0 || v.p1} select combineProperties(p.a) as c0 from pattern [a=EventOne -> EventTwo] as p";
-				env.CompileDeploy(epl).AddListener("s0");
+                SendEventOne(env, "a", "e");
+                SendAssertEventTwo(env, null);
 
-				SendEventOne(env, "a", "b");
-				SendAssertEventTwo(env, "ab");
+                env.UndeployAll();
+            }
+        }
 
-				env.UndeployAll();
-			}
-		}
+        private class ExprDefineEventParamContextProperty : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@public @buseventtype create schema EventOne(p0 string, p1 string);\n" +
+                    "@public @buseventtype create schema EventTwo();\n" +
+                    "create context PerEventOne initiated by EventOne e1;\n" +
+                    "@name('s0') expression combineProperties {v -> v.p0 || v.p1} \n" +
+                    "context PerEventOne select combineProperties(context.e1) as c0 from EventTwo;\n";
+                env.CompileDeploy(epl).AddListener("s0");
 
-		private class ExprDefineEventParamPatternPONO : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var epl =
-					"@name('s0') expression combineProperties {v -> v.P00 || v.P01} select combineProperties(p.a) as c0 from pattern [a=SupportBean_S0 -> SupportBean_S1] as p";
-				env.CompileDeploy(epl).AddListener("s0");
+                SendEventOne(env, "a", "b");
+                SendAssertEventTwo(env, "ab");
 
-				SendS0(env, "a", "b");
-				SendAssertS1(env, "ab");
+                env.UndeployAll();
+            }
+        }
 
-				env.UndeployAll();
-			}
-		}
+        private class ExprDefineEventParamPatternMap : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@public @buseventtype create schema EventOne(p0 string, p1 string);\n" +
+                    "@public @buseventtype create schema EventTwo();\n" +
+                    "@name('s0') expression combineProperties {v -> v.p0 || v.p1} select combineProperties(p.a) as c0 from pattern [a=EventOne -> EventTwo] as p";
+                env.CompileDeploy(epl).AddListener("s0");
 
-		private static void SendEventOne(
-			RegressionEnvironment env,
-			string p0,
-			string p1)
-		{
-			env.SendEventMap(CollectionUtil.BuildMap("p0", p0, "p1", p1), "EventOne");
-		}
+                SendEventOne(env, "a", "b");
+                SendAssertEventTwo(env, "ab");
 
-		private static void SendAssertEventTwo(
-			RegressionEnvironment env,
-			object expected)
-		{
-			env.SendEventMap(EmptyDictionary<string, object>.Instance, "EventTwo");
-			AssertReceived(env, expected);
-		}
+                env.UndeployAll();
+            }
+        }
 
-		private static void SendS0(
-			RegressionEnvironment env,
-			string p00,
-			string p01)
-		{
-			env.SendEventBean(new SupportBean_S0(0, p00, p01));
-		}
+        private class ExprDefineEventParamPatternPONO : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('s0') expression combineProperties {v -> v.P00 || v.P01} select combineProperties(p.a) as c0 from pattern [a=SupportBean_S0 -> SupportBean_S1] as p";
+                env.CompileDeploy(epl).AddListener("s0");
 
-		private static void SendAssertS1(
-			RegressionEnvironment env,
-			object expected)
-		{
-			env.SendEventBean(new SupportBean_S1(0));
-			AssertReceived(env, expected);
-		}
+                SendS0(env, "a", "b");
+                SendAssertS1(env, "ab");
 
-		private static void AssertReceived(
-			RegressionEnvironment env,
-			object expected)
-		{
-			env.AssertEqualsNew("s0", "c0", expected);
-		}
-	}
+                env.UndeployAll();
+            }
+        }
+
+        private static void SendEventOne(
+            RegressionEnvironment env,
+            string p0,
+            string p1)
+        {
+            env.SendEventMap(CollectionUtil.BuildMap("p0", p0, "p1", p1), "EventOne");
+        }
+
+        private static void SendAssertEventTwo(
+            RegressionEnvironment env,
+            object expected)
+        {
+            env.SendEventMap(EmptyDictionary<string, object>.Instance, "EventTwo");
+            AssertReceived(env, expected);
+        }
+
+        private static void SendS0(
+            RegressionEnvironment env,
+            string p00,
+            string p01)
+        {
+            env.SendEventBean(new SupportBean_S0(0, p00, p01));
+        }
+
+        private static void SendAssertS1(
+            RegressionEnvironment env,
+            object expected)
+        {
+            env.SendEventBean(new SupportBean_S1(0));
+            AssertReceived(env, expected);
+        }
+
+        private static void AssertReceived(
+            RegressionEnvironment env,
+            object expected)
+        {
+            env.AssertEqualsNew("s0", "c0", expected);
+        }
+    }
 } // end of namespace

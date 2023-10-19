@@ -32,9 +32,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithInvalidExpr(execs);
             WithStatementException(execs);
-            WithUseResult(execs);
+            With(UseResult)(execs);
+#endif
             return execs;
         }
 
@@ -161,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 return Collections.Set(RegressionFlag.INVALIDITY);
             }
- 
+
             public void Run(RegressionEnvironment env)
             {
                 EPCompileException exception;

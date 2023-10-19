@@ -19,120 +19,178 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
-	public class EventBeanSchemaGenericTypeWFields {
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EventBeanCreateSchemaTypeParamPlain());
-	        execs.Add(new EventBeanCreateSchemaTypeParamMapped());
-	        execs.Add(new EventBeanCreateSchemaTypeParamIndexed());
-	        return execs;
-	    }
+    public class EventBeanSchemaGenericTypeWFields
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithPlain(execs);
+            WithMapped(execs);
+            WithIndexed(execs);
+            return execs;
+        }
 
-	    private class EventBeanCreateSchemaTypeParamPlain : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl =
-	                "@name('schema') @public @buseventtype create schema MyEvent as " + typeof(SupportBeanParameterizedWFieldSinglePlain<>).FullName + "<Integer>;\n" +
-	                "@name('s0') select simpleProperty as c0, simpleField as c1 from MyEvent;\n";
-	            env.CompileDeploy(epl).AddListener("s0");
+        public static IList<RegressionExecution> WithIndexed(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventBeanCreateSchemaTypeParamIndexed());
+            return execs;
+        }
 
-	            env.AssertStatement("schema", statement => {
-	                var type = env.Statement("schema").EventType.UnderlyingType;
-	                Assert.AreEqual(typeof(SupportBeanParameterizedWFieldSinglePlain<int?>), type);
-	                SupportEventPropUtil.AssertPropsEquals(
-		                env.Statement("schema").EventType.PropertyDescriptors.ToArray(),
-	                    new SupportEventPropDesc("simpleProperty", typeof(int?)),
-	                    new SupportEventPropDesc("simpleField", typeof(int?)));
+        public static IList<RegressionExecution> WithMapped(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventBeanCreateSchemaTypeParamMapped());
+            return execs;
+        }
 
-	                SupportEventPropUtil.AssertPropsEquals(
-		                env.Statement("s0").EventType.PropertyDescriptors.ToArray(),
-	                    new SupportEventPropDesc("c0", typeof(int?)),
-	                    new SupportEventPropDesc("c1", typeof(int?)));
-	            });
+        public static IList<RegressionExecution> WithPlain(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EventBeanCreateSchemaTypeParamPlain());
+            return execs;
+        }
 
-	            env.SendEventBean(new SupportBeanParameterizedWFieldSinglePlain<int?>(10), "MyEvent");
-	            env.AssertPropsNew("s0", "c0,c1".Split(","), new object[] {10, 10});
+        private class EventBeanCreateSchemaTypeParamPlain : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('schema') @public @buseventtype create schema MyEvent as " +
+                    typeof(SupportBeanParameterizedWFieldSinglePlain<>).FullName +
+                    "<Integer>;\n" +
+                    "@name('s0') select simpleProperty as c0, simpleField as c1 from MyEvent;\n";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	            env.UndeployAll();
-	        }
+                env.AssertStatement(
+                    "schema",
+                    statement => {
+                        var type = env.Statement("schema").EventType.UnderlyingType;
+                        Assert.AreEqual(typeof(SupportBeanParameterizedWFieldSinglePlain<int?>), type);
+                        SupportEventPropUtil.AssertPropsEquals(
+                            env.Statement("schema").EventType.PropertyDescriptors.ToArray(),
+                            new SupportEventPropDesc("simpleProperty", typeof(int?)),
+                            new SupportEventPropDesc("simpleField", typeof(int?)));
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.SERDEREQUIRED);
-	        }
-	    }
+                        SupportEventPropUtil.AssertPropsEquals(
+                            env.Statement("s0").EventType.PropertyDescriptors.ToArray(),
+                            new SupportEventPropDesc("c0", typeof(int?)),
+                            new SupportEventPropDesc("c1", typeof(int?)));
+                    });
 
-	    private class EventBeanCreateSchemaTypeParamMapped : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl =
-	                "@name('schema') @public @buseventtype create schema MyEvent as " + typeof(SupportBeanParameterizedWFieldSingleMapped<>).FullName + "<Integer>;\n" +
-	                "@name('s0') select mapProperty as c0, mapField as c1, mapProperty('key') as c2, mapField('key') as c3, mapKeyed('key') as c4 from MyEvent;\n";
-	            env.CompileDeploy(epl).AddListener("s0");
-	            env.AssertStatement("schema", statement => SupportEventPropUtil.AssertPropsEquals(
-		            statement.EventType.PropertyDescriptors.ToArray(),
-	                new SupportEventPropDesc("mapProperty", typeof(IDictionary<string, int?>)).WithMapped(),
-	                new SupportEventPropDesc("mapField", typeof(IDictionary<string, int?>)).WithMapped(),
-	                new SupportEventPropDesc("mapKeyed", typeof(int?)).WithMapped().WithMappedRequiresKey()
-	            ));
+                env.SendEventBean(new SupportBeanParameterizedWFieldSinglePlain<int?>(10), "MyEvent");
+                env.AssertPropsNew("s0", "c0,c1".Split(","), new object[] { 10, 10 });
 
-	            env.AssertStatement("s0", statement => SupportEventPropUtil.AssertPropsEquals(
-		            statement.EventType.PropertyDescriptors.ToArray(),
-	                new SupportEventPropDesc("c0", typeof(IDictionary<string, int?>)).WithMapped(),
-	                new SupportEventPropDesc("c1", typeof(IDictionary<string, int?>)).WithMapped(),
-	                new SupportEventPropDesc("c2", typeof(int?)),
-	                new SupportEventPropDesc("c3", typeof(int?)),
-	                new SupportEventPropDesc("c4", typeof(int?))));
+                env.UndeployAll();
+            }
 
-	            env.SendEventBean(new SupportBeanParameterizedWFieldSingleMapped<int?>(10), "MyEvent");
-	            env.AssertPropsNew("s0", "c0,c1,c2,c3,c4".Split(","), new object[] {CollectionUtil.BuildMap("key", 10), CollectionUtil.BuildMap("key", 10), 10, 10, 10});
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.SERDEREQUIRED);
+            }
+        }
 
-	            env.UndeployAll();
-	        }
+        private class EventBeanCreateSchemaTypeParamMapped : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('schema') @public @buseventtype create schema MyEvent as " +
+                    typeof(SupportBeanParameterizedWFieldSingleMapped<>).FullName +
+                    "<Integer>;\n" +
+                    "@name('s0') select mapProperty as c0, mapField as c1, mapProperty('key') as c2, mapField('key') as c3, mapKeyed('key') as c4 from MyEvent;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+                env.AssertStatement(
+                    "schema",
+                    statement => SupportEventPropUtil.AssertPropsEquals(
+                        statement.EventType.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("mapProperty", typeof(IDictionary<string, int?>)).WithMapped(),
+                        new SupportEventPropDesc("mapField", typeof(IDictionary<string, int?>)).WithMapped(),
+                        new SupportEventPropDesc("mapKeyed", typeof(int?)).WithMapped().WithMappedRequiresKey()
+                    ));
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.SERDEREQUIRED);
-	        }
-	    }
+                env.AssertStatement(
+                    "s0",
+                    statement => SupportEventPropUtil.AssertPropsEquals(
+                        statement.EventType.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("c0", typeof(IDictionary<string, int?>)).WithMapped(),
+                        new SupportEventPropDesc("c1", typeof(IDictionary<string, int?>)).WithMapped(),
+                        new SupportEventPropDesc("c2", typeof(int?)),
+                        new SupportEventPropDesc("c3", typeof(int?)),
+                        new SupportEventPropDesc("c4", typeof(int?))));
 
-	    private class EventBeanCreateSchemaTypeParamIndexed : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl =
-	                "@name('schema') @public @buseventtype create schema MyEvent as " + typeof(SupportBeanParameterizedWFieldSingleIndexed<>).FullName + "<Integer>;\n" +
+                env.SendEventBean(new SupportBeanParameterizedWFieldSingleMapped<int?>(10), "MyEvent");
+                env.AssertPropsNew(
+                    "s0",
+                    "c0,c1,c2,c3,c4".Split(","),
+                    new object[]
+                        { CollectionUtil.BuildMap("key", 10), CollectionUtil.BuildMap("key", 10), 10, 10, 10 });
+
+                env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.SERDEREQUIRED);
+            }
+        }
+
+        private class EventBeanCreateSchemaTypeParamIndexed : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('schema') @public @buseventtype create schema MyEvent as " +
+                    typeof(SupportBeanParameterizedWFieldSingleIndexed<>).FullName +
+                    "<Integer>;\n" +
                     "@name('s0') select indexedArrayProperty as c0, indexedArrayField as c1, indexedArrayProperty[0] as c2, indexedArrayField[0] as c3," +
                     "indexedListProperty as c4, indexedListField as c5, indexedListProperty[0] as c6, indexedListField[0] as c7," +
                     "indexedArrayAtIndex[0] as c8 from MyEvent;\n";
-	            env.CompileDeploy(epl).AddListener("s0");
+                env.CompileDeploy(epl).AddListener("s0");
 
-	            env.AssertStatement("schema", statement => {
-	                SupportEventPropUtil.AssertPropsEquals(
-		                statement.EventType.PropertyDescriptors.ToArray(),
-	                    new SupportEventPropDesc("indexedArrayProperty", typeof(int?[])).WithIndexed(),
-	                    new SupportEventPropDesc("indexedArrayField", typeof(int?[])).WithIndexed(),
-	                    new SupportEventPropDesc("indexedListProperty", typeof(IList<int?>)).WithIndexed(),
-	                    new SupportEventPropDesc("indexedListField", typeof(IList<int?>)).WithIndexed(),
-	                    new SupportEventPropDesc("indexedArrayAtIndex", typeof(int?)).WithIndexed().WithIndexedRequiresIndex());
-	            });
+                env.AssertStatement(
+                    "schema",
+                    statement => {
+                        SupportEventPropUtil.AssertPropsEquals(
+                            statement.EventType.PropertyDescriptors.ToArray(),
+                            new SupportEventPropDesc("indexedArrayProperty", typeof(int?[])).WithIndexed(),
+                            new SupportEventPropDesc("indexedArrayField", typeof(int?[])).WithIndexed(),
+                            new SupportEventPropDesc("indexedListProperty", typeof(IList<int?>)).WithIndexed(),
+                            new SupportEventPropDesc("indexedListField", typeof(IList<int?>)).WithIndexed(),
+                            new SupportEventPropDesc("indexedArrayAtIndex", typeof(int?)).WithIndexed()
+                                .WithIndexedRequiresIndex());
+                    });
 
-	            env.AssertStatement("s0", statement => SupportEventPropUtil.AssertPropsEquals(
-		            statement.EventType.PropertyDescriptors.ToArray(),
-	                new SupportEventPropDesc("c0", typeof(int?[])).WithIndexed(),
-	                new SupportEventPropDesc("c1", typeof(int?[])).WithIndexed(),
-	                new SupportEventPropDesc("c2", typeof(int?)),
-	                new SupportEventPropDesc("c3", typeof(int?)),
-	                new SupportEventPropDesc("c4", typeof(IList<int?>)).WithIndexed(),
-	                new SupportEventPropDesc("c5", typeof(IList<int?>)).WithIndexed(),
-	                new SupportEventPropDesc("c6", typeof(int?)),
-	                new SupportEventPropDesc("c7", typeof(int?)),
-	                new SupportEventPropDesc("c8", typeof(int?))));
+                env.AssertStatement(
+                    "s0",
+                    statement => SupportEventPropUtil.AssertPropsEquals(
+                        statement.EventType.PropertyDescriptors.ToArray(),
+                        new SupportEventPropDesc("c0", typeof(int?[])).WithIndexed(),
+                        new SupportEventPropDesc("c1", typeof(int?[])).WithIndexed(),
+                        new SupportEventPropDesc("c2", typeof(int?)),
+                        new SupportEventPropDesc("c3", typeof(int?)),
+                        new SupportEventPropDesc("c4", typeof(IList<int?>)).WithIndexed(),
+                        new SupportEventPropDesc("c5", typeof(IList<int?>)).WithIndexed(),
+                        new SupportEventPropDesc("c6", typeof(int?)),
+                        new SupportEventPropDesc("c7", typeof(int?)),
+                        new SupportEventPropDesc("c8", typeof(int?))));
 
-	            env.SendEventBean(new SupportBeanParameterizedWFieldSingleIndexed<int?>(10), "MyEvent");
-	            env.AssertPropsNew("s0", "c0,c1,c2,c3,c4,c5,c6,c7,c8".Split(","), new object[] {new int?[] {10}, new int?[] {10}, 10, 10,
-	                Collections.SingletonList(10), Collections.SingletonList(10), 10, 10, 10});
+                env.SendEventBean(new SupportBeanParameterizedWFieldSingleIndexed<int?>(10), "MyEvent");
+                env.AssertPropsNew(
+                    "s0",
+                    "c0,c1,c2,c3,c4,c5,c6,c7,c8".Split(","),
+                    new object[] {
+                        new int?[] { 10 }, new int?[] { 10 }, 10, 10,
+                        Collections.SingletonList(10), Collections.SingletonList(10), 10, 10, 10
+                    });
 
-	            env.UndeployAll();
-	        }
+                env.UndeployAll();
+            }
 
-	        public ISet<RegressionFlag> Flags() {
-	            return Collections.Set(RegressionFlag.SERDEREQUIRED);
-	        }
-	    }
-	}
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.SERDEREQUIRED);
+            }
+        }
+    }
 } // end of namespace

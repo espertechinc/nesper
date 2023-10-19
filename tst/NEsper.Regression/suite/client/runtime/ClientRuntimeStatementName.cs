@@ -23,10 +23,40 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            execs.Add(new ClientRuntimeStatementAllowNameDuplicate());
-            execs.Add(new ClientRuntimeSingleModuleTwoStatementsNoDep());
-            execs.Add(new ClientRuntimeStatementNameUnassigned());
+            WithStatementAllowNameDuplicate(execs);
+            WithSingleModuleTwoStatementsNoDep(execs);
+            WithStatementNameUnassigned(execs);
+            WithStatementNameRuntimeResolverDuplicate(execs);
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStatementNameRuntimeResolverDuplicate(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientRuntimeStatementNameRuntimeResolverDuplicate());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStatementNameUnassigned(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeStatementNameUnassigned());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithSingleModuleTwoStatementsNoDep(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeSingleModuleTwoStatementsNoDep());
+            return execs;
+        }
+
+        public static IList<RegressionExecution> WithStatementAllowNameDuplicate(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ClientRuntimeStatementAllowNameDuplicate());
             return execs;
         }
 

@@ -109,6 +109,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         public StatementSpecMapEnv StatementSpecMapEnv =>
             new StatementSpecMapEnv(
+                Services.Container,
                 Services.ImportServiceCompileTime,
                 Services.VariableCompileTimeResolver,
                 Services.Configuration,

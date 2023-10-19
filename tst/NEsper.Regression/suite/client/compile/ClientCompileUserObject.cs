@@ -23,8 +23,10 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithDifferentTypes(execs);
-            WithResolveContextInfo(execs);
+            With(ResolveContextInfo)(execs);
+#endif
             return execs;
         }
 
@@ -72,10 +74,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 return Collections.Set(RegressionFlag.COMPILEROPS);
             }
+
             public void Run(RegressionEnvironment env)
             {
                 AssertUserObject(env, "ABC");
-                AssertUserObject(env, new int[] {1, 2, 3});
+                AssertUserObject(env, new int[] { 1, 2, 3 });
                 AssertUserObject(env, null);
                 AssertUserObject(env, new MyUserObject("hello"));
             }
@@ -145,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     return false;
                 }
 
-                return Equals((MyUserObject) obj);
+                return Equals((MyUserObject)obj);
             }
 
             public override int GetHashCode()

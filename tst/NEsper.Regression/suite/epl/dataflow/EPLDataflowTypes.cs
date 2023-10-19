@@ -31,8 +31,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithBeanType(execs);
-            WithMapType(execs);
+            With(MapType)(execs);
+#endif
             return execs;
         }
 
@@ -70,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "MySupportBeanOutputOp(outstream) {}" +
                     "SupportGenericOutputOpWPort(outstream) {}");
 
-                var source = new DefaultSupportSourceOp(new object[] {new SupportBean("E1", 1)});
+                var source = new DefaultSupportSourceOp(new object[] { new SupportBean("E1", 1) });
                 var outputOne = new MySupportBeanOutputOp();
                 var outputTwo = new SupportGenericOutputOpWPort();
                 var options =
@@ -81,23 +83,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 SupportBean.Compare(
                     outputOne.GetAndReset().ToArray(),
-                    new [] { "TheString","IntPrimitive" },
+                    new[] { "TheString", "IntPrimitive" },
                     new[] {
-                        new object[] {"E1", 1}
+                        new object[] { "E1", 1 }
                     });
                 var received = outputTwo.GetAndReset();
                 SupportBean.Compare(
                     received.First.ToArray(),
-                    new [] { "TheString","IntPrimitive" },
+                    new[] { "TheString", "IntPrimitive" },
                     new[] {
-                        new object[] {"E1", 1}
+                        new object[] { "E1", 1 }
                     });
-                EPAssertionUtil.AssertEqualsExactOrder(new int?[] {0}, received.Second.ToArray());
+                EPAssertionUtil.AssertEqualsExactOrder(new int?[] { 0 }, received.Second.ToArray());
 
                 env.UndeployAll();
             }
-            
-            public ISet<RegressionFlag> Flags() {
+
+            public ISet<RegressionFlag> Flags()
+            {
                 return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }
@@ -115,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "DefaultSupportCaptureOp(outstream) {}",
                     path);
 
-                var source = new DefaultSupportSourceOp(new object[] {MakeMap("E1", 1)});
+                var source = new DefaultSupportSourceOp(new object[] { MakeMap("E1", 1) });
                 var outputOne = new MyMapOutputOp();
                 var outputTwo = new DefaultSupportCaptureOp(env.Container.LockManager());
                 var options =
@@ -126,23 +129,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 EPAssertionUtil.AssertPropsPerRow(
                     outputOne.GetAndReset().ToArray(),
-                    new[] {"P0", "P1"},
+                    new[] { "P0", "P1" },
                     new[] {
-                        new object[] {"E1", 1}
+                        new object[] { "E1", 1 }
                     });
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Container,
                     outputTwo.GetAndReset()[0].UnwrapIntoArray<object>(),
-                    new[] {"P0", "P1"},
+                    new[] { "P0", "P1" },
                     new[] {
-                        new object[] {"E1", 1}
+                        new object[] { "E1", 1 }
                     });
 
                 env.UndeployAll();
             }
-            
-            public ISet<RegressionFlag> Flags() {
+
+            public ISet<RegressionFlag> Flags()
+            {
                 return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }

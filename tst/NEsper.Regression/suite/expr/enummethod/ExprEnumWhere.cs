@@ -25,9 +25,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithEvents(execs);
             WithScalar(execs);
-            WithScalarBoolean(execs);
+            With(ScalarBoolean)(execs);
+#endif
             return execs;
         }
 

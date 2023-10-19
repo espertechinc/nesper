@@ -28,8 +28,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithParameterInjectionCallback(execs);
-            WithOperatorInjectionCallback(execs);
+            With(OperatorInjectionCallback)(execs);
+#endif
             return execs;
         }
 

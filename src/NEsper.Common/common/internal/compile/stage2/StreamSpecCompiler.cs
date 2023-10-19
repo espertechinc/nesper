@@ -837,7 +837,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             ISet<string> arrayTags)
         {
             if (arrayTags == null || arrayTags.IsEmpty()) {
-                return new int[0];
+                return Array.Empty<int>();
             }
 
             var indexes = new int[arrayTags.Count];

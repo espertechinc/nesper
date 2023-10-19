@@ -22,212 +22,245 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
-	public class ExprFilterOptimizablePerf
-	{
+    public class ExprFilterOptimizablePerf
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithOr(execs);
+            WithEqualsWithFunc(execs);
+            WithTrueWithFunc(execs);
+            WithEqualsDeclaredExpr(execs);
+            WithTrueDeclaredExpr(execs);
+            return execs;
+        }
 
-		public static ICollection<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> executions = new List<RegressionExecution>();
-			executions.Add(new ExprFilterOptimizablePerfOr());
-			executions.Add(new ExprFilterOptimizablePerfEqualsWithFunc());
-			executions.Add(new ExprFilterOptimizablePerfTrueWithFunc());
-			executions.Add(new ExprFilterOptimizablePerfEqualsDeclaredExpr());
-			executions.Add(new ExprFilterOptimizablePerfTrueDeclaredExpr());
-			return executions;
-		}
+        public static IList<RegressionExecution> WithTrueDeclaredExpr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptimizablePerfTrueDeclaredExpr());
+            return execs;
+        }
 
-		private class ExprFilterOptimizablePerfEqualsWithFunc : RegressionExecution
-		{
-			public ISet<RegressionFlag> Flags()
-			{
-				return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
-			}
+        public static IList<RegressionExecution> WithEqualsDeclaredExpr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptimizablePerfEqualsDeclaredExpr());
+            return execs;
+        }
 
-			public void Run(RegressionEnvironment env)
-			{
-				// func(...) = value
-				TryOptimizableEquals(
-					env,
-					new RegressionPath(),
-					"select * from SupportBean(libSplit(theString) = !NUM!)",
-					10);
-			}
-		}
+        public static IList<RegressionExecution> WithTrueWithFunc(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptimizablePerfTrueWithFunc());
+            return execs;
+        }
 
-		private class ExprFilterOptimizablePerfTrueWithFunc : RegressionExecution
-		{
-			public ISet<RegressionFlag> Flags()
-			{
-				return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
-			}
+        public static IList<RegressionExecution> WithEqualsWithFunc(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptimizablePerfEqualsWithFunc());
+            return execs;
+        }
 
-			public void Run(RegressionEnvironment env)
-			{
-				// func(...) implied true
-				TryOptimizableBoolean(env, new RegressionPath(), "select * from SupportBean(libE1True(theString))");
-			}
-		}
+        public static IList<RegressionExecution> WithOr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ExprFilterOptimizablePerfOr());
+            return execs;
+        }
 
-		private class ExprFilterOptimizablePerfEqualsDeclaredExpr : RegressionExecution
-		{
-			public ISet<RegressionFlag> Flags()
-			{
-				return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
-			}
+        private class ExprFilterOptimizablePerfEqualsWithFunc : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
 
-			public void Run(RegressionEnvironment env)
-			{
-				// declared expression (...) = value
-				var path = new RegressionPath();
-				env.CompileDeploy(
-						"@name('create-expr') @public create expression thesplit {theString => libSplit(theString)}",
-						path)
-					.AddListener("create-expr");
-				TryOptimizableEquals(env, path, "select * from SupportBean(thesplit(*) = !NUM!)", 10);
-			}
-		}
+            public void Run(RegressionEnvironment env)
+            {
+                // func(...) = value
+                TryOptimizableEquals(
+                    env,
+                    new RegressionPath(),
+                    "select * from SupportBean(libSplit(theString) = !NUM!)",
+                    10);
+            }
+        }
 
-		private class ExprFilterOptimizablePerfTrueDeclaredExpr : RegressionExecution
-		{
-			public ISet<RegressionFlag> Flags()
-			{
-				return Collections.Set(
-					RegressionFlag.EXCLUDEWHENINSTRUMENTED,
-					RegressionFlag.OBSERVEROPS,
-					RegressionFlag.PERFORMANCE);
-			}
+        private class ExprFilterOptimizablePerfTrueWithFunc : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
 
-			public void Run(RegressionEnvironment env)
-			{
-				// declared expression (...) implied true
-				var path = new RegressionPath();
-				env.CompileDeploy(
-						"@name('create-expr') @public create expression theE1Test {theString => libE1True(theString)}",
-						path)
-					.AddListener("create-expr");
-				TryOptimizableBoolean(env, path, "select * from SupportBean(theE1Test(*))");
-			}
-		}
+            public void Run(RegressionEnvironment env)
+            {
+                // func(...) implied true
+                TryOptimizableBoolean(env, new RegressionPath(), "select * from SupportBean(libE1True(theString))");
+            }
+        }
 
-		private class ExprFilterOptimizablePerfOr : RegressionExecution
-		{
-			public ISet<RegressionFlag> Flags()
-			{
-				return Collections.Set(
-					RegressionFlag.EXCLUDEWHENINSTRUMENTED,
-					RegressionFlag.OBSERVEROPS,
-					RegressionFlag.PERFORMANCE);
-			}
+        private class ExprFilterOptimizablePerfEqualsDeclaredExpr : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
+            }
 
-			public void Run(RegressionEnvironment env)
-			{
-				var listener = new SupportUpdateListener();
-				for (var i = 0; i < 100; i++) {
-					var epl = "@name('s" +
-					          i +
-					          "') select * from SupportBean(theString = '" +
-					          i +
-					          "' or intPrimitive=" +
-					          i +
-					          ")";
-					var compiled = env.Compile(epl);
-					env.Deploy(compiled).Statement("s" + i).AddListener(listener);
-				}
+            public void Run(RegressionEnvironment env)
+            {
+                // declared expression (...) = value
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                        "@name('create-expr') @public create expression thesplit {theString => libSplit(theString)}",
+                        path)
+                    .AddListener("create-expr");
+                TryOptimizableEquals(env, path, "select * from SupportBean(thesplit(*) = !NUM!)", 10);
+            }
+        }
 
-				var start = PerformanceObserver.NanoTime;
-				// Console.WriteLine("Starting " + DateTime.print(new Date()));
-				for (var i = 0; i < 10000; i++) {
-					env.SendEventBean(new SupportBean("100", 1));
-					Assert.IsTrue(listener.IsInvoked);
-					listener.Reset();
-				}
+        private class ExprFilterOptimizablePerfTrueDeclaredExpr : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(
+                    RegressionFlag.EXCLUDEWHENINSTRUMENTED,
+                    RegressionFlag.OBSERVEROPS,
+                    RegressionFlag.PERFORMANCE);
+            }
 
-				// Console.WriteLine("Ending " + DateTime.print(new Date()));
-				var delta = (PerformanceObserver.NanoTime - start) / 1000d / 1000d;
-				// Console.WriteLine("Delta=" + (delta + " msec"));
-				Assert.IsTrue(delta < 500);
+            public void Run(RegressionEnvironment env)
+            {
+                // declared expression (...) implied true
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                        "@name('create-expr') @public create expression theE1Test {theString => libE1True(theString)}",
+                        path)
+                    .AddListener("create-expr");
+                TryOptimizableBoolean(env, path, "select * from SupportBean(theE1Test(*))");
+            }
+        }
 
-				env.UndeployAll();
-			}
-		}
+        private class ExprFilterOptimizablePerfOr : RegressionExecution
+        {
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(
+                    RegressionFlag.EXCLUDEWHENINSTRUMENTED,
+                    RegressionFlag.OBSERVEROPS,
+                    RegressionFlag.PERFORMANCE);
+            }
 
-		private static void TryOptimizableEquals(
-			RegressionEnvironment env,
-			RegressionPath path,
-			string epl,
-			int numStatements)
-		{
-			// test function returns lookup value and "equals"
-			for (var i = 0; i < numStatements; i++) {
-				var text = "@name('s" + i + "') " + epl.Replace("!NUM!", Convert.ToString(i));
-				env.CompileDeploy(text, path).AddListener("s" + i);
-			}
+            public void Run(RegressionEnvironment env)
+            {
+                var listener = new SupportUpdateListener();
+                for (var i = 0; i < 100; i++) {
+                    var epl = "@name('s" +
+                              i +
+                              "') select * from SupportBean(theString = '" +
+                              i +
+                              "' or intPrimitive=" +
+                              i +
+                              ")";
+                    var compiled = env.Compile(epl);
+                    env.Deploy(compiled).Statement("s" + i).AddListener(listener);
+                }
 
-			env.Milestone(0);
+                var start = PerformanceObserver.NanoTime;
+                // Console.WriteLine("Starting " + DateTime.print(new Date()));
+                for (var i = 0; i < 10000; i++) {
+                    env.SendEventBean(new SupportBean("100", 1));
+                    Assert.IsTrue(listener.IsInvoked);
+                    listener.Reset();
+                }
 
-			var startTime = PerformanceObserver.MilliTime;
-			SupportStaticMethodLib.ResetCountInvoked();
-			var loops = 1000;
-			for (var i = 0; i < loops; i++) {
-				env.SendEventBean(new SupportBean("E_" + i % numStatements, 0));
-				var stmtName = "s" + i % numStatements;
-				env.AssertListenerInvoked(stmtName);
-			}
+                // Console.WriteLine("Ending " + DateTime.print(new Date()));
+                var delta = (PerformanceObserver.NanoTime - start) / 1000d / 1000d;
+                // Console.WriteLine("Delta=" + (delta + " msec"));
+                Assert.IsTrue(delta < 500);
 
-			var delta = PerformanceObserver.MilliTime - startTime;
-			Assert.AreEqual(loops, SupportStaticMethodLib.CountInvoked);
+                env.UndeployAll();
+            }
+        }
 
-			Assert.That(delta, Is.LessThan(1000), "Delta is " + delta);
-			env.UndeployAll();
-		}
+        private static void TryOptimizableEquals(
+            RegressionEnvironment env,
+            RegressionPath path,
+            string epl,
+            int numStatements)
+        {
+            // test function returns lookup value and "equals"
+            for (var i = 0; i < numStatements; i++) {
+                var text = "@name('s" + i + "') " + epl.Replace("!NUM!", Convert.ToString(i));
+                env.CompileDeploy(text, path).AddListener("s" + i);
+            }
 
-		private static void TryOptimizableBoolean(
-			RegressionEnvironment env,
-			RegressionPath path,
-			string epl)
-		{
+            env.Milestone(0);
 
-			// test function returns lookup value and "equals"
-			var count = 10;
-			for (var i = 0; i < count; i++) {
-				var compiled = env.Compile("@name('s" + i + "')" + epl, path);
-				var admin = env.Runtime.DeploymentService;
-				try {
-					admin.Deploy(compiled);
-				}
-				catch (EPDeployException ex) {
-					Console.WriteLine(ex.StackTrace);
-					Assert.Fail();
-				}
-			}
+            var startTime = PerformanceObserver.MilliTime;
+            SupportStaticMethodLib.ResetCountInvoked();
+            var loops = 1000;
+            for (var i = 0; i < loops; i++) {
+                env.SendEventBean(new SupportBean("E_" + i % numStatements, 0));
+                var stmtName = "s" + i % numStatements;
+                env.AssertListenerInvoked(stmtName);
+            }
 
-			env.Milestone(0);
+            var delta = PerformanceObserver.MilliTime - startTime;
+            Assert.AreEqual(loops, SupportStaticMethodLib.CountInvoked);
 
-			var listener = new SupportUpdateListener();
-			for (var i = 0; i < 10; i++) {
-				env.Statement("s" + i).AddListener(listener);
-			}
+            Assert.That(delta, Is.LessThan(1000), "Delta is " + delta);
+            env.UndeployAll();
+        }
 
-			var startTime = PerformanceObserver.MilliTime;
-			SupportStaticMethodLib.ResetCountInvoked();
-			var loops = 10000;
-			for (var i = 0; i < loops; i++) {
-				var key = "E_" + i % 100;
-				env.SendEventBean(new SupportBean(key, 0));
-				if (key.Equals("E_1")) {
-					Assert.AreEqual(count, listener.NewDataList.Count);
-					listener.Reset();
-				}
-				else {
-					Assert.IsFalse(listener.IsInvoked);
-				}
-			}
+        private static void TryOptimizableBoolean(
+            RegressionEnvironment env,
+            RegressionPath path,
+            string epl)
+        {
+            // test function returns lookup value and "equals"
+            var count = 10;
+            for (var i = 0; i < count; i++) {
+                var compiled = env.Compile("@name('s" + i + "')" + epl, path);
+                var admin = env.Runtime.DeploymentService;
+                try {
+                    admin.Deploy(compiled);
+                }
+                catch (EPDeployException ex) {
+                    Console.WriteLine(ex.StackTrace);
+                    Assert.Fail();
+                }
+            }
 
-			var delta = PerformanceObserver.MilliTime - startTime;
-			Assert.AreEqual(loops, SupportStaticMethodLib.CountInvoked);
+            env.Milestone(0);
 
-			Assert.That(delta, Is.LessThan(1000), "Delta is " + delta);
-			env.UndeployAll();
-		}
-	}
+            var listener = new SupportUpdateListener();
+            for (var i = 0; i < 10; i++) {
+                env.Statement("s" + i).AddListener(listener);
+            }
+
+            var startTime = PerformanceObserver.MilliTime;
+            SupportStaticMethodLib.ResetCountInvoked();
+            var loops = 10000;
+            for (var i = 0; i < loops; i++) {
+                var key = "E_" + i % 100;
+                env.SendEventBean(new SupportBean(key, 0));
+                if (key.Equals("E_1")) {
+                    Assert.AreEqual(count, listener.NewDataList.Count);
+                    listener.Reset();
+                }
+                else {
+                    Assert.IsFalse(listener.IsInvoked);
+                }
+            }
+
+            var delta = PerformanceObserver.MilliTime - startTime;
+            Assert.AreEqual(loops, SupportStaticMethodLib.CountInvoked);
+
+            Assert.That(delta, Is.LessThan(1000), "Delta is " + delta);
+            env.UndeployAll();
+        }
+    }
 } // end of namespace

@@ -131,6 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
 
             // Handle declared-expression
             var declaredExpr = ExprDeclaredHelper.GetExistsDeclaredExpr(
+                mapContext.Container,
                 chainFirstName,
                 chainFirstParams,
                 mapContext.ExpressionDeclarations.Values,

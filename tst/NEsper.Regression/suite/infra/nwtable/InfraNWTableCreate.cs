@@ -18,61 +18,70 @@ using static com.espertech.esper.regressionlib.support.events.SupportGenericColU
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
-	public class InfraNWTableCreate
-	{
-		public static ICollection<RegressionExecution> Executions()
-		{
-			var execs = new List<RegressionExecution>();
-			execs.Add(new InfraCreateGenericColType(true));
-			execs.Add(new InfraCreateGenericColType(false));
-			return execs;
-		}
+    public class InfraNWTableCreate
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            var execs = new List<RegressionExecution>();
+            Withe(execs);
+            return execs;
+        }
 
-		private class InfraCreateGenericColType : RegressionExecution
-		{
-			private readonly bool namedWindow;
+        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new InfraCreateGenericColType(true));
+            execs.Add(new InfraCreateGenericColType(false));
+            return execs;
+        }
 
-			public InfraCreateGenericColType(bool namedWindow)
-			{
-				this.namedWindow = namedWindow;
-			}
+        private class InfraCreateGenericColType : RegressionExecution
+        {
+            private readonly bool namedWindow;
 
-			public void Run(RegressionEnvironment env)
-			{
-				var epl = "@public @buseventtype create schema MyInputEvent(" +
-				          SupportGenericColUtil.AllNamesAndTypes() +
-				          ");\n";
-				epl += "@name('infra')";
-				epl += namedWindow ? "create window MyInfra#keepall as (" : "create table MyInfra as (";
-				epl += SupportGenericColUtil.AllNamesAndTypes();
-				epl += ");\n";
-				epl += "on MyInputEvent merge MyInfra insert select " + SupportGenericColUtil.AllNames() + ";\n";
+            public InfraCreateGenericColType(bool namedWindow)
+            {
+                this.namedWindow = namedWindow;
+            }
 
-				env.CompileDeploy(epl);
-				env.AssertStatement("infra", statement => AssertPropertyTypes(statement.EventType));
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@public @buseventtype create schema MyInputEvent(" +
+                          SupportGenericColUtil.AllNamesAndTypes() +
+                          ");\n";
+                epl += "@name('infra')";
+                epl += namedWindow ? "create window MyInfra#keepall as (" : "create table MyInfra as (";
+                epl += SupportGenericColUtil.AllNamesAndTypes();
+                epl += ");\n";
+                epl += "on MyInputEvent merge MyInfra insert select " + SupportGenericColUtil.AllNames() + ";\n";
 
-				env.SendEventMap(SupportGenericColUtil.GetSampleEvent(), "MyInputEvent");
+                env.CompileDeploy(epl);
+                env.AssertStatement("infra", statement => AssertPropertyTypes(statement.EventType));
 
-				env.Milestone(0);
+                env.SendEventMap(SupportGenericColUtil.GetSampleEvent(), "MyInputEvent");
 
-				env.AssertIterator("infra", iterator => SupportGenericColUtil.Compare(env.GetEnumerator("infra").Advance()));
+                env.Milestone(0);
 
-				env.UndeployAll();
-			}
+                env.AssertIterator(
+                    "infra",
+                    iterator => SupportGenericColUtil.Compare(env.GetEnumerator("infra").Advance()));
 
-			public string Name()
-			{
-				return this.GetType().Name +
-				       "{" +
-				       "namedWindow=" +
-				       namedWindow +
-				       '}';
-			}
+                env.UndeployAll();
+            }
 
-			public ISet<RegressionFlag> Flags()
-			{
-				return Collections.Set(RegressionFlag.SERDEREQUIRED);
-			}
-		}
-	}
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "namedWindow=" +
+                       namedWindow +
+                       '}';
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.SERDEREQUIRED);
+            }
+        }
+    }
 } // end of namespace

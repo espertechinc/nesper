@@ -52,8 +52,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             env.SendEventBean(@event);
             env.AssertPropsNew(
                 "s0",
-                new [] { "c0.Id","c1.Id","c2.Id" },
-                new object[] {"id1", "id2", "id3"});
+                new[] { "c0.Id", "c1.Id", "c2.Id" },
+                new object[] { "id1", "id2", "id3" });
 
             env.UndeployAll();
         }

@@ -12,55 +12,64 @@ using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
-	public class ClientExtendPatternGuard : RegressionExecution {
+    public class ClientExtendPatternGuard : RegressionExecution
+    {
+        public void Run(RegressionEnvironment env)
+        {
+            RunAssertionGuard(env);
+            RunAssertionGuardVariable(env);
+            RunAssertionInvalid(env);
+        }
 
-	    public void Run(RegressionEnvironment env) {
-	        RunAssertionGuard(env);
-	        RunAssertionGuardVariable(env);
-	        RunAssertionInvalid(env);
-	    }
+        private void RunAssertionGuard(RegressionEnvironment env)
+        {
+            if (env.IsHA) {
+                return;
+            }
 
-	    private void RunAssertionGuard(RegressionEnvironment env) {
-	        if (env.IsHA) {
-	            return;
-	        }
-	        var stmtText = "@name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(10)]";
-	        env.CompileDeploy(stmtText).AddListener("s0");
+            var stmtText = "@name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(10)]";
+            env.CompileDeploy(stmtText).AddListener("s0");
 
-	        for (var i = 0; i < 10; i++) {
-	            env.SendEventBean(new SupportBean());
-	            env.AssertListenerInvoked("s0");
-	        }
+            for (var i = 0; i < 10; i++) {
+                env.SendEventBean(new SupportBean());
+                env.AssertListenerInvoked("s0");
+            }
 
-	        env.SendEventBean(new SupportBean());
-	        env.AssertListenerNotInvoked("s0");
+            env.SendEventBean(new SupportBean());
+            env.AssertListenerNotInvoked("s0");
 
-	        env.UndeployAll();
-	    }
+            env.UndeployAll();
+        }
 
-	    private void RunAssertionGuardVariable(RegressionEnvironment env) {
-	        if (env.IsHA) {
-	            return;
-	        }
-	        var path = new RegressionPath();
-	        env.CompileDeploy("@public create variable int COUNT_TO = 3", path);
-	        var stmtText = "@name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(COUNT_TO)]";
-	        env.CompileDeploy(stmtText, path).AddListener("s0");
+        private void RunAssertionGuardVariable(RegressionEnvironment env)
+        {
+            if (env.IsHA) {
+                return;
+            }
 
-	        for (var i = 0; i < 3; i++) {
-	            env.SendEventBean(new SupportBean());
-	            env.AssertListenerInvoked("s0");
-	        }
+            var path = new RegressionPath();
+            env.CompileDeploy("@public create variable int COUNT_TO = 3", path);
+            var stmtText = "@name('s0') select * from pattern [(every SupportBean) where myplugin:count_to(COUNT_TO)]";
+            env.CompileDeploy(stmtText, path).AddListener("s0");
 
-	        env.SendEventBean(new SupportBean());
-	        env.AssertListenerNotInvoked("s0");
+            for (var i = 0; i < 3; i++) {
+                env.SendEventBean(new SupportBean());
+                env.AssertListenerInvoked("s0");
+            }
 
-	        env.UndeployAll();
-	    }
+            env.SendEventBean(new SupportBean());
+            env.AssertListenerNotInvoked("s0");
 
-	    private void RunAssertionInvalid(RegressionEnvironment env) {
-	        env.TryInvalidCompile("select * from pattern [every SupportBean where namespace:name(10)]",
-	            "Failed to resolve pattern guard 'SupportBean where namespace:name(10)': Error casting guard forge instance to " + typeof(GuardForge).FullName + " interface for guard 'name'");
-	    }
-	}
+            env.UndeployAll();
+        }
+
+        private void RunAssertionInvalid(RegressionEnvironment env)
+        {
+            env.TryInvalidCompile(
+                "select * from pattern [every SupportBean where namespace:name(10)]",
+                "Failed to resolve pattern guard 'SupportBean where namespace:name(10)': Error casting guard forge instance to " +
+                typeof(GuardForge).FullName +
+                " interface for guard 'name'");
+        }
+    }
 } // end of namespace

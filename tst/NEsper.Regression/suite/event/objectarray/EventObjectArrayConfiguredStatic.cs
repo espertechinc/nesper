@@ -29,17 +29,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                     Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("map"));
                     Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("bean"));
                 });
-            
+
             env.CompileDeploy("@name('s0') select bean, TheString, map('key'), bean.TheString from MyOAType");
             env.AddListener("s0");
 
-            env.AssertStatement("s0", statement => Assert.AreEqual(typeof(object[]), statement.EventType.UnderlyingType));
+            env.AssertStatement(
+                "s0",
+                statement => Assert.AreEqual(typeof(object[]), statement.EventType.UnderlyingType));
 
             var bean = new SupportBean("E1", 1);
-            env.SendEventObjectArray(new object[] {bean, "abc", Collections.SingletonDataMap("key", "value")}, "MyOAType");
-            env.AssertPropsNew("s0",
-                new [] { "bean","TheString","map('key')","bean.TheString" },
-                new object[] {bean, "abc", "value", "E1"});
+            env.SendEventObjectArray(
+                new object[] { bean, "abc", Collections.SingletonDataMap("key", "value") },
+                "MyOAType");
+            env.AssertPropsNew(
+                "s0",
+                new[] { "bean", "TheString", "map('key')", "bean.TheString" },
+                new object[] { bean, "abc", "value", "E1" });
 
             env.UndeployAll();
         }

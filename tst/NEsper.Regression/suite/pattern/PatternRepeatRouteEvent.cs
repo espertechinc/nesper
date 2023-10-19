@@ -22,9 +22,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithSingle(execs);
             WithCascade(execs);
-            WithTimer(execs);
+            With(Timer)(execs);
+#endif
             return execs;
         }
 
@@ -205,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 CountReceived++;
                 var newEvents = eventArgs.NewEvents;
-                var theEvent = (SupportBean) newEvents[0].Get("tag");
+                var theEvent = (SupportBean)newEvents[0].Get("tag");
                 var numNewEvents = theEvent.IntPrimitive;
 
                 for (var i = 0; i < numNewEvents; i++) {

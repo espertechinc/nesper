@@ -16,103 +16,156 @@ using com.espertech.esper.regressionlib.support.bean;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
-	public class ViewKeepAll {
+    public class ViewKeepAll
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithSimple(execs);
+            WithIterator(execs);
+            WithWindowStats(execs);
+            return execs;
+        }
 
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new ViewKeepAllSimple());
-	        execs.Add(new ViewKeepAllIterator());
-	        execs.Add(new ViewKeepAllWindowStats());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithWindowStats(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewKeepAllWindowStats());
+            return execs;
+        }
 
-	    public class ViewKeepAllSimple : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var fields = "c0".SplitCsv();
+        public static IList<RegressionExecution> WithIterator(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewKeepAllIterator());
+            return execs;
+        }
 
-	            var epl = "@name('s0') select irstream theString as c0 from SupportBean#keepall()";
-	            env.CompileDeployAddListenerMileZero(epl, "s0");
+        public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ViewKeepAllSimple());
+            return execs;
+        }
 
-	            env.AssertPropsPerRowIterator("s0", fields, Array.Empty<object[]>());
-	            SendSupportBean(env, "E1");
-	            env.AssertPropsNew("s0", fields, new object[]{"E1"});
+        public class ViewKeepAllSimple : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "c0".SplitCsv();
 
-	            env.Milestone(1);
+                var epl = "@name('s0') select irstream theString as c0 from SupportBean#keepall()";
+                env.CompileDeployAddListenerMileZero(epl, "s0");
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E1"}});
-	            SendSupportBean(env, "E2");
-	            env.AssertPropsNew("s0", fields, new object[]{"E2"});
+                env.AssertPropsPerRowIterator("s0", fields, Array.Empty<object[]>());
+                SendSupportBean(env, "E1");
+                env.AssertPropsNew("s0", fields, new object[] { "E1" });
 
-	            env.Milestone(2);
+                env.Milestone(1);
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}});
-	            SendSupportBean(env, "E3");
-	            env.AssertPropsNew("s0", fields, new object[]{"E3"});
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { "E1" } });
+                SendSupportBean(env, "E2");
+                env.AssertPropsNew("s0", fields, new object[] { "E2" });
 
-	            env.Milestone(3);
+                env.Milestone(2);
 
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}});
-	            SendSupportBean(env, "E4");
-	            env.AssertPropsNew("s0", fields, new object[]{"E4"});
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{new object[] {"E1"}, new object[] {"E2"}, new object[] {"E3"}, new object[] {"E4"}});
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E1" }, new object[] { "E2" } });
+                SendSupportBean(env, "E3");
+                env.AssertPropsNew("s0", fields, new object[] { "E3" });
 
-	            env.Milestone(4);
+                env.Milestone(3);
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E3" } });
+                SendSupportBean(env, "E4");
+                env.AssertPropsNew("s0", fields, new object[] { "E4" });
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][]
+                        { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E3" }, new object[] { "E4" } });
 
-	    private class ViewKeepAllIterator : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var fields = "symbol,price".SplitCsv();
-	            var epl = "@name('s0') select symbol, price from SupportMarketDataBean#keepall";
-	            env.CompileDeployAddListenerMileZero(epl, "s0");
+                env.Milestone(4);
 
-	            SendEvent(env, "ABC", 20);
-	            SendEvent(env, "DEF", 100);
-	            env.AssertPropsPerRowIterator("s0", fields, new object[][]{new object[] {"ABC", 20d}, new object[] {"DEF", 100d}});
+                env.UndeployAll();
+            }
+        }
 
-	            SendEvent(env, "EFG", 50);
+        private class ViewKeepAllIterator : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = "symbol,price".SplitCsv();
+                var epl = "@name('s0') select symbol, price from SupportMarketDataBean#keepall";
+                env.CompileDeployAddListenerMileZero(epl, "s0");
 
-	            env.Milestone(1);
+                SendEvent(env, "ABC", 20);
+                SendEvent(env, "DEF", 100);
+                env.AssertPropsPerRowIterator(
+                    "s0",
+                    fields,
+                    new object[][] { new object[] { "ABC", 20d }, new object[] { "DEF", 100d } });
 
-	            env.AssertPropsPerRowIterator("s0", fields, new object[][]{new object[] {"ABC", 20d}, new object[] {"DEF", 100d}, new object[] {"EFG", 50d}});
+                SendEvent(env, "EFG", 50);
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.Milestone(1);
 
-	    private class ViewKeepAllWindowStats : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select irstream symbol, count(*) as cnt, sum(price) as mysum from SupportMarketDataBean#keepall group by symbol";
-	            env.CompileDeployAddListenerMileZero(epl, "s0");
+                env.AssertPropsPerRowIterator(
+                    "s0",
+                    fields,
+                    new object[][]
+                        { new object[] { "ABC", 20d }, new object[] { "DEF", 100d }, new object[] { "EFG", 50d } });
 
-	            SendEvent(env, "S1", 100);
-	            var fields = new string[]{"symbol", "cnt", "mysum"};
-	            env.AssertPropsIRPair("s0", fields, new object[]{"S1", 1L, 100d}, new object[]{"S1", 0L, null});
+                env.UndeployAll();
+            }
+        }
 
-	            SendEvent(env, "S2", 50);
-	            env.AssertPropsIRPair("s0", fields, new object[]{"S2", 1L, 50d}, new object[]{"S2", 0L, null});
+        private class ViewKeepAllWindowStats : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('s0') select irstream symbol, count(*) as cnt, sum(price) as mysum from SupportMarketDataBean#keepall group by symbol";
+                env.CompileDeployAddListenerMileZero(epl, "s0");
 
-	            env.Milestone(1);
+                SendEvent(env, "S1", 100);
+                var fields = new string[] { "symbol", "cnt", "mysum" };
+                env.AssertPropsIRPair("s0", fields, new object[] { "S1", 1L, 100d }, new object[] { "S1", 0L, null });
 
-	            SendEvent(env, "S1", 5);
-	            env.AssertPropsIRPair("s0", fields, new object[]{"S1", 2L, 105d}, new object[]{"S1", 1L, 100d});
+                SendEvent(env, "S2", 50);
+                env.AssertPropsIRPair("s0", fields, new object[] { "S2", 1L, 50d }, new object[] { "S2", 0L, null });
 
-	            SendEvent(env, "S2", -1);
-	            env.AssertPropsIRPair("s0", fields, new object[]{"S2", 2L, 49d}, new object[]{"S2", 1L, 50d});
+                env.Milestone(1);
 
-	            env.UndeployAll();
-	        }
-	    }
+                SendEvent(env, "S1", 5);
+                env.AssertPropsIRPair("s0", fields, new object[] { "S1", 2L, 105d }, new object[] { "S1", 1L, 100d });
 
-	    private static void SendSupportBean(RegressionEnvironment env, string @string) {
-	        env.SendEventBean(new SupportBean(@string, 0));
-	    }
+                SendEvent(env, "S2", -1);
+                env.AssertPropsIRPair("s0", fields, new object[] { "S2", 2L, 49d }, new object[] { "S2", 1L, 50d });
 
-	    private static void SendEvent(RegressionEnvironment env, string symbol, double price) {
-	        var theEvent = new SupportMarketDataBean(symbol, price, 0L, "");
-	        env.SendEventBean(theEvent);
-	    }
-	}
+                env.UndeployAll();
+            }
+        }
+
+        private static void SendSupportBean(
+            RegressionEnvironment env,
+            string @string)
+        {
+            env.SendEventBean(new SupportBean(@string, 0));
+        }
+
+        private static void SendEvent(
+            RegressionEnvironment env,
+            string symbol,
+            double price)
+        {
+            var theEvent = new SupportMarketDataBean(symbol, price, 0L, "");
+            env.SendEventBean(theEvent);
+        }
+    }
 } // end of namespace

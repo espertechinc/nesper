@@ -21,247 +21,280 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.context
 {
-	public class ContextLifecycle
-	{
+    public class ContextLifecycle
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            var execs = new List<RegressionExecution>();
+            WithSplitStream(execs);
+            WithVirtualDataWindow(execs);
+            WithNWOtherContextOnExpr(execs);
+            WithInvalid(execs);
+            WithSimple(execs);
+            return execs;
+        }
 
-		public static ICollection<RegressionExecution> Executions()
-		{
-			var execs = new List<RegressionExecution>();
-			execs.Add(new ContextLifecycleSplitStream());
-			execs.Add(new ContextLifecycleVirtualDataWindow());
-			execs.Add(new ContextLifecycleNWOtherContextOnExpr());
-			execs.Add(new ContextLifecycleInvalid());
-			execs.Add(new ContextLifecycleSimple());
-			return execs;
-		}
+        public static IList<RegressionExecution> WithSimple(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextLifecycleSimple());
+            return execs;
+        }
 
-		private class ContextLifecycleSplitStream : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var path = new RegressionPath();
-				var eplOne = "@Public create context CtxSegmentedByTarget partition by theString from SupportBean;" +
-				             "@name('out') @public context CtxSegmentedByTarget on SupportBean insert into NewSupportBean select * where intPrimitive = 100;";
-				env.CompileDeploy(eplOne, path);
-				env.CompileDeploy("@name('s0') select * from NewSupportBean", path).AddListener("s0");
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextLifecycleInvalid());
+            return execs;
+        }
 
-				env.SendEventBean(new SupportBean("E1", 1));
-				env.AssertListenerNotInvoked("s0");
+        public static IList<RegressionExecution> WithNWOtherContextOnExpr(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextLifecycleNWOtherContextOnExpr());
+            return execs;
+        }
 
-				env.SendEventBean(new SupportBean("E1", 100));
-				env.AssertListenerInvoked("s0");
-				env.UndeployAll();
-				path.Clear();
+        public static IList<RegressionExecution> WithVirtualDataWindow(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextLifecycleVirtualDataWindow());
+            return execs;
+        }
 
-				// test with subquery
-				var fields = "mymax".SplitCsv();
-				var eplTwo = "@Public create context CtxSegmentedByTarget partition by theString from SupportBean;" +
-				             "@Public context CtxSegmentedByTarget create window NewEvent#unique(theString) as SupportBean;" +
-				             "@name('out') @public context CtxSegmentedByTarget on SupportBean " +
-				             "insert into NewEvent select * where intPrimitive = 100 " +
-				             "insert into NewEventTwo select (select max(intPrimitive) from NewEvent) as mymax  " +
-				             "output all;";
-				env.CompileDeploy(eplTwo, path);
-				env.CompileDeploy("@name('s0') select * from NewEventTwo", path).AddListener("s0");
-				env.SendEventBean(new SupportBean("E1", 1));
-				env.AssertPropsNew("s0", fields, new object[] { null });
+        public static IList<RegressionExecution> WithSplitStream(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ContextLifecycleSplitStream());
+            return execs;
+        }
 
-				env.SendEventBean(new SupportBean("E1", 100));
-				env.AssertPropsNew("s0", fields, new object[] { null });
+        private class ContextLifecycleSplitStream : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                var eplOne = "@Public create context CtxSegmentedByTarget partition by theString from SupportBean;" +
+                             "@name('out') @public context CtxSegmentedByTarget on SupportBean insert into NewSupportBean select * where intPrimitive = 100;";
+                env.CompileDeploy(eplOne, path);
+                env.CompileDeploy("@name('s0') select * from NewSupportBean", path).AddListener("s0");
 
-				env.SendEventBean(new SupportBean("E1", 0));
-				env.AssertPropsNew("s0", fields, new object[] { 100 });
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.AssertListenerNotInvoked("s0");
 
-				env.UndeployAll();
-			}
-		}
+                env.SendEventBean(new SupportBean("E1", 100));
+                env.AssertListenerInvoked("s0");
+                env.UndeployAll();
+                path.Clear();
 
-		private class ContextLifecycleVirtualDataWindow : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				SupportVirtualDWFactory.Windows.Clear();
-				SupportVirtualDWFactory.IsDestroyed = false;
+                // test with subquery
+                var fields = "mymax".SplitCsv();
+                var eplTwo = "@Public create context CtxSegmentedByTarget partition by theString from SupportBean;" +
+                             "@Public context CtxSegmentedByTarget create window NewEvent#unique(theString) as SupportBean;" +
+                             "@name('out') @public context CtxSegmentedByTarget on SupportBean " +
+                             "insert into NewEvent select * where intPrimitive = 100 " +
+                             "insert into NewEventTwo select (select max(intPrimitive) from NewEvent) as mymax  " +
+                             "output all;";
+                env.CompileDeploy(eplTwo, path);
+                env.CompileDeploy("@name('s0') select * from NewEventTwo", path).AddListener("s0");
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.AssertPropsNew("s0", fields, new object[] { null });
 
-				var path = new RegressionPath();
-				env.CompileDeploy(
-					"@Public create context CtxSegmented as partition by theString from SupportBean",
-					path);
-				env.CompileDeploy(
-					"@Public context CtxSegmented create window TestVDWWindow.test:vdw() as SupportBean",
-					path);
-				env.CompileDeploy("select * from TestVDWWindow", path);
+                env.SendEventBean(new SupportBean("E1", 100));
+                env.AssertPropsNew("s0", fields, new object[] { null });
 
-				env.SendEventBean(new SupportBean("E1", 1));
-				env.SendEventBean(new SupportBean("E2", 2));
-				env.AssertThat(
-					() => Assert.AreEqual(
-						2,
-						SupportVirtualDWFactory.Windows.Count)); // Independent windows for independent contexts
+                env.SendEventBean(new SupportBean("E1", 0));
+                env.AssertPropsNew("s0", fields, new object[] { 100 });
 
-				env.UndeployAll();
-				env.AssertThat(
-					() => {
-						foreach (var vdw in SupportVirtualDWFactory.Windows) {
-							Assert.IsTrue(vdw.IsDestroyed);
-						}
+                env.UndeployAll();
+            }
+        }
 
-						Assert.IsTrue(SupportVirtualDWFactory.IsDestroyed);
-					});
-			}
-		}
+        private class ContextLifecycleVirtualDataWindow : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                SupportVirtualDWFactory.Windows.Clear();
+                SupportVirtualDWFactory.IsDestroyed = false;
 
-		private class ContextLifecycleNWOtherContextOnExpr : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var path = new RegressionPath();
-				env.CompileDeploy(
-					"@Public create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)",
-					path);
-				env.CompileDeploy(
-					"@Public create context TenToFive as start (0, 10, *, *, *) end (0, 17, *, *, *)",
-					path);
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@Public create context CtxSegmented as partition by theString from SupportBean",
+                    path);
+                env.CompileDeploy(
+                    "@Public context CtxSegmented create window TestVDWWindow.test:vdw() as SupportBean",
+                    path);
+                env.CompileDeploy("select * from TestVDWWindow", path);
 
-				// Trigger not in context
-				env.CompileDeploy(
-					"@name('createwindow') @public context NineToFive create window MyWindow#keepall as SupportBean",
-					path);
-				env.TryInvalidCompile(
-					path,
-					"on SupportBean_S0 s0 merge MyWindow mw when matched then update set intPrimitive = 1",
-					"Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please declare the same context name");
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.SendEventBean(new SupportBean("E2", 2));
+                env.AssertThat(
+                    () => Assert.AreEqual(
+                        2,
+                        SupportVirtualDWFactory.Windows.Count)); // Independent windows for independent contexts
 
-				// Trigger in different context
-				env.TryInvalidCompile(
-					path,
-					"context TenToFive on SupportBean_S0 s0 merge MyWindow mw when matched then update set intPrimitive = 1",
-					"Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please use the same context instead");
+                env.UndeployAll();
+                env.AssertThat(
+                    () => {
+                        foreach (var vdw in SupportVirtualDWFactory.Windows) {
+                            Assert.IsTrue(vdw.IsDestroyed);
+                        }
 
-				// Named window not in context, trigger in different context
-				env.UndeployModuleContaining("createwindow");
-				env.CompileDeploy("@Public create window MyWindowTwo#keepall as SupportBean", path);
-				env.TryInvalidCompile(
-					path,
-					"context TenToFive on SupportBean_S0 s0 merge MyWindowTwo mw when matched then update set intPrimitive = 1",
-					"Cannot create on-trigger expression: Named window 'MyWindowTwo' was declared without a context");
+                        Assert.IsTrue(SupportVirtualDWFactory.IsDestroyed);
+                    });
+            }
+        }
 
-				env.UndeployAll();
-			}
-		}
+        private class ContextLifecycleNWOtherContextOnExpr : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@Public create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)",
+                    path);
+                env.CompileDeploy(
+                    "@Public create context TenToFive as start (0, 10, *, *, *) end (0, 17, *, *, *)",
+                    path);
 
-		private class ContextLifecycleSimple : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
+                // Trigger not in context
+                env.CompileDeploy(
+                    "@name('createwindow') @public context NineToFive create window MyWindow#keepall as SupportBean",
+                    path);
+                env.TryInvalidCompile(
+                    path,
+                    "on SupportBean_S0 s0 merge MyWindow mw when matched then update set intPrimitive = 1",
+                    "Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please declare the same context name");
 
-				var epl =
-					"@name('context') @public create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)";
-				Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
-				Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
+                // Trigger in different context
+                env.TryInvalidCompile(
+                    path,
+                    "context TenToFive on SupportBean_S0 s0 merge MyWindow mw when matched then update set intPrimitive = 1",
+                    "Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please use the same context instead");
 
-				// create and destroy
-				env.CompileDeploy(epl);
-				Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
-				Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
+                // Named window not in context, trigger in different context
+                env.UndeployModuleContaining("createwindow");
+                env.CompileDeploy("@Public create window MyWindowTwo#keepall as SupportBean", path);
+                env.TryInvalidCompile(
+                    path,
+                    "context TenToFive on SupportBean_S0 s0 merge MyWindowTwo mw when matched then update set intPrimitive = 1",
+                    "Cannot create on-trigger expression: Named window 'MyWindowTwo' was declared without a context");
 
-				env.UndeployModuleContaining("context");
-				Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
+                env.UndeployAll();
+            }
+        }
 
-				// create context, create statement, destroy statement, destroy context
-				var path = new RegressionPath();
-				env.CompileDeploy(epl, path);
-				Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
+        private class ContextLifecycleSimple : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('context') @public create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)";
+                Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
+                Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
 
-				env.CompileDeploy("@name('s0') context NineToFive select * from SupportBean", path);
-				Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
+                // create and destroy
+                env.CompileDeploy(epl);
+                Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
+                Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
 
-				env.UndeployModuleContaining("s0");
-				Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
+                env.UndeployModuleContaining("context");
+                Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
 
-				env.UndeployModuleContaining("context");
-				Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
+                // create context, create statement, destroy statement, destroy context
+                var path = new RegressionPath();
+                env.CompileDeploy(epl, path);
+                Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
 
-				// create same context
-				path.Clear();
-				env.CompileDeploy(epl, path);
-				env.CompileDeploy("@name('C') context NineToFive select * from SupportBean", path);
-				env.CompileDeploy("@name('D') context NineToFive select * from SupportBean", path);
+                env.CompileDeploy("@name('s0') context NineToFive select * from SupportBean", path);
+                Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
 
-				Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
+                env.UndeployModuleContaining("s0");
+                Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
 
-				env.UndeployAll();
-				Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
-				Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
+                env.UndeployModuleContaining("context");
+                Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
 
-				env.UndeployAll();
-			}
+                // create same context
+                path.Clear();
+                env.CompileDeploy(epl, path);
+                env.CompileDeploy("@name('C') context NineToFive select * from SupportBean", path);
+                env.CompileDeploy("@name('D') context NineToFive select * from SupportBean", path);
 
-			public ISet<RegressionFlag> Flags()
-			{
-				return Collections.Set(RegressionFlag.STATICHOOK);
-			}
-		}
+                Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
 
-		private class ContextLifecycleInvalid : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var path = new RegressionPath();
+                env.UndeployAll();
+                Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
+                Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
 
-				// same context twice
-				var eplCreateCtx =
-					"@name('ctx') @public create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)";
-				env.CompileDeploy(eplCreateCtx, path);
-				env.TryInvalidCompile(path, eplCreateCtx, "Context by name 'NineToFive' already exists");
+                env.UndeployAll();
+            }
 
-				// still in use
-				env.CompileDeploy("context NineToFive select * from SupportBean", path);
-				try {
-					env.Deployment.Undeploy(env.DeploymentId("ctx"));
-					Assert.Fail();
-				}
-				catch (EPUndeployException ex) {
-					SupportMessageAssertUtil.AssertMessage(
-						ex.Message,
-						"A precondition is not satisfied: Context 'NineToFive' cannot be un-deployed as it is referenced by deployment");
-				}
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.STATICHOOK);
+            }
+        }
 
-				// not found
-				env.TryInvalidCompile(
-					path,
-					"context EightToSix select * from SupportBean",
-					"Context by name 'EightToSix' could not be found");
+        private class ContextLifecycleInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
 
-				// test update: update is not allowed as it is processed out-of-context by eventService
-				env.CompileDeploy("@Public insert into ABCStream select * from SupportBean", path);
-				env.CompileDeploy(
-					"@name('context') @public create context SegmentedByAString partition by theString from ABCStream",
-					path);
-				env.TryInvalidCompile(
-					path,
-					"context SegmentedByAString update istream ABCStream set intPrimitive = (select id from SupportBean_S0#lastevent) where intPrimitive < 0",
-					"Update IStream is not supported in conjunction with a context");
+                // same context twice
+                var eplCreateCtx =
+                    "@name('ctx') @public create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)";
+                env.CompileDeploy(eplCreateCtx, path);
+                env.TryInvalidCompile(path, eplCreateCtx, "Context by name 'NineToFive' already exists");
 
-				// context declaration for create-context
-				env.CompileDeploy("@Public create context ABC start @now end after 5 seconds", path);
-				env.TryInvalidCompile(
-					path,
-					"context ABC create context DEF start @now end after 5 seconds",
-					"A create-context statement cannot itself be associated to a context, please declare a nested context instead [context ABC create context DEF start @now end after 5 seconds]");
+                // still in use
+                env.CompileDeploy("context NineToFive select * from SupportBean", path);
+                try {
+                    env.Deployment.Undeploy(env.DeploymentId("ctx"));
+                    Assert.Fail();
+                }
+                catch (EPUndeployException ex) {
+                    SupportMessageAssertUtil.AssertMessage(
+                        ex.Message,
+                        "A precondition is not satisfied: Context 'NineToFive' cannot be un-deployed as it is referenced by deployment");
+                }
 
-				// statement references context but there is none
-				env.TryInvalidCompile(
-					"select context.sb.theString from SupportBean as sb",
-					"Failed to validate select-clause expression 'context.sb.theString': Failed to resolve property 'context.sb.theString' to a stream or nested property in a stream");
+                // not found
+                env.TryInvalidCompile(
+                    path,
+                    "context EightToSix select * from SupportBean",
+                    "Context by name 'EightToSix' could not be found");
 
-				env.UndeployAll();
-			}
+                // test update: update is not allowed as it is processed out-of-context by eventService
+                env.CompileDeploy("@Public insert into ABCStream select * from SupportBean", path);
+                env.CompileDeploy(
+                    "@name('context') @public create context SegmentedByAString partition by theString from ABCStream",
+                    path);
+                env.TryInvalidCompile(
+                    path,
+                    "context SegmentedByAString update istream ABCStream set intPrimitive = (select id from SupportBean_S0#lastevent) where intPrimitive < 0",
+                    "Update IStream is not supported in conjunction with a context");
 
-			public ISet<RegressionFlag> Flags()
-			{
-				return Collections.Set(RegressionFlag.INVALIDITY);
-			}
-		}
-	}
+                // context declaration for create-context
+                env.CompileDeploy("@Public create context ABC start @now end after 5 seconds", path);
+                env.TryInvalidCompile(
+                    path,
+                    "context ABC create context DEF start @now end after 5 seconds",
+                    "A create-context statement cannot itself be associated to a context, please declare a nested context instead [context ABC create context DEF start @now end after 5 seconds]");
+
+                // statement references context but there is none
+                env.TryInvalidCompile(
+                    "select context.sb.theString from SupportBean as sb",
+                    "Failed to validate select-clause expression 'context.sb.theString': Failed to resolve property 'context.sb.theString' to a stream or nested property in a stream");
+
+                env.UndeployAll();
+            }
+
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.INVALIDITY);
+            }
+        }
+    }
 } // end of namespace

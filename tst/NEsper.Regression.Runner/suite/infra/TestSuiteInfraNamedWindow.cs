@@ -284,7 +284,12 @@ namespace com.espertech.esper.regressionrun.suite.infra
             public void WithCreateSchemaModelAfter() => RegressionRunner.Run(_session, InfraNamedWindowTypes.WithCreateSchemaModelAfter());
 
             [Test, RunInApplicationDomain]
-            public void WithEventTypeColumnDef() => RegressionRunner.Run(_session, InfraNamedWindowTypes.WithEventTypeColumnDef());
+            [TestCase(EventRepresentationChoice.MAP)]
+            [TestCase(EventRepresentationChoice.AVRO)]
+            [TestCase(EventRepresentationChoice.JSON)]
+            [TestCase(EventRepresentationChoice.JSONCLASSPROVIDED)]
+            [TestCase(EventRepresentationChoice.OBJECTARRAY)]
+            public void WithEventTypeColumnDef(EventRepresentationChoice rep) => RegressionRunner.Run(_session, InfraNamedWindowTypes.WithEventTypeColumnDef(rep));
 
             [Test, RunInApplicationDomain]
             public void WithCreateTableArray() => RegressionRunner.Run(_session, InfraNamedWindowTypes.WithCreateTableArray());
@@ -398,7 +403,12 @@ namespace com.espertech.esper.regressionrun.suite.infra
             public void WithOrderedDeleteAndSelect() => RegressionRunner.Run(_session, InfraNamedWindowProcessingOrder.WithOrderedDeleteAndSelect());
 
             [Test, RunInApplicationDomain]
-            public void WithDispatchBackQueue() => RegressionRunner.Run(_session, InfraNamedWindowProcessingOrder.WithDispatchBackQueue());
+            [TestCase(EventRepresentationChoice.MAP)]
+            [TestCase(EventRepresentationChoice.AVRO)]
+            [TestCase(EventRepresentationChoice.JSON)]
+            [TestCase(EventRepresentationChoice.JSONCLASSPROVIDED)]
+            [TestCase(EventRepresentationChoice.OBJECTARRAY)]
+            public void WithDispatchBackQueue(EventRepresentationChoice rep) => RegressionRunner.Run(_session, InfraNamedWindowProcessingOrder.WithDispatchBackQueue(rep));
         }
 
         /// <summary>

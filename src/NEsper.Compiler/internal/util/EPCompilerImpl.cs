@@ -128,6 +128,7 @@ namespace com.espertech.esper.compiler.@internal.util
         {
             try {
                 var mapEnv = new StatementSpecMapEnv(
+                    configuration.Container,
                     MakeImportService(configuration),
                     VariableCompileTimeResolverEmpty.INSTANCE,
                     configuration,

@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         /// <summary>
         ///     Tests concurrent updates on a secondary index also read by a join:
         ///     create table MyTable (key string primary key, value int)

@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadContextMultiStmtStartEnd()
         {
             using (new PerformanceContext()) {
-                new MultithreadContextMultiStmtStartEnd().Run(SupportConfigFactory.GetConfiguration(Container));
+                new MultithreadContextMultiStmtStartEnd(SupportConfigFactory.GetConfiguration(Container)).Run();
             }
         }
 
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadContextNestedNonOverlapAtNow()
         {
             using (new PerformanceContext()) {
-                new MultithreadContextNestedNonOverlapAtNow().Run(SupportConfigFactory.GetConfiguration(Container));
+                new MultithreadContextNestedNonOverlapAtNow(SupportConfigFactory.GetConfiguration(Container)).Run();
             }
         }
 
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadDeterminismInsertIntoLockConfig()
         {
             using (new PerformanceContext()) {
-                new MultithreadDeterminismInsertIntoLockConfig().Run(SupportConfigFactory.GetConfiguration(Container));
+                new MultithreadDeterminismInsertIntoLockConfig(SupportConfigFactory.GetConfiguration(Container)).Run();
             }
         }
 
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadDeterminismListener()
         {
             using (new PerformanceContext()) {
-                new MultithreadDeterminismListener().Run(SupportConfigFactory.GetConfiguration(Container));
+                new MultithreadDeterminismListener(SupportConfigFactory.GetConfiguration(Container)).Run();
             }
         }
 
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadInsertIntoTimerConcurrency()
         {
             using (new PerformanceContext()) {
-                new MultithreadInsertIntoTimerConcurrency().Run(SupportConfigFactory.GetConfiguration(Container));
+                new MultithreadInsertIntoTimerConcurrency(SupportConfigFactory.GetConfiguration(Container)).Run();
             }
         }
 
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadStmtPatternFollowedByReadMostly()
         {
             using (new PerformanceContext()) {
-                new MultithreadStmtPatternFollowedBy().RunReadMostly(SupportConfigFactory.GetConfiguration(Container));
+                new MultithreadStmtPatternFollowedBy(SupportConfigFactory.GetConfiguration(Container)).RunReadMostly();
             }
         }
 
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadStmtPatternFollowedByReadWrite()
         {
             using (new PerformanceContext()) {
-                new MultithreadStmtPatternFollowedBy().RunReadWrite(SupportConfigFactory.GetConfiguration(Container));
+                new MultithreadStmtPatternFollowedBy(SupportConfigFactory.GetConfiguration(Container)).RunReadWrite();
             }
         }
 
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadStmtNamedWindowUniqueTwoWJoinConsumer()
         {
             using (new PerformanceContext()) {
-                new MultithreadStmtNamedWindowUniqueTwoWJoinConsumer().Run(SupportConfigFactory.GetConfiguration(Container));
+                new MultithreadStmtNamedWindowUniqueTwoWJoinConsumer(SupportConfigFactory.GetConfiguration(Container)).Run();
             }
         }
 
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
         public void TestMultithreadContextOverlapDistinct()
         {
             using (new PerformanceContext()) {
-                new MultithreadContextOverlapDistinct().Run(SupportConfigFactory.GetConfiguration(Container));
+                new MultithreadContextOverlapDistinct(SupportConfigFactory.GetConfiguration(Container)).Run();
             }
         }
 

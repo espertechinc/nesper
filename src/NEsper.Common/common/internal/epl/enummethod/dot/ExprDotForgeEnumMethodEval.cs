@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             }
 
             var eventsLambda = eventsPerStream == null
-                ? new EventBean[0]
+                ? Array.Empty<EventBean>()
                 : AllocateCopyEventLambda(eventsPerStream, enumEvalNumRequiredEvents);
             return enumEval.EvaluateEnumMethod(eventsLambda, coll, isNewData, exprEvaluatorContext);
         }

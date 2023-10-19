@@ -17,118 +17,161 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
-	public class ResultSetQueryTypeAggregateGroupedHaving {
-	    private const string SYMBOL_DELL = "DELL";
-	    private const string SYMBOL_IBM = "IBM";
+    public class ResultSetQueryTypeAggregateGroupedHaving
+    {
+        private const string SYMBOL_DELL = "DELL";
+        private const string SYMBOL_IBM = "IBM";
 
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new ResultSetQueryTypeGroupByHaving(false));
-	        execs.Add(new ResultSetQueryTypeGroupByHaving(true));
-	        execs.Add(new ResultSetQueryTypeSumOneView());
-	        execs.Add(new ResultSetQueryTypeSumJoin());
-	        return execs;
-	    }
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithGroupByHaving(execs);
+            WithSumOneView(execs);
+            WithSumJoin(execs);
+            return execs;
+        }
 
-	    private class ResultSetQueryTypeGroupByHaving : RegressionExecution {
-	        private readonly bool join;
+        public static IList<RegressionExecution> WithSumJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeSumJoin());
+            return execs;
+        }
 
-	        public ResultSetQueryTypeGroupByHaving(bool join) {
-	            this.join = join;
-	        }
+        public static IList<RegressionExecution> WithSumOneView(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeSumOneView());
+            return execs;
+        }
 
-	        public void Run(RegressionEnvironment env) {
-	            var epl = !join ?
-	                "@name('s0') select * from SupportBean#length_batch(3) group by theString having count(*) > 1" :
-	                "@name('s0') select theString, intPrimitive from SupportBean_S0#lastevent, SupportBean#length_batch(3) group by theString having count(*) > 1";
-	            env.CompileDeploy(epl).AddListener("s0");
+        public static IList<RegressionExecution> WithGroupByHaving(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetQueryTypeGroupByHaving(false));
+            execs.Add(new ResultSetQueryTypeGroupByHaving(true));
+            return execs;
+        }
 
-	            env.SendEventBean(new SupportBean_S0(1));
-	            env.SendEventBean(new SupportBean("E1", 10));
+        private class ResultSetQueryTypeGroupByHaving : RegressionExecution
+        {
+            private readonly bool join;
 
-	            env.Milestone(0);
+            public ResultSetQueryTypeGroupByHaving(bool join)
+            {
+                this.join = join;
+            }
 
-	            env.SendEventBean(new SupportBean("E2", 20));
-	            env.SendEventBean(new SupportBean("E2", 21));
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = !join
+                    ? "@name('s0') select * from SupportBean#length_batch(3) group by theString having count(*) > 1"
+                    : "@name('s0') select theString, intPrimitive from SupportBean_S0#lastevent, SupportBean#length_batch(3) group by theString having count(*) > 1";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	            env.AssertPropsPerRowNewFlattened("s0", "theString,intPrimitive".SplitCsv(),
-	                new object[][]{new object[] {"E2", 20}, new object[] {"E2", 21}});
+                env.SendEventBean(new SupportBean_S0(1));
+                env.SendEventBean(new SupportBean("E1", 10));
 
-	            env.UndeployAll();
-	        }
+                env.Milestone(0);
 
-	        public string Name() {
-	            return this.GetType().Name + "{" +
-	                "join=" + join +
-	                '}';
-	        }
-	    }
+                env.SendEventBean(new SupportBean("E2", 20));
+                env.SendEventBean(new SupportBean("E2", 21));
 
-	    private class ResultSetQueryTypeSumOneView : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            // Every event generates a new row, this time we sum the price by symbol and output volume
-	            var epl = "@name('s0') select irstream symbol, volume, sum(price) as mySum " +
-	                      "from SupportMarketDataBean#length(3) " +
-	                      "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
-	                      "group by symbol " +
-	                      "having sum(price) >= 50";
-	            env.CompileDeploy(epl).AddListener("s0");
+                env.AssertPropsPerRowNewFlattened(
+                    "s0",
+                    "theString,intPrimitive".SplitCsv(),
+                    new object[][] { new object[] { "E2", 20 }, new object[] { "E2", 21 } });
 
-	            TryAssertionSum(env);
+                env.UndeployAll();
+            }
 
-	            env.UndeployAll();
-	        }
-	    }
+            public string Name()
+            {
+                return this.GetType().Name +
+                       "{" +
+                       "join=" +
+                       join +
+                       '}';
+            }
+        }
 
-	    private class ResultSetQueryTypeSumJoin : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            // Every event generates a new row, this time we sum the price by symbol and output volume
-	            var epl = "@name('s0') select irstream symbol, volume, sum(price) as mySum " +
-	                      "from SupportBeanString#length(100) as one, " +
-	                      "SupportMarketDataBean#length(3) as two " +
-	                      "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-	                      "  and one.theString = two.symbol " +
-	                      "group by symbol " +
-	                      "having sum(price) >= 50";
-	            env.CompileDeploy(epl).AddListener("s0");
+        private class ResultSetQueryTypeSumOneView : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // Every event generates a new row, this time we sum the price by symbol and output volume
+                var epl = "@name('s0') select irstream symbol, volume, sum(price) as mySum " +
+                          "from SupportMarketDataBean#length(3) " +
+                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
+                          "group by symbol " +
+                          "having sum(price) >= 50";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	            env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
-	            env.SendEventBean(new SupportBeanString(SYMBOL_IBM));
+                TryAssertionSum(env);
 
-	            TryAssertionSum(env);
+                env.UndeployAll();
+            }
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        private class ResultSetQueryTypeSumJoin : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // Every event generates a new row, this time we sum the price by symbol and output volume
+                var epl = "@name('s0') select irstream symbol, volume, sum(price) as mySum " +
+                          "from SupportBeanString#length(100) as one, " +
+                          "SupportMarketDataBean#length(3) as two " +
+                          "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
+                          "  and one.theString = two.symbol " +
+                          "group by symbol " +
+                          "having sum(price) >= 50";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	    private static void TryAssertionSum(RegressionEnvironment env) {
-	        // assert select result type
-	        env.AssertStatement("s0", statement => {
-	            Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("symbol"));
-	            Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("volume"));
-	            Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
-	        });
+                env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
+                env.SendEventBean(new SupportBeanString(SYMBOL_IBM));
 
-	        var fields = "symbol,volume,mySum".SplitCsv();
-	        SendEvent(env, SYMBOL_DELL, 10000, 49);
-	        env.AssertListenerNotInvoked("s0");
+                TryAssertionSum(env);
 
-	        SendEvent(env, SYMBOL_DELL, 20000, 54);
-	        env.AssertPropsNew("s0", fields, new object[]{SYMBOL_DELL, 20000L, 103d});
+                env.UndeployAll();
+            }
+        }
 
-	        SendEvent(env, SYMBOL_IBM, 1000, 10);
-	        env.AssertListenerNotInvoked("s0");
+        private static void TryAssertionSum(RegressionEnvironment env)
+        {
+            // assert select result type
+            env.AssertStatement(
+                "s0",
+                statement => {
+                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("symbol"));
+                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("volume"));
+                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
+                });
 
-	        SendEvent(env, SYMBOL_IBM, 5000, 20);
-	        env.AssertPropsOld("s0", fields, new object[]{SYMBOL_DELL, 10000L, 54d});
+            var fields = "symbol,volume,mySum".SplitCsv();
+            SendEvent(env, SYMBOL_DELL, 10000, 49);
+            env.AssertListenerNotInvoked("s0");
 
-	        SendEvent(env, SYMBOL_IBM, 6000, 5);
-	        env.AssertListenerNotInvoked("s0");
-	    }
+            SendEvent(env, SYMBOL_DELL, 20000, 54);
+            env.AssertPropsNew("s0", fields, new object[] { SYMBOL_DELL, 20000L, 103d });
 
-	    private static void SendEvent(RegressionEnvironment env, string symbol, long volume, double price) {
-	        var bean = new SupportMarketDataBean(symbol, price, volume, null);
-	        env.SendEventBean(bean);
-	    }
-	}
+            SendEvent(env, SYMBOL_IBM, 1000, 10);
+            env.AssertListenerNotInvoked("s0");
+
+            SendEvent(env, SYMBOL_IBM, 5000, 20);
+            env.AssertPropsOld("s0", fields, new object[] { SYMBOL_DELL, 10000L, 54d });
+
+            SendEvent(env, SYMBOL_IBM, 6000, 5);
+            env.AssertListenerNotInvoked("s0");
+        }
+
+        private static void SendEvent(
+            RegressionEnvironment env,
+            string symbol,
+            long volume,
+            double price)
+        {
+            var bean = new SupportMarketDataBean(symbol, price, volume, null);
+            env.SendEventBean(bean);
+        }
+    }
 } // end of namespace

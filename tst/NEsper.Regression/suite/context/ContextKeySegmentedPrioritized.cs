@@ -18,7 +18,9 @@ namespace com.espertech.esper.regressionlib.suite.context
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@public create context SegmentedByMessage partition by TheString from SupportBean", path);
+            env.CompileDeploy(
+                "@public create context SegmentedByMessage partition by TheString from SupportBean",
+                path);
 
             env.CompileDeploy(
                 "@name('s0') @Drop @Priority(1) context SegmentedByMessage select 'test1' from SupportBean",

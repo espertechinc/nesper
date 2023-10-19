@@ -22,8 +22,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithForward(execs);
-            WithBack(execs);
+            With(Back)(execs);
+#endif
             return execs;
         }
 
@@ -92,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
             }
-            
+
             public void Run(RegressionEnvironment env)
             {
                 var stmt = "@name('s0') select A.IntPrimitive as value from " +

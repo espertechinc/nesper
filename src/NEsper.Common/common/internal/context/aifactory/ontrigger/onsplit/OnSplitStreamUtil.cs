@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -197,7 +198,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                 spec,
                 typeServiceTrigger,
                 null,
-                new bool[0],
+                Array.Empty<bool>(),
                 false,
                 contextPropertyRegistry,
                 false,

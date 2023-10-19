@@ -37,13 +37,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
             var stmtText =
                 "@name('s0') select * from sql:MyDBWithLRU100000 ['select mybigint, mybool from mytesttable where ${queryvar_bool} = mytesttable.mybool and myint between ${lower} and ${upper} order by mybigint']";
-            string[] fields = {"mybigint", "mybool"};
+            string[] fields = { "mybigint", "mybool" };
             env.CompileDeploy(stmtText, path);
             SendSupportBeanEvent(env, true, 20, 60);
 
             var start = PerformanceObserver.MilliTime;
             for (var i = 0; i < 10000; i++) {
-                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][]{ new object[] {4L, true} });
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { 4L, true } });
             }
 
             var end = PerformanceObserver.MilliTime;

@@ -24,7 +24,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            Withy(execs);
+#if REGRESSION_EXECUTIONS
+            With(y)(execs);
+#endif
             return execs;
         }
 

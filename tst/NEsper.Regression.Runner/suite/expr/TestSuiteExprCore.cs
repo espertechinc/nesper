@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             map.Put("intBoxed", typeof(int?));
             configuration.Common.AddEventType("StaticTypeMapEvent", map);
 
-            configuration.Compiler.ByteCode.AllowSubscriber = true;
+            configuration.Compiler.ByteCode.IsAllowSubscriber =true;
         }
 
         [Test, RunInApplicationDomain]
@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
         [Test, RunInApplicationDomain]
         public void TestExprCoreRelOp()
         {
-            RegressionRunner.Run(_session, new ExprCoreRelOp());
+            RegressionRunner.Run(_session, ExprCoreRelOp.Executions());
         }
 
         [Test, RunInApplicationDomain]

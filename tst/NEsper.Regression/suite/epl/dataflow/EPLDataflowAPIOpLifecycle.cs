@@ -32,9 +32,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithTypeEvent(execs);
             WithFlowGraphSource(execs);
-            WithFlowGraphOperator(execs);
+            With(FlowGraphOperator)(execs);
+#endif
             return execs;
         }
 
@@ -89,14 +91,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 Assert.AreEqual(3, events.Count);
                 Assert.AreEqual("instantiated", events[0]);
                 Assert.AreEqual("SetPropOne=abc", events[1]);
-                var forgeCtx = (DataFlowOpForgeInitializeContext) events[2];
+                var forgeCtx = (DataFlowOpForgeInitializeContext)events[2];
                 Assert.AreEqual(0, forgeCtx.InputPorts.Count);
                 Assert.AreEqual(1, forgeCtx.OutputPorts.Count);
                 Assert.AreEqual("outstream", forgeCtx.OutputPorts[0].StreamName);
                 Assert.AreEqual("SupportBean", forgeCtx.OutputPorts[0].OptionalDeclaredType.EventType.Name);
                 Assert.AreEqual(2, forgeCtx.OperatorAnnotations.Length);
-                Assert.AreEqual("Goodie", ((NameAttribute) forgeCtx.OperatorAnnotations[0]).Value);
-                Assert.IsNotNull((AuditAttribute) forgeCtx.OperatorAnnotations[1]);
+                Assert.AreEqual("Goodie", ((NameAttribute)forgeCtx.OperatorAnnotations[0]).Value);
+                Assert.IsNotNull((AuditAttribute)forgeCtx.OperatorAnnotations[1]);
                 Assert.AreEqual("MyDataFlow", forgeCtx.DataflowName);
                 Assert.AreEqual(0, forgeCtx.OperatorNumber);
 
@@ -105,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 Assert.AreEqual(3, events.Count);
                 Assert.AreEqual("instantiated", events[0]);
                 Assert.AreEqual("SetPropOne=abc", events[1]);
-                var factoryCtx = (DataFlowOpFactoryInitializeContext) events[2];
+                var factoryCtx = (DataFlowOpFactoryInitializeContext)events[2];
                 Assert.AreEqual("MyDataFlow", factoryCtx.DataFlowName);
                 Assert.AreEqual(0, factoryCtx.OperatorNumber);
                 Assert.IsNotNull(factoryCtx.StatementContext);
@@ -117,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow", options);
                 events = SupportGraphSourceFactory.GetAndResetLifecycle();
                 Assert.AreEqual(1, events.Count);
-                var opCtx = (DataFlowOpInitializeContext) events[0];
+                var opCtx = (DataFlowOpInitializeContext)events[0];
                 Assert.AreEqual("MyDataFlow", opCtx.DataFlowName);
                 Assert.AreEqual("id1", opCtx.DataFlowInstanceId);
                 Assert.IsNotNull(opCtx.AgentInstanceContext);
@@ -176,14 +178,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 events = SupportOperator.GetAndResetLifecycle();
                 Assert.AreEqual(4, events.Count);
                 Assert.IsTrue(events[0] is DataFlowOpOpenContext); // called open (GraphSource only)
-                Assert.AreEqual("abc", ((object[]) events[1])[0]);
-                Assert.AreEqual("def", ((object[]) events[2])[0]);
+                Assert.AreEqual("abc", ((object[])events[1])[0]);
+                Assert.AreEqual("def", ((object[])events[2])[0]);
                 Assert.IsTrue(events[3] is DataFlowOpCloseContext); // called close (GraphSource only)
 
                 env.UndeployAll();
             }
-            
-            public ISet<RegressionFlag> Flags() {
+
+            public ISet<RegressionFlag> Flags()
+            {
                 return Collections.Set(RegressionFlag.DATAFLOW);
             }
         }

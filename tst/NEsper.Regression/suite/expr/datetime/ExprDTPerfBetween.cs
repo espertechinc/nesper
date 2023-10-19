@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             env.SendEventBean(SupportDateTime.Make("2002-05-30T10:00:00.050"));
             env.AssertEqualsNew("s0", "c0", "ALater");
-            
+
             env.UndeployAll();
         }
     }

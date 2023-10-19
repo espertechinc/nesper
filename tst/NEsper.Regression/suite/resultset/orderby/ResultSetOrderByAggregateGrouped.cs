@@ -19,280 +19,397 @@ using NUnit.Framework; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 {
-	public class ResultSetOrderByAggregateGrouped {
-	    public static ICollection<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new ResultSetAliasesAggregationCompile());
-	        execs.Add(new ResultSetAliasesAggregationOM());
-	        execs.Add(new ResultSetAliases());
-	        execs.Add(new ResultSetGroupBySwitch());
-	        execs.Add(new ResultSetGroupBySwitchJoin());
-	        execs.Add(new ResultSetLastJoin());
-	        execs.Add(new ResultSetIterator());
-	        execs.Add(new ResultSetLast());
-	        return execs;
-	    }
+    public class ResultSetOrderByAggregateGrouped
+    {
+        public static ICollection<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithAliasesAggregationCompile(execs);
+            WithAliasesAggregationOM(execs);
+            WithAliases(execs);
+            WithGroupBySwitch(execs);
+            WithGroupBySwitchJoin(execs);
+            WithLastJoin(execs);
+            WithIterator(execs);
+            WithLast(execs);
+            return execs;
+        }
 
-	    private class ResultSetAliasesAggregationCompile : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select symbol, volume, sum(price) as mySum from " +
-	                      "SupportMarketDataBean#length(20) " +
-	                      "group by symbol " +
-	                      "output every 6 events " +
-	                      "order by sum(price), symbol";
-	            env.EplToModelCompileDeploy(epl).AddListener("s0");
+        public static IList<RegressionExecution> WithLast(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLast());
+            return execs;
+        }
 
-	            TryAssertionDefault(env);
+        public static IList<RegressionExecution> WithIterator(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetIterator());
+            return execs;
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        public static IList<RegressionExecution> WithLastJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetLastJoin());
+            return execs;
+        }
 
-	    private class ResultSetAliasesAggregationOM : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var model = new EPStatementObjectModel();
-	            model.SelectClause = SelectClause.Create("symbol", "volume").Add(Expressions.Sum("price"), "mySum");
-	            model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportMarketDataBean)).AddView(View.Create("length", Expressions.Constant(20))));
-	            model.GroupByClause = GroupByClause.Create("symbol");
-	            model.OutputLimitClause = OutputLimitClause.Create(6);
-	            model.OrderByClause = OrderByClause.Create(Expressions.Sum("price")).Add("symbol", false);
-	            model = env.CopyMayFail(model);
+        public static IList<RegressionExecution> WithGroupBySwitchJoin(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetGroupBySwitchJoin());
+            return execs;
+        }
 
-	            var epl = "select symbol, volume, sum(price) as mySum from " +
-	                      "SupportMarketDataBean#length(20) " +
-	                      "group by symbol " +
-	                      "output every 6 events " +
-	                      "order by sum(price), symbol";
-	            Assert.AreEqual(epl, model.ToEPL());
+        public static IList<RegressionExecution> WithGroupBySwitch(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetGroupBySwitch());
+            return execs;
+        }
 
-	            model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-	            env.CompileDeploy(model).AddListener("s0");
+        public static IList<RegressionExecution> WithAliases(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAliases());
+            return execs;
+        }
 
-	            TryAssertionDefault(env);
+        public static IList<RegressionExecution> WithAliasesAggregationOM(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAliasesAggregationOM());
+            return execs;
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        public static IList<RegressionExecution> WithAliasesAggregationCompile(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new ResultSetAliasesAggregationCompile());
+            return execs;
+        }
 
-	    private class ResultSetAliases : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select symbol, volume, sum(price) as mySum from " +
-	                      "SupportMarketDataBean#length(20) " +
-	                      "group by symbol " +
-	                      "output every 6 events " +
-	                      "order by mySum, symbol";
-	            env.CompileDeploy(epl).AddListener("s0");
+        private class ResultSetAliasesAggregationCompile : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select symbol, volume, sum(price) as mySum from " +
+                          "SupportMarketDataBean#length(20) " +
+                          "group by symbol " +
+                          "output every 6 events " +
+                          "order by sum(price), symbol";
+                env.EplToModelCompileDeploy(epl).AddListener("s0");
 
-	            TryAssertionDefault(env);
+                TryAssertionDefault(env);
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private class ResultSetGroupBySwitch : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            // Instead of the row-per-group behavior, these should
-	            // get row-per-event behavior since there are properties
-	            // in the order-by that are not in the select expression.
-	            var epl = "@name('s0') select symbol, sum(price) from " +
-	                      "SupportMarketDataBean#length(20) " +
-	                      "group by symbol " +
-	                      "output every 6 events " +
-	                      "order by sum(price), symbol, volume";
-	            env.CompileDeploy(epl).AddListener("s0");
+        private class ResultSetAliasesAggregationOM : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var model = new EPStatementObjectModel();
+                model.SelectClause = SelectClause.Create("symbol", "volume").Add(Expressions.Sum("price"), "mySum");
+                model.FromClause = FromClause.Create(
+                    FilterStream.Create(nameof(SupportMarketDataBean))
+                        .AddView(View.Create("length", Expressions.Constant(20))));
+                model.GroupByClause = GroupByClause.Create("symbol");
+                model.OutputLimitClause = OutputLimitClause.Create(6);
+                model.OrderByClause = OrderByClause.Create(Expressions.Sum("price")).Add("symbol", false);
+                model = env.CopyMayFail(model);
 
-	            TryAssertionDefaultNoVolume(env);
+                var epl = "select symbol, volume, sum(price) as mySum from " +
+                          "SupportMarketDataBean#length(20) " +
+                          "group by symbol " +
+                          "output every 6 events " +
+                          "order by sum(price), symbol";
+                Assert.AreEqual(epl, model.ToEPL());
 
-	            env.UndeployAll();
-	        }
-	    }
+                model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
+                env.CompileDeploy(model).AddListener("s0");
 
-	    private class ResultSetGroupBySwitchJoin : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl =
-	                "@name('s0') select symbol, sum(price) from " +
-	                    "SupportMarketDataBean#length(20) as one, " +
-	                    "SupportBeanString#length(100) as two " +
-	                    "where one.symbol = two.theString " +
-	                    "group by symbol " +
-	                    "output every 6 events " +
-	                    "order by sum(price), symbol, volume";
-	            env.CompileDeploy(epl).AddListener("s0");
+                TryAssertionDefault(env);
 
-	            env.SendEventBean(new SupportBeanString("CAT"));
-	            env.SendEventBean(new SupportBeanString("IBM"));
-	            env.SendEventBean(new SupportBeanString("CMU"));
-	            env.SendEventBean(new SupportBeanString("KGB"));
-	            env.SendEventBean(new SupportBeanString("DOG"));
+                env.UndeployAll();
+            }
+        }
 
-	            TryAssertionDefaultNoVolume(env);
+        private class ResultSetAliases : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select symbol, volume, sum(price) as mySum from " +
+                          "SupportMarketDataBean#length(20) " +
+                          "group by symbol " +
+                          "output every 6 events " +
+                          "order by mySum, symbol";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	            env.UndeployAll();
-	        }
-	    }
+                TryAssertionDefault(env);
 
-	    private class ResultSetLast : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select symbol, volume, sum(price) from " +
-	                      "SupportMarketDataBean#length(20) " +
-	                      "group by symbol " +
-	                      "output last every 6 events " +
-	                      "order by sum(price)";
-	            env.CompileDeploy(epl).AddListener("s0");
+                env.UndeployAll();
+            }
+        }
 
-	            TryAssertionLast(env);
+        private class ResultSetGroupBySwitch : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // Instead of the row-per-group behavior, these should
+                // get row-per-event behavior since there are properties
+                // in the order-by that are not in the select expression.
+                var epl = "@name('s0') select symbol, sum(price) from " +
+                          "SupportMarketDataBean#length(20) " +
+                          "group by symbol " +
+                          "output every 6 events " +
+                          "order by sum(price), symbol, volume";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	            env.UndeployAll();
-	        }
-	    }
+                TryAssertionDefaultNoVolume(env);
 
-	    private class ResultSetLastJoin : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var epl = "@name('s0') select symbol, volume, sum(price) from " +
-	                      "SupportMarketDataBean#length(20) as one, " +
-	                      "SupportBeanString#length(100) as two " +
-	                      "where one.symbol = two.theString " +
-	                      "group by symbol " +
-	                      "output last every 6 events " +
-	                      "order by sum(price)";
-	            env.CompileDeploy(epl).AddListener("s0");
+                env.UndeployAll();
+            }
+        }
 
-	            env.SendEventBean(new SupportBeanString("CAT"));
-	            env.SendEventBean(new SupportBeanString("IBM"));
-	            env.SendEventBean(new SupportBeanString("CMU"));
-	            env.SendEventBean(new SupportBeanString("KGB"));
-	            env.SendEventBean(new SupportBeanString("DOG"));
+        private class ResultSetGroupBySwitchJoin : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('s0') select symbol, sum(price) from " +
+                    "SupportMarketDataBean#length(20) as one, " +
+                    "SupportBeanString#length(100) as two " +
+                    "where one.symbol = two.theString " +
+                    "group by symbol " +
+                    "output every 6 events " +
+                    "order by sum(price), symbol, volume";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	            TryAssertionLast(env);
+                env.SendEventBean(new SupportBeanString("CAT"));
+                env.SendEventBean(new SupportBeanString("IBM"));
+                env.SendEventBean(new SupportBeanString("CMU"));
+                env.SendEventBean(new SupportBeanString("KGB"));
+                env.SendEventBean(new SupportBeanString("DOG"));
 
-	            env.UndeployAll();
-	        }
-	    }
+                TryAssertionDefaultNoVolume(env);
 
-	    private class ResultSetIterator : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var fields = new string[]{"symbol", "theString", "sumPrice"};
-	            var epl = "@name('s0') select symbol, theString, sum(price) as sumPrice from " +
-	                      "SupportMarketDataBean#length(10) as one, " +
-	                      "SupportBeanString#length(100) as two " +
-	                      "where one.symbol = two.theString " +
-	                      "group by symbol " +
-	                      "order by symbol";
-	            env.CompileDeploy(epl).AddListener("s0");
-	            SendJoinEvents(env);
-	            SendEvent(env, "CAT", 50);
-	            SendEvent(env, "IBM", 49);
-	            SendEvent(env, "CAT", 15);
-	            SendEvent(env, "IBM", 100);
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields,
-	                new object[][]{
-	                    new object[] {"CAT", "CAT", 65d},
-	                    new object[] {"CAT", "CAT", 65d},
-	                    new object[] {"IBM", "IBM", 149d},
-	                    new object[] {"IBM", "IBM", 149d},
-	                });
+                env.UndeployAll();
+            }
+        }
 
-	            SendEvent(env, "KGB", 75);
-	            env.AssertPropsPerRowIteratorAnyOrder("s0", fields,
-	                new object[][]{
-	                    new object[] {"CAT", "CAT", 65d},
-	                    new object[] {"CAT", "CAT", 65d},
-	                    new object[] {"IBM", "IBM", 149d},
-	                    new object[] {"IBM", "IBM", 149d},
-	                    new object[] {"KGB", "KGB", 75d},
-	                });
+        private class ResultSetLast : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select symbol, volume, sum(price) from " +
+                          "SupportMarketDataBean#length(20) " +
+                          "group by symbol " +
+                          "output last every 6 events " +
+                          "order by sum(price)";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	            env.UndeployAll();
-	        }
-	    }
+                TryAssertionLast(env);
 
-	    private static void SendEvent(RegressionEnvironment env, string symbol, double price) {
-	        var bean = new SupportMarketDataBean(symbol, price, 0L, null);
-	        env.SendEventBean(bean);
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private static void SendEvent(RegressionEnvironment env, string symbol, long volume, double price) {
-	        var bean = new SupportMarketDataBean(symbol, price, volume, null);
-	        env.SendEventBean(bean);
-	    }
+        private class ResultSetLastJoin : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "@name('s0') select symbol, volume, sum(price) from " +
+                          "SupportMarketDataBean#length(20) as one, " +
+                          "SupportBeanString#length(100) as two " +
+                          "where one.symbol = two.theString " +
+                          "group by symbol " +
+                          "output last every 6 events " +
+                          "order by sum(price)";
+                env.CompileDeploy(epl).AddListener("s0");
 
-	    private static void SendJoinEvents(RegressionEnvironment env) {
-	        env.SendEventBean(new SupportBeanString("CAT"));
-	        env.SendEventBean(new SupportBeanString("IBM"));
-	        env.SendEventBean(new SupportBeanString("CMU"));
-	        env.SendEventBean(new SupportBeanString("KGB"));
-	        env.SendEventBean(new SupportBeanString("DOG"));
-	    }
+                env.SendEventBean(new SupportBeanString("CAT"));
+                env.SendEventBean(new SupportBeanString("IBM"));
+                env.SendEventBean(new SupportBeanString("CMU"));
+                env.SendEventBean(new SupportBeanString("KGB"));
+                env.SendEventBean(new SupportBeanString("DOG"));
 
-	    private static void TryAssertionDefault(RegressionEnvironment env) {
-	        SendEvent(env, "IBM", 110, 3);
+                TryAssertionLast(env);
 
-	        env.Milestone(0);
+                env.UndeployAll();
+            }
+        }
 
-	        SendEvent(env, "IBM", 120, 4);
-	        SendEvent(env, "CMU", 130, 1);
+        private class ResultSetIterator : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var fields = new string[] { "symbol", "theString", "sumPrice" };
+                var epl = "@name('s0') select symbol, theString, sum(price) as sumPrice from " +
+                          "SupportMarketDataBean#length(10) as one, " +
+                          "SupportBeanString#length(100) as two " +
+                          "where one.symbol = two.theString " +
+                          "group by symbol " +
+                          "order by symbol";
+                env.CompileDeploy(epl).AddListener("s0");
+                SendJoinEvents(env);
+                SendEvent(env, "CAT", 50);
+                SendEvent(env, "IBM", 49);
+                SendEvent(env, "CAT", 15);
+                SendEvent(env, "IBM", 100);
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] {
+                        new object[] { "CAT", "CAT", 65d },
+                        new object[] { "CAT", "CAT", 65d },
+                        new object[] { "IBM", "IBM", 149d },
+                        new object[] { "IBM", "IBM", 149d },
+                    });
 
-	        env.Milestone(1);
+                SendEvent(env, "KGB", 75);
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "s0",
+                    fields,
+                    new object[][] {
+                        new object[] { "CAT", "CAT", 65d },
+                        new object[] { "CAT", "CAT", 65d },
+                        new object[] { "IBM", "IBM", 149d },
+                        new object[] { "IBM", "IBM", 149d },
+                        new object[] { "KGB", "KGB", 75d },
+                    });
 
-	        SendEvent(env, "CMU", 140, 2);
-	        SendEvent(env, "CAT", 150, 5);
+                env.UndeployAll();
+            }
+        }
 
-	        env.Milestone(2);
+        private static void SendEvent(
+            RegressionEnvironment env,
+            string symbol,
+            double price)
+        {
+            var bean = new SupportMarketDataBean(symbol, price, 0L, null);
+            env.SendEventBean(bean);
+        }
 
-	        SendEvent(env, "CAT", 160, 6);
+        private static void SendEvent(
+            RegressionEnvironment env,
+            string symbol,
+            long volume,
+            double price)
+        {
+            var bean = new SupportMarketDataBean(symbol, price, volume, null);
+            env.SendEventBean(bean);
+        }
 
-	        var fields = "symbol,volume,mySum".SplitCsv();
-	        env.AssertPropsPerRowNewOnly("s0", fields, new object[][]{new object[] {"CMU", 130L, 1.0}, new object[] {"CMU", 140L, 3.0}, new object[] {"IBM", 110L, 3.0},
-	            new object[] {"CAT", 150L, 5.0}, new object[] {"IBM", 120L, 7.0}, new object[] {"CAT", 160L, 11.0}});
-	    }
+        private static void SendJoinEvents(RegressionEnvironment env)
+        {
+            env.SendEventBean(new SupportBeanString("CAT"));
+            env.SendEventBean(new SupportBeanString("IBM"));
+            env.SendEventBean(new SupportBeanString("CMU"));
+            env.SendEventBean(new SupportBeanString("KGB"));
+            env.SendEventBean(new SupportBeanString("DOG"));
+        }
 
-	    private static void TryAssertionDefaultNoVolume(RegressionEnvironment env) {
-	        SendEvent(env, "IBM", 110, 3);
-	        SendEvent(env, "IBM", 120, 4);
-	        SendEvent(env, "CMU", 130, 1);
+        private static void TryAssertionDefault(RegressionEnvironment env)
+        {
+            SendEvent(env, "IBM", 110, 3);
 
-	        env.Milestone(0);
+            env.Milestone(0);
 
-	        SendEvent(env, "CMU", 140, 2);
-	        SendEvent(env, "CAT", 150, 5);
+            SendEvent(env, "IBM", 120, 4);
+            SendEvent(env, "CMU", 130, 1);
 
-	        env.Milestone(1);
+            env.Milestone(1);
 
-	        SendEvent(env, "CAT", 160, 6);
+            SendEvent(env, "CMU", 140, 2);
+            SendEvent(env, "CAT", 150, 5);
 
-	        var fields = "symbol,sum(price)".SplitCsv();
-	        env.AssertPropsPerRowNewOnly("s0", fields, new object[][]{new object[] {"CMU", 1.0}, new object[] {"CMU", 3.0}, new object[] {"IBM", 3.0},
-	            new object[] {"CAT", 5.0}, new object[] {"IBM", 7.0}, new object[] {"CAT", 11.0}});
-	    }
+            env.Milestone(2);
 
-	    private static void TryAssertionLast(RegressionEnvironment env) {
-	        SendEvent(env, "IBM", 101, 3);
-	        SendEvent(env, "IBM", 102, 4);
+            SendEvent(env, "CAT", 160, 6);
 
-	        env.Milestone(0);
+            var fields = "symbol,volume,mySum".SplitCsv();
+            env.AssertPropsPerRowNewOnly(
+                "s0",
+                fields,
+                new object[][] {
+                    new object[] { "CMU", 130L, 1.0 }, new object[] { "CMU", 140L, 3.0 },
+                    new object[] { "IBM", 110L, 3.0 },
+                    new object[] { "CAT", 150L, 5.0 }, new object[] { "IBM", 120L, 7.0 },
+                    new object[] { "CAT", 160L, 11.0 }
+                });
+        }
 
-	        SendEvent(env, "CMU", 103, 1);
-	        SendEvent(env, "CMU", 104, 2);
+        private static void TryAssertionDefaultNoVolume(RegressionEnvironment env)
+        {
+            SendEvent(env, "IBM", 110, 3);
+            SendEvent(env, "IBM", 120, 4);
+            SendEvent(env, "CMU", 130, 1);
 
-	        env.Milestone(1);
+            env.Milestone(0);
 
-	        SendEvent(env, "CAT", 105, 5);
-	        SendEvent(env, "CAT", 106, 6);
+            SendEvent(env, "CMU", 140, 2);
+            SendEvent(env, "CAT", 150, 5);
 
-	        var fields = "symbol,volume,sum(price)".SplitCsv();
-	        env.AssertPropsPerRowNewOnly("s0", fields, new object[][]{new object[] {"CMU", 104L, 3.0}, new object[] {"IBM", 102L, 7.0}, new object[] {"CAT", 106L, 11.0}});
+            env.Milestone(1);
 
-	        SendEvent(env, "IBM", 201, 3);
-	        SendEvent(env, "IBM", 202, 4);
+            SendEvent(env, "CAT", 160, 6);
 
-	        env.Milestone(2);
+            var fields = "symbol,sum(price)".SplitCsv();
+            env.AssertPropsPerRowNewOnly(
+                "s0",
+                fields,
+                new object[][] {
+                    new object[] { "CMU", 1.0 }, new object[] { "CMU", 3.0 }, new object[] { "IBM", 3.0 },
+                    new object[] { "CAT", 5.0 }, new object[] { "IBM", 7.0 }, new object[] { "CAT", 11.0 }
+                });
+        }
 
-	        SendEvent(env, "CMU", 203, 5);
-	        SendEvent(env, "CMU", 204, 5);
-	        SendEvent(env, "DOG", 205, 0);
-	        SendEvent(env, "DOG", 206, 1);
+        private static void TryAssertionLast(RegressionEnvironment env)
+        {
+            SendEvent(env, "IBM", 101, 3);
+            SendEvent(env, "IBM", 102, 4);
 
-	        env.AssertPropsPerRowNewOnly("s0", fields, new object[][]{new object[] {"DOG", 206L, 1.0}, new object[] {"CMU", 204L, 13.0}, new object[] {"IBM", 202L, 14.0}});
-	    }
-	}
+            env.Milestone(0);
+
+            SendEvent(env, "CMU", 103, 1);
+            SendEvent(env, "CMU", 104, 2);
+
+            env.Milestone(1);
+
+            SendEvent(env, "CAT", 105, 5);
+            SendEvent(env, "CAT", 106, 6);
+
+            var fields = "symbol,volume,sum(price)".SplitCsv();
+            env.AssertPropsPerRowNewOnly(
+                "s0",
+                fields,
+                new object[][] {
+                    new object[] { "CMU", 104L, 3.0 }, new object[] { "IBM", 102L, 7.0 },
+                    new object[] { "CAT", 106L, 11.0 }
+                });
+
+            SendEvent(env, "IBM", 201, 3);
+            SendEvent(env, "IBM", 202, 4);
+
+            env.Milestone(2);
+
+            SendEvent(env, "CMU", 203, 5);
+            SendEvent(env, "CMU", 204, 5);
+            SendEvent(env, "DOG", 205, 0);
+            SendEvent(env, "DOG", 206, 1);
+
+            env.AssertPropsPerRowNewOnly(
+                "s0",
+                fields,
+                new object[][] {
+                    new object[] { "DOG", 206L, 1.0 }, new object[] { "CMU", 204L, 13.0 },
+                    new object[] { "IBM", 202L, 14.0 }
+                });
+        }
+    }
 } // end of namespace

@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
     public class EPLDatabaseQueryResultCache : RegressionExecution
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        
+
         private readonly long assertMaximumTime;
         private readonly int numEvents;
         private readonly bool useRandomKeyLookup;
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
         }
-        
+
         private static void TryCache(
             RegressionEnvironment env,
             long assertMaximumTime,

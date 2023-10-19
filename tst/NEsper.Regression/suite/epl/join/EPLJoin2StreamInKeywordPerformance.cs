@@ -27,8 +27,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithSingleIndexLookup(execs);
-            WithMultiIndexLookup(execs);
+            With(MultiIndexLookup)(execs);
+#endif
             return execs;
         }
 
@@ -58,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var epl =
                     "@name('s0') select IntPrimitive as val from SupportBean#keepall sb, SupportBean_S0 S0 unidirectional " +
                     "where sb.TheString in (S0.P00, S0.P01)";
-                var fields = new[] {"val"};
+                var fields = new[] { "val" };
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 for (var i = 0; i < 10000; i++) {
@@ -71,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     env.AssertPropsPerRowLastNew(
                         "s0",
                         fields,
-                        new[] {new object[] {645}, new object[] {8975}});
+                        new[] { new object[] { 645 }, new object[] { 8975 } });
                 }
 
                 var delta = PerformanceObserver.MilliTime - startTime;
@@ -88,13 +90,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.PERFORMANCE);
             }
-            
+
             public void Run(RegressionEnvironment env)
             {
                 var epl =
                     "@name('s0') select Id as val from SupportBean_S0#keepall S0, SupportBean sb unidirectional " +
                     "where sb.TheString in (S0.P00, S0.P01)";
-                var fields = new[] {"val"};
+                var fields = new[] { "val" };
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 for (var i = 0; i < 10000; i++) {
@@ -107,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     env.AssertPropsNew(
                         "s0",
                         fields,
-                        new object[] {645});
+                        new object[] { 645 });
                 }
 
                 var delta = PerformanceObserver.MilliTime - startTime;

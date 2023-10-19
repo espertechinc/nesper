@@ -23,296 +23,332 @@ using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
-	public class EPLOtherCreateExpression
-	{
-		public static IList<RegressionExecution> Executions()
-		{
-			IList<RegressionExecution> execs = new List<RegressionExecution>();
-			execs.Add(new EPLOtherInvalid());
-			execs.Add(new EPLOtherParseSpecialAndMixedExprAndScript());
-			execs.Add(new EPLOtherExprAndScriptLifecycleAndFilter());
-			execs.Add(new EPLOtherScriptUse());
-			execs.Add(new EPLOtherExpressionUse());
-			return execs;
-		}
+    public class EPLOtherCreateExpression
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
+            WithInvalid(execs);
+            WithParseSpecialAndMixedExprAndScript(execs);
+            WithExprAndScriptLifecycleAndFilter(execs);
+            WithScriptUse(execs);
+            With(ExpressionUse)(execs);
+#endif
+            return execs;
+        }
 
-		private class EPLOtherInvalid : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var path = new RegressionPath();
-				env.CompileDeploy("@name('s0') @public create expression E1 {''}", path);
-				env.AssertStatement(
-					"s0",
-					statement => {
-						Assert.AreEqual(
-							StatementType.CREATE_EXPRESSION,
-							statement.GetProperty(StatementProperty.STATEMENTTYPE));
-						Assert.AreEqual("E1", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
-					});
+        public static IList<RegressionExecution> WithExpressionUse(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherExpressionUse());
+            return execs;
+        }
 
-				env.TryInvalidCompile(
-					path,
-					"create expression E1 {''}",
-					"Expression 'E1' has already been declared [create expression E1 {''}]");
+        public static IList<RegressionExecution> WithScriptUse(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherScriptUse());
+            return execs;
+        }
 
-				env.CompileDeploy("@public create expression int js:abc(p1, p2) [p1*p2]", path);
-				env.TryInvalidCompile(
-					path,
-					"create expression int js:abc(a, a) [p1*p2]",
-					"Script 'abc' that takes the same number of parameters has already been declared [create expression int js:abc(a, a) [p1*p2]]");
+        public static IList<RegressionExecution> WithExprAndScriptLifecycleAndFilter(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherExprAndScriptLifecycleAndFilter());
+            return execs;
+        }
 
-				env.UndeployAll();
-			}
-		}
+        public static IList<RegressionExecution> WithParseSpecialAndMixedExprAndScript(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherParseSpecialAndMixedExprAndScript());
+            return execs;
+        }
 
-		private class EPLOtherParseSpecialAndMixedExprAndScript : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLOtherInvalid());
+            return execs;
+        }
 
-				var path = new RegressionPath();
-				env.CompileDeploy("@public create expression string js:myscript(p1) [\"--\"+p1+\"--\"]", path);
-				env.CompileDeploy("@public create expression myexpr {sb => '--'||theString||'--'}", path);
+        private class EPLOtherInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy("@name('s0') @public create expression E1 {''}", path);
+                env.AssertStatement(
+                    "s0",
+                    statement => {
+                        Assert.AreEqual(
+                            StatementType.CREATE_EXPRESSION,
+                            statement.GetProperty(StatementProperty.STATEMENTTYPE));
+                        Assert.AreEqual("E1", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
+                    });
 
-				// test mapped property syntax
-				var eplMapped = "@name('s0') select myscript('x') as c0, myexpr(sb) as c1 from SupportBean as sb";
-				env.CompileDeploy(eplMapped, path).AddListener("s0");
+                env.TryInvalidCompile(
+                    path,
+                    "create expression E1 {''}",
+                    "Expression 'E1' has already been declared [create expression E1 {''}]");
 
-				env.SendEventBean(new SupportBean("E1", 1));
-				env.AssertPropsNew("s0", "c0,c1".SplitCsv(), new object[] { "--x--", "--E1--" });
-				env.UndeployModuleContaining("s0");
+                env.CompileDeploy("@public create expression int js:abc(p1, p2) [p1*p2]", path);
+                env.TryInvalidCompile(
+                    path,
+                    "create expression int js:abc(a, a) [p1*p2]",
+                    "Script 'abc' that takes the same number of parameters has already been declared [create expression int js:abc(a, a) [p1*p2]]");
 
-				// test expression chained syntax
-				var eplExpr = "" +
-				              "@public create expression scalarfilter {s => " +
-				              "   strvals.where(y => y != 'E1') " +
-				              "}";
-				env.CompileDeploy(eplExpr, path);
-				var eplSelect =
-					"@name('s0') select scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
-				env.CompileDeploy(eplSelect, path).AddListener("s0");
-				AssertStatelessStmt(env, "s0", true);
-				env.SendEventBean(SupportCollection.MakeString("E1,E2,E3,E4"));
-				LambdaAssertionUtil.AssertValuesArrayScalar(env, "val1", "E3", "E4");
-				env.UndeployAll();
+                env.UndeployAll();
+            }
+        }
 
-				// test script chained synax
-				var eplScript = "@public create expression " +
-				                typeof(SupportBean).FullName +
-				                " js:callIt() [ new " +
-				                typeof(SupportBean).FullName +
-				                "('E1', 10); ]";
-				env.CompileDeploy(eplScript, path);
-				env.CompileDeploy(
-						"@name('s0') select callIt() as val0, callIt().getTheString() as val1 from SupportBean as sb",
-						path)
-					.AddListener("s0");
-				env.SendEventBean(new SupportBean());
-				env.AssertPropsNew(
-					"s0",
-					"val0.theString,val0.intPrimitive,val1".SplitCsv(),
-					new object[] { "E1", 10, "E1" });
+        private class EPLOtherParseSpecialAndMixedExprAndScript : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy("@public create expression string js:myscript(p1) [\"--\"+p1+\"--\"]", path);
+                env.CompileDeploy("@public create expression myexpr {sb => '--'||theString||'--'}", path);
 
-				env.UndeployAll();
-			}
-		}
+                // test mapped property syntax
+                var eplMapped = "@name('s0') select myscript('x') as c0, myexpr(sb) as c1 from SupportBean as sb";
+                env.CompileDeploy(eplMapped, path).AddListener("s0");
 
-		private class EPLOtherScriptUse : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				var path = new RegressionPath();
-				env.CompileDeploy("@public create expression int js:abc(p1, p2) [p1*p2*10]", path);
-				env.CompileDeploy("@public create expression int js:abc(p1) [p1*10]", path);
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.AssertPropsNew("s0", "c0,c1".SplitCsv(), new object[] { "--x--", "--E1--" });
+                env.UndeployModuleContaining("s0");
 
-				var epl =
-					"@name('s0') select abc(intPrimitive, doublePrimitive) as c0, abc(intPrimitive) as c1 from SupportBean";
-				env.CompileDeploy(epl, path).AddListener("s0");
+                // test expression chained syntax
+                var eplExpr = "" +
+                              "@public create expression scalarfilter {s => " +
+                              "   strvals.where(y => y != 'E1') " +
+                              "}";
+                env.CompileDeploy(eplExpr, path);
+                var eplSelect =
+                    "@name('s0') select scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
+                env.CompileDeploy(eplSelect, path).AddListener("s0");
+                AssertStatelessStmt(env, "s0", true);
+                env.SendEventBean(SupportCollection.MakeString("E1,E2,E3,E4"));
+                LambdaAssertionUtil.AssertValuesArrayScalar(env, "val1", "E3", "E4");
+                env.UndeployAll();
 
-				env.SendEventBean(MakeBean("E1", 10, 3.5));
-				env.AssertPropsNew("s0", "c0,c1".SplitCsv(), new object[] { 350, 100 });
+                // test script chained synax
+                var eplScript = "@public create expression " +
+                                typeof(SupportBean).FullName +
+                                " js:callIt() [ new " +
+                                typeof(SupportBean).FullName +
+                                "('E1', 10); ]";
+                env.CompileDeploy(eplScript, path);
+                env.CompileDeploy(
+                        "@name('s0') select callIt() as val0, callIt().getTheString() as val1 from SupportBean as sb",
+                        path)
+                    .AddListener("s0");
+                env.SendEventBean(new SupportBean());
+                env.AssertPropsNew(
+                    "s0",
+                    "val0.theString,val0.intPrimitive,val1".SplitCsv(),
+                    new object[] { "E1", 10, "E1" });
 
-				env.UndeployAll();
+                env.UndeployAll();
+            }
+        }
 
-				// test SODA
-				var eplExpr = "@name('expr') @public create expression somescript(i1) ['a']";
-				var modelExpr = env.EplToModel(eplExpr);
-				Assert.AreEqual(eplExpr, modelExpr.ToEPL());
-				env.CompileDeploy(modelExpr, path);
-				env.AssertStatement(
-					"expr",
-					statement => Assert.AreEqual(eplExpr, statement.GetProperty(StatementProperty.EPL)));
+        private class EPLOtherScriptUse : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy("@public create expression int js:abc(p1, p2) [p1*p2*10]", path);
+                env.CompileDeploy("@public create expression int js:abc(p1) [p1*10]", path);
 
-				var eplSelect = "@name('select') select somescript(1) from SupportBean";
-				var modelSelect = env.EplToModel(eplSelect);
-				Assert.AreEqual(eplSelect, modelSelect.ToEPL());
-				env.CompileDeploy(modelSelect, path);
-				env.AssertStatement(
-					"select",
-					statement => Assert.AreEqual(eplSelect, statement.GetProperty(StatementProperty.EPL)));
+                var epl =
+                    "@name('s0') select abc(intPrimitive, doublePrimitive) as c0, abc(intPrimitive) as c1 from SupportBean";
+                env.CompileDeploy(epl, path).AddListener("s0");
 
-				env.UndeployAll();
-			}
-		}
+                env.SendEventBean(MakeBean("E1", 10, 3.5));
+                env.AssertPropsNew("s0", "c0,c1".SplitCsv(), new object[] { 350, 100 });
 
-		private class EPLOtherExpressionUse : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
+                env.UndeployAll();
 
-				var path = new RegressionPath();
-				env.CompileDeploy("@public create expression TwoPi {Math.PI * 2}", path);
-				env.CompileDeploy("@public create expression factorPi {sb => Math.PI * intPrimitive}", path);
+                // test SODA
+                var eplExpr = "@name('expr') @public create expression somescript(i1) ['a']";
+                var modelExpr = env.EplToModel(eplExpr);
+                Assert.AreEqual(eplExpr, modelExpr.ToEPL());
+                env.CompileDeploy(modelExpr, path);
+                env.AssertStatement(
+                    "expr",
+                    statement => Assert.AreEqual(eplExpr, statement.GetProperty(StatementProperty.EPL)));
 
-				var fields = "c0,c1,c2".SplitCsv();
-				var epl = "@name('s0') select " +
-				          "TwoPi() as c0," +
-				          "(select TwoPi() from SupportBean_S0#lastevent) as c1," +
-				          "factorPi(sb) as c2 " +
-				          "from SupportBean sb";
-				env.CompileDeploy(epl, path).AddListener("s0");
+                var eplSelect = "@name('select') select somescript(1) from SupportBean";
+                var modelSelect = env.EplToModel(eplSelect);
+                Assert.AreEqual(eplSelect, modelSelect.ToEPL());
+                env.CompileDeploy(modelSelect, path);
+                env.AssertStatement(
+                    "select",
+                    statement => Assert.AreEqual(eplSelect, statement.GetProperty(StatementProperty.EPL)));
 
-				env.SendEventBean(new SupportBean_S0(10));
-				env.SendEventBean(new SupportBean("E1", 3)); // factor is 3
-				env.AssertPropsNew(
-					"s0",
-					fields,
-					new object[] { Math.PI * 2, Math.PI * 2, Math.PI * 3 });
+                env.UndeployAll();
+            }
+        }
 
-				env.UndeployModuleContaining("s0");
+        private class EPLOtherExpressionUse : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy("@public create expression TwoPi {Math.PI * 2}", path);
+                env.CompileDeploy("@public create expression factorPi {sb => Math.PI * intPrimitive}", path);
 
-				// test local expression override
-				env.CompileDeploy(
-						"@name('s0') expression TwoPi {Math.PI * 10} select TwoPi() as c0 from SupportBean",
-						path)
-					.AddListener("s0");
+                var fields = "c0,c1,c2".SplitCsv();
+                var epl = "@name('s0') select " +
+                          "TwoPi() as c0," +
+                          "(select TwoPi() from SupportBean_S0#lastevent) as c1," +
+                          "factorPi(sb) as c2 " +
+                          "from SupportBean sb";
+                env.CompileDeploy(epl, path).AddListener("s0");
 
-				env.SendEventBean(new SupportBean("E1", 0));
-				env.AssertPropsNew("s0", "c0".SplitCsv(), new object[] { Math.PI * 10 });
+                env.SendEventBean(new SupportBean_S0(10));
+                env.SendEventBean(new SupportBean("E1", 3)); // factor is 3
+                env.AssertPropsNew(
+                    "s0",
+                    fields,
+                    new object[] { Math.PI * 2, Math.PI * 2, Math.PI * 3 });
 
-				// test SODA
-				var eplExpr =
-					"@name('expr') @public create expression JoinMultiplication {(s1,s2) => s1.intPrimitive*s2.id}";
-				var modelExpr = env.EplToModel(eplExpr);
-				Assert.AreEqual(eplExpr, modelExpr.ToEPL());
-				env.CompileDeploy(modelExpr, path);
-				env.AssertStatement(
-					"expr",
-					statement => Assert.AreEqual(eplExpr, statement.GetProperty(StatementProperty.EPL)));
+                env.UndeployModuleContaining("s0");
 
-				// test SODA and join and 2-stream parameter
-				var eplJoin =
-					"@name('join') select JoinMultiplication(sb,s0) from SupportBean#lastevent as sb, SupportBean_S0#lastevent as s0";
-				var modelJoin = env.EplToModel(eplJoin);
-				Assert.AreEqual(eplJoin, modelJoin.ToEPL());
-				env.CompileDeploy(modelJoin, path);
-				env.AssertStatement(
-					"join",
-					statement => Assert.AreEqual(eplJoin, statement.GetProperty(StatementProperty.EPL)));
-				env.UndeployAll();
+                // test local expression override
+                env.CompileDeploy(
+                        "@name('s0') expression TwoPi {Math.PI * 10} select TwoPi() as c0 from SupportBean",
+                        path)
+                    .AddListener("s0");
 
-				// test subquery against named window and table defined in declared expression
-				TryAssertionTestExpressionUse(env, true);
-				TryAssertionTestExpressionUse(env, false);
+                env.SendEventBean(new SupportBean("E1", 0));
+                env.AssertPropsNew("s0", "c0".SplitCsv(), new object[] { Math.PI * 10 });
 
-				env.UndeployAll();
-			}
+                // test SODA
+                var eplExpr =
+                    "@name('expr') @public create expression JoinMultiplication {(s1,s2) => s1.intPrimitive*s2.id}";
+                var modelExpr = env.EplToModel(eplExpr);
+                Assert.AreEqual(eplExpr, modelExpr.ToEPL());
+                env.CompileDeploy(modelExpr, path);
+                env.AssertStatement(
+                    "expr",
+                    statement => Assert.AreEqual(eplExpr, statement.GetProperty(StatementProperty.EPL)));
 
-			private static void TryAssertionTestExpressionUse(
-				RegressionEnvironment env,
-				bool namedWindow)
-			{
+                // test SODA and join and 2-stream parameter
+                var eplJoin =
+                    "@name('join') select JoinMultiplication(sb,s0) from SupportBean#lastevent as sb, SupportBean_S0#lastevent as s0";
+                var modelJoin = env.EplToModel(eplJoin);
+                Assert.AreEqual(eplJoin, modelJoin.ToEPL());
+                env.CompileDeploy(modelJoin, path);
+                env.AssertStatement(
+                    "join",
+                    statement => Assert.AreEqual(eplJoin, statement.GetProperty(StatementProperty.EPL)));
+                env.UndeployAll();
 
-				var path = new RegressionPath();
-				env.CompileDeploy("@public create expression myexpr {(select intPrimitive from MyInfra)}", path);
-				var eplCreate = namedWindow
-					? "@public create window MyInfra#keepall as SupportBean"
-					: "@public create table MyInfra(theString string, intPrimitive int)";
-				env.CompileDeploy(eplCreate, path);
-				env.CompileDeploy("insert into MyInfra select theString, intPrimitive from SupportBean", path);
-				env.CompileDeploy("@name('s0') select myexpr() as c0 from SupportBean_S0", path).AddListener("s0");
-				AssertStatelessStmt(env, "s0", false);
+                // test subquery against named window and table defined in declared expression
+                TryAssertionTestExpressionUse(env, true);
+                TryAssertionTestExpressionUse(env, false);
 
-				env.SendEventBean(new SupportBean("E1", 100));
-				env.SendEventBean(new SupportBean_S0(1, "E1"));
-				env.AssertPropsNew("s0", "c0".SplitCsv(), new object[] { 100 });
+                env.UndeployAll();
+            }
 
-				env.UndeployAll();
-			}
-		}
+            private static void TryAssertionTestExpressionUse(
+                RegressionEnvironment env,
+                bool namedWindow)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy("@public create expression myexpr {(select intPrimitive from MyInfra)}", path);
+                var eplCreate = namedWindow
+                    ? "@public create window MyInfra#keepall as SupportBean"
+                    : "@public create table MyInfra(theString string, intPrimitive int)";
+                env.CompileDeploy(eplCreate, path);
+                env.CompileDeploy("insert into MyInfra select theString, intPrimitive from SupportBean", path);
+                env.CompileDeploy("@name('s0') select myexpr() as c0 from SupportBean_S0", path).AddListener("s0");
+                AssertStatelessStmt(env, "s0", false);
 
-		private class EPLOtherExprAndScriptLifecycleAndFilter : RegressionExecution
-		{
-			public void Run(RegressionEnvironment env)
-			{
-				// expression assertion
-				TryAssertionLifecycleAndFilter(
-					env,
-					"@public create expression MyFilter {sb => intPrimitive = 1}",
-					"select * from SupportBean(MyFilter(sb)) as sb",
-					"@public create expression MyFilter {sb => intPrimitive = 2}");
+                env.SendEventBean(new SupportBean("E1", 100));
+                env.SendEventBean(new SupportBean_S0(1, "E1"));
+                env.AssertPropsNew("s0", "c0".SplitCsv(), new object[] { 100 });
 
-				// script assertion
-				TryAssertionLifecycleAndFilter(
-					env,
-					"@public create expression boolean js:MyFilter(intPrimitive) [intPrimitive==1]",
-					"select * from SupportBean(MyFilter(intPrimitive)) as sb",
-					"@public create expression boolean js:MyFilter(intPrimitive) [intPrimitive==2]");
-			}
+                env.UndeployAll();
+            }
+        }
 
-			public ISet<RegressionFlag> Flags()
-			{
-				return Collections.Set(RegressionFlag.OBSERVEROPS);
-			}
-		}
+        private class EPLOtherExprAndScriptLifecycleAndFilter : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // expression assertion
+                TryAssertionLifecycleAndFilter(
+                    env,
+                    "@public create expression MyFilter {sb => intPrimitive = 1}",
+                    "select * from SupportBean(MyFilter(sb)) as sb",
+                    "@public create expression MyFilter {sb => intPrimitive = 2}");
 
-		private static void TryAssertionLifecycleAndFilter(
-			RegressionEnvironment env,
-			string expressionBefore,
-			string selector,
-			string expressionAfter)
-		{
-			var path = new RegressionPath();
-			env.CompileDeploy("@name('expr-one') " + expressionBefore, path);
-			env.CompileDeploy("@name('s1') " + selector, path).AddListener("s1");
+                // script assertion
+                TryAssertionLifecycleAndFilter(
+                    env,
+                    "@public create expression boolean js:MyFilter(intPrimitive) [intPrimitive==1]",
+                    "select * from SupportBean(MyFilter(intPrimitive)) as sb",
+                    "@public create expression boolean js:MyFilter(intPrimitive) [intPrimitive==2]");
+            }
 
-			env.SendEventBean(new SupportBean("E1", 0));
-			env.AssertListenerNotInvoked("s1");
-			env.SendEventBean(new SupportBean("E2", 1));
-			env.AssertListenerInvoked("s1");
+            public ISet<RegressionFlag> Flags()
+            {
+                return Collections.Set(RegressionFlag.OBSERVEROPS);
+            }
+        }
 
-			var listenerS1 = env.Listener("s1");
-			path.Clear();
-			env.UndeployAll();
+        private static void TryAssertionLifecycleAndFilter(
+            RegressionEnvironment env,
+            string expressionBefore,
+            string selector,
+            string expressionAfter)
+        {
+            var path = new RegressionPath();
+            env.CompileDeploy("@name('expr-one') " + expressionBefore, path);
+            env.CompileDeploy("@name('s1') " + selector, path).AddListener("s1");
 
-			env.CompileDeploy("@name('expr-two') " + expressionAfter, path);
-			env.CompileDeploy("@name('s2') " + selector, path).AddListener("s2");
+            env.SendEventBean(new SupportBean("E1", 0));
+            env.AssertListenerNotInvoked("s1");
+            env.SendEventBean(new SupportBean("E2", 1));
+            env.AssertListenerInvoked("s1");
 
-			env.SendEventBean(new SupportBean("E3", 0));
-			Assert.IsFalse(listenerS1.GetAndClearIsInvoked() || env.Listener("s2").GetAndClearIsInvoked());
+            var listenerS1 = env.Listener("s1");
+            path.Clear();
+            env.UndeployAll();
 
-			env.Milestone(0);
+            env.CompileDeploy("@name('expr-two') " + expressionAfter, path);
+            env.CompileDeploy("@name('s2') " + selector, path).AddListener("s2");
 
-			env.SendEventBean(new SupportBean("E4", 1));
-			Assert.IsFalse(listenerS1.GetAndClearIsInvoked());
-			Assert.IsFalse(env.Listener("s2").GetAndClearIsInvoked());
-			env.SendEventBean(new SupportBean("E4", 2));
-			Assert.IsFalse(listenerS1.GetAndClearIsInvoked());
-			Assert.IsTrue(env.Listener("s2").GetAndClearIsInvoked());
+            env.SendEventBean(new SupportBean("E3", 0));
+            Assert.IsFalse(listenerS1.GetAndClearIsInvoked() || env.Listener("s2").GetAndClearIsInvoked());
 
-			env.UndeployAll();
-		}
+            env.Milestone(0);
 
-		private static SupportBean MakeBean(
-			string theString,
-			int intPrimitive,
-			double doublePrimitive)
-		{
-			var sb = new SupportBean();
-			sb.IntPrimitive = intPrimitive;
-			sb.DoublePrimitive = doublePrimitive;
-			return sb;
-		}
-	}
+            env.SendEventBean(new SupportBean("E4", 1));
+            Assert.IsFalse(listenerS1.GetAndClearIsInvoked());
+            Assert.IsFalse(env.Listener("s2").GetAndClearIsInvoked());
+            env.SendEventBean(new SupportBean("E4", 2));
+            Assert.IsFalse(listenerS1.GetAndClearIsInvoked());
+            Assert.IsTrue(env.Listener("s2").GetAndClearIsInvoked());
+
+            env.UndeployAll();
+        }
+
+        private static SupportBean MakeBean(
+            string theString,
+            int intPrimitive,
+            double doublePrimitive)
+        {
+            var sb = new SupportBean();
+            sb.IntPrimitive = intPrimitive;
+            sb.DoublePrimitive = doublePrimitive;
+            return sb;
+        }
+    }
 } // end of namespace

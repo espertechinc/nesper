@@ -13,199 +13,260 @@ using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
 {
-	public class EPLSubselectWithinPattern {
+    public class EPLSubselectWithinPattern
+    {
+        public static IList<RegressionExecution> Executions()
+        {
+            IList<RegressionExecution> execs = new List<RegressionExecution>();
+            WithInvalid(execs);
+            WithCorrelated(execs);
+            WithAggregation(execs);
+            WithSubqueryAgainstNamedWindowInUDFInPattern(execs);
+            WithFilterPatternNamedWindowNoAlias(execs);
+            return execs;
+        }
 
-	    public static IList<RegressionExecution> Executions() {
-	        IList<RegressionExecution> execs = new List<RegressionExecution>();
-	        execs.Add(new EPLSubselectInvalid());
-	        execs.Add(new EPLSubselectCorrelated());
-	        execs.Add(new EPLSubselectAggregation());
-	        execs.Add(new EPLSubselectSubqueryAgainstNamedWindowInUDFInPattern());
-	        execs.Add(new EPLSubselectFilterPatternNamedWindowNoAlias());
-	        return execs;
-	    }
+        public static IList<RegressionExecution> WithFilterPatternNamedWindowNoAlias(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectFilterPatternNamedWindowNoAlias());
+            return execs;
+        }
 
-	    private class EPLSubselectInvalid : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            var path = new RegressionPath();
-	            env.CompileDeploy("@public create window MyWindowInvalid#lastevent as select * from SupportBean_S0", path);
+        public static IList<RegressionExecution> WithSubqueryAgainstNamedWindowInUDFInPattern(
+            IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectSubqueryAgainstNamedWindowInUDFInPattern());
+            return execs;
+        }
 
-	            env.TryInvalidCompile("select * from SupportBean_S0(exists (select * from SupportBean_S1))",
-	                "Failed to validate subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consider declaring a length or time window [select * from SupportBean_S0(exists (select * from SupportBean_S1))]");
+        public static IList<RegressionExecution> WithAggregation(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectAggregation());
+            return execs;
+        }
 
-	            env.TryInvalidCompile(path, "select * from SupportBean_S0(exists (select * from MyWindowInvalid#lastevent))",
-	                "Failed to validate subquery number 1 querying MyWindowInvalid: Consuming statements to a named window cannot declare a data window view onto the named window [select * from SupportBean_S0(exists (select * from MyWindowInvalid#lastevent))]");
+        public static IList<RegressionExecution> WithCorrelated(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectCorrelated());
+            return execs;
+        }
 
-	            env.TryInvalidCompile(path, "select * from SupportBean_S0(id in ((select p00 from MyWindowInvalid)))",
-	                "Failed to validate filter expression 'id in (subselect_1)': Implicit conversion not allowed: Cannot coerce types Integer and String [select * from SupportBean_S0(id in ((select p00 from MyWindowInvalid)))]");
+        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        {
+            execs = execs ?? new List<RegressionExecution>();
+            execs.Add(new EPLSubselectInvalid());
+            return execs;
+        }
 
-	            env.UndeployAll();
-	        }
-	    }
+        private class EPLSubselectInvalid : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@public create window MyWindowInvalid#lastevent as select * from SupportBean_S0",
+                    path);
 
-	    private class EPLSubselectSubqueryAgainstNamedWindowInUDFInPattern : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
+                env.TryInvalidCompile(
+                    "select * from SupportBean_S0(exists (select * from SupportBean_S1))",
+                    "Failed to validate subquery number 1 querying SupportBean_S1: Subqueries require one or more views to limit the stream, consider declaring a length or time window [select * from SupportBean_S0(exists (select * from SupportBean_S1))]");
 
-	            var epl = "create window MyWindowSNW#unique(p00)#keepall as SupportBean_S0;\n" +
-	                      "@name('s0') select * from pattern[SupportBean_S1(supportSingleRowFunction((select * from MyWindowSNW)))];\n";
-	            env.CompileDeployAddListenerMileZero(epl, "s0");
+                env.TryInvalidCompile(
+                    path,
+                    "select * from SupportBean_S0(exists (select * from MyWindowInvalid#lastevent))",
+                    "Failed to validate subquery number 1 querying MyWindowInvalid: Consuming statements to a named window cannot declare a data window view onto the named window [select * from SupportBean_S0(exists (select * from MyWindowInvalid#lastevent))]");
 
-	            env.SendEventBean(new SupportBean_S1(1));
-	            env.AssertListenerInvoked("s0");
+                env.TryInvalidCompile(
+                    path,
+                    "select * from SupportBean_S0(id in ((select p00 from MyWindowInvalid)))",
+                    "Failed to validate filter expression 'id in (subselect_1)': Implicit conversion not allowed: Cannot coerce types Integer and String [select * from SupportBean_S0(id in ((select p00 from MyWindowInvalid)))]");
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.UndeployAll();
+            }
+        }
 
-	    private class EPLSubselectFilterPatternNamedWindowNoAlias : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            // subselect in pattern
-	            var stmtTextOne = "@name('s0') select s.id as myid from pattern [every s=SupportBean_S0(p00 in (select p10 from SupportBean_S1#lastevent))]";
-	            env.CompileDeployAddListenerMileZero(stmtTextOne, "s0");
+        private class EPLSubselectSubqueryAgainstNamedWindowInUDFInPattern : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl = "create window MyWindowSNW#unique(p00)#keepall as SupportBean_S0;\n" +
+                          "@name('s0') select * from pattern[SupportBean_S1(supportSingleRowFunction((select * from MyWindowSNW)))];\n";
+                env.CompileDeployAddListenerMileZero(epl, "s0");
 
-	            TryAssertion(env);
-	            env.UndeployAll();
+                env.SendEventBean(new SupportBean_S1(1));
+                env.AssertListenerInvoked("s0");
 
-	            // subselect in filter
-	            var stmtTextTwo = "@name('s0') select id as myid from SupportBean_S0(p00 in (select p10 from SupportBean_S1#lastevent))";
-	            env.CompileDeployAddListenerMile(stmtTextTwo, "s0", 1);
-	            TryAssertion(env);
-	            env.UndeployAll();
+                env.UndeployAll();
+            }
+        }
 
-	            // subselect in filter with named window
-	            var epl = "create window MyS1Window#lastevent as select * from SupportBean_S1;\n" +
-	                      "insert into MyS1Window select * from SupportBean_S1;\n" +
-	                      "@name('s0') select id as myid from SupportBean_S0(p00 in (select p10 from MyS1Window))";
-	            env.CompileDeployAddListenerMile(epl, "s0", 2);
-	            TryAssertion(env);
-	            env.UndeployAll();
+        private class EPLSubselectFilterPatternNamedWindowNoAlias : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                // subselect in pattern
+                var stmtTextOne =
+                    "@name('s0') select s.id as myid from pattern [every s=SupportBean_S0(p00 in (select p10 from SupportBean_S1#lastevent))]";
+                env.CompileDeployAddListenerMileZero(stmtTextOne, "s0");
 
-	            // subselect in pattern with named window
-	            epl = "create window MyS1Window#lastevent as select * from SupportBean_S1;\n" +
-	                "insert into MyS1Window select * from SupportBean_S1;\n" +
-	                "@name('s0') select s.id as myid from pattern [every s=SupportBean_S0(p00 in (select p10 from MyS1Window))];\n";
-	            env.CompileDeployAddListenerMile(epl, "s0", 3);
-	            TryAssertion(env);
-	            env.UndeployAll();
-	        }
-	    }
+                TryAssertion(env);
+                env.UndeployAll();
 
-	    private class EPLSubselectCorrelated : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
-	            string epl;
+                // subselect in filter
+                var stmtTextTwo =
+                    "@name('s0') select id as myid from SupportBean_S0(p00 in (select p10 from SupportBean_S1#lastevent))";
+                env.CompileDeployAddListenerMile(stmtTextTwo, "s0", 1);
+                TryAssertion(env);
+                env.UndeployAll();
 
-	            epl = "@name('s0') select sp1.id as myid from pattern[every sp1=SupportBean_S0(exists (select * from SupportBean_S1#keepall as stream1 where stream1.p10 = sp1.p00))]";
-	            env.CompileDeployAddListenerMile(epl, "s0", 0);
-	            TryAssertionCorrelated(env);
-	            env.UndeployAll();
+                // subselect in filter with named window
+                var epl = "create window MyS1Window#lastevent as select * from SupportBean_S1;\n" +
+                          "insert into MyS1Window select * from SupportBean_S1;\n" +
+                          "@name('s0') select id as myid from SupportBean_S0(p00 in (select p10 from MyS1Window))";
+                env.CompileDeployAddListenerMile(epl, "s0", 2);
+                TryAssertion(env);
+                env.UndeployAll();
 
-	            epl = "@name('s0') select id as myid from SupportBean_S0(exists (select stream1.id from SupportBean_S1#keepall as stream1 where stream1.p10 = stream0.p00)) as stream0";
-	            env.CompileDeployAddListenerMile(epl, "s0", 1);
-	            TryAssertionCorrelated(env);
-	            env.UndeployAll();
+                // subselect in pattern with named window
+                epl = "create window MyS1Window#lastevent as select * from SupportBean_S1;\n" +
+                      "insert into MyS1Window select * from SupportBean_S1;\n" +
+                      "@name('s0') select s.id as myid from pattern [every s=SupportBean_S0(p00 in (select p10 from MyS1Window))];\n";
+                env.CompileDeployAddListenerMile(epl, "s0", 3);
+                TryAssertion(env);
+                env.UndeployAll();
+            }
+        }
 
-	            epl = "@name('s0') select sp0.p00||'+'||sp1.p10 as myid from pattern[" +
-	                "every sp0=SupportBean_S0 -> sp1=SupportBean_S1(p11 = (select stream2.p21 from SupportBean_S2#keepall as stream2 where stream2.p20 = sp0.p00))]";
-	            env.CompileDeployAddListenerMile(epl, "s0", 2);
+        private class EPLSubselectCorrelated : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                string epl;
 
-	            env.SendEventBean(new SupportBean_S2(21, "X", "A"));
-	            env.SendEventBean(new SupportBean_S2(22, "Y", "B"));
-	            env.SendEventBean(new SupportBean_S2(23, "Z", "C"));
+                epl =
+                    "@name('s0') select sp1.id as myid from pattern[every sp1=SupportBean_S0(exists (select * from SupportBean_S1#keepall as stream1 where stream1.p10 = sp1.p00))]";
+                env.CompileDeployAddListenerMile(epl, "s0", 0);
+                TryAssertionCorrelated(env);
+                env.UndeployAll();
 
-	            env.SendEventBean(new SupportBean_S0(1, "A"));
-	            env.SendEventBean(new SupportBean_S0(2, "Y"));
-	            env.SendEventBean(new SupportBean_S0(3, "C"));
-	            env.AssertListenerNotInvoked("s0");
+                epl =
+                    "@name('s0') select id as myid from SupportBean_S0(exists (select stream1.id from SupportBean_S1#keepall as stream1 where stream1.p10 = stream0.p00)) as stream0";
+                env.CompileDeployAddListenerMile(epl, "s0", 1);
+                TryAssertionCorrelated(env);
+                env.UndeployAll();
 
-	            env.SendEventBean(new SupportBean_S1(4, "B", "B"));
-	            env.AssertEqualsNew("s0", "myid", "Y+B");
+                epl = "@name('s0') select sp0.p00||'+'||sp1.p10 as myid from pattern[" +
+                      "every sp0=SupportBean_S0 -> sp1=SupportBean_S1(p11 = (select stream2.p21 from SupportBean_S2#keepall as stream2 where stream2.p20 = sp0.p00))]";
+                env.CompileDeployAddListenerMile(epl, "s0", 2);
 
-	            env.SendEventBean(new SupportBean_S1(4, "B", "C"));
-	            env.SendEventBean(new SupportBean_S1(5, "C", "B"));
-	            env.SendEventBean(new SupportBean_S1(6, "X", "A"));
-	            env.SendEventBean(new SupportBean_S1(7, "A", "C"));
-	            env.AssertListenerNotInvoked("s0");
+                env.SendEventBean(new SupportBean_S2(21, "X", "A"));
+                env.SendEventBean(new SupportBean_S2(22, "Y", "B"));
+                env.SendEventBean(new SupportBean_S2(23, "Z", "C"));
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.SendEventBean(new SupportBean_S0(1, "A"));
+                env.SendEventBean(new SupportBean_S0(2, "Y"));
+                env.SendEventBean(new SupportBean_S0(3, "C"));
+                env.AssertListenerNotInvoked("s0");
 
-	    private class EPLSubselectAggregation : RegressionExecution {
-	        public void Run(RegressionEnvironment env) {
+                env.SendEventBean(new SupportBean_S1(4, "B", "B"));
+                env.AssertEqualsNew("s0", "myid", "Y+B");
 
-	            var stmtText = "@name('s0') select * from SupportBean_S0(id = (select sum(id) from SupportBean_S1#length(2)))";
-	            env.CompileDeployAddListenerMileZero(stmtText, "s0");
+                env.SendEventBean(new SupportBean_S1(4, "B", "C"));
+                env.SendEventBean(new SupportBean_S1(5, "C", "B"));
+                env.SendEventBean(new SupportBean_S1(6, "X", "A"));
+                env.SendEventBean(new SupportBean_S1(7, "A", "C"));
+                env.AssertListenerNotInvoked("s0");
 
-	            env.SendEventBean(new SupportBean_S0(1));
-	            env.SendEventBean(new SupportBean_S1(1));
-	            env.AssertListenerNotInvoked("s0");
+                env.UndeployAll();
+            }
+        }
 
-	            env.SendEventBean(new SupportBean_S0(1));
-	            env.AssertListenerInvoked("s0");
+        private class EPLSubselectAggregation : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var stmtText =
+                    "@name('s0') select * from SupportBean_S0(id = (select sum(id) from SupportBean_S1#length(2)))";
+                env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
-	            env.SendEventBean(new SupportBean_S1(3));  // now at 4
-	            env.SendEventBean(new SupportBean_S0(3));
-	            env.SendEventBean(new SupportBean_S0(5));
-	            env.AssertListenerNotInvoked("s0");
+                env.SendEventBean(new SupportBean_S0(1));
+                env.SendEventBean(new SupportBean_S1(1));
+                env.AssertListenerNotInvoked("s0");
 
-	            env.SendEventBean(new SupportBean_S0(4));
-	            env.AssertListenerInvoked("s0");
+                env.SendEventBean(new SupportBean_S0(1));
+                env.AssertListenerInvoked("s0");
 
-	            env.SendEventBean(new SupportBean_S1(10));  // now at 13 (length window 2)
-	            env.SendEventBean(new SupportBean_S0(10));
-	            env.SendEventBean(new SupportBean_S0(3));
-	            env.AssertListenerNotInvoked("s0");
+                env.SendEventBean(new SupportBean_S1(3)); // now at 4
+                env.SendEventBean(new SupportBean_S0(3));
+                env.SendEventBean(new SupportBean_S0(5));
+                env.AssertListenerNotInvoked("s0");
 
-	            env.SendEventBean(new SupportBean_S0(13));
-	            env.AssertListenerInvoked("s0");
+                env.SendEventBean(new SupportBean_S0(4));
+                env.AssertListenerInvoked("s0");
 
-	            env.UndeployAll();
-	        }
-	    }
+                env.SendEventBean(new SupportBean_S1(10)); // now at 13 (length window 2)
+                env.SendEventBean(new SupportBean_S0(10));
+                env.SendEventBean(new SupportBean_S0(3));
+                env.AssertListenerNotInvoked("s0");
 
-	    private static void TryAssertionCorrelated(RegressionEnvironment env) {
-	        env.SendEventBean(new SupportBean_S0(1, "A"));
-	        env.SendEventBean(new SupportBean_S1(2, "A"));
-	        env.SendEventBean(new SupportBean_S0(3, "B"));
-	        env.SendEventBean(new SupportBean_S1(4, "C"));
-	        env.AssertListenerNotInvoked("s0");
+                env.SendEventBean(new SupportBean_S0(13));
+                env.AssertListenerInvoked("s0");
 
-	        env.SendEventBean(new SupportBean_S0(5, "C"));
-	        env.AssertEqualsNew("s0", "myid", 5);
+                env.UndeployAll();
+            }
+        }
 
-	        env.SendEventBean(new SupportBean_S0(6, "A"));
-	        env.AssertEqualsNew("s0", "myid", 6);
+        private static void TryAssertionCorrelated(RegressionEnvironment env)
+        {
+            env.SendEventBean(new SupportBean_S0(1, "A"));
+            env.SendEventBean(new SupportBean_S1(2, "A"));
+            env.SendEventBean(new SupportBean_S0(3, "B"));
+            env.SendEventBean(new SupportBean_S1(4, "C"));
+            env.AssertListenerNotInvoked("s0");
 
-	        env.SendEventBean(new SupportBean_S0(7, "D"));
-	        env.SendEventBean(new SupportBean_S1(8, "E"));
-	        env.AssertListenerNotInvoked("s0");
+            env.SendEventBean(new SupportBean_S0(5, "C"));
+            env.AssertEqualsNew("s0", "myid", 5);
 
-	        env.SendEventBean(new SupportBean_S0(9, "C"));
-	        env.AssertEqualsNew("s0", "myid", 9);
-	    }
+            env.SendEventBean(new SupportBean_S0(6, "A"));
+            env.AssertEqualsNew("s0", "myid", 6);
 
-	    private static void TryAssertion(RegressionEnvironment env) {
-	        env.SendEventBean(new SupportBean_S0(1, "A"));
-	        env.SendEventBean(new SupportBean_S1(2, "A"));
-	        env.SendEventBean(new SupportBean_S0(3, "B"));
-	        env.SendEventBean(new SupportBean_S1(4, "C"));
-	        env.AssertListenerNotInvoked("s0");
+            env.SendEventBean(new SupportBean_S0(7, "D"));
+            env.SendEventBean(new SupportBean_S1(8, "E"));
+            env.AssertListenerNotInvoked("s0");
 
-	        env.SendEventBean(new SupportBean_S0(5, "C"));
-	        env.AssertEqualsNew("s0", "myid", 5);
+            env.SendEventBean(new SupportBean_S0(9, "C"));
+            env.AssertEqualsNew("s0", "myid", 9);
+        }
 
-	        env.SendEventBean(new SupportBean_S0(6, "A"));
-	        env.SendEventBean(new SupportBean_S0(7, "D"));
-	        env.SendEventBean(new SupportBean_S1(8, "E"));
-	        env.SendEventBean(new SupportBean_S0(9, "C"));
-	        env.AssertListenerNotInvoked("s0");
+        private static void TryAssertion(RegressionEnvironment env)
+        {
+            env.SendEventBean(new SupportBean_S0(1, "A"));
+            env.SendEventBean(new SupportBean_S1(2, "A"));
+            env.SendEventBean(new SupportBean_S0(3, "B"));
+            env.SendEventBean(new SupportBean_S1(4, "C"));
+            env.AssertListenerNotInvoked("s0");
 
-	        env.SendEventBean(new SupportBean_S0(10, "E"));
-	        env.AssertEqualsNew("s0", "myid", 10);
-	    }
+            env.SendEventBean(new SupportBean_S0(5, "C"));
+            env.AssertEqualsNew("s0", "myid", 5);
 
-	    public static bool SupportSingleRowFunction(params object[] v) {
-	        return true;
-	    }
-	}
+            env.SendEventBean(new SupportBean_S0(6, "A"));
+            env.SendEventBean(new SupportBean_S0(7, "D"));
+            env.SendEventBean(new SupportBean_S1(8, "E"));
+            env.SendEventBean(new SupportBean_S0(9, "C"));
+            env.AssertListenerNotInvoked("s0");
+
+            env.SendEventBean(new SupportBean_S0(10, "E"));
+            env.AssertEqualsNew("s0", "myid", 10);
+        }
+
+        public static bool SupportSingleRowFunction(params object[] v)
+        {
+            return true;
+        }
+    }
 } // end of namespace

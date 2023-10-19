@@ -23,9 +23,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         public static ICollection<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
+#if REGRESSION_EXECUTIONS
             WithWSelectFrom(execs);
             WithTwoProperties(execs);
-            WithInvalid(execs);
+            With(Invalid)(execs);
+#endif
             return execs;
         }
 
