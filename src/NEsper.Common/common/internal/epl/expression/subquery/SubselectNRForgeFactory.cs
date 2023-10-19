@@ -281,7 +281,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             try {
                 coercionType = typeOne.GetCompareToCoercionType(typeTwo);
             }
-            catch (CoercionException ex) {
+            catch (CoercionException) {
                 throw new ExprValidationException(
                     "Implicit conversion from datatype '" +
                     typeTwo +

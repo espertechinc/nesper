@@ -191,7 +191,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
                 var subproperty = ToPlainPropertyString(chain, 1);
                 return new ExprContextPropertyNodeImpl(subproperty);
             }
-            catch (ChainableWalkNotAPropertyException ex) {
+            catch (ChainableWalkNotAPropertyException) {
                 // may not be a property, handle as a dot-expression
             }
 
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
                     dot.AddChildNode(contextProperty);
                     return dot;
                 }
-                catch (ChainableWalkNotAPropertyException ex) {
+                catch (ChainableWalkNotAPropertyException) {
                     // may not be a property, handle as a dot-expression
                 }
             }
@@ -320,10 +320,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
             try {
                 return mapContext.ImportService.ResolveSingleRow(chainFirstName, mapContext.ClassProvidedExtension);
             }
-            catch (ImportException ex) {
+            catch (ImportException) {
                 return null;
             }
-            catch (ImportUndefinedException ex) {
+            catch (ImportUndefinedException) {
                 return null;
             }
         }
@@ -388,7 +388,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.walk
                     depthFound = depth;
                     break;
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     // expected, handled later when expression validation takes place
                 }
 

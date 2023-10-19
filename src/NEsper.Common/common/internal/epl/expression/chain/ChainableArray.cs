@@ -17,102 +17,90 @@ using com.espertech.esper.compat.function;
 
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityQuery; //acceptParams
 
-namespace com.espertech.esper.common.@internal.epl.expression.chain
-{
-    public class ChainableArray : Chainable
-    {
-        public ChainableArray(IList<ExprNode> indexExpressions)
-        {
+namespace com.espertech.esper.common.@internal.epl.expression.chain {
+    public class ChainableArray : Chainable {
+        public ChainableArray (IList<ExprNode> indexExpressions) {
             Indexes = indexExpressions;
         }
 
-        public ChainableArray(
+        public ChainableArray (
             bool distinct,
             bool optional,
-            IList<ExprNode> indexes) : base(distinct, optional)
-        {
+            IList<ExprNode> indexes) : base (distinct, optional) {
             Indexes = indexes;
         }
 
         public IList<ExprNode> Indexes { get; }
 
-        public override void Accept(ExprNodeVisitor visitor)
-        {
-            AcceptParams(visitor, Indexes);
+        public override void Accept (ExprNodeVisitor visitor) {
+            AcceptParams (visitor, Indexes);
         }
 
-        public override void Accept(ExprNodeVisitorWithParent visitor)
-        {
-            AcceptParams(visitor, Indexes);
+        public override void Accept (ExprNodeVisitorWithParent visitor) {
+            AcceptParams (visitor, Indexes);
         }
 
-        public override void Accept(
+        public override void Accept (
             ExprNodeVisitorWithParent visitor,
-            ExprNode parent)
-        {
-            AcceptParams(visitor, Indexes, parent);
+            ExprNode parent) {
+            AcceptParams (visitor, Indexes, parent);
         }
 
-        public override void ValidateExpressions(
+        public override void ValidateExpressions (
             ExprNodeOrigin origin,
-            ExprValidationContext validationContext)
-        {
-            ValidateExpressions(Indexes, origin, validationContext);
+            ExprValidationContext validationContext) {
+            ValidateExpressions (Indexes, origin, validationContext);
         }
 
-        public override void AddParametersTo(ICollection<ExprNode> result)
-        {
-            result.AddAll(Indexes);
+        public override void AddParametersTo (ICollection<ExprNode> result) {
+            result.AddAll (Indexes);
         }
 
-        public override bool Equals(object o)
-        {
+        public override bool Equals (object o) {
             if (this == o) {
                 return true;
             }
 
-            if (o == null || GetType() != o.GetType()) {
+            if (o == null || GetType () != o.GetType ()) {
                 return false;
             }
 
-            var that = (ChainableArray)o;
-            return EqualsChainable(that) && ExprNodeUtilityCompare.DeepEquals(Indexes, that.Indexes);
+            var that = (ChainableArray) o;
+            return EqualsChainable (that) && ExprNodeUtilityCompare.DeepEquals (Indexes, that.Indexes);
         }
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode () {
             return 0;
         }
 
-        public static ExprNode ValidateSingleIndexExpr(
+        public static ExprNode ValidateSingleIndexExpr (
             IList<ExprNode> indexes,
-            Supplier<string> supplier)
-        {
+            Supplier<string> supplier) {
             if (indexes.Count != 1) {
-                throw new ExprValidationException(
+                throw new ExprValidationException (
                     "Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received " +
                     indexes.Count +
                     " expressions for " +
-                    supplier.Invoke());
+                    supplier.Invoke ());
             }
 
             var node = indexes[0];
             var evaluationType = node.Forge.EvaluationType;
-            if (!evaluationType.IsTypeInt32()) {
-                throw new ExprValidationException(
+            if (!evaluationType.IsTypeInt32 ()) {
+                throw new ExprValidationException (
                     "Incorrect index expression for array operation, expected an expression returning an integer value but the expression '" +
-                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(node) +
+                    ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe (node) +
                     "' returns '" +
-                    evaluationType.CleanName() +
+                    evaluationType.CleanName () +
                     "' for " +
-                    supplier.Invoke());
+                    supplier.Invoke ());
             }
 
             return node;
         }
 
-        public IList<ExprNode> ParametersOrEmpty => EmptyList<ExprNode>.Instance;
+        public override IList<ExprNode> ParametersOrEmpty => EmptyList<ExprNode>.Instance;
 
-        public string RootNameOrEmptyString => "";
+        public override string RootNameOrEmptyString => "";
     }
 } // end of namespace

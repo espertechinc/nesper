@@ -178,7 +178,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// </summary>
         [NonSerialized] private static Timer releaseTimer = null;
 
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public virtual void GetObjectData(
             SerializationInfo info,
             StreamingContext context)

@@ -218,7 +218,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         false,
                         validationContext.TableCompileTimeResolver);
                 }
-                catch (ExprValidationPropertyException ex) {
+                catch (ExprValidationPropertyException) {
                     // fine
                 }
 
@@ -269,7 +269,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         true,
                         validationContext.TableCompileTimeResolver);
                 }
-                catch (ExprValidationPropertyException ex) {
+                catch (ExprValidationPropertyException) {
                     // fine
                 }
 
@@ -406,7 +406,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     true,
                     validationContext.TableCompileTimeResolver);
             }
-            catch (ExprValidationPropertyException ex) {
+            catch (ExprValidationPropertyException) {
                 // not a property
             }
 
@@ -748,7 +748,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     myself._isDuckTyping,
                     filterAnalyzerInputProp);
             }
-            catch (ExprValidationException ex) {
+            catch (ExprValidationException) {
                 if (inputType is EPChainableTypeEventSingle || inputType is EPChainableTypeEventMulti) {
                     throw;
                 }

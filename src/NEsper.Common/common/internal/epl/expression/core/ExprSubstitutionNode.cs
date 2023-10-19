@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         optionalType.ClassIdentifier,
                         validationContext.ImportService.TypeResolver);
                 }
-                catch (TypeLoadException e) {
+                catch (TypeLoadException) {
                 }
 
                 if (clazz == null) {

@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.output.condition;
 using com.espertech.esper.common.@internal.@event.arr;
+using com.espertech.esper.compat;
 
 
 namespace com.espertech.esper.common.@internal.epl.output.polled
@@ -87,8 +88,8 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             }
 
             var result = false;
-            var output = (bool)factory.WhenExpression.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-            if (output != null && output) {
+            var output = factory.WhenExpression.Evaluate(eventsPerStream, true, exprEvaluatorContext).AsBoxedBoolean();
+            if (output != null && true.Equals(output)) {
                 result = true;
             }
 

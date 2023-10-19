@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
                     instance.AddEvent(@event);
                 }
             }
-            catch (EPException ex) {
+            catch (EPException) {
                 foreach (var @event in inserted) {
                     instance.DeleteEvent(@event);
                 }

@@ -369,7 +369,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                             validationContext);
                         matchingMethod = true;
                     }
-                    catch (ExprValidationException ex) {
+                    catch (ExprValidationException) {
                         // expected
                     }
                 }
@@ -533,7 +533,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                                     currentInputType = forge.TypeInfo;
                                     continue;
                                 }
-                                catch (Exception e2) {
+                                catch (Exception) {
                                     throw new ExprValidationException(e.Message, e);
                                 }
                             }

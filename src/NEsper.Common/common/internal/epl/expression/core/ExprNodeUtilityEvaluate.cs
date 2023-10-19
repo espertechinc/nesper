@@ -37,9 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     new EventBean[] { @event },
                     true,
                     exprEvaluatorContext)
-                .AsInt32();
+                .AsBoxedInt32();
             if (precedenceResult != null) {
-                return precedenceResult;
+                return precedenceResult.Value;
             }
 
             return defaultValue;

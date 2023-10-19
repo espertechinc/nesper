@@ -107,7 +107,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// <value>The param prefix.</value>
         protected override string ParamPrefix => _paramPrefix;
 
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(
             SerializationInfo info,
             StreamingContext context)

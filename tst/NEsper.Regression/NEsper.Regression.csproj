@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.1;net6.0;net7.0</TargetFrameworks>
+        <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -34,15 +34,4 @@
         <ProjectReference Include="..\..\src\NEsper.Log.NLog\NEsper.Log.NLog.csproj" />
         <ProjectReference Include="..\..\src\NEsper.Runtime\NEsper.Runtime.csproj" />
     </ItemGroup>
-
-    <!--
-    <ItemGroup>
-      <None Update="log4net.config">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="NEsperRegressionConfig.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-    -->
 </Project>
