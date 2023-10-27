@@ -127,12 +127,12 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType("MyEventWTypeAndUID", myEventWTypeAndUID);
 
             var stockQuote = new ConfigurationCommonEventTypeXMLDOM();
-            stockQuote.AddXPathProperty("symbol_a", "//m0:symbol", XPathResultType.String);
+            stockQuote.AddXPathProperty("symbol_a", "//m0:Symbol", XPathResultType.String);
             stockQuote.AddXPathProperty(
                 "symbol_b",
                 "//*[local-name(.) = 'getQuote' and namespace-uri(.) = 'http://services.samples/xsd']",
                 XPathResultType.String);
-            stockQuote.AddXPathProperty("symbol_c", "/m0:getQuote/m0:request/m0:symbol", XPathResultType.String);
+            stockQuote.AddXPathProperty("symbol_c", "/m0:getQuote/m0:request/m0:Symbol", XPathResultType.String);
             stockQuote.RootElementName = "getQuote";
             stockQuote.DefaultNamespace = "http://services.samples/xsd";
             stockQuote.RootElementNamespace = "http://services.samples/xsd";
@@ -332,7 +332,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType("PageVisitEvent", pageVisitEvent);
 
             var orderEvent = new ConfigurationCommonEventTypeXMLDOM();
-            orderEvent.RootElementName = "order";
+            orderEvent.RootElementName = "Order";
             orderEvent.SchemaText = schemaTextSimpleSchemaWithRestriction;
             configuration.Common.AddEventType("OrderEvent", orderEvent);
         }

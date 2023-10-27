@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                         REF_EPS,
                         Constant(updateItems.Length),
                         ConstantTrue()))
-                .DeclareVar<EventBean>("copy", ExprDotMethod(copyMethodField, "copy", Ref("matchingEvent")))
+                .DeclareVar<EventBean>("copy", ExprDotMethod(copyMethodField, "Copy", Ref("matchingEvent")))
                 .AssignArrayElement(REF_EPS, Constant(0), Ref("copy"))
                 .AssignArrayElement(REF_EPS, Constant(2), Ref("matchingEvent"))
                 .LocalMethod(updateInternal, REF_EPS, REF_EXPREVALCONTEXT, Ref("copy"))

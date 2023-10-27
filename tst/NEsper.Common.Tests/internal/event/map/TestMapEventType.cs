@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             levelZero.Put("obj", new SupportBean_A("A1"));
             levelZero.Put("map", levelOne);
             IDictionary<string, object> noDefZero = new Dictionary<string, object>();
-            noDefZero.Put("item", "|nodefmap.item|");
+            noDefZero.Put("Item", "|nodefmap.Item|");
             levelZero.Put("nodefmap", noDefZero);
 
             return levelZero;
@@ -284,7 +284,7 @@ namespace com.espertech.esper.common.@internal.@event.map
 
             object[][] expected = {
                 new object[] {"map.mapOne.simpleTwo", typeof(float?), 300f},
-                new object[] {"nodefmap.item?", typeof(object), "|nodefmap.item|"},
+                new object[] {"nodefmap.Item?", typeof(object), "|nodefmap.Item|"},
                 new object[] {"map.objOne", typeof(SupportBean_B), new SupportBean_B("B1")},
                 new object[] {"map.simpleOne", typeof(int?), 20},
                 new[] {

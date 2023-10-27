@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.view.sort
 
         internal override Type TypeOfFactory => typeof(SortWindowViewFactory);
 
-        internal override string FactoryMethod => "sort";
+        internal override string FactoryMethod => "Sort";
 
         internal override void Assign(
             CodegenMethod method,

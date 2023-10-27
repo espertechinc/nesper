@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
                 env.AssertPropsPerRowLastNew(
                     "s0",
-                    "theString".SplitCsv(),
+                    "TheString".SplitCsv(),
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 env.UndeployAll();
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 1000);
-                var fields = "symbol".SplitCsv();
+                var fields = "Symbol".SplitCsv();
 
                 var text = "@name('s0') select irstream * from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
@@ -242,14 +242,14 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // 1st event
                 SendTimer(env, 1000);
                 SendEvent(env, "E1");
-                env.AssertEqualsNew("s0", "symbol", "E1");
+                env.AssertEqualsNew("s0", "Symbol", "E1");
 
                 env.Milestone(1);
 
                 // 2nd event
                 SendTimer(env, 5000);
                 SendEvent(env, "E2");
-                env.AssertEqualsNew("s0", "symbol", "E2");
+                env.AssertEqualsNew("s0", "Symbol", "E2");
 
                 env.Milestone(2);
 
@@ -275,13 +275,13 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // 3rd and 4th event
                 SendTimer(env, 31000);
                 SendEvent(env, "E3");
-                env.AssertEqualsNew("s0", "symbol", "E3");
+                env.AssertEqualsNew("s0", "Symbol", "E3");
 
                 env.Milestone(5);
 
                 SendTimer(env, 31000);
                 SendEvent(env, "E4");
-                env.AssertEqualsNew("s0", "symbol", "E4");
+                env.AssertEqualsNew("s0", "Symbol", "E4");
 
                 // Window pushes out events
                 env.Milestone(6);
@@ -298,18 +298,18 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 // 5th event
                 SendEvent(env, "E5");
-                env.AssertEqualsNew("s0", "symbol", "E5");
+                env.AssertEqualsNew("s0", "Symbol", "E5");
 
                 env.Milestone(7);
 
                 // 6th and 7th event
                 SendTimer(env, 41000);
                 SendEvent(env, "E6");
-                env.AssertEqualsNew("s0", "symbol", "E6");
+                env.AssertEqualsNew("s0", "Symbol", "E6");
 
                 SendTimer(env, 49000);
                 SendEvent(env, "E7");
-                env.AssertEqualsNew("s0", "symbol", "E7");
+                env.AssertEqualsNew("s0", "Symbol", "E7");
 
                 env.Milestone(8);
 
@@ -328,7 +328,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString".SplitCsv();
+                var fields = "TheString".SplitCsv();
                 SendTimer(env, 1000);
                 var epl = "@name('s0') select irstream * from SupportBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -447,7 +447,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 var epl =
-                    "@name('s0') select irstream price, prev(1, price) as prevPrice, prior(1, price) as priorPrice " +
+                    "@name('s0') select irstream Price, prev(1, Price) as prevPrice, prior(1, Price) as priorPrice " +
                     "from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -492,12 +492,12 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 1000);
 
-                var text = "@name('s0') select irstream price, " +
-                           "prev(1, price) as prevPrice, " +
-                           "prior(1, price) as priorPrice, " +
-                           "prevtail(price) as prevtailPrice, " +
-                           "prevcount(price) as prevCountPrice, " +
-                           "prevwindow(price) as prevWindowPrice " +
+                var text = "@name('s0') select irstream Price, " +
+                           "prev(1, Price) as prevPrice, " +
+                           "prior(1, Price) as priorPrice, " +
+                           "prevtail(Price) as prevtailPrice, " +
+                           "prevcount(Price) as prevCountPrice, " +
+                           "prevwindow(Price) as prevWindowPrice " +
                            "from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
@@ -551,7 +551,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 var epl =
-                    "@name('s0') select irstream sum(price) as sumPrice from SupportMarketDataBean#time_accum(10 sec)";
+                    "@name('s0') select irstream sum(Price) as sumPrice from SupportMarketDataBean#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // 1st event
@@ -601,7 +601,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 var epl =
-                    "@name('s0') select irstream * from SupportMarketDataBean#groupwin(symbol)#time_accum(10 sec)";
+"@name('s0') select irstream * from SupportMarketDataBean#groupwin(Symbol)#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // 1st S1 event
@@ -689,7 +689,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             double? prevPrice,
             double? priorPrice)
         {
-            Assert.AreEqual(price, theEvent.Get("price"));
+            Assert.AreEqual(price, theEvent.Get("Price"));
             Assert.AreEqual(prevPrice, theEvent.Get("prevPrice"));
             Assert.AreEqual(priorPrice, theEvent.Get("priorPrice"));
         }
@@ -721,7 +721,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             var events = new SupportMarketDataBean[100];
             for (var i = 0; i < events.Length; i++) {
                 var group = i % 10;
-                events[i] = new SupportMarketDataBean("S" + group.ToString(), "id_" + i.ToString(), i);
+                events[i] = new SupportMarketDataBean($"S{group}", $"id_{i}", i);
             }
 
             return events;
@@ -760,7 +760,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             long? prevCountPrice,
             object[] prevWindowPrice)
         {
-            Assert.AreEqual(price, @event.Get("price"));
+            Assert.AreEqual(price, @event.Get("Price"));
             Assert.AreEqual(prevPrice, @event.Get("prevPrice"));
             Assert.AreEqual(priorPrice, @event.Get("priorPrice"));
             Assert.AreEqual(prevtailPrice, @event.Get("prevtailPrice"));

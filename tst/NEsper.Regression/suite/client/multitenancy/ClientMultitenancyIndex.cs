@@ -37,26 +37,26 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
             {
                 var path = new RegressionPath();
                 var epl = "module com_test_app;\n" +
-                          "@public @buseventtype create schema VWAPrice(symbol string);\n" +
-                          "@public create table Basket(basket_id string primary key, symbol string primary key, weight double);\n" +
-                          "@public create index BasketIndex on Basket(symbol);\n";
+"@public @buseventtype create schema VWAPrice(Symbol string);\n"+
+"@public create table Basket(basket_id string primary key, Symbol string primary key, weight double);\n"+
+"@public create index BasketIndex on Basket(Symbol);\n";
                 env.CompileDeploy(epl, path);
                 env.CompileExecuteFAFNoResult(
-                    "insert into Basket select '1' as basket_id, 'A' as symbol, 1 as weight",
+"insert into Basket select '1' as basket_id, 'A' as Symbol, 1 as weight",
                     path);
                 env.CompileExecuteFAFNoResult(
-                    "insert into Basket select '2' as basket_id, 'B' as symbol, 2 as weight",
+"insert into Basket select '2' as basket_id, 'B' as Symbol, 2 as weight",
                     path);
 
-                epl = "@name('s0') select weight from Basket as bask, VWAPrice as v where bask.symbol = v.symbol;\n";
+                epl = "@name('s0') select weight from Basket as bask, VWAPrice as v where bask.Symbol = v.Symbol;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
-                env.SendEventMap(Collections.SingletonDataMap("symbol", "A"), "VWAPrice");
+                env.SendEventMap(Collections.SingletonDataMap("Symbol", "A"), "VWAPrice");
                 env.AssertEqualsNew("s0", "weight", 1.0);
 
                 env.Milestone(0);
 
-                env.SendEventMap(Collections.SingletonDataMap("symbol", "B"), "VWAPrice");
+                env.SendEventMap(Collections.SingletonDataMap("Symbol", "B"), "VWAPrice");
                 env.AssertEqualsNew("s0", "weight", 2.0);
 
                 env.UndeployAll();

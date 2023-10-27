@@ -65,12 +65,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             var method = parent.MakeChild(typeof(AggregationPortableValidationSorted), GetType(), classScope);
             method.Block.DeclareVarNewInstance(typeof(AggregationPortableValidationSorted), "v")
-                .ExprDotMethod(Ref("v"), "setAggFuncName", Constant(aggFuncName))
-                .ExprDotMethod(
+                .SetProperty(Ref("v"), "AggFuncName", Constant(aggFuncName))
+                .SetProperty(
                     Ref("v"),
-                    "setContainedEventType",
+                    "ContainedEventType",
                     EventTypeUtility.ResolveTypeCodegen(containedEventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("v"), "setOptionalCriteriaTypes", Constant(optionalCriteriaTypes))
+                .SetProperty(Ref("v"), "OptionalCriteriaTypes", Constant(optionalCriteriaTypes))
                 .MethodReturn(Ref("v"));
             return LocalMethod(method);
         }

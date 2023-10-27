@@ -152,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 string stringOne,
                 int? expected)
             {
-                env.SendEventBean(new SupportEventWithManyArray("id").WithStringOne(stringOne.SplitCsv()));
+                env.SendEventBean(new SupportEventWithManyArray("Id").WithStringOne(stringOne.SplitCsv()));
                 env.AssertEqualsNew("s0", "v", expected);
             }
 
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 int? expected)
             {
                 env.SendEventBean(
-                    new SupportEventWithManyArray("id").WithStringOne(stringOne.SplitCsv())
+                    new SupportEventWithManyArray("Id").WithStringOne(stringOne.SplitCsv())
                         .WithStringTwo(stringTwo.SplitCsv()));
                 env.AssertEqualsNew("s0", "v", expected);
             }
@@ -769,21 +769,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var createEpl = namedWindow
-                    ? "@public create window MyInfraNWT#unique(theString) as (theString string, intPrimitive int)"
-                    : "@public create table MyInfraNWT(theString string primary key, intPrimitive int)";
+                    ? "@public create window MyInfraNWT#unique(TheString) as (TheString string, IntPrimitive int)"
+                    : "@public create table MyInfraNWT(TheString string primary key, IntPrimitive int)";
                 if (enableIndexShareCreate) {
                     createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
                 }
 
                 env.CompileDeploy(createEpl, path);
-                env.CompileDeploy("insert into MyInfraNWT select theString, intPrimitive from SupportBean", path);
+                env.CompileDeploy("insert into MyInfraNWT select TheString, IntPrimitive from SupportBean", path);
 
                 if (createExplicitIndex) {
-                    env.CompileDeploy("@name('index') create index MyIndex on MyInfraNWT (theString)", path);
+                    env.CompileDeploy("@name('index') create index MyIndex on MyInfraNWT (TheString)", path);
                 }
 
                 var consumeEpl =
-                    "@name('s0') select status.*, (select * from MyInfraNWT where theString = SupportBean_S0.p00) @eventbean as details from SupportBean_S0 as status";
+                    "@name('s0') select status.*, (select * from MyInfraNWT where TheString = SupportBean_S0.P00) @eventbean as details from SupportBean_S0 as status";
                 if (disableIndexShareConsumer) {
                     consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
                 }
@@ -794,7 +794,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.CompileDeploy(consumeEpl, path).AddListener("s0");
 
-                var fields = "id,details[0].theString,details[0].intPrimitive".SplitCsv();
+                var fields = "Id,details[0].TheString,details[0].IntPrimitive".SplitCsv();
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E2", 20));

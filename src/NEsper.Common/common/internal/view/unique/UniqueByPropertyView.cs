@@ -70,17 +70,17 @@ namespace com.espertech.esper.common.@internal.view.unique
                 // Shortcut
                 var key = GetUniqueKey(newData[0]);
                 var lastValue = _mostRecentEvents.Push(key, newData[0]);
-                if (child != null) {
+                if (Child != null) {
                     var oldDataToPost = lastValue == null ? null : new[] { lastValue };
                     _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, oldDataToPost);
-                    child.Update(newData, oldDataToPost);
+                    Child.Update(newData, oldDataToPost);
                     _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
             }
             else {
                 OneEventCollection postOldData = null;
 
-                if (child != null) {
+                if (Child != null) {
                     postOldData = new OneEventCollection();
                 }
 
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.view.unique
                         var key = GetUniqueKey(newData[i]);
 
                         // If there are no child views, just update the own collection
-                        if (child == null) {
+                        if (Child == null) {
                             _mostRecentEvents.Put(key, newData[i]);
                             continue;
                         }
@@ -123,10 +123,10 @@ namespace com.espertech.esper.common.@internal.view.unique
                 }
 
                 // If there are child views, fireStatementStopped update method
-                if (child != null) {
+                if (Child != null) {
                     if (postOldData.IsEmpty()) {
                         _agentInstanceContext.InstrumentationProvider.QViewIndicate(_viewFactory, newData, null);
-                        child.Update(newData, null);
+                        Child.Update(newData, null);
                         _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                     else {
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.view.unique
                             _viewFactory,
                             newData,
                             postOldDataArray);
-                        child.Update(newData, postOldDataArray);
+                        Child.Update(newData, postOldDataArray);
                         _agentInstanceContext.InstrumentationProvider.AViewIndicate();
                     }
                 }

@@ -74,8 +74,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile(
-                    "select * from pattern[a=SupportBean_A -[a.intPrimitive]> SupportBean_B]",
-                    "Invalid maximum expression in followed-by, event properties are not allowed within the expression [select * from pattern[a=SupportBean_A -[a.intPrimitive]> SupportBean_B]]");
+                    "select * from pattern[a=SupportBean_A -[a.IntPrimitive]> SupportBean_B]",
+                    "Invalid maximum expression in followed-by, event properties are not allowed within the expression [select * from pattern[a=SupportBean_A -[a.IntPrimitive]> SupportBean_B]]");
                 env.TryInvalidCompile(
                     "select * from pattern[a=SupportBean_A -[false]> SupportBean_B]",
                     "Invalid maximum expression in followed-by, the expression must return an integer value [select * from pattern[a=SupportBean_A -[false]> SupportBean_B]]");
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var expression = "@name('s0') select a.id as a, b.id as b, c.id as c from pattern [" +
+                var expression = "@name('s0') select a.Id as a, b.Id as b, c.Id as c from pattern [" +
                                  "every a=SupportBean_A -[2]> b=SupportBean_B -[3]> c=SupportBean_C]";
                 env.CompileDeploy(expression).AddListener("s0");
 
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var expression = "@name('s0') select a.id as a, b.id as b, c.id as c from pattern [" +
+                var expression = "@name('s0') select a.Id as a, b.Id as b, c.Id as c from pattern [" +
                                  "every a=SupportBean_A -> b=SupportBean_B -[2]> c=SupportBean_C]";
                 env.CompileDeploy(expression).AddListener("s0");
 
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // not-operator
                 var expression =
-                    "@name('s0') select a.id as a, b.id as b from pattern [every a=SupportBean_A -[2]> (b=SupportBean_B and not SupportBean_C)]";
+                    "@name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> (b=SupportBean_B and not SupportBean_C)]";
                 env.CompileDeploy(expression).AddListener("s0");
                 var fields = new string[] { "a", "b" };
 
@@ -226,7 +226,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // guard
                 var expressionTwo =
-                    "@name('s0') select a.id as a, b.id as b from pattern [every a=SupportBean_A -[2]> (b=SupportBean_B where timer:within(1))]";
+                    "@name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> (b=SupportBean_B where timer:within(1))]";
                 env.CompileDeploy(expressionTwo).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // every-operator
                 var expressionThree =
-                    "@name('s0') select a.id as a, b.id as b from pattern [every a=SupportBean_A -[2]> (every b=SupportBean_B(id=a.id) and not SupportBean_C(id=a.id))]";
+                    "@name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> (every b=SupportBean_B(id=a.Id) and not SupportBean_C(Id=a.Id))]";
                 env.CompileDeploy(expressionThree).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("1"));
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 Assert.AreEqual(env.RuntimeURI, context.RuntimeURI);
 
                 var expression =
-                    "@name('s0') select a.id as a, b.id as b from pattern [every a=SupportBean_A -[2]> b=SupportBean_B]";
+                    "@name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> b=SupportBean_B]";
                 env.CompileDeploy(expression).AddListener("s0");
                 RunAssertionSingleMaxSimple(env);
                 env.UndeployAll();
@@ -305,7 +305,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var path = new RegressionPath();
                 env.CompileDeploy("@public create variable int myvar=3", path);
                 expression =
-                    "@name('s0') select a.id as a, b.id as b from pattern [every a=SupportBean_A -[myvar-1]> b=SupportBean_B]";
+                    "@name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[myvar-1]> b=SupportBean_B]";
                 env.CompileDeploy(expression, path).AddListener("s0");
                 RunAssertionSingleMaxSimple(env);
 

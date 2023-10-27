@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
                             "InitTermFactory",
                             distinctStateMgmtSettings.ToExpression(),
                             ctxStateMgmtSettings.ToExpression()))
-                .ExprDotMethod(Ref("factory"), "setInitTermSpec", detail.MakeCodegen(method, symbols, classScope))
+                .SetProperty(Ref("factory"), "InitTermSpec", detail.MakeCodegen(method, symbols, classScope))
                 .MethodReturn(Ref("factory"));
             return method;
         }

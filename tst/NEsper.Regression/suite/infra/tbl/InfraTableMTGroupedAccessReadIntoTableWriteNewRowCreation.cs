@@ -57,9 +57,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numEvents)
         {
             var epl =
-                "@public create table varTotal (key string primary key, total sum(int));\n" +
-                "into table varTotal select TheString, sum(IntPrimitive) as total from SupportBean group by TheString;\n" +
-                "@name('s0') select varTotal[P00].total as c0 from SupportBean_S0;\n";
+"@public create table varTotal (key string primary key, Total sum(int));\n"+
+"into table varTotal select TheString, sum(IntPrimitive) as Total from SupportBean group by TheString;\n"+
+"@name('s0') select varTotal[P00].Total as c0 from SupportBean_S0;\n";
             env.CompileDeploy(epl).AddListener("s0");
             env.SendEventBean(new SupportBean("A", 10));
 

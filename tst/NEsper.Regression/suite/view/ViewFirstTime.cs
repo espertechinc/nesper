@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields = "c0,c1".SplitCsv();
                 env.AdvanceTime(0);
                 var epl =
-                    "@name('s0') select irstream theString as c0, intPrimitive as c1 from SupportBean#firsttime(10 sec)";
+                    "@name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#firsttime(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.Milestone(1);
@@ -110,20 +110,20 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 env.AdvanceTime(500);
                 env.SendEventBean(MakeMarketDataEvent("E1"));
-                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E1" } }, null);
+                env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E1" } }, null);
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "symbol" },
+                    new string[] { "Symbol"},
                     new object[][] { new object[] { "E1" } });
 
                 env.Milestone(1);
 
                 env.AdvanceTime(600);
                 env.SendEventBean(MakeMarketDataEvent("E2"));
-                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E2" } }, null);
+                env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E2" } }, null);
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "symbol" },
+                    new string[] { "Symbol"},
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 env.Milestone(2);
@@ -167,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    "theString".SplitCsv(),
+                    "TheString".SplitCsv(),
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 env.UndeployAll();

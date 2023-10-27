@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.CompileDeploy("@public create variable int lower", path);
                 env.CompileDeploy("@public create variable int upper", path);
                 env.CompileDeploy(
-                    "on SupportBean set queryvar_int=intPrimitive, queryvar_bool=boolPrimitive, lower=intPrimitive,upper=intBoxed",
+                    "on SupportBean set queryvar_int=IntPrimitive, queryvar_bool=BoolPrimitive, lower=IntPrimitive,upper=IntBoxed",
                     path);
 
                 // Test int and singlerow
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
                 // Test multi-parameter and multi-row
                 stmtText =
-                    "@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where mytesttable.mybigint between ${queryvar_int-2} and ${queryvar_int+2}'] order by myint";
+"@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where mytesttable.mybigint between ${queryvar_int-2} and ${queryvar_int+2}'] Order by myint";
                 env.CompileDeploy(stmtText, path);
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "s0",
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.CompileDeploy("@public create variable int lower", path);
                 env.CompileDeploy("@public create variable int upper", path);
                 env.CompileDeploy(
-                    "on SupportBean set queryvar_int=intPrimitive, queryvar_bool=boolPrimitive, lower=intPrimitive,upper=intBoxed",
+                    "on SupportBean set queryvar_int=IntPrimitive, queryvar_bool=BoolPrimitive, lower=IntPrimitive,upper=IntBoxed",
                     path);
 
                 // Test int and singlerow
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
                 // Test boolean and multirow
                 stmtText =
-                    "@name('s0') select * from sql:MyDBWithTxnIso1WithReadOnly ['select mybigint, mybool from mytesttable where ${queryvar_bool} = mytesttable.mybool and myint between ${lower} and ${upper} order by mybigint']";
+"@name('s0') select * from sql:MyDBWithTxnIso1WithReadOnly ['select mybigint, mybool from mytesttable where ${queryvar_bool} = mytesttable.mybool and myint between ${lower} and ${upper} Order by mybigint']";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 var fields = new string[] { "mybigint", "mybool" };
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     path);
 
                 var epl =
-                    "@name('s0') select * from sql:MyDBPlain['select * from mytesttable where myint = ${(select intPrimitive from MyWindow)}']";
+                    "@name('s0') select * from sql:MyDBPlain['select * from mytesttable where myint = ${(select IntPrimitive from MyWindow)}']";
                 env.CompileDeploy(epl, path);
 
                 env.AssertPropsPerRowIterator("s0", new string[] { "myvarchar" }, Array.Empty<object[]>());

@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
         }
 
         internal override Type TypeOfFactory => typeof(ExternallyTimedBatchViewFactory);
-        internal override string FactoryMethod => "exttimebatch";
+        internal override string FactoryMethod => "Exttimebatch";
 
         internal override void Assign(
             CodegenMethod method,
@@ -92,11 +92,11 @@ namespace com.espertech.esper.common.@internal.view.exttimedbatch
         {
             method.Block
                 .DeclareVar<TimePeriodCompute>("eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(factory, "setOptionalReferencePoint", Constant(optionalReferencePoint))
-                .ExprDotMethod(
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
+                .SetProperty(factory, "OptionalReferencePoint", Constant(optionalReferencePoint))
+                .SetProperty(
                     factory,
-                    "setTimestampEval",
+                    "TimestampEval",
                     CodegenEvaluator(timestampExpression.Forge, method, GetType(), classScope));
         }
 

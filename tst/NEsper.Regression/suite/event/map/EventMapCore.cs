@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 env.AssertThat(() => Assert.NotNull(env.Runtime.EventTypeService.GetEventTypePreconfigured("MyMap")));
-                env.CompileDeploy("@name('s0') select lev0name.lev1name.sb.theString as val from MyMap")
+                env.CompileDeploy("@name('s0') select lev0name.lev1name.sb.TheString as val from MyMap")
                     .AddListener("s0");
 
                 IDictionary<string, object> lev2data = new Dictionary<string, object>();
@@ -139,10 +139,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@name('s0') select beanA.simpleProperty as simple," +
-                                    "beanA.nested.nestedValue as nested," +
+                var statementText = "@name('s0') select beanA.SimpleProperty as simple," +
+                                    "beanA.Nested.NestedValue as nested," +
                                     "beanA.indexed[1] as indexed," +
-                                    "beanA.nested.nestedNested.nestedNestedValue as nestednested " +
+                                    "beanA.Nested.NestedNested.NestedNestedValue as nestednested " +
                                     "from myMapEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
 
@@ -150,9 +150,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual("nestedValue", @event.Get("nested"));
+                        Assert.AreEqual("NestedValue", @event.Get("Nested"));
                         Assert.AreEqual(2, @event.Get("indexed"));
-                        Assert.AreEqual("nestedNestedValue", @event.Get("nestednested"));
+                        Assert.AreEqual("NestedNestedValue", @event.Get("nestednested"));
                     });
 
                 env.UndeployAll();

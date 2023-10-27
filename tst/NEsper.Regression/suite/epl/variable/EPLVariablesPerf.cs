@@ -37,14 +37,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
             // test join
             env.CompileDeploy(
-                "@name('s0') select * from SupportBean_S0 s0 unidirectional, MyWindow sb where theString = MYCONST",
+                "@name('s0') select * from SupportBean_S0 s0 unidirectional, MyWindow sb where TheString = MYCONST",
                 path);
             env.AddListener("s0");
 
             var start = PerformanceObserver.MilliTime;
             for (var i = 0; i < 10000; i++) {
                 env.SendEventBean(new SupportBean_S0(i, "E" + i));
-                env.AssertPropsNew("s0", "sb.theString,sb.intPrimitive".SplitCsv(), new object[] { "E331", -331 });
+                env.AssertPropsNew("s0", "sb.TheString,sb.IntPrimitive".SplitCsv(), new object[] { "E331", -331 });
             }
 
             var delta = PerformanceObserver.MilliTime - start;
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
             // test subquery
             env.CompileDeploy(
-                "@name('s0') select * from SupportBean_S0 where exists (select * from MyWindow where theString = MYCONST)",
+                "@name('s0') select * from SupportBean_S0 where exists (select * from MyWindow where TheString = MYCONST)",
                 path);
             env.AddListener("s0");
 

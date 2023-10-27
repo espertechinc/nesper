@@ -59,10 +59,10 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a".SplitCsv();
                 var text = "@name('s0') @Hint('iterate_only') select * from SupportRecogBean#length(1) " +
                            "match_recognize (" +
-                           "  measures A.theString as a" +
+                           "  measures A.TheString as a" +
                            "  all matches " +
                            "  pattern (A) " +
-                           "  define A as SupportStaticMethodLib.sleepReturnTrue(mySleepDuration)" +
+                           "  define A as SupportStaticMethodLib.SleepReturnTrue(mySleepDuration)" +
                            ")";
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a".SplitCsv();
                 var text = "@Hint('iterate_only') @name('s0') select * from SupportRecogBean#lastevent " +
                            "match_recognize (" +
-                           "  measures A.theString as a" +
+                           "  measures A.TheString as a" +
                            "  all matches " +
                            "  pattern (A) " +
                            "  define A as prev(A.value, 2) = value" +
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var text = "@name('s0') @Hint('iterate_only') select * from SupportRecogBean#lastevent " +
                            "match_recognize (" +
                            "  partition by cat" +
-                           "  measures A.theString as a, A.cat as cat" +
+                           "  measures A.TheString as a, A.cat as cat" +
                            "  all matches " +
                            "  pattern (A) " +
                            "  define A as prev(A.value, 2) = value" +

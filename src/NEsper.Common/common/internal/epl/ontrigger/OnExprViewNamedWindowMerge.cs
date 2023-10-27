@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
     /// </summary>
     public class OnExprViewNamedWindowMerge : OnExprViewNameWindowBase
     {
-        private new readonly InfraOnMergeViewFactory parent;
+        private readonly InfraOnMergeViewFactory parent;
 
         public OnExprViewNamedWindowMerge(
             SubordWMatchExprLookupStrategy lookupStrategy,

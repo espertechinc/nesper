@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.epl.table.update
                     index.Add(events, exprEvaluatorContext);
                 }
             }
-            catch (EPException ex) {
+            catch (EPException) {
                 // rollback
                 // remove updated events
                 foreach (var affectedIndexName in affectedIndexNames) {

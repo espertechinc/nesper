@@ -34,8 +34,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             var statementText = "@name('s0') select " +
                                 "innermap.int? as t0, " +
-                                "innermap.innerTwo?.nested as t1, " +
-                                "innermap.innerTwo?.innerThree.nestedTwo as t2, " +
+                                "innermap.innerTwo?.Nested as t1, " +
+                                "innermap.innerTwo?.innerThree.NestedTwo as t2, " +
                                 "dynamicOne? as t3, " +
                                 "dynamicTwo? as t4, " +
                                 "indexed[1]? as t5, " +
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                     MakeMap("keyTwo", "def"),
                     "innerTwo",
                     MakeMap(
-                        "nested",
+                        "Nested",
                         30d,
                         "innerThree",
                         MakeMap("nestedTwo", 99))));
@@ -99,8 +99,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             var statementText = "@name('s0') select " +
                                 "exists(innermap.int?) as t0, " +
-                                "exists(innermap.innerTwo?.nested) as t1, " +
-                                "exists(innermap.innerTwo?.innerThree.nestedTwo) as t2, " +
+                                "exists(innermap.innerTwo?.Nested) as t1, " +
+                                "exists(innermap.innerTwo?.innerThree.NestedTwo) as t2, " +
                                 "exists(dynamicOne?) as t3, " +
                                 "exists(dynamicTwo?) as t4, " +
                                 "exists(indexed[1]?) as t5, " +
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                     MakeMap("keyTwo", "def"),
                     "innerTwo",
                     MakeMap(
-                        "nested",
+                        "Nested",
                         30d,
                         "innerThree",
                         MakeMap("nestedTwo", 99))));

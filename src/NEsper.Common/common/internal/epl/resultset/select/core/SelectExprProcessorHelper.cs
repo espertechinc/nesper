@@ -1782,7 +1782,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                     additionalForgeables);
                             }
                             else if (insertIntoTargetType is AvroSchemaEventType) {
-                                throw new ExprValidationException("Avro event type does not allow contained beans");
+                                throw new ExprValidationException("Avro event type does not allow Contained beans");
                             }
                             else {
                                 throw new IllegalStateException("Unrecognized event type " + insertIntoTargetType);

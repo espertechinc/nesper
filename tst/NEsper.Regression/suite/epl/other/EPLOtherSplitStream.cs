@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var epl = "create context mycontext initiated by SupportBean as criteria;" +
                           "context mycontext on SupportBean_S0 as event" +
-                          "  insert into SomeOtherStream select context.id as cid, context.criteria as criteria, event as event;" +
+                          "  insert into SomeOtherStream select context.Id as cid, context.criteria as criteria, event as event;" +
                           "@name('s0') select * from SomeOtherStream;";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -165,8 +165,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var epl = "create schema AValue(value int);\n" +
                           "on SupportBean\n" +
-                          "  insert into AValue select (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array) as value where intPrimitive > 0\n" +
-                          "  insert into AValue select 0 as value where intPrimitive <= 0;\n" +
+                          "  insert into AValue select (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array) as value where IntPrimitive > 0\n" +
+                          "  insert into AValue select 0 as value where IntPrimitive <= 0;\n" +
                           "@name('s0') select * from AValue;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -204,15 +204,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile(
-                    "on SupportBean select * where intPrimitive=1 insert into BStream select * where 1=2",
+                    "on SupportBean select * where IntPrimitive=1 insert into BStream select * where 1=2",
                     "Required insert-into clause is not provided, the clause is required for split-stream syntax");
 
                 env.TryInvalidCompile(
-                    "on SupportBean insert into AStream select * where intPrimitive=1 group by string insert into BStream select * where 1=2",
-                    "A group-by clause, having-clause or order-by clause is not allowed for the split stream syntax");
+                    "on SupportBean insert into AStream select * where IntPrimitive=1 group by string insert into BStream select * where 1=2",
+"A group-by clause, having-clause or Order-by clause is not allowed for the split stream syntax");
 
                 env.TryInvalidCompile(
-                    "on SupportBean insert into AStream select * where intPrimitive=1 insert into BStream select avg(intPrimitive) where 1=2",
+                    "on SupportBean insert into AStream select * where IntPrimitive=1 insert into BStream select avg(IntPrimitive) where 1=2",
                     "Aggregation functions are not allowed in this context");
             }
         }
@@ -251,12 +251,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@name('s0') select * from AStream", path).AddListener("s0");
 
                 SendSupportBean(env, "E1", 1);
-                env.AssertEqualsNew("s0", "theString", "E1");
+                env.AssertEqualsNew("s0", "TheString", "E1");
                 env.AssertListenerNotInvoked("insert");
 
                 // test select
                 stmtOrigText =
-                    "@name('s1') @public on SupportBean insert into BStreamABC select 3*intPrimitive as value";
+                    "@name('s1') @public on SupportBean insert into BStreamABC select 3*IntPrimitive as value";
                 env.CompileDeploy(stmtOrigText, path);
 
                 env.CompileDeploy("@name('s2') select value from BStreamABC", path).AddListener("s2");
@@ -280,8 +280,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var stmtOrigText = "@name('split') @public on SupportBean " +
-                                   "insert into AStream2SP select * where intPrimitive=1 " +
-                                   "insert into BStream2SP select * where intPrimitive=1 or intPrimitive=2";
+                                   "insert into AStream2SP select * where IntPrimitive=1 " +
+                                   "insert into BStream2SP select * where IntPrimitive=1 or IntPrimitive=2";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
                 TryAssertion(env, path);
                 path.Clear();
@@ -292,13 +292,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean"));
                 model.InsertInto = InsertIntoClause.Create("AStream2SP");
                 model.SelectClause = SelectClause.CreateWildcard();
-                model.WhereClause = Expressions.Eq("intPrimitive", 1);
+                model.WhereClause = Expressions.Eq("IntPrimitive", 1);
                 var clause = OnClause.CreateOnInsertSplitStream();
                 model.OnExpr = clause;
                 var item = OnInsertSplitStreamItem.Create(
                     InsertIntoClause.Create("BStream2SP"),
                     SelectClause.CreateWildcard(),
-                    Expressions.Or(Expressions.Eq("intPrimitive", 1), Expressions.Eq("intPrimitive", 2)));
+                    Expressions.Or(Expressions.Eq("IntPrimitive", 1), Expressions.Eq("IntPrimitive", 2)));
                 clause.AddItem(item);
                 model.Annotations = Arrays.AsList(AnnotationPart.NameAnnotation("split"), new AnnotationPart("public"));
                 Assert.AreEqual(stmtOrigText, model.ToEPL());
@@ -317,8 +317,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var stmtOrigText = "@name('split') @public on SupportBean " +
-                                   "insert into AStreamSub select (select p00 from SupportBean_S0#lastevent) as string where intPrimitive=(select id from SupportBean_S0#lastevent) " +
-                                   "insert into BStreamSub select (select p01 from SupportBean_S0#lastevent) as string where intPrimitive<>(select id from SupportBean_S0#lastevent) or (select id from SupportBean_S0#lastevent) is null";
+                                   "insert into AStreamSub select (select P00 from SupportBean_S0#lastevent) as string where IntPrimitive=(select Id from SupportBean_S0#lastevent) " +
+                                   "insert into BStreamSub select (select P01 from SupportBean_S0#lastevent) as string where IntPrimitive<>(select id from SupportBean_S0#lastevent) or (select Id from SupportBean_S0#lastevent) is null";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
                 env.CompileDeploy("@name('s0') select * from AStreamSub", path).AddListener("s0");
@@ -348,8 +348,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var stmtOrigText = "@name('split') @public on SupportBean " +
-                                   "insert into AStream2S select theString where intPrimitive=1 " +
-                                   "insert into BStream2S select theString where intPrimitive=1 or intPrimitive=2 " +
+                                   "insert into AStream2S select TheString where IntPrimitive=1 " +
+                                   "insert into BStream2S select TheString where IntPrimitive=1 or IntPrimitive=2 " +
                                    "output all";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
@@ -365,24 +365,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     });
 
                 SendSupportBean(env, "E1", 1);
-                env.AssertEqualsNew("s0", "theString", "E1");
-                env.AssertEqualsNew("s1", "theString", "E1");
+                env.AssertEqualsNew("s0", "TheString", "E1");
+                env.AssertEqualsNew("s1", "TheString", "E1");
                 env.AssertListenerNotInvoked("split");
 
                 SendSupportBean(env, "E2", 2);
                 env.AssertListenerNotInvoked("s0");
-                env.AssertEqualsNew("s1", "theString", "E2");
+                env.AssertEqualsNew("s1", "TheString", "E2");
                 env.AssertListenerNotInvoked("split");
 
                 SendSupportBean(env, "E3", 1);
-                env.AssertEqualsNew("s0", "theString", "E3");
-                env.AssertEqualsNew("s1", "theString", "E3");
+                env.AssertEqualsNew("s0", "TheString", "E3");
+                env.AssertEqualsNew("s1", "TheString", "E3");
                 env.AssertListenerNotInvoked("split");
 
                 SendSupportBean(env, "E4", -999);
                 env.AssertListenerNotInvoked("s0");
                 env.AssertListenerNotInvoked("s1");
-                env.AssertEqualsNew("split", "theString", "E4");
+                env.AssertEqualsNew("split", "TheString", "E4");
 
                 env.UndeployAll();
             }
@@ -394,9 +394,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var stmtOrigText = "@name('split') @public on SupportBean " +
-                                   "insert into AStream2S select theString || '_1' as theString where intPrimitive in (1, 2) " +
-                                   "insert into BStream2S select theString || '_2' as theString where intPrimitive in (2, 3) " +
-                                   "insert into CStream2S select theString || '_3' as theString " +
+                                   "insert into AStream2S select TheString || '_1' as TheString where IntPrimitive in (1, 2) " +
+                                   "insert into BStream2S select TheString || '_2' as TheString where IntPrimitive in (2, 3) " +
+                                   "insert into CStream2S select TheString || '_3' as TheString " +
                                    "output all";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
@@ -405,27 +405,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@name('s2') select * from CStream2S", path).AddListener("s2");
 
                 SendSupportBean(env, "E1", 2);
-                env.AssertEqualsNew("s0", "theString", "E1_1");
-                env.AssertEqualsNew("s1", "theString", "E1_2");
-                env.AssertEqualsNew("s2", "theString", "E1_3");
+                env.AssertEqualsNew("s0", "TheString", "E1_1");
+                env.AssertEqualsNew("s1", "TheString", "E1_2");
+                env.AssertEqualsNew("s2", "TheString", "E1_3");
                 env.AssertListenerNotInvoked("split");
 
                 SendSupportBean(env, "E2", 1);
-                env.AssertEqualsNew("s0", "theString", "E2_1");
+                env.AssertEqualsNew("s0", "TheString", "E2_1");
                 env.AssertListenerNotInvoked("s1");
-                env.AssertEqualsNew("s2", "theString", "E2_3");
+                env.AssertEqualsNew("s2", "TheString", "E2_3");
                 env.AssertListenerNotInvoked("split");
 
                 SendSupportBean(env, "E3", 3);
                 env.AssertListenerNotInvoked("s0");
-                env.AssertEqualsNew("s1", "theString", "E3_2");
-                env.AssertEqualsNew("s2", "theString", "E3_3");
+                env.AssertEqualsNew("s1", "TheString", "E3_2");
+                env.AssertEqualsNew("s2", "TheString", "E3_3");
                 env.AssertListenerNotInvoked("split");
 
                 SendSupportBean(env, "E4", -999);
                 env.AssertListenerNotInvoked("s0");
                 env.AssertListenerNotInvoked("s1");
-                env.AssertEqualsNew("s2", "theString", "E4_3");
+                env.AssertEqualsNew("s2", "TheString", "E4_3");
                 env.AssertListenerNotInvoked("split");
 
                 env.UndeployAll();
@@ -438,9 +438,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var stmtOrigText = "@name('split') @public on SupportBean as mystream " +
-                                   "insert into AStream34 select mystream.theString||'_1' as theString where intPrimitive=1 " +
-                                   "insert into BStream34 select mystream.theString||'_2' as theString where intPrimitive=2 " +
-                                   "insert into CStream34 select theString||'_3' as theString";
+                                   "insert into AStream34 select mystream.TheString||'_1' as TheString where IntPrimitive=1 " +
+                                   "insert into BStream34 select mystream.TheString||'_2' as TheString where IntPrimitive=2 " +
+                                   "insert into CStream34 select TheString||'_3' as TheString";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
                 env.CompileDeploy("@name('s0') select * from AStream34", path).AddListener("s0");
@@ -456,19 +456,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     });
 
                 SendSupportBean(env, "E1", 1);
-                env.AssertEqualsNew("s0", "theString", "E1_1");
+                env.AssertEqualsNew("s0", "TheString", "E1_1");
                 env.AssertListenerNotInvoked("s1");
                 env.AssertListenerNotInvoked("s2");
                 env.AssertListenerNotInvoked("split");
 
                 SendSupportBean(env, "E2", 2);
                 env.AssertListenerNotInvoked("s0");
-                env.AssertEqualsNew("s1", "theString", "E2_2");
+                env.AssertEqualsNew("s1", "TheString", "E2_2");
                 env.AssertListenerNotInvoked("s2");
                 env.AssertListenerNotInvoked("split");
 
                 SendSupportBean(env, "E3", 1);
-                env.AssertEqualsNew("s0", "theString", "E3_1");
+                env.AssertEqualsNew("s0", "TheString", "E3_1");
                 env.AssertListenerNotInvoked("s1");
                 env.AssertListenerNotInvoked("s2");
                 env.AssertListenerNotInvoked("split");
@@ -476,7 +476,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SendSupportBean(env, "E4", -999);
                 env.AssertListenerNotInvoked("s0");
                 env.AssertListenerNotInvoked("s1");
-                env.AssertEqualsNew("s2", "theString", "E4_3");
+                env.AssertEqualsNew("s2", "TheString", "E4_3");
                 env.AssertListenerNotInvoked("split");
 
                 env.UndeployAll();
@@ -489,10 +489,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var stmtOrigText = "@name('split') @public on SupportBean " +
-                                   "insert into AStream34 select theString||'_1' as theString where intPrimitive=10 " +
-                                   "insert into BStream34 select theString||'_2' as theString where intPrimitive=20 " +
-                                   "insert into CStream34 select theString||'_3' as theString where intPrimitive<0 " +
-                                   "insert into DStream34 select theString||'_4' as theString";
+                                   "insert into AStream34 select TheString||'_1' as TheString where IntPrimitive=10 " +
+                                   "insert into BStream34 select TheString||'_2' as TheString where IntPrimitive=20 " +
+                                   "insert into CStream34 select TheString||'_3' as TheString where IntPrimitive<0 " +
+                                   "insert into DStream34 select TheString||'_4' as TheString";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
                 env.CompileDeploy("@name('s0') select * from AStream34", path).AddListener("s0");
@@ -503,7 +503,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SendSupportBean(env, "E5", -999);
                 env.AssertListenerNotInvoked("s0");
                 env.AssertListenerNotInvoked("s1");
-                env.AssertEqualsNew("s2", "theString", "E5_3");
+                env.AssertEqualsNew("s2", "TheString", "E5_3");
                 env.AssertListenerNotInvoked("s3");
                 env.AssertListenerNotInvoked("split");
 
@@ -511,18 +511,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListenerNotInvoked("s0");
                 env.AssertListenerNotInvoked("s1");
                 env.AssertListenerNotInvoked("s2");
-                env.AssertEqualsNew("s3", "theString", "E6_4");
+                env.AssertEqualsNew("s3", "TheString", "E6_4");
                 env.AssertListenerNotInvoked("split");
 
                 SendSupportBean(env, "E7", 20);
                 env.AssertListenerNotInvoked("s0");
-                env.AssertEqualsNew("s1", "theString", "E7_2");
+                env.AssertEqualsNew("s1", "TheString", "E7_2");
                 env.AssertListenerNotInvoked("s2");
                 env.AssertListenerNotInvoked("s3");
                 env.AssertListenerNotInvoked("split");
 
                 SendSupportBean(env, "E8", 10);
-                env.AssertEqualsNew("s0", "theString", "E8_1");
+                env.AssertEqualsNew("s0", "TheString", "E8_1");
                 env.AssertListenerNotInvoked("s1");
                 env.AssertListenerNotInvoked("s2");
                 env.AssertListenerNotInvoked("s3");
@@ -559,21 +559,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 });
 
             SendSupportBean(env, "E1", 1);
-            env.AssertEqualsNew("s0", "theString", "E1");
+            env.AssertEqualsNew("s0", "TheString", "E1");
             env.AssertListenerNotInvoked("s1");
 
             SendSupportBean(env, "E2", 2);
             env.AssertListenerNotInvoked("s0");
-            env.AssertEqualsNew("s1", "theString", "E2");
+            env.AssertEqualsNew("s1", "TheString", "E2");
 
             SendSupportBean(env, "E3", 1);
-            env.AssertEqualsNew("s0", "theString", "E3");
+            env.AssertEqualsNew("s0", "TheString", "E3");
             env.AssertListenerNotInvoked("s1");
 
             SendSupportBean(env, "E4", -999);
             env.AssertListenerNotInvoked("s0");
             env.AssertListenerNotInvoked("s1");
-            env.AssertEqualsNew("split", "theString", "E4");
+            env.AssertEqualsNew("split", "TheString", "E4");
 
             env.UndeployAll();
         }
@@ -649,9 +649,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var path = new RegressionPath();
             var epl = "@public on OrderBean as oe " +
-                      "insert into StartEvent select oe.orderdetail.orderId as oi " +
-                      "insert into ThenEvent select * from [select oe.orderdetail.orderId as oi, itemId from orderdetail.items] as item " +
-                      "insert into MoreEvent select oe.orderdetail.orderId as oi, item.itemId as itemId from [select oe, * from orderdetail.items] as item " +
+                      "insert into StartEvent select oe.orderdetail.OrderId as oi " +
+"insert into ThenEvent select * from [select oe.orderdetail.OrderId as oi, ItemId from orderdetail.Items] as Item "+
+"insert into MoreEvent select oe.orderdetail.OrderId as oi, Item.ItemId as ItemId from [select oe, * from orderdetail.Items] as Item "+
                       "output all";
             env.CompileDeploy(soda, epl, path);
 
@@ -661,7 +661,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             env.SendEventBean(OrderBeanFactory.MakeEventOne());
             var fieldsOrderId = "oi".SplitCsv();
-            var fieldsItems = "oi,itemId".SplitCsv();
+            var fieldsItems = "oi,ItemId".SplitCsv();
             env.AssertPropsNew("s0", fieldsOrderId, new object[] { "PO200901" });
             var expected = new object[][] {
                 new object[] { "PO200901", "A001" }, new object[] { "PO200901", "A002" },
@@ -689,9 +689,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var path = new RegressionPath();
             var epl = "@name('split') @public on OrderBean " +
-                      "insert into BeginEvent select orderdetail.orderId as orderId " +
-                      "insert into OrderItem select * from [select orderdetail.orderId as orderId, * from orderdetail.items] " +
-                      "insert into EndEvent select orderdetail.orderId as orderId " +
+                      "insert into BeginEvent select orderdetail.OrderId as OrderId " +
+"insert into OrderItem select * from [select orderdetail.OrderId as OrderId, * from orderdetail.Items] "+
+                      "insert into EndEvent select orderdetail.OrderId as OrderId " +
                       "output all";
             env.CompileDeploy(soda, epl, path);
             env.AssertStatement(
@@ -710,7 +710,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         env.DeploymentId("split"),
                         "OrderItem");
                     Assert.AreEqual(
-                        "[amount, itemId, price, productId, orderId]",
+                        "[Amount, ItemId, Price, ProductId, OrderId]",
                         CompatExtensions.Render(orderItemType.PropertyNames));
                 });
 
@@ -743,12 +743,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             bool soda)
         {
             var path = new RegressionPath();
-            var fieldsOrderId = "oe.orderdetail.orderId".SplitCsv();
+            var fieldsOrderId = "oe.orderdetail.OrderId".SplitCsv();
             var epl = "@public on OrderBean as oe " +
-                      "insert into HeaderEvent select orderdetail.orderId as orderId where 1=2 " +
-                      "insert into StreamOne select * from [select oe, * from orderdetail.items] where productId=\"10020\" " +
-                      "insert into StreamTwo select * from [select oe, * from orderdetail.items] where productId=\"10022\" " +
-                      "insert into StreamThree select * from [select oe, * from orderdetail.items] where productId in (\"10020\",\"10025\",\"10022\")";
+                      "insert into HeaderEvent select orderdetail.OrderId as OrderId where 1=2 " +
+"insert into StreamOne select * from [select oe, * from orderdetail.Items] where ProductId=\"10020\" "+
+"insert into StreamTwo select * from [select oe, * from orderdetail.Items] where ProductId=\"10022\" "+
+"insert into StreamThree select * from [select oe, * from orderdetail.Items] where ProductId in (\"10020\",\"10025\",\"10022\")";
             env.CompileDeploy(soda, epl, path);
 
             var listenerEPL = new string[]
@@ -783,25 +783,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         private static void TryAssertionFromClauseDocSample(RegressionEnvironment env)
         {
             var epl =
-                "create schema MyOrderItem(itemId string);\n" +
-                "@public @buseventtype create schema MyOrderEvent(orderId string, items MyOrderItem[]);\n" +
+                "create schema MyOrderItem(ItemId string);\n" +
+"@public @buseventtype create schema MyOrderEvent(OrderId string, Items MyOrderItem[]);\n"+
                 "on MyOrderEvent\n" +
-                "  insert into MyOrderBeginEvent select orderId\n" +
-                "  insert into MyOrderItemEvent select * from [select orderId, * from items]\n" +
-                "  insert into MyOrderEndEvent select orderId\n" +
+                "  insert into MyOrderBeginEvent select OrderId\n" +
+"  insert into MyOrderItemEvent select * from [select OrderId, * from Items]\n"+
+                "  insert into MyOrderEndEvent select OrderId\n" +
                 "  output all;\n" +
                 "create context MyOrderContext \n" +
                 "  initiated by MyOrderBeginEvent as obe\n" +
-                "  terminated by MyOrderEndEvent(orderId = obe.orderId);\n" +
+                "  terminated by MyOrderEndEvent(OrderId = obe.OrderId);\n" +
                 "@name('count') context MyOrderContext select count(*) as orderItemCount from MyOrderItemEvent output when terminated;\n";
             env.CompileDeploy(epl, new RegressionPath()).AddListener("count");
 
             IDictionary<string, object> @event = new Dictionary<string, object>();
-            @event.Put("orderId", "1010");
+            @event.Put("OrderId", "1010");
             @event.Put(
-                "items",
+"Items",
                 new IDictionary<string, object>[] {
-                    Collections.SingletonDataMap("itemId", "A0001")
+                    Collections.SingletonDataMap("ItemId", "A0001")
                 });
             env.SendEventMap(@event, "MyOrderEvent");
 
@@ -815,8 +815,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             string orderId,
             object[][] expected)
         {
-            var fieldsOrderId = "orderId".SplitCsv();
-            var fieldsItems = "orderId,itemId".SplitCsv();
+            var fieldsOrderId = "OrderId".SplitCsv();
+            var fieldsItems = "OrderId,ItemId".SplitCsv();
             env.AssertListener(
                 "s0",
                 listener => EPAssertionUtil.AssertProps(

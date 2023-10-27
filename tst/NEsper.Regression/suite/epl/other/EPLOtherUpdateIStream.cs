@@ -318,8 +318,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // not found
                 env.TryInvalidCompile(
                     path,
-                    "update istream MySchema set dummy[intPrimitive]=1",
-                    "Failed to validate update assignment expression 'intPrimitive': Property named 'intPrimitive' is not valid in any stream");
+                    "update istream MySchema set dummy[IntPrimitive]=1",
+                    "Failed to validate update assignment expression 'IntPrimitive': Property named 'IntPrimitive' is not valid in any stream");
 
                 path.Clear();
 
@@ -362,9 +362,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "@public @buseventtype create map schema MyEvent(a int, b int);\n" +
                     "inlined_class \"\"\"\n" +
                     "  public class Helper {\n" +
-                    "    public static void swap(System.Collections.Generic.IDictionary event) {\n" +
-                    "      Object temp = event.get(\"a\");\n" +
-                    "      event.put(\"a\", event.get(\"b\"));\n" +
+                    "    public static void swap(System.Collections.Generic.IDictionary @event) {\n" +
+                    "      Object temp = @event.Get(\"a\");\n" +
+                    "      event.put(\"a\", @event.Get(\"b\"));\n" +
                     "      event.put(\"b\", temp);\n" +
                     "    }\n" +
                     "  }\n" +
@@ -476,13 +476,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(text, path).AddListener("Insert");
 
                 text =
-                    "@name('Update') update istream MyStream set intPrimitive=10, theString='O_' || theString where intPrimitive=1";
+                    "@name('Update') update istream MyStream set IntPrimitive=10, TheString='O_' || TheString where IntPrimitive=1";
                 env.CompileDeploy(text, path).AddListener("Update");
 
                 text = "@name('Select') select * from MyStream";
                 env.CompileDeploy(text, path).AddListener("Select");
 
-                var fields = "theString,intPrimitive".SplitCsv();
+                var fields = "TheString,IntPrimitive".SplitCsv();
                 env.SendEventBean(new SupportBean("E1", 9));
                 env.AssertPropsNew("Select", fields, new object[] { "E1", 9 });
                 env.AssertPropsNew("Insert", fields, new object[] { "E1", 9 });
@@ -510,7 +510,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 env.CompileDeploy(
                     "@name('update') update istream SupportBean " +
-                    "set intPrimitive=myvar, intBoxed=intPrimitive");
+                    "set IntPrimitive=myvar, IntBoxed=IntPrimitive");
                 env.AssertStatement(
                     "update",
                     statement => Assert.AreEqual(
@@ -518,7 +518,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         statement.GetProperty(StatementProperty.STATEMENTTYPE)));
 
                 env.CompileDeploy("@name('s0') select * from SupportBean").AddListener("s0");
-                var fields = "intPrimitive,intBoxed".SplitCsv();
+                var fields = "IntPrimitive,IntBoxed".SplitCsv();
 
                 env.SendEventBean(MakeSupportBean("E1", 1, 2));
                 env.AssertPropsNew("s0", fields, new object[] { 10, 1 });
@@ -540,36 +540,36 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.TryInvalidCompile(
                     path,
-                    "update istream SupportBeanStream set intPrimitive=longPrimitive",
-                    "Failed to validate assignment expression 'intPrimitive=longPrimitive': Invalid assignment of column 'longPrimitive' of type 'Long' to event property 'intPrimitive' typed as 'int', column and parameter types mismatch [update istream SupportBeanStream set intPrimitive=longPrimitive]");
+                    "update istream SupportBeanStream set IntPrimitive=LongPrimitive",
+                    "Failed to validate assignment expression 'IntPrimitive=LongPrimitive': Invalid assignment of column 'LongPrimitive' of type 'Long' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [update istream SupportBeanStream set IntPrimitive=LongPrimitive]");
                 env.TryInvalidCompile(
                     path,
                     "update istream SupportBeanStream set xxx='abc'",
                     "Failed to validate assignment expression 'xxx=\"abc\"': Property 'xxx' is not available for write access [update istream SupportBeanStream set xxx='abc']");
                 env.TryInvalidCompile(
                     path,
-                    "update istream SupportBeanStream set intPrimitive=null",
-                    "Failed to validate assignment expression 'intPrimitive=null': Invalid assignment of column 'null' of null type to event property 'intPrimitive' typed as 'int', nullable type mismatch [update istream SupportBeanStream set intPrimitive=null]");
+                    "update istream SupportBeanStream set IntPrimitive=null",
+                    "Failed to validate assignment expression 'IntPrimitive=null': Invalid assignment of column 'null' of null type to event property 'IntPrimitive' typed as 'int', nullable type mismatch [update istream SupportBeanStream set IntPrimitive=null]");
                 env.TryInvalidCompile(
                     path,
-                    "update istream SupportBeanStreamTwo set a.intPrimitive=10",
-                    "Failed to validate assignment expression 'a.intPrimitive=10': Property 'a.intPrimitive' is not available for write access [update istream SupportBeanStreamTwo set a.intPrimitive=10]");
+                    "update istream SupportBeanStreamTwo set a.IntPrimitive=10",
+                    "Failed to validate assignment expression 'a.IntPrimitive=10': Property 'a.IntPrimitive' is not available for write access [update istream SupportBeanStreamTwo set a.IntPrimitive=10]");
                 env.TryInvalidCompile(
                     path,
                     "update istream SupportBeanStreamRO set side='a'",
                     "Failed to validate assignment expression 'side=\"a\"': Property 'side' is not available for write access [update istream SupportBeanStreamRO set side='a']");
                 env.TryInvalidCompile(
                     path,
-                    "update istream SupportBean set longPrimitive=sum(intPrimitive)",
-                    "Aggregation functions may not be used within update-set [update istream SupportBean set longPrimitive=sum(intPrimitive)]");
+                    "update istream SupportBean set LongPrimitive=sum(IntPrimitive)",
+                    "Aggregation functions may not be used within update-set [update istream SupportBean set LongPrimitive=sum(IntPrimitive)]");
                 env.TryInvalidCompile(
                     path,
-                    "update istream SupportBean set longPrimitive=longPrimitive where sum(intPrimitive) = 1",
-                    "Aggregation functions may not be used within an update-clause [update istream SupportBean set longPrimitive=longPrimitive where sum(intPrimitive) = 1]");
+                    "update istream SupportBean set LongPrimitive=LongPrimitive where sum(IntPrimitive) = 1",
+                    "Aggregation functions may not be used within an update-clause [update istream SupportBean set LongPrimitive=LongPrimitive where sum(IntPrimitive) = 1]");
                 env.TryInvalidCompile(
                     path,
-                    "update istream SupportBean set longPrimitive=prev(1, longPrimitive)",
-                    "Failed to validate update assignment expression 'prev(1,longPrimitive)': Previous function cannot be used in this context [update istream SupportBean set longPrimitive=prev(1, longPrimitive)]");
+                    "update istream SupportBean set LongPrimitive=prev(1, LongPrimitive)",
+                    "Failed to validate update assignment expression 'prev(1,LongPrimitive)': Previous function cannot be used in this context [update istream SupportBean set LongPrimitive=prev(1, LongPrimitive)]");
                 env.TryInvalidCompile(
                     path,
                     "update istream MyXmlEvent set abc=1",
@@ -580,8 +580,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "The update-clause requires the underlying event representation to support copy (via Serializable by default) [update istream SupportBeanErrorTestingOne set value='1']");
                 env.TryInvalidCompile(
                     path,
-                    "update istream SupportBean set longPrimitive=(select p0 from MyMapTypeInv#lastevent where theString=p3)",
-                    "Failed to plan subquery number 1 querying MyMapTypeInv: Failed to validate filter expression 'theString=p3': Property named 'theString' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [update istream SupportBean set longPrimitive=(select p0 from MyMapTypeInv#lastevent where theString=p3)]");
+                    "update istream SupportBean set LongPrimitive=(select p0 from MyMapTypeInv#lastevent where TheString=p3)",
+                    "Failed to plan subquery number 1 querying MyMapTypeInv: Failed to validate filter expression 'TheString=p3': Property named 'TheString' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [update istream SupportBean set LongPrimitive=(select p0 from MyMapTypeInv#lastevent where TheString=p3)]");
                 env.TryInvalidCompile(
                     path,
                     "update istream XYZ.GYH set a=1",
@@ -600,14 +600,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AddListener("insert");
 
                 env.CompileDeploy(
-                    "@name('update_1') update istream MyStreamBW set intPrimitive=10, theString='O_' || theString where intPrimitive=1",
+                    "@name('update_1') update istream MyStreamBW set IntPrimitive=10, TheString='O_' || TheString where IntPrimitive=1",
                     path);
                 env.AddListener("update_1");
 
                 env.CompileDeploy("@name('s0') select * from MyStreamBW", path);
                 env.AddListener("s0");
 
-                var fields = "theString,intPrimitive".SplitCsv();
+                var fields = "TheString,IntPrimitive".SplitCsv();
                 env.SendEventBean(new SupportBean("E1", 9));
                 env.AssertPropsNew("s0", fields, new object[] { "E1", 9 });
                 env.AssertPropsNew("insert", fields, new object[] { "E1", 9 });
@@ -630,7 +630,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertPropsIRPair("update_1", fields, new object[] { "O_E4", 10 }, new object[] { "E4", 1 });
 
                 env.CompileDeploy(
-                    "@name('update_2') update istream MyStreamBW as xyz set intPrimitive=xyz.intPrimitive + 1000 where intPrimitive=2",
+                    "@name('update_2') update istream MyStreamBW as xyz set IntPrimitive=xyz.IntPrimitive + 1000 where IntPrimitive=2",
                     path);
                 env.AddListener("update_2");
 
@@ -676,7 +676,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertPropsNew("s0", fields, new object[] { "E10", 2 });
                 env.AssertPropsNew("insert", fields, new object[] { "E10", 2 });
 
-                env.CompileDeploy("@name('update_3') update istream MyStreamBW set intPrimitive=intBoxed", path);
+                env.CompileDeploy("@name('update_3') update istream MyStreamBW set IntPrimitive=IntBoxed", path);
                 env.AddListener("update_3");
 
                 env.SendEventBean(new SupportBean("E11", 2));
@@ -838,7 +838,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertPropsNew("select", fields, new object[] { "E1", "newvalue" });
 
                 env.CompileDeploy(
-                        "@name('onselect') on SupportBean(theString='A') select win.* from AWindow as win",
+                        "@name('onselect') on SupportBean(TheString='A') select win.* from AWindow as win",
                         path)
                     .AddListener("onselect");
                 env.SendEventBean(new SupportBean("A", 0));
@@ -847,7 +847,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.Milestone(1);
 
                 env.CompileDeploy(
-                        "@name('oninsert') @public on SupportBean(theString='B') insert into MyOtherStream select win.* from AWindow as win",
+                        "@name('oninsert') @public on SupportBean(TheString='B') insert into MyOtherStream select win.* from AWindow as win",
                         path)
                     .AddListener("oninsert");
                 env.SendEventBean(new SupportBean("B", 1));
@@ -870,10 +870,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = "theString,longBoxed,intBoxed".SplitCsv();
+                var fields = "TheString,LongBoxed,IntBoxed".SplitCsv();
 
                 env.CompileDeploy("@public insert into AStream select * from SupportBean", path);
-                env.CompileDeploy("update istream AStream set longBoxed=intBoxed, intBoxed=null", path);
+                env.CompileDeploy("update istream AStream set LongBoxed=IntBoxed, IntBoxed=null", path);
                 env.CompileDeploy("@name('s0') select * from AStream", path).AddListener("s0");
 
                 var bean = new SupportBean("E1", 0);
@@ -920,9 +920,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test bean
                 env.CompileDeploy("@name('s0') select * from SupportBean").AddListener("s0");
-                env.CompileDeploy("update istream SupportBean set intPrimitive=999");
+                env.CompileDeploy("update istream SupportBean set IntPrimitive=999");
 
-                fields = "theString,intPrimitive".SplitCsv();
+                fields = "TheString,IntPrimitive".SplitCsv();
                 env.SendEventBean(new SupportBean("E1", 0));
                 env.AssertPropsNew("s0", fields, new object[] { "E1", 999 });
 
@@ -936,7 +936,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventMap(MakeMap("p0", "", "p1", ""), "MyMapTypeSR");
                 env.AssertPropsNew("s0", fields, new object[] { "E3", 999 });
 
-                env.CompileDeploy("@Drop update istream SupportBean set intPrimitive=1");
+                env.CompileDeploy("@Drop update istream SupportBean set IntPrimitive=1");
                 env.SendEventBean(new SupportBean("E4", 0));
                 env.SendEventBean(new SupportBean("E4", 0));
                 env.SendEventMap(MakeMap("p0", "", "p1", ""), "MyMapTypeSR");
@@ -1016,19 +1016,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@name('s0') select * from ABCStreamWO", path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
-                env.AssertPropsNew("s0", "valOne,valTwo,theString".SplitCsv(), new object[] { 987, 123, "E1" });
+                env.AssertPropsNew("s0", "valOne,valTwo,TheString".SplitCsv(), new object[] { 987, 123, "E1" });
 
                 env.UndeployModuleContaining("update");
-                env.CompileDeploy("@name('update') update istream ABCStreamWO set theString = 'A'", path);
+                env.CompileDeploy("@name('update') update istream ABCStreamWO set TheString = 'A'", path);
 
                 env.SendEventBean(new SupportBean("E2", 0));
-                env.AssertPropsNew("s0", "valOne,valTwo,theString".SplitCsv(), new object[] { 1, 2, "A" });
+                env.AssertPropsNew("s0", "valOne,valTwo,TheString".SplitCsv(), new object[] { 1, 2, "A" });
 
                 env.UndeployModuleContaining("update");
-                env.CompileDeploy("update istream ABCStreamWO set theString = 'B', valOne = 555", path);
+                env.CompileDeploy("update istream ABCStreamWO set TheString = 'B', valOne = 555", path);
 
                 env.SendEventBean(new SupportBean("E3", 0));
-                env.AssertPropsNew("s0", "valOne,valTwo,theString".SplitCsv(), new object[] { 555, 2, "B" });
+                env.AssertPropsNew("s0", "valOne,valTwo,TheString".SplitCsv(), new object[] { 555, 2, "B" });
 
                 env.UndeployAll();
             }
@@ -1055,10 +1055,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var fields = "theString,intPrimitive".SplitCsv();
+                var fields = "TheString,IntPrimitive".SplitCsv();
                 env.CompileDeploy("@public insert into ABCStreamSQ select * from SupportBean", path);
                 env.CompileDeploy(
-                    "@name('update') update istream ABCStreamSQ set theString = (select s0 from MyMapTypeSelect#lastevent) where intPrimitive in (select w0 from MyMapTypeWhere#keepall)",
+                    "@name('update') update istream ABCStreamSQ set TheString = (select s0 from MyMapTypeSelect#lastevent) where IntPrimitive in (select w0 from MyMapTypeWhere#keepall)",
                     path);
                 env.CompileDeploy("@name('s0') select * from ABCStreamSQ", path).AddListener("s0");
 
@@ -1083,7 +1083,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test correlated subquery
                 env.UndeployModuleContaining("update");
                 env.CompileDeploy(
-                    "@name('update') update istream ABCStreamSQ set intPrimitive = (select s1 from MyMapTypeSelect#keepall where s0 = ABCStreamSQ.theString)",
+                    "@name('update') update istream ABCStreamSQ set IntPrimitive = (select s1 from MyMapTypeSelect#keepall where s0 = ABCStreamSQ.TheString)",
                     path);
 
                 // note that this will log an error (int primitive set to null), which is good, and leave the value unchanged
@@ -1097,7 +1097,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test correlated with as-clause
                 env.UndeployModuleContaining("update");
                 env.CompileDeploy(
-                    "@name('update') update istream ABCStreamSQ as mystream set intPrimitive = (select s1 from MyMapTypeSelect#keepall where s0 = mystream.theString)",
+                    "@name('update') update istream ABCStreamSQ as mystream set IntPrimitive = (select s1 from MyMapTypeSelect#keepall where s0 = mystream.TheString)",
                     path);
 
                 // note that this will log an error (int primitive set to null), which is good, and leave the value unchanged
@@ -1143,24 +1143,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
 
                 var path = new RegressionPath();
-                var fields = "theString,intPrimitive,value1".SplitCsv();
+                var fields = "TheString,IntPrimitive,value1".SplitCsv();
                 env.CompileDeploy(
                         "@name('insert') @public insert into ABCStreamLD select *, 'orig' as value1 from SupportBean",
                         path)
                     .Statement("insert")
                     .AddListener(listenerInsert);
                 env.CompileDeploy(
-                        "@name('A') update istream ABCStreamLD set theString='A', value1='a' where intPrimitive in (1,2)",
+                        "@name('A') update istream ABCStreamLD set TheString='A', value1='a' where IntPrimitive in (1,2)",
                         path)
                     .Statement("A")
                     .AddListener(listeners[0]);
                 env.CompileDeploy(
-                        "@name('B') update istream ABCStreamLD set theString='B', value1='b' where intPrimitive in (1,3)",
+                        "@name('B') update istream ABCStreamLD set TheString='B', value1='b' where IntPrimitive in (1,3)",
                         path)
                     .Statement("B")
                     .AddListener(listeners[1]);
                 env.CompileDeploy(
-                        "@name('C') update istream ABCStreamLD set theString='C', value1='c' where intPrimitive in (2,3)",
+                        "@name('C') update istream ABCStreamLD set TheString='C', value1='c' where IntPrimitive in (2,3)",
                         path)
                     .Statement("C")
                     .AddListener(listeners[2]);
@@ -1216,7 +1216,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
 
                 var path = new RegressionPath();
-                var fields = "theString,intPrimitive,value1".SplitCsv();
+                var fields = "TheString,IntPrimitive,value1".SplitCsv();
                 env.CompileDeploy(
                         "@name('insert') @public insert into ABCStreamLDM select *, 'orig' as value1 from SupportBean",
                         path)
@@ -1224,15 +1224,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     .AddListener(listenerInsert);
                 env.CompileDeploy("@name('s0') select * from ABCStreamLDM", path).AddListener("s0");
 
-                env.CompileDeploy("@name('A') update istream ABCStreamLDM set theString='A', value1='a'", path);
-                env.CompileDeploy("@name('B') update istream ABCStreamLDM set theString='B', value1='b'", path)
+                env.CompileDeploy("@name('A') update istream ABCStreamLDM set TheString='A', value1='a'", path);
+                env.CompileDeploy("@name('B') update istream ABCStreamLDM set TheString='B', value1='b'", path)
                     .Statement("B")
                     .AddListener(listeners[1]);
-                env.CompileDeploy("@name('C') update istream ABCStreamLDM set theString='C', value1='c'", path);
-                env.CompileDeploy("@name('D') update istream ABCStreamLDM set theString='D', value1='d'", path)
+                env.CompileDeploy("@name('C') update istream ABCStreamLDM set TheString='C', value1='c'", path);
+                env.CompileDeploy("@name('D') update istream ABCStreamLDM set TheString='D', value1='d'", path)
                     .Statement("D")
                     .AddListener(listeners[3]);
-                env.CompileDeploy("@name('E') update istream ABCStreamLDM set theString='E', value1='e'", path);
+                env.CompileDeploy("@name('E') update istream ABCStreamLDM set TheString='E', value1='e'", path);
 
                 env.SendEventBean(new SupportBean("E4", 4));
                 env.AssertPropsNew("insert", fields, new object[] { "E4", 4, "orig" });
@@ -1425,7 +1425,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             }
 
             env.CompileDeploy(
-                "on SupportBean update MyWindowWithMapProp set simple='A', mymap('abc') = intPrimitive, myarray[2] = intPrimitive",
+                "on SupportBean update MyWindowWithMapProp set simple='A', mymap('abc') = IntPrimitive, myarray[2] = IntPrimitive",
                 path);
             env.SendEventBean(new SupportBean("E1", 10));
             env.AssertPropsPerRowIterator(
@@ -1488,43 +1488,43 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             var prefix = eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedSB));
             env.CompileDeploy(
                 prefix +
-                " @public insert into MyStream select theString, intPrimitive from SupportBean(theString not like 'Z%')",
+                " @public insert into MyStream select TheString, IntPrimitive from SupportBean(TheString not like 'Z%')",
                 path);
             env.CompileDeploy(
                 prefix +
-                " @public insert into MyStream select 'AX'||theString as theString, intPrimitive from SupportBean(theString like 'Z%')",
+                " @public insert into MyStream select 'AX'||TheString as TheString, IntPrimitive from SupportBean(TheString like 'Z%')",
                 path);
             env.CompileDeploy(
-                prefix + " @Name('a') @Priority(12) update istream MyStream set intPrimitive=-2 where intPrimitive=-1",
-                path);
-            env.CompileDeploy(
-                prefix +
-                " @Name('b') @Priority(11) update istream MyStream set intPrimitive=-1 where theString like 'D%'",
+                prefix + " @Name('a') @Priority(12) update istream MyStream set IntPrimitive=-2 where IntPrimitive=-1",
                 path);
             env.CompileDeploy(
                 prefix +
-                " @Name('c') @Priority(9) update istream MyStream set intPrimitive=9 where theString like 'A%'",
+                " @Name('b') @Priority(11) update istream MyStream set IntPrimitive=-1 where TheString like 'D%'",
                 path);
             env.CompileDeploy(
                 prefix +
-                " @Name('d') @Priority(8) update istream MyStream set intPrimitive=8 where theString like 'A%' or theString like 'C%'",
+                " @Name('c') @Priority(9) update istream MyStream set IntPrimitive=9 where TheString like 'A%'",
                 path);
             env.CompileDeploy(
-                " @Name('e') @Priority(10) update istream MyStream set intPrimitive=10 where theString like 'A%'",
+                prefix +
+                " @Name('d') @Priority(8) update istream MyStream set IntPrimitive=8 where TheString like 'A%' or TheString like 'C%'",
                 path);
             env.CompileDeploy(
-                " @Name('f') @Priority(7) update istream MyStream set intPrimitive=7 where theString like 'A%' or theString like 'C%'",
+                " @Name('e') @Priority(10) update istream MyStream set IntPrimitive=10 where TheString like 'A%'",
                 path);
             env.CompileDeploy(
-                " @Name('g') @Priority(6) update istream MyStream set intPrimitive=6 where theString like 'A%'",
+                " @Name('f') @Priority(7) update istream MyStream set IntPrimitive=7 where TheString like 'A%' or TheString like 'C%'",
                 path);
             env.CompileDeploy(
-                " @Name('h') @Drop update istream MyStream set intPrimitive=6 where theString like 'B%'",
+                " @Name('g') @Priority(6) update istream MyStream set IntPrimitive=6 where TheString like 'A%'",
+                path);
+            env.CompileDeploy(
+                " @Name('h') @Drop update istream MyStream set IntPrimitive=6 where TheString like 'B%'",
                 path);
 
-            env.CompileDeploy("@name('s0') select * from MyStream where intPrimitive > 0", path).AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from MyStream where IntPrimitive > 0", path).AddListener("s0");
 
-            var fields = "theString,intPrimitive".SplitCsv();
+            var fields = "TheString,IntPrimitive".SplitCsv();
             env.SendEventBean(new SupportBean("A1", 0));
             env.AssertPropsNew("s0", fields, new object[] { "A1", 10 });
 

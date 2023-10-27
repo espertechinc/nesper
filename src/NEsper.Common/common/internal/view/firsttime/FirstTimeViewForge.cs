@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.view.firsttime
         }
 
         internal override Type TypeOfFactory => typeof(FirstTimeViewFactory);
-        internal override string FactoryMethod => "firsttime";
+        internal override string FactoryMethod => "Firsttime";
 
         internal override void Assign(
             CodegenMethod method,
@@ -75,8 +75,8 @@ namespace com.espertech.esper.common.@internal.view.firsttime
 
             method.Block
                 .DeclareVar<TimePeriodCompute>("eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId));
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
+                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
         }
 
         public override AppliesTo AppliesTo()

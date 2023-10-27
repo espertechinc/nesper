@@ -461,18 +461,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
                                 "', no child node found under initializer element, expecting an element node");
                         }
 
-                        var output = new StringWriter();
-                        try {
-                            var myXslTrans = new XslTransform() ;
-                            myXslTrans.Load(nodeIter.Current.OuterXml);
-                        }
-                        catch (XsltCompileException e) {
-                            throw new ConfigurationException(
-                                "Error handling config-xml for plug-in loader '" + loaderName + "' :" + e.Message,
-                                e);
-                        }
-
-                        configXML = output.ToString();
+                        configXML = nodeIter.Current.OuterXml;
                         break;
                     }
                 }

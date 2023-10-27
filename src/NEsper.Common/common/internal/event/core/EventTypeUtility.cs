@@ -1570,12 +1570,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                     }
                 }
                 else if (prop is MappedProperty mappedProp) {
-                    var type = nestableTypes.Get(mappedProp.PropertyNameAtomic);
-                    if (type == null) {
-                        return null;
-                    }
-
-                    if (type is Type asType) {
+                    var typeX = nestableTypes.Get(mappedProp.PropertyNameAtomic);
+                    if (typeX is Type asType) {
                         return TypeHelper.IsImplementsInterface(asType, typeof(IDictionary<string, object>))
                             ? factory.GetGetterMappedProperty(mappedProp.PropertyNameAtomic, mappedProp.Key)
                             : null;
@@ -1955,7 +1951,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public static void ValidateEventBeanClassVisibility(Type clazz)
         {
-            if (!clazz.IsPublic) {
+            if (!clazz.IsPublic && !clazz.IsNestedPublic) {
                 throw new EventAdapterException("Event class '" + clazz.Name + "' does not have public visibility");
             }
         }

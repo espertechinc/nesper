@@ -34,21 +34,21 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public void Run(RegressionEnvironment env)
         {
             var epl =
-                "@public @buseventtype create schema ScoreCycle (userId string, keyword string, ProductId string, score long);\n" +
+                "@public @buseventtype create schema ScoreCycle (UserId string, keyword string, ProductId string, score long);\n" +
                 "\n" +
-                "@public @buseventtype create schema UserKeywordTotalStream (userId string, keyword string, sumScore long);\n" +
+                "@public @buseventtype create schema UserKeywordTotalStream (UserId string, keyword string, sumScore long);\n" +
                 "\n" +
                 "create context HashByUserCtx as\n" +
-                "coalesce by consistent_hash_crc32(userId) from ScoreCycle,\n" +
-                "consistent_hash_crc32(userId) from UserKeywordTotalStream \n" +
+                "coalesce by consistent_hash_crc32(UserId) from ScoreCycle,\n" +
+                "consistent_hash_crc32(UserId) from UserKeywordTotalStream \n" +
                 "granularity 10000000;\n" +
                 "\n" +
-                "context HashByUserCtx create window ScoreCycleWindow#unique(userId, keyword, ProductId) as ScoreCycle;\n" +
+                "context HashByUserCtx create window ScoreCycleWindow#unique(UserId, keyword, ProductId) as ScoreCycle;\n" +
                 "\n" +
                 "context HashByUserCtx insert into ScoreCycleWindow select * from ScoreCycle;\n" +
                 "\n" +
                 "@name('Select') context HashByUserCtx insert into UserKeywordTotalStream\n" +
-                "select userId, keyword, sum(score) as sumScore from ScoreCycleWindow group by userId, keyword;";
+                "select UserId, keyword, sum(score) as sumScore from ScoreCycleWindow group by UserId, keyword;";
             env.CompileDeploy(epl, new RegressionPath());
             var listener = new MyUpdateListener();
             env.Statement("Select").AddListener(listener);
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             long score)
         {
             IDictionary<string, object> theEvent = new LinkedHashMap<string, object>();
-            theEvent.Put("userId", userId);
+            theEvent.Put("UserId", userId);
             theEvent.Put("keyword", keyword);
             theEvent.Put("ProductId", productId);
             theEvent.Put("score", score);

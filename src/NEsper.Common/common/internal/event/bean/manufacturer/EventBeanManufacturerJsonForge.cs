@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             // manufacturer.AddMethod("make", makeMethod);
             // makeMethod.Block
             //     .DeclareVar(typeof(object), "und", LocalMethod(makeUndMethod, Ref("properties")))
-            //     .MethodReturn(ExprDotMethod(factory, "adapterForTypedJson", Ref("und"), eventType));
+            //     .MethodReturn(ExprDotMethod(factory, "AdapterForTypedJson", Ref("und"), eventType));
 
             return codegenClassScope.AddDefaultFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }

@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.view.prior
 
         internal override Type TypeOfFactory => typeof(PriorEventViewFactory);
 
-        internal override string FactoryMethod => "prior";
+        internal override string FactoryMethod => "Prior";
 
         internal override void Assign(
             CodegenMethod method,

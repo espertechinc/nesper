@@ -326,13 +326,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var delimiter = "";
                 for (var i = 0; i < numColumns; i++) {
                     epl.Write(delimiter);
-                    epl.Write("sorted(intPrimitive + ");
+                    epl.Write("sorted(IntPrimitive + ");
                     epl.Write(i.ToString());
                     epl.Write(").firstEvent() as c");
                     epl.Write(i.ToString());
                     delimiter = ",";
                     epl.Write(delimiter);
-                    epl.Write("sorted(intPrimitive + ");
+                    epl.Write("sorted(IntPrimitive + ");
                     epl.Write(i.ToString());
                     epl.Write(").selectFrom(v => v) as d");
                     epl.Write(i.ToString());
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var delimiter = "";
                 for (var i = 0; i < numColumns; i++) {
                     epl.Write(delimiter);
-                    epl.Write("sum(intPrimitive + ");
+                    epl.Write("sum(IntPrimitive + ");
                     epl.Write(i.ToString());
                     epl.Write(") as c");
                     epl.Write(i.ToString());
@@ -468,7 +468,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     (
                         writer,
                         index) => {
-                        writer.Write("sum(intPrimitive + ");
+                        writer.Write("sum(IntPrimitive + ");
                         writer.Write(index.ToString());
                         writer.Write(")");
                     });
@@ -507,7 +507,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     (
                         writer,
                         index) => {
-                        writer.Write("sum(intPrimitive + ");
+                        writer.Write("sum(IntPrimitive + ");
                         writer.Write(index.ToString());
                         writer.Write(")");
                     });
@@ -569,7 +569,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var delimiter = "";
                 for (var i = 0; i < numColumns; i++) {
                     epl.Write(delimiter);
-                    epl.Write("theString||'");
+                    epl.Write("TheString||'");
                     epl.Write(i.ToString());
                     epl.Write("' as c");
                     epl.Write(i.ToString());

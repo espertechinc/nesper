@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.@event.bean.getter;
@@ -67,7 +68,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             BeanEventTypeFactory beanEventTypeFactory)
         {
             var propertyDesc = eventType.GetIndexedProperty(PropertyNameAtomic);
-            if (propertyDesc != null) {
+            if (propertyDesc is { IsIndexedReadMethod: true }) {
                 return new KeyedMethodPropertyGetter(
                     propertyDesc.ReadMethod,
                     _index,
@@ -83,65 +84,121 @@ namespace com.espertech.esper.common.@internal.@event.property
 
             var returnType = propertyDesc.ReturnType;
             if (returnType.IsArray) {
-                if (propertyDesc.ReadMethod != null) {
-                    var method = propertyDesc.ReadMethod;
-                    return new ArrayMethodPropertyGetter(
-                        method,
-                        _index,
-                        eventBeanTypedEventFactory,
-                        beanEventTypeFactory);
-                }
-                else {
-                    var field = propertyDesc.AccessorField;
-                    return new ArrayFieldPropertyGetter(
-                        field,
-                        _index,
-                        eventBeanTypedEventFactory,
-                        beanEventTypeFactory);
-                }
+                return GetGetterFromArray(
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory,
+                    propertyDesc);
             }
-            else if (returnType.IsGenericList()) {
-                if (propertyDesc.ReadMethod != null) {
-                    var method = propertyDesc.ReadMethod;
-                    return new ListMethodPropertyGetter(
-                        method,
-                        _index,
-                        eventBeanTypedEventFactory,
-                        beanEventTypeFactory);
-                }
-                else {
-                    var field = propertyDesc.AccessorField;
-                    return new ListFieldPropertyGetter(field, _index, eventBeanTypedEventFactory, beanEventTypeFactory);
-                }
+
+            if (returnType.IsGenericList()) {
+                return GetGetterFromList(
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory,
+                    propertyDesc);
             }
-            else if (returnType.IsGenericEnumerable()) {
-                if (propertyDesc.ReadMethod != null) {
-                    var method = propertyDesc.ReadMethod;
-                    return new IterableMethodPropertyGetter(
-                        method,
-                        _index,
-                        eventBeanTypedEventFactory,
-                        beanEventTypeFactory);
-                }
-                else {
-                    var field = propertyDesc.AccessorField;
-                    return new IterableFieldPropertyGetter(
-                        field,
-                        _index,
-                        eventBeanTypedEventFactory,
-                        beanEventTypeFactory);
-                }
+
+            if (returnType.IsGenericEnumerable() || returnType.IsImplementsInterface(typeof(System.Collections.IEnumerable))) {
+                return GetGetterFromEnumerable(
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory,
+                    propertyDesc);
             }
 
             return null;
         }
 
+        private EventPropertyGetterSPI GetGetterFromEnumerable(
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory,
+            PropertyStem propertyDesc)
+        {
+            if (propertyDesc.AccessorProp != null) {
+                return new IterablePropertyPropertyGetter(
+                    propertyDesc.AccessorProp,
+                    Index,
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory);
+            }
+
+            if (propertyDesc.IsSimpleReadMethod) {
+                return new IterableMethodPropertyGetter(
+                    propertyDesc.ReadMethod,
+                    Index,
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory);
+            }
+
+            if (propertyDesc.AccessorField != null) {
+                return new IterableFieldPropertyGetter(
+                    propertyDesc.AccessorField,
+                    Index,
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory);
+            }
+
+            throw new EPRuntimeException("unable to determine property enumerator accessor");
+        }
+
+        private EventPropertyGetterSPI GetGetterFromList(
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory,
+            PropertyStem propertyDesc)
+        {
+            var prop = propertyDesc.AccessorProp;
+            if (prop != null) {
+                return new ListPropertyPropertyGetter(prop, Index, eventBeanTypedEventFactory, beanEventTypeFactory);
+            }
+
+            if (propertyDesc.IsSimpleReadMethod) {
+                var method = propertyDesc.ReadMethod;
+                return new ListMethodPropertyGetter(
+                    method,
+                    Index,
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory);
+            }
+
+            var field = propertyDesc.AccessorField;
+            if (field != null) {
+                return new ListFieldPropertyGetter(field, Index, eventBeanTypedEventFactory, beanEventTypeFactory);
+            }
+
+            throw new EPRuntimeException("unable to determine property list accessor");
+        }
+
+        private EventPropertyGetterSPI GetGetterFromArray(
+            EventBeanTypedEventFactory eventBeanTypedEventFactory,
+            BeanEventTypeFactory beanEventTypeFactory,
+            PropertyStem propertyDesc)
+        {
+            var prop = propertyDesc.AccessorProp;
+            if (prop != null) {
+                return new ArrayPropertyPropertyGetter(prop, Index, eventBeanTypedEventFactory, beanEventTypeFactory);
+            }
+
+            if (propertyDesc.IsSimpleReadMethod) {
+                var method = propertyDesc.ReadMethod;
+                return new ArrayMethodPropertyGetter(
+                    method,
+                    Index,
+                    eventBeanTypedEventFactory,
+                    beanEventTypeFactory);
+            }
+
+            var field = propertyDesc.AccessorField;
+            if (field != null) {
+                return new ArrayFieldPropertyGetter(field, Index, eventBeanTypedEventFactory, beanEventTypeFactory);
+            }
+
+            throw new EPRuntimeException("unable to determine property array accessor");
+        }
+        
         public override Type GetPropertyType(
             BeanEventType eventType,
             BeanEventTypeFactory beanEventTypeFactory)
         {
             var descriptor = eventType.GetIndexedProperty(PropertyNameAtomic);
-            if (descriptor != null) {
+            if (descriptor is { IsIndexedReadMethod: true }) {
                 return descriptor.ReturnType;
             }
 
@@ -155,8 +212,21 @@ namespace com.espertech.esper.common.@internal.@event.property
             if (returnType.IsArray) {
                 return returnType.GetComponentType();
             }
-            else if (returnType.IsGenericEnumerable()) {
-                return returnType.GetComponentType();
+            
+            if (returnType.IsGenericEnumerable() || returnType.IsImplementsInterface(typeof(System.Collections.IEnumerable))) {
+                if (descriptor.AccessorProp != null) {
+                    return TypeHelper.GetGenericPropertyType(descriptor.AccessorProp, false);
+                }
+
+                if (descriptor.ReadMethod != null) {
+                    return TypeHelper.GetGenericReturnType(descriptor.ReadMethod, false);
+                }
+
+                if (descriptor.AccessorField != null) {
+                    return TypeHelper.GetGenericFieldType(descriptor.AccessorField, false);
+                }
+
+                return null;
             }
 
             return null;
@@ -171,15 +241,15 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return null;
             }
 
-            if (type is TypeBeanOrUnderlying[] underlyings) {
-                var innerType = underlyings[0].EventType;
+            if (type is TypeBeanOrUnderlying[] typeBeanOrUnderlyings) {
+                var innerType = typeBeanOrUnderlyings[0].EventType;
                 if (innerType is MapEventType) {
                     return typeof(IDictionary<string, object>);
                 }
             }
             else {
                 if (type is Type { IsArray: true } typeClass) {
-                    return typeClass.GetComponentType();
+                    return typeClass.GetElementType();
                 }
             }
                             
@@ -196,8 +266,8 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return null;
             }
 
-            if (type is TypeBeanOrUnderlying[] underlyings) {
-                var innerType = underlyings[0].EventType;
+            if (type is TypeBeanOrUnderlying[] typeBeanOrUnderlyings) {
+                var innerType = typeBeanOrUnderlyings[0].EventType;
                 if (innerType is MapEventType) {
                     return new MapArrayPropertyGetter(
                         PropertyNameAtomic,
@@ -206,9 +276,9 @@ namespace com.espertech.esper.common.@internal.@event.property
                         innerType);
                 }
             }
-            else if (type is Type type1) {
-                if (type1.IsArray) {
-                    Type componentType = type1.GetComponentType();
+            else if (type is Type asType) {
+                if (asType.IsArray) {
+                    var componentType = asType.GetElementType();
                     // its an array
                     return new MapArrayPONOEntryIndexedPropertyGetter(
                         PropertyNameAtomic,
@@ -318,7 +388,7 @@ namespace com.espertech.esper.common.@internal.@event.property
         /// </summary>
         /// <param name="propertyName">property expression</param>
         /// <returns>index</returns>
-        public static int? GetIndex(string propertyName)
+        public static int GetIndex(string propertyName)
         {
             var start = propertyName.IndexOf('[');
             var end = propertyName.IndexOf(']');
@@ -341,8 +411,8 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return null;
             }
 
-            if (type is TypeBeanOrUnderlying[] underlyings) {
-                var innerType = underlyings[0].EventType;
+            if (type is TypeBeanOrUnderlying[] typeBeanOrUnderlyings) {
+                var innerType = typeBeanOrUnderlyings[0].EventType;
                 if (!(innerType is ObjectArrayEventType)) {
                     return null;
                 }
@@ -353,12 +423,9 @@ namespace com.espertech.esper.common.@internal.@event.property
                     eventBeanTypedEventFactory,
                     innerType);
             }
-            else if (type is Type typeMayArray) {
-                if (!typeMayArray.IsArray) {
-                    return null;
-                }
-
-                var componentType = typeMayArray.GetComponentType();
+            
+            if (type is Type asType && asType.IsArray) {
+                var componentType = asType.GetElementType();
                 // its an array
                 return new ObjectArrayArrayPONOEntryIndexedPropertyGetter(
                     propertyIndex,
@@ -367,9 +434,8 @@ namespace com.espertech.esper.common.@internal.@event.property
                     beanEventTypeFactory,
                     componentType);
             }
-            else {
-                return null;
-            }
+
+            return null;
         }
     }
 } // end of namespace

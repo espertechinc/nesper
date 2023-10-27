@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         ifRight.DeclareVar(
                             typeof(bool?),
                             "eq",
-                            ExprDotMethod(left, "equals", Ref("valueRight")));
+                            ExprDotMethod(left, "Equals", Ref("valueRight")));
                         if (isAll) {
                             ifRight.IfCondition(NotOptional(!isNot, Ref("eq"))).BlockReturn(ConstantFalse());
                         }

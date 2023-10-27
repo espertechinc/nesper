@@ -91,14 +91,14 @@ namespace com.espertech.esper.common.@internal.epl.historical.indexingstrategy
 
             method.Block
                 .DeclareVarNewInstance(typeof(PollResultIndexingStrategyComposite), "strat")
-                .ExprDotMethod(Ref("strat"), "setStreamNum", Constant(streamNum))
-                .ExprDotMethod(Ref("strat"), "setOptionalKeyedProps", Constant(optHashPropertyNames))
-                .ExprDotMethod(Ref("strat"), "setOptKeyCoercedTypes", Constant(optHashCoercedTypes))
-                .ExprDotMethod(Ref("strat"), "setHashGetter", hashGetter)
-                .ExprDotMethod(Ref("strat"), "setRangeProps", Constant(rangeProps))
-                .ExprDotMethod(Ref("strat"), "setOptRangeCoercedTypes", Constant(rangeTypes))
-                .ExprDotMethod(Ref("strat"), "setRangeGetters", Ref("rangeGetters"))
-                .ExprDotMethod(Ref("strat"), "init")
+                .SetProperty(Ref("strat"), "StreamNum", Constant(streamNum))
+                .SetProperty(Ref("strat"), "OptionalKeyedProps", Constant(optHashPropertyNames))
+                .SetProperty(Ref("strat"), "OptKeyCoercedTypes", Constant(optHashCoercedTypes))
+                .SetProperty(Ref("strat"), "HashGetter", hashGetter)
+                .SetProperty(Ref("strat"), "RangeProps", Constant(rangeProps))
+                .SetProperty(Ref("strat"), "OptRangeCoercedTypes", Constant(rangeTypes))
+                .SetProperty(Ref("strat"), "RangeGetters", Ref("rangeGetters"))
+                .ExprDotMethod(Ref("strat"), "Init")
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }

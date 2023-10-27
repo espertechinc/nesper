@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var result = listener.NewDataListFlattened;
             ISet<string> received = new HashSet<string>();
             foreach (var @event in result) {
-                var key = (string) @event.Get("P01");
+                var key = (string)@event.Get("P01");
                 if (received.Contains(key)) {
                     Assert.Fail("key " + key + " received multiple times");
                 }

@@ -93,8 +93,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             }
 
             method.Block
-                .ExprDotMethod(Ref("node"), "setChildren", Ref("children"))
-                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", Ref("node")));
+                .SetProperty(Ref("node"), "Children", Ref("children"))
+                .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", Ref("node")));
 
             if (OptionalMaxExpressions != null && !OptionalMaxExpressions.IsEmpty()) {
                 method.Block.DeclareVar(
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                             classScope));
                 }
 
-                method.Block.ExprDotMethod(Ref("node"), "setMaxPerChildEvals", Ref("evals"));
+                method.Block.SetProperty(Ref("node"), "MaxPerChildEvals", Ref("evals"));
             }
         }
 

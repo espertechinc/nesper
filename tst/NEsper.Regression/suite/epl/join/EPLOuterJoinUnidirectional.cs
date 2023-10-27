@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select a.id as aid, b.id as bid from SupportBean_A as a unidirectional " +
+                var epl = "@name('s0') select a.Id as aid, b.Id as bid from SupportBean_A as a unidirectional " +
                           "full outer join SupportBean_B as b unidirectional";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -167,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var epl = "@public create window MyCWindow#keepall as SupportBean_C;\n" +
                           "insert into MyCWindow select * from SupportBean_C;\n" +
-                          "@name('s0') select a.id as aid, b.id as bid, MyCWindow.id as cid, SupportBean_D.id as did " +
+                          "@name('s0') select a.Id as aid, b.Id as bid, MyCWindow.Id as cid, SupportBean_D.Id as did " +
                           "from pattern[every a=SupportBean_A -> b=SupportBean_B] t1 unidirectional " +
                           "full outer join " +
                           "MyCWindow unidirectional " +
@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                           "full outer join SupportBean_B as b unidirectional " +
                           "full outer join SupportBean_C as c unidirectional " +
                           "full outer join SupportBean_D as d unidirectional " +
-                          "where coalesce(a.id,b.id,c.id,d.id) in ('YES')";
+                          "where coalesce(a.Id,b.Id,c.Id,d.Id) in ('YES')";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendAssert(env, new SupportBean_A("A1"), false);
@@ -240,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             string b,
             string c)
         {
-            var fields = "a.id,b.id,c.id".SplitCsv();
+            var fields = "a.Id,b.Id,c.Id".SplitCsv();
             env.AssertPropsNew("s0", fields, new object[] { a, b, c });
         }
 

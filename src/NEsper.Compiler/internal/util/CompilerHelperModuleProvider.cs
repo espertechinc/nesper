@@ -80,7 +80,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			
 			EPCompiledManifest manifest;
 			try {
-				manifest = CompileToBytes(
+				manifest = CompileToArtifact(
 					compilerAbstraction,
 					compilationState,
 					compilables,
@@ -116,7 +116,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			return compiled;
 		}
 
-		private static EPCompiledManifest CompileToBytes(
+		private static EPCompiledManifest CompileToArtifact(
 			CompilerAbstraction compilerAbstraction,
 			CompilerAbstractionArtifactCollection compilationState,
 			IList<Compilable> compilables,
@@ -254,7 +254,7 @@ namespace com.espertech.esper.compiler.@internal.util
 				path.Compileds,
 				out var moduleArtifact);
 
-#if TBD
+#if TODO
 			// remove path create-class class-provided byte code
 			compileTimeServices.ClassProvidedCompileTimeResolver.RemoveFrom(_ => compilationState.Remove(_));
 
@@ -1282,7 +1282,8 @@ namespace com.espertech.esper.compiler.@internal.util
 					classScope,
 					typeof(CompilerHelperModuleProvider))
 				.AddParam(typeof(LinkedHashMap<string, object>), "props")
-				.SetConsumer(consumer.Invoke);
+				.SetConsumer(consumer)
+				.Build();
 
 			method.Block.MethodReturn(Ref("props"));
 			return method;

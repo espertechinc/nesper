@@ -35,14 +35,14 @@ namespace NEsper.Avro.Core
         {
             var lvl2Schema = SchemaBuilder.Record(
                 "lvl2Schema",
-                Field("nestedValue", StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE))),
-                Field("nestedIndexed", Array(IntType())),
-                Field("nestedMapped", Map(StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)))));
+                Field("NestedValue", StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE))),
+                Field("NestedIndexed", Array(IntType())),
+                Field("NestedMapped", Map(StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)))));
 
             var lvl1Schema = SchemaBuilder.Record(
                 "lvl1Schema",
                 Field("lvl2", lvl2Schema),
-                RequiredInt("intPrimitive"),
+                RequiredInt("IntPrimitive"),
                 Field("indexed", Array(IntType())),
                 Field("mapped", Map(StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)))));
 
@@ -61,31 +61,31 @@ namespace NEsper.Avro.Core
             AssertPropertyType(typeof(string), typeof(char), eventType, "myString");
             AssertPropertyType(null, null, eventType, "myNullValue");
             AssertPropertyType(typeof(GenericRecord), null, eventType, "lvl1");
-            AssertPropertyType(typeof(int), null, eventType, "lvl1.intPrimitive");
-            AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.lvl2.nestedValue");
+            AssertPropertyType(typeof(int), null, eventType, "lvl1.IntPrimitive");
+            AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.lvl2.NestedValue");
             AssertPropertyType(typeof(int), null, eventType, "lvl1.indexed[1]");
             AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.mapped('a')");
-            AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.lvl2.nestedMapped('a')");
-            AssertPropertyType(typeof(int), null, eventType, "lvl1.lvl2.nestedIndexed[1]");
+            AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.lvl2.NestedMapped('a')");
+            AssertPropertyType(typeof(int), null, eventType, "lvl1.lvl2.NestedIndexed[1]");
 
             AssertNotAProperty(eventType, "dummy");
             AssertNotAProperty(eventType, "lvl1.dfgdg");
-            AssertNotAProperty(eventType, "xxx.intPrimitive");
-            AssertNotAProperty(eventType, "lvl1.lvl2.nestedValueXXX");
+            AssertNotAProperty(eventType, "xxx.IntPrimitive");
+            AssertNotAProperty(eventType, "lvl1.lvl2.NestedValueXXX");
             AssertNotAProperty(eventType, "myInt[1]");
-            AssertNotAProperty(eventType, "lvl1.intPrimitive[1]");
+            AssertNotAProperty(eventType, "lvl1.IntPrimitive[1]");
             AssertNotAProperty(eventType, "myInt('a')");
-            AssertNotAProperty(eventType, "lvl1.intPrimitive('a')");
-            AssertNotAProperty(eventType, "lvl1.lvl2.nestedIndexed('a')");
-            AssertNotAProperty(eventType, "lvl1.lvl2.nestedMapped[1]");
+            AssertNotAProperty(eventType, "lvl1.IntPrimitive('a')");
+            AssertNotAProperty(eventType, "lvl1.lvl2.NestedIndexed('a')");
+            AssertNotAProperty(eventType, "lvl1.lvl2.NestedMapped[1]");
 
             var lvl2Rec = new GenericRecord(lvl2Schema);
-            lvl2Rec.Put("nestedValue", 100);
-            lvl2Rec.Put("nestedIndexed", Collections.List(19, 21));
-            lvl2Rec.Put("nestedMapped", Collections.SingletonDataMap("nestedkey", "nestedvalue"));
+            lvl2Rec.Put("NestedValue", 100);
+            lvl2Rec.Put("NestedIndexed", Collections.List(19, 21));
+            lvl2Rec.Put("NestedMapped", Collections.SingletonDataMap("Nestedkey", "Nestedvalue"));
             var lvl1Rec = new GenericRecord(lvl1Schema);
             lvl1Rec.Put("lvl2", lvl2Rec);
-            lvl1Rec.Put("intPrimitive", 10);
+            lvl1Rec.Put("IntPrimitive", 10);
             lvl1Rec.Put("indexed", Collections.List(1, 2, 3));
             lvl1Rec.Put("mapped", Collections.SingletonDataMap("key", "value"));
             var record = new GenericRecord(schema);
@@ -100,13 +100,13 @@ namespace NEsper.Avro.Core
             Assert.AreEqual(554, eventBean.Get("myIntBoxed"));
             Assert.AreEqual("hugo", eventBean.Get("myString"));
             Assert.AreEqual(lvl1Rec, eventBean.Get("lvl1"));
-            Assert.AreEqual(10, eventBean.Get("lvl1.intPrimitive"));
-            Assert.AreEqual(100, eventBean.Get("lvl1.lvl2.nestedValue"));
+            Assert.AreEqual(10, eventBean.Get("lvl1.IntPrimitive"));
+            Assert.AreEqual(100, eventBean.Get("lvl1.lvl2.NestedValue"));
             Assert.AreEqual(2, eventBean.Get("lvl1.indexed[1]"));
             Assert.AreEqual("value", eventBean.Get("lvl1.mapped('key')"));
             Assert.AreEqual(null, eventBean.Get("myNullValue"));
-            Assert.AreEqual("nestedvalue", eventBean.Get("lvl1.lvl2.nestedMapped('nestedkey')"));
-            Assert.AreEqual(21, eventBean.Get("lvl1.lvl2.nestedIndexed[1]"));
+            Assert.AreEqual("Nestedvalue", eventBean.Get("lvl1.lvl2.NestedMapped('nestedkey')"));
+            Assert.AreEqual(21, eventBean.Get("lvl1.lvl2.NestedIndexed[1]"));
         }
 
         [Test]

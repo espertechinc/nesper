@@ -80,11 +80,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 // invalid column type
                 env.TryInvalidCompile(
                     path,
-                    "create index MyIndex on MyWindow((id, py) pointregionquadtree(0, 0, 100, 100))",
+                    "create index MyIndex on MyWindow((Id, py) pointregionquadtree(0, 0, 100, 100))",
                     "Index of type 'pointregionquadtree' for column 0 that is providing x-values expecting type Number but received type String");
                 env.TryInvalidCompile(
                     path,
-                    "create index MyIndex on MyWindow((px, id) pointregionquadtree(0, 0, 100, 100))",
+                    "create index MyIndex on MyWindow((px, Id) pointregionquadtree(0, 0, 100, 100))",
                     "Index of type 'pointregionquadtree' for column 1 that is providing y-values expecting type Number but received type String");
 
                 // invalid expressions for column or parameter

@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                     "@name('schema') @public @buseventtype create schema MyEvent as " +
                     typeof(SupportBeanParameterizedWFieldSinglePlain<>).FullName +
                     "<Integer>;\n" +
-                    "@name('s0') select simpleProperty as c0, simpleField as c1 from MyEvent;\n";
+                    "@name('s0') select SimpleProperty as c0, simpleField as c1 from MyEvent;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertStatement(
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                         Assert.AreEqual(typeof(SupportBeanParameterizedWFieldSinglePlain<int?>), type);
                         SupportEventPropUtil.AssertPropsEquals(
                             env.Statement("schema").EventType.PropertyDescriptors.ToArray(),
-                            new SupportEventPropDesc("simpleProperty", typeof(int?)),
+                            new SupportEventPropDesc("SimpleProperty", typeof(int?)),
                             new SupportEventPropDesc("simpleField", typeof(int?)));
 
                         SupportEventPropUtil.AssertPropsEquals(

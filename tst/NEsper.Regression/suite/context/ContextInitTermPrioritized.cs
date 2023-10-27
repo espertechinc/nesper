@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString".SplitCsv();
+                var fields = "TheString".SplitCsv();
                 var epl = "@Priority(1) create context C1 start @now end SupportBean;\n" +
                           "@name('s0') @Priority(0) context C1 select * from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");

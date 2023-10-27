@@ -57,13 +57,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // create window
                 var path = new RegressionPath();
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') @public create window MyInfra#keepall as select theString as a, intPrimitive as b from SupportBean"
+                    ? "@name('create') @public create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
                     : "@name('create') @public create table MyInfra(a string primary key, b int primary key)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "@name('insert') insert into MyInfra select theString as a, intPrimitive as b from SupportBean";
+                    "@name('insert') insert into MyInfra select TheString as a, IntPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // create consumer
@@ -140,12 +140,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') @public create window MyInfra#keepall as select theString as a, intPrimitive as b from SupportBean"
+                    ? "@name('create') @public create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
                     : "@name('create') @public create table MyInfra(a string primary key, b int primary key)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // create insert into
-                var stmtTextInsertOne = "insert into MyInfra select theString as a, intPrimitive as b from SupportBean";
+                var stmtTextInsertOne = "insert into MyInfra select TheString as a, IntPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // create consumer

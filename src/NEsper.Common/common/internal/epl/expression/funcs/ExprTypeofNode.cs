@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -25,8 +26,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     public class ExprTypeofNode : ExprNodeBase,
         ExprFilterOptimizableNode
     {
-        [NonSerialized] private ExprTypeofNodeForge forge;
-        [NonSerialized] private ExprValidationContext exprValidationContext;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprTypeofNodeForge forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprValidationContext exprValidationContext;
 
         public ExprEvaluator ExprEvaluator {
             get {

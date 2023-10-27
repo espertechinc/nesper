@@ -76,14 +76,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "expression F {v -> v} select sum(intPrimitive) from SupportBean group by theString having count(*) > F(1)";
+                    "expression F {v -> v} select sum(IntPrimitive) from SupportBean group by TheString having count(*) > F(1)";
                 env.Compile(epl);
 
                 var eplInvalid =
-                    "expression F {v -> v} select sum(intPrimitive) from SupportBean group by theString having count(*) > F(longPrimitive)";
+                    "expression F {v -> v} select sum(IntPrimitive) from SupportBean group by TheString having count(*) > F(LongPrimitive)";
                 env.TryInvalidCompile(
                     eplInvalid,
-                    "Non-aggregated property 'longPrimitive' in the HAVING clause must occur in the group-by clause");
+                    "Non-aggregated property 'LongPrimitive' in the HAVING clause must occur in the group-by clause");
             }
         }
 
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 env.AdvanceTime(0);
                 env.CompileDeploy(
-                    "@name('s0') select count(*) as y from SupportBean#time_batch(1 seconds) group by theString having count(*) > 0");
+                    "@name('s0') select count(*) as y from SupportBean#time_batch(1 seconds) group by TheString having count(*) > 0");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@name('s0') select * from SupportBean(intPrimitive = 3)#length(10) as e1 group by theString having count(*) > 2";
+                    "@name('s0') select * from SupportBean(IntPrimitive = 3)#length(10) as e1 group by TheString having count(*) > 2";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A1", 3));
@@ -133,13 +133,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream symbol, sum(price) as mySum " +
+                var epl = "@name('s0') select irstream Symbol, sum(Price) as mySum "+
                           "from SupportBeanString#length(100) as one, " +
                           " SupportMarketDataBean#length(3) as two " +
-                          "where (symbol='DELL' or symbol='IBM' or symbol='GE')" +
-                          "       and one.theString = two.symbol " +
-                          "group by symbol " +
-                          "having sum(price) >= 100";
+"where (Symbol='DELL' or Symbol='IBM' or Symbol='GE')"+
+"       and one.TheString = two.Symbol "+
+"group by Symbol "+
+                          "having sum(Price) >= 100";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
@@ -156,11 +156,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream symbol, sum(price) as mySum " +
+                var epl = "@name('s0') select irstream Symbol, sum(Price) as mySum "+
                           "from SupportMarketDataBean#length(3) " +
-                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
-                          "group by symbol " +
-                          "having sum(price) >= 100";
+"where Symbol='DELL' or Symbol='IBM' or Symbol='GE' "+
+"group by Symbol "+
+                          "having sum(Price) >= 100";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertion(env);
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     Assert.AreEqual(1, newData.Length);
 
                     Assert.AreEqual(newSum, newData[0].Get("mySum"));
-                    Assert.AreEqual(symbol, newData[0].Get("symbol"));
+                    Assert.AreEqual(symbol, newData[0].Get("Symbol"));
 
                     listener.Reset();
                 });
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     Assert.AreEqual(1, oldData.Length);
 
                     Assert.AreEqual(newSum, oldData[0].Get("mySum"));
-                    Assert.AreEqual(symbol, oldData[0].Get("symbol"));
+                    Assert.AreEqual(symbol, oldData[0].Get("Symbol"));
 
                     listener.Reset();
                 });

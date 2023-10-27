@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
@@ -25,7 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     {
         private readonly bool _isNotEquals;
         private readonly bool _isIs;
-        [NonSerialized] private ExprEqualsNodeForge _forge;
+        [JsonIgnore]        [NonSerialized]
+
+        private ExprEqualsNodeForge _forge;
 
         /// <summary>
         /// Ctor.

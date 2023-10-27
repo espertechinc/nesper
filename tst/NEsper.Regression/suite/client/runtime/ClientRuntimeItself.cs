@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             {
                 env.CompileDeploy(
                     "@name('a') select * from SupportBean;\n" +
-                    "@name('b') select * from SupportBean(theString='xxx');\n");
+                    "@name('b') select * from SupportBean(TheString='xxx');\n");
                 var spi = (EPRuntimeSPI)env.Runtime;
 
                 var myTraverse = new MyStatementTraverse();
@@ -185,14 +185,14 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 var result = env.Runtime.FireAndForgetService.ExecuteQuery(compiledFAF);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.GetEnumerator(),
-                    new string[] { "theString" },
+                    new string[] { "TheString" },
                     new object[][] { new object[] { "E1" } });
 
                 var compiledFromEPL = svc.ReflectiveCompile("@name('s0') select * from MyWindow");
                 env.Deploy(compiledFromEPL);
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "theString" },
+                    new string[] { "TheString" },
                     new object[][] { new object[] { "E1" } });
 
                 var module = new Module();
@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.Deploy(compiledFromModule);
                 env.AssertPropsPerRowIterator(
                     "s1",
-                    new string[] { "theString" },
+                    new string[] { "TheString" },
                     new object[][] { new object[] { "E1" } });
 
                 var node = svc.ReflectiveCompileExpression("1*1", null, null);

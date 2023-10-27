@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             WithNoSpecificationBean(execs);
             WithWildcardWithFields(execs);
             WithCreateTableArray(execs);
-            
+
             foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                 WithEventTypeColumnDef(rep, execs);
             }
@@ -261,12 +261,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('create') create window MyWindowNW#keepall as select theString as a, longPrimitive as b, longBoxed as c from SupportBean;\n" +
-                    "insert into MyWindowNW select theString as a, longPrimitive as b, longBoxed as c from SupportBean;\n" +
-                    "insert into MyWindowNW select symbol as a, volume as b, volume as c from SupportMarketDataBean;\n" +
+                    "@name('create') create window MyWindowNW#keepall as select TheString as a, LongPrimitive as b, LongBoxed as c from SupportBean;\n" +
+                    "insert into MyWindowNW select TheString as a, LongPrimitive as b, LongBoxed as c from SupportBean;\n" +
+"insert into MyWindowNW select Symbol as a, Volume as b, Volume as c from SupportMarketDataBean;\n"+
                     "insert into MyWindowNW select key as a, boxed as b, primitive as c from MyMapWithKeyPrimitiveBoxed;\n" +
                     "@name('s1') select a, b, c from MyWindowNW;\n" +
-                    "@name('delete') on SupportMarketDataBean as s0 delete from MyWindowNW as s1 where s0.symbol = s1.a;\n";
+"@name('delete') on SupportMarketDataBean as s0 delete from MyWindowNW as s1 where s0.Symbol = s1.a;\n";
                 env.CompileDeploy(epl).AddListener("create").AddListener("s1").AddListener("delete");
 
                 env.AssertStatement(
@@ -314,15 +314,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('create') create window MyWindowNWNA#keepall as select theString, longPrimitive, longBoxed from SupportBean;\n" +
-                    "insert into MyWindowNWNA select theString, longPrimitive, longBoxed from SupportBean;\n" +
-                    "insert into MyWindowNWNA select symbol as theString, volume as longPrimitive, volume as longBoxed from SupportMarketDataBean;\n" +
-                    "insert into MyWindowNWNA select key as theString, boxed as longPrimitive, primitive as longBoxed from MyMapWithKeyPrimitiveBoxed;\n" +
-                    "@name('select') select theString, longPrimitive, longBoxed from MyWindowNWNA;\n";
+                    "@name('create') create window MyWindowNWNA#keepall as select TheString, LongPrimitive, LongBoxed from SupportBean;\n" +
+                    "insert into MyWindowNWNA select TheString, LongPrimitive, LongBoxed from SupportBean;\n" +
+"insert into MyWindowNWNA select Symbol as TheString, Volume as LongPrimitive, Volume as LongBoxed from SupportMarketDataBean;\n"+
+                    "insert into MyWindowNWNA select key as TheString, boxed as LongPrimitive, primitive as LongBoxed from MyMapWithKeyPrimitiveBoxed;\n" +
+                    "@name('select') select TheString, LongPrimitive, LongBoxed from MyWindowNWNA;\n";
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
                 SendSupportBean(env, "E1", 1L, 10L);
-                var fields = new string[] { "theString", "longPrimitive", "longBoxed" };
+                var fields = new string[] { "TheString", "LongPrimitive", "LongBoxed" };
                 env.AssertPropsNew("create", fields, new object[] { "E1", 1L, 10L });
                 env.AssertPropsNew("select", fields, new object[] { "E1", 1L, 10L });
 
@@ -343,14 +343,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('create') create window MyWindowCA#keepall as select '' as theString, 0L as longPrimitive, 0L as longBoxed from MyMapWithKeyPrimitiveBoxed;\n" +
-                    "insert into MyWindowCA select theString, longPrimitive, longBoxed from SupportBean;\n" +
-                    "insert into MyWindowCA select symbol as theString, volume as longPrimitive, volume as longBoxed from SupportMarketDataBean;\n" +
-                    "@name('select') select theString, longPrimitive, longBoxed from MyWindowCA;\n";
+                    "@name('create') create window MyWindowCA#keepall as select '' as TheString, 0L as LongPrimitive, 0L as LongBoxed from MyMapWithKeyPrimitiveBoxed;\n" +
+                    "insert into MyWindowCA select TheString, LongPrimitive, LongBoxed from SupportBean;\n" +
+"insert into MyWindowCA select Symbol as TheString, Volume as LongPrimitive, Volume as LongBoxed from SupportMarketDataBean;\n"+
+                    "@name('select') select TheString, LongPrimitive, LongBoxed from MyWindowCA;\n";
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
                 SendSupportBean(env, "E1", 1L, 10L);
-                var fields = new string[] { "theString", "longPrimitive", "longBoxed" };
+                var fields = new string[] { "TheString", "LongPrimitive", "LongBoxed" };
                 env.AssertPropsNew("create", fields, new object[] { "E1", 1L, 10L });
                 env.AssertPropsNew("select", fields, new object[] { "E1", 1L, 10L });
 
@@ -437,7 +437,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create schema SecurityData (name String, roles String[]);\n" +
-                          "create window SecurityEvent#time(30 sec) (ipAddress string, userId String, secData SecurityData, historySecData SecurityData[]);\n" +
+                          "create window SecurityEvent#time(30 sec) (ipAddress string, UserId String, secData SecurityData, historySecData SecurityData[]);\n" +
                           "@name('create') create window MyWindowCTA#keepall (myvalue string[]);\n" +
                           "insert into MyWindowCTA select {'a','b'} as myvalue from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("create");
@@ -460,7 +460,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var epl =
                     "@name('create') create window MyWindowCTS#keepall (stringValOne varchar, stringValTwo string, intVal int, longVal long);\n" +
-                    "insert into MyWindowCTS select theString as stringValOne, theString as stringValTwo, cast(longPrimitive, int) as intVal, longBoxed as longVal from SupportBean;\n" +
+                    "insert into MyWindowCTS select TheString as stringValOne, TheString as stringValTwo, cast(LongPrimitive, int) as intVal, LongBoxed as longVal from SupportBean;\n" +
                     "@name('select') select stringValOne, stringValTwo, intVal, longVal from MyWindowCTS;\n";
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
@@ -502,11 +502,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var epl = "@name('create') create window MyWindowWNF#keepall select * from SupportBean_A;\n" +
                           "insert into MyWindowWNF select * from SupportBean_A;" +
-                          "@name('select') select id from MyWindowWNF;\n";
+                          "@name('select') select Id from MyWindowWNF;\n";
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
                 env.SendEventBean(new SupportBean_A("E1"));
-                var fields = new string[] { "id" };
+                var fields = new string[] { "Id" };
                 env.AssertPropsNew("create", fields, new object[] { "E1" });
                 env.AssertPropsNew("select", fields, new object[] { "E1" });
 
@@ -544,11 +544,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl = "@name('create') create window MyWindowWI#keepall as select * from SupportBeanAtoFBase;\n" +
                           "insert into MyWindowWI select * from SupportBean_A;\n" +
                           "insert into MyWindowWI select * from SupportBean_B;\n" +
-                          "@name('select') select id from MyWindowWI;\n";
+                          "@name('select') select Id from MyWindowWI;\n";
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
                 env.SendEventBean(new SupportBean_A("E1"));
-                var fields = new string[] { "id" };
+                var fields = new string[] { "Id" };
                 env.AssertPropsNew("create", fields, new object[] { "E1" });
                 env.AssertPropsNew("select", fields, new object[] { "E1" });
 
@@ -566,11 +566,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var epl = "@name('create') create window MyWindowNSB#keepall as SupportBean_A;\n" +
                           "insert into MyWindowNSB select * from SupportBean_A;\n" +
-                          "@name('select') select id from MyWindowNSB;\n";
+                          "@name('select') select Id from MyWindowNSB;\n";
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
                 env.SendEventBean(new SupportBean_A("E1"));
-                var fields = new string[] { "id" };
+                var fields = new string[] { "Id" };
                 env.AssertPropsNew("create", fields, new object[] { "E1" });
                 env.AssertPropsNew("select", fields, new object[] { "E1" });
 
@@ -583,13 +583,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('create') create window MyWindowWWF#keepall as select *, id as myid from SupportBean_A;\n" +
-                    "insert into MyWindowWWF select *, id || 'A' as myid from SupportBean_A;\n" +
-                    "@name('select') select id, myid from MyWindowWWF;\n";
+                    "@name('create') create window MyWindowWWF#keepall as select *, Id as myid from SupportBean_A;\n" +
+                    "insert into MyWindowWWF select *, Id || 'A' as myid from SupportBean_A;\n" +
+                    "@name('select') select Id, myid from MyWindowWWF;\n";
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
                 env.SendEventBean(new SupportBean_A("E1"));
-                var fields = new string[] { "id", "myid" };
+                var fields = new string[] { "Id", "myid" };
                 env.AssertPropsNew("create", fields, new object[] { "E1", "E1A" });
                 env.AssertPropsNew("select", fields, new object[] { "E1", "E1A" });
 

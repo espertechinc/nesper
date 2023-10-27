@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.compiler;
@@ -38,8 +39,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         private readonly ImportSingleRowDesc config;
 
         private ExprPlugInSingleRowNodeForge forge;
-        [NonSerialized] private StatementCompileTimeServices compileTimeServices;
-        [NonSerialized] private StatementRawInfo statementRawInfo;
+        [JsonIgnore]
+        [NonSerialized]
+        private StatementCompileTimeServices compileTimeServices;
+        [JsonIgnore]
+        [NonSerialized]
+        private StatementRawInfo statementRawInfo;
 
 
         public ExprPlugInSingleRowNode(

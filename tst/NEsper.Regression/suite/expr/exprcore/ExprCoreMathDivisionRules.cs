@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select intPrimitive/intBoxed as result from SupportBean";
+                var epl = "@name('s0') select IntPrimitive/IntBoxed as result from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertStmtType("s0", "result", typeof(int?));

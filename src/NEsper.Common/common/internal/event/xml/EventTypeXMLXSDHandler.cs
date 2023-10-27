@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 {
     public interface EventTypeXMLXSDHandler
     {
-        const string HANDLER_IMPL = "com.espertech.esper.common.@internal.xmlxsd.core.EventTypeXMLXSDHandlerImpl";
+        const string HANDLER_IMPL = "com.espertech.esper.common.internal.xmlxsd.core.EventTypeXMLXSDHandlerImpl";
 
         //XmlQualifiedName SimpleTypeToQName(short type);
 

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.client;
@@ -812,7 +813,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var stmt =
-                    "@name('s0') select SupportStaticMethodLib.arrayLength(a) as length, java.lang.reflect.Array.getLength(a) as l2 from pattern [[1:] a=SupportBean_A until SupportBean_B]";
+                    $"@name('s0') select " +
+                    $" SupportStaticMethodLib.ArrayLength(a) as length, " +
+                    $" {typeof(Arrays).FullName}.GetLength(a) as l2 " +
+                    $" from pattern [[1:] a=SupportBean_A until SupportBean_B]";
 
                 env.CompileDeploy(stmt);
                 env.AddListener("s0");

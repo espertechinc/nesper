@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
@@ -38,9 +39,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         private readonly bool audit;
         private readonly string statementName;
 
-        [NonSerialized] private ExprEvaluator innerEvaluatorLazy;
-        [NonSerialized] private ExprEnumerationEval innerEvaluatorLambdaLazy;
-        [NonSerialized] private ExprTypableReturnEval innerEvaluatorTypableLazy;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEvaluator innerEvaluatorLazy;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEnumerationEval innerEvaluatorLambdaLazy;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprTypableReturnEval innerEvaluatorTypableLazy;
 
         public abstract EventBean[] GetEventsPerStreamRewritten(
             EventBean[] eventsPerStream,

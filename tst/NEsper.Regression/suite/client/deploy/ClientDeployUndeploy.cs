@@ -147,9 +147,9 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     Assert.Fail();
                 }
                 catch (EPUndeployNotFoundException ex) {
-                    SupportMessageAssertUtil.AssertMessage(ex.Message, "Deployment id 'nofound' cannot be found");
+                    SupportMessageAssertUtil.AssertMessage(ex.Message, "Deployment Id 'nofound' cannot be found");
                 }
-                catch (EPUndeployException t) {
+                catch (EPUndeployException) {
                     Assert.Fail();
                 }
             }
@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('ctx') @public create context MyContext partition by theString from SupportBean",
+                    "@name('ctx') @public create context MyContext partition by TheString from SupportBean",
                     path);
 
                 var text = "Context 'MyContext'";
@@ -412,14 +412,14 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     env,
                     path,
                     "index",
-                    "@name('A') select * from SupportBean as sb, MyTable as mt where sb.intPrimitive = mt.i1",
+                    "@name('A') select * from SupportBean as sb, MyTable as mt where sb.IntPrimitive = mt.i1",
                     "A",
                     text);
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "index",
-                    "@name('B') select * from SupportBean as sb where exists (select * from MyTable as mt where sb.intPrimitive = mt.i1)",
+                    "@name('B') select * from SupportBean as sb where exists (select * from MyTable as mt where sb.IntPrimitive = mt.i1)",
                     "B",
                     text);
 
@@ -428,14 +428,14 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
                 // Named window
                 env.CompileDeploy("@name('infra') @public create window MyWindow#keepall as SupportBean", path);
-                env.CompileDeploy("@name('index') @public create index MyIndexOnNW on MyWindow(intPrimitive)", path);
+                env.CompileDeploy("@name('index') @public create index MyIndexOnNW on MyWindow(IntPrimitive)", path);
 
                 text = "Index 'MyIndexOnNW'";
                 TryDeployInvalidUndeploy(
                     env,
                     path,
                     "index",
-                    "@name('A') on SupportBean_S0 as s0 delete from MyWindow as mw where mw.intPrimitive = s0.id",
+                    "@name('A') on SupportBean_S0 as s0 delete from MyWindow as mw where mw.IntPrimitive = s0.Id",
                     "A",
                     text);
 

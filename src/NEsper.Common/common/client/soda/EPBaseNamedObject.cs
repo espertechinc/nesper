@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Base class for named runtime objects such as views, patterns guards and observers.
     /// </summary>
-    [Serializable]
     public abstract class EPBaseNamedObject
     {
         private string @namespace;

@@ -260,12 +260,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var epl = "create schema SchemaA (account string, foo " +
                           typeof(MyLocalValueObject).Name +
                           ");\n" +
-                          "create schema SchemaB (symbol string) copyfrom SchemaA;\n" +
+"create schema SchemaB (Symbol string) copyfrom SchemaA;\n"+
                           "create schema SchemaC () copyfrom SchemaB;\n" +
                           "create schema SchemaD () copyfrom SchemaB;\n" +
                           "insert into SchemaD select account, " +
                           typeof(EPLOtherCreateSchema).Name +
-                          ".getLocalValueObject() as foo, symbol from SchemaC;\n";
+".getLocalValueObject() as foo, Symbol from SchemaC;\n";
                 env.CompileDeploy(epl).UndeployAll();
             }
         }
@@ -296,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
                 catch (Exception ex) {
                     Assert.AreEqual(
-                        "Test failed due to exception: Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consider renaming either of these types",
+                        "Test failed due to exception: Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 Id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consider renaming either of these types",
                         ex.Message);
                 }
             }
@@ -313,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var epl = "@name('schema') create schema SimpleSchema(p0 string, p1 int);" +
                           "@name('s0') select * from SimpleSchema;\n" +
-                          "insert into SimpleSchema select theString as p0, intPrimitive as p1 from SupportBean;\n";
+                          "insert into SimpleSchema select TheString as p0, IntPrimitive as p1 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "schema",
@@ -453,7 +453,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         "@name('s0') insert into MySchema select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent")
                     .AddListener("s0");
                 env.SendEventBean(theEvent);
-                env.AssertPropsNew("s0", "bean.theString,beanarray[0].id".Split(","), new object[] { "E1", 2 });
+                env.AssertPropsNew("s0", "bean.TheString,beanarray[0].Id".Split(","), new object[] { "E1", 2 });
                 env.UndeployModuleContaining("s0");
 
                 // test named window
@@ -479,12 +479,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "@name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent",
                     path);
                 env.SendEventBean(theEvent);
-                env.AssertPropsNew("window", "bean.theString,beanarray[0].id".Split(","), new object[] { "E1", 2 });
+                env.AssertPropsNew("window", "bean.TheString,beanarray[0].Id".Split(","), new object[] { "E1", 2 });
                 env.UndeployModuleContaining("windowInsertOne");
 
                 // insert pattern to named window
                 env.CompileDeploy(
-                    "@name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from pattern [sb=SupportBean -> s0Arr=SupportBean_S0 until SupportBean_S0(id=0)]",
+                    "@name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from pattern [sb=SupportBean -> s0Arr=SupportBean_S0 until SupportBean_S0(Id=0)]",
                     path);
                 env.SendEventBean(new SupportBean("E2", 2));
                 env.SendEventBean(new SupportBean_S0(10, "S0_1"));
@@ -492,7 +492,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean_S0(0, "S0_3"));
                 env.AssertPropsNew(
                     "window",
-                    "bean.theString,beanarray[0].id,beanarray[1].id".Split(","),
+                    "bean.TheString,beanarray[0].Id,beanarray[1].Id".Split(","),
                     new object[] { "E2", 10, 20 });
                 env.UndeployModuleContaining("windowInsertOne");
 
@@ -501,7 +501,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         "@name('s0') insert into MyConfiguredMap select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent")
                     .AddListener("s0");
                 env.SendEventBean(theEvent);
-                env.AssertPropsNew("s0", "bean.theString,beanarray[0].id".Split(","), new object[] { "E1", 2 });
+                env.AssertPropsNew("s0", "bean.TheString,beanarray[0].Id".Split(","), new object[] { "E1", 2 });
 
                 env.UndeployAll();
             }
@@ -779,9 +779,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 Schema schema = SchemaBuilder.Union(TypeBuilder.IntType(), TypeBuilder.StringType());
-                var epl = "@AvroSchemaField(name='carId',schema='" +
+                var epl = "@AvroSchemaField(name='CarId',schema='" +
                           schema.ToString() +
-                          "') create avro schema MyEvent(carId object)";
+                          "') create avro schema MyEvent(CarId object)";
                 env.CompileDeploy(epl);
                 env.UndeployAll();
             }
@@ -846,11 +846,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     statement => Assert.AreEqual(typeof(SupportBean_ST0), statement.EventType.UnderlyingType));
 
                 env.SendEventBean(new SupportBean_ST0("E1", 2), "SupportBeanOne");
-                env.AssertPropsNew("s0", "id,p00".Split(","), new object[] { "E1", 2 });
+                env.AssertPropsNew("s0", "Id,P00".Split(","), new object[] { "E1", 2 });
                 env.AssertListenerNotInvoked("s1");
 
                 env.SendEventBean(new SupportBean_ST0("E2", 3), "SupportBeanTwo");
-                env.AssertPropsNew("s1", "id,p00".Split(","), new object[] { "E2", 3 });
+                env.AssertPropsNew("s1", "Id,P00".Split(","), new object[] { "E2", 3 });
                 env.AssertListenerNotInvoked("s0");
 
                 // assert type information

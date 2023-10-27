@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(currentMinMaxSerde, "write", RowDotMember(row, currentMinMax), output, unitKey, writer)
+                .ExprDotMethod(currentMinMaxSerde, "Write", RowDotMember(row, currentMinMax), output, unitKey, writer)
                 .ExprDotMethod(
                     currentMinMaxBeanSerde,
                     "write",
@@ -151,10 +151,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             method.Block
                 .AssignRef(
                     RowDotMember(row, currentMinMax),
-                    Cast(typeof(object), ExprDotMethod(currentMinMaxSerde, "read", input, unitKey)))
+                    Cast(typeof(object), ExprDotMethod(currentMinMaxSerde, "Read", input, unitKey)))
                 .AssignRef(
                     RowDotMember(row, currentMinMaxBean),
-                    Cast(typeof(EventBean), ExprDotMethod(currentMinMaxBeanSerde, "read", input, unitKey)));
+                    Cast(typeof(EventBean), ExprDotMethod(currentMinMaxBeanSerde, "Read", input, unitKey)));
         }
 
         public override void CollectFabricType(FabricTypeCollector collector)
@@ -231,7 +231,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .AssignRef(currentMinMax, Ref("comparable"))
                 .AssignRef(currentMinMaxBean, Ref("theEvent"))
                 .IfElse()
-                .DeclareVar<int>("compareResult", ExprDotMethod(comparator, "compare", currentMinMax, Ref("comparable")))
+                .DeclareVar<int>("compareResult", ExprDotMethod(comparator, "Compare", currentMinMax, Ref("comparable")))
                 .IfCondition(Relational(Ref("compareResult"), forge.Spec.IsMax ? LT : GT, Constant(0)))
                 .AssignRef(currentMinMax, Ref("comparable"))
                 .AssignRef(currentMinMaxBean, Ref("theEvent"));

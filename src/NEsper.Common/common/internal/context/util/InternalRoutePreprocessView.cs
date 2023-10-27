@@ -75,10 +75,10 @@ namespace com.espertech.esper.common.@internal.context.util
                 if (StatementResultService.IsMakeNatural) {
                     var natural = new NaturalEventBean(_eventType, new[] { newEvent.Underlying }, newEvent);
                     var naturalOld = new NaturalEventBean(_eventType, new[] { oldEvent.Underlying }, oldEvent);
-                    child.Update(new[] { natural }, new[] { naturalOld });
+                    Child.Update(new[] { natural }, new[] { naturalOld });
                 }
                 else {
-                    child.Update(new[] { newEvent }, new[] { oldEvent });
+                    Child.Update(new[] { newEvent }, new[] { oldEvent });
                 }
             }
             catch (Exception ex) {

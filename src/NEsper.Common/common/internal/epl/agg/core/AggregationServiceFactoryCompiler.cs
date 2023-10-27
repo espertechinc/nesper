@@ -32,30 +32,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     public class AggregationServiceFactoryCompiler
     {
         internal static readonly IList<CodegenNamedParam> MAKESERVICEPARAMS = CodegenNamedParam.From(
-            typeof(ExprEvaluatorContext),
-            NAME_EXPREVALCONTEXT,
-            typeof(int?),
-            NAME_STREAMNUM,
-            typeof(int?),
-            NAME_SUBQUERYNUMBER,
-            typeof(int[]),
-            NAME_GROUPID);
+            typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT,
+            typeof(int?), NAME_STREAMNUM,
+            typeof(int?), NAME_SUBQUERYNUMBER,
+            typeof(int[]), NAME_GROUPID);
 
         internal static readonly IList<CodegenNamedParam> UPDPARAMS = CodegenNamedParam.From(
-            typeof(EventBean[]),
-            NAME_EPS,
-            typeof(ExprEvaluatorContext),
-            NAME_EXPREVALCONTEXT);
+            typeof(EventBean[]), NAME_EPS,
+            typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
 
         internal static readonly IList<CodegenNamedParam> GETPARAMS = CodegenNamedParam.From(
-            typeof(int),
-            NAME_VCOL,
-            typeof(EventBean[]),
-            NAME_EPS,
-            typeof(bool),
-            NAME_ISNEWDATA,
-            typeof(ExprEvaluatorContext),
-            NAME_EXPREVALCONTEXT);
+            typeof(int), NAME_VCOL,
+            typeof(EventBean[]), NAME_EPS,
+            typeof(bool), NAME_ISNEWDATA,
+            typeof(ExprEvaluatorContext), NAME_EXPREVALCONTEXT);
 
         private static readonly CodegenExpressionRef STATEMENT_FIELDS_REF = Ref("statementFields");
         private static readonly CodegenExpressionRef STATEMENT_FIELDS_FIELD_REF = Ref("this.statementFields");
@@ -78,13 +68,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
                 IList<CodegenInnerClass> innerClasses = new List<CodegenInnerClass>();
 
-                Consumer<AggregationRowCtorDesc> rowCtorDescConsumer =
-                    rowCtorDesc => generator.RowCtorCodegen(rowCtorDesc);
                 var assignments = MakeRow(
                     false,
                     gen.RowLevelDesc,
                     gen.GetType(),
-                    rowCtorDescConsumer,
+                    rowCtorDesc => generator.RowCtorCodegen(rowCtorDesc),
                     classScope,
                     innerClasses,
                     classNames);
@@ -97,20 +85,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     providerClassName,
                     classNames);
 
-                BiConsumer<CodegenMethod, int> readConsumer =
-                (
-                    method,
-                    level) => generator.RowReadMethodCodegen(method, level);
-                BiConsumer<CodegenMethod, int> writeConsumer =
-                (
-                    method,
-                    level) => generator.RowWriteMethodCodegen(method, level);
-                MakeRowSerde(
+                MakeRowSerde<AggregationRow>(
                     isTargetHA,
                     assignments,
                     gen.GetType(),
-                    readConsumer,
-                    writeConsumer,
+                    (method, level) => generator.RowReadMethodCodegen(method, level),
+                    (method, level) => generator.RowWriteMethodCodegen(method, level),
                     innerClasses,
                     classScope,
                     providerClassName,
@@ -157,20 +137,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
             MakeRowFactory(rowLevelDesc, forgeClass, classScope, innerClasses, providerClassName, classNames);
 
-            BiConsumer<CodegenMethod, int> readConsumer = (
-                method,
-                level) => {
-            };
-            BiConsumer<CodegenMethod, int> writeConsumer = (
-                method,
-                level) => {
-            };
-            MakeRowSerde(
+            MakeRowSerde<AggregationRow>(
                 isTargetHA,
                 assignments,
                 forgeClass,
-                readConsumer,
-                writeConsumer,
+                (method, level) => { },
+                (method, level) => { },
                 innerClasses,
                 classScope,
                 providerClassName,
@@ -260,7 +232,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 classNameFactory,
                 typeof(AggregationRowFactory),
                 ctor,
-                EmptyList<CodegenTypedParam>.Instance, 
+                members,
                 methods,
                 properties);
             innerClasses.Add(innerClass);
@@ -590,7 +562,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 classNames.ServiceFactory,
                 typeof(AggregationServiceFactory),
                 ctor,
-                EmptyList<CodegenTypedParam>.Instance,
+                members,
                 methods,
                 properties);
             

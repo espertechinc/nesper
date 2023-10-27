@@ -10,6 +10,7 @@ using System;
 using System.ComponentModel;
 using System.Data.Common;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.db.drivers;
 using com.espertech.esper.compat;
@@ -25,6 +26,7 @@ namespace com.espertech.esper.epl.db.drivers
     [Serializable]
     public class DbDriverMySQL : BaseDbDriver
     {
+        [JsonIgnore]
         [NonSerialized]
         private readonly DbProviderFactory _dbProviderFactory;
 

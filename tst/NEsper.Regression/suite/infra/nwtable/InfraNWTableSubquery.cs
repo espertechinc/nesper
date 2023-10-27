@@ -93,12 +93,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // create infra
                 var stmtTextCreate = namedWindow
                     ? "@name('Create') @public create window MyInfra.win:keepall() as SupportBean"
-                    : "@name('Create') @public create table MyInfra(theString string primary key, intPrimitive int)";
+                    : "@name('Create') @public create table MyInfra(TheString string primary key, IntPrimitive int)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("Create");
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "@name('Insert') insert into MyInfra select theString, intPrimitive from SupportBean";
+                    "@name('Insert') insert into MyInfra select TheString, IntPrimitive from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 env.SendEventBean(new SupportBean("A1", 1));
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create subquery
                 var stmtSubquery =
-                    "@name('Subq') select (select intPrimitive from MyInfra where theString = s0.p00) as c0 from SupportBean_S0 as s0";
+                    "@name('Subq') select (select IntPrimitive from MyInfra where TheString = s0.P00) as c0 from SupportBean_S0 as s0";
                 env.CompileDeploy(stmtSubquery, path).AddListener("Subq");
 
                 env.Milestone(0);
@@ -155,22 +155,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') @public create window MyInfraUCS#keepall as select theString as a, longPrimitive as b from SupportBean"
+                    ? "@name('create') @public create window MyInfraUCS#keepall as select TheString as a, LongPrimitive as b from SupportBean"
                     : "@name('create') @public create table MyInfraUCS(a string primary key, b long)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "insert into MyInfraUCS select theString as a, longPrimitive as b from SupportBean";
+                    "insert into MyInfraUCS select TheString as a, LongPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // create consumer
                 var stmtTextSelectOne =
-                    "select irstream (select sum(b) from MyInfraUCS) as value, symbol from SupportMarketDataBean";
+"select irstream (select sum(b) from MyInfraUCS) as value, Symbol from SupportMarketDataBean";
                 env.CompileDeploy("@name('selectOne')" + stmtTextSelectOne, path).AddListener("selectOne");
 
                 SendMarketBean(env, "M1");
-                var fieldsStmt = new string[] { "value", "symbol" };
+                var fieldsStmt = new string[] { "value", "Symbol"};
                 env.AssertPropsNew("selectOne", fieldsStmt, new object[] { null, "M1" });
 
                 env.Milestone(0);
@@ -220,17 +220,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
                     ? "@public create window MyInfraIS#keepall as SupportBean"
-                    : "@public create table MyInfraIS(theString string)";
+                    : "@public create table MyInfraIS(TheString string)";
                 env.CompileDeploy(eplCreate, path);
 
                 try {
-                    env.CompileWCheckedEx("select (select theString from MyInfraIS#lastevent) from MyInfraIS", path);
+                    env.CompileWCheckedEx("select (select TheString from MyInfraIS#lastevent) from MyInfraIS", path);
                     Assert.Fail();
                 }
                 catch (EPCompileException ex) {
                     if (namedWindow) {
                         Assert.AreEqual(
-                            "Failed to plan subquery number 1 querying MyInfraIS: Consuming statements to a named window cannot declare a data window view onto the named window [select (select theString from MyInfraIS#lastevent) from MyInfraIS]",
+                            "Failed to plan subquery number 1 querying MyInfraIS: Consuming statements to a named window cannot declare a data window view onto the named window [select (select TheString from MyInfraIS#lastevent) from MyInfraIS]",
                             ex.Message);
                     }
                     else {
@@ -272,17 +272,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') @public create window MyInfra#keepall as select theString as key, intBoxed as value from SupportBean"
+                    ? "@name('create') @public create window MyInfra#keepall as select TheString as key, IntBoxed as value from SupportBean"
                     : "@name('create') @public create table MyInfra(key string primary key, value int primary key)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // delete
-                var stmtTextDelete = "@name('delete') on SupportBean delete from MyInfra where key = theString";
+                var stmtTextDelete = "@name('delete') on SupportBean delete from MyInfra where key = TheString";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "insert into MyInfra select theString as key, intBoxed as value from SupportBean as s0";
+                    "insert into MyInfra select TheString as key, IntBoxed as value from SupportBean as s0";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 SendSupportBean(env, "E1", 1);
@@ -354,14 +354,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') @public create window MyInfraSSS#keepall as select theString as key, intBoxed as value from SupportBean"
+                    ? "@name('create') @public create window MyInfraSSS#keepall as select TheString as key, IntBoxed as value from SupportBean"
                     : "@name('create') @public create table MyInfraSSS (key string primary key, value int)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("create");
 
                 // create insert into (not does insert if key already exists)
                 var stmtTextInsertOne =
-                    "insert into MyInfraSSS select theString as key, intBoxed as value from SupportBean as s0" +
-                    " where not exists (select * from MyInfraSSS as win where win.key = s0.theString)";
+                    "insert into MyInfraSSS select TheString as key, IntBoxed as value from SupportBean as s0" +
+                    " where not exists (select * from MyInfraSSS as win where win.key = s0.TheString)";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 SendSupportBean(env, "E1", 1);
@@ -411,7 +411,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 // Add delete
-                var stmtTextDelete = "@name('delete') on SupportBean_A delete from MyInfraSSS where key = id";
+                var stmtTextDelete = "@name('delete') on SupportBean_A delete from MyInfraSSS where key = Id";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 // delete E2

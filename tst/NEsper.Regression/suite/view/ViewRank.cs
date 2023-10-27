@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var text =
                     "@name('s0') select prevwindow(ev) as win, prev(0, ev) as prev0, prev(1, ev) as prev1, prev(2, ev) as prev2, prev(3, ev) as prev3, prev(4, ev) as prev4 " +
-                    "from SupportBean#rank(theString, 3, intPrimitive) as ev";
+                    "from SupportBean#rank(TheString, 3, IntPrimitive) as ev";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeEvent("E1", 100, 0L));
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var epl =
                     "@name('s0') select prevwindow(ev) as win, prev(0, ev) as prev0, prev(1, ev) as prev1, prev(2, ev) as prev2, prev(3, ev) as prev3, prev(4, ev) as prev4 " +
-                    "from SupportBean#rank(theString, 3, intPrimitive) as ev";
+                    "from SupportBean#rank(TheString, 3, IntPrimitive) as ev";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(MakeEvent("E1", 100, 0L));
@@ -167,10 +167,10 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.UndeployAll();
 
                 epl =
-                    "@name('s0') select irstream * from SupportBean#groupwin(theString)#rank(intPrimitive, 2, doublePrimitive) as ev";
+                    "@name('s0') select irstream * from SupportBean#groupwin(TheString)#rank(IntPrimitive, 2, DoublePrimitive) as ev";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
-                var fields = "theString,intPrimitive,longPrimitive,doublePrimitive".SplitCsv();
+                var fields = "TheString,IntPrimitive,LongPrimitive,DoublePrimitive".SplitCsv();
                 env.SendEventBean(MakeEvent("E1", 100, 0L, 1d));
                 env.AssertPropsNew("s0", fields, new object[] { "E1", 100, 0L, 1d });
                 env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "E1", 100, 0L, 1d } });
@@ -224,9 +224,9 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,intPrimitive,longPrimitive,doublePrimitive".SplitCsv();
+                var fields = "TheString,IntPrimitive,LongPrimitive,DoublePrimitive".SplitCsv();
                 var epl =
-                    "@name('s0') select irstream * from SupportBean#rank(theString, intPrimitive, 3, longPrimitive, doublePrimitive)";
+                    "@name('s0') select irstream * from SupportBean#rank(TheString, IntPrimitive, 3, LongPrimitive, DoublePrimitive)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(MakeEvent("E1", 100, 1L, 10d));
@@ -320,12 +320,12 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,intPrimitive,longPrimitive".SplitCsv();
+                var fields = "TheString,IntPrimitive,LongPrimitive".SplitCsv();
                 var epl =
-                    "@name('create') create window MyWindow#rank(theString, 3, intPrimitive asc) as SupportBean;\n" +
+                    "@name('create') create window MyWindow#rank(TheString, 3, IntPrimitive asc) as SupportBean;\n" +
                     "insert into MyWindow select * from SupportBean;\n" +
                     "@name('s0') select irstream * from MyWindow;\n" +
-                    "on SupportBean_A delete from MyWindow mw where theString = id;\n";
+                    "on SupportBean_A delete from MyWindow mw where TheString = Id;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(MakeEvent("E1", 10, 0L));
@@ -390,8 +390,8 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,intPrimitive,longPrimitive".SplitCsv();
-                var epl = "@name('s0') select irstream * from SupportBean.ext:rank(theString, 3, intPrimitive)";
+                var fields = "TheString,IntPrimitive,LongPrimitive".SplitCsv();
+                var epl = "@name('s0') select irstream * from SupportBean.ext:rank(TheString, 3, IntPrimitive)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.AssertPropsPerRowIterator("s0", fields, null);
@@ -489,8 +489,8 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,intPrimitive,longPrimitive".SplitCsv();
-                var epl = "@name('s0') select irstream * from SupportBean#rank(theString, 4, intPrimitive desc)";
+                var fields = "TheString,IntPrimitive,LongPrimitive".SplitCsv();
+                var epl = "@name('s0') select irstream * from SupportBean#rank(TheString, 4, IntPrimitive desc)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(MakeEvent("E1", 10, 0L));
@@ -685,28 +685,28 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile(
-                    "select * from SupportBean#rank(1, intPrimitive desc)",
-                    "Failed to validate data window declaration: rank view requires a list of expressions providing unique keys, a numeric size parameter and a list of expressions providing sort keys [select * from SupportBean#rank(1, intPrimitive desc)]");
+                    "select * from SupportBean#rank(1, IntPrimitive desc)",
+                    "Failed to validate data window declaration: rank view requires a list of expressions providing unique keys, a numeric size parameter and a list of expressions providing sort keys [select * from SupportBean#rank(1, IntPrimitive desc)]");
 
                 env.TryInvalidCompile(
-                    "select * from SupportBean#rank(1, intPrimitive, theString desc)",
-                    "Failed to validate data window declaration: Failed to find unique value expressions that are expected to occur before the numeric size parameter [select * from SupportBean#rank(1, intPrimitive, theString desc)]");
+                    "select * from SupportBean#rank(1, IntPrimitive, TheString desc)",
+                    "Failed to validate data window declaration: Failed to find unique value expressions that are expected to occur before the numeric size parameter [select * from SupportBean#rank(1, IntPrimitive, TheString desc)]");
 
                 env.TryInvalidCompile(
-                    "select * from SupportBean#rank(theString, intPrimitive, 1)",
-                    "Failed to validate data window declaration: Failed to find sort key expressions after the numeric size parameter [select * from SupportBean#rank(theString, intPrimitive, 1)]");
+                    "select * from SupportBean#rank(TheString, IntPrimitive, 1)",
+                    "Failed to validate data window declaration: Failed to find sort key expressions after the numeric size parameter [select * from SupportBean#rank(TheString, IntPrimitive, 1)]");
 
                 env.TryInvalidCompile(
-                    "select * from SupportBean#rank(theString, intPrimitive, theString desc)",
-                    "Failed to validate data window declaration: Failed to find constant value for the numeric size parameter [select * from SupportBean#rank(theString, intPrimitive, theString desc)]");
+                    "select * from SupportBean#rank(TheString, IntPrimitive, TheString desc)",
+                    "Failed to validate data window declaration: Failed to find constant value for the numeric size parameter [select * from SupportBean#rank(TheString, IntPrimitive, TheString desc)]");
 
                 env.TryInvalidCompile(
-                    "select * from SupportBean#rank(theString, 1, 1, intPrimitive, theString desc)",
-                    "Failed to validate data window declaration: Invalid view parameter expression 2 for rank view, the expression returns a constant result value, are you sure? [select * from SupportBean#rank(theString, 1, 1, intPrimitive, theString desc)]");
+                    "select * from SupportBean#rank(TheString, 1, 1, IntPrimitive, TheString desc)",
+                    "Failed to validate data window declaration: Invalid view parameter expression 2 for rank view, the expression returns a constant result value, are you sure? [select * from SupportBean#rank(TheString, 1, 1, IntPrimitive, TheString desc)]");
 
                 env.TryInvalidCompile(
-                    "select * from SupportBean#rank(theString, intPrimitive, 1, intPrimitive, 1, theString desc)",
-                    "Failed to validate data window declaration: Invalid view parameter expression 4 for rank view, the expression returns a constant result value, are you sure? [select * from SupportBean#rank(theString, intPrimitive, 1, intPrimitive, 1, theString desc)]");
+                    "select * from SupportBean#rank(TheString, IntPrimitive, 1, IntPrimitive, 1, TheString desc)",
+                    "Failed to validate data window declaration: Invalid view parameter expression 4 for rank view, the expression returns a constant result value, are you sure? [select * from SupportBean#rank(TheString, IntPrimitive, 1, IntPrimitive, 1, TheString desc)]");
             }
         }
 
@@ -714,13 +714,13 @@ namespace com.espertech.esper.regressionlib.suite.view
             RegressionEnvironment env,
             object[][] expected)
         {
-            var fields = "theString,intPrimitive,longPrimitive".SplitCsv();
+            var fields = "TheString,IntPrimitive,LongPrimitive".SplitCsv();
             env.AssertEventNew(
                 "s0",
                 @event => {
                     SupportBeanAssertionUtil.AssertPropsPerRow((object[])@event.Get("win"), fields, expected);
                     for (var i = 0; i < 5; i++) {
-                        var prevValue = @event.Get("prev" + i);
+                        var prevValue = @event.Get($"prev{i}");
                         if (prevValue == null && expected.Length <= i) {
                             continue;
                         }

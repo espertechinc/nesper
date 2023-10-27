@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
                 .DeclareVar<EventBean>("substituteEvent",
                     ExprDotMethod(
                         future,
-                        "getSubstituteEvent",
+                        "GetSubstituteEvent",
                         Ref("originalEvent"),
                         exprSymbol.GetAddIsNewData(method),
                         Constant(constantIndexNumber),

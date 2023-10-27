@@ -1,13 +1,17 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 
+using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.util.serde
 {
-    public class ObjectSerializer : Serializer
+    public partial class ObjectSerializer : Serializer
     {
         private JsonSerializerOptions _options;
         private TypeResolver _typeResolver;
@@ -30,6 +34,16 @@ namespace com.espertech.esper.common.@internal.util.serde
         {
             _typeResolver = typeResolver;
             _options = new JsonSerializerOptions() {
+                
+                TypeInfoResolver = new DefaultJsonTypeInfoResolver(),
+                UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement,
+                Converters = {
+                    new JsonConverterImport(),
+                    new JsonConverterImportBuiltin(),
+                    new JsonConverterDictionaryWithTypeInfo(),
+                    new JsonConverterRuntimeType(_typeResolver),
+                    new JsonConverterTimeZoneInfo()
+                }
             };
         }
 
@@ -59,12 +73,13 @@ namespace com.espertech.esper.common.@internal.util.serde
             }
 
             var typeName = obj.GetType().AssemblyQualifiedName;
-
+            Console.WriteLine(typeName);
             writer.WriteStartObject();
             writer.WriteString("__type", typeName);
             writer.WritePropertyName("__data");
             JsonSerializer.Serialize(writer, obj, _options);
             writer.WriteEndObject();
+            writer.Flush();
 
             return stream.ToArray();
         }
@@ -94,7 +109,7 @@ namespace com.espertech.esper.common.@internal.util.serde
                             var typeName = typeElement.GetString();
                             var type = _typeResolver.ResolveType(typeName);
                             var data = dataElement.GetRawText();
-                            return JsonSerializer.Deserialize(data, type);
+                            return JsonSerializer.Deserialize(data, type, _options);
                         }
 
                         throw new SerializationException("invalid type representation");

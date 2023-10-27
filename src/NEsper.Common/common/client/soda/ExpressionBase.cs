@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Base expression.
     /// </summary>
-    [Serializable]
     public abstract class ExpressionBase : Expression
     {
         /// <summary>

@@ -287,7 +287,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var module = MakeModule(
                     "com.testit",
-                    "@name('A') select SupportStaticMethodLib.PlusOne(intPrimitive) as val from SupportBean");
+                    "@name('A') select SupportStaticMethodLib.PlusOne(IntPrimitive) as val from SupportBean");
                 module.Imports.Add(new ImportNamespace(typeof(SupportStaticMethodLib)));
 
                 var compiled = CompileModule(env, module);
@@ -301,7 +301,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var epl = "import " +
                           typeof(SupportStaticMethodLib).FullName +
                           ";\n" +
-                          "@name('A') select SupportStaticMethodLib.PlusOne(intPrimitive) as val from SupportBean;\n";
+                          "@name('A') select SupportStaticMethodLib.PlusOne(IntPrimitive) as val from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("A");
 
                 env.SendEventBean(new SupportBean("E1", 6));
@@ -578,7 +578,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             for (var i = 0; i < expecteds.Length; i++) {
                 var expected = expecteds[i];
                 var actual = module.Items[i];
-                var message = "Failed to item#" + i;
+                var message = "Failed to Item#"+ i;
                 Assert.AreEqual(expected.IsCommentOnly, actual.IsCommentOnly, message);
                 Assert.AreEqual(expected.LineNumber, actual.LineNumber, message);
                 Assert.AreEqual(expected.LineNumberEnd, actual.LineNumberEnd, message);

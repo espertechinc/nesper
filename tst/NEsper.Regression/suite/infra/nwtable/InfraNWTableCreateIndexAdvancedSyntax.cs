@@ -34,8 +34,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             env.TryInvalidCompile(
                 path,
-                "create index MyIndex on MyWindow(intPrimitive+1)",
-                "Invalid index expression 'intPrimitive+1'");
+                "create index MyIndex on MyWindow(IntPrimitive+1)",
+                "Invalid index expression 'IntPrimitive+1'");
 
             env.TryInvalidCompile(
                 path,
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             env.TryInvalidCompile(
                 path,
-                "create index MyIndex on MyWindow(id xxxx)",
+                "create index MyIndex on MyWindow(Id xxxx)",
                 "Unrecognized advanced-type index 'xxxx'");
 
             env.UndeployAll();

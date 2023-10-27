@@ -9,7 +9,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace com.espertech.esper.compat.collections
 {
@@ -18,9 +17,6 @@ namespace com.espertech.esper.compat.collections
     {
         private const int DEFAULT_INITIAL_CAPACITY = 256;
 
-        private static long _lid = 0L;
-        private long _id = Interlocked.Increment(ref _lid);
-        
         private int _head;
         private int _tail;
         private T[] _array;
@@ -159,7 +155,7 @@ namespace com.espertech.esper.compat.collections
             // preserve the value at the head
             var result = _array[_head];
             // clear the value in the array
-            _array[_head] = default(T);
+            _array[_head] = default!;
             // increment the head
             if (++_head == _array.Length)
                 _head = 0;
@@ -174,7 +170,7 @@ namespace com.espertech.esper.compat.collections
             if (--_tail < 0)
                 _tail = _array.Length - 1;
             var result = _array[_tail];
-            _array[_tail] = default(T);
+            _array[_tail] = default!;
             return result;
         }
 
@@ -187,7 +183,7 @@ namespace com.espertech.esper.compat.collections
                     throw new ArgumentOutOfRangeException();
                 if (tindex == _head)
                 {
-                    _array[_head++] = default(T);
+                    _array[_head++] = default!;
                     _head %= _array.Length;
                     index = _head;
                 }
@@ -198,7 +194,7 @@ namespace com.espertech.esper.compat.collections
 
                     if (--_tail < 0)
                         _tail = _array.Length - 1;
-                    _array[_tail] = default(T);
+                    _array[_tail] = default!;
                 }
             }
             else if (index > _array.Length)
@@ -210,7 +206,7 @@ namespace com.espertech.esper.compat.collections
                 var tindex = index;
                 if (tindex == _head)
                 {
-                    _array[_head++] = default(T);
+                    _array[_head++] = default!;
                     _head %= _array.Length;
                     index = _head;
                 }
@@ -218,14 +214,14 @@ namespace com.espertech.esper.compat.collections
                 {
                     for (var ii = tindex + 1 ; ii < _array.Length ; ii++)
                         _array[ii - 1] = _array[ii];
-                    _array[_array.Length - 1] = _array[0];
+                    _array[^1] = _array[0];
                     for (var ii = 1 ; ii < _tail ; ii++)
                         _array[ii - 1] = _array[ii];
 
                     if (--_tail < 0)
                         _tail = _array.Length - 1;
 
-                    _array[_tail] = default(T);
+                    _array[_tail] = default!;
                 }
                 else
                 {
@@ -234,7 +230,7 @@ namespace com.espertech.esper.compat.collections
 
                     if (--_tail < 0)
                         _tail = _array.Length - 1;
-                    _array[_tail] = default(T);
+                    _array[_tail] = default!;
                 }
             }
 
@@ -450,7 +446,7 @@ namespace com.espertech.esper.compat.collections
         public T Poll()
         {
             if (_head == _tail)
-                return default(T);
+                return default;
             return RemoveFirst();
         }
 
@@ -473,7 +469,7 @@ namespace com.espertech.esper.compat.collections
         {
             if (_head == _tail)
             {
-                return default(T);
+                return default;
             }
 
             return First;

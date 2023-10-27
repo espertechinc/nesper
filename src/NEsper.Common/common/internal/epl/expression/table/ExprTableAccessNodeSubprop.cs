@@ -10,6 +10,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -35,8 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
     {
         private readonly string subpropName;
         private Type bindingReturnType;
-        [NonSerialized] private EPChainableType optionalEnumerationType;
-        [NonSerialized] private ExprEnumerationGivenEventForge optionalPropertyEnumEvaluator;
+        [NonSerialized]
+        private EPChainableType optionalEnumerationType;
+        [NonSerialized]
+        private ExprEnumerationGivenEventForge optionalPropertyEnumEvaluator;
 
         public ExprTableAccessNodeSubprop(
             string tableName,
@@ -157,10 +160,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public override ExprForge Forge => this;
 
+        [JsonIgnore]
         public ExprEnumerationEval ExprEvaluatorEnumeration => this;
 
+        [JsonIgnore]
         public string SubpropName => subpropName;
 
+        [JsonIgnore]
         public Type ComponentTypeCollection =>
             EPChainableTypeHelper.GetCollectionOrArrayComponentTypeOrNull(optionalEnumerationType);
     }

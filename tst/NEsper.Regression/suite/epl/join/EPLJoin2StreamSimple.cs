@@ -16,9 +16,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public void Run(RegressionEnvironment env)
         {
             var text =
-                "@name('s0') select irstream s0.price, s1.price from SupportMarketDataBean(symbol='S0')#length(3) as s0," +
-                "SupportMarketDataBean(symbol='S1')#length(3) as s1 " +
-                " where s0.volume = s1.volume";
+"@name('s0') select irstream s0.Price, s1.Price from SupportMarketDataBean(Symbol='S0')#length(3) as s0,"+
+"SupportMarketDataBean(Symbol='S1')#length(3) as s1 "+
+                " where s0.Volume = s1.Volume";
             env.CompileDeployAddListenerMileZero(text, "s0");
 
             env.SendEventBean(MakeMarketDataEvent("S0", 100, 1));
@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.SendEventBean(MakeMarketDataEvent("S1", 20, 1));
             env.AssertPropsPerRowIRPairFlattened(
                 "s0",
-                new string[] { "s0.price", "s1.price" },
+                new string[] { "s0.Price", "s1.Price" },
                 new object[][] { new object[] { 100.0, 20.0 } },
                 null);
 
@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.SendEventBean(MakeMarketDataEvent("S1", 21, 1));
             env.AssertPropsPerRowIRPairFlattened(
                 "s0",
-                new string[] { "s0.price", "s1.price" },
+                new string[] { "s0.Price", "s1.Price" },
                 new object[][] { new object[] { 100.0, 21.0 } },
                 null);
 
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.SendEventBean(MakeMarketDataEvent("S1", 23, 3));
             env.AssertPropsPerRowIRPairFlattened(
                 "s0",
-                new string[] { "s0.price", "s1.price" },
+                new string[] { "s0.Price", "s1.Price" },
                 null,
                 new object[][] { new object[] { 100.0, 20.0 } });
 

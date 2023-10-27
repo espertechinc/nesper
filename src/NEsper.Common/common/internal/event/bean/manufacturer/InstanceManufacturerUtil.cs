@@ -134,12 +134,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                     codegenClassScope);
 
                 methodNode.Block
-                    .DeclareVar<EventBean>("event",
+                    .DeclareVar<EventBean>("@event",
                         Cast(
                             typeof(EventBean),
                             innerForge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope)))
-                    .IfRefNullReturnNull("event")
-                    .MethodReturn(Cast(returnType, ExprDotUnderlying(Ref("event"))));
+                    .IfRefNullReturnNull("@event")
+                    .MethodReturn(Cast(returnType, ExprDotUnderlying(Ref("@event"))));
                 return LocalMethod(methodNode);
             }
 
@@ -213,7 +213,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                         Ref("i"),
                         Cast(
                             componentReturnType,
-                            ExprDotMethod(ArrayAtIndex(Ref("events"), Ref("i")), "getUnderlying")))
+                            ExprDotName(ArrayAtIndex(Ref("events"), Ref("i")), "Underlying")))
                     .BlockEnd()
                     .MethodReturn(Ref("values"));
                 return LocalMethod(methodNode);

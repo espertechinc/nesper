@@ -41,8 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.state
         ///     Remove old events from the state, applicable for "prev" function and partial NFA state.
         /// </summary>
         /// <param name="events">to remove</param>
-        /// <param name="IsEmpty">indicator if there are not matches</param>
-        /// <param name="isEmpty"></param>
+        /// <param name="isEmpty">indicator if there are not matches</param>
         /// <param name="found">indicator if any partial matches exist to be deleted</param>
         /// <returns>number removed</returns>
         int RemoveOld(

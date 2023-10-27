@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var fields = "cb,cnb,c,pct".SplitCsv();
                 var epl =
-                    "@name('s0') select count(*,boolPrimitive) as cb, count(*,not boolPrimitive) as cnb, count(*) as c, count(*,boolPrimitive)/count(*) as pct from SupportBean#length(3)";
+                    "@name('s0') select count(*,BoolPrimitive) as cb, count(*,not BoolPrimitive) as cnb, count(*) as c, count(*,BoolPrimitive)/count(*) as pct from SupportBean#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");
                 SupportAdminUtil.AssertStatelessStmt(env, "s0", false);
 
@@ -105,8 +105,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var fields = "c1,c2".SplitCsv();
                 var epl = "@name('s0') select " +
-                          "count(intBoxed, boolPrimitive) as c1," +
-                          "count(distinct intBoxed, boolPrimitive) as c2 " +
+                          "count(IntBoxed, BoolPrimitive) as c1," +
+                          "count(distinct IntBoxed, BoolPrimitive) as c2 " +
                           "from SupportBean#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -147,15 +147,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 fields = "cavedev,cavg,cmax,cmedian,cmin,cstddev,csum,cfmaxever,cfminever".SplitCsv();
                 epl = "@name('s0') select " +
-                      "avedev(intBoxed, boolPrimitive) as cavedev," +
-                      "avg(intBoxed, boolPrimitive) as cavg, " +
-                      "fmax(intBoxed, boolPrimitive) as cmax, " +
-                      "median(intBoxed, boolPrimitive) as cmedian, " +
-                      "fmin(intBoxed, boolPrimitive) as cmin, " +
-                      "stddev(intBoxed, boolPrimitive) as cstddev, " +
-                      "sum(intBoxed, boolPrimitive) as csum," +
-                      "fmaxever(intBoxed, boolPrimitive) as cfmaxever, " +
-                      "fminever(intBoxed, boolPrimitive) as cfminever " +
+                      "avedev(IntBoxed, BoolPrimitive) as cavedev," +
+                      "avg(IntBoxed, BoolPrimitive) as cavg, " +
+                      "fmax(IntBoxed, BoolPrimitive) as cmax, " +
+                      "median(IntBoxed, BoolPrimitive) as cmedian, " +
+                      "fmin(IntBoxed, BoolPrimitive) as cmin, " +
+                      "stddev(IntBoxed, BoolPrimitive) as cstddev, " +
+                      "sum(IntBoxed, BoolPrimitive) as csum," +
+                      "fmaxever(IntBoxed, BoolPrimitive) as cfmaxever, " +
+                      "fminever(IntBoxed, BoolPrimitive) as cfminever " +
                       "from SupportBean#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -189,10 +189,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 fields = "c1,c2,c3,c4".SplitCsv();
                 epl = "@name('s0') select " +
-                      "sum(floatPrimitive, boolPrimitive) as c1," +
-                      "sum(doublePrimitive, boolPrimitive) as c2, " +
-                      "sum(longPrimitive, boolPrimitive) as c3, " +
-                      "sum(shortPrimitive, boolPrimitive) as c4 " +
+                      "sum(FloatPrimitive, BoolPrimitive) as c1," +
+                      "sum(DoublePrimitive, BoolPrimitive) as c2, " +
+                      "sum(LongPrimitive, BoolPrimitive) as c3, " +
+                      "sum(ShortPrimitive, BoolPrimitive) as c4 " +
                       "from SupportBean#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.MilestoneInc(milestone);
@@ -215,8 +215,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
                 fields = "c1,c2".SplitCsv();
                 epl = "@name('s0') select " +
-                      "fmax(intBoxed, boolPrimitive) as c1," +
-                      "fmin(intBoxed, boolPrimitive) as c2 " +
+                      "fmax(IntBoxed, BoolPrimitive) as c1," +
+                      "fmin(IntBoxed, BoolPrimitive) as c2 " +
                       "from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
                 SupportAdminUtil.AssertStatelessStmt(env, "s0", false);
@@ -267,13 +267,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 env.UndeployAll();
                 epl = "@name('s0') select " +
-                      "avedev(distinct intBoxed,boolPrimitive) as cavedev, " +
-                      "avg(distinct intBoxed,boolPrimitive) as cavg, " +
-                      "fmax(distinct intBoxed,boolPrimitive) as cmax, " +
-                      "median(distinct intBoxed,boolPrimitive) as cmedian, " +
-                      "fmin(distinct intBoxed,boolPrimitive) as cmin, " +
-                      "stddev(distinct intBoxed,boolPrimitive) as cstddev, " +
-                      "sum(distinct intBoxed,boolPrimitive) as csum " +
+                      "avedev(distinct IntBoxed,BoolPrimitive) as cavedev, " +
+                      "avg(distinct IntBoxed,BoolPrimitive) as cavg, " +
+                      "fmax(distinct IntBoxed,BoolPrimitive) as cmax, " +
+                      "median(distinct IntBoxed,BoolPrimitive) as cmedian, " +
+                      "fmin(distinct IntBoxed,BoolPrimitive) as cmin, " +
+                      "stddev(distinct IntBoxed,BoolPrimitive) as cstddev, " +
+                      "sum(distinct IntBoxed,BoolPrimitive) as csum " +
                       "from SupportBean#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -331,9 +331,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var fields = "c1,c2,c3".SplitCsv();
                 var epl = "@name('s0') select " +
-                          "firstever(intBoxed,boolPrimitive) as c1, " +
-                          "lastever(intBoxed,boolPrimitive) as c2, " +
-                          "countever(*,boolPrimitive) as c3 " +
+                          "firstever(IntBoxed,BoolPrimitive) as c1, " +
+                          "lastever(IntBoxed,BoolPrimitive) as c2, " +
+                          "countever(*,BoolPrimitive) as c3 " +
                           "from SupportBean#length(3)";
                 env.CompileDeploy(soda, epl).AddListener("s0");
 
@@ -362,12 +362,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile(
-                    "select count(*, intPrimitive) from SupportBean",
-                    "Failed to validate select-clause expression 'count(*,intPrimitive)': Invalid filter expression parameter to the aggregation function 'count' is expected to return a boolean value but returns Integer [select count(*, intPrimitive) from SupportBean]");
+                    "select count(*, IntPrimitive) from SupportBean",
+                    "Failed to validate select-clause expression 'count(*,IntPrimitive)': Invalid filter expression parameter to the aggregation function 'count' is expected to return a boolean value but returns Integer [select count(*, IntPrimitive) from SupportBean]");
 
                 env.TryInvalidCompile(
-                    "select fmin(intPrimitive) from SupportBean",
-                    "Failed to validate select-clause expression 'min(intPrimitive)': MIN-filtered aggregation function must have a filter expression as a second parameter [select fmin(intPrimitive) from SupportBean]");
+                    "select fmin(IntPrimitive) from SupportBean",
+                    "Failed to validate select-clause expression 'min(IntPrimitive)': MIN-filtered aggregation function must have a filter expression as a second parameter [select fmin(IntPrimitive) from SupportBean]");
             }
         }
 

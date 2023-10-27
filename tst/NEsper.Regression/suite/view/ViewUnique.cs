@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@name('s0') select irstream symbol, price from SupportMarketDataBean#unique(symbol) order by symbol";
+"@name('s0') select irstream Symbol, Price from SupportMarketDataBean#unique(Symbol) Order by Symbol";
                 if (optionalAnnotation != null) {
                     text = optionalAnnotation + text;
                 }
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S1", 100));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "symbol", "S1" }, new object[] { "price", 100.0 } },
+                    new object[][] { new object[] { "Symbol", "S1" }, new object[] { "Price", 100.0 } },
                     null);
 
                 env.Milestone(1);
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S2", 5));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "symbol", "S2" }, new object[] { "price", 5.0 } },
+                    new object[][] { new object[] { "Symbol", "S2" }, new object[] { "Price", 5.0 } },
                     null);
 
                 env.Milestone(2);
@@ -107,21 +107,21 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S1", 101));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "symbol", "S1" }, new object[] { "price", 101.0 } },
-                    new object[][] { new object[] { "symbol", "S1" }, new object[] { "price", 100.0 } });
+                    new object[][] { new object[] { "Symbol", "S1" }, new object[] { "Price", 101.0 } },
+                    new object[][] { new object[] { "Symbol", "S1" }, new object[] { "Price", 100.0 } });
 
                 env.Milestone(3);
 
                 env.SendEventBean(MakeMarketDataEvent("S1", 102));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "symbol", "S1" }, new object[] { "price", 102.0 } },
-                    new object[][] { new object[] { "symbol", "S1" }, new object[] { "price", 101.0 } });
+                    new object[][] { new object[] { "Symbol", "S1" }, new object[] { "Price", 102.0 } },
+                    new object[][] { new object[] { "Symbol", "S1" }, new object[] { "Price", 101.0 } });
 
                 // test iterator
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "price" },
+                    new string[] { "Price" },
                     new object[][] { new object[] { 102.0 }, new object[] { 5.0 } });
 
                 env.Milestone(4);
@@ -129,8 +129,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S2", 6));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "symbol", "S2" }, new object[] { "price", 6.0 } },
-                    new object[][] { new object[] { "symbol", "S2" }, new object[] { "price", 5.0 } });
+                    new object[][] { new object[] { "Symbol", "S2" }, new object[] { "Price", 6.0 } },
+                    new object[][] { new object[] { "Symbol", "S2" }, new object[] { "Price", 5.0 } });
 
                 env.UndeployAll();
             }
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@name('s0') select irstream symbol, feed, price from  SupportMarketDataBean#unique(symbol, feed) order by symbol, feed";
+"@name('s0') select irstream Symbol, Feed, Price from  SupportMarketDataBean#unique(Symbol, Feed) Order by Symbol, Feed";
                 if (optionalAnnotation != null) {
                     text = optionalAnnotation + text;
                 }
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsNV(
                     "s0",
                     new object[][] {
-                        new object[] { "symbol", "S1" }, new object[] { "feed", "F1" }, new object[] { "price", 100.0 }
+                        new object[] { "Symbol", "S1" }, new object[] { "Feed", "F1" }, new object[] { "Price", 100.0 }
                     },
                     null);
 
@@ -169,7 +169,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsNV(
                     "s0",
                     new object[][] {
-                        new object[] { "symbol", "S2" }, new object[] { "feed", "F1" }, new object[] { "price", 5.0 }
+                        new object[] { "Symbol", "S2" }, new object[] { "Feed", "F1" }, new object[] { "Price", 5.0 }
                     },
                     null);
 
@@ -179,10 +179,10 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsNV(
                     "s0",
                     new object[][] {
-                        new object[] { "symbol", "S1" }, new object[] { "feed", "F1" }, new object[] { "price", 101.0 }
+                        new object[] { "Symbol", "S1" }, new object[] { "Feed", "F1" }, new object[] { "Price", 101.0 }
                     },
                     new object[][] {
-                        new object[] { "symbol", "S1" }, new object[] { "feed", "F1" }, new object[] { "price", 100.0 }
+                        new object[] { "Symbol", "S1" }, new object[] { "Feed", "F1" }, new object[] { "Price", 100.0 }
                     });
 
                 env.Milestone(3);
@@ -191,16 +191,16 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsNV(
                     "s0",
                     new object[][] {
-                        new object[] { "symbol", "S2" }, new object[] { "feed", "F1" }, new object[] { "price", 102.0 }
+                        new object[] { "Symbol", "S2" }, new object[] { "Feed", "F1" }, new object[] { "Price", 102.0 }
                     },
                     new object[][] {
-                        new object[] { "symbol", "S2" }, new object[] { "feed", "F1" }, new object[] { "price", 5.0 }
+                        new object[] { "Symbol", "S2" }, new object[] { "Feed", "F1" }, new object[] { "Price", 5.0 }
                     });
 
                 // test iterator
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "s0",
-                    new string[] { "price" },
+                    new string[] { "Price" },
                     new object[][] { new object[] { 101.0 }, new object[] { 102.0 } });
 
                 env.Milestone(4);
@@ -209,14 +209,14 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsNV(
                     "s0",
                     new object[][] {
-                        new object[] { "symbol", "S1" }, new object[] { "feed", "F2" }, new object[] { "price", 6.0 }
+                        new object[] { "Symbol", "S1" }, new object[] { "Feed", "F2" }, new object[] { "Price", 6.0 }
                     },
                     null);
 
                 // test iterator
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "s0",
-                    new string[] { "price" },
+                    new string[] { "Price" },
                     new object[][] { new object[] { 101.0 }, new object[] { 6.0 }, new object[] { 102.0 } });
 
                 env.UndeployAll();
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var fields = "c0,c1".SplitCsv();
                 var epl =
-                    "@name('s0') select irstream theString as c0, intPrimitive as c1 from SupportBean#unique(theString)";
+                    "@name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#unique(TheString)";
                 if (optionalAnnotations != null) {
                     epl = optionalAnnotations + epl;
                 }
@@ -296,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select * from SupportBean#unique(Math.abs(intPrimitive))";
+                var epl = "@name('s0') select * from SupportBean#unique(Math.abs(IntPrimitive))";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendSupportBean(env, "E1", 10);
@@ -305,7 +305,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendSupportBean(env, "E4", 5);
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "s0",
-                    "theString".SplitCsv(),
+                    "TheString".SplitCsv(),
                     new object[][] { new object[] { "E2" }, new object[] { "E4" } });
 
                 env.UndeployAll();
@@ -316,14 +316,14 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream * from SupportBean#unique(intBoxed)";
+                var epl = "@name('s0') select irstream * from SupportBean#unique(IntBoxed)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var beanOne = new SupportBean("E1", 1);
                 env.SendEventBean(beanOne);
                 env.AssertListenerInvoked("s0");
 
-                var eplTwo = "@name('s1') select irstream * from SupportBean#unique(intBoxed)";
+                var eplTwo = "@name('s1') select irstream * from SupportBean#unique(IntBoxed)";
                 env.CompileDeployAddListenerMile(eplTwo, "s1", 1);
 
                 var beanTwo = new SupportBean("E2", 2);

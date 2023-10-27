@@ -255,11 +255,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
 
             // Stop-Method (generates last as other methods may allocate members)
             var enumeratorMethod = CodegenMethod
-                .MakeParentNode(
-                    typeof(IEnumerator<EventBean>),
-                    forge.GetType(),
-                    CodegenSymbolProviderEmpty.INSTANCE,
-                    classScope)
+                .MakeParentNode(typeof(IEnumerator<EventBean>), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride();
             forge.EnumeratorCodegen(enumeratorMethod, classScope);
 
@@ -282,11 +278,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 .AddParam<AgentInstanceStopServices>("svc");
             
             // Terminate-Method (no action for generated code)
-            var terminatedMethod = CodegenMethod.MakeParentNode(
-                typeof(void),
-                forge.GetType(),
-                CodegenSymbolProviderEmpty.INSTANCE,
-                classScope);
+            var terminatedMethod = CodegenMethod
+                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                .WithOverride();
 
             var innerProperties = new CodegenClassProperties();
             var innerMethods = new CodegenClassMethods();

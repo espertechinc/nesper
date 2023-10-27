@@ -135,11 +135,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           typeof(ExprCoreArray).FullName +
                           ".doIt({'a'}, new object[] {1}, new object[] {1, 'd', null, true}) as func," +
                           "{true, false} as boolArray," +
-                          "{intPrimitive} as dynIntArr," +
-                          "{intPrimitive, longPrimitive} as dynLongArr," +
-                          "{intPrimitive, theString} as dynMixedArr," +
-                          "{intPrimitive, intPrimitive * 2, intPrimitive * 3} as dynCalcArr," +
-                          "{longBoxed, doubleBoxed * 2, theString || 'a'} as dynCalcArrNulls" +
+                          "{IntPrimitive} as dynIntArr," +
+                          "{IntPrimitive, LongPrimitive} as dynLongArr," +
+                          "{IntPrimitive, TheString} as dynMixedArr," +
+                          "{IntPrimitive, IntPrimitive * 2, IntPrimitive * 3} as dynCalcArr," +
+                          "{LongBoxed, DoubleBoxed * 2, TheString || 'a'} as dynCalcArrNulls" +
                           " from " +
                           nameof(SupportBean);
                 env.CompileDeploy(epl).AddListener("s0");
@@ -245,7 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "c0".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBeanComplexProps")
-                    .WithExpressions(fields, "{arrayProperty, nested}");
+                    .WithExpressions(fields, "{ArrayProperty, nested}");
 
                 var bean = SupportBeanComplexProps.MakeDefaultBean();
                 builder.WithAssertion(bean)

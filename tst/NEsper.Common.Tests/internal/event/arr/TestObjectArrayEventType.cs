@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.@event.arr
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyComplexBean.Nested.NestedValue"));
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MyComplexBean.Indexed[1]"));
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyComplexBean.Mapped('a')"));
-            Assert.AreEqual(null, eventType.GetPropertyType("MyNullType"));
+            Assert.AreEqual(typeof(object), eventType.GetPropertyType("MyNullType"));
 
             Assert.IsNull(eventType.GetPropertyType("dummy"));
             Assert.IsNull(eventType.GetPropertyType("MySupportBean.dfgdg"));

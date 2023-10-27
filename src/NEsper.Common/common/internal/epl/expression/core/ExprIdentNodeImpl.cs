@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
@@ -47,9 +48,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         private string resolvedStreamName;
         private string resolvedPropertyName;
-        [NonSerialized] private StatementCompileTimeServices compileTimeServices;
-        [NonSerialized] private ExprIdentNodeEvaluator evaluator;
-        [NonSerialized] private StatementRawInfo statementRawInfo;
+        [JsonIgnore]
+        [NonSerialized]
+        private StatementCompileTimeServices compileTimeServices;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprIdentNodeEvaluator evaluator;
+        [JsonIgnore]
+        [NonSerialized]
+        private StatementRawInfo statementRawInfo;
 
         /// <summary>
         /// Ctor.

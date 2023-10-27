@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -23,7 +24,9 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     public class ContextSpecCategory : ContextSpec
     {
-        [NonSerialized] private FilterSpecCompiled filterSpecCompiled;
+        [JsonIgnore]
+        [NonSerialized]
+        private FilterSpecCompiled filterSpecCompiled;
 
         public ContextSpecCategory(
             IList<ContextSpecCategoryItem> items,

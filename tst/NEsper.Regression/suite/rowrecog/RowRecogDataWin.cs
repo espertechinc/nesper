@@ -74,10 +74,10 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "string,value".SplitCsv();
                 var text = "@name('s0') select * from SupportRecogBean " +
                            "match_recognize (" +
-                           "  measures A.theString as string, A.value as value" +
+                           "  measures A.TheString as string, A.value as value" +
                            "  all matches pattern (A) " +
                            "  define " +
-                           "    A as PREV(A.theString, 1) = theString" +
+                           "    A as PREV(A.TheString, 1) = TheString" +
                            ")";
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a_string,b_string,c_string".SplitCsv();
                 var text = "@name('s0') select * from SupportRecogBean#time(5 sec) " +
                            "match_recognize (" +
-                           "  measures A.theString as a_string, B.theString as b_string, C.theString as c_string" +
+                           "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +
                            "  all matches pattern ( A B C ) " +
                            "  define " +
                            "    A as (A.value = 1)," +
@@ -200,13 +200,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var text = "@name('s0') select * from SupportRecogBean#time_batch(5 sec) " +
                            "match_recognize (" +
                            "  partition by cat " +
-                           "  measures A.theString as a_string, B.theString as b_string, C.theString as c_string" +
+                           "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +
                            "  all matches pattern ( (A | B) C ) " +
                            "  define " +
-                           "    A as A.theString like 'A%'," +
-                           "    B as B.theString like 'B%'," +
-                           "    C as C.theString like 'C%' and C.value in (A.value, B.value)" +
-                           ") order by a_string";
+                           "    A as A.TheString like 'A%'," +
+                           "    B as B.TheString like 'B%'," +
+                           "    C as C.TheString like 'C%' and C.value in (A.value, B.value)" +
+") Order by a_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -297,11 +297,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
                 var text = "@name('S1') select * from MyWindow " +
                            "match_recognize (" +
-                           "  partition by theString " +
-                           "  measures A.theString as ast, A.intPrimitive as ai, B.intPrimitive as bi" +
+                           "  partition by TheString " +
+                           "  measures A.TheString as ast, A.IntPrimitive as ai, B.IntPrimitive as bi" +
                            "  all matches pattern ( A B ) " +
                            "  define " +
-                           "    B as (B.intPrimitive = A.intPrimitive)" +
+                           "    B as (B.IntPrimitive = A.IntPrimitive)" +
                            ")";
 
                 var fields = "ast,ai,bi".SplitCsv();
@@ -336,13 +336,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var text = "@name('s0') select * from SupportRecogBean#time_batch(5 sec) " +
                            "match_recognize (" +
                            "  partition by cat " +
-                           "  measures A.theString as a_string, B.theString as b_string, C.theString as c_string" +
+                           "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +
                            "  all matches pattern ( (A | B) C ) " +
                            "  define " +
-                           "    A as A.theString like 'A%'," +
-                           "    B as B.theString like 'B%'," +
-                           "    C as C.theString like 'C%' and C.value in (A.value, B.value)" +
-                           ") order by a_string";
+                           "    A as A.TheString like 'A%'," +
+                           "    B as B.TheString like 'B%'," +
+                           "    C as C.TheString like 'C%' and C.value in (A.value, B.value)" +
+") Order by a_string";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.AdvanceTime(50);

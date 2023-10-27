@@ -107,8 +107,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // inject properties: property invalid type
                 env.TryInvalidCompile(
-                    "create dataflow MyGraph MyTestOp {theString: 1}",
-                    "Property 'theString' of class " +
+                    "create dataflow MyGraph MyTestOp {TheString: 1}",
+                    "Property 'TheString' of class " +
                     typeof(MyTestOp).FullName +
                     " expects an String but receives a value of type Integer");
 

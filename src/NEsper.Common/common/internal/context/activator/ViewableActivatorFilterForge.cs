@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.context.module;
+using com.espertech.esper.common.@internal.filterspec;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -47,6 +48,7 @@ namespace com.espertech.esper.common.@internal.context.activator
             var method = parent.MakeChild(typeof(ViewableActivatorFilter), GetType(), classScope);
 
             var makeFilter = filterSpecCompiled.MakeCodegen(method, symbols, classScope);
+            method.Block.DeclareVar<FilterSpecActivatable>("filterSpecCompiled", LocalMethod(makeFilter));
 
             CodegenExpression initializer = ExprDotMethodChain(symbols.GetAddInitSvc(method))
                 .Get(EPStatementInitServicesConstants.VIEWABLEACTIVATORFACTORY)

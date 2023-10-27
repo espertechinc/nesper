@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             lock (sendLock) {
                 Monitor.PulseAll(sendLock);
             }
-            
+
             executor.Shutdown();
             SupportCompileDeployUtil.ExecutorAwait(executor, TimeSpan.FromSeconds(10));
 

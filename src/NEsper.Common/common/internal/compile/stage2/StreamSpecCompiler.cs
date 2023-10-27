@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 }
 
                 if (streamSpec.RawFilterSpec.OptionalPropertyEvalSpec != null) {
-                    throw new ExprValidationException("Contained-event expressions are not supported with tables");
+                    throw new ExprValidationException("contained-event expressions are not supported with tables");
                 }
 
                 StreamTypeService streamTypeServiceX = new StreamTypeServiceImpl(

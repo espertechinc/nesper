@@ -153,10 +153,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var epl = "create constant variable string MYVAR = " +
                           typeof(ExprCoreDotExpression).FullName +
-                          ".supportDotExpressionReturningSB('X').theString;\n" +
+                          ".supportDotExpressionReturningSB('X').TheString;\n" +
                           "@name('s0') select " +
                           typeof(ExprCoreDotExpression).FullName +
-                          ".supportDotExpressionReturningSB(p00).theString as c0, MYVAR as c1 from SupportBean_S0";
+                          ".supportDotExpressionReturningSB(P00).TheString as c0, MYVAR as c1 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "a"));
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select p01.split(',').selectFrom(v -> v).size() as sz from SupportBean_S0(p00=p01.split(',').selectFrom(v -> v).get(2))";
+                    "@name('s0') select P01.split(',').selectFrom(v -> v).size() as sz from SupportBean_S0(P00=P01.split(',').selectFrom(v -> v).get(2))";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssert(env, "A", "A,B,C", null);
@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select sb.equals(maxBy(intPrimitive)) as c0 from SupportBean as sb";
+                var epl = "@name('s0') select sb.equals(maxBy(IntPrimitive)) as c0 from SupportBean as sb";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssertDotObjectEquals(env, 10, true);
@@ -262,11 +262,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "c0,c1,c2,c3,c4,c5,c6".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean", "sb")
-                    .WithExpression(fields[0], "intPrimitive = SupportEnumTwo.ENUM_VALUE_1.getAssociatedValue()")
-                    .WithExpression(fields[1], "SupportEnumTwo.ENUM_VALUE_2.checkAssociatedValue(intPrimitive)")
+                    .WithExpression(fields[0], "IntPrimitive = SupportEnumTwo.ENUM_VALUE_1.getAssociatedValue()")
+                    .WithExpression(fields[1], "SupportEnumTwo.ENUM_VALUE_2.checkAssociatedValue(IntPrimitive)")
                     .WithExpression(fields[2], "SupportEnumTwo.ENUM_VALUE_3.getNested().getValue()")
-                    .WithExpression(fields[3], "SupportEnumTwo.ENUM_VALUE_2.checkEventBeanPropInt(sb, 'intPrimitive')")
-                    .WithExpression(fields[4], "SupportEnumTwo.ENUM_VALUE_2.checkEventBeanPropInt(*, 'intPrimitive')")
+                    .WithExpression(fields[3], "SupportEnumTwo.ENUM_VALUE_2.checkEventBeanPropInt(sb, 'IntPrimitive')")
+                    .WithExpression(fields[4], "SupportEnumTwo.ENUM_VALUE_2.checkEventBeanPropInt(*, 'IntPrimitive')")
                     .WithExpression(fields[5], "SupportEnumTwo.ENUM_VALUE_2.getMyStringsAsList()")
                     .WithExpression(fields[6], "SupportEnumTwo.ENUM_VALUE_2.getNested().getMyStringsNestedAsList()");
 
@@ -394,16 +394,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create window NodeWindow#unique(id) as SupportEventNode;\n";
+                var epl = "create window NodeWindow#unique(Id) as SupportEventNode;\n";
                 epl += "insert into NodeWindow select * from SupportEventNode;\n";
                 epl += "create window NodeDataWindow#unique(nodeId) as SupportEventNodeData;\n";
                 epl += "insert into NodeDataWindow select * from SupportEventNodeData;\n";
                 epl += "create schema NodeWithData(node SupportEventNode, data SupportEventNodeData);\n";
-                epl += "create window NodeWithDataWindow#unique(node.id) as NodeWithData;\n";
+                epl += "create window NodeWithDataWindow#unique(node.Id) as NodeWithData;\n";
                 epl += "insert into NodeWithDataWindow " +
-                       "select node, data from NodeWindow node join NodeDataWindow as data on node.id = data.nodeId;\n";
+                       "select node, data from NodeWindow node join NodeDataWindow as data on node.Id = data.nodeId;\n";
                 epl +=
-                    "@name('s0') select node.id, data.nodeId, data.value, node.compute(data) from NodeWithDataWindow;\n";
+                    "@name('s0') select node.Id, data.nodeId, data.value, node.compute(data) from NodeWithDataWindow;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportEventNode("1"));
@@ -469,11 +469,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select " +
-                          "(arrayProperty).size() as size, " +
-                          "(arrayProperty).get(0) as get0, " +
-                          "(arrayProperty).get(1) as get1, " +
-                          "(arrayProperty).get(2) as get2, " +
-                          "(arrayProperty).get(3) as get3 " +
+                          "(ArrayProperty).size() as size, " +
+                          "(ArrayProperty).get(0) as get0, " +
+                          "(ArrayProperty).get(1) as get1, " +
+                          "(ArrayProperty).get(2) as get2, " +
+                          "(ArrayProperty).get(3) as get3 " +
                           "from SupportBeanComplexProps";
                 env.CompileDeploy(epl).AddListener("s0");
 

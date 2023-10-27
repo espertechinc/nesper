@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                         Assert.AreEqual(1, newEvents.Length);
                     }
 
-                    Beans.Add((SupportBean) newEvents[0].Underlying);
+                    Beans.Add((SupportBean)newEvents[0].Underlying);
                 }
             }
         }

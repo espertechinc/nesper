@@ -8,6 +8,7 @@
 
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -24,9 +25,15 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// </summary>
     public class FilterForEvalDeployTimeConstForge : FilterSpecParamInValueForge
     {
-        [NonSerialized] private readonly ExprNodeDeployTimeConst _deployTimeConst;
-        [NonSerialized] private readonly Coercer _numberCoercer;
-        [NonSerialized] private readonly Type _returnType;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly ExprNodeDeployTimeConst _deployTimeConst;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly Coercer _numberCoercer;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly Type _returnType;
 
         public FilterForEvalDeployTimeConstForge(
             ExprNodeDeployTimeConst deployTimeConst,

@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.view.firstunique
 
         public ViewFactory ViewFactory => viewFactory;
 
-        public override EventType EventType => parent.EventType;
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(
             EventBean[] newData,
@@ -105,9 +105,9 @@ namespace com.espertech.esper.common.@internal.view.firstunique
                 }
             }
 
-            if (child != null && (newDataToPost != null || oldDataToPost != null)) {
+            if (Child != null && (newDataToPost != null || oldDataToPost != null)) {
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newDataToPost, oldDataToPost);
-                child.Update(newDataToPost, oldDataToPost);
+                Child.Update(newDataToPost, oldDataToPost);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 

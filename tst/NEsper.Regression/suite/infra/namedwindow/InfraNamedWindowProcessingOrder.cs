@@ -153,8 +153,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var epl = "create window MyWindow#lastevent as select * from SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "on MyWindow e delete from MyWindow win where win.theString=e.theString and e.intPrimitive = 7;\n" +
-                          "on MyWindow e delete from MyWindow win where win.theString=e.theString and e.intPrimitive = 5;\n" +
+                          "on MyWindow e delete from MyWindow win where win.TheString=e.TheString and e.IntPrimitive = 7;\n" +
+                          "on MyWindow e delete from MyWindow win where win.TheString=e.TheString and e.IntPrimitive = 5;\n" +
                           "on MyWindow e insert into ResultStream select e.* from MyWindow;\n" +
                           "@name('s0') select * from ResultStream;\n";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -163,13 +163,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportBean("E2", 8));
-                env.AssertEqualsNew("s0", "theString", "E2");
+                env.AssertEqualsNew("s0", "TheString", "E2");
 
                 env.SendEventBean(new SupportBean("E3", 5));
                 env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportBean("E4", 6));
-                env.AssertEqualsNew("s0", "theString", "E4");
+                env.AssertEqualsNew("s0", "TheString", "E4");
 
                 env.UndeployAll();
             }

@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var epl = "@name('s0') select * " +
                           "from SupportBean#length_batch(2) " +
-                          "where intPrimitive>0 " +
+                          "where IntPrimitive>0 " +
                           "having count(*)=2";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -150,12 +150,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     .Add(Expressions.Avg("Price"), "avgPrice");
                 model.FromClause = FromClause.Create(
                     FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(5)));
-                model.HavingClause = Expressions.Lt(Expressions.Property("price"), Expressions.Avg("price"));
+                model.HavingClause = Expressions.Lt(Expressions.Property("Price"), Expressions.Avg("Price"));
                 model = env.CopyMayFail(model);
 
-                var epl = "select irstream symbol, price, avg(price) as avgPrice " +
+                var epl = "select irstream Symbol, Price, avg(Price) as avgPrice "+
                           "from SupportMarketDataBean#length(5) " +
-                          "having price<avg(price)";
+                          "having Price<avg(Price)";
                 Assert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -171,9 +171,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream symbol, price, avg(price) as avgPrice " +
+                var epl = "@name('s0') select irstream Symbol, Price, avg(Price) as avgPrice "+
                           "from SupportMarketDataBean#length(5) " +
-                          "having price < avg(price)";
+                          "having Price < avg(Price)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertion(env);
@@ -186,11 +186,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream symbol, price, avg(price) as avgPrice " +
+                var epl = "@name('s0') select irstream Symbol, Price, avg(Price) as avgPrice "+
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(5) as two " +
-                          "where one.theString = two.symbol " +
-                          "having price < avg(price)";
+"where one.TheString = two.Symbol "+
+                          "having Price < avg(Price)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
@@ -205,9 +205,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream symbol, price, avg(price) as avgPrice " +
+                var epl = "@name('s0') select irstream Symbol, Price, avg(Price) as avgPrice "+
                           "from SupportMarketDataBean#length(5) as two " +
-                          "having volume < avg(price)";
+                          "having Volume < avg(Price)";
                 env.CompileDeploy(epl).UndeployAll();
             }
         }
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') insert into MyStream select quote.* from SupportBean#length(14) quote having avg(intPrimitive) >= 3\n";
+                    "@name('s0') insert into MyStream select quote.* from SupportBean#length(14) quote having avg(IntPrimitive) >= 3\n";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("abc", 2));
@@ -261,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select irstream sum(myEvent.intPrimitive) as mysum from pattern [every myEvent=SupportBean] having sum(myEvent.intPrimitive) = 2";
+                    "@name('s0') select irstream sum(myEvent.IntPrimitive) as mysum from pattern [every myEvent=SupportBean] having sum(myEvent.IntPrimitive) = 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, 1);
@@ -284,8 +284,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select istream sum(myEvent.intPrimitive) as mysum from pattern [every myEvent=SupportBean" +
-                    "] having sum(myEvent.intPrimitive) = 2";
+                    "@name('s0') select istream sum(myEvent.IntPrimitive) as mysum from pattern [every myEvent=SupportBean" +
+                    "] having sum(myEvent.IntPrimitive) = 2";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, 1);
@@ -309,8 +309,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("symbol"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("price"));
+                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("Price"));
                     Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("avgPrice"));
                 });
 
@@ -357,8 +357,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     Assert.IsNull(oldData);
                     Assert.AreEqual(1, newData.Length);
 
-                    Assert.AreEqual(symbol, newData[0].Get("symbol"));
-                    Assert.AreEqual(newPrice, newData[0].Get("price"));
+                    Assert.AreEqual(symbol, newData[0].Get("Symbol"));
+                    Assert.AreEqual(newPrice, newData[0].Get("Price"));
                     Assert.AreEqual(newAvgPrice, newData[0].Get("avgPrice"));
 
                     listener.Reset();
@@ -381,8 +381,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     Assert.IsNull(newData);
                     Assert.AreEqual(1, oldData.Length);
 
-                    Assert.AreEqual(symbol, oldData[0].Get("symbol"));
-                    Assert.AreEqual(oldPrice, oldData[0].Get("price"));
+                    Assert.AreEqual(symbol, oldData[0].Get("Symbol"));
+                    Assert.AreEqual(oldPrice, oldData[0].Get("Price"));
                     Assert.AreEqual(oldAvgPrice, oldData[0].Get("avgPrice"));
 
                     listener.Reset();
@@ -394,11 +394,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             string filterClause)
         {
             var epl =
-                "@name('s0') select irstream a.price as aPrice, b.price as bPrice, Math.max(a.price, b.price) - Math.min(a.price, b.price) as spread " +
-                "from SupportMarketDataBean(symbol='SYM1')#length(1) as a, " +
-                "SupportMarketDataBean(symbol='SYM2')#length(1) as b " +
+                "@name('s0') select irstream a.Price as aPrice, b.Price as bPrice, Math.max(a.Price, b.Price) - Math.min(a.Price, b.Price) as spread " +
+"from SupportMarketDataBean(Symbol='SYM1')#length(1) as a, "+
+"SupportMarketDataBean(Symbol='SYM2')#length(1) as b "+
                 filterClause +
-                " Math.max(a.price, b.price) - Math.min(a.price, b.price) >= 1.4";
+                " Math.max(a.Price, b.Price) - Math.min(a.Price, b.Price) >= 1.4";
             env.CompileDeploy(epl).AddListener("s0");
 
             SendPriceEvent(env, "SYM1", 20);

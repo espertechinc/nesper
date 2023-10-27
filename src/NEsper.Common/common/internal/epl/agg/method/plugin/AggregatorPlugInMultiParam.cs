@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
                 injectionStrategy.GetInitializationExpression(classScope));
 
             plugin = membersColumnized.AddMember(col, typeof(AggregationFunction), "plugin");
-            rowCtor.Block.AssignRef(plugin, ExprDotMethod(factoryField, "newAggregator", ConstantNull()));
+            rowCtor.Block.AssignRef(plugin, ExprDotMethod(factoryField, "NewAggregator", ConstantNull()));
         }
 
         public void ApplyEvalEnterCodegen(
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "enter", value);
+            method.Block.ExprDotMethod(plugin, "Enter", value);
         }
 
         public void ApplyTableLeaveCodegen(
@@ -82,21 +82,21 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "leave", value);
+            method.Block.ExprDotMethod(plugin, "Leave", value);
         }
 
         public void ClearCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(plugin, "clear");
+            method.Block.ExprDotMethod(plugin, "Clear");
         }
 
         public void GetValueCodegen(
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(ExprDotMethod(plugin, "getValue"));
+            method.Block.MethodReturn(ExprDotName(plugin, "Value"));
         }
 
         public void WriteCodegen(

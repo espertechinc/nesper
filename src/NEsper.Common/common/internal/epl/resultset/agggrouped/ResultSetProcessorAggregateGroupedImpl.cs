@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     LocalMethod(forge.GenerateGroupKeyArrayJoin, REF_OLDDATA, ConstantFalse()));
 
             if (forge.IsUnidirectional) {
-                method.Block.ExprDotMethod(Ref("this"), "clear");
+                method.Block.ExprDotMethod(Ref("this"), "Clear");
             }
 
             method.Block.StaticMethod(
@@ -349,7 +349,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             return instance.Methods.AddMethod(
                 typeof(EventBean[]),
-                "generateOutputEventsView",
+                "GenerateOutputEventsView",
                 CodegenNamedParam.From(
                     typeof(EventBean[]),
                     "outputEvents",
@@ -474,7 +474,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             return instance.Methods.AddMethod(
                 typeof(EventBean[]),
-                "generateOutputEventsJoin",
+                "GenerateOutputEventsJoin",
                 CodegenNamedParam.From(
                     EPTYPE_SET_MULTIKEYARRAYOFKEYS_EVENTBEANARRAY,
                     "resultSet",
@@ -777,7 +777,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             };
             return instance.Methods.AddMethod(
                 typeof(void),
-                "generateOutputBatchedJoinUnkeyed",
+                "GenerateOutputBatchedJoinUnkeyed",
                 CodegenNamedParam.From(
                     EPTYPE_SET_MULTIKEYARRAYOFKEYS_EVENTBEAN,
                     "outputEvents",
@@ -832,7 +832,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             };
             instance.Methods.AddMethod(
                 typeof(EventBean),
-                "generateOutputBatchedSingle",
+                "GenerateOutputBatchedSingle",
                 CodegenNamedParam.From(
                     typeof(object),
                     "groupByKey",
@@ -912,7 +912,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             };
             return instance.Methods.AddMethod(
                 typeof(void),
-                "generateOutputBatchedViewPerKey",
+                "GenerateOutputBatchedViewPerKey",
                 CodegenNamedParam.From(
                     typeof(EventBean[]),
                     "outputEvents",
@@ -998,7 +998,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             };
             return instance.Methods.AddMethod(
                 typeof(void),
-                "generateOutputBatchedJoinPerKey",
+                "GenerateOutputBatchedJoinPerKey",
                 CodegenNamedParam.From(
                     EPTYPE_SET_MULTIKEYARRAYOFKEYS_EVENTBEAN,
                     "outputEvents",
@@ -1256,7 +1256,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         "newEventsArr",
                         ExprDotMethod(
                             MEMBER_ORDERBYPROCESSOR,
-                            "sortWOrderKeys",
+                            "SortWOrderKeys",
                             Ref("newEventsArr"),
                             Ref("sortKeysNew"),
                             MEMBER_EXPREVALCONTEXT));
@@ -1272,7 +1272,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             "oldEventsArr",
                             ExprDotMethod(
                                 MEMBER_ORDERBYPROCESSOR,
-                                "sortWOrderKeys",
+                                "SortWOrderKeys",
                                 Ref("oldEventsArr"),
                                 Ref("sortKeysOld"),
                                 MEMBER_EXPREVALCONTEXT));
@@ -1364,14 +1364,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                 .DeclareVar<OutputConditionPolled>("outputStateGroup",
                                     ExprDotMethod(
                                         Member(NAME_OUTPUTFIRSTHELPER),
-                                        "getOrAllocate",
+                                        "GetOrAllocate",
                                         Ref("mk"),
                                         MEMBER_EXPREVALCONTEXT,
                                         outputFactory))
                                 .DeclareVar<bool>("pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(1),
                                         Constant(0)));
                             var ifPass = forloop.IfCondition(Ref("pass"));
@@ -1398,14 +1398,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                 .DeclareVar<OutputConditionPolled>("outputStateGroup",
                                     ExprDotMethod(
                                         Member(NAME_OUTPUTFIRSTHELPER),
-                                        "getOrAllocate",
+                                        "GetOrAllocate",
                                         Ref("mk"),
                                         MEMBER_EXPREVALCONTEXT,
                                         outputFactory))
                                 .DeclareVar<bool>("pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(0),
                                         Constant(1)));
                             var ifPass = forloop.IfCondition(Ref("pass"));
@@ -1488,14 +1488,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             forloop.DeclareVar<OutputConditionPolled>("outputStateGroup",
                                     ExprDotMethod(
                                         Member(NAME_OUTPUTFIRSTHELPER),
-                                        "getOrAllocate",
+                                        "GetOrAllocate",
                                         Ref("mk"),
                                         MEMBER_EXPREVALCONTEXT,
                                         outputFactory))
                                 .DeclareVar<bool>("pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(1),
                                         Constant(0)));
                             forloop.IfCondition(Ref("pass"))
@@ -1532,14 +1532,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             forloop.DeclareVar<OutputConditionPolled>("outputStateGroup",
                                     ExprDotMethod(
                                         Member(NAME_OUTPUTFIRSTHELPER),
-                                        "getOrAllocate",
+                                        "GetOrAllocate",
                                         Ref("mk"),
                                         MEMBER_EXPREVALCONTEXT,
                                         outputFactory))
                                 .DeclareVar<bool>("pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(0),
                                         Constant(1)));
                             forloop.IfCondition(Ref("pass"))
@@ -1574,7 +1574,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         "newEventsArr",
                         ExprDotMethod(
                             MEMBER_ORDERBYPROCESSOR,
-                            "sortWOrderKeys",
+                            "SortWOrderKeys",
                             Ref("newEventsArr"),
                             Ref("sortKeysNew"),
                             MEMBER_EXPREVALCONTEXT));
@@ -1650,7 +1650,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         LocalMethod(forge.GenerateGroupKeyArrayJoin, Ref("oldData"), ConstantFalse()));
 
                 if (forge.IsUnidirectional) {
-                    forEach.ExprDotMethod(Ref("this"), "clear");
+                    forEach.ExprDotMethod(Ref("this"), "Clear");
                 }
 
                 {
@@ -1777,7 +1777,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         LocalMethod(forge.GenerateGroupKeyArrayJoin, Ref("oldData"), ConstantFalse()));
 
                 if (forge.IsUnidirectional) {
-                    forEach.ExprDotMethod(Ref("this"), "clear");
+                    forEach.ExprDotMethod(Ref("this"), "Clear");
                 }
 
                 forEach.StaticMethod(
@@ -1934,7 +1934,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         "newEventsArr",
                         ExprDotMethod(
                             MEMBER_ORDERBYPROCESSOR,
-                            "sortWOrderKeys",
+                            "SortWOrderKeys",
                             Ref("newEventsArr"),
                             Ref("sortKeysNew"),
                             MEMBER_EXPREVALCONTEXT));
@@ -1950,7 +1950,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             "oldEventsArr",
                             ExprDotMethod(
                                 MEMBER_ORDERBYPROCESSOR,
-                                "sortWOrderKeys",
+                                "SortWOrderKeys",
                                 Ref("oldEventsArr"),
                                 Ref("sortKeysOld"),
                                 MEMBER_EXPREVALCONTEXT));
@@ -2041,14 +2041,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                 .DeclareVar<OutputConditionPolled>("outputStateGroup",
                                     ExprDotMethod(
                                         Member(NAME_OUTPUTFIRSTHELPER),
-                                        "getOrAllocate",
+                                        "GetOrAllocate",
                                         Ref("mk"),
                                         MEMBER_EXPREVALCONTEXT,
                                         outputFactory))
                                 .DeclareVar<bool>("pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(1),
                                         Constant(0)));
                             var ifPass = forloop.IfCondition(Ref("pass"));
@@ -2077,14 +2077,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                                 .DeclareVar<OutputConditionPolled>("outputStateGroup",
                                     ExprDotMethod(
                                         Member(NAME_OUTPUTFIRSTHELPER),
-                                        "getOrAllocate",
+                                        "GetOrAllocate",
                                         Ref("mk"),
                                         MEMBER_EXPREVALCONTEXT,
                                         outputFactory))
                                 .DeclareVar<bool>("pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(0),
                                         Constant(1)));
                             var ifPass = forloop.IfCondition(Ref("pass"));
@@ -2169,14 +2169,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             forloop.DeclareVar<OutputConditionPolled>("outputStateGroup",
                                     ExprDotMethod(
                                         Member(NAME_OUTPUTFIRSTHELPER),
-                                        "getOrAllocate",
+                                        "GetOrAllocate",
                                         Ref("mk"),
                                         MEMBER_EXPREVALCONTEXT,
                                         outputFactory))
                                 .DeclareVar<bool>("pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(1),
                                         Constant(0)));
                             forloop.IfCondition(Ref("pass"))
@@ -2215,14 +2215,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                             forloop.DeclareVar<OutputConditionPolled>("outputStateGroup",
                                     ExprDotMethod(
                                         Member(NAME_OUTPUTFIRSTHELPER),
-                                        "getOrAllocate",
+                                        "GetOrAllocate",
                                         Ref("mk"),
                                         MEMBER_EXPREVALCONTEXT,
                                         outputFactory))
                                 .DeclareVar<bool>("pass",
                                     ExprDotMethod(
                                         Ref("outputStateGroup"),
-                                        "updateOutputCondition",
+                                        "UpdateOutputCondition",
                                         Constant(0),
                                         Constant(1)));
                             forloop.IfCondition(Ref("pass"))
@@ -2261,7 +2261,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         "newEventsArr",
                         ExprDotMethod(
                             MEMBER_ORDERBYPROCESSOR,
-                            "sortWOrderKeys",
+                            "SortWOrderKeys",
                             Ref("newEventsArr"),
                             Ref("sortKeysNew"),
                             MEMBER_EXPREVALCONTEXT));
@@ -2519,10 +2519,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 GenerateOutputBatchedAddToListSingleCodegen(forge, classScope, instance);
 
             Consumer<CodegenMethod> code = methodNode => {
-                methodNode.Block.ForEach(
-						typeof(KeyValuePair<object, EventBean[]>),
-                        "entry",
-                        ExprDotMethod(Ref("keysAndEvents"), "entrySet"))
+                methodNode.Block
+                    .ForEachVar("entry", Ref("keysAndEvents"))
                     .LocalMethod(
                         generateOutputBatchedAddToListSingle,
                         ExprDotName(Ref("entry"), "Key"),
@@ -2535,7 +2533,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             return instance.Methods.AddMethod(
                 typeof(void),
-                "generateOutputBatchedAddToList",
+                "GenerateOutputBatchedAddToList",
                 CodegenNamedParam.From(
                     EPTYPE_MAP_OBJECT_EVENTBEANARRAY,
                     "keysAndEvents",
@@ -2604,7 +2602,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             return instance.Methods.AddMethod(
                 typeof(void),
-                "generateOutputBatchedAddToListSingle",
+                "GenerateOutputBatchedAddToListSingle",
                 CodegenNamedParam.From(
                     typeof(object),
                     "key",
@@ -2686,7 +2684,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             };
             return instance.Methods.AddMethod(
                 typeof(void),
-                "generateOutputBatchedViewUnkeyed",
+                "GenerateOutputBatchedViewUnkeyed",
                 CodegenNamedParam.From(
                     typeof(EventBean[]),
                     "outputEvents",
@@ -2762,7 +2760,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             return instance.Methods.AddMethod(
                 typeof(UniformPair<EventBean[]>),
-                "processViewResultPairDepthOne",
+                "ProcessViewResultPairDepthOne",
                 CodegenNamedParam.From(
                     typeof(EventBean[]),
                     NAME_NEWDATA,
@@ -2805,7 +2803,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
 
             return instance.Methods.AddMethod(
                 typeof(UniformPair<EventBean[]>),
-                "processViewResultNewDepthOneCodegen",
+                "ProcessViewResultNewDepthOneCodegen",
                 CodegenNamedParam.From(typeof(EventBean[]), NAME_NEWDATA, typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,

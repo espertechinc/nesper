@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "id".SplitCsv();
+                var fields = "Id".SplitCsv();
                 env.AdvanceTime(1000);
 
                 var text = "@name('s0') select irstream * from SupportBeanTimestamp#time_order(timestamp, 10 sec)";
@@ -134,14 +134,14 @@ namespace com.espertech.esper.regressionlib.suite.view
                 AssertIdReceived(env, "E2");
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { "E2" }, new object[] { "E1" } });
 
                 env.Milestone(2);
 
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { "E2" }, new object[] { "E1" } });
 
                 // 3rd event
@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { "E4" }, new object[] { "E1" }, new object[] { "E3" } });
 
                 // Window pushes out event E4
@@ -298,7 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 RegressionEnvironment env,
                 string expected)
             {
-                env.AssertEqualsNew("s0", "id", expected);
+                env.AssertEqualsNew("s0", "Id", expected);
             }
         }
 
@@ -306,10 +306,10 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,longPrimitive".SplitCsv();
+                var fields = "TheString,LongPrimitive".SplitCsv();
 
                 env.AdvanceTime(0);
-                var epl = "@name('s0') select irstream * from SupportBean.ext:time_order(longPrimitive, 10 sec)";
+                var epl = "@name('s0') select irstream * from SupportBean.ext:time_order(LongPrimitive, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertPropsPerRowIterator("s0", fields, null);
@@ -379,7 +379,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
 
-                var fields = "id".SplitCsv();
+                var fields = "Id".SplitCsv();
                 var epl = "@name('s0') select irstream * from SupportBeanTimestamp#timetolive(timestamp)";
                 env.CompileDeploy(epl).AddListener("s0").Milestone(0);
 
@@ -475,7 +475,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListenerNotInvoked("s0");
 
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
-                env.AssertPropsPerRowLastNew("s0", "id".SplitCsv(), new object[][] { new object[] { "E1" } });
+                env.AssertPropsPerRowLastNew("s0", "Id".SplitCsv(), new object[][] { new object[] { "E1" } });
 
                 env.UndeployAll();
             }
@@ -485,10 +485,10 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "id".SplitCsv();
+                var fields = "Id".SplitCsv();
                 SendTimer(env, 1000);
                 var epl =
-                    "insert rstream into OrderedStream select rstream id from SupportBeanTimestamp#time_order(timestamp, 10 sec);\n" +
+                    "insert rstream into OrderedStream select rstream Id from SupportBeanTimestamp#time_order(timestamp, 10 sec);\n" +
                     "@name('s0') select * from OrderedStream";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -576,23 +576,23 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "id".SplitCsv();
+                var fields = "Id".SplitCsv();
                 SendTimer(env, 1000);
 
                 var epl = "@name('s0') select irstream * from SupportBeanTimestamp#time_order(timestamp, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, null);
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, null);
 
                 SendTimer(env, 21000);
                 env.AssertListenerNotInvoked("s0");
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, null);
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, null);
 
                 env.Milestone(0);
 
                 // 1st event at 21 sec
                 SendEvent(env, "E1", 21000);
                 AssertId(env, "E1");
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, new object[][] { new object[] { "E1" } });
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, new object[][] { new object[] { "E1" } });
 
                 // 2nd event at 22 sec
                 SendTimer(env, 22000);
@@ -600,7 +600,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 AssertId(env, "E2");
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 // 3nd event at 28 sec
@@ -609,7 +609,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 AssertId(env, "E3");
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E3" } });
 
                 env.Milestone(1);
@@ -620,7 +620,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 AssertId(env, "E4");
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][]
                         { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E4" }, new object[] { "E3" } });
 
@@ -629,7 +629,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 AssertId(env, "E5");
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] {
                         new object[] { "E1" }, new object[] { "E2" }, new object[] { "E5" }, new object[] { "E4" },
                         new object[] { "E3" }
@@ -642,7 +642,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsPerRowIRPair("s0", fields, null, new object[][] { new object[] { "E1" } });
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][]
                         { new object[] { "E2" }, new object[] { "E5" }, new object[] { "E4" }, new object[] { "E3" } });
 
@@ -655,7 +655,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     new object[][] { new object[] { "E6" } });
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][]
                         { new object[] { "E2" }, new object[] { "E5" }, new object[] { "E4" }, new object[] { "E3" } });
 
@@ -664,7 +664,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 AssertId(env, "E7");
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] {
                         new object[] { "E7" }, new object[] { "E2" }, new object[] { "E5" }, new object[] { "E4" },
                         new object[] { "E3" }
@@ -677,7 +677,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsPerRowIRPair("s0", fields, null, new object[][] { new object[] { "E7" } });
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][]
                         { new object[] { "E2" }, new object[] { "E5" }, new object[] { "E4" }, new object[] { "E3" } });
 
@@ -692,7 +692,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     new object[][] { new object[] { "E2" }, new object[] { "E5" } });
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { "E4" }, new object[] { "E3" } });
 
                 // flush one
@@ -700,7 +700,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListenerNotInvoked("s0");
                 SendTimer(env, 37000);
                 env.AssertPropsPerRowIRPair("s0", fields, null, new object[][] { new object[] { "E4" } });
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, new object[][] { new object[] { "E3" } });
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, new object[][] { new object[] { "E3" } });
 
                 // rather old event
                 SendEvent(env, "E8", 21000);
@@ -709,14 +709,14 @@ namespace com.espertech.esper.regressionlib.suite.view
                     fields,
                     new object[][] { new object[] { "E8" } },
                     new object[][] { new object[] { "E8" } });
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, new object[][] { new object[] { "E3" } });
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, new object[][] { new object[] { "E3" } });
 
                 // 9-second old event for posting at 38 sec
                 SendEvent(env, "E9", 28000);
                 AssertId(env, "E9");
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { "E3" }, new object[] { "E9" } });
 
                 // flush two
@@ -728,32 +728,32 @@ namespace com.espertech.esper.regressionlib.suite.view
                     fields,
                     null,
                     new object[][] { new object[] { "E3" }, new object[] { "E9" } });
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, null);
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, null);
 
                 // new event
                 SendEvent(env, "E10", 38000);
                 AssertId(env, "E10");
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, new object[][] { new object[] { "E10" } });
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, new object[][] { new object[] { "E10" } });
 
                 // flush last
                 SendTimer(env, 47999);
                 env.AssertListenerNotInvoked("s0");
                 SendTimer(env, 48000);
                 env.AssertPropsPerRowIRPair("s0", fields, null, new object[][] { new object[] { "E10" } });
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, null);
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, null);
 
                 // last, in the future
                 SendEvent(env, "E11", 70000);
                 AssertId(env, "E11");
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, new object[][] { new object[] { "E11" } });
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, new object[][] { new object[] { "E11" } });
 
                 SendTimer(env, 80000);
                 env.AssertPropsPerRowIRPair("s0", fields, null, new object[][] { new object[] { "E11" } });
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, null);
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, null);
 
                 SendTimer(env, 100000);
                 env.AssertListenerNotInvoked("s0");
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, null);
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, null);
 
                 env.UndeployAll();
             }
@@ -763,7 +763,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "id".SplitCsv();
+                var fields = "Id".SplitCsv();
                 SendTimer(env, 20000);
                 var epl =
                     "@name('s0') select irstream * from SupportBeanTimestamp#groupwin(groupId)#time_order(timestamp, 10 sec)";
@@ -776,34 +776,34 @@ namespace com.espertech.esper.regressionlib.suite.view
                     fields,
                     new object[][] { new object[] { "E1" } },
                     new object[][] { new object[] { "E1" } });
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, null);
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, null);
 
                 env.Milestone(0);
 
                 // 2nd just fits
                 SendEvent(env, "E2", "G2", 10001);
                 AssertId(env, "E2");
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, new object[][] { new object[] { "E2" } });
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, new object[][] { new object[] { "E2" } });
 
                 SendEvent(env, "E3", "G3", 20000);
                 AssertId(env, "E3");
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { "E2" }, new object[] { "E3" } });
 
                 SendEvent(env, "E4", "G2", 20000);
                 AssertId(env, "E4");
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { "E2" }, new object[] { "E4" }, new object[] { "E3" } });
 
                 SendTimer(env, 20001);
                 env.AssertPropsPerRowIRPair("s0", fields, null, new object[][] { new object[] { "E2" } });
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { "E4" }, new object[] { "E3" } });
 
                 env.Milestone(1);
@@ -813,14 +813,14 @@ namespace com.espertech.esper.regressionlib.suite.view
                 AssertId(env, "E5");
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { "E5" }, new object[] { "E4" }, new object[] { "E3" } });
 
                 SendTimer(env, 29000);
                 env.AssertPropsPerRowIRPair("s0", fields, null, new object[][] { new object[] { "E5" } });
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { "E4" }, new object[] { "E3" } });
 
                 SendTimer(env, 30000);
@@ -832,11 +832,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                         Assert.AreEqual(2, listener.LastOldData.Length);
                         EPAssertionUtil.AssertPropsPerRowAnyOrder(
                             listener.LastOldData,
-                            "id".SplitCsv(),
+                            "Id".SplitCsv(),
                             new object[][] { new object[] { "E4" }, new object[] { "E3" } });
                         listener.Reset();
                     });
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, null);
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, null);
 
                 SendTimer(env, 100000);
                 env.AssertListenerNotInvoked("s0");
@@ -859,7 +859,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 env.TryInvalidCompile(
                     "select * from SupportBeanTimestamp#time_order(timestamp, abc)",
-                    "Failed to validate data window declaration: Invalid parameter expression 1 for Time-Order view: Failed to validate view parameter expression 'abc': Property named 'abc' is not valid in any stream (did you mean 'id'?) [");
+                    "Failed to validate data window declaration: Invalid parameter expression 1 for Time-Order view: Failed to validate view parameter expression 'abc': Property named 'abc' is not valid in any stream (did you mean 'Id'?) [");
             }
         }
 
@@ -869,23 +869,23 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 1000);
 
-                var epl = "@name('s0') select irstream id, " +
-                          " prev(0, id) as prevIdZero, " +
-                          " prev(1, id) as prevIdOne, " +
-                          " prior(1, id) as priorIdOne," +
-                          " prevtail(0, id) as prevTailIdZero, " +
-                          " prevtail(1, id) as prevTailIdOne, " +
-                          " prevcount(id) as prevCountId, " +
-                          " prevwindow(id) as prevWindowId " +
+                var epl = "@name('s0') select irstream Id, " +
+                          " prev(0, Id) as prevIdZero, " +
+                          " prev(1, Id) as prevIdOne, " +
+                          " prior(1, Id) as priorIdOne," +
+                          " prevtail(0, Id) as prevTailIdZero, " +
+                          " prevtail(1, Id) as prevTailIdOne, " +
+                          " prevcount(Id) as prevCountId, " +
+                          " prevwindow(Id) as prevWindowId " +
                           " from SupportBeanTimestamp#time_order(timestamp, 10 sec)";
                 env.CompileDeploy(epl).AddListener("s0");
                 var fields = new string[]
-                    { "id", "prevIdZero", "prevIdOne", "priorIdOne", "prevTailIdZero", "prevTailIdOne", "prevCountId" };
+                    { "Id", "prevIdZero", "prevIdOne", "priorIdOne", "prevTailIdZero", "prevTailIdOne", "prevCountId" };
 
                 SendTimer(env, 20000);
                 SendEvent(env, "E1", 25000);
                 AssertId(env, "E1");
-                env.AssertPropsPerRowIterator("s0", new string[] { "id" }, new object[][] { new object[] { "E1" } });
+                env.AssertPropsPerRowIterator("s0", new string[] { "Id" }, new object[][] { new object[] { "E1" } });
 
                 env.Milestone(0);
 
@@ -893,7 +893,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual("E2", theEvent.Get("id"));
+                        Assert.AreEqual("E2", theEvent.Get("Id"));
                         Assert.AreEqual("E2", theEvent.Get("prevIdZero"));
                         Assert.AreEqual("E1", theEvent.Get("prevIdOne"));
                         Assert.AreEqual("E1", theEvent.Get("priorIdOne"));
@@ -916,7 +916,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual("E3", theEvent.Get("id"));
+                        Assert.AreEqual("E3", theEvent.Get("Id"));
                         Assert.AreEqual("E2", theEvent.Get("prevIdZero"));
                         Assert.AreEqual("E3", theEvent.Get("prevIdOne"));
                         Assert.AreEqual("E2", theEvent.Get("priorIdOne"));
@@ -944,7 +944,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                         Assert.AreEqual(1, listener.OldDataList.Count);
                         Assert.AreEqual(1, listener.LastOldData.Length);
                         var theEvent = env.Listener("s0").LastOldData[0];
-                        Assert.AreEqual("E2", theEvent.Get("id"));
+                        Assert.AreEqual("E2", theEvent.Get("Id"));
                         Assert.IsNull(theEvent.Get("prevIdZero"));
                         Assert.IsNull(theEvent.Get("prevIdOne"));
                         Assert.AreEqual("E1", theEvent.Get("priorIdOne"));
@@ -972,12 +972,12 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(1000);
 
-                var text = "@name('s0') select irstream id, " +
-                           "prev(1, id) as prevId, " +
-                           "prior(1, id) as priorId, " +
-                           "prevtail(0, id) as prevtail, " +
-                           "prevcount(id) as prevCountId, " +
-                           "prevwindow(id) as prevWindowId " +
+                var text = "@name('s0') select irstream Id, " +
+                           "prev(1, Id) as prevId, " +
+                           "prior(1, Id) as priorId, " +
+                           "prevtail(0, Id) as prevtail, " +
+                           "prevcount(Id) as prevCountId, " +
+                           "prevwindow(Id) as prevWindowId " +
                            "from SupportBeanTimestamp#time_order(timestamp, 10 sec)";
                 env.CompileDeploy(text).AddListener("s0").Milestone(0);
 
@@ -1111,7 +1111,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             long? prevCountId,
             object[] prevWindowId)
         {
-            Assert.AreEqual(id, @event.Get("id"));
+            Assert.AreEqual(id, @event.Get("Id"));
             Assert.AreEqual(prevId, @event.Get("prevId"));
             Assert.AreEqual(priorId, @event.Get("priorId"));
             Assert.AreEqual(prevTailId, @event.Get("prevtail"));
@@ -1133,7 +1133,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             RegressionEnvironment env,
             string expected)
         {
-            env.AssertEqualsNew("s0", "id", expected);
+            env.AssertEqualsNew("s0", "Id", expected);
         }
     }
 } // end of namespace

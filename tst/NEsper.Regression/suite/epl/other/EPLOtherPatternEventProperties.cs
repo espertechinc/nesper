@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                SetupSimplePattern(env, "a, a as myEvent, a.intPrimitive as myInt, a.theString");
+                SetupSimplePattern(env, "a, a as myEvent, a.IntPrimitive as myInt, a.TheString");
 
                 var theEvent = new SupportBean();
                 theEvent.IntPrimitive = 1;
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         Assert.AreSame(theEvent, eventBean.Get("a"));
                         Assert.AreSame(theEvent, eventBean.Get("myEvent"));
                         Assert.AreEqual(1, eventBean.Get("myInt"));
-                        Assert.AreEqual("test", eventBean.Get("a.theString"));
+                        Assert.AreEqual("test", eventBean.Get("a.TheString"));
                     });
 
                 env.UndeployAll();
@@ -130,8 +130,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 SetupOrPattern(
                     env,
-                    "a, a as myAEvent, b, b as myBEvent, a.intPrimitive as myInt, " +
-                    "a.theString, b.simpleProperty as simple, b.indexed[0] as indexed, b.nested.nestedValue as nestedVal");
+                    "a, a as myAEvent, b, b as myBEvent, a.IntPrimitive as myInt, " +
+                    "a.TheString, b.SimpleProperty as simple, b.indexed[0] as indexed, b.Nested.NestedValue as nestedVal");
 
                 object theEvent = SupportBeanComplexProps.MakeDefaultBean();
                 env.SendEventBean(theEvent);
@@ -141,11 +141,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         Assert.AreSame(theEvent, eventBean.Get("b"));
                         Assert.AreEqual("simple", eventBean.Get("simple"));
                         Assert.AreEqual(1, eventBean.Get("indexed"));
-                        Assert.AreEqual("nestedValue", eventBean.Get("nestedVal"));
+                        Assert.AreEqual("NestedValue", eventBean.Get("NestedVal"));
                         Assert.IsNull(eventBean.Get("a"));
                         Assert.IsNull(eventBean.Get("myAEvent"));
                         Assert.IsNull(eventBean.Get("myInt"));
-                        Assert.IsNull(eventBean.Get("a.theString"));
+                        Assert.IsNull(eventBean.Get("a.TheString"));
                     });
 
                 var eventTwo = new SupportBean();
@@ -156,12 +156,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     eventBean => {
                         Assert.AreEqual(2, eventBean.Get("myInt"));
-                        Assert.AreEqual("test2", eventBean.Get("a.theString"));
+                        Assert.AreEqual("test2", eventBean.Get("a.TheString"));
                         Assert.IsNull(eventBean.Get("b"));
                         Assert.IsNull(eventBean.Get("myBEvent"));
                         Assert.IsNull(eventBean.Get("simple"));
                         Assert.IsNull(eventBean.Get("indexed"));
-                        Assert.IsNull(eventBean.Get("nestedVal"));
+                        Assert.IsNull(eventBean.Get("NestedVal"));
                     });
 
                 env.UndeployAll();

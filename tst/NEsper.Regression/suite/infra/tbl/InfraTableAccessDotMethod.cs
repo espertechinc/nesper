@@ -182,20 +182,20 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var eplInto = "into table varaggNDM " +
                           "select window(*) as windowSupportBean from SupportBean#length(2)" +
-                          (grouped ? " group by theString" : "");
+                          (grouped ? " group by TheString" : "");
             env.CompileDeploy(soda, eplInto, path);
 
             var key = grouped ? "[\"E1\"]" : "";
             var eplSelect = "@name('s0') select " +
                             "varaggNDM" +
                             key +
-                            ".windowSupportBean.last(*).intPrimitive as c0, " +
+                            ".windowSupportBean.last(*).IntPrimitive as c0, " +
                             "varaggNDM" +
                             key +
                             ".windowSupportBean.window(*).countOf() as c1, " +
                             "varaggNDM" +
                             key +
-                            ".windowSupportBean.window(intPrimitive).take(1) as c2" +
+                            ".windowSupportBean.window(IntPrimitive).take(1) as c2" +
                             " from SupportBean_S0";
             env.CompileDeploy(soda, eplSelect, path).AddListener("s0");
             var expectedAggType = new object[][] {
@@ -253,8 +253,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.CompileDeploy(soda, eplDeclare, path);
 
             var eplInto = "@name('into') into table varaggWDE " +
-                          "select lastever(longPrimitive) as a1, window(*) as a2 from SupportBean#time(10 seconds)" +
-                          (grouped ? " group by theString" : "");
+                          "select lastever(LongPrimitive) as a1, window(*) as a2 from SupportBean#time(10 seconds)" +
+                          (grouped ? " group by TheString" : "");
             env.CompileDeploy(soda, eplInto, path);
             var expectedAggType = new object[][]
                 { new object[] { "a1", typeof(long?) }, new object[] { "a2", typeof(SupportBean[]) } };

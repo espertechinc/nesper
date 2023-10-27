@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             ValidateIntoTableWFilterWInputType(tableExpression, intoTableAgg, intoExpression, factory);
         }
 
-        public bool HasFilter { get; set; }
+        public virtual bool HasFilter { get; set; }
 
         public Type InputValueType { get; set; }
     }

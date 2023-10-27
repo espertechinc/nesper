@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         Constant(0),
                         StaticMethod(
                             typeof(EventBeanUtility),
-                            "getNonemptyFirstEvent",
+                            "GetNonemptyFirstEvent",
                             symbols.GetAddMatchingEvents(method)));
             }
             else {
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         "subselectResult",
                         StaticMethod(
                             typeof(EventBeanUtility),
-                            "evaluateFilterExpectSingleMatch",
+                            "EvaluateFilterExpectSingleMatch",
                             REF_EVENTS_SHIFTED,
                             symbols.GetAddIsNewData(method),
                             symbols.GetAddMatchingEvents(method),
@@ -138,17 +138,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .DeclareVar(
                         typeof(object[][]),
                         "rows",
-                        NewArrayByLength(typeof(object[]), ExprDotMethod(symbols.GetAddMatchingEvents(method), "size")))
+                        NewArrayByLength(typeof(object[]), ExprDotName(symbols.GetAddMatchingEvents(method), "Count")))
                     .DeclareVar<int>("index", Constant(-1))
                     .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
                 var foreachEvent = method.Block.ForEach(
                     typeof(EventBean),
-                    "event",
+                    "@event",
                     symbols.GetAddMatchingEvents(method));
                 {
                     foreachEvent
                         .IncrementRef("index")
-                        .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("event"))
+                        .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"))
                         .DeclareVar<object[]>(
                             "results",
                             NewArrayByLength(typeof(object), Constant(_subselect.selectClause.Length)))
@@ -177,17 +177,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     GetType(),
                     classScope);
                 method.Block
-                    .DeclareVar(
-                        typeof(ArrayDeque<object[]>),
-                        "rows",
-                        NewInstance(typeof(ArrayDeque<object[]>)))
+                    .DeclareVar<ArrayDeque<object[]>>("rows", NewInstance<ArrayDeque<object[]>>())
                     .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
                 var foreachEvent = method.Block.ForEach(
                     typeof(EventBean),
-                    "event",
+                    "@event",
                     symbols.GetAddMatchingEvents(method));
                 {
-                    foreachEvent.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("event"));
+                    foreachEvent.AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("@event"));
 
                     var filter = CodegenLegoMethodExpression.CodegenExpression(
                         _subselect.filterExpr,
@@ -225,10 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 method.Block
                     .IfCondition(ExprDotMethod(Ref("rows"), "IsEmpty"))
                     .BlockReturn(EnumValue(typeof(CollectionUtil), "OBJECTARRAYARRAY_EMPTY"))
-                    .MethodReturn(
-                        Cast(
-                            typeof(object[][]),
-                            ExprDotMethod(Ref("rows"), "toArray", NewArrayByLength(typeof(object[]), Constant(0)))));
+                    .MethodReturn(ExprDotMethod(Ref("rows"), "ToArray"));
                 return LocalMethod(method);
             }
         }

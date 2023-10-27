@@ -8,11 +8,10 @@
 
 using System;
 using System.Xml;
-using System.Xml.Schema;
 using System.Xml.XPath;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
-using com.espertech.esper.common.@internal.settings;
+using com.espertech.esper.common.@internal.xmlxsd.core;
 using com.espertech.esper.container;
 using NUnit.Framework;
 
@@ -57,22 +56,22 @@ namespace com.espertech.esper.common.@internal.@event.xml
         [Test]
         public void TestNestedProperties()
         {
-            Assert.AreEqual(true, eventSchemaOne.Get("nested1.prop2"));
-            Assert.AreEqual(typeof(bool), eventSchemaOne.Get("nested1.prop2").GetType());
+            Assert.AreEqual(true, eventSchemaOne.Get("Nested1.prop2"));
+            Assert.AreEqual(typeof(bool), eventSchemaOne.Get("Nested1.prop2").GetType());
         }
 
         [Test]
         public void TestMappedProperties()
         {
-            Assert.AreEqual("SAMPLE_V8", eventSchemaOne.Get("nested3.nested4('a').prop5[1]"));
-            Assert.AreEqual("SAMPLE_V11", eventSchemaOne.Get("nested3.nested4('c').prop5[1]"));
+            Assert.AreEqual("SAMPLE_V8", eventSchemaOne.Get("Nested3.Nested4('a').prop5[1]"));
+            Assert.AreEqual("SAMPLE_V11", eventSchemaOne.Get("Nested3.Nested4('c').prop5[1]"));
         }
 
         [Test]
         public void TestIndexedProperties()
         {
-            Assert.AreEqual(5, eventSchemaOne.Get("nested1.nested2.prop3[2]"));
-            Assert.AreEqual(typeof(int?), eventSchemaOne.EventType.GetPropertyType("nested1.nested2.prop3[2]"));
+            Assert.AreEqual(5, eventSchemaOne.Get("Nested1.Nested2.prop3[2]"));
+            Assert.AreEqual(typeof(int?), eventSchemaOne.EventType.GetPropertyType("Nested1.Nested2.prop3[2]"));
         }
 
         [Test]
@@ -88,8 +87,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.AreEqual(true, eventSchemaOne.Get("prop4.attr2"));
             Assert.AreEqual(typeof(bool?), eventSchemaOne.EventType.GetPropertyType("prop4.attr2"));
 
-            Assert.AreEqual("c", eventSchemaOne.Get("nested3.nested4[2].id"));
-            Assert.AreEqual(typeof(string), eventSchemaOne.EventType.GetPropertyType("nested3.nested4[1].id"));
+            Assert.AreEqual("c", eventSchemaOne.Get("Nested3.Nested4[2].Id"));
+            Assert.AreEqual(typeof(string), eventSchemaOne.EventType.GetPropertyType("Nested3.Nested4[1].Id"));
         }
 
         [Test]
@@ -97,7 +96,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
         {
             try
             {
-                var prop = "nested3.nested4.id";
+                var prop = "Nested3.Nested4.Id";
                 eventSchemaOne.EventType.GetGetter(prop);
                 Assert.Fail("Invalid collection access: " + prop + " accepted");
             }
@@ -107,7 +106,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
             try
             {
-                var prop = "nested3.nested4.nested5";
+                var prop = "Nested3.Nested4.Nested5";
                 eventSchemaOne.EventType.GetGetter(prop);
                 Assert.Fail("Invalid collection access: " + prop + " accepted");
             }
@@ -115,30 +114,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
             {
                 //Expected
             }
-        }
-    }
-
-    public class EventTypeXMLXSDHandlerImpl : EventTypeXMLXSDHandler
-    {
-        public XPathResultType SimpleTypeToResultType(XmlSchemaSimpleType type)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Type ToReturnType(
-            XmlSchemaSimpleType xsType,
-            string typeName,
-            int? optionalFractionDigits)
-        {
-            throw new NotImplementedException();
-        }
-
-        public SchemaModel LoadAndMap(
-            string schemaResource,
-            string schemaText,
-            ImportService importService)
-        {
-            throw new NotImplementedException();
         }
     }
 } // end of namespace

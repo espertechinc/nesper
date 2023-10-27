@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.bean.manufacturer;
@@ -28,7 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly ClassDescriptor _classIdentNoDimensions;
         private readonly int _numArrayDimensions;
         private bool _arrayInitializedByExpr;
-        [NonSerialized] private ExprForge _forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprForge _forge;
 
         public ExprNewInstanceNode(
             ClassDescriptor classIdentNoDimensions,

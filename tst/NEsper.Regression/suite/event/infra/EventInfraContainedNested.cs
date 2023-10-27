@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Map
             Consumer<string> map = id => {
-                var leaf = Collections.SingletonDataMap("id", id);
+                var leaf = Collections.SingletonDataMap("Id", id);
                 var inner = Collections.SingletonDataMap("leaf", leaf);
                 env.SendEventMap(Collections.SingletonDataMap("property", inner), "LocalEvent");
             };
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Json
             Consumer<string> json = id => {
-                var leaf = new JObject(new JProperty("id", id));
+                var leaf = new JObject(new JProperty("Id", id));
                 var inner = new JObject(new JProperty("leaf", leaf));
                 var @event = new JObject(new JProperty("property", inner));
                 env.SendEventJson(@event.ToString(), "LocalEvent");
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 var schema = env.RuntimeAvroSchemaByDeployment("schema", "LocalEvent");
                 var leaf = new GenericRecord(
                     schema.GetField("property").Schema.GetField("leaf").Schema.AsRecordSchema());
-                leaf.Put("id", id);
+                leaf.Put("Id", id);
                 var inner = new GenericRecord(schema.GetField("property").Schema.AsRecordSchema());
                 inner.Put("leaf", leaf);
                 var @event = new GenericRecord(schema.AsRecordSchema());
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             return "create " +
                    underlying +
-                   " schema LocalLeafEvent(id string);\n" +
+                   " schema LocalLeafEvent(Id string);\n" +
                    "create " +
                    underlying +
                    " schema LocalInnerEvent(leaf LocalLeafEvent);\n" +
@@ -109,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 .AddListener("s0");
 
             sender.Invoke("a");
-            env.AssertEqualsNew("s0", "id", "a");
+            env.AssertEqualsNew("s0", "Id", "a");
 
             env.UndeployAll();
         }

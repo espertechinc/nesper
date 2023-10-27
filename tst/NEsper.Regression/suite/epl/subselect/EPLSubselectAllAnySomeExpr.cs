@@ -85,11 +85,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "g,ge,l,le".SplitCsv();
                 var stmtText = "@name('s0') select " +
-                               "intPrimitive > all (select intPrimitive from SupportBean(theString like \"S%\")#keepall) as g, " +
-                               "intPrimitive >= all (select intPrimitive from SupportBean(theString like \"S%\")#keepall) as ge, " +
-                               "intPrimitive < all (select intPrimitive from SupportBean(theString like \"S%\")#keepall) as l, " +
-                               "intPrimitive <= all (select intPrimitive from SupportBean(theString like \"S%\")#keepall) as le " +
-                               "from SupportBean(theString like \"E%\")";
+                               "IntPrimitive > all (select IntPrimitive from SupportBean(TheString like \"S%\")#keepall) as g, " +
+                               "IntPrimitive >= all (select IntPrimitive from SupportBean(TheString like \"S%\")#keepall) as ge, " +
+                               "IntPrimitive < all (select IntPrimitive from SupportBean(TheString like \"S%\")#keepall) as l, " +
+                               "IntPrimitive <= all (select IntPrimitive from SupportBean(TheString like \"S%\")#keepall) as le " +
+                               "from SupportBean(TheString like \"E%\")";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -120,8 +120,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.UndeployAll();
 
                 env.TryInvalidCompile(
-                    "select intArr > all (select intPrimitive from SupportBean#keepall) from SupportBeanArrayCollMap",
-                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords [select intArr > all (select intPrimitive from SupportBean#keepall) from SupportBeanArrayCollMap]");
+                    "select IntArr > all (select IntPrimitive from SupportBean#keepall) from SupportBeanArrayCollMap",
+                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords [select IntArr > all (select IntPrimitive from SupportBean#keepall) from SupportBeanArrayCollMap]");
 
                 // test OM
                 env.EplToModelCompileDeploy(stmtText).AddListener("s0");
@@ -137,9 +137,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "vall,vany".SplitCsv();
                 var stmtText = "@name('s0') select " +
-                               "intBoxed >= all (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as vall, " +
-                               "intBoxed >= any (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as vany " +
-                               " from SupportBean(theString like 'E%')";
+                               "IntBoxed >= all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as vall, " +
+                               "IntBoxed >= any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as vany " +
+                               " from SupportBean(TheString like 'E%')";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // subs is empty
@@ -180,11 +180,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "g,ge,l,le".SplitCsv();
                 var stmtText = "@name('s0') select " +
-                               "intPrimitive > any (select intPrimitive from SupportBean(theString like 'S%')#keepall) as g, " +
-                               "intPrimitive >= any (select intPrimitive from SupportBean(theString like 'S%')#keepall) as ge, " +
-                               "intPrimitive < any (select intPrimitive from SupportBean(theString like 'S%')#keepall) as l, " +
-                               "intPrimitive <= any (select intPrimitive from SupportBean(theString like 'S%')#keepall) as le " +
-                               " from SupportBean(theString like 'E%')";
+                               "IntPrimitive > any (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as g, " +
+                               "IntPrimitive >= any (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as ge, " +
+                               "IntPrimitive < any (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as l, " +
+                               "IntPrimitive <= any (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as le " +
+                               " from SupportBean(TheString like 'E%')";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -225,11 +225,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "eq,neq,sqlneq,nneq".SplitCsv();
                 var stmtText = "@name('s0') select " +
-                               "intPrimitive=all(select intPrimitive from SupportBean(theString like 'S%')#keepall) as eq, " +
-                               "intPrimitive != all (select intPrimitive from SupportBean(theString like 'S%')#keepall) as neq, " +
-                               "intPrimitive <> all (select intPrimitive from SupportBean(theString like 'S%')#keepall) as sqlneq, " +
-                               "not intPrimitive = all (select intPrimitive from SupportBean(theString like 'S%')#keepall) as nneq " +
-                               " from SupportBean(theString like 'E%')";
+                               "IntPrimitive=all(select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as eq, " +
+                               "IntPrimitive != all (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as neq, " +
+                               "IntPrimitive <> all (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as sqlneq, " +
+                               "not IntPrimitive = all (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as nneq " +
+                               " from SupportBean(TheString like 'E%')";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -261,11 +261,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "r1,r2,r3,r4".SplitCsv();
                 var stmtText = "@name('s0') select " +
-                               "intPrimitive = SOME (select intPrimitive from SupportBean(theString like 'S%')#keepall) as r1, " +
-                               "intPrimitive = ANY (select intPrimitive from SupportBean(theString like 'S%')#keepall) as r2, " +
-                               "intPrimitive != SOME (select intPrimitive from SupportBean(theString like 'S%')#keepall) as r3, " +
-                               "intPrimitive <> ANY (select intPrimitive from SupportBean(theString like 'S%')#keepall) as r4 " +
-                               "from SupportBean(theString like 'E%')";
+                               "IntPrimitive = SOME (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as r1, " +
+                               "IntPrimitive = ANY (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as r2, " +
+                               "IntPrimitive != SOME (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as r3, " +
+                               "IntPrimitive <> ANY (select IntPrimitive from SupportBean(TheString like 'S%')#keepall) as r4 " +
+                               "from SupportBean(TheString like 'E%')";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -295,12 +295,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "eall,eany,neall,neany,isin".SplitCsv();
                 var stmtText = "@name('s0') select " +
-                               "intBoxed = all (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as eall, " +
-                               "intBoxed = any (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as eany, " +
-                               "intBoxed != all (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as neall, " +
-                               "intBoxed != any (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as neany, " +
-                               "intBoxed in (select doubleBoxed from SupportBean(theString like 'S%')#keepall) as isin " +
-                               " from SupportBean(theString like 'E%')";
+                               "IntBoxed = all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as eall, " +
+                               "IntBoxed = any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as eany, " +
+                               "IntBoxed != all (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as neall, " +
+                               "IntBoxed != any (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as neany, " +
+                               "IntBoxed in (select DoubleBoxed from SupportBean(TheString like 'S%')#keepall) as isin " +
+                               " from SupportBean(TheString like 'E%')";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // subs is empty
@@ -339,8 +339,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile(
-                    "select intArr = all (select intPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap",
-                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords [select intArr = all (select intPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap]");
+                    "select IntArr = all (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap",
+                    "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords [select IntArr = all (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap]");
             }
         }
 

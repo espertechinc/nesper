@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             var holder = new SelectJoinHolder();
 
             var epl =
-                "@name('s0') select irstream * from SupportBean_A#length(3) as streamA, SupportBean_B#length(3) as streamB where streamA.id = streamB.id";
+                "@name('s0') select irstream * from SupportBean_A#length(3) as streamA, SupportBean_B#length(3) as streamB where streamA.Id = streamB.Id";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.AssertStatement(

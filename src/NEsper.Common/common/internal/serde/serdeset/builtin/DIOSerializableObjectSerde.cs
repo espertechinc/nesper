@@ -17,7 +17,7 @@ using com.espertech.esper.compat.io;
 namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
 {
     /// <summary>
-    /// Serde that serializes and de-serializes using <seealso cref="ObjectInputStream" /> and <seealso cref="ObjectOutputStream" />.
+    /// Serde that serializes and de-serializes.
     /// </summary>
     public class DIOSerializableObjectSerde : DataInputOutputSerde
     {

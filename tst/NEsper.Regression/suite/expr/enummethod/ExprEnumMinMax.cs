@@ -96,14 +96,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.min(v => extractNum(v))");
-                builder.WithExpression(fields[1], "strvals.max(v => extractNum(v))");
-                builder.WithExpression(fields[2], "strvals.min(v => v)");
-                builder.WithExpression(fields[3], "strvals.max(v => v)");
-                builder.WithExpression(fields[4], "strvals.min( (v, i) => extractNum(v) + i*10)");
-                builder.WithExpression(fields[5], "strvals.max( (v, i) => extractNum(v) + i*10)");
-                builder.WithExpression(fields[6], "strvals.min( (v, i, s) => extractNum(v) + i*10 + s*100)");
-                builder.WithExpression(fields[7], "strvals.max( (v, i, s) => extractNum(v) + i*10 + s*100)");
+                builder.WithExpression(fields[0], "Strvals.min(v => extractNum(v))");
+                builder.WithExpression(fields[1], "Strvals.max(v => extractNum(v))");
+                builder.WithExpression(fields[2], "Strvals.min(v => v)");
+                builder.WithExpression(fields[3], "Strvals.max(v => v)");
+                builder.WithExpression(fields[4], "Strvals.min( (v, i) => extractNum(v) + i*10)");
+                builder.WithExpression(fields[5], "Strvals.max( (v, i) => extractNum(v) + i*10)");
+                builder.WithExpression(fields[6], "Strvals.min( (v, i, s) => extractNum(v) + i*10 + s*100)");
+                builder.WithExpression(fields[7], "Strvals.max( (v, i, s) => extractNum(v) + i*10 + s*100)");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypes(
@@ -136,12 +136,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "contained.min(x => p00)");
-                builder.WithExpression(fields[1], "contained.max(x => p00)");
-                builder.WithExpression(fields[2], "contained.min( (x, i) => p00 + i*10)");
-                builder.WithExpression(fields[3], "contained.max( (x, i) => p00 + i*10)");
-                builder.WithExpression(fields[4], "contained.min( (x, i, s) => p00 + i*10 + s*100)");
-                builder.WithExpression(fields[5], "contained.max( (x, i, s) => p00 + i*10 + s*100)");
+                builder.WithExpression(fields[0], "Contained.min(x => P00)");
+                builder.WithExpression(fields[1], "Contained.max(x => P00)");
+                builder.WithExpression(fields[2], "Contained.min( (x, i) => P00 + i*10)");
+                builder.WithExpression(fields[3], "Contained.max( (x, i) => P00 + i*10)");
+                builder.WithExpression(fields[4], "Contained.min( (x, i, s) => P00 + i*10 + s*100)");
+                builder.WithExpression(fields[5], "Contained.max( (x, i, s) => P00 + i*10 + s*100)");
 
                 builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
@@ -167,8 +167,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.min()");
-                builder.WithExpression(fields[1], "strvals.max()");
+                builder.WithExpression(fields[0], "Strvals.min()");
+                builder.WithExpression(fields[1], "Strvals.max()");
 
                 builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string)));
 
@@ -190,17 +190,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string epl;
 
-                epl = "select contained.min() from SupportBean_ST0_Container";
+                epl = "select Contained.min() from SupportBean_ST0_Container";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'contained.min()': Invalid input for built-in enumeration method 'min' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
+                    "Failed to validate select-clause expression 'Contained.min()': Invalid input for built-in enumeration method 'min' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
                     typeof(SupportBean_ST0).FullName +
                     "'");
 
-                epl = "select contained.min(x => null) from SupportBean_ST0_Container";
+                epl = "select Contained.min(x => null) from SupportBean_ST0_Container";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'contained.min()': Null-type is not allowed");
+                    "Failed to validate select-clause expression 'Contained.min()': Null-type is not allowed");
             }
         }
 

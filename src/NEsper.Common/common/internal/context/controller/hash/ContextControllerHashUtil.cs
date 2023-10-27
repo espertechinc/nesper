@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
                             hashFuncName,
                             services.ClassProvidedExtension);
                     }
-                    catch (Exception e) {
+                    catch (Exception) {
                         // expected
                     }
 

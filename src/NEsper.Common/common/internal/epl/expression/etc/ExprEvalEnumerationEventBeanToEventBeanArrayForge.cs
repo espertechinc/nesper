@@ -45,11 +45,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 typeof(ExprEvalEnumerationEventBeanToEventBeanArrayForge),
                 codegenClassScope);
             methodNode.Block
-                .DeclareVar<EventBean>("event",
+                .DeclareVar<EventBean>("@event",
                     enumerationForge.EvaluateGetEventBeanCodegen(methodNode, exprSymbol, codegenClassScope))
-                .IfRefNullReturnNull("event")
+                .IfRefNullReturnNull("@event")
                 .DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(1)))
-                .AssignArrayElement(Ref("events"), Constant(0), Ref("event"))
+                .AssignArrayElement(Ref("events"), Constant(0), Ref("@event"))
                 .MethodReturn(Ref("events"));
             return LocalMethod(methodNode);
         }

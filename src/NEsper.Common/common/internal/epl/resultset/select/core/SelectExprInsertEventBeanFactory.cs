@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 try {
                     return InitializeCtorInjection(type, forges, expressionReturnTypes, importService);
                 }
-                catch (ExprValidationException ctorEx) {
+                catch (ExprValidationException) {
                     if (writableProps.IsEmpty()) {
                         throw;
                     }
@@ -182,7 +182,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
 
                     return InitializeCtorInjection(type, forges, resultTypes, importService);
                 }
-                catch (ExprValidationException ctorEx) {
+                catch (ExprValidationException) {
                     if (writableProps.IsEmpty()) {
                         throw;
                     }
@@ -296,7 +296,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                         .Block
                                         .IfCondition(InstanceOf(Ref("input"), typeof(EventBean)))
                                         .BlockReturn(
-                                            ExprDotMethod(Cast(typeof(EventBean), Ref("input")), "getUnderlying"))
+                                            ExprDotName(Cast(typeof(EventBean), Ref("input")), "Underlying"))
                                         .MethodReturn(Ref("input"));
                                     return LocalMethodBuild(method).Pass(expression).Call();
                                 }

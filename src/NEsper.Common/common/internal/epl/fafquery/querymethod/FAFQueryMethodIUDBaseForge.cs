@@ -195,29 +195,29 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             var queryMethod = Ref("qm");
             method.Block
                 .DeclareVar(TypeOfMethod(), queryMethod.Ref, NewInstance(TypeOfMethod()))
-                .ExprDotMethod(
+                .SetProperty(
                     queryMethod,
-                    "setAnnotations",
+                    "Annotations",
                     annotations == null
                         ? ConstantNull()
                         : MakeAnnotations(typeof(Attribute[]), annotations, method, classScope))
-                .ExprDotMethod(queryMethod, "setProcessor", processor.Make(method, symbols, classScope))
-                .ExprDotMethod(
+                .SetProperty(queryMethod, "Processor", processor.Make(method, symbols, classScope))
+                .SetProperty(
                     queryMethod,
-                    "setQueryGraph",
+                    "QueryGraph",
                     queryGraph == null ? ConstantNull() : queryGraph.Make(method, symbols, classScope))
-                .ExprDotMethod(
+                .SetProperty(
                     queryMethod,
-                    "setInternalEventRouteDest",
+                    "InternalEventRouteDest",
                     ExprDotName(symbols.GetAddInitSvc(method), EPStatementInitServicesConstants.INTERNALEVENTROUTEDEST))
-                .ExprDotMethod(
+                .SetProperty(
                     queryMethod,
-                    "setTableAccesses",
+                    "TableAccesses",
                     ExprTableEvalStrategyUtil.CodegenInitMap(tableAccessForges, GetType(), method, symbols, classScope))
-                .ExprDotMethod(queryMethod, "setHasTableAccess", Constant(hasTableAccess))
-                .ExprDotMethod(
+                .SetProperty(queryMethod, "HasTableAccess", Constant(hasTableAccess))
+                .SetProperty(
                     queryMethod,
-                    "setSubselects",
+                    "Subselects",
                     SubSelectFactoryForge.CodegenInitMap(subselectForges, GetType(), method, symbols, classScope));
             MakeInlineSpecificSetter(queryMethod, method, symbols, classScope);
             method.Block.MethodReturn(queryMethod);

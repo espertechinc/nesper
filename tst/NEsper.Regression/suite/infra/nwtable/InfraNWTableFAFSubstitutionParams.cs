@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = SetupInfra(env, true);
                 EPFireAndForgetPreparedQueryParameterized query;
 
-                var eplOneParam = "select * from MyInfra where intPrimitive = ?:p0:int";
+                var eplOneParam = "select * from MyInfra where IntPrimitive = ?:p0:int";
                 RunParameterizedQueryWCompile(
                     env,
                     path,
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     Collections.SingletonDataMap("p0", 5),
                     new string[] { "E5" });
 
-                var eplTwiceUsed = "select * from MyInfra where intPrimitive = ?:p0:int or intBoxed = ?:p0:int";
+                var eplTwiceUsed = "select * from MyInfra where IntPrimitive = ?:p0:int or IntBoxed = ?:p0:int";
                 RunParameterizedQueryWCompile(
                     env,
                     path,
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     Collections.SingletonDataMap("p0", 12),
                     new string[] { "E2" });
 
-                var eplTwoParam = "select * from MyInfra where intPrimitive = ?:p1:int and intBoxed = ?:p0:int";
+                var eplTwoParam = "select * from MyInfra where IntPrimitive = ?:p1:int and IntBoxed = ?:p0:int";
                 query = CompilePrepare(eplTwoParam, path, env);
                 RunParameterizedQuery(
                     env,
@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy("@public create window MyWindow#keepall as SupportBean", path);
 
                 // invalid execute without prepare-params
-                var compiled = env.CompileFAF("select * from MyWindow where theString=?::string", path);
+                var compiled = env.CompileFAF("select * from MyWindow where TheString=?::string", path);
                 try {
                     env.Runtime.FireAndForgetService.ExecuteQuery(compiled);
                     Assert.Fail();
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 TryInvalidlyParameterized(env, compiled, query => { }, "Missing value for substitution parameter 1");
 
                 compiled = env.CompileFAF(
-                    "select * from MyWindow where theString=?::string and intPrimitive=?::int",
+                    "select * from MyWindow where TheString=?::string and IntPrimitive=?::int",
                     path);
                 TryInvalidlyParameterized(env, compiled, query => { }, "Missing value for substitution parameter 1");
                 TryInvalidlyParameterized(
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "Missing value for substitution parameter 2");
 
                 compiled = env.CompileFAF(
-                    "select * from MyWindow where theString=?:p0:string and intPrimitive=?:p1:int",
+                    "select * from MyWindow where TheString=?:p0:string and IntPrimitive=?:p1:int",
                     path);
                 TryInvalidlyParameterized(env, compiled, query => { }, "Missing value for substitution parameter 'p0'");
                 TryInvalidlyParameterized(
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 env.CompileDeploy("@public create window MyWindow#keepall as SupportBean", path);
 
-                var compiled = env.CompileFAF("select * from MyWindow where theString='ABC'", path);
+                var compiled = env.CompileFAF("select * from MyWindow where TheString='ABC'", path);
                 TryInvalidSetObject(
                     env,
                     compiled,
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "The query has no substitution parameters");
 
                 // numbered, untyped, casted at eventService
-                compiled = env.CompileFAF("select * from MyWindow where theString=cast(?, String)", path);
+                compiled = env.CompileFAF("select * from MyWindow where TheString=cast(?, String)", path);
                 TryInvalidSetObject(
                     env,
                     compiled,
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "Invalid substitution parameter index, expected an index between 1 and 1");
 
                 // named, untyped, casted at eventService
-                compiled = env.CompileFAF("select * from MyWindow where theString=cast(?:p0, String)", path);
+                compiled = env.CompileFAF("select * from MyWindow where TheString=cast(?:p0, String)", path);
                 TryInvalidSetObject(
                     env,
                     compiled,
@@ -296,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 EPCompiled compiled;
 
                 // numbered, typed
-                compiled = env.CompileFAF("select * from MyWindow where theString=?::string", path);
+                compiled = env.CompileFAF("select * from MyWindow where TheString=?::string", path);
                 TryInvalidSetObject(
                     env,
                     compiled,
@@ -305,7 +305,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     typeof(string));
 
                 // name, typed
-                compiled = env.CompileFAF("select * from MyWindow where theString=?:p0:string", path);
+                compiled = env.CompileFAF("select * from MyWindow where TheString=?:p0:string", path);
                 TryInvalidSetObject(
                     env,
                     compiled,
@@ -338,7 +338,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = SetupInfra(env, namedWindow);
 
                 // test one parameter
-                var eplOneParam = "select * from MyInfra where intPrimitive = ?::int";
+                var eplOneParam = "select * from MyInfra where IntPrimitive = ?::int";
                 var pqOneParam = CompilePrepare(eplOneParam, path, env);
                 for (var i = 0; i < 10; i++) {
                     RunParameterizedQuery(env, pqOneParam, new object[] { i }, new string[] { "E" + i });
@@ -347,7 +347,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RunParameterizedQuery(env, pqOneParam, new object[] { -1 }, null); // not found
 
                 // test two parameter
-                var eplTwoParam = "select * from MyInfra where intPrimitive = ?::int and longPrimitive = ?::long";
+                var eplTwoParam = "select * from MyInfra where IntPrimitive = ?::int and LongPrimitive = ?::long";
                 var pqTwoParam = CompilePrepare(eplTwoParam, path, env);
                 for (var i = 0; i < 10; i++) {
                     RunParameterizedQuery(
@@ -360,13 +360,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RunParameterizedQuery(env, pqTwoParam, new object[] { -1, 1000L }, null); // not found
 
                 // test in-clause with string objects
-                var eplInSimple = "select * from MyInfra where theString in (?::string, ?::string, ?::string)";
+                var eplInSimple = "select * from MyInfra where TheString in (?::string, ?::string, ?::string)";
                 var pqInSimple = CompilePrepare(eplInSimple, path, env);
                 RunParameterizedQuery(env, pqInSimple, new object[] { "A", "A", "A" }, null); // not found
                 RunParameterizedQuery(env, pqInSimple, new object[] { "A", "E3", "A" }, new string[] { "E3" });
 
                 // test in-clause with string array
-                var eplInArray = "select * from MyInfra where theString in (?::string[])";
+                var eplInArray = "select * from MyInfra where TheString in (?::string[])";
                 var pqInArray = CompilePrepare(eplInArray, path, env);
                 RunParameterizedQuery(
                     env,
@@ -378,24 +378,24 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RunParameterizedQuery(
                     env,
                     CompilePrepare(
-                        "select * from MyInfra where theString in (?::string[]) and longPrimitive = 4000",
+                        "select * from MyInfra where TheString in (?::string[]) and LongPrimitive = 4000",
                         path,
                         env),
                     new object[] { new string[] { "E3", "E4", "E8" } },
                     new string[] { "E4" });
                 RunParameterizedQuery(
                     env,
-                    CompilePrepare("select * from MyInfra where longPrimitive > 8000", path, env),
+                    CompilePrepare("select * from MyInfra where LongPrimitive > 8000", path, env),
                     new object[] { },
                     new string[] { "E9" });
                 RunParameterizedQuery(
                     env,
-                    CompilePrepare("select * from MyInfra where longPrimitive < ?::long", path, env),
+                    CompilePrepare("select * from MyInfra where LongPrimitive < ?::long", path, env),
                     new object[] { 2000L },
                     new string[] { "E0", "E1" });
                 RunParameterizedQuery(
                     env,
-                    CompilePrepare("select * from MyInfra where longPrimitive between ?::int and ?::int", path, env),
+                    CompilePrepare("select * from MyInfra where LongPrimitive between ?::int and ?::int", path, env),
                     new object[] { 2000, 4000 },
                     new string[] { "E2", "E3", "E4" });
 
@@ -424,12 +424,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             var path = new RegressionPath();
             var eplCreate = namedWindow
                 ? "@name('TheInfra') @public create window MyInfra#keepall as select * from SupportBean"
-                : "@name('TheInfra') @public create table MyInfra as (theString string primary key, intPrimitive int primary key, longPrimitive long)";
+                : "@name('TheInfra') @public create table MyInfra as (TheString string primary key, IntPrimitive int primary key, LongPrimitive long)";
             env.CompileDeploy(eplCreate, path);
             var eplInsert = namedWindow
                 ? "@name('Insert') insert into MyInfra select * from SupportBean"
-                : "@name('Insert') on SupportBean sb merge MyInfra mi where mi.theString = sb.theString and mi.intPrimitive=sb.intPrimitive" +
-                  " when not matched then insert select theString, intPrimitive, longPrimitive";
+                : "@name('Insert') on SupportBean sb merge MyInfra mi where mi.TheString = sb.TheString and mi.IntPrimitive=sb.IntPrimitive" +
+                  " when not matched then insert select TheString, IntPrimitive, LongPrimitive";
             env.CompileDeploy(eplInsert, path);
 
             for (var i = 0; i < 10; i++) {
@@ -500,7 +500,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 Assert.AreEqual(expected.Length, result.Array.Length);
                 var resultStrings = new string[result.Array.Length];
                 for (var i = 0; i < resultStrings.Length; i++) {
-                    resultStrings[i] = (string)result.Array[i].Get("theString");
+                    resultStrings[i] = (string)result.Array[i].Get("TheString");
                 }
 
                 EPAssertionUtil.AssertEqualsAnyOrder(expected, resultStrings);

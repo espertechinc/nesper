@@ -53,14 +53,14 @@ namespace com.espertech.esper.common.@internal.support
             IDictionary<string, string> mapProperty,
             int[] arrayProperty,
             string nestedValue,
-            string nestedNestedValue)
+            string NestedNestedValue)
         {
             _simpleProperty = simpleProperty;
             _mappedProps = mappedProps;
             _indexedProps = indexedProps;
             _mapProperty = mapProperty;
             _arrayProperty = arrayProperty;
-            _nested = new SupportBeanSpecialGetterNested(nestedValue, nestedNestedValue);
+            _nested = new SupportBeanSpecialGetterNested(nestedValue, NestedNestedValue);
         }
 
         public string SimpleProperty {
@@ -154,10 +154,10 @@ namespace com.espertech.esper.common.@internal.support
 
             public SupportBeanSpecialGetterNested(
                 string nestedValue,
-                string nestedNestedValue)
+                string NestedNestedValue)
             {
                 _nestedValue = nestedValue;
-                NestedNested = new SupportBeanSpecialGetterNestedNested(nestedNestedValue);
+                NestedNested = new SupportBeanSpecialGetterNestedNested(NestedNestedValue);
             }
 
             public string NestedValue {
@@ -202,9 +202,9 @@ namespace com.espertech.esper.common.@internal.support
         {
             private string _nestedNestedValue;
 
-            public SupportBeanSpecialGetterNestedNested(string nestedNestedValue)
+            public SupportBeanSpecialGetterNestedNested(string NestedNestedValue)
             {
-                _nestedNestedValue = nestedNestedValue;
+                _nestedNestedValue = NestedNestedValue;
             }
 
             public string NestedNestedValue {

@@ -105,8 +105,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     rep.GetName() +
                     " schema MyTwoColEvent(c0 string, c1 int);\n" +
                     "@public @name('window') create window MyWindow#keepall as MyTwoColEvent;\n" +
-                    "insert into MyWindow select theString as c0 from SupportBean;\n" +
-                    "insert into MyWindow select id as c1 from SupportBean_S0;\n";
+                    "insert into MyWindow select TheString as c0 from SupportBean;\n" +
+                    "insert into MyWindow select Id as c1 from SupportBean_S0;\n";
                 env.CompileDeploy(epl, path);
                 var fields = "c0,c1".SplitCsv();
 
@@ -141,11 +141,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl = "@name('windowOne') create window MyWindow#keepall as SupportBean;\n" +
                           "@name('windowTwo')create window MyWindowTwo#keepall as MyWindow;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "@name('selectOne') select theString from MyWindow;\n";
+                          "@name('selectOne') select TheString from MyWindow;\n";
                 env.CompileDeploy(epl).AddListener("selectOne").AddListener("windowOne");
 
                 env.SendEventBean(new SupportBean("E1", 1));
-                var fields = new string[] { "theString" };
+                var fields = new string[] { "TheString" };
                 env.AssertPropsNew("windowOne", fields, new object[] { "E1" });
                 env.AssertPropsNew("selectOne", fields, new object[] { "E1" });
 
@@ -157,11 +157,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "theString" };
+                var fields = new string[] { "TheString" };
                 var path = new RegressionPath();
 
                 var epl = "@name('window') @public create window MyWindowIWT#keepall as SupportBean;\n" +
-                          "insert into MyWindowIWT select * from SupportBean(intPrimitive > 0);\n";
+                          "insert into MyWindowIWT select * from SupportBean(IntPrimitive > 0);\n";
                 env.CompileDeploy(epl, path).AddListener("window");
 
                 env.Milestone(0);
@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create window with keep-all and filter
                 var stmtTextCreateThree =
-                    "@name('windowThree') @public create window MyWindowThree#keepall as MyWindowIWT insert where theString like 'A%'";
+                    "@name('windowThree') @public create window MyWindowThree#keepall as MyWindowIWT insert where TheString like 'A%'";
                 env.CompileDeploy(stmtTextCreateThree, path).AddListener("windowThree");
                 env.AssertPropsPerRowIterator(
                     "windowThree",
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create window with last-per-id
                 var stmtTextCreateFour =
-                    "@name('windowFour') @public create window MyWindowFour#unique(intPrimitive) as MyWindowIWT insert";
+                    "@name('windowFour') @public create window MyWindowFour#unique(IntPrimitive) as MyWindowIWT insert";
                 env.CompileDeploy(stmtTextCreateFour, path).AddListener("windowFour");
                 env.AssertPropsPerRowIterator(
                     "windowFour",
@@ -234,10 +234,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 env.AssertRuntime(runtime => Assert.AreEqual(2, GetCount(env, path, "windowFour", "MyWindowFour")));
 
-                env.CompileDeploy("insert into MyWindowIWT select * from SupportBean(theString like 'A%')", path);
-                env.CompileDeploy("insert into MyWindowTwo select * from SupportBean(theString like 'B%')", path);
-                env.CompileDeploy("insert into MyWindowThree select * from SupportBean(theString like 'C%')", path);
-                env.CompileDeploy("insert into MyWindowFour select * from SupportBean(theString like 'D%')", path);
+                env.CompileDeploy("insert into MyWindowIWT select * from SupportBean(TheString like 'A%')", path);
+                env.CompileDeploy("insert into MyWindowTwo select * from SupportBean(TheString like 'B%')", path);
+                env.CompileDeploy("insert into MyWindowThree select * from SupportBean(TheString like 'C%')", path);
+                env.CompileDeploy("insert into MyWindowFour select * from SupportBean(TheString like 'D%')", path);
                 env.AssertListenerNotInvoked("window");
                 env.AssertListenerNotInvoked("windowTwo");
                 env.AssertListenerNotInvoked("windowThree");
@@ -402,11 +402,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "window",
                     iterator => {
                         var events = EPAssertionUtil.EnumeratorToArray(iterator);
-                        Assert.AreEqual("A1", events[0].Get("id?"));
+                        Assert.AreEqual("A1", events[0].Get("Id?"));
                     });
                 env.AssertPropsPerRowIterator(
                     "window",
-                    "id?".SplitCsv(),
+                    "Id?".SplitCsv(),
                     new object[][] { new object[] { "A1" }, new object[] { "B1" } });
 
                 env.UndeployAll();
@@ -425,19 +425,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "create window testWindow3#keepall as SupportBean insert",
                     "A named window by name 'SupportBean' could not be located, the insert-keyword requires an existing named window");
                 env.TryInvalidCompile(
-                    "create window testWindow3#keepall as select * from SupportBean insert where (intPrimitive = 10)",
+                    "create window testWindow3#keepall as select * from SupportBean insert where (IntPrimitive = 10)",
                     "A named window by name 'SupportBean' could not be located, the insert-keyword requires an existing named window");
                 env.TryInvalidCompile(
                     path,
-                    "create window MyWindowTwo#keepall as MyWindowINV insert where (select intPrimitive from SupportBean#lastevent)",
+                    "create window MyWindowTwo#keepall as MyWindowINV insert where (select IntPrimitive from SupportBean#lastevent)",
                     "Create window where-clause may not have a subselect");
                 env.TryInvalidCompile(
                     path,
-                    "create window MyWindowTwo#keepall as MyWindowINV insert where sum(intPrimitive) > 2",
+                    "create window MyWindowTwo#keepall as MyWindowINV insert where sum(IntPrimitive) > 2",
                     "Create window where-clause may not have an aggregation function");
                 env.TryInvalidCompile(
                     path,
-                    "create window MyWindowTwo#keepall as MyWindowINV insert where prev(1, intPrimitive) = 1",
+                    "create window MyWindowTwo#keepall as MyWindowINV insert where prev(1, IntPrimitive) = 1",
                     "Create window where-clause may not have a function that requires view resources (prior, prev)");
 
                 env.UndeployAll();

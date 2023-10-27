@@ -17,8 +17,6 @@ namespace com.espertech.esper.common.@internal.context.activator
 {
     public class ViewableActivatorFilter : ViewableActivator
     {
-        public IContainer Container { get; set; }
-
         public FilterSpecActivatable FilterSpec { get; set; }
 
         public bool CanIterate { get; set; }
@@ -120,7 +118,11 @@ namespace com.espertech.esper.common.@internal.context.activator
                         filterHandle);
             }
 
-            var stopCallback = new ViewableActivatorFilterMgmtCallback(Container, filterHandle, FilterSpec);
+            var stopCallback = new ViewableActivatorFilterMgmtCallback(
+                agentInstanceContext.StatementContext.Container,
+                filterHandle,
+                FilterSpec);
+            
             return new ViewableActivationResult(theStream, stopCallback, null, false, false, null, null, null);
         }
     }

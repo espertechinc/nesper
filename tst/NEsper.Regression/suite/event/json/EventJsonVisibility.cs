@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public void Run(RegressionEnvironment env)
             {
                 var moduleA = "module A.X; @protected create json schema JsonSchema(fruit string, size string);\n";
-                var moduleB = "module B; @protected create json schema JsonSchema(carId string);\n";
+                var moduleB = "module B; @protected create json schema JsonSchema(CarId string);\n";
 
                 var pathA = new RegressionPath();
                 env.CompileDeploy(moduleA, pathA);
@@ -70,13 +70,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 env.CompileDeploy(moduleB, pathB);
 
                 env.CompileDeploy(
-                        "module A.X; insert into JsonSchema select theString as fruit, 'large' as size from SupportBean;\n" +
+                        "module A.X; insert into JsonSchema select TheString as fruit, 'large' as size from SupportBean;\n" +
                         "@name('a') select fruit, size from JsonSchema#keepall",
                         pathA)
                     .AddListener("a");
                 env.CompileDeploy(
-                        "module B; insert into JsonSchema select theString as carId from SupportBean;\n" +
-                        "@name('b') select carId from JsonSchema#keepall",
+                        "module B; insert into JsonSchema select TheString as CarId from SupportBean;\n" +
+                        "@name('b') select CarId from JsonSchema#keepall",
                         pathB)
                     .AddListener("b");
 
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 
             private void AssertCar(EventBean @event)
             {
-                EPAssertionUtil.AssertProps(@event, "carId".SplitCsv(), new object[] { "E1" });
+                EPAssertionUtil.AssertProps(@event, "CarId".SplitCsv(), new object[] { "E1" });
             }
 
             private void AssertFruit(EventBean @event)

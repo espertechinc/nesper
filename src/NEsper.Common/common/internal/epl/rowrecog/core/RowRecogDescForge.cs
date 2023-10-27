@@ -161,11 +161,11 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 .SetProperty(desc, "RowEventType", EventTypeUtility.ResolveTypeCodegen(rowEventType, init))
                 .SetProperty(
                     desc,
-                    "setCompositeEventType",
+                    "CompositeEventType",
                     EventTypeUtility.ResolveTypeCodegen(compositeEventType, init))
                 .SetProperty(
                     desc,
-                    "setMultimatchEventType",
+                    "MultimatchEventType",
                     multimatchEventType == null
                         ? ConstantNull()
                         : EventTypeUtility.ResolveTypeCodegen(multimatchEventType, init))
@@ -173,7 +173,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 .SetProperty(desc, "MultimatchVariableToStreamNum", Constant(multimatchVariableToStreamNum))
                 .SetProperty(
                     desc,
-                    "setPartitionEvalMayNull",
+                    "PartitionEvalMayNull",
                     MultiKeyCodegen.CodegenExprEvaluatorMayMultikey(
                         partitionBy,
                         null,
@@ -182,13 +182,13 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         classScope))
                 .SetProperty(
                     desc,
-                    "setPartitionEvalTypes",
+                    "PartitionEvalTypes",
                     partitionBy == null
                         ? ConstantNull()
                         : Constant(ExprNodeUtilityQuery.GetExprResultTypes(partitionBy)))
                 .SetProperty(
                     desc,
-                    "setPartitionEvalSerde",
+                    "PartitionEvalSerde",
                     partitionBy == null ? ConstantNull() : partitionByMultiKey.GetExprMKSerde(method, classScope))
                 .SetProperty(desc, "VariableStreams", MakeVariableStreams(method, classScope))
                 .SetProperty(desc, "HasInterval", Constant(hasInterval))
@@ -206,18 +206,18 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 .SetProperty(desc, "Skip", Constant(skip))
                 .SetProperty(
                     desc,
-                    "setColumnEvaluators",
+                    "ColumnEvaluators",
                     ExprNodeUtilityCodegen.CodegenEvaluators(columnEvaluators, method, GetType(), classScope))
                 .SetProperty(desc, "ColumnNames", Constant(columnNames))
                 .SetProperty(
                     desc,
-                    "setIntervalCompute",
+                    "IntervalCompute",
                     intervalCompute == null ? ConstantNull() : intervalCompute.MakeEvaluator(method, classScope))
                 .SetProperty(desc, "PreviousRandomAccessIndexes", Constant(previousRandomAccessIndexes))
                 .SetProperty(desc, "AggregationServiceFactories", aggregationServiceFactories)
                 .SetProperty(
                     desc,
-                    "setAggregationResultFutureAssignables",
+                    "AggregationResultFutureAssignables",
                     aggregationServices == null ? ConstantNull() : MakeAggAssignables(method, classScope))
                 .SetProperty(desc, "PartitionMgmtStateMgmtSettings", partitionMgmtStateMgmtSettings.ToExpression())
                 .SetProperty(desc, "ScheduleMgmtStateMgmtSettings", scheduleMgmtStateMgmtSettings.ToExpression())

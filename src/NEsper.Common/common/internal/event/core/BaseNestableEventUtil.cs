@@ -25,6 +25,7 @@ using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
@@ -401,7 +402,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 generator);
             return LocalMethod(
                 method,
-                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static bool HandleNestedValueArrayWithMapExists(
@@ -438,7 +439,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 generator);
             return LocalMethod(
                 method,
-                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static object HandleNestedValueArrayWithObjectArray(
@@ -475,7 +476,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 generator);
             return LocalMethod(
                 method,
-                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static bool HandleNestedValueArrayWithObjectArrayExists(
@@ -512,7 +513,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 generator);
             return LocalMethod(
                 method,
-                StaticMethod(typeof(BaseNestableEventUtil), "getBNArrayValueAtIndex", @ref, Constant(index)));
+                StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
         public static object HandleNestedValueArrayWithObjectArrayFragment(
@@ -557,34 +558,41 @@ namespace com.espertech.esper.common.@internal.@event.core
                 StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
-        public static object GetMappedPropertyValue(
-            object value,
-            string key)
+        public static IDictionary<string, object> GetUnderlyingMap(object value)
         {
             if (value == null) {
                 return null;
             }
 
-            if (!(value is IDictionary<string, object> innerMap)) {
-                return null;
+            if (value is IDictionary<string, object> valueMap) {
+                return valueMap;
+            }
+            
+            var valueType = value.GetType();
+            if (valueType.IsGenericStringDictionary()) {
+                var magicMap = MagicMarker.SingletonInstance.GetStringDictionaryFactory(valueType).Invoke(value);
+                if (magicMap != null) {
+                    return magicMap;
+                }
             }
 
-            return innerMap.Get(key);
+            return null;
+        }
+        
+        public static object GetMappedPropertyValue(
+            object value,
+            string key)
+        {
+            var valueMap = GetUnderlyingMap(value);
+            return valueMap?.Get(key);
         }
 
         public static bool GetMappedPropertyExists(
             object value,
             string key)
         {
-            if (value == null) {
-                return false;
-            }
-
-            if (!(value is IDictionary<string, object> innerMap)) {
-                return false;
-            }
-
-            return innerMap.ContainsKey(key);
+            var valueMap = GetUnderlyingMap(value);
+            return valueMap != null && valueMap.ContainsKey(key);
         }
 
         public static MapIndexedPropPair GetIndexedAndMappedProps(string[] properties)
@@ -740,14 +748,17 @@ namespace com.espertech.esper.common.@internal.@event.core
                 .Block
                 .IfRefNullReturnNull("value")
                 
-                .IfConditionReturnConst(Not(ExprDotMethodChain(Ref("value")).Add("getClass").Add("isArray")), null)
+                .IfNotInstanceOf("value", typeof(Array))
+                .BlockReturn(ConstantNull())
+                
+                .DeclareVar<Array>("array", Cast<Array>(Ref("value")))
                 .IfConditionReturnConst(
-                    Relational(StaticMethod(typeof(Array), "getLength", Ref("value")), LE, Constant(index)),
+                    Relational(ExprDotName(Ref("array"), "Length"), LE, Constant(index)),
                     null)
                 
                 .DeclareVar<object>(
                     "arrayItem",
-                    StaticMethod(typeof(Array), "Get", Ref("value"), Constant(index)))
+                    ExprDotMethod(Ref("array"), "GetValue", Constant(index)))
                 
                 .IfRefNullReturnNull("arrayItem")
                 .MethodReturn(

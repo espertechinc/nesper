@@ -289,7 +289,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public ParameterSyntax CodegenSyntaxAsParameter()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public CodegenNamedParam WithOutputModifier()

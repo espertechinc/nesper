@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             var startA = "2002-05-30T09:00:00.000";
             var epl = "@public @buseventtype create schema SupportBeanXXX as " +
                       typeof(SupportBean).FullName +
-                      " starttimestamp longPrimitive endtimestamp longBoxed;\n";
+                      " starttimestamp LongPrimitive endtimestamp LongBoxed;\n";
             epl += "@name('s0') select a.get('month') as val0 from SupportBeanXXX a;\n";
             env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
 

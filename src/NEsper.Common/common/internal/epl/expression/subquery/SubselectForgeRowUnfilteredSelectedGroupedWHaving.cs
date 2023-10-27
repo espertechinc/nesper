@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 return ConstantNull();
             }
 
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(Subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
@@ -52,12 +52,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             method.Block
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar<AggregationService>("aggregationService",
-                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar(
-                    typeof(ICollection<object>),
-                    "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
+                .DeclareVar<AggregationService>("aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar(typeof(ICollection<object>), "groupKeys", ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
                 .IfCondition(ExprDotMethod(Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
@@ -130,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(Subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
             var factory =
@@ -145,14 +141,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             method.Block
                 .DeclareVar(typeof(int), "cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar(
-                    typeof(AggregationService),
-                    "aggregationService",
-                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar(
-                    typeof(ICollection<object>),
-                    "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "getGroupKeys", evalCtx))
+                .DeclareVar(typeof(AggregationService), "aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar(typeof(ICollection<object>), "groupKeys", ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
                 .IfCondition(ExprDotMethod(Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)

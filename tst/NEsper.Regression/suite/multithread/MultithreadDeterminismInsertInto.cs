@@ -56,7 +56,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var path = new RegressionPath();
             var insertIntoStmts = new EPStatement[numStatements];
             for (var i = 0; i < numStatements; i++) {
-                var epl = $"@name('s{i}') @public insert into MyStream select {i} as ident,count(*) as cnt from SupportBean";
+                var epl =
+                    $"@name('s{i}') @public insert into MyStream select {i} as ident,count(*) as cnt from SupportBean";
                 insertIntoStmts[i] = env.CompileDeploy(epl, path).Statement("s" + i);
             }
 

@@ -55,17 +55,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select irstream es0a.id as es0aId, " +
-                               "es0a.p00 as es0ap00, " +
-                               "es0b.id as es0bId, " +
-                               "es0b.p00 as es0bp00, " +
-                               "s1.id as s1Id, " +
-                               "s1.p10 as s1p10 " +
+                var stmtText = "@name('s0') select irstream es0a.Id as es0aId, " +
+                               "es0a.P00 as es0ap00, " +
+                               "es0b.Id as es0bId, " +
+                               "es0b.P00 as es0bp00, " +
+                               "s1.Id as s1Id, " +
+                               "s1.P10 as s1p10 " +
                                " from " +
-                               " pattern [every (es0a=SupportBean_S0(p00='a') " +
-                               "or es0b=SupportBean_S0(p00='b'))]#length(5) as s0," +
+                               " pattern [every (es0a=SupportBean_S0(P00='a') " +
+                               "or es0b=SupportBean_S0(P00='b'))]#length(5) as s0," +
                                "SupportBean_S1#length(5) as s1" +
-                               " where (es0a.id = s1.id) or (es0b.id = s1.id)";
+                               " where (es0a.Id = s1.Id) or (es0b.Id = s1.Id)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEventS1(env, 1, "s1A");
@@ -123,21 +123,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select irstream s0.es0.id as s0es0Id," +
-                               "s0.es1.id as s0es1Id, " +
-                               "s1.es2.id as s1es2Id, " +
-                               "s1.es3.id as s1es3Id, " +
-                               "es0.p00 as es0p00, " +
-                               "es1.p10 as es1p10, " +
-                               "es2.p20 as es2p20, " +
-                               "es3.p30 as es3p30" +
+                var stmtText = "@name('s0') select irstream s0.es0.Id as s0es0Id," +
+                               "s0.es1.Id as s0es1Id, " +
+                               "s1.es2.Id as s1es2Id, " +
+                               "s1.es3.Id as s1es3Id, " +
+                               "es0.P00 as es0p00, " +
+                               "es1.P10 as es1p10, " +
+                               "es2.P20 as es2p20, " +
+                               "es3.P30 as es3p30" +
                                " from " +
                                " pattern [every (es0=SupportBean_S0" +
                                " and es1=SupportBean_S1" +
                                ")]#length(3) as s0," +
                                " pattern [every (es2=SupportBean_S2" +
                                " and es3=SupportBean_S3)]#length(3) as s1" +
-                               " where s0.es0.id = s1.es2.id";
+                               " where s0.es0.Id = s1.es2.Id";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEventS3(env, 2, "d");
@@ -209,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                                " and es1=SupportBean_S1)]#length(5) as s0," +
                                " pattern [every (es2=SupportBean_S2" +
                                " and es3=SupportBean_S3)]#length(5) as s1" +
-                               " where s0.es0.id = s1.es2.id";
+                               " where s0.es0.Id = s1.es2.Id";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var s0 = SendEventS0(env, 100, "");

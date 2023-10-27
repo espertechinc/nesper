@@ -479,10 +479,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             }
 
             // Set-Agent-Instance is supported for fire-and-forget queries only
-            var setExprEvalContextMethod = CodegenMethod
-                .MakeParentNode(typeof(void), forge.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-                .AddParam<ExprEvaluatorContext>("context");
-            setExprEvalContextMethod.Block.AssignRef(NAME_EXPREVALCONTEXT, Ref("context"));
+            var exprEvalContextProperty = CodegenProperty
+                .MakePropertyNode<ExprEvaluatorContext>(forge.GetType(), classScope)
+                .WithGetter(block => block.BlockReturn(Ref(NAME_EXPREVALCONTEXT)))
+                .WithSetter(block => block.AssignRef(NAME_EXPREVALCONTEXT, Ref("value")));
 
             // Apply-view
             var applyViewResultMethod = CodegenMethod
@@ -627,8 +627,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 innerMethods,
                 innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(
-                setExprEvalContextMethod,
-                "SetExprEvaluatorContext",
+                exprEvalContextProperty,
+                "ExprEvaluatorContext",
                 innerMethods,
                 innerProperties);
             CodegenStackGenerator.RecursiveBuildStack(

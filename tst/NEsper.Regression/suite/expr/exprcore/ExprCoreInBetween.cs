@@ -218,23 +218,23 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var input = new double?[] { 1d, null, 1.1d, 1.0d, 1.0999999999, 2d, 4d };
                 var result = new bool?[] { false, null, true, false, false, true, true };
-                TryNumeric(env, "doubleBoxed in (1.1d, 7/3.5, 2*6/3, 0)", input, result);
+                TryNumeric(env, "DoubleBoxed in (1.1d, 7/3.5, 2*6/3, 0)", input, result);
 
                 TryNumeric(
                     env,
-                    "doubleBoxed in (7/3d, null)",
+                    "DoubleBoxed in (7/3d, null)",
                     new double?[] { 2d, 7 / 3d, null },
                     new bool?[] { null, true, null });
 
                 TryNumeric(
                     env,
-                    "doubleBoxed in (5,5,5,5,5, -1)",
+                    "DoubleBoxed in (5,5,5,5,5, -1)",
                     new double?[] { 5.0, 5d, 0d, null, -1d },
                     new bool?[] { true, true, false, null, true });
 
                 TryNumeric(
                     env,
-                    "doubleBoxed not in (1.1d, 7/3.5, 2*6/3, 0)",
+                    "DoubleBoxed not in (1.1d, 7/3.5, 2*6/3, 0)",
                     new double?[] { 1d, null, 1.1d, 1.0d, 1.0999999999, 2d, 4d },
                     new bool?[] { true, null, false, true, true, false, false });
             }
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "c0".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBeanArrayCollMap")
-                    .WithExpressions(fields, "anyObject in (objectArr)");
+                    .WithExpressions(fields, "AnyObject in (ObjectArr)");
 
                 builder.WithAssertion(Make()).Expect(fields, true);
 
@@ -271,7 +271,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select intPrimitive in (?::int[primitive]) as result from SupportBean";
+                var stmtText = "@name('s0') select IntPrimitive in (?::int[primitive]) as result from SupportBean";
                 var compiled = env.Compile(stmtText);
                 env.Deploy(
                     compiled,
@@ -295,13 +295,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select 10 in (arrayProperty) as result from SupportBeanComplexProps";
+                var epl = "@name('s0') select 10 in (ArrayProperty) as result from SupportBeanComplexProps";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "s0",
                     statement => Assert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("result")));
 
-                epl = "@name('s1') select 5 in (arrayProperty) as result from SupportBeanComplexProps";
+                epl = "@name('s1') select 5 in (ArrayProperty) as result from SupportBeanComplexProps";
                 env.CompileDeploy(epl).AddListener("s1");
                 env.Milestone(0);
 
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select 1 in (intArr, longArr) as resOne, 1 not in (intArr, longArr) as resTwo from SupportBeanArrayCollMap";
+                    "@name('s0') select 1 in (IntArr, LongArr) as resOne, 1 not in (IntArr, LongArr) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = "resOne, resTwo".SplitCsv();
@@ -345,7 +345,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "resOne, resTwo".SplitCsv();
                 var epl =
-                    "@name('s0') select 1 in (intCol, longCol) as resOne, 1 not in (longCol, intCol) as resTwo from SupportBeanArrayCollMap";
+                    "@name('s0') select 1 in (IntCol, LongCol) as resOne, 1 not in (LongCol, IntCol) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendArrayCollMap(env, new SupportBeanArrayCollMap(true, new int[] { 10, 20, 30 }, null));
@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select 1 in (longBoxed, intArr, longMap, intCol) as resOne, 1 not in (longBoxed, intArr, longMap, intCol) as resTwo from SupportBeanArrayCollMap";
+                    "@name('s0') select 1 in (LongBoxed, IntArr, longMap, IntCol) as resOne, 1 not in (LongBoxed, IntArr, longMap, IntCol) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = "resOne, resTwo".SplitCsv();
@@ -433,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select 1 in (objectArr) as resOne, 2 in (objectArr) as resTwo from SupportBeanArrayCollMap";
+                    "@name('s0') select 1 in (ObjectArr) as resOne, 2 in (ObjectArr) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
                 var fields = "resOne, resTwo".SplitCsv();
 
@@ -470,11 +470,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var caseExpr = "@name('s0') select theString in (\"a\",\"b\",\"c\") as result from " +
+                var caseExpr = "@name('s0') select TheString in (\"a\",\"b\",\"c\") as result from " +
                                nameof(SupportBean);
                 var model = new EPStatementObjectModel();
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                model.SelectClause = SelectClause.Create().Add(Expressions.In("theString", "a", "b", "c"), "result");
+                model.SelectClause = SelectClause.Create().Add(Expressions.In("TheString", "a", "b", "c"), "result");
                 model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
 
                 TryString(
@@ -486,13 +486,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 model = new EPStatementObjectModel();
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
-                model.SelectClause = SelectClause.Create().Add(Expressions.NotIn("theString", "a", "b", "c"), "result");
+                model.SelectClause = SelectClause.Create().Add(Expressions.NotIn("TheString", "a", "b", "c"), "result");
                 model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
                 env.CopyMayFail(model);
 
                 TryString(
                     env,
-                    "theString not in ('a', 'b', 'c')",
+                    "TheString not in ('a', 'b', 'c')",
                     new string[] { "0", "a", "b", "c", "d", null },
                     new bool?[] { true, false, false, false, true, null });
             }
@@ -504,43 +504,43 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 TryString(
                     env,
-                    "theString in ('a', 'b', 'c')",
+                    "TheString in ('a', 'b', 'c')",
                     new string[] { "0", "a", "b", "c", "d", null },
                     new bool?[] { false, true, true, true, false, null });
 
                 TryString(
                     env,
-                    "theString in ('a')",
+                    "TheString in ('a')",
                     new string[] { "0", "a", "b", "c", "d", null },
                     new bool?[] { false, true, false, false, false, null });
 
                 TryString(
                     env,
-                    "theString in ('a', 'b')",
+                    "TheString in ('a', 'b')",
                     new string[] { "0", "b", "a", "c", "d", null },
                     new bool?[] { false, true, true, false, false, null });
 
                 TryString(
                     env,
-                    "theString in ('a', null)",
+                    "TheString in ('a', null)",
                     new string[] { "0", "b", "a", "c", "d", null },
                     new bool?[] { null, null, true, null, null, null });
 
                 TryString(
                     env,
-                    "theString in (null)",
+                    "TheString in (null)",
                     new string[] { "0", null, "b" },
                     new bool?[] { null, null, null });
 
                 TryString(
                     env,
-                    "theString not in ('a', 'b', 'c')",
+                    "TheString not in ('a', 'b', 'c')",
                     new string[] { "0", "a", "b", "c", "d", null },
                     new bool?[] { true, false, false, false, true, null });
 
                 TryString(
                     env,
-                    "theString not in (null)",
+                    "TheString not in (null)",
                     new string[] { "0", null, "b" },
                     new bool?[] { null, null, null });
             }
@@ -584,31 +584,31 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 input = new string[] { "0", "a1", "a10", "c", "d", null, "a0", "b9", "b90" };
                 result = new bool?[] { false, true, true, false, false, false, true, true, false };
-                TryString(env, "theString between 'a0' and 'b9'", input, result);
-                TryString(env, "theString between 'b9' and 'a0'", input, result);
+                TryString(env, "TheString between 'a0' and 'b9'", input, result);
+                TryString(env, "TheString between 'b9' and 'a0'", input, result);
 
                 TryString(
                     env,
-                    "theString between null and 'b9'",
+                    "TheString between null and 'b9'",
                     new string[] { "0", null, "a0", "b9" },
                     new bool?[] { false, false, false, false });
 
                 TryString(
                     env,
-                    "theString between null and null",
+                    "TheString between null and null",
                     new string[] { "0", null, "a0", "b9" },
                     new bool?[] { false, false, false, false });
 
                 TryString(
                     env,
-                    "theString between 'a0' and null",
+                    "TheString between 'a0' and null",
                     new string[] { "0", null, "a0", "b9" },
                     new bool?[] { false, false, false, false });
 
                 input = new string[] { "0", "a1", "a10", "c", "d", null, "a0", "b9", "b90" };
                 result = new bool?[] { true, false, false, true, true, false, false, false, true };
-                TryString(env, "theString not between 'a0' and 'b9'", input, result);
-                TryString(env, "theString not between 'b9' and 'a0'", input, result);
+                TryString(env, "TheString not between 'a0' and 'b9'", input, result);
+                TryString(env, "TheString not between 'b9' and 'a0'", input, result);
             }
         }
 
@@ -618,35 +618,35 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var input = new double?[] { 1d, null, 1.1d, 2d, 1.0999999999, 2d, 4d, 15d, 15.00001d };
                 var result = new bool?[] { false, false, true, true, false, true, true, true, false };
-                TryNumeric(env, "doubleBoxed between 1.1 and 15", input, result);
-                TryNumeric(env, "doubleBoxed between 15 and 1.1", input, result);
+                TryNumeric(env, "DoubleBoxed between 1.1 and 15", input, result);
+                TryNumeric(env, "DoubleBoxed between 15 and 1.1", input, result);
 
                 TryNumeric(
                     env,
-                    "doubleBoxed between null and 15",
+                    "DoubleBoxed between null and 15",
                     new double?[] { 1d, null, 1.1d },
                     new bool?[] { false, false, false });
 
                 TryNumeric(
                     env,
-                    "doubleBoxed between 15 and null",
+                    "DoubleBoxed between 15 and null",
                     new double?[] { 1d, null, 1.1d },
                     new bool?[] { false, false, false });
 
                 TryNumeric(
                     env,
-                    "doubleBoxed between null and null",
+                    "DoubleBoxed between null and null",
                     new double?[] { 1d, null, 1.1d },
                     new bool?[] { false, false, false });
 
                 input = new double?[] { 1d, null, 1.1d, 2d, 1.0999999999, 2d, 4d, 15d, 15.00001d };
                 result = new bool?[] { true, false, false, false, true, false, false, false, true };
-                TryNumeric(env, "doubleBoxed not between 1.1 and 15", input, result);
-                TryNumeric(env, "doubleBoxed not between 15 and 1.1", input, result);
+                TryNumeric(env, "DoubleBoxed not between 1.1 and 15", input, result);
+                TryNumeric(env, "DoubleBoxed not between 15 and 1.1", input, result);
 
                 TryNumeric(
                     env,
-                    "doubleBoxed not between 15 and null",
+                    "DoubleBoxed not between 15 and null",
                     new double?[] { 1d, null, 1.1d },
                     new bool?[] { false, false, false });
             }
@@ -658,19 +658,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 TryInBoolean(
                     env,
-                    "boolBoxed in (true, true)",
+                    "BoolBoxed in (true, true)",
                     new bool?[] { true, false },
                     new bool[] { true, false });
 
                 TryInBoolean(
                     env,
-                    "boolBoxed in (1>2, 2=3, 4<=2)",
+                    "BoolBoxed in (1>2, 2=3, 4<=2)",
                     new bool?[] { true, false },
                     new bool[] { false, true });
 
                 TryInBoolean(
                     env,
-                    "boolBoxed not in (1>2, 2=3, 4<=2)",
+                    "BoolBoxed not in (1>2, 2=3, 4<=2)",
                     new bool?[] { true, false },
                     new bool[] { true, false });
             }
@@ -680,7 +680,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select intPrimitive in (shortBoxed, intBoxed, longBoxed) as result from " +
+                var epl = "@name('s0') select IntPrimitive in (ShortBoxed, IntBoxed, LongBoxed) as result from " +
                           nameof(SupportBean);
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -704,7 +704,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select intBoxed in (floatBoxed, doublePrimitive, longBoxed) as result from " +
+                var epl = "@name('s0') select IntBoxed in (FloatBoxed, DoublePrimitive, LongBoxed) as result from " +
                           nameof(SupportBean);
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -730,7 +730,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "c0,".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean")
-                    .WithExpressions(fields, "intPrimitive between shortBoxed and longBoxed")
+                    .WithExpressions(fields, "IntPrimitive between ShortBoxed and LongBoxed")
                     .WithStatementConsumer(
                         stmt => Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c0")));
 
@@ -754,8 +754,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "ro,rc,rho,rhc,nro,nrc,nrho,nrhc".SplitCsv();
                 var eplOne =
-                    "@name('s0') select intPrimitive in (2:4) as ro, intPrimitive in [2:4] as rc, intPrimitive in [2:4) as rho, intPrimitive in (2:4] as rhc, " +
-                    "intPrimitive not in (2:4) as nro, intPrimitive not in [2:4] as nrc, intPrimitive not in [2:4) as nrho, intPrimitive not in (2:4] as nrhc " +
+                    "@name('s0') select IntPrimitive in (2:4) as ro, IntPrimitive in [2:4] as rc, IntPrimitive in [2:4) as rho, IntPrimitive in (2:4] as rhc, " +
+                    "IntPrimitive not in (2:4) as nro, IntPrimitive not in [2:4] as nrc, IntPrimitive not in [2:4) as nrho, IntPrimitive not in (2:4] as nrhc " +
                     "from SupportBean";
                 env.CompileDeploy(eplOne).AddListener("s0");
 
@@ -778,13 +778,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 var model = env.EplToModel(eplOne);
                 var epl = model.ToEPL();
-                epl = epl.Replace("intPrimitive between 2 and 4 as rc", "intPrimitive in [2:4] as rc");
-                epl = epl.Replace("intPrimitive not between 2 and 4 as nrc", "intPrimitive not in [2:4] as nrc");
+                epl = epl.Replace("IntPrimitive between 2 and 4 as rc", "IntPrimitive in [2:4] as rc");
+                epl = epl.Replace("IntPrimitive not between 2 and 4 as nrc", "IntPrimitive not in [2:4] as nrc");
                 Assert.AreEqual(eplOne, epl);
 
                 // test range reversed
                 var eplTwo =
-                    "@name('s1') select intPrimitive between 4 and 2 as r1, intPrimitive in [4:2] as r2 from SupportBean";
+                    "@name('s1') select IntPrimitive between 4 and 2 as r1, IntPrimitive in [4:2] as r2 from SupportBean";
                 env.CompileDeployAddListenerMile(eplTwo, "s1", 1);
 
                 fields = "r1,r2".SplitCsv();
@@ -795,7 +795,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 // test string type;
                 fields = "ro".SplitCsv();
-                var eplThree = "@name('s2') select theString in ('a':'d') as ro from SupportBean";
+                var eplThree = "@name('s2') select TheString in ('a':'d') as ro from SupportBean";
                 env.CompileDeployAddListenerMile(eplThree, "s2", 2);
 
                 env.SendEventBean(new SupportBean("a", 5));
@@ -818,7 +818,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select intBoxed between floatBoxed and doublePrimitive as result from " +
+                var epl = "@name('s0') select IntBoxed between FloatBoxed and DoublePrimitive as result from " +
                           nameof(SupportBean);
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -847,10 +847,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "select intArr in (1, 2, 3) as r1 from SupportBeanArrayCollMap";
+                var epl = "select IntArr in (1, 2, 3) as r1 from SupportBeanArrayCollMap";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'intArr in (1,2,3)': Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords");
+                    "Failed to validate select-clause expression 'IntArr in (1,2,3)': Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords");
             }
         }
 

@@ -390,7 +390,7 @@ namespace com.espertech.esper.common.@internal.context.module
                     block => block.StaticMethod(
                         typeof(AuditPath),
                         "AuditStream",
-                        Ref("event"),
+                        Ref("@event"),
                         REF_EXPREVALCONTEXT,
                         Ref("filterText")));
 
@@ -484,7 +484,7 @@ namespace com.espertech.esper.common.@internal.context.module
                     block => block.StaticMethod(
                         typeof(AuditPath),
                         "AuditInsert",
-                        Ref("event"),
+                        Ref("@event"),
                         REF_EXPREVALCONTEXT));
             }
 
@@ -677,7 +677,7 @@ namespace com.espertech.esper.common.@internal.context.module
                     typeof(Collections),
                     "SingletonMap",
                     field.Invoke(first.Key),
-                    value.Invoke(first.Value));
+                    Cast(typeof(object), value.Invoke(first.Value)));
             }
 
             var method = parent.MakeChild(
@@ -687,8 +687,7 @@ namespace com.espertech.esper.common.@internal.context.module
             method.Block
                 .DeclareVar<IDictionary<StatementProperty, object>>(
                     "properties",
-                    NewInstance(
-                        typeof(Dictionary<StatementProperty, object>)));
+                    NewInstance<Dictionary<StatementProperty, object>>());
             foreach (var entry in properties) {
                 method.Block.ExprDotMethod(
                     Ref("properties"),

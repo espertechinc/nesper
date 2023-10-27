@@ -29,12 +29,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public override string ToString()
         {
-            return "ClassIdentifierWArrayTokenType{" +
-                   "regex=" +
-                   _regex +
-                   ", token=" +
-                   _token +
-                   '}';
+            return $"ClassIdentifierWArrayTokenType{{regex={_regex}, token={_token}}}";
         }
     }
 } // end of namespace

@@ -445,7 +445,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     continue;
                 }
 
-                props.Add(new AnnotationAttribute(method.Name, method.ReturnType, null)); // TBD: method.DefaultValue
+                props.Add(new AnnotationAttribute(method.Name, method.ReturnType, null)); // TODO: method.DefaultValue
             }
 #endif
 

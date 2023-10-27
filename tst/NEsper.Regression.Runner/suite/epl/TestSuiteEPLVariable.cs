@@ -170,7 +170,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             common.AddVariable("varcoll", "String[]", new string[] {"E1", "E2"}, true);
             common.AddVariable("mySimpleVariableService", typeof(EPLVariablesUse.MySimpleVariableService), null);
             common.AddVariable("myInitService", typeof(EPLVariablesUse.MySimpleVariableService), EPLVariablesUse.MySimpleVariableServiceFactory.MakeService());
-            common.AddVariable("supportEnum", typeof(SupportEnum), SupportEnum.ENUM_VALUE_1);
+            common.AddVariable("SupportEnum", typeof(SupportEnum), SupportEnum.ENUM_VALUE_1);
             common.AddVariable("enumWithOverride", typeof(EPLVariablesUse.MyEnumWithOverride), EPLVariablesUse.MyEnumWithOverride.LONG);
             common.AddVariable("var1", typeof(int), -1);
             common.AddVariable("var2", typeof(string), "abc");

@@ -108,12 +108,12 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var eplContext =
-                    "@name('CTX') @public create context SegmentedByString partition by theString from SupportBean";
+                    "@name('CTX') @public create context SegmentedByString partition by TheString from SupportBean";
                 env.CompileDeploy(eplContext, path);
 
-                var fieldsGrouped = "theString,intPrimitive,col1".SplitCsv();
+                var fieldsGrouped = "TheString,IntPrimitive,col1".SplitCsv();
                 var eplGroupedAccess =
-                    "@name('s0') context SegmentedByString select theString,intPrimitive,window(longPrimitive) as col1 from SupportBean#keepall sb group by intPrimitive";
+                    "@name('s0') context SegmentedByString select TheString,IntPrimitive,window(LongPrimitive) as col1 from SupportBean#keepall sb group by IntPrimitive";
                 env.CompileDeploy(eplGroupedAccess, path);
 
                 env.AddListener("s0");
@@ -144,13 +144,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('context') @public create context SegmentedByString partition by theString from SupportBean",
+                    "@name('context') @public create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
-                var fields = new string[] { "theString", "intPrimitive", "val0" };
+                var fields = new string[] { "TheString", "IntPrimitive", "val0" };
                 env.CompileDeploy(
                     "@name('s0') context SegmentedByString " +
-                    "select theString, intPrimitive, (select count(*) from SupportBean_S0#keepall as s0 where sb.intPrimitive = s0.id) as val0 " +
+                    "select TheString, IntPrimitive, (select count(*) from SupportBean_S0#keepall as s0 where sb.IntPrimitive = s0.Id) as val0 " +
                     "from SupportBean as sb",
                     path);
                 env.AddListener("s0");
@@ -172,12 +172,12 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('context') @public create context SegmentedByString partition by theString from SupportBean",
+                    "@name('context') @public create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
-                var fieldsOne = "intPrimitive,count(*)".SplitCsv();
+                var fieldsOne = "IntPrimitive,count(*)".SplitCsv();
                 env.CompileDeploy(
-                    "@name('s0') context SegmentedByString select intPrimitive, count(*) from SupportBean group by intPrimitive",
+                    "@name('s0') context SegmentedByString select IntPrimitive, count(*) from SupportBean group by IntPrimitive",
                     path);
                 env.AddListener("s0");
 
@@ -202,9 +202,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.UndeployModuleContaining("s0");
 
                 // add "string" : a context property
-                var fieldsTwo = "theString,intPrimitive,count(*)".SplitCsv();
+                var fieldsTwo = "TheString,IntPrimitive,count(*)".SplitCsv();
                 env.CompileDeploy(
-                    "@name('s0') context SegmentedByString select theString, intPrimitive, count(*) from SupportBean group by intPrimitive",
+                    "@name('s0') context SegmentedByString select TheString, IntPrimitive, count(*) from SupportBean group by IntPrimitive",
                     path);
                 env.AddListener("s0");
 
@@ -236,12 +236,12 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('context') @public create context SegmentedByString partition by theString from SupportBean",
+                    "@name('context') @public create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
-                var fieldsOne = "intPrimitive,count(*)".SplitCsv();
+                var fieldsOne = "IntPrimitive,count(*)".SplitCsv();
                 env.CompileDeploy(
-                    "@name('s0') context SegmentedByString select intPrimitive, count(*) from SupportBean#length_batch(2) group by intPrimitive order by intPrimitive asc",
+"@name('s0') context SegmentedByString select IntPrimitive, count(*) from SupportBean#length_batch(2) group by IntPrimitive Order by IntPrimitive asc",
                     path);
                 env.AddListener("s0");
 
@@ -287,9 +287,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.UndeployModuleContaining("s0");
 
                 // add "string" : add context property
-                var fieldsTwo = "theString,intPrimitive,count(*)".SplitCsv();
+                var fieldsTwo = "TheString,IntPrimitive,count(*)".SplitCsv();
                 env.CompileDeploy(
-                    "@name('s0') context SegmentedByString select theString, intPrimitive, count(*) from SupportBean#length_batch(2) group by intPrimitive order by theString, intPrimitive asc",
+"@name('s0') context SegmentedByString select TheString, IntPrimitive, count(*) from SupportBean#length_batch(2) group by IntPrimitive Order by TheString, IntPrimitive asc",
                     path);
                 env.AddListener("s0");
 
@@ -338,15 +338,15 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('context') @public create context SegmentedByString partition by theString from SupportBean",
+                    "@name('context') @public create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
-                var fieldsOne = "intPrimitive,col1,col2,col3".SplitCsv();
+                var fieldsOne = "IntPrimitive,col1,col2,col3".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context SegmentedByString " +
-                    "select intPrimitive, count(*) as col1, toArray(window(*).selectFrom(v=>v.longPrimitive)) as col2, first().longPrimitive as col3 " +
+                    "select IntPrimitive, count(*) as col1, toArray(window(*).selectFrom(v=>v.LongPrimitive)) as col2, first().LongPrimitive as col3 " +
                     "from SupportBean#keepall as sb " +
-                    "group by intPrimitive order by intPrimitive asc",
+"group by IntPrimitive Order by IntPrimitive asc",
                     path);
                 env.AddListener("s0");
 
@@ -380,10 +380,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
 
                 var eplCtx =
-                    "@name('context') @public create context SegmentedByString partition by theString from SupportBean";
+                    "@name('context') @public create context SegmentedByString partition by TheString from SupportBean";
                 env.CompileDeploy(eplCtx, path);
 
-                var epl = "@name('s0') context SegmentedByString select sum(intPrimitive) as col1 from SupportBean;\n";
+                var epl = "@name('s0') context SegmentedByString select sum(IntPrimitive) as col1 from SupportBean;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.MilestoneInc(milestone);
@@ -419,7 +419,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fieldsTwo = "col1,col2".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context SegmentedByString " +
-                    "select sum(intPrimitive) as col1, toArray(window(*).selectFrom(v=>v.intPrimitive)) as col2 " +
+                    "select sum(IntPrimitive) as col1, toArray(window(*).selectFrom(v=>v.IntPrimitive)) as col2 " +
                     "from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
@@ -442,7 +442,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fieldsThree = "col1".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context SegmentedByString " +
-                    "select toArray(window(*).selectFrom(v=>v.intPrimitive)) as col1 " +
+                    "select toArray(window(*).selectFrom(v=>v.IntPrimitive)) as col1 " +
                     "from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
@@ -488,15 +488,15 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('context') @public create context SegmentedByString partition by theString from SupportBean",
+                    "@name('context') @public create context SegmentedByString partition by TheString from SupportBean",
                     path);
 
-                var fieldsOne = "intPrimitive,col1".SplitCsv();
+                var fieldsOne = "IntPrimitive,col1".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context SegmentedByString " +
-                    "select intPrimitive, count(*) as col1 " +
+                    "select IntPrimitive, count(*) as col1 " +
                     "from SupportBean unidirectional, SupportBean_S0#keepall " +
-                    "group by intPrimitive order by intPrimitive asc",
+"group by IntPrimitive Order by IntPrimitive asc",
                     path);
                 env.AddListener("s0");
 
@@ -545,16 +545,16 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var eplContext =
-                    "@name('CTX') @public create context SegmentedByString partition by theString from SupportBean";
+                    "@name('CTX') @public create context SegmentedByString partition by TheString from SupportBean";
                 env.CompileDeploy(eplContext, path);
 
-                var fields = "theString,col1".SplitCsv();
+                var fields = "TheString,col1".SplitCsv();
                 var eplUngrouped =
-                    "@name('S1') context SegmentedByString select theString,sum(intPrimitive) as col1 from SupportBean";
+                    "@name('S1') context SegmentedByString select TheString,sum(IntPrimitive) as col1 from SupportBean";
                 env.CompileDeploy(eplUngrouped, path).AddListener("S1");
 
                 var eplGroupedAccess =
-                    "@name('S2') context SegmentedByString select theString,window(intPrimitive) as col1 from SupportBean#keepall() sb";
+                    "@name('S2') context SegmentedByString select TheString,window(IntPrimitive) as col1 from SupportBean#keepall() sb";
                 env.CompileDeploy(eplGroupedAccess, path).AddListener("S2");
 
                 env.Milestone(0);
@@ -626,20 +626,20 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var eplContext =
-                    "@name('CTX') @public create context SegmentedByString partition by theString from SupportBean";
+                    "@name('CTX') @public create context SegmentedByString partition by TheString from SupportBean";
                 env.CompileDeploy(eplContext, path);
 
-                var fields = "theString,intPrimitive,col1".SplitCsv();
+                var fields = "TheString,IntPrimitive,col1".SplitCsv();
                 var eplGrouped =
-                    "@name('S1') context SegmentedByString select theString,intPrimitive,sum(longPrimitive) as col1 from SupportBean group by intPrimitive";
+                    "@name('S1') context SegmentedByString select TheString,IntPrimitive,sum(LongPrimitive) as col1 from SupportBean group by IntPrimitive";
                 env.CompileDeploy(eplGrouped, path).AddListener("S1");
 
                 var eplGroupedAccess =
-                    "@name('S2') context SegmentedByString select theString,intPrimitive,window(longPrimitive) as col1 from SupportBean.win:keepall() sb group by intPrimitive";
+                    "@name('S2') context SegmentedByString select TheString,IntPrimitive,window(LongPrimitive) as col1 from SupportBean.win:keepall() sb group by IntPrimitive";
                 env.CompileDeploy(eplGroupedAccess, path).AddListener("S2");
 
                 var eplGroupedDistinct =
-                    "@name('S3') context SegmentedByString select theString,intPrimitive,sum(distinct longPrimitive) as col1 from SupportBean.win:keepall() sb group by intPrimitive";
+                    "@name('S3') context SegmentedByString select TheString,IntPrimitive,sum(distinct LongPrimitive) as col1 from SupportBean.win:keepall() sb group by IntPrimitive";
                 env.CompileDeploy(eplGroupedDistinct, path).AddListener("S3");
 
                 env.SendEventBean(MakeEvent("G1", 1, 10L));

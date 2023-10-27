@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
                         return serde.ToForge();
                     }
                 }
-                catch (DataInputOutputSerdeException ex) {
+                catch (DataInputOutputSerdeException) {
                     throw;
                 }
                 catch (EPException) {

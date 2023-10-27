@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                        "#length(5) as eventOne, " +
                        eventNameTwo +
                        "#length(5) as eventTwo " +
-                       "where eventOne.myString = eventTwo.symbol";
+"where eventOne.myString = eventTwo.Symbol";
                 env.CompileDeploy(text).AddListener("s0");
 
                 AssertNoCommonProperties(env);
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var eventNameOne = nameof(SupportBean_A);
                 var eventNameTwo = nameof(SupportBean_B);
-                var text = "@name('s0') select *, eventOne.id||eventTwo.id as concat " +
+                var text = "@name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
                            "from " +
                            eventNameOne +
                            "#length(5) as eventOne, " +
@@ -235,13 +235,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.UndeployAll();
 
-                text = "@name('s0') select *, eventOne.id||eventTwo.id as concat " +
+                text = "@name('s0') select *, eventOne.Id||eventTwo.Id as concat " +
                        "from " +
                        eventNameOne +
                        "#length(5) as eventOne, " +
                        eventNameTwo +
                        "#length(5) as eventTwo " +
-                       "where eventOne.id = eventTwo.id";
+                       "where eventOne.Id = eventTwo.Id";
                 env.CompileDeploy(text).AddListener("s0");
 
                 AssertCommonProperties(env);
@@ -266,19 +266,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select *, theString||theString as concat from MyMapEventIntString#length(5)";
+                var text = "@name('s0') select *, TheString||TheString as concat from MyMapEventIntString#length(5)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 // The map to send into the eventService
                 IDictionary<string, object> props = new Dictionary<string, object>();
                 props.Put("int", 1);
-                props.Put("theString", "xx");
+                props.Put("TheString", "xx");
                 env.SendEventMap(props, "MyMapEventIntString");
 
                 // The map of expected results
                 IDictionary<string, object> properties = new Dictionary<string, object>();
                 properties.Put("int", 1);
-                properties.Put("theString", "xx");
+                properties.Put("TheString", "xx");
                 properties.Put("concat", "xxxx");
 
                 AssertProperties(env, "s0", properties);

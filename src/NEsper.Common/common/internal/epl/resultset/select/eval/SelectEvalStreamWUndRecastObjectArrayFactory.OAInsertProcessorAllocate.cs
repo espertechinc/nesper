@@ -63,9 +63,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.eval
                             "props",
                             CodegenExpressionBuilder.Constant(item.ToIndex),
                             CodegenExpressionBuilder.ArrayAtIndex(
-                                CodegenExpressionBuilder.ExprDotMethod(
+                                CodegenExpressionBuilder.ExprDotName(
                                     CodegenExpressionBuilder.Ref("theEvent"),
-                                    "getProperties"),
+                                    "Properties"),
                                 CodegenExpressionBuilder.Constant(item.OptionalFromIndex)));
                     }
                     else {

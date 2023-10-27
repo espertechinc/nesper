@@ -119,14 +119,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean")
-                    .WithExpression(fields[0], "intPrimitive > cast(null, int)")
-                    .WithExpression(fields[1], "intBoxed > 0")
-                    .WithExpression(fields[2], "cast(null, int) > intPrimitive")
-                    .WithExpression(fields[3], "cast(null, int) > intBoxed")
+                    .WithExpression(fields[0], "IntPrimitive > cast(null, int)")
+                    .WithExpression(fields[1], "IntBoxed > 0")
+                    .WithExpression(fields[2], "cast(null, int) > IntPrimitive")
+                    .WithExpression(fields[3], "cast(null, int) > IntBoxed")
                     .WithExpression(fields[4], "cast(null, int) > cast(null, int)")
-                    .WithExpression(fields[5], "intPrimitive > intBoxed")
-                    .WithExpression(fields[6], "intBoxed > intPrimitive")
-                    .WithExpression(fields[7], "doubleBoxed > intBoxed");
+                    .WithExpression(fields[5], "IntPrimitive > IntBoxed")
+                    .WithExpression(fields[6], "IntBoxed > IntPrimitive")
+                    .WithExpression(fields[7], "DoubleBoxed > IntBoxed");
                 builder.WithStatementConsumer(
                     stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
 

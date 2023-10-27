@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                     AggregationRowFactory>(
                     "rowFactory",
                     CodegenExpressionBuilder.NewInstanceInner(classNames.RowFactoryTop, Ref("this")))
-                .DeclareVar<DataInputOutputSerde>(
+                .DeclareVar<DataInputOutputSerde<AggregationRow>>(
                     "rowSerde",
                     CodegenExpressionBuilder.NewInstanceInner(classNames.RowSerdeTop, Ref("this")))
                 .MethodReturn(

@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.compat.collections;
 
@@ -23,7 +24,9 @@ namespace com.espertech.esper.common.@internal.util
     {
         private readonly bool _isDescendingValue;
 
-        [NonSerialized] private readonly IComparer<object> _collator = null;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly IComparer<object> _collator = null;
 
         /// <summary>Ctor. </summary>
         /// <param name="isDescendingValue">ascending or descending</param>

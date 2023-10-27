@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.epl.dataflow.ops;
@@ -48,7 +49,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Map of event name and fully-qualified class name.
         /// </summary>
-        private IDictionary<string, string> eventClasses;
+        private IDictionary<string, string> eventTypeNames;
 
         /// <summary>
         ///     Event type common configuration
@@ -145,7 +146,9 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Transient configuration.
         /// </summary>
-        [NonSerialized] private IDictionary<string, object> transientConfiguration;
+        [JsonIgnore]
+        [NonSerialized]
+        private IDictionary<string, object> transientConfiguration;
 
         /// <summary>
         ///     Map of variables.
@@ -167,10 +170,84 @@ namespace com.espertech.esper.common.client.configuration.common
         }
 
         /// <summary>
+        /// Constructor - used during JsonDeserialization
+        /// </summary>
+        /// <param name="annotationImports"></param>
+        /// <param name="databaseReferences"></param>
+        /// <param name="eventTypeNames"></param>
+        /// <param name="eventMeta"></param>
+        /// <param name="eventTypeAutoNameNamespaces"></param>
+        /// <param name="eventTypesAvro"></param>
+        /// <param name="eventTypesBean"></param>
+        /// <param name="eventTypesXmldom"></param>
+        /// <param name="execution"></param>
+        /// <param name="imports"></param>
+        /// <param name="logging"></param>
+        /// <param name="eventTypesMapEvents"></param>
+        /// <param name="mapTypeConfigurations"></param>
+        /// <param name="methodInvocationReferences"></param>
+        /// <param name="eventTypesNestableMapEvents"></param>
+        /// <param name="eventTypesNestableObjectArrayEvents"></param>
+        /// <param name="objectArrayTypeConfigurations"></param>
+        /// <param name="scripting"></param>
+        /// <param name="timeSource"></param>
+        /// <param name="transientConfiguration"></param>
+        /// <param name="variables"></param>
+        /// <param name="variantStreams"></param>
+        [JsonConstructor]
+        public ConfigurationCommon(
+            IList<Import> annotationImports,
+            IDictionary<string, ConfigurationCommonDBRef> databaseReferences,
+            IDictionary<string, string> eventTypeNames,
+            ConfigurationCommonEventTypeMeta eventMeta,
+            ISet<string> eventTypeAutoNameNamespaces,
+            IDictionary<string, ConfigurationCommonEventTypeAvro> eventTypesAvro,
+            IDictionary<string, ConfigurationCommonEventTypeBean> eventTypesBean,
+            IDictionary<string, ConfigurationCommonEventTypeXMLDOM> eventTypesXmldom,
+            ConfigurationCommonExecution execution,
+            IList<Import> imports,
+            ConfigurationCommonLogging logging,
+            IDictionary<string, Properties> eventTypesMapEvents,
+            IDictionary<string, ConfigurationCommonEventTypeMap> mapTypeConfigurations,
+            IDictionary<string, ConfigurationCommonMethodRef> methodInvocationReferences,
+            IDictionary<string, IDictionary<string, object>> eventTypesNestableMapEvents,
+            IDictionary<string, IDictionary<string, object>> eventTypesNestableObjectArrayEvents,
+            IDictionary<string, ConfigurationCommonEventTypeObjectArray> objectArrayTypeConfigurations,
+            ConfigurationCommonScripting scripting,
+            ConfigurationCommonTimeSource timeSource,
+            IDictionary<string, object> transientConfiguration,
+            IDictionary<string, ConfigurationCommonVariable> variables,
+            IDictionary<string, ConfigurationCommonVariantStream> variantStreams)
+        {
+            this.annotationImports = annotationImports;
+            this.databaseReferences = databaseReferences;
+            this.eventTypeNames = eventTypeNames;
+            this.eventMeta = eventMeta;
+            this.eventTypeAutoNameNamespaces = eventTypeAutoNameNamespaces;
+            this.eventTypesAvro = eventTypesAvro;
+            this.eventTypesBean = eventTypesBean;
+            this.eventTypesXMLDOM = eventTypesXmldom;
+            this.execution = execution;
+            this.imports = imports;
+            this.logging = logging;
+            this.mapNames = eventTypesMapEvents;
+            this.mapTypeConfigurations = mapTypeConfigurations;
+            this.methodInvocationReferences = methodInvocationReferences;
+            this.nestableMapNames = eventTypesNestableMapEvents;
+            this.nestableObjectArrayNames = eventTypesNestableObjectArrayEvents;
+            this.objectArrayTypeConfigurations = objectArrayTypeConfigurations;
+            this.scripting = scripting;
+            this.timeSource = timeSource;
+            this.transientConfiguration = transientConfiguration;
+            this.variables = variables;
+            this.variantStreams = variantStreams;
+        }
+
+        /// <summary>
         ///     Returns the mapping of event type name to type name.
         /// </summary>
         /// <value>event type names for type names</value>
-        public IDictionary<string, string> EventTypeNames => eventClasses;
+        public IDictionary<string, string> EventTypeNames => eventTypeNames;
 
         /// <summary>
         ///     Returns a map keyed by event type name, and values being the definition for the
@@ -325,7 +402,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <unknown>@since 2.1</unknown>
         public bool IsEventTypeExists(string eventTypeName)
         {
-            return eventClasses.ContainsKey(eventTypeName) ||
+            return eventTypeNames.ContainsKey(eventTypeName) ||
                    mapNames.ContainsKey(eventTypeName) ||
                    nestableMapNames.ContainsKey(eventTypeName) ||
                    nestableObjectArrayNames.ContainsKey(eventTypeName) ||
@@ -344,7 +421,7 @@ namespace com.espertech.esper.common.client.configuration.common
             string eventTypeName,
             string eventClassName)
         {
-            eventClasses.Put(eventTypeName, eventClassName);
+            eventTypeNames.Put(eventTypeName, eventClassName);
         }
 
         /// <summary>
@@ -632,7 +709,7 @@ namespace com.espertech.esper.common.client.configuration.common
             string eventClass,
             ConfigurationCommonEventTypeBean beanEventTypeDesc)
         {
-            eventClasses.Put(eventTypeName, eventClass);
+            eventTypeNames.Put(eventTypeName, eventClass);
             eventTypesBean.Put(eventTypeName, beanEventTypeDesc);
         }
 
@@ -641,7 +718,7 @@ namespace com.espertech.esper.common.client.configuration.common
             Type eventClass,
             ConfigurationCommonEventTypeBean beanEventTypeDesc)
         {
-            eventClasses.Put(eventTypeName, eventClass.FullName);
+            eventTypeNames.Put(eventTypeName, eventClass.FullName);
             eventTypesBean.Put(eventTypeName, beanEventTypeDesc);
         }
 
@@ -934,7 +1011,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         protected void Reset()
         {
-            eventClasses = new LinkedHashMap<string, string>();
+            eventTypeNames = new LinkedHashMap<string, string>();
             mapNames = new LinkedHashMap<string, Properties>();
             nestableMapNames = new LinkedHashMap<string, IDictionary<string, object>>();
             nestableObjectArrayNames = new LinkedHashMap<string, IDictionary<string, object>>();

@@ -238,8 +238,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 // test std:unique
                 SupportQueryPlanIndexHook.Reset();
                 var eplUnique = INDEX_CALLBACK_HOOK +
-                                "@name('s0') select id as c0, " +
-                                "(select intPrimitive from SupportBean#unique(theString) where theString = s0.p00) as c1 " +
+                                "@name('s0') select Id as c0, " +
+                                "(select IntPrimitive from SupportBean#unique(TheString) where TheString = s0.P00) as c1 " +
                                 "from SupportBean_S0 as s0";
                 env.CompileDeploy(eplUnique).AddListener("s0");
                 env.AssertThat(
@@ -265,8 +265,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 // test std:firstunique
                 SupportQueryPlanIndexHook.Reset();
                 var eplFirstUnique = INDEX_CALLBACK_HOOK +
-                                     "@name('s0') select id as c0, " +
-                                     "(select intPrimitive from SupportBean#firstunique(theString) where theString = s0.p00) as c1 " +
+                                     "@name('s0') select Id as c0, " +
+                                     "(select IntPrimitive from SupportBean#firstunique(TheString) where TheString = s0.P00) as c1 " +
                                      "from SupportBean_S0 as s0";
                 env.CompileDeploy(eplFirstUnique).AddListener("s0");
                 env.AssertThat(
@@ -292,8 +292,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 // test intersection std:firstunique
                 SupportQueryPlanIndexHook.Reset();
                 var eplIntersection = INDEX_CALLBACK_HOOK +
-                                      "@name('s0') select id as c0, " +
-                                      "(select intPrimitive from SupportBean#time(1)#unique(theString) where theString = s0.p00) as c1 " +
+                                      "@name('s0') select Id as c0, " +
+                                      "(select IntPrimitive from SupportBean#time(1)#unique(TheString) where TheString = s0.P00) as c1 " +
                                       "from SupportBean_S0 as s0";
                 env.CompileDeploy(eplIntersection).AddListener("s0");
                 env.AssertThat(
@@ -320,8 +320,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 // test grouped unique
                 SupportQueryPlanIndexHook.Reset();
                 var eplGrouped = INDEX_CALLBACK_HOOK +
-                                 "@name('s0') select id as c0, " +
-                                 "(select longPrimitive from SupportBean#groupwin(theString)#unique(intPrimitive) where theString = s0.p00 and intPrimitive = s0.id) as c1 " +
+                                 "@name('s0') select Id as c0, " +
+                                 "(select LongPrimitive from SupportBean#groupwin(TheString)#unique(IntPrimitive) where TheString = s0.P00 and IntPrimitive = s0.Id) as c1 " +
                                  "from SupportBean_S0 as s0";
                 env.CompileDeploy(eplGrouped).AddListener("s0");
                 env.AssertThat(

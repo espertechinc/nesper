@@ -60,16 +60,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 string epl;
 
                 // invalid incompatible params
-                epl = "select contained.aggregate(0, (result, item) => result || ',') from SupportBean_ST0_Container";
+                epl = "select Contained.aggregate(0, (result, Item) => result || ',') from SupportBean_ST0_Container";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'contained.aggregate(0,)': Failed to validate enumeration method 'aggregate' parameter 1: Failed to validate declared expression body expression 'result||\",\"': Implicit conversion from datatype 'Integer' to string is not allowed");
+                    "Failed to validate select-clause expression 'Contained.aggregate(0,)': Failed to validate enumeration method 'aggregate' parameter 1: Failed to validate declared expression body expression 'result||\",\"': Implicit conversion from datatype 'Integer' to string is not allowed");
 
                 // null-init-value for aggregate
-                epl = "select contained.aggregate(null, (result, item) => result) from SupportBean_ST0_Container";
+                epl = "select Contained.aggregate(null, (result, Item) => result) from SupportBean_ST0_Container";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'contained.aggregate(null,)': Initialization value is null-typed");
+                    "Failed to validate select-clause expression 'Contained.aggregate(null,)': Initialization value is null-typed");
             }
         }
 
@@ -79,20 +79,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "contained.aggregate(0, (result, item) => result + item.p00)");
+                builder.WithExpression(fields[0], "Contained.aggregate(0, (result, Item) => result + Item.P00)");
                 builder.WithExpression(
                     fields[1],
-                    "contained.aggregate('', (result, item) => result || ', ' || item.id)");
+"Contained.aggregate('', (result, Item) => result || ', ' || Item.Id)");
                 builder.WithExpression(
                     fields[2],
-                    "contained.aggregate('', (result, item) => result || (case when result='' then '' else ',' end) || item.id)");
+"Contained.aggregate('', (result, Item) => result || (case when result='' then '' else ',' end) || Item.Id)");
                 builder.WithExpression(
                     fields[3],
-                    "contained.aggregate(0, (result, item, i) => result + item.p00 + i*10)");
+"Contained.aggregate(0, (result, Item, i) => result + Item.P00 + i*10)");
                 builder.WithExpression(
                     fields[4],
-                    "contained.aggregate(0, (result, item, i, s) => result + item.p00 + i*10 + s*100)");
-                builder.WithExpression(fields[5], "contained.aggregate(0, (result, item) => null)");
+"Contained.aggregate(0, (result, Item, i, s) => result + Item.P00 + i*10 + s*100)");
+                builder.WithExpression(fields[5], "Contained.aggregate(0, (result, Item) => null)");
 
                 builder.WithStatementConsumer(
                     stmt => SupportEventPropUtil.AssertTypes(
@@ -130,14 +130,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.aggregate('', (result, item) => result || '+' || item)");
+                builder.WithExpression(fields[0], "Strvals.aggregate('', (result, Item) => result || '+' || Item)");
                 builder.WithExpression(
                     fields[1],
-                    "strvals.aggregate('', (result, item, i) => result || '+' || item || '_' || Integer.toString(i))");
+"Strvals.aggregate('', (result, Item, i) => result || '+' || Item || '_' || Integer.toString(i))");
                 builder.WithExpression(
                     fields[2],
-                    "strvals.aggregate('', (result, item, i, s) => result || '+' || item || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
-                builder.WithExpression(fields[3], "strvals.aggregate('', (result, item, i, s) => null)");
+"Strvals.aggregate('', (result, Item, i, s) => result || '+' || Item || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
+                builder.WithExpression(fields[3], "Strvals.aggregate('', (result, Item, i, s) => null)");
 
                 builder.WithStatementConsumer(
                     stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(string)));

@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select id, sum(value) as thesum from SupportEventWithIntArray group by array";
+                var epl = "@name('s0') select Id, sum(value) as thesum from SupportEventWithIntArray group by array";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssertIntArray(env, "E1", new int[] { 1, 2 }, 5, 5);
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select sb.getLongPrimitive() as c0, sum(intPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.getTheString()";
+                    "@name('s0') select sb.getLongPrimitive() as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.getTheString()";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 MakeSendSupportBean(env, "E1", 10, 100L);
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var fields = "c0,c1".SplitCsv();
                 var epl =
-                    "@name('s0') @IterableUnbound select theString as c0, sum(intPrimitive) as c1 from SupportBean group by theString";
+                    "@name('s0') @IterableUnbound select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select theString from SupportBean group by theString having intPrimitive > 5";
+                var epl = "@name('s0') select TheString from SupportBean group by TheString having IntPrimitive > 5";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 3));
@@ -196,10 +196,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("E1", 6));
-                env.AssertEqualsNew("s0", "theString", "E1");
+                env.AssertEqualsNew("s0", "TheString", "E1");
 
                 env.SendEventBean(new SupportBean("E3", 7));
-                env.AssertEqualsNew("s0", "theString", "E3");
+                env.AssertEqualsNew("s0", "TheString", "E3");
 
                 env.UndeployAll();
             }
@@ -210,9 +210,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // test no output limit
-                var fields = "theString, intPrimitive, minval".SplitCsv();
+                var fields = "TheString, IntPrimitive, minval".SplitCsv();
                 var epl =
-                    "@name('s0') select *, min(intPrimitive) as minval from SupportBean#length(2) group by theString";
+                    "@name('s0') select *, min(IntPrimitive) as minval from SupportBean#length(2) group by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("G1", 10));
@@ -235,10 +235,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // test for ESPER-185
-                var fields = "volume,symbol,price,mycount".SplitCsv();
-                var epl = "@name('s0') select irstream volume,symbol,price,count(price) as mycount " +
+                var fields = "Volume,Symbol,Price,mycount".SplitCsv();
+                var epl = "@name('s0') select irstream Volume,Symbol,Price,count(Price) as mycount "+
                           "from SupportMarketDataBean#length(5) " +
-                          "group by symbol, price";
+"group by Symbol, Price";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, SYMBOL_DELL, 1000, 10);
@@ -332,10 +332,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@name('s0') select irstream symbol, volume, sum(price) as mySum " +
+                var epl = "@name('s0') select irstream Symbol, Volume, sum(Price) as mySum "+
                           "from SupportMarketDataBean#length(3) " +
-                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
-                          "group by symbol";
+"where Symbol='DELL' or Symbol='IBM' or Symbol='GE' "+
+"group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertionSum(env);
@@ -349,12 +349,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@name('s0') select irstream symbol, volume, sum(price) as mySum " +
+                var epl = "@name('s0') select irstream Symbol, Volume, sum(Price) as mySum "+
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
-                          "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                          "  and one.theString = two.symbol " +
-                          "group by symbol";
+"where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') "+
+"  and one.TheString = two.Symbol "+
+"group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
@@ -371,21 +371,21 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var stmt =
-                    "@name('s0') select symbol as symbol, avg(price) as average, sum(volume) as sumation from SupportMarketDataBean#length(3000)";
+"@name('s0') select Symbol as Symbol, avg(Price) as Average, sum(Volume) as sumation from SupportMarketDataBean#length(3000)";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportMarketDataBean("IBM", 10D, 20000L, null));
                 env.AssertEventNew(
                     "s0",
                     eventBean => {
-                        Assert.AreEqual("IBM", eventBean.Get("symbol"));
-                        Assert.AreEqual(10d, eventBean.Get("average"));
+                        Assert.AreEqual("IBM", eventBean.Get("Symbol"));
+                        Assert.AreEqual(10d, eventBean.Get("Average"));
                         Assert.AreEqual(20000L, eventBean.Get("sumation"));
                     });
 
                 // create insert into statements
                 stmt =
-                    "@name('s1') insert into StockAverages select symbol as symbol, avg(price) as average, sum(volume) as sumation " +
+"@name('s1') insert into StockAverages select Symbol as Symbol, avg(Price) as Average, sum(Volume) as sumation "+
                     "from SupportMarketDataBean#length(3000);\n" +
                     "@name('s2') select * from StockAverages";
                 env.CompileDeploy(stmt).AddListener("s1").AddListener("s2");
@@ -395,16 +395,16 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertEventNew(
                     "s0",
                     eventBean => {
-                        Assert.AreEqual("IBM", eventBean.Get("symbol"));
-                        Assert.AreEqual(15d, eventBean.Get("average"));
+                        Assert.AreEqual("IBM", eventBean.Get("Symbol"));
+                        Assert.AreEqual(15d, eventBean.Get("Average"));
                         Assert.AreEqual(60000L, eventBean.Get("sumation"));
                     });
 
                 env.AssertEventNew(
                     "s2",
                     eventBean => {
-                        Assert.AreEqual("IBM", eventBean.Get("symbol"));
-                        Assert.AreEqual(20d, eventBean.Get("average"));
+                        Assert.AreEqual("IBM", eventBean.Get("Symbol"));
+                        Assert.AreEqual(20d, eventBean.Get("Average"));
                         Assert.AreEqual(40000L, eventBean.Get("sumation"));
                     });
 
@@ -414,15 +414,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
         private static void TryAssertionSum(RegressionEnvironment env)
         {
-            var fields = new string[] { "symbol", "volume", "mySum" };
+            var fields = new string[] { "Symbol", "Volume", "mySum" };
             env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
 
             // assert select result type
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("symbol"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("volume"));
+                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("Volume"));
                     Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
                 });
 
@@ -494,8 +494,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     Assert.IsNull(oldData);
                     Assert.AreEqual(1, newData.Length);
 
-                    Assert.AreEqual(symbol, newData[0].Get("symbol"));
-                    Assert.AreEqual(volume, newData[0].Get("volume"));
+                    Assert.AreEqual(symbol, newData[0].Get("Symbol"));
+                    Assert.AreEqual(volume, newData[0].Get("Volume"));
                     Assert.AreEqual(sum, newData[0].Get("mySum"));
 
                     listener.Reset();
@@ -513,7 +513,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             env.AssertPropsIRPair(
                 "s0",
-                "symbol,volume,mySum".SplitCsv(),
+"Symbol,Volume,mySum".SplitCsv(),
                 new object[] { symbolNew, volumeNew, sumNew },
                 new object[] { symbolOld, volumeOld, sumOld });
         }
@@ -547,7 +547,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             int value,
             int expected)
         {
-            var fields = "id,thesum".SplitCsv();
+            var fields = "Id,thesum".SplitCsv();
             env.SendEventBean(new SupportEventWithIntArray(id, array, value));
             env.AssertPropsNew("s0", fields, new object[] { id, expected });
         }

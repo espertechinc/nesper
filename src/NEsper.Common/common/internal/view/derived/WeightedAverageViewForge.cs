@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.view.derived
 
         internal override Type TypeOfFactory => typeof(WeightedAverageViewFactory);
 
-        internal override string FactoryMethod => "weightedavg";
+        internal override string FactoryMethod => "Weightedavg";
 
         internal override void Assign(
             CodegenMethod method,

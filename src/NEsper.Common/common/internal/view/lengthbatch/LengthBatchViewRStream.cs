@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
 
         public ViewFactory ViewFactory => lengthBatchViewFactory;
 
-        public override EventType EventType => parent.EventType;
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(
             EventBean[] newData,
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
         protected void SendBatch()
         {
             // If there are child views and the batch was filled, fireStatementStopped update method
-            if (child != null) {
+            if (Child != null) {
                 // Convert to object arrays
                 EventBean[] newData = null;
                 EventBean[] oldData = null;
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.view.lengthbatch
                         lengthBatchViewFactory,
                         newData,
                         oldData);
-                    child.Update(newData, oldData);
+                    Child.Update(newData, oldData);
                     agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
             }

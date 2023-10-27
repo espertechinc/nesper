@@ -307,10 +307,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             return groupByExpressions != null && !groupByExpressions.IsEmpty();
         }
 
-        private static bool Aggregated(ExprSubselectNode.SubqueryAggregationType subqueryAggregationType)
+        private static bool Aggregated(ExprSubselectNode.SubqueryAggregationType? subqueryAggregationType)
         {
             return subqueryAggregationType != null &&
-                   subqueryAggregationType != ExprSubselectNode.SubqueryAggregationType.NONE;
+                   subqueryAggregationType.Value != ExprSubselectNode.SubqueryAggregationType.NONE;
         }
     }
 } // end of namespace

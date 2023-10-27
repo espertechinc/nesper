@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields = "c0".SplitCsv();
 
                 var epl =
-                    "@name('s0') select irstream theString as c0 from SupportBean#ext_timed_batch(longPrimitive, 10 sec)";
+                    "@name('s0') select irstream TheString as c0 from SupportBean#ext_timed_batch(LongPrimitive, 10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.AssertPropsPerRowIterator("s0", fields, Array.Empty<object[]>());
@@ -146,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "id".SplitCsv();
+                var fields = "Id".SplitCsv();
                 var epl =
                     "@name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(mytimestamp, 1 minute)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -253,20 +253,20 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields =
                     "currSymbol,prev0Symbol,prev0Price,prev1Symbol,prev1Price,prev2Symbol,prev2Price,prevTail0Symbol,prevTail0Price,prevTail1Symbol,prevTail1Price,prevCountPrice,prevWindowPrice"
                         .SplitCsv();
-                var epl = "@name('s0') select irstream symbol as currSymbol, " +
-                          "prev(0, symbol) as prev0Symbol, " +
-                          "prev(0, price) as prev0Price, " +
-                          "prev(1, symbol) as prev1Symbol, " +
-                          "prev(1, price) as prev1Price, " +
-                          "prev(2, symbol) as prev2Symbol, " +
-                          "prev(2, price) as prev2Price," +
-                          "prevtail(0, symbol) as prevTail0Symbol, " +
-                          "prevtail(0, price) as prevTail0Price, " +
-                          "prevtail(1, symbol) as prevTail1Symbol, " +
-                          "prevtail(1, price) as prevTail1Price, " +
-                          "prevcount(price) as prevCountPrice, " +
-                          "prevwindow(price) as prevWindowPrice " +
-                          "from SupportMarketDataBean#ext_timed_batch(volume, 10, 0L) ";
+                var epl = "@name('s0') select irstream Symbol as currSymbol, "+
+"prev(0, Symbol) as prev0Symbol, "+
+                          "prev(0, Price) as prev0Price, " +
+"prev(1, Symbol) as prev1Symbol, "+
+                          "prev(1, Price) as prev1Price, " +
+"prev(2, Symbol) as prev2Symbol, "+
+                          "prev(2, Price) as prev2Price," +
+"prevtail(0, Symbol) as prevTail0Symbol, "+
+                          "prevtail(0, Price) as prevTail0Price, " +
+"prevtail(1, Symbol) as prevTail1Symbol, "+
+                          "prevtail(1, Price) as prevTail1Price, " +
+                          "prevcount(Price) as prevCountPrice, " +
+                          "prevwindow(Price) as prevWindowPrice " +
+                          "from SupportMarketDataBean#ext_timed_batch(Volume, 10, 0L) ";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendMarketEvent(env, "A", 1, 1000);
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             string epl,
             AtomicLong milestone)
         {
-            var fields = "id".SplitCsv();
+            var fields = "Id".SplitCsv();
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
             env.SendEventBean(SupportEventIdWithTimestamp.MakeTime("E1", "8:00:00.000"));
@@ -371,7 +371,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select * from SupportBean#ext_timed_batch(longPrimitive, 1 month)";
+                var epl = "@name('s0') select * from SupportBean#ext_timed_batch(LongPrimitive, 1 month)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-02-01T09:00:00.000"), "E1");
@@ -381,7 +381,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-03-01T09:00:00.000"), "E3");
                 env.AssertPropsPerRowLastNew(
                     "s0",
-                    "theString".SplitCsv(),
+                    "TheString".SplitCsv(),
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 env.UndeployAll();

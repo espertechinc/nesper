@@ -18,10 +18,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             string epl;
 
             // invalid incompatible params
-            epl = "select contained.set('hour', 1) from SupportBean_ST0_Container";
+            epl = "select Contained.set('hour', 1) from SupportBean_ST0_Container";
             env.TryInvalidCompile(
                 epl,
-                "Failed to validate select-clause expression 'contained.set(\"hour\",1)': Date-time enumeration method 'set' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property but received collection of events of type '" +
+                "Failed to validate select-clause expression 'Contained.set(\"hour\",1)': Date-time enumeration method 'set' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property but received collection of events of type '" +
                 typeof(SupportBean_ST0).FullName +
                 "'");
 

@@ -209,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 buf.Write(",");
             }
 
-            buf.Write("intPrimitive from SupportBean");
+            buf.Write("IntPrimitive from SupportBean");
 
             env.CompileDeployAddListenerMile(buf.ToString(), "test", milestone.GetAndIncrement());
 

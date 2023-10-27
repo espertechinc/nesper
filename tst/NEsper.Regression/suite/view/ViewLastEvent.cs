@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields = "c0,c1".SplitCsv();
 
                 var epl =
-                    "@name('s0') select irstream theString as c0, intPrimitive as c1 from SupportBean#lastevent()";
+                    "@name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#lastevent()";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.Milestone(1);
@@ -87,30 +87,30 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeMarketDataEvent("E1"));
-                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E1" } }, null);
+                env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E1" } }, null);
 
                 env.Milestone(1);
 
                 env.SendEventBean(MakeMarketDataEvent("E2"));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "symbol", "E2" } },
-                    new object[][] { new object[] { "symbol", "E1" } });
+                    new object[][] { new object[] { "Symbol", "E2" } },
+                    new object[][] { new object[] { "Symbol", "E1" } });
 
                 // test iterator
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "symbol" },
+                    new string[] { "Symbol"},
                     new object[][] { new object[] { "E2" } });
 
                 env.Milestone(2);
 
                 for (var i = 3; i < 10; i++) {
-                    env.SendEventBean(MakeMarketDataEvent("E" + i));
+                    env.SendEventBean(MakeMarketDataEvent($"E{i}"));
                     env.AssertPropsNV(
                         "s0",
-                        new object[][] { new object[] { "symbol", "E" + i } }, // new data
-                        new object[][] { new object[] { "symbol", "E" + (i - 1) } } //  old data
+                        new object[][] { new object[] { "Symbol", $"E{i}" } }, // new data
+                        new object[][] { new object[] { "Symbol", $"E{(i - 1)}" } } //  old data
                     );
 
                     env.Milestone(i);

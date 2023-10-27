@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             // manufacturer.AddMethod("make", makeMethod);
             // makeMethod.Block
             //     .DeclareVar<object[]>("und", LocalMethod(makeUndMethod, Ref("properties")))
-            //     .MethodReturn(ExprDotMethod(factory, "adapterForTypedObjectArray", Ref("und"), eventType));
+            //     .MethodReturn(ExprDotMethod(factory, "AdapterForTypedObjectArray", Ref("und"), eventType));
 
             return codegenClassScope.AddDefaultFieldUnshared(true, typeof(EventBeanManufacturer), manufacturer);
         }

@@ -57,13 +57,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var n1v = beanOne.Nested.NestedValue;
             var n1nv = beanOne.Nested.NestedNested.NestedNestedValue;
             var beanTwo = SupportBeanComplexProps.MakeDefaultBean();
-            beanTwo.Nested.NestedValue = "nested1";
-            beanTwo.Nested.NestedNested.NestedNestedValue = "nested2";
+            beanTwo.Nested.NestedValue = "Nested1";
+            beanTwo.Nested.NestedNested.NestedNestedValue = "Nested2";
             var beanTests = new Pair<object, object>[] {
                 new Pair<object, object>(new SupportBeanDynRoot(beanOne), AllExist(n1v, n1v, n1nv, n1nv, n1nv, n1nv)),
                 new Pair<object, object>(
                     new SupportBeanDynRoot(beanTwo),
-                    AllExist("nested1", "nested1", "nested2", "nested2", "nested2", "nested2")),
+                    AllExist("Nested1", "Nested1", "Nested2", "Nested2", "Nested2", "Nested2")),
                 new Pair<object, object>(new SupportBeanDynRoot("abc"), notExists)
             };
             RunAssertion(env, "SupportBeanDynRoot", FBEAN, null, beanTests, typeof(object), path);
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     "\t</Nested>\n" +
                     "</Item>\n",
                     AllExist("100", "100", "101", "101", "101", "101")),
-                new Pair<object, object>("<item/>", notExists),
+                new Pair<object, object>("<Item/>", notExists),
             };
             RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode), path);
 
@@ -299,11 +299,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 @event = valueRecord;
             }
             else {
-                var itemSchema = schema.GetField("item").Schema;
+                var itemSchema = schema.GetField("Item").Schema;
                 var itemDatum = new GenericRecord(itemSchema.AsRecordSchema());
-                itemDatum.Put("nested", value);
+                itemDatum.Put("Nested", value);
                 @event = new GenericRecord(schema.AsRecordSchema());
-                @event.Put("item", itemDatum);
+                @event.Put("Item", itemDatum);
             }
 
             env.SendEventAvro(@event, typename);
@@ -324,8 +324,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         [Serializable]
         public class MyLocalJsonProvidedNested
         {
-            public int? nestedValue;
-            public MyLocalJsonProvidedNestedNested nestedNested;
+            public int? NestedValue;
+            public MyLocalJsonProvidedNestedNested NestedNested;
         }
 
         [Serializable]

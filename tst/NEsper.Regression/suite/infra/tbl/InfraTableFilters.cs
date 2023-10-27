@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var path = new RegressionPath();
             env.CompileDeploy("@public create table MyTable(pkey string primary key, col0 int)", path);
             env.CompileDeploy(
-                "insert into MyTable select theString as pkey, intPrimitive as col0 from SupportBean",
+                "insert into MyTable select TheString as pkey, IntPrimitive as col0 from SupportBean",
                 path);
 
             for (var i = 0; i < 5; i++) {

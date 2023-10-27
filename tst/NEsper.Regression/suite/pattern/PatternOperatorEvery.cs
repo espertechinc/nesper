@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var fields = "c0".SplitCsv();
 
-                var epl = "@name('s0') select a.theString as c0 from pattern [every a=SupportBean]";
+                var epl = "@name('s0') select a.TheString as c0 from pattern [every a=SupportBean]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendSupportBean(env, "E1", 0);
@@ -128,8 +128,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var fields = "c0,c1,c2".SplitCsv();
 
-                var epl = "@name('s0') select a.theString as c0, a.intPrimitive as c1, b.intPrimitive as c2 " +
-                          "from pattern [every a=SupportBean -> b=SupportBean(theString=a.theString)]";
+                var epl = "@name('s0') select a.TheString as c0, a.IntPrimitive as c1, b.IntPrimitive as c2 " +
+                          "from pattern [every a=SupportBean -> b=SupportBean(TheString=a.TheString)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -160,8 +160,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var fields = "c0,c1,c2".SplitCsv();
 
                 env.AdvanceTime(0);
-                var epl = "@name('s0') select a.theString as c0, a.intPrimitive as c1, b.intPrimitive as c2 " +
-                          "from pattern [every a=SupportBean -> b=SupportBean(theString=a.theString) where timer:within(10 sec)]";
+                var epl = "@name('s0') select a.TheString as c0, a.IntPrimitive as c1, b.IntPrimitive as c2 " +
+                          "from pattern [every a=SupportBean -> b=SupportBean(TheString=a.TheString) where timer:within(10 sec)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -198,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var fields = "c0,c1".SplitCsv();
 
                 var epl =
-                    "@name('s0') select a.theString as c0, b.theString as c1 from pattern [every (a=SupportBean(intPrimitive>0) and b=SupportBean(intPrimitive<0))]";
+                    "@name('s0') select a.TheString as c0, b.TheString as c1 from pattern [every (a=SupportBean(IntPrimitive>0) and b=SupportBean(IntPrimitive<0))]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);

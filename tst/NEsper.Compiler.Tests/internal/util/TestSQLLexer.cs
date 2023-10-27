@@ -38,17 +38,14 @@ namespace com.espertech.esper.compiler.@internal.util
 				    "select * from A where 1=0 having a>b"
 			    },
 			    new string[] {
-				    "select * from A order by d",
-				    "select * from A where 1=0 order by d"
-			    },
+"select * from A Order by d",
+"select * from A where 1=0 Order by d"			    },
 			    new string[] {
-				    "select * from A group by a having b>c order by d",
-				    "select * from A where 1=0 group by a having b>c order by d"
-			    },
+"select * from A group by a having b>c Order by d",
+"select * from A where 1=0 group by a having b>c Order by d"			    },
 			    new string[] {
-				    "select * from A where (7<4) group by a having b>c order by d",
-				    "select * from A where 1=0 and (7<4) group by a having b>c order by d"
-			    },
+"select * from A where (7<4) group by a having b>c Order by d",
+"select * from A where 1=0 and (7<4) group by a having b>c Order by d"			    },
 			    new string[] {
 				    "select * from A union select * from B",
 				    "select * from A  where 1=0 union  select * from B where 1=0"

@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
     public class ExprFilterOptimizableConditionNegateConfirm
     {
-        private static readonly string HOOK = "@Hook(type=HookType.INTERNAL_FILTERSPEC, hook='" +
+        private static readonly string HOOK = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, hook='" +
                                               typeof(SupportFilterPlanHook).FullName +
                                               "')";
 
@@ -273,19 +273,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var advanced = HasFilterIndexPlanAdvanced(env);
                 {
-                    var confirm = "context.s0.p00=\"x\" or context.s0.p01=\"y\"";
+                    var confirm = "context.s0.P00=\"x\" or context.s0.P01=\"y\"";
                     var pathOne = new SupportFilterPlanPath(
-                        MakeTriplet("p10", EQUAL, "a", confirm),
-                        MakeTriplet("p11", EQUAL, "c"));
+                        MakeTriplet("P10", EQUAL, "a", confirm),
+                        MakeTriplet("P11", EQUAL, "c"));
                     var pathTwo = new SupportFilterPlanPath(
-                        MakeTriplet("p10", EQUAL, "a", confirm),
-                        MakeTriplet("p12", EQUAL, "d"));
+                        MakeTriplet("P10", EQUAL, "a", confirm),
+                        MakeTriplet("P12", EQUAL, "d"));
                     var plan = new SupportFilterPlan(pathOne, pathTwo);
                     RunAssertion(
                         env,
                         plan,
                         advanced,
-                        "(p10='a' or context.s0.p00='x' or context.s0.p01='y') and (p11='c' or p12='d')");
+                        "(P10='a' or context.s0.P00='x' or context.s0.P01='y') and (P11='c' or P12='d')");
                 }
             }
 
@@ -323,12 +323,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     milestone,
                     advanced,
-                    "(p10='a' or context.s0.p00='x' or context.s0.p00='y') and (p11='b' or p12='c')");
+                    "(P10='a' or context.s0.P00='x' or context.s0.P00='y') and (P11='b' or P12='c')");
                 RunAssertion(
                     env,
                     milestone,
                     advanced,
-                    "('c'=p12 or p11='b') and (context.s0.p00='x' or context.s0.p00='y' or 'a'=p10)");
+                    "('c'=P12 or P11='b') and (context.s0.P00='x' or context.s0.P00='y' or 'a'=P10)");
             }
 
             private void RunAssertion(
@@ -345,13 +345,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 SupportFilterPlanHook.Reset();
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var pathWhenXOrY = "context.s0.p00=\"x\" or context.s0.p00=\"y\"";
+                var pathWhenXOrY = "context.s0.P00=\"x\" or context.s0.P00=\"y\"";
                 var pathOne = new SupportFilterPlanPath(
-                    MakeTriplet("p10", EQUAL, "a", pathWhenXOrY),
-                    MakeTriplet("p11", EQUAL, "b"));
+                    MakeTriplet("P10", EQUAL, "a", pathWhenXOrY),
+                    MakeTriplet("P11", EQUAL, "b"));
                 var pathTwo = new SupportFilterPlanPath(
-                    MakeTriplet("p10", EQUAL, "a", pathWhenXOrY),
-                    MakeTriplet("p12", EQUAL, "c"));
+                    MakeTriplet("P10", EQUAL, "a", pathWhenXOrY),
+                    MakeTriplet("P12", EQUAL, "c"));
                 var plan = new SupportFilterPlan(pathOne, pathTwo);
                 if (advanced) {
                     AssertPlanSingleByType("SupportBean_S1", plan);
@@ -366,8 +366,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem("p11", EQUAL) },
-                            new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem("p12", EQUAL) },
+                            new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem("P11", EQUAL) },
+                            new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem("P12", EQUAL) },
                         });
                 }
 
@@ -384,8 +384,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p11", EQUAL) },
-                            new FilterItem[] { new FilterItem("p12", EQUAL) }
+                            new FilterItem[] { new FilterItem("P11", EQUAL) },
+                            new FilterItem[] { new FilterItem("P12", EQUAL) }
                         });
                 }
 
@@ -414,12 +414,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     milestone,
                     advanced,
-                    "(p10='a' or p11='b' or context.s0.p00='x') and (p12='c' or p13='d' or context.s0.p00='y')");
+                    "(P10='a' or P11='b' or context.s0.P00='x') and (P12='c' or P13='d' or context.s0.P00='y')");
                 RunAssertion(
                     env,
                     milestone,
                     advanced,
-                    "(p11='b' or context.s0.p00='x' or p10='a') and (context.s0.p00='y' or p12='c' or p13='d')");
+                    "(P11='b' or context.s0.P00='x' or P10='a') and (context.s0.P00='y' or P12='c' or P13='d')");
             }
 
             private void RunAssertion(
@@ -436,30 +436,30 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 SupportFilterPlanHook.Reset();
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var whenNotXAndNotY = "not context.s0.p00=\"x\" and not context.s0.p00=\"y\"";
-                var whenYAndNotX = "context.s0.p00=\"y\" and not context.s0.p00=\"x\"";
-                var whenXAndNotY = "context.s0.p00=\"x\" and not context.s0.p00=\"y\"";
-                var confirm = "context.s0.p00=\"x\" and context.s0.p00=\"y\"";
+                var whenNotXAndNotY = "not context.s0.P00=\"x\" and not context.s0.P00=\"y\"";
+                var whenYAndNotX = "context.s0.P00=\"y\" and not context.s0.P00=\"x\"";
+                var whenXAndNotY = "context.s0.P00=\"x\" and not context.s0.P00=\"y\"";
+                var confirm = "context.s0.P00=\"x\" and context.s0.P00=\"y\"";
                 var pathOne = new SupportFilterPlanPath(
                     whenNotXAndNotY,
-                    MakeTriplet("p10", EQUAL, "a"),
-                    MakeTriplet("p12", EQUAL, "c"));
+                    MakeTriplet("P10", EQUAL, "a"),
+                    MakeTriplet("P12", EQUAL, "c"));
                 var pathTwo = new SupportFilterPlanPath(
                     whenNotXAndNotY,
-                    MakeTriplet("p10", EQUAL, "a"),
-                    MakeTriplet("p13", EQUAL, "d"));
+                    MakeTriplet("P10", EQUAL, "a"),
+                    MakeTriplet("P13", EQUAL, "d"));
                 var pathThree = new SupportFilterPlanPath(
                     whenNotXAndNotY,
-                    MakeTriplet("p11", EQUAL, "b"),
-                    MakeTriplet("p12", EQUAL, "c"));
+                    MakeTriplet("P11", EQUAL, "b"),
+                    MakeTriplet("P12", EQUAL, "c"));
                 var pathFour = new SupportFilterPlanPath(
                     whenNotXAndNotY,
-                    MakeTriplet("p11", EQUAL, "b"),
-                    MakeTriplet("p13", EQUAL, "d"));
-                var pathFive = new SupportFilterPlanPath(whenYAndNotX, MakeTriplet("p10", EQUAL, "a"));
-                var pathSix = new SupportFilterPlanPath(whenYAndNotX, MakeTriplet("p11", EQUAL, "b"));
-                var pathSeven = new SupportFilterPlanPath(whenXAndNotY, MakeTriplet("p12", EQUAL, "c"));
-                var pathEight = new SupportFilterPlanPath(whenXAndNotY, MakeTriplet("p13", EQUAL, "d"));
+                    MakeTriplet("P11", EQUAL, "b"),
+                    MakeTriplet("P13", EQUAL, "d"));
+                var pathFive = new SupportFilterPlanPath(whenYAndNotX, MakeTriplet("P10", EQUAL, "a"));
+                var pathSix = new SupportFilterPlanPath(whenYAndNotX, MakeTriplet("P11", EQUAL, "b"));
+                var pathSeven = new SupportFilterPlanPath(whenXAndNotY, MakeTriplet("P12", EQUAL, "c"));
+                var pathEight = new SupportFilterPlanPath(whenXAndNotY, MakeTriplet("P13", EQUAL, "d"));
                 var plan = new SupportFilterPlan(
                     confirm,
                     null,
@@ -484,10 +484,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem("p12", EQUAL) },
-                            new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem("p13", EQUAL) },
-                            new FilterItem[] { new FilterItem("p11", EQUAL), new FilterItem("p12", EQUAL) },
-                            new FilterItem[] { new FilterItem("p11", EQUAL), new FilterItem("p13", EQUAL) }
+                            new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem("P12", EQUAL) },
+                            new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem("P13", EQUAL) },
+                            new FilterItem[] { new FilterItem("P11", EQUAL), new FilterItem("P12", EQUAL) },
+                            new FilterItem[] { new FilterItem("P11", EQUAL), new FilterItem("P13", EQUAL) }
                         });
                 }
 
@@ -506,8 +506,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p12", EQUAL) },
-                            new FilterItem[] { new FilterItem("p13", EQUAL) }
+                            new FilterItem[] { new FilterItem("P12", EQUAL) },
+                            new FilterItem[] { new FilterItem("P13", EQUAL) }
                         });
                 }
 
@@ -523,8 +523,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p10", EQUAL) },
-                            new FilterItem[] { new FilterItem("p11", EQUAL) }
+                            new FilterItem[] { new FilterItem("P10", EQUAL) },
+                            new FilterItem[] { new FilterItem("P11", EQUAL) }
                         });
                 }
 
@@ -552,12 +552,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     milestone,
                     advanced,
-                    "(p10='a' or p11='b' or context.s0.p00='x') and (p12='c' or p13='d')");
+                    "(P10='a' or P11='b' or context.s0.P00='x') and (P12='c' or P13='d')");
                 RunAssertion(
                     env,
                     milestone,
                     advanced,
-                    "(p13='d' or 'c'=p12) and (context.s0.p00='x' or p11='b' or p10='a')");
+                    "(P13='d' or 'c'=P12) and (context.s0.P00='x' or P11='b' or P10='a')");
             }
 
             private void RunAssertion(
@@ -574,26 +574,26 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 SupportFilterPlanHook.Reset();
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var pathWhenX = "context.s0.p00=\"x\"";
+                var pathWhenX = "context.s0.P00=\"x\"";
                 var pathWhenNotX = "not " + pathWhenX;
                 var pathOne = new SupportFilterPlanPath(
                     pathWhenNotX,
-                    MakeTriplet("p10", EQUAL, "a"),
-                    MakeTriplet("p12", EQUAL, "c"));
+                    MakeTriplet("P10", EQUAL, "a"),
+                    MakeTriplet("P12", EQUAL, "c"));
                 var pathTwo = new SupportFilterPlanPath(
                     pathWhenNotX,
-                    MakeTriplet("p10", EQUAL, "a"),
-                    MakeTriplet("p13", EQUAL, "d"));
+                    MakeTriplet("P10", EQUAL, "a"),
+                    MakeTriplet("P13", EQUAL, "d"));
                 var pathThree = new SupportFilterPlanPath(
                     pathWhenNotX,
-                    MakeTriplet("p11", EQUAL, "b"),
-                    MakeTriplet("p12", EQUAL, "c"));
+                    MakeTriplet("P11", EQUAL, "b"),
+                    MakeTriplet("P12", EQUAL, "c"));
                 var pathFour = new SupportFilterPlanPath(
                     pathWhenNotX,
-                    MakeTriplet("p11", EQUAL, "b"),
-                    MakeTriplet("p13", EQUAL, "d"));
-                var pathFive = new SupportFilterPlanPath(pathWhenX, MakeTriplet("p12", EQUAL, "c"));
-                var pathSix = new SupportFilterPlanPath(pathWhenX, MakeTriplet("p13", EQUAL, "d"));
+                    MakeTriplet("P11", EQUAL, "b"),
+                    MakeTriplet("P13", EQUAL, "d"));
+                var pathFive = new SupportFilterPlanPath(pathWhenX, MakeTriplet("P12", EQUAL, "c"));
+                var pathSix = new SupportFilterPlanPath(pathWhenX, MakeTriplet("P13", EQUAL, "d"));
                 var plan = new SupportFilterPlan(pathOne, pathTwo, pathThree, pathFour, pathFive, pathSix);
                 if (advanced) {
                     AssertPlanSingleByType("SupportBean_S1", plan);
@@ -608,10 +608,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem("p12", EQUAL) },
-                            new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem("p13", EQUAL) },
-                            new FilterItem[] { new FilterItem("p11", EQUAL), new FilterItem("p12", EQUAL) },
-                            new FilterItem[] { new FilterItem("p11", EQUAL), new FilterItem("p13", EQUAL) }
+                            new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem("P12", EQUAL) },
+                            new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem("P13", EQUAL) },
+                            new FilterItem[] { new FilterItem("P11", EQUAL), new FilterItem("P12", EQUAL) },
+                            new FilterItem[] { new FilterItem("P11", EQUAL), new FilterItem("P13", EQUAL) }
                         });
                 }
 
@@ -630,8 +630,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p12", EQUAL) },
-                            new FilterItem[] { new FilterItem("p13", EQUAL) }
+                            new FilterItem[] { new FilterItem("P12", EQUAL) },
+                            new FilterItem[] { new FilterItem("P13", EQUAL) }
                         });
                 }
 
@@ -655,8 +655,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var advanced = HasFilterIndexPlanAdvanced(env);
-                RunAssertion(env, milestone, advanced, "(p10='a' or context.s0.p00='x') and (p11='c' or p12='d')");
-                RunAssertion(env, milestone, advanced, "(p12='d' or p11='c') and (context.s0.p00='x' or p10='a')");
+                RunAssertion(env, milestone, advanced, "(P10='a' or context.s0.P00='x') and (P11='c' or P12='d')");
+                RunAssertion(env, milestone, advanced, "(P12='d' or P11='c') and (context.s0.P00='x' or P10='a')");
             }
 
             private void RunAssertion(
@@ -674,11 +674,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var pathOne = new SupportFilterPlanPath(
-                    MakeTriplet("p10", EQUAL, "a", "context.s0.p00=\"x\""),
-                    MakeTriplet("p11", EQUAL, "c"));
+                    MakeTriplet("P10", EQUAL, "a", "context.s0.P00=\"x\""),
+                    MakeTriplet("P11", EQUAL, "c"));
                 var pathTwo = new SupportFilterPlanPath(
-                    MakeTriplet("p10", EQUAL, "a", "context.s0.p00=\"x\""),
-                    MakeTriplet("p12", EQUAL, "d"));
+                    MakeTriplet("P10", EQUAL, "a", "context.s0.P00=\"x\""),
+                    MakeTriplet("P12", EQUAL, "d"));
                 if (advanced) {
                     AssertPlanSingleByType("SupportBean_S1", new SupportFilterPlan(pathOne, pathTwo));
                 }
@@ -692,8 +692,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem("p11", EQUAL) },
-                            new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem("p12", EQUAL) }
+                            new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem("P11", EQUAL) },
+                            new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem("P12", EQUAL) }
                         });
                 }
 
@@ -710,8 +710,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p11", EQUAL) },
-                            new FilterItem[] { new FilterItem("p12", EQUAL) }
+                            new FilterItem[] { new FilterItem("P11", EQUAL) },
+                            new FilterItem[] { new FilterItem("P12", EQUAL) }
                         });
                 }
 
@@ -739,12 +739,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     milestone,
                     advanced,
-                    "(p10='a' or p11='b') and (p12='c' or p13='d') and (s0.p00='x' or s0.p00='y')");
+                    "(P10='a' or P11='b') and (P12='c' or P13='d') and (s0.P00='x' or s0.P00='y')");
                 RunAssertion(
                     env,
                     milestone,
                     advanced,
-                    "(s0.p00='x' or s0.p00='y') and ('d'=p13 or 'c'=p12) and ('b'=p11 or 'a'=p10)");
+                    "(s0.P00='x' or s0.P00='y') and ('d'=P13 or 'c'=P12) and ('b'=P11 or 'a'=P10)");
             }
 
             private void RunAssertion(
@@ -762,7 +762,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 if (advanced) {
                     AssertPlanSingleByType(
                         "SupportBean_S1",
-                        new SupportFilterPlan(null, "s0.p00=\"x\" or s0.p00=\"y\"", MakeABCDCombinationPath()));
+                        new SupportFilterPlan(null, "s0.P00=\"x\" or s0.P00=\"y\"", MakeABCDCombinationPath()));
                 }
 
                 env.MilestoneInc(milestone);
@@ -804,8 +804,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var advanced = HasFilterIndexPlanAdvanced(env);
-                RunAssertion(env, milestone, advanced, "(p10='a' or p11='b') and (p12='c' or p13='d') and s0.p00='x'");
-                RunAssertion(env, milestone, advanced, "s0.p00='x' and ('d'=p13 or 'c'=p12) and ('b'=p11 or 'a'=p10)");
+                RunAssertion(env, milestone, advanced, "(P10='a' or P11='b') and (P12='c' or P13='d') and s0.P00='x'");
+                RunAssertion(env, milestone, advanced, "s0.P00='x' and ('d'=P13 or 'c'=P12) and ('b'=P11 or 'a'=P10)");
             }
 
             private void RunAssertion(
@@ -823,7 +823,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 if (advanced) {
                     AssertPlanSingleByType(
                         "SupportBean_S1",
-                        new SupportFilterPlan(null, "s0.p00=\"x\"", MakeABCDCombinationPath()));
+                        new SupportFilterPlan(null, "s0.P00=\"x\"", MakeABCDCombinationPath()));
                 }
 
                 env.MilestoneInc(milestone);
@@ -858,8 +858,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var advanced = HasFilterIndexPlanAdvanced(env);
-                RunAssertion(env, milestone, advanced, "(p10='a' or p11='b') and (p12='c' or p13='d')");
-                RunAssertion(env, milestone, advanced, "('d'=p13 or 'c'=p12) and ('b'=p11 or 'a'=p10)");
+                RunAssertion(env, milestone, advanced, "(P10='a' or P11='b') and (P12='c' or P13='d')");
+                RunAssertion(env, milestone, advanced, "('d'=P13 or 'c'=P12) and ('b'=P11 or 'a'=P10)");
             }
 
             private void RunAssertion(
@@ -908,12 +908,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     milestone,
                     advanced,
-                    "(p10 = 'a' and s0.p00 like '%1%') or (p10 = 'b' and s0.p00 like '%2%') or (p10 = 'c' and s0.p00 like '%3%')");
+                    "(P10 = 'a' and s0.P00 like '%1%') or (P10 = 'b' and s0.P00 like '%2%') or (P10 = 'c' and s0.P00 like '%3%')");
                 RunAssertion(
                     env,
                     milestone,
                     advanced,
-                    "(s0.p00 like '%2%' and p10 = 'b') or (s0.p00 like '%3%' and 'c' = p10) or (p10 = 'a' and s0.p00 like '%1%')");
+                    "(s0.P00 like '%2%' and P10 = 'b') or (s0.P00 like '%3%' and 'c' = P10) or (P10 = 'a' and s0.P00 like '%1%')");
             }
 
             private void RunAssertion(
@@ -928,9 +928,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                           ")];\n";
                 SupportFilterPlanHook.Reset();
                 env.CompileDeploy(epl).AddListener("s0");
-                var pathOne = new SupportFilterPlanPath("s0.p00 like \"%1%\"", MakeTriplet("p10", EQUAL, "a"));
-                var pathTwo = new SupportFilterPlanPath("s0.p00 like \"%2%\"", MakeTriplet("p10", EQUAL, "b"));
-                var pathThree = new SupportFilterPlanPath("s0.p00 like \"%3%\"", MakeTriplet("p10", EQUAL, "c"));
+                var pathOne = new SupportFilterPlanPath("s0.P00 like \"%1%\"", MakeTriplet("P10", EQUAL, "a"));
+                var pathTwo = new SupportFilterPlanPath("s0.P00 like \"%2%\"", MakeTriplet("P10", EQUAL, "b"));
+                var pathThree = new SupportFilterPlanPath("s0.P00 like \"%3%\"", MakeTriplet("P10", EQUAL, "c"));
                 if (advanced) {
                     AssertPlanSingleByType("SupportBean_S1", new SupportFilterPlan(pathOne, pathTwo, pathThree));
                 }
@@ -948,7 +948,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 env.SendEventBean(new SupportBean_S0(2, "1"));
                 if (advanced) {
-                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("p10", EQUAL));
+                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("P10", EQUAL));
                 }
 
                 SendS1Assert(env, 20, "c", false);
@@ -957,7 +957,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 env.SendEventBean(new SupportBean_S0(3, "2"));
                 if (advanced) {
-                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("p10", EQUAL));
+                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("P10", EQUAL));
                 }
 
                 SendS1Assert(env, 30, "a", false);
@@ -966,7 +966,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 env.SendEventBean(new SupportBean_S0(4, "3"));
                 if (advanced) {
-                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("p10", EQUAL));
+                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("P10", EQUAL));
                 }
 
                 SendS1Assert(env, 40, "a", false);
@@ -992,15 +992,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     milestone,
                     advanced,
-                    "(p10 = 'a' or s0.p00 like '%1%' or s0.p00 like '%2%') and " +
-                    "(p11 = 'b' or s0.p00 like '%3%') and (p12 = 'c' or s0.p00 like '%4%')");
+                    "(P10 = 'a' or s0.P00 like '%1%' or s0.P00 like '%2%') and " +
+                    "(P11 = 'b' or s0.P00 like '%3%') and (P12 = 'c' or s0.P00 like '%4%')");
                 RunAssertion(
                     env,
                     milestone,
                     advanced,
-                    "('c' = p12 or s0.p00 like '%4%') and" +
-                    "(s0.p00 like '%3%' or p11 = 'b') and" +
-                    "(s0.p00 like '%1%' or p10 = 'a' or s0.p00 like '%2%')");
+                    "('c' = P12 or s0.P00 like '%4%') and" +
+                    "(s0.P00 like '%3%' or P11 = 'b') and" +
+                    "(s0.P00 like '%1%' or P10 = 'a' or s0.P00 like '%2%')");
             }
 
             private void RunAssertion(
@@ -1015,9 +1015,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                           ")];\n";
                 SupportFilterPlanHook.Reset();
                 env.CompileDeploy(epl).AddListener("s0");
-                var tripletOne = MakeTriplet("p10", EQUAL, "a", "s0.p00 like \"%1%\" or s0.p00 like \"%2%\"");
-                var tripletTwo = MakeTriplet("p11", EQUAL, "b", "s0.p00 like \"%3%\"");
-                var tripletThree = MakeTriplet("p12", EQUAL, "c", "s0.p00 like \"%4%\"");
+                var tripletOne = MakeTriplet("P10", EQUAL, "a", "s0.P00 like \"%1%\" or s0.P00 like \"%2%\"");
+                var tripletTwo = MakeTriplet("P11", EQUAL, "b", "s0.P00 like \"%3%\"");
+                var tripletThree = MakeTriplet("P12", EQUAL, "c", "s0.P00 like \"%4%\"");
                 if (advanced) {
                     AssertPlanSingleByType(
                         "SupportBean_S1",
@@ -1034,7 +1034,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "SupportBean_S1",
                         new FilterItem[][] {
                             new FilterItem[] {
-                                new FilterItem("p10", EQUAL), new FilterItem("p11", EQUAL), new FilterItem("p12", EQUAL)
+                                new FilterItem("P10", EQUAL), new FilterItem("P11", EQUAL), new FilterItem("P12", EQUAL)
                             }
                         });
                 }
@@ -1050,7 +1050,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p11", EQUAL), new FilterItem("p12", EQUAL) }
+                            new FilterItem[] { new FilterItem("P11", EQUAL), new FilterItem("P12", EQUAL) }
                         });
                 }
 
@@ -1065,7 +1065,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p11", EQUAL), new FilterItem("p12", EQUAL) }
+                            new FilterItem[] { new FilterItem("P11", EQUAL), new FilterItem("P12", EQUAL) }
                         });
                 }
 
@@ -1080,7 +1080,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem("p12", EQUAL) }
+                            new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem("P12", EQUAL) }
                         });
                 }
 
@@ -1095,7 +1095,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem("p11", EQUAL) }
+                            new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem("P11", EQUAL) }
                         });
                 }
 
@@ -1125,9 +1125,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var advanced = HasFilterIndexPlanAdvanced(env);
-                RunAssertion(env, milestone, advanced, "(p10 = 'a' or p11 = 'b') and context.s0.p00 = 'x'");
-                RunAssertion(env, milestone, advanced, "context.s0.p00 = 'x' and (p10 = 'a' or p11 = 'b')");
-                RunAssertion(env, milestone, advanced, "(p10 = 'a' or p11 = 'b') and context.s0.p00 = 'x'");
+                RunAssertion(env, milestone, advanced, "(P10 = 'a' or P11 = 'b') and context.s0.P00 = 'x'");
+                RunAssertion(env, milestone, advanced, "context.s0.P00 = 'x' and (P10 = 'a' or P11 = 'b')");
+                RunAssertion(env, milestone, advanced, "(P10 = 'a' or P11 = 'b') and context.s0.P00 = 'x'");
             }
 
             private void RunAssertion(
@@ -1143,14 +1143,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                           ");\n";
                 SupportFilterPlanHook.Reset();
                 env.CompileDeploy(epl).AddListener("s0");
-                var tripletOne = MakeTriplet("p10", EQUAL, "a");
-                var tripletTwo = MakeTriplet("p11", EQUAL, "b");
+                var tripletOne = MakeTriplet("P10", EQUAL, "a");
+                var tripletTwo = MakeTriplet("P11", EQUAL, "b");
                 if (advanced) {
                     AssertPlanSingleByType(
                         "SupportBean_S1",
                         new SupportFilterPlan(
                             null,
-                            "context.s0.p00=\"x\"",
+                            "context.s0.P00=\"x\"",
                             new SupportFilterPlanPath(tripletOne),
                             new SupportFilterPlanPath(tripletTwo)));
                 }
@@ -1172,8 +1172,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p10", EQUAL) },
-                            new FilterItem[] { new FilterItem("p11", EQUAL) }
+                            new FilterItem[] { new FilterItem("P10", EQUAL) },
+                            new FilterItem[] { new FilterItem("P11", EQUAL) }
                         });
                 }
 
@@ -1201,12 +1201,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     milestone,
                     advanced,
-                    "(p10 regexp '.*a.*' or context.s0.p00 = 'x') or (p11 regexp '.*b.*' or context.s0.p01 = 'y')");
+                    "(P10 regexp '.*a.*' or context.s0.P00 = 'x') or (P11 regexp '.*b.*' or context.s0.P01 = 'y')");
                 RunAssertion(
                     env,
                     milestone,
                     advanced,
-                    "context.s0.p00 = 'x' or context.s0.p01 = 'y' or p10 regexp '.*a.*' or p11 regexp '.*b.*'");
+                    "context.s0.P00 = 'x' or context.s0.P01 = 'y' or P10 regexp '.*a.*' or P11 regexp '.*b.*'");
             }
 
             private void RunAssertion(
@@ -1222,13 +1222,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                           ");\n";
                 SupportFilterPlanHook.Reset();
                 env.CompileDeploy(epl).AddListener("s0");
-                var tripletOne = MakeTripletRebool(".p10 regexp ?", "\".*a.*\"");
-                var tripletTwo = MakeTripletRebool(".p11 regexp ?", "\".*b.*\"");
+                var tripletOne = MakeTripletRebool(".P10 regexp ?", "\".*a.*\"");
+                var tripletTwo = MakeTripletRebool(".P11 regexp ?", "\".*b.*\"");
                 if (advanced) {
                     AssertPlanSingleByType(
                         "SupportBean_S1",
                         new SupportFilterPlan(
-                            "context.s0.p00=\"x\" or context.s0.p01=\"y\"",
+                            "context.s0.P00=\"x\" or context.s0.P01=\"y\"",
                             null,
                             new SupportFilterPlanPath(tripletOne),
                             new SupportFilterPlanPath(tripletTwo)));
@@ -1241,8 +1241,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem(".p10 regexp ?", REBOOL) },
-                            new FilterItem[] { new FilterItem(".p11 regexp ?", REBOOL) }
+                            new FilterItem[] { new FilterItem(".P10 regexp ?", REBOOL) },
+                            new FilterItem[] { new FilterItem(".P11 regexp ?", REBOOL) }
                         });
                 }
 
@@ -1284,8 +1284,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var advanced = HasFilterIndexPlanAdvanced(env);
-                RunAssertion(env, milestone, advanced, "s0.p00='x' or (p10 = 'a' and p11 regexp '.*b.*')");
-                RunAssertion(env, milestone, advanced, "(p10 = 'a' and p11 regexp '.*b.*') or (s0.p00='x')");
+                RunAssertion(env, milestone, advanced, "s0.P00='x' or (P10 = 'a' and P11 regexp '.*b.*')");
+                RunAssertion(env, milestone, advanced, "(P10 = 'a' and P11 regexp '.*b.*') or (s0.P00='x')");
             }
 
             private void RunAssertion(
@@ -1301,11 +1301,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                           ")]";
                 SupportFilterPlanHook.Reset();
                 env.CompileDeploy(epl).AddListener("s0");
-                var tripletOne = MakeTriplet("p10", EQUAL, "a");
-                var tripletTwo = MakeTripletRebool(".p11 regexp ?", "\".*b.*\"");
+                var tripletOne = MakeTriplet("P10", EQUAL, "a");
+                var tripletTwo = MakeTripletRebool(".P11 regexp ?", "\".*b.*\"");
                 var path = new SupportFilterPlanPath(tripletOne, tripletTwo);
                 if (advanced) {
-                    AssertPlanSingleByType("SupportBean_S1", new SupportFilterPlan("s0.p00=\"x\"", null, path));
+                    AssertPlanSingleByType("SupportBean_S1", new SupportFilterPlan("s0.P00=\"x\"", null, path));
                 }
 
                 env.SendEventBean(new SupportBean_S0(1, "-"));
@@ -1315,7 +1315,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem(".p11 regexp ?", REBOOL) }
+                            new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem(".P11 regexp ?", REBOOL) }
                         });
                 }
 
@@ -1428,8 +1428,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var advanced = HasFilterIndexPlanAdvanced(env);
-                RunAssertion(env, milestone, advanced, "(p10='a' or s0.p00='x') and (p11='b' or s0.p01='y')");
-                RunAssertion(env, milestone, advanced, "(s0.p01='y' or p11='b') and (s0.p00='x' or p10='a')");
+                RunAssertion(env, milestone, advanced, "(P10='a' or s0.P00='x') and (P11='b' or s0.P01='y')");
+                RunAssertion(env, milestone, advanced, "(s0.P01='y' or P11='b') and (s0.P00='x' or P10='a')");
             }
 
             private void RunAssertion(
@@ -1445,8 +1445,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                           ")]";
                 SupportFilterPlanHook.Reset();
                 env.CompileDeploy(epl).AddListener("s0");
-                var tripletOne = MakeTriplet("p10", EQUAL, "a", "s0.p00=\"x\"");
-                var tripletTwo = MakeTriplet("p11", EQUAL, "b", "s0.p01=\"y\"");
+                var tripletOne = MakeTriplet("P10", EQUAL, "a", "s0.P00=\"x\"");
+                var tripletTwo = MakeTriplet("P11", EQUAL, "b", "s0.P01=\"y\"");
                 var path = new SupportFilterPlanPath(tripletOne, tripletTwo);
                 if (advanced) {
                     AssertPlanSingleByType("SupportBean_S1", new SupportFilterPlan(path));
@@ -1460,7 +1460,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem("p11", EQUAL) }
+                            new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem("P11", EQUAL) }
                         });
                 }
 
@@ -1471,7 +1471,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.SendEventBean(new SupportBean_S0(2, "x", "-"));
                 env.MilestoneInc(milestone);
                 if (advanced) {
-                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("p11", EQUAL));
+                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("P11", EQUAL));
                 }
 
                 SendS1Assert(env, 21, "a", "-", false);
@@ -1479,7 +1479,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 env.SendEventBean(new SupportBean_S0(2, "-", "y"));
                 if (advanced) {
-                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("p10", EQUAL));
+                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("P10", EQUAL));
                 }
 
                 SendS1Assert(env, 30, "-", "b", false);
@@ -1508,9 +1508,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var advanced = HasFilterIndexPlanAdvanced(env);
-                RunAssertion(env, milestone, advanced, "p10='a' or (p11='b' and s0.p00='x')");
-                RunAssertion(env, milestone, advanced, "(s0.p00='x' and p11='b') or p10='a'");
-                RunAssertion(env, milestone, advanced, "(p11='b' and s0.p00='x') or p10='a'");
+                RunAssertion(env, milestone, advanced, "P10='a' or (P11='b' and s0.P00='x')");
+                RunAssertion(env, milestone, advanced, "(s0.P00='x' and P11='b') or P10='a'");
+                RunAssertion(env, milestone, advanced, "(P11='b' and s0.P00='x') or P10='a'");
             }
 
             private void RunAssertion(
@@ -1526,8 +1526,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                           ")]";
                 SupportFilterPlanHook.Reset();
                 env.CompileDeploy(epl).AddListener("s0");
-                var pathOne = MakePathFromSingle("p10", EQUAL, "a");
-                var pathTwo = new SupportFilterPlanPath("s0.p00=\"x\"", MakeTriplet("p11", EQUAL, "b"));
+                var pathOne = MakePathFromSingle("P10", EQUAL, "a");
+                var pathTwo = new SupportFilterPlanPath("s0.P00=\"x\"", MakeTriplet("P11", EQUAL, "b"));
                 if (advanced) {
                     AssertPlanSingleByType("SupportBean_S1", new SupportFilterPlan(pathOne, pathTwo));
                 }
@@ -1540,8 +1540,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p10", EQUAL) },
-                            new FilterItem[] { new FilterItem("p11", EQUAL) }
+                            new FilterItem[] { new FilterItem("P10", EQUAL) },
+                            new FilterItem[] { new FilterItem("P11", EQUAL) }
                         });
                 }
 
@@ -1555,7 +1555,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 env.SendEventBean(new SupportBean_S0(3, "-"));
                 if (advanced) {
-                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("p10", EQUAL));
+                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("P10", EQUAL));
                 }
 
                 SendS1Assert(env, 30, "-", "b", false);
@@ -1576,11 +1576,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var advanced = HasFilterIndexPlanAdvanced(env);
-                RunAssertion(env, milestone, advanced, "p10='a' or p11='b' or s0.p00='x'");
-                RunAssertion(env, milestone, advanced, "p11='b' or s0.p00='x' or p10='a'");
-                RunAssertion(env, milestone, advanced, "s0.p00='x' or p11='b' or p10='a'");
-                RunAssertion(env, milestone, advanced, "(s0.p00='x' or p11='b') or p10='a'");
-                RunAssertion(env, milestone, advanced, "s0.p00='x' or (p11='b' or p10='a')");
+                RunAssertion(env, milestone, advanced, "P10='a' or P11='b' or s0.P00='x'");
+                RunAssertion(env, milestone, advanced, "P11='b' or s0.P00='x' or P10='a'");
+                RunAssertion(env, milestone, advanced, "s0.P00='x' or P11='b' or P10='a'");
+                RunAssertion(env, milestone, advanced, "(s0.P00='x' or P11='b') or P10='a'");
+                RunAssertion(env, milestone, advanced, "s0.P00='x' or (P11='b' or P10='a')");
             }
 
             private void RunAssertion(
@@ -1596,12 +1596,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                           ")]";
                 SupportFilterPlanHook.Reset();
                 env.CompileDeploy(epl).AddListener("s0");
-                var pathOne = MakePathFromSingle("p10", EQUAL, "a");
-                var pathTwo = MakePathFromSingle("p11", EQUAL, "b");
+                var pathOne = MakePathFromSingle("P10", EQUAL, "a");
+                var pathTwo = MakePathFromSingle("P11", EQUAL, "b");
                 if (advanced) {
                     AssertPlanSingleByType(
                         "SupportBean_S1",
-                        new SupportFilterPlan("s0.p00=\"x\"", null, pathOne, pathTwo));
+                        new SupportFilterPlan("s0.P00=\"x\"", null, pathOne, pathTwo));
                 }
 
                 env.SendEventBean(new SupportBean_S0(1, "x"));
@@ -1619,8 +1619,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         "SupportBean_S1",
                         new FilterItem[][] {
-                            new FilterItem[] { new FilterItem("p10", EQUAL) },
-                            new FilterItem[] { new FilterItem("p11", EQUAL) }
+                            new FilterItem[] { new FilterItem("P10", EQUAL) },
+                            new FilterItem[] { new FilterItem("P11", EQUAL) }
                         });
                 }
 
@@ -1645,9 +1645,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var advanced = HasFilterIndexPlanAdvanced(env);
-                RunAssertion(env, advanced, "p10='a' or s0.p00='x' or s0.p01='y'");
-                RunAssertion(env, advanced, "s0.p00='x' or p10='a' or s0.p01='y'");
-                RunAssertion(env, advanced, "s0.p00='x' or (s0.p01='y' or p10='a')");
+                RunAssertion(env, advanced, "P10='a' or s0.P00='x' or s0.P01='y'");
+                RunAssertion(env, advanced, "s0.P00='x' or P10='a' or s0.P01='y'");
+                RunAssertion(env, advanced, "s0.P00='x' or (s0.P01='y' or P10='a')");
             }
 
             private void RunAssertion(
@@ -1662,11 +1662,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                           ")]";
                 SupportFilterPlanHook.Reset();
                 env.CompileDeploy(epl).AddListener("s0");
-                var path = MakePathFromSingle("p10", EQUAL, "a");
+                var path = MakePathFromSingle("P10", EQUAL, "a");
                 if (advanced) {
                     AssertPlanSingleByType(
                         "SupportBean_S1",
-                        new SupportFilterPlan("s0.p00=\"x\" or s0.p01=\"y\"", null, path));
+                        new SupportFilterPlan("s0.P00=\"x\" or s0.P01=\"y\"", null, path));
                 }
 
                 env.SendEventBean(new SupportBean_S0(1, "x", "-"));
@@ -1685,7 +1685,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 env.SendEventBean(new SupportBean_S0(3, "-", "-"));
                 if (advanced) {
-                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("p10", EQUAL));
+                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean_S1", new FilterItem("P10", EQUAL));
                 }
 
                 SendS1Assert(env, 30, "-", false);
@@ -1791,7 +1791,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "create context MyContext group by theString='abc' and 1=2 as categoryOne from SupportBean;\n" +
+                    "create context MyContext group by TheString='abc' and 1=2 as categoryOne from SupportBean;\n" +
                     "@name('s0') context MyContext select * from SupportBean;\n";
                 var compiled = env.Compile(epl);
                 var advanced = HasFilterIndexPlanAdvanced(env);
@@ -1819,12 +1819,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     milestone,
                     advanced,
-                    "theString = 'abc' or (s0.p00 || s1.p10 || s2[0].p20 || s2[1].p20 = 'QRST')");
+                    "TheString = 'abc' or (s0.P00 || s1.P10 || s2[0].P20 || s2[1].P20 = 'QRST')");
                 RunAssertion(
                     env,
                     milestone,
                     advanced,
-                    "(s0.p00 || s1.p10 || s2[0].p20 || s2[1].p20 = 'QRST') or theString = 'abc'");
+                    "(s0.P00 || s1.P10 || s2[0].P20 || s2[1].P20 = 'QRST') or TheString = 'abc'");
             }
 
             private void RunAssertion(
@@ -1844,9 +1844,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     AssertPlanSingleByType(
                         "SupportBean",
                         new SupportFilterPlan(
-                            "s0.p00||s1.p10||s2[0].p20||s2[1].p20=\"QRST\"",
+                            "s0.P00||s1.P10||s2[0].P20||s2[1].P20=\"QRST\"",
                             null,
-                            MakePathsFromSingle("theString", EQUAL, "abc")));
+                            MakePathsFromSingle("TheString", EQUAL, "abc")));
                 }
 
                 env.SendEventBean(new SupportBean_S0(1, "Q"));
@@ -1870,13 +1870,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.SendEventBean(new SupportBean_S2(13, "-"));
                 env.SendEventBean(new SupportBean_S2(14, "-"));
                 if (advanced) {
-                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean", new FilterItem("theString", EQUAL));
+                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean", new FilterItem("TheString", EQUAL));
                 }
 
                 env.MilestoneInc(milestone);
 
                 if (advanced) {
-                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean", new FilterItem("theString", EQUAL));
+                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean", new FilterItem("TheString", EQUAL));
                 }
 
                 SendSBAssert(env, "x", false);
@@ -1897,8 +1897,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var advanced = HasFilterIndexPlanAdvanced(env);
-                RunAssertion(env, milestone, advanced, "theString = 'abc' and s0.p00 = 'x'");
-                RunAssertion(env, milestone, advanced, "s0.p00 = 'x' and theString = 'abc'");
+                RunAssertion(env, milestone, advanced, "TheString = 'abc' and s0.P00 = 'x'");
+                RunAssertion(env, milestone, advanced, "s0.P00 = 'x' and TheString = 'abc'");
             }
 
             private void RunAssertion(
@@ -1916,7 +1916,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 if (advanced) {
                     AssertPlanSingleByType(
                         "SupportBean",
-                        new SupportFilterPlan(null, "s0.p00=\"x\"", MakePathsFromSingle("theString", EQUAL, "abc")));
+                        new SupportFilterPlan(null, "s0.P00=\"x\"", MakePathsFromSingle("TheString", EQUAL, "abc")));
                 }
 
                 env.SendEventBean(new SupportBean_S0(1, "x"));
@@ -1924,7 +1924,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.MilestoneInc(milestone);
 
                 if (advanced) {
-                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean", new FilterItem("theString", EQUAL));
+                    AssertFilterSvcByTypeSingle(env, "s0", "SupportBean", new FilterItem("TheString", EQUAL));
                 }
 
                 SendSBAssert(env, "def", false);
@@ -1958,9 +1958,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var advanced = HasFilterIndexPlanAdvanced(env);
-                RunAssertion(env, milestone, advanced, "theString = 'abc' and context.s0.p00 = 'x'");
-                RunAssertion(env, milestone, advanced, "context.s0.p00 = 'x' and theString = 'abc'");
-                RunAssertion(env, milestone, advanced, "context.s0.p00 = 'x' and theString = 'abc'");
+                RunAssertion(env, milestone, advanced, "TheString = 'abc' and context.s0.P00 = 'x'");
+                RunAssertion(env, milestone, advanced, "context.s0.P00 = 'x' and TheString = 'abc'");
+                RunAssertion(env, milestone, advanced, "context.s0.P00 = 'x' and TheString = 'abc'");
             }
 
             private void RunAssertion(
@@ -1980,13 +1980,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     AssertPlanSingle(
                         new SupportFilterPlan(
                             null,
-                            "context.s0.p00=\"x\"",
-                            MakePathsFromSingle("theString", EQUAL, "abc")));
+                            "context.s0.P00=\"x\"",
+                            MakePathsFromSingle("TheString", EQUAL, "abc")));
                 }
 
                 env.SendEventBean(new SupportBean_S0(1, "x"));
                 if (advanced) {
-                    AssertFilterSvcSingle(env, "s0", "theString", EQUAL);
+                    AssertFilterSvcSingle(env, "s0", "TheString", EQUAL);
                 }
 
                 SendSBAssert(env, "abc", true);
@@ -1995,7 +1995,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.MilestoneInc(milestone);
 
                 if (advanced) {
-                    AssertFilterSvcSingle(env, "s0", "theString", EQUAL);
+                    AssertFilterSvcSingle(env, "s0", "TheString", EQUAL);
                 }
 
                 SendSBAssert(env, "abc", true);
@@ -2037,9 +2037,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var advanced = HasFilterIndexPlanAdvanced(env);
-                RunAssertion(env, milestone, "theString = 'abc' or context.s0.p00 = 'x'", advanced);
-                RunAssertion(env, milestone, "context.s0.p00 = 'x' or theString = 'abc'", advanced);
-                RunAssertion(env, milestone, "context.s0.p00 = 'x' or theString = 'abc'", advanced);
+                RunAssertion(env, milestone, "TheString = 'abc' or context.s0.P00 = 'x'", advanced);
+                RunAssertion(env, milestone, "context.s0.P00 = 'x' or TheString = 'abc'", advanced);
+                RunAssertion(env, milestone, "context.s0.P00 = 'x' or TheString = 'abc'", advanced);
             }
 
             private void RunAssertion(
@@ -2058,9 +2058,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 if (advanced) {
                     AssertPlanSingle(
                         new SupportFilterPlan(
-                            "context.s0.p00=\"x\"",
+                            "context.s0.P00=\"x\"",
                             null,
-                            MakePathsFromSingle("theString", EQUAL, "abc")));
+                            MakePathsFromSingle("TheString", EQUAL, "abc")));
                 }
 
                 env.SendEventBean(new SupportBean_S0(1, "x"));
@@ -2083,7 +2083,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 env.SendEventBean(new SupportBean_S0(2, "-"));
                 if (advanced) {
-                    AssertFilterSvcSingle(env, "s0", "theString", EQUAL);
+                    AssertFilterSvcSingle(env, "s0", "TheString", EQUAL);
                 }
 
                 SendSBAssert(env, "abc", true);
@@ -2092,7 +2092,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.MilestoneInc(milestone);
 
                 if (advanced) {
-                    AssertFilterSvcSingle(env, "s0", "theString", EQUAL);
+                    AssertFilterSvcSingle(env, "s0", "TheString", EQUAL);
                 }
 
                 SendSBAssert(env, "abc", true);
@@ -2109,20 +2109,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
         private static SupportFilterPlanPath[] MakeABCDCombinationPath()
         {
-            var pathOne = new SupportFilterPlanPath(MakeTriplet("p10", EQUAL, "a"), MakeTriplet("p12", EQUAL, "c"));
-            var pathTwo = new SupportFilterPlanPath(MakeTriplet("p10", EQUAL, "a"), MakeTriplet("p13", EQUAL, "d"));
-            var pathThree = new SupportFilterPlanPath(MakeTriplet("p11", EQUAL, "b"), MakeTriplet("p12", EQUAL, "c"));
-            var pathFour = new SupportFilterPlanPath(MakeTriplet("p11", EQUAL, "b"), MakeTriplet("p13", EQUAL, "d"));
+            var pathOne = new SupportFilterPlanPath(MakeTriplet("P10", EQUAL, "a"), MakeTriplet("P12", EQUAL, "c"));
+            var pathTwo = new SupportFilterPlanPath(MakeTriplet("P10", EQUAL, "a"), MakeTriplet("P13", EQUAL, "d"));
+            var pathThree = new SupportFilterPlanPath(MakeTriplet("P11", EQUAL, "b"), MakeTriplet("P12", EQUAL, "c"));
+            var pathFour = new SupportFilterPlanPath(MakeTriplet("P11", EQUAL, "b"), MakeTriplet("P13", EQUAL, "d"));
             return new SupportFilterPlanPath[] { pathOne, pathTwo, pathThree, pathFour };
         }
 
         private static FilterItem[][] MakeABCDCombinationFilterItems()
         {
             return new FilterItem[][] {
-                new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem("p12", EQUAL) },
-                new FilterItem[] { new FilterItem("p10", EQUAL), new FilterItem("p13", EQUAL) },
-                new FilterItem[] { new FilterItem("p11", EQUAL), new FilterItem("p12", EQUAL) },
-                new FilterItem[] { new FilterItem("p11", EQUAL), new FilterItem("p13", EQUAL) }
+                new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem("P12", EQUAL) },
+                new FilterItem[] { new FilterItem("P10", EQUAL), new FilterItem("P13", EQUAL) },
+                new FilterItem[] { new FilterItem("P11", EQUAL), new FilterItem("P12", EQUAL) },
+                new FilterItem[] { new FilterItem("P11", EQUAL), new FilterItem("P13", EQUAL) }
             };
         }
 

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -19,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
     /// </summary>
     public class ExprPriorEvalStrategyRandomAccess : PriorEvalStrategy
     {
-        [NonSerialized] private readonly RandomAccessByIndex _randomAccess;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly RandomAccessByIndex _randomAccess;
 
         public ExprPriorEvalStrategyRandomAccess(RandomAccessByIndex randomAccess)
         {

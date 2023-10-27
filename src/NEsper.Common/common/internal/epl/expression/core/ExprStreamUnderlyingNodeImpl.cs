@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -33,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         private readonly string streamName;
         private readonly bool isWildcard;
         private int streamNum = -1;
-        [NonSerialized] private EventType eventType;
+        [JsonIgnore]
+        [NonSerialized]
+        private EventType eventType;
 
         public ExprStreamUnderlyingNodeImpl(
             string streamName,
@@ -147,9 +150,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 codegenClassScope);
             var refEPS = exprSymbol.GetAddEPS(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("event", ArrayAtIndex(refEPS, Constant(streamNum)))
-                .IfRefNullReturnNull("event")
-                .MethodReturn(Cast(eventType.UnderlyingType, ExprDotMethod(Ref("event"), "getUnderlying")));
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .IfRefNullReturnNull("@event")
+                .MethodReturn(Cast(eventType.UnderlyingType, ExprDotName(Ref("@event"), "Underlying")));
             return LocalMethod(methodNode);
         }
 

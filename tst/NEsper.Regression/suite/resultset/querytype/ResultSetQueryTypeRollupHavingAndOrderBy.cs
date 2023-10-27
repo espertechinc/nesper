@@ -78,10 +78,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var fields = "c0,c1".SplitCsv();
                 var epl = "@name('s0')" +
-                          "select theString as c0, sum(intPrimitive) as c1 " +
+                          "select TheString as c0, sum(IntPrimitive) as c1 " +
                           "from SupportBean#length(3) " +
                           (join ? ", SupportBean_S0#keepall " : "") +
-                          "group by rollup(theString)";
+                          "group by rollup(TheString)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -134,9 +134,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var fields = "c0,c1,c2".SplitCsv();
 
                 var epl = "@name('s0')" +
-                          "select theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 " +
+                          "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean_S0 unidirectional, SupportBean#keepall " +
-                          "group by cube(theString, intPrimitive)";
+                          "group by cube(TheString, IntPrimitive)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(MakeEvent("E1", 10, 100));
@@ -197,11 +197,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var fields = "c0,c1,c2".SplitCsv();
 
                 var epl = "@name('s0')" +
-                          "select theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 " +
+                          "select TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean#keepall " +
                           (join ? ", SupportBean_S0#lastevent " : "") +
-                          "group by rollup(theString, intPrimitive)" +
-                          "having sum(longPrimitive) > 1000";
+                          "group by rollup(TheString, IntPrimitive)" +
+                          "having sum(LongPrimitive) > 1000";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBean_S0(1));
 
@@ -230,14 +230,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 // test having on the aggregation alone
                 var fieldsC0C1 = "c0,c1".SplitCsv();
                 epl = "@name('s0')" +
-                      "select theString as c0, sum(intPrimitive) as c1 " +
+                      "select TheString as c0, sum(IntPrimitive) as c1 " +
                       "from SupportBean#keepall " +
                       (join ? ", SupportBean_S0#lastevent " : "") +
-                      "group by rollup(theString) " +
+                      "group by rollup(TheString) " +
                       "having " +
-                      "(theString is null and sum(intPrimitive) > 100) " +
+                      "(TheString is null and sum(IntPrimitive) > 100) " +
                       "or " +
-                      "(theString is not null and sum(intPrimitive) > 200)";
+                      "(TheString is not null and sum(IntPrimitive) > 200)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -295,11 +295,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var fields = "c0,c1,c2".SplitCsv();
 
                 var epl = "@name('s0')" +
-                          "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 " +
+                          "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 " +
                           "from SupportBean#time_batch(1 sec) " +
                           (join ? ", SupportBean_S0#lastevent " : "") +
-                          "group by rollup(theString, intPrimitive) " +
-                          "order by theString, intPrimitive";
+                          "group by rollup(TheString, IntPrimitive) " +
+"Order by TheString, IntPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -387,9 +387,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var fields = "c0,c1,c2".SplitCsv();
 
                 var epl = "@name('s0')" +
-                          "select irstream theString as c0, intPrimitive as c1, sum(longPrimitive) as c2 from SupportBean#time_batch(1 sec) " +
-                          "group by rollup(theString, intPrimitive) " +
-                          "order by theString desc;";
+                          "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#time_batch(1 sec) " +
+                          "group by rollup(TheString, IntPrimitive) " +
+"Order by TheString desc;";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(MakeEvent("E2", 10, 100));

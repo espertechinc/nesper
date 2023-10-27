@@ -61,11 +61,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean")
                     .WithExpression(fields[0], "cast(null, boolean) and cast(null, boolean)")
-                    .WithExpression(fields[1], "boolPrimitive and boolBoxed")
-                    .WithExpression(fields[2], "boolBoxed and boolPrimitive")
-                    .WithExpression(fields[3], "boolPrimitive or boolBoxed")
-                    .WithExpression(fields[4], "boolBoxed or boolPrimitive")
-                    .WithExpression(fields[5], "not boolBoxed");
+                    .WithExpression(fields[1], "BoolPrimitive and BoolBoxed")
+                    .WithExpression(fields[2], "BoolBoxed and BoolPrimitive")
+                    .WithExpression(fields[3], "BoolPrimitive or BoolBoxed")
+                    .WithExpression(fields[4], "BoolBoxed or BoolPrimitive")
+                    .WithExpression(fields[5], "not BoolBoxed");
                 builder.WithStatementConsumer(
                     stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(bool?)));
                 builder.WithAssertion(MakeSB("E1", true, true)).Expect(fields, null, true, true, true, true, false);

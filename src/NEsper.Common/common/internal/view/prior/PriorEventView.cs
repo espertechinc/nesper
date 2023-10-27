@@ -20,8 +20,8 @@ namespace com.espertech.esper.common.@internal.view.prior
     public class PriorEventView : ViewSupport,
         ViewDataVisitable
     {
-        protected internal ViewUpdatedCollection buffer;
-        private new Viewable parent;
+        private ViewUpdatedCollection buffer;
+        private Viewable parent;
 
         /// <summary>
         ///     Ctor.
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.view.prior
             EventBean[] oldData)
         {
             buffer.Update(newData, oldData);
-            child.Update(newData, oldData);
+            Child.Update(newData, oldData);
         }
 
         public override IEnumerator<EventBean> GetEnumerator()

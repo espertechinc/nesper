@@ -163,14 +163,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select s0.id as id, h0.val as valh0, h1.val as valh1 " +
+                var expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 " +
                                  "from SupportBeanInt#lastevent as s0, " +
-                                 "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
-                                 "method:SupportJoinMethods.fetchVal('H1', p01) as h1 " +
-                                 "order by h0.val, h1.val";
+                                 "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
+                                 "method:SupportJoinMethods.FetchVal('H1', P01) as h1 " +
+"Order by h0.val, h1.val";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1".SplitCsv();
+                var fields = "Id,valh0,valh1".SplitCsv();
                 env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
 
                 SendBeanInt(env, "E1", 1, 1);
@@ -215,18 +215,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 string expression;
 
-                expression = "@name('s0') select s0.id as id, h0.val as valh0, h1.val as valh1 " +
+                expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 " +
                              "from SupportBeanInt#keepall as s0, " +
-                             "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
-                             "method:SupportJoinMethods.fetchVal('H1', p01) as h1 " +
-                             "where h0.index = h1.index and h0.index = p02";
+                             "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
+                             "method:SupportJoinMethods.FetchVal('H1', P01) as h1 " +
+                             "where h0.index = h1.index and h0.index = P02";
                 TryAssertionOne(env, expression);
 
-                expression = "@name('s0') select s0.id as id, h0.val as valh0, h1.val as valh1   from " +
-                             "method:SupportJoinMethods.fetchVal('H1', p01) as h1, " +
-                             "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
+                expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1   from " +
+                             "method:SupportJoinMethods.FetchVal('H1', P01) as h1, " +
+                             "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
                              "SupportBeanInt#keepall as s0 " +
-                             "where h0.index = h1.index and h0.index = p02";
+                             "where h0.index = h1.index and h0.index = P02";
                 TryAssertionOne(env, expression);
             }
 
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1".SplitCsv();
+                var fields = "Id,valh0,valh1".SplitCsv();
                 env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
 
                 SendBeanInt(env, "E1", 20, 20, 3);
@@ -271,18 +271,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 string expression;
                 var milestone = new AtomicLong();
 
-                expression = "@name('s0') select s0.id as id, h0.val as valh0, h1.val as valh1 " +
+                expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 " +
                              "from SupportBeanInt#keepall as s0, " +
-                             "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
-                             "method:SupportJoinMethods.fetchVal(h0.val, p01) as h1 " +
-                             "order by h0.val, h1.val";
+                             "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
+                             "method:SupportJoinMethods.FetchVal(h0.val, P01) as h1 " +
+"Order by h0.val, h1.val";
                 TryAssertionTwo(env, expression, milestone);
 
-                expression = "@name('s0') select s0.id as id, h0.val as valh0, h1.val as valh1 from " +
-                             "method:SupportJoinMethods.fetchVal(h0.val, p01) as h1, " +
+                expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 from " +
+                             "method:SupportJoinMethods.FetchVal(h0.val, P01) as h1, " +
                              "SupportBeanInt#keepall as s0, " +
-                             "method:SupportJoinMethods.fetchVal('H0', p00) as h0 " +
-                             "order by h0.val, h1.val";
+                             "method:SupportJoinMethods.FetchVal('H0', P00) as h0 " +
+"Order by h0.val, h1.val";
                 TryAssertionTwo(env, expression, milestone);
             }
 
@@ -293,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1".SplitCsv();
+                var fields = "Id,valh0,valh1".SplitCsv();
                 env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
 
                 SendBeanInt(env, "E1", 1, 1);
@@ -342,20 +342,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 string expression;
 
-                expression = "@name('s0') select s0.id as id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
+                expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
                              "from SupportBeanInt#lastevent as s0, " +
-                             "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
-                             "method:SupportJoinMethods.fetchVal('H1', p01) as h1, " +
-                             "method:SupportJoinMethods.fetchVal('H2', p02) as h2 " +
-                             "order by h0.val, h1.val, h2.val";
+                             "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
+                             "method:SupportJoinMethods.FetchVal('H1', P01) as h1, " +
+                             "method:SupportJoinMethods.FetchVal('H2', P02) as h2 " +
+"Order by h0.val, h1.val, h2.val";
                 TryAssertionThree(env, expression);
 
-                expression = "@name('s0') select s0.id as id, h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
-                             "method:SupportJoinMethods.fetchVal('H2', p02) as h2, " +
-                             "method:SupportJoinMethods.fetchVal('H1', p01) as h1, " +
-                             "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
+                expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
+                             "method:SupportJoinMethods.FetchVal('H2', P02) as h2, " +
+                             "method:SupportJoinMethods.FetchVal('H1', P01) as h1, " +
+                             "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
                              "SupportBeanInt#lastevent as s0 " +
-                             "order by h0.val, h1.val, h2.val";
+"Order by h0.val, h1.val, h2.val";
                 TryAssertionThree(env, expression);
             }
 
@@ -365,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1,valh2".SplitCsv();
+                var fields = "Id,valh0,valh1,valh2".SplitCsv();
                 env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
 
                 SendBeanInt(env, "E1", 1, 1, 1);
@@ -394,20 +394,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 string expression;
 
-                expression = "@name('s0') select s0.id as id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
+                expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
                              "from SupportBeanInt#keepall as s0, " +
-                             "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
-                             "method:SupportJoinMethods.fetchVal('H1', p01) as h1, " +
-                             "method:SupportJoinMethods.fetchVal(h0.val||'H2', p02) as h2 " +
-                             " where h0.index = h1.index and h1.index = h2.index and h2.index = p03";
+                             "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
+                             "method:SupportJoinMethods.FetchVal('H1', P01) as h1, " +
+                             "method:SupportJoinMethods.FetchVal(h0.val||'H2', P02) as h2 " +
+                             " where h0.index = h1.index and h1.index = h2.index and h2.index = P03";
                 TryAssertionFour(env, expression);
 
-                expression = "@name('s0') select s0.id as id, h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
-                             "method:SupportJoinMethods.fetchVal(h0.val||'H2', p02) as h2, " +
-                             "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
+                expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
+                             "method:SupportJoinMethods.FetchVal(h0.val||'H2', P02) as h2, " +
+                             "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
                              "SupportBeanInt#keepall as s0, " +
-                             "method:SupportJoinMethods.fetchVal('H1', p01) as h1 " +
-                             " where h0.index = h1.index and h1.index = h2.index and h2.index = p03";
+                             "method:SupportJoinMethods.FetchVal('H1', P01) as h1 " +
+                             " where h0.index = h1.index and h1.index = h2.index and h2.index = P03";
                 TryAssertionFour(env, expression);
             }
 
@@ -417,7 +417,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1,valh2".SplitCsv();
+                var fields = "Id,valh0,valh1,valh2".SplitCsv();
                 env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
 
                 SendBeanInt(env, "E1", 2, 2, 2, 1);
@@ -452,15 +452,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 string expression;
 
-                expression = "@name('s0') select s0.id as id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
+                expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
                              "from SupportBeanInt#keepall as s0, " +
-                             "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
-                             "method:SupportJoinMethods.fetchVal(h0.val||'H1', p01) as h1, " +
-                             "method:SupportJoinMethods.fetchVal(h1.val||'H2', p02) as h2 " +
-                             " where h0.index = h1.index and h1.index = h2.index and h2.index = p03";
+                             "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
+                             "method:SupportJoinMethods.FetchVal(h0.val||'H1', P01) as h1, " +
+                             "method:SupportJoinMethods.FetchVal(h1.val||'H2', P02) as h2 " +
+                             " where h0.index = h1.index and h1.index = h2.index and h2.index = P03";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1,valh2".SplitCsv();
+                var fields = "Id,valh0,valh1,valh2".SplitCsv();
                 env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
 
                 SendBeanInt(env, "E2", 4, 4, 4, 3);
@@ -489,12 +489,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select s0.id as ids0, s1.id as ids1, h0.val as valh0, h1.val as valh1 " +
-                                 "from SupportBeanInt(id like 'S0%')#keepall as s0, " +
-                                 "SupportBeanInt(id like 'S1%')#lastevent as s1, " +
-                                 "method:SupportJoinMethods.fetchVal(s0.id||'H1', s0.p00) as h0, " +
-                                 "method:SupportJoinMethods.fetchVal(s1.id||'H2', s1.p00) as h1 " +
-                                 "order by s0.id asc";
+                var expression = "@name('s0') select s0.Id as ids0, s1.Id as ids1, h0.val as valh0, h1.val as valh1 " +
+                                 "from SupportBeanInt(Id like 'S0%')#keepall as s0, " +
+                                 "SupportBeanInt(Id like 'S1%')#lastevent as s1, " +
+                                 "method:SupportJoinMethods.FetchVal(s0.Id||'H1', s0.P00) as h0, " +
+                                 "method:SupportJoinMethods.FetchVal(s1.Id||'H2', s1.P00) as h1 " +
+"Order by s0.Id asc";
                 env.CompileDeploy(expression).AddListener("s0");
 
                 var fields = "ids0,ids1,valh0,valh1".SplitCsv();
@@ -532,12 +532,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select s0.id as ids0, s1.id as ids1, s2.id as ids2, h0.val as valh0 " +
-                                 "from SupportBeanInt(id like 'S0%')#keepall as s0, " +
-                                 "SupportBeanInt(id like 'S1%')#lastevent as s1, " +
-                                 "SupportBeanInt(id like 'S2%')#lastevent as s2, " +
-                                 "method:SupportJoinMethods.fetchVal(s1.id||s2.id||'H1', s0.p00) as h0 " +
-                                 "order by s0.id, s1.id, s2.id, h0.val";
+                var expression = "@name('s0') select s0.Id as ids0, s1.Id as ids1, s2.Id as ids2, h0.val as valh0 " +
+                                 "from SupportBeanInt(Id like 'S0%')#keepall as s0, " +
+                                 "SupportBeanInt(Id like 'S1%')#lastevent as s1, " +
+                                 "SupportBeanInt(Id like 'S2%')#lastevent as s2, " +
+                                 "method:SupportJoinMethods.FetchVal(s1.Id||s2.Id||'H1', s0.P00) as h0 " +
+"Order by s0.Id, s1.Id, s2.Id, h0.val";
                 env.CompileDeploy(expression).AddListener("s0");
 
                 var fields = "ids0,ids1,ids2,valh0".SplitCsv();
@@ -579,20 +579,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("on SupportBeanInt set var1=p00, var2=p01, var3=p02, var4=p03");
+                env.CompileDeploy("on SupportBeanInt set var1=P00, var2=P01, var3=P02, var4=P03");
                 var milestone = new AtomicLong();
 
                 string expression;
                 expression = "@name('s0') select h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
-                             "method:SupportJoinMethods.fetchVal('H0', var1) as h0," +
-                             "method:SupportJoinMethods.fetchVal('H1', var2) as h1," +
-                             "method:SupportJoinMethods.fetchVal('H2', var3) as h2";
+                             "method:SupportJoinMethods.FetchVal('H0', var1) as h0," +
+                             "method:SupportJoinMethods.FetchVal('H1', var2) as h1," +
+                             "method:SupportJoinMethods.FetchVal('H2', var3) as h2";
                 TryAssertionFive(env, expression, milestone);
 
                 expression = "@name('s0') select h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
-                             "method:SupportJoinMethods.fetchVal('H2', var3) as h2," +
-                             "method:SupportJoinMethods.fetchVal('H1', var2) as h1," +
-                             "method:SupportJoinMethods.fetchVal('H0', var1) as h0";
+                             "method:SupportJoinMethods.FetchVal('H2', var3) as h2," +
+                             "method:SupportJoinMethods.FetchVal('H1', var2) as h1," +
+                             "method:SupportJoinMethods.FetchVal('H0', var1) as h0";
                 TryAssertionFive(env, expression, milestone);
 
                 env.UndeployAll();
@@ -642,11 +642,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("on SupportBeanInt set var1=p00, var2=p01, var3=p02, var4=p03");
+                env.CompileDeploy("on SupportBeanInt set var1=P00, var2=P01, var3=P02, var4=P03");
 
                 string expression;
                 expression = "@name('s0') select h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
-                             "method:SupportJoinMethods.fetchVal('H0', var1) as h0," +
+                             "method:SupportJoinMethods.FetchVal('H0', var1) as h0," +
                              "method:SupportJoinMethods.fetchVal('H1', var2) as h1," +
                              "method:SupportJoinMethods.fetchVal(h0.val||'-H2', var3) as h2";
                 TryAssertionSix(env, expression);
@@ -702,7 +702,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("on SupportBeanInt set var1=p00, var2=p01, var3=p02, var4=p03");
+                env.CompileDeploy("on SupportBeanInt set var1=P00, var2=P01, var3=P02, var4=P03");
                 var milestone = new AtomicLong();
 
                 string expression;

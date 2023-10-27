@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "  // No transformation.\n" +
                           "  EventBusSource -> stream.one<SampleSchema> {}\n" +
                           "  \n" +
-                          "  // Receive all SampleSchema events with tag id '001' from the event bus.\n" +
+                          "  // Receive all SampleSchema events with tag Id '001' from the event bus.\n" +
                           "  // No transformation.\n" +
                           "  EventBusSource -> stream.one<SampleSchema> {\n" +
                           "    filter : tagId = '001'\n" +

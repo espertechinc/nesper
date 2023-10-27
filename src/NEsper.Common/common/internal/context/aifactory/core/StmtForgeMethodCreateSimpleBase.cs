@@ -73,9 +73,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(statementEventType);
 
+            var statementFieldsClassName =
+                CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
+
             var namespaceScope = new CodegenNamespaceScope(
                 @namespace,
-                null,
+                statementFieldsClassName,
                 services.IsInstrumented,
                 services.Configuration.Compiler.ByteCode);
 
@@ -107,9 +110,15 @@ namespace com.espertech.esper.common.@internal.context.aifactory.core
                 informationals,
                 namespaceScope);
 
+            var stmtClassForgeableStmtFields = new StmtClassForgeableStmtFields(
+                statementFieldsClassName,
+                namespaceScope,
+                false);
+
             IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
             forgeables.Add(aiFactoryForgeable);
             forgeables.Add(stmtProvider);
+            forgeables.Add(stmtClassForgeableStmtFields);
             return new StmtForgeMethodResult(
                 forgeables,
                 EmptyList<FilterSpecTracked>.Instance,

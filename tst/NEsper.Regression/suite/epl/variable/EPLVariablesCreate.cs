@@ -331,7 +331,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.AssertPropsPerRowIterator("create-two", fieldsVar2, new object[][] { new object[] { 20L } });
                 env.AssertListenerNotInvoked("create-two");
 
-                var stmtTextSet = "@name('set') on SupportBean set var1SAI = intPrimitive * 2, var2SAI = var1SAI + 1";
+                var stmtTextSet = "@name('set') on SupportBean set var1SAI = IntPrimitive * 2, var2SAI = var1SAI + 1";
                 env.CompileDeploy(stmtTextSet, path);
 
                 SendSupportBean(env, "E1", 100);

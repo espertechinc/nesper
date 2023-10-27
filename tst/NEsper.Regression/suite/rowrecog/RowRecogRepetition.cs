@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by device\n" +
-                      "  measures A[0].id as a0_id, A[1].id as a1_id, B.id as b_id\n" +
+                      "  measures A[0].Id as a0_id, A[1].Id as a1_id, B.Id as b_id\n" +
                       "  pattern (A{,2} B)\n" +
                       "  define \n" +
                       "\tA as A.temp >= 100,\n" +
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by device\n" +
-                      "  measures A[0].id as a0_id, A[1].id as a1_id, A[2].id as a2_id, B.id as b_id\n" +
+                      "  measures A[0].Id as a0_id, A[1].Id as a1_id, A[2].Id as a2_id, B.Id as b_id\n" +
                       "  pattern (" +
                       pattern +
                       ")\n" +
@@ -152,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
                       "  partition by device\n" +
-                      "  measures A[0].id as a0_id, A[1].id as a1_id\n" +
+                      "  measures A[0].Id as a0_id, A[1].Id as a1_id\n" +
                       "  pattern (A{2})\n" +
                       "  define \n" +
                       "\tA as A.temp >= 100)";
@@ -224,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A as a" +
                            "  pattern (A{3}) " +
                            "  define " +
-                           "    A as A.intPrimitive > prev(A.intPrimitive)" +
+                           "    A as A.IntPrimitive > prev(A.IntPrimitive)" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -696,7 +696,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
             var text = "@name('s0') select * from SupportBean " +
                        "match_recognize (" +
-                       " partition by intPrimitive" +
+                       " partition by IntPrimitive" +
                        " measures " +
                        measures +
                        " pattern (" +
@@ -776,7 +776,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 buf.Write(prop.ToUpperInvariant());
                 buf.Write(" as ");
                 buf.Write(prop.ToUpperInvariant());
-                buf.Write(".theString like \"");
+                buf.Write(".TheString like \"");
                 buf.Write(prop.ToUpperInvariant());
                 buf.Write("%\"");
             }
@@ -827,7 +827,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                       before +
                       ")" +
                       " define" +
-                      " A as A.theString like \"A%\"" +
+                      " A as A.TheString like \"A%\"" +
                       ")";
 
             var model = env.EplToModel(epl);

@@ -150,16 +150,16 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@buseventtype @public create schema OrderEvent(OrderId string, price double);\n" +
-                    "@name('a') select sorted(price).lowerKey(price) as lowerPrice from OrderEvent#time(10 minutes);\n" +
-                    "@name('b') select sorted(price).lowerEvent(price).OrderId as lowerPriceOrderId from OrderEvent#time(10 minutes);\n" +
-                    "create table OrderPrices(prices sorted(price) @type('OrderEvent'));\n" +
+                    "@buseventtype @public create schema OrderEvent(OrderId string, Price double);\n" +
+                    "@name('a') select sorted(Price).lowerKey(Price) as lowerPrice from OrderEvent#time(10 minutes);\n" +
+                    "@name('b') select sorted(Price).lowerEvent(Price).OrderId as lowerPriceOrderId from OrderEvent#time(10 minutes);\n" +
+                    "create table OrderPrices(prices sorted(Price) @type('OrderEvent'));\n" +
                     "into table OrderPrices select sorted(*) as prices from OrderEvent#time(10 minutes);\n" +
                     "@name('c') select OrderPrices.prices.firstKey() as lowestPrice, OrderPrices.prices.lastKey() as highestPrice from OrderEvent;\n" +
                     "@name('d') select (select prices.firstKey() from OrderPrices) as lowestPrice, * from OrderEvent;\n";
                 env.CompileDeploy(epl).AddListener("a").AddListener("b").AddListener("c").AddListener("d");
 
-                env.SendEventMap(CollectionUtil.BuildMap("OrderId", "A", "price", 10d), "OrderEvent");
+                env.SendEventMap(CollectionUtil.BuildMap("OrderId", "A", "Price", 10d), "OrderEvent");
                 env.AssertPropsNew("a", "lowerPrice".SplitCsv(), new object[] { null });
                 env.AssertPropsNew("b", "lowerPriceOrderId".SplitCsv(), new object[] { null });
                 env.AssertPropsNew("c", "lowestPrice,highestPrice".SplitCsv(), new object[] { 10d, 10d });
@@ -167,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 env.Milestone(0);
 
-                env.SendEventMap(CollectionUtil.BuildMap("OrderId", "B", "price", 20d), "OrderEvent");
+                env.SendEventMap(CollectionUtil.BuildMap("OrderId", "B", "Price", 20d), "OrderEvent");
                 env.AssertPropsNew("a", "lowerPrice".SplitCsv(), new object[] { 10d });
                 env.AssertPropsNew("b", "lowerPriceOrderId".SplitCsv(), new object[] { "A" });
                 env.AssertPropsNew("c", "lowestPrice,highestPrice".SplitCsv(), new object[] { 10d, 20d });

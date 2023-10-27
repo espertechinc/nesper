@@ -207,8 +207,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var epl =
                     "create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, value int);\n" +
-                    "insert into MyTable select intOne as k1, intTwo as k2, value from SupportEventWithManyArray(id = 'I');\n" +
-                    "@name('s0') select MyTable[intOne, intTwo].value as c0 from SupportEventWithManyArray(id = 'Q');\n" +
+                    "insert into MyTable select intOne as k1, intTwo as k2, value from SupportEventWithManyArray(Id = 'I');\n" +
+                    "@name('s0') select MyTable[intOne, intTwo].value as c0 from SupportEventWithManyArray(Id = 'Q');\n" +
                     "@name('s1') select MyTable.keys() as keys from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
@@ -266,8 +266,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create table MyTable(k int[primitive] primary key, value int);\n" +
-                          "insert into MyTable select intOne as k, value from SupportEventWithManyArray(id = 'I');\n" +
-                          "@name('s0') select MyTable[intOne].value as c0 from SupportEventWithManyArray(id = 'Q');\n" +
+                          "insert into MyTable select intOne as k, value from SupportEventWithManyArray(Id = 'I');\n" +
+                          "@name('s0') select MyTable[intOne].value as c0 from SupportEventWithManyArray(Id = 'Q');\n" +
                           "@name('s1') select MyTable.keys() as keys from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
@@ -341,7 +341,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     });
 
                 var eplInto =
-                    "into table varaggIIP select window(*) as myevents from SupportBean#length(3) group by intPrimitive";
+                    "into table varaggIIP select window(*) as myevents from SupportBean#length(3) group by IntPrimitive";
                 env.CompileDeploy(soda, eplInto, path);
 
                 var eplSelect =
@@ -365,9 +365,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create table varaggFB (total count(*))", path);
-                env.CompileDeploy("into table varaggFB select count(*) as total from SupportBean_S0", path);
-                env.CompileDeploy("@name('s0') select * from SupportBean(varaggFB.total = intPrimitive)", path)
+                env.CompileDeploy("@public create table varaggFB (Total count(*))", path);
+                env.CompileDeploy("into table varaggFB select count(*) as Total from SupportBean_S0", path);
+                env.CompileDeploy("@name('s0') select * from SupportBean(varaggFB.Total = IntPrimitive)", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(0));
@@ -403,18 +403,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "@name('s0') select " +
                     "varaggESC.keys()," +
-                    "varaggESC[p00].theEvents," +
-                    "varaggESC[p00]," +
-                    "varaggESC[p00].theEvents.last(*)," +
-                    "varaggESC[p00].theEvents.window(*).take(1) from SupportBean_S0",
+                    "varaggESC[P00].theEvents," +
+                    "varaggESC[P00]," +
+                    "varaggESC[P00].theEvents.last(*)," +
+                    "varaggESC[P00].theEvents.window(*).take(1) from SupportBean_S0",
                     path);
 
                 var expectedAggType = new object[][] {
                     new object[] { "varaggESC.keys()", typeof(object[]) },
-                    new object[] { "varaggESC[p00].theEvents", typeof(SupportBean[]) },
-                    new object[] { "varaggESC[p00]", typeof(IDictionary<string, object>) },
-                    new object[] { "varaggESC[p00].theEvents.last(*)", typeof(SupportBean) },
-                    new object[] { "varaggESC[p00].theEvents.window(*).take(1)", typeof(ICollection<object>) },
+                    new object[] { "varaggESC[P00].theEvents", typeof(SupportBean[]) },
+                    new object[] { "varaggESC[P00]", typeof(IDictionary<string, object>) },
+                    new object[] { "varaggESC[P00].theEvents.last(*)", typeof(SupportBean) },
+                    new object[] { "varaggESC[P00].theEvents.window(*).take(1)", typeof(ICollection<object>) },
                 };
                 env.AssertStatement(
                     "s0",
@@ -463,7 +463,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy(
                         soda,
-                        "@name('s0') select windowAndTotalTLP2K[id,p00] as val0 from SupportBean_S0",
+                        "@name('s0') select windowAndTotalTLP2K[Id,P00] as val0 from SupportBean_S0",
                         path)
                     .AddListener("s0");
                 env.AssertStatement("s0", statement => AssertTopLevelTypeInfo(statement));
@@ -632,12 +632,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create table MyTableTwo(theString string primary key, intPrimitive int)",
+                    "@public create table MyTableTwo(TheString string primary key, IntPrimitive int)",
                     path);
                 env.CompileDeploy(
-                    "@public create expression getMyValue{o => (select MyTableTwo[o.p00].intPrimitive from SupportBean_S1#lastevent)}",
+                    "@public create expression getMyValue{o => (select MyTableTwo[o.P00].IntPrimitive from SupportBean_S1#lastevent)}",
                     path);
-                env.CompileDeploy("insert into MyTableTwo select theString, intPrimitive from SupportBean", path);
+                env.CompileDeploy("insert into MyTableTwo select TheString, IntPrimitive from SupportBean", path);
                 env.CompileDeploy("@name('s0') select getMyValue(s0) as c0 from SupportBean_S0 as s0", path)
                     .AddListener("s0");
 
@@ -659,10 +659,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create table MyTableOne(theString string primary key, intPrimitive int)",
+                    "@public create table MyTableOne(TheString string primary key, IntPrimitive int)",
                     path);
-                env.CompileDeploy("@public create expression getMyValue{o => MyTableOne[o.p00].intPrimitive}", path);
-                env.CompileDeploy("insert into MyTableOne select theString, intPrimitive from SupportBean", path);
+                env.CompileDeploy("@public create expression getMyValue{o => MyTableOne[o.P00].IntPrimitive}", path);
+                env.CompileDeploy("insert into MyTableOne select TheString, IntPrimitive from SupportBean", path);
                 env.CompileDeploy("@name('s0') select getMyValue(s0) as c0 from SupportBean_S0 as s0", path)
                     .AddListener("s0");
 
@@ -682,16 +682,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 AtomicLong milestone)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create expression sumi {a -> sum(intPrimitive)}", path);
-                env.CompileDeploy("@public create expression sumd alias for {sum(doublePrimitive)}", path);
+                env.CompileDeploy("@public create expression sumi {a -> sum(IntPrimitive)}", path);
+                env.CompileDeploy("@public create expression sumd alias for {sum(DoublePrimitive)}", path);
                 env.CompileDeploy(
                     "@public create table varaggITFE (" +
                     "sumi sum(int), sumd sum(double), sumf sum(float), suml sum(long))",
                     path);
                 env.CompileDeploy(
-                    "expression suml alias for {sum(longPrimitive)} " +
+                    "expression suml alias for {sum(LongPrimitive)} " +
                     "into table varaggITFE " +
-                    "select suml, sum(floatPrimitive) as sumf, sumd, sumi(sb) from SupportBean as sb",
+                    "select suml, sum(FloatPrimitive) as sumf, sumd, sumi(sb) from SupportBean as sb",
                     path);
 
                 MakeSendBean(env, "E1", 10, 100L, 1000d, 10000f);
@@ -720,16 +720,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 var eplDeclare =
-                    "@public create table varTotalG2K (key0 string primary key, key1 int primary key, total sum(long), cnt count(*))";
+"@public create table varTotalG2K (key0 string primary key, key1 int primary key, Total sum(long), cnt count(*))";
                 env.CompileDeploy(eplDeclare, path);
 
                 var eplBind = "into table varTotalG2K " +
-                              "select sum(longPrimitive) as total, count(*) as cnt " +
-                              "from SupportBean group by theString, intPrimitive";
+"select sum(LongPrimitive) as Total, count(*) as cnt "+
+                              "from SupportBean group by TheString, IntPrimitive";
                 env.CompileDeploy(eplBind, path);
 
                 var eplUse =
-                    "@name('s0') select varTotalG2K[p00, id].total as c0, varTotalG2K[p00, id].cnt as c1 from SupportBean_S0";
+"@name('s0') select varTotalG2K[P00, id].Total as c0, varTotalG2K[P00, Id].cnt as c1 from SupportBean_S0";
                 env.CompileDeploy(eplUse, path).AddListener("s0");
 
                 MakeSendBean(env, "E1", 10, 100);
@@ -755,17 +755,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 var eplDeclare = "@public create table varTotalG3K (key0 string primary key, key1 int primary key," +
-                                 "key2 long primary key, total sum(double), cnt count(*))";
+"key2 long primary key, Total sum(double), cnt count(*))";
                 env.CompileDeploy(eplDeclare, path);
 
                 var eplBind = "into table varTotalG3K " +
-                              "select sum(doublePrimitive) as total, count(*) as cnt " +
-                              "from SupportBean group by theString, intPrimitive, longPrimitive";
+"select sum(DoublePrimitive) as Total, count(*) as cnt "+
+                              "from SupportBean group by TheString, IntPrimitive, LongPrimitive";
                 env.CompileDeploy(eplBind, path);
 
                 var fields = "c0,c1".SplitCsv();
                 var eplUse =
-                    "@name('s0') select varTotalG3K[p00, id, 100L].total as c0, varTotalG3K[p00, id, 100L].cnt as c1 from SupportBean_S0";
+"@name('s0') select varTotalG3K[P00, id, 100L].Total as c0, varTotalG3K[P00, Id, 100L].cnt as c1 from SupportBean_S0";
                 env.CompileDeploy(eplUse, path).AddListener("s0");
 
                 MakeSendBean(env, "E1", 10, 100, 1000);
@@ -801,14 +801,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 AtomicLong milestone)
             {
                 var path = new RegressionPath();
-                var eplDeclare = "@public create table varTotalG1K (key string primary key, total sum(int))";
+                var eplDeclare = "@public create table varTotalG1K (key string primary key, Total sum(int))";
                 env.CompileDeploy(soda, eplDeclare, path);
 
                 var eplBind = "into table varTotalG1K " +
-                              "select theString, sum(intPrimitive) as total from SupportBean group by theString";
+"select TheString, sum(IntPrimitive) as Total from SupportBean group by TheString";
                 env.CompileDeploy(soda, eplBind, path);
 
-                var eplUse = "@name('s0') select p00 as c0, varTotalG1K[p00].total as c1 from SupportBean_S0";
+                var eplUse = "@name('s0') select P00 as c0, varTotalG1K[P00].Total as c1 from SupportBean_S0";
                 env.CompileDeploy(soda, eplUse, path).AddListener("s0");
 
                 TryAssertionTopLevelSingle(env, milestone);
@@ -822,10 +822,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var eplPart =
-                    "create context PartitionedByString partition by theString from SupportBean, p00 from SupportBean_S0;\n" +
-                    "context PartitionedByString create table varTotalUG (total sum(int));\n" +
-                    "context PartitionedByString into table varTotalUG select sum(intPrimitive) as total from SupportBean;\n" +
-                    "@name('s0') context PartitionedByString select p00 as c0, varTotalUG.total as c1 from SupportBean_S0;\n";
+                    "create context PartitionedByString partition by TheString from SupportBean, P00 from SupportBean_S0;\n" +
+"context PartitionedByString create table varTotalUG (Total sum(int));\n"+
+"context PartitionedByString into table varTotalUG select sum(IntPrimitive) as Total from SupportBean;\n"+
+"@name('s0') context PartitionedByString select P00 as c0, varTotalUG.Total as c1 from SupportBean_S0;\n";
                 env.CompileDeploy(eplPart);
                 env.AddListener("s0");
 
@@ -856,18 +856,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 // contribute to the same aggregation
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create table sharedagg (total sum(int))", path);
+                env.CompileDeploy("@public create table sharedagg (Total sum(int))", path);
                 env.CompileDeploy(
                         "@name('i1') into table sharedagg " +
-                        "select p00 as c0, sum(id) as total from SupportBean_S0",
+"select P00 as c0, sum(Id) as Total from SupportBean_S0",
                         path)
                     .AddListener("i1");
                 env.CompileDeploy(
                         "@name('i2') into table sharedagg " +
-                        "select p10 as c0, sum(id) as total from SupportBean_S1",
+"select P10 as c0, sum(Id) as Total from SupportBean_S1",
                         path)
                     .AddListener("i2");
-                env.CompileDeploy("@name('s0') select theString as c0, sharedagg.total as total from SupportBean", path)
+                env.CompileDeploy("@name('s0') select TheString as c0, sharedagg.Total as Total from SupportBean", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(10, "A"));
@@ -890,7 +890,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 string c0,
                 int total)
             {
-                var fields = "c0,total".SplitCsv();
+                var fields = "c0,Total".SplitCsv();
                 env.AssertEventNew(
                     stmtName,
                     @event => EPAssertionUtil.AssertProps(@event, fields, new object[] { c0, total }));
@@ -917,21 +917,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                                          "varaggMSC.s0win as c2, varaggMSC.s1sum as c3, varaggMSC.s1cnt as c4," +
                                          "varaggMSC.s1win as c5 from SupportBean";
                 var eplSelectGrouped =
-                    "@name('s0') select varaggMSC[theString].s0sum as c0, varaggMSC[theString].s0cnt as c1," +
-                    "varaggMSC[theString].s0win as c2, varaggMSC[theString].s1sum as c3, varaggMSC[theString].s1cnt as c4," +
-                    "varaggMSC[theString].s1win as c5 from SupportBean";
+                    "@name('s0') select varaggMSC[TheString].s0sum as c0, varaggMSC[TheString].s0cnt as c1," +
+                    "varaggMSC[TheString].s0win as c2, varaggMSC[TheString].s1sum as c3, varaggMSC[TheString].s1cnt as c4," +
+                    "varaggMSC[TheString].s1win as c5 from SupportBean";
                 env.CompileDeploy(grouped ? eplSelectGrouped : eplSelectUngrouped, path).AddListener("s0");
 
                 var fieldsOne = "s0sum,s0cnt,s0win".SplitCsv();
                 var eplBindOne =
-                    "@name('s1') into table varaggMSC select sum(id) as s0sum, count(*) as s0cnt, window(*) as s0win from SupportBean_S0#length(2) " +
-                    (grouped ? "group by p00" : "");
+                    "@name('s1') into table varaggMSC select sum(Id) as s0sum, count(*) as s0cnt, window(*) as s0win from SupportBean_S0#length(2) " +
+                    (grouped ? "group by P00" : "");
                 env.CompileDeploy(eplBindOne, path).AddListener("s1");
 
                 var fieldsTwo = "s1sum,s1cnt,s1win".SplitCsv();
                 var eplBindTwo =
-                    "@name('s2') into table varaggMSC select sum(id) as s1sum, count(*) as s1cnt, window(*) as s1win from SupportBean_S1#length(2) " +
-                    (grouped ? "group by p10" : "");
+                    "@name('s2') into table varaggMSC select sum(Id) as s1sum, count(*) as s1cnt, window(*) as s1win from SupportBean_S1#length(2) " +
+                    (grouped ? "group by P10" : "");
                 env.CompileDeploy(eplBindTwo, path).AddListener("s2");
 
                 // contribute S1
@@ -1005,16 +1005,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 var epl = "@public create window MyWindow#length(2) as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "@public create table varaggNWFAF (total sum(int));\n" +
-                          "into table varaggNWFAF select sum(intPrimitive) as total from MyWindow;\n";
+"@public create table varaggNWFAF (Total sum(int));\n"+
+"into table varaggNWFAF select sum(IntPrimitive) as Total from MyWindow;\n";
                 env.CompileDeploy(epl, path);
 
                 env.SendEventBean(new SupportBean("E1", 10));
-                var resultSelect = env.CompileExecuteFAF("select varaggNWFAF.total as c0 from MyWindow", path);
+                var resultSelect = env.CompileExecuteFAF("select varaggNWFAF.Total as c0 from MyWindow", path);
                 Assert.AreEqual(10, resultSelect.Array[0].Get("c0"));
 
                 var resultDelete = env.CompileExecuteFAF(
-                    "delete from MyWindow where varaggNWFAF.total = intPrimitive",
+"delete from MyWindow where varaggNWFAF.Total = IntPrimitive",
                     path);
                 Assert.AreEqual(1, resultDelete.Array.Length);
 
@@ -1022,16 +1022,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.SendEventBean(new SupportBean("E2", 20));
                 var resultUpdate = env.CompileExecuteFAF(
-                    "update MyWindow set doublePrimitive = 100 where varaggNWFAF.total = intPrimitive",
+"update MyWindow set DoublePrimitive = 100 where varaggNWFAF.Total = IntPrimitive",
                     path);
-                Assert.AreEqual(100d, resultUpdate.Array[0].Get("doublePrimitive"));
+                Assert.AreEqual(100d, resultUpdate.Array[0].Get("DoublePrimitive"));
 
                 var resultInsert = env.CompileExecuteFAF(
-                    "insert into MyWindow (theString, intPrimitive) values ('A', varaggNWFAF.total)",
+"insert into MyWindow (TheString, IntPrimitive) values ('A', varaggNWFAF.Total)",
                     path);
                 EPAssertionUtil.AssertProps(
                     resultInsert.Array[0],
-                    "theString,intPrimitive".SplitCsv(),
+                    "TheString,IntPrimitive".SplitCsv(),
                     new object[] { "A", 20 });
 
                 env.UndeployAll();
@@ -1049,15 +1049,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create table subquery_var_agg (key string primary key, total count(*))",
+"@public create table subquery_var_agg (key string primary key, Total count(*))",
                     path);
                 env.CompileDeploy(
-                        "@name('s0') select (select subquery_var_agg[p00].total from SupportBean_S0#lastevent) as c0 " +
+"@name('s0') select (select subquery_var_agg[P00].Total from SupportBean_S0#lastevent) as c0 "+
                         "from SupportBean_S1",
                         path)
                     .AddListener("s0");
                 env.CompileDeploy(
-                    "into table subquery_var_agg select count(*) as total from SupportBean group by theString",
+"into table subquery_var_agg select count(*) as Total from SupportBean group by TheString",
                     path);
 
                 env.SendEventBean(new SupportBean("E1", -1));
@@ -1085,19 +1085,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create table the_table (key string primary key, total count(*), value int)",
+"@public create table the_table (key string primary key, Total count(*), value int)",
                     path);
                 env.CompileDeploy(
-                    "into table the_table select count(*) as total from SupportBean group by theString",
+"into table the_table select count(*) as Total from SupportBean group by TheString",
                     path);
                 env.CompileDeploy(
                     "on SupportBean_S0 as s0 " +
                     "merge the_table as tt " +
-                    "where s0.p00 = tt.key " +
-                    "when matched and the_table[s0.p00].total > 0" +
+                    "where s0.P00 = tt.key " +
+"when matched and the_table[s0.P00].Total > 0"+
                     "  then update set value = 1",
                     path);
-                env.CompileDeploy("@name('s0') select the_table[p10].value as c0 from SupportBean_S1", path)
+                env.CompileDeploy("@name('s0') select the_table[P10].value as c0 from SupportBean_S1", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", -1));
@@ -1118,12 +1118,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 var epl = "@public create table MyTable(k1 string primary key, c1 int);\n" +
-                          "insert into MyTable select theString as k1, intPrimitive as c1 from SupportBean;\n";
+                          "insert into MyTable select TheString as k1, IntPrimitive as c1 from SupportBean;\n";
                 env.CompileDeploy(epl, path);
 
                 epl = "@public on SupportBean_S0 " +
-                      "  insert into AStream select MyTable['A'].c1 as c0 where id=1" +
-                      "  insert into AStream select MyTable['B'].c1 as c0 where id=2;\n";
+                      "  insert into AStream select MyTable['A'].c1 as c0 where Id=1" +
+                      "  insert into AStream select MyTable['B'].c1 as c0 where Id=2;\n";
                 env.CompileDeploy(epl, path);
 
                 env.CompileDeploy("@name('out') select * from AStream", path).AddListener("out");
@@ -1228,17 +1228,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var eplBind = "into table varMyAgg select " +
                           "count(*) as c0, " +
-                          "count(distinct intPrimitive) as c1, " +
+                          "count(distinct IntPrimitive) as c1, " +
                           "window(*) as c2, " +
-                          "sum(longPrimitive) as c3 " +
-                          "from SupportBean#length(3) group by theString";
+                          "sum(LongPrimitive) as c3 " +
+                          "from SupportBean#length(3) group by TheString";
             env.CompileDeploy(soda, eplBind, path);
 
             var eplSelect = "@name('s0') select " +
-                            "varMyAgg[p00].c0 as c0, " +
-                            "varMyAgg[p00].c1 as c1, " +
-                            "varMyAgg[p00].c2 as c2, " +
-                            "varMyAgg[p00].c3 as c3" +
+                            "varMyAgg[P00].c0 as c0, " +
+                            "varMyAgg[P00].c1 as c1, " +
+                            "varMyAgg[P00].c2 as c2, " +
+                            "varMyAgg[P00].c3 as c3" +
                             " from SupportBean_S0";
             env.CompileDeploy(soda, eplSelect, path).AddListener("s0");
             var fields = "c0,c1,c2,c3".SplitCsv();
@@ -1409,19 +1409,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                              (ungrouped ? "" : "key string primary key, ") +
                              "sumint sum(int), " +
                              "sumlong sum(long), " +
-                             "mysort sorted(intPrimitive) @type(SupportBean)," +
+                             "mysort sorted(IntPrimitive) @type(SupportBean)," +
                              "mywindow window(*) @type(SupportBean)" +
                              ")";
             env.CompileDeploy(eplDeclare, path);
 
             var fieldsTable = "sumint,sumlong,mywindow,mysort".SplitCsv();
             var eplSelect = "@name('into') into table varaggOOA select " +
-                            "sum(longPrimitive) as sumlong, " +
-                            "sum(intPrimitive) as sumint, " +
+                            "sum(LongPrimitive) as sumlong, " +
+                            "sum(IntPrimitive) as sumint, " +
                             "window(*) as mywindow," +
                             "sorted() as mysort " +
                             "from SupportBean#length(2) " +
-                            (ungrouped ? "" : "group by theString ");
+                            (ungrouped ? "" : "group by TheString ");
             env.CompileDeploy(eplSelect, path).AddListener("into");
 
             var fieldsSelect = "c0,c1,c2,c3".SplitCsv();

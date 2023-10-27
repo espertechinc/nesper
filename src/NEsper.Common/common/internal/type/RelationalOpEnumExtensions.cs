@@ -172,7 +172,7 @@ namespace com.espertech.esper.common.@internal.type
                     return RelationalOpEnum.LE;
 
                 default:
-                    throw new ArgumentException("Invalid relational operator '" + op + "'");
+                    throw new ArgumentException($"Invalid relational operator '{op}'");
             }
         }
 
@@ -198,7 +198,7 @@ namespace com.espertech.esper.common.@internal.type
                 coercedType != typeof(string) &&
                 coercedType != typeof(decimal?) &&
                 coercedType != typeof(BigInteger?)) {
-                throw new ArgumentException("Unsupported type for relational op compare, Type " + coercedType);
+                throw new ArgumentException($"Unsupported type for relational op compare, Type {coercedType}");
             }
 
             if (coercedType.IsTypeBigInteger()) {

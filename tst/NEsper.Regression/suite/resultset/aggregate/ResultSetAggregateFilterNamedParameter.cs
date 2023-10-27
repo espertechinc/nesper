@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var epl = "create table WordCountTable(wordcms countMinSketch());\n" +
                           "into table WordCountTable select countMinSketchAdd(TheString, filter:IntPrimitive > 0) as wordcms from SupportBean;\n" +
-                          "@name('s0') select WordCountTable.wordcms.countMinSketchFrequency(p00) as c0 from SupportBean_S0;\n";
+                          "@name('s0') select WordCountTable.wordcms.countMinSketchFrequency(P00) as c0 from SupportBean_S0;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "hello", 0);
@@ -430,7 +430,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 // invalid correlated subquery
                 env.TryInvalidCompile(
-                    "select (select sum(IntPrimitive, filter:s0.p00='a') from SupportBean) from SupportBean_S0 as s0",
+                    "select (select sum(IntPrimitive, filter:s0.P00='a') from SupportBean) from SupportBean_S0 as s0",
                     "Failed to plan subquery number 1 querying SupportBean: Subselect aggregation functions cannot aggregate across correlated properties");
             }
         }

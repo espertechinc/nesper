@@ -115,10 +115,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@name('s0') select beanA.simpleProperty as simple," +
-                                    "beanA.nested.nestedValue as nested," +
+                var statementText = "@name('s0') select beanA.SimpleProperty as simple," +
+                                    "beanA.Nested.NestedValue as nested," +
                                     "beanA.indexed[1] as indexed," +
-                                    "beanA.nested.nestedNested.nestedNestedValue as nestednested " +
+                                    "beanA.Nested.NestedNested.NestedNestedValue as nestednested " +
                                     "from MyObjectArrayEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
 
@@ -128,9 +128,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual("nestedValue", @event.Get("nested"));
+                        Assert.AreEqual("NestedValue", @event.Get("Nested"));
                         Assert.AreEqual(2, @event.Get("indexed"));
-                        Assert.AreEqual("nestedNestedValue", @event.Get("nestednested"));
+                        Assert.AreEqual("NestedNestedValue", @event.Get("nestednested"));
                     });
 
                 env.UndeployAll();

@@ -129,17 +129,8 @@ namespace com.espertech.esper.common.@internal.type
 
         public override string ToString()
         {
-            return "ClassIdentifierWArray{" +
-                   "classIdentifier='" +
-                   ClassIdentifier +
-                   '\'' +
-                   ", typeParameters=" +
-                   TypeParameters +
-                   ", arrayDimensions=" +
-                   ArrayDimensions +
-                   ", arrayOfPrimitive=" +
-                   IsArrayOfPrimitive +
-                   '}';
+            return
+                $"ClassIdentifierWArray{{classIdentifier='{ClassIdentifier}', typeParameters={TypeParameters}, arrayDimensions={ArrayDimensions}, arrayOfPrimitive={IsArrayOfPrimitive}}}";
         }
     }
 } // end of namespace

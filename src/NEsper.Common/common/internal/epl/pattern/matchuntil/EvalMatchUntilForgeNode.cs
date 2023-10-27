@@ -82,10 +82,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
             }
 
             method.Block
-                .ExprDotMethod(node, "setChildren", Ref("children"))
-                .ExprDotMethod(
+                .SetProperty(node, "Children", Ref("children"))
+                .SetProperty(
                     node,
-                    "setLowerBounds",
+                    "LowerBounds",
                     lowerBounds == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
@@ -93,9 +93,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
                             method,
                             GetType(),
                             classScope))
-                .ExprDotMethod(
+                .SetProperty(
                     node,
-                    "setUpperBounds",
+                    "UpperBounds",
                     upperBounds == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
@@ -103,9 +103,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
                             method,
                             GetType(),
                             classScope))
-                .ExprDotMethod(
+                .SetProperty(
                     node,
-                    "setSingleBound",
+                    "SingleBound",
                     singleBound == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(
@@ -113,8 +113,8 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
                             method,
                             GetType(),
                             classScope))
-                .ExprDotMethod(node, "setTagsArrayed", Constant(tagsArrayed))
-                .ExprDotMethod(node, "setOptionalConvertor", converterExpression);
+                .SetProperty(node, "TagsArrayed", Constant(tagsArrayed))
+                .SetProperty(node, "OptionalConvertor", converterExpression);
         }
 
         public override void CollectSelfFilterAndSchedule(

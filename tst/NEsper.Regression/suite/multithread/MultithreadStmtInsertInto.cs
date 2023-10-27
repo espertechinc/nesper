@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             IDictionary<long, ICollection<string>> results = new Dictionary<long, ICollection<string>>();
             foreach (var theEvent in result) {
                 var count = theEvent.Get("mycount").AsInt64();
-                var key = (string) theEvent.Get("key");
+                var key = (string)theEvent.Get("key");
 
                 var entries = results.Get(count);
                 if (entries == null) {

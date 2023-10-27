@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile(
-                    "select simpleProperty.* as a from SupportBeanComplexProps as s0",
+                    "select SimpleProperty.* as a from SupportBeanComplexProps as s0",
                     "The property wildcard syntax must be used without column name");
             }
         }
@@ -197,16 +197,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested),
                         statement.EventType.UnderlyingType));
 
-                var stmtTwoText = "@name('l2') select nestedValue from StreamA";
+                var stmtTwoText = "@name('l2') select NestedValue from StreamA";
                 env.CompileDeploy(stmtTwoText, path).AddListener("l2");
                 env.AssertStatement(
                     "l2",
-                    statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("nestedValue")));
+                    statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("NestedValue")));
 
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
 
-                env.AssertEqualsNew("l1", "nestedValue", "nestedValue");
-                env.AssertEqualsNew("l2", "nestedValue", "nestedValue");
+                env.AssertEqualsNew("l1", "NestedValue", "NestedValue");
+                env.AssertEqualsNew("l2", "NestedValue", "NestedValue");
 
                 env.UndeployAll();
                 env.UndeployAll();
@@ -247,7 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             typeof(Pair<object, IDictionary<string, object>>),
                             statement.EventType.UnderlyingType);
                         Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("abc"));
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("theString"));
+                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("TheString"));
                     });
 
                 env.UndeployAll();
@@ -262,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 model.SelectClause = SelectClause.Create()
                     .AddStreamWildcard("s0")
                     .AddStreamWildcard("s1", "s1stream")
-                    .AddWithAsProvidedName("theString", "sym");
+                    .AddWithAsProvidedName("TheString", "sym");
                 model.FromClause = FromClause.Create()
                     .Add(FilterStream.Create("SupportBean", "s0").AddView("keepall"))
                     .Add(FilterStream.Create("SupportMarketDataBean", "s1").AddView("keepall"));
@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(model).AddListener("s0");
 
                 var epl =
-                    "@name('s0') select s0.*, s1.* as s1stream, theString as sym from SupportBean#keepall as s0, " +
+                    "@name('s0') select s0.*, s1.* as s1stream, TheString as sym from SupportBean#keepall as s0, " +
                     "SupportMarketDataBean#keepall as s1";
                 Assert.AreEqual(epl, model.ToEPL());
                 var modelReverse = env.EplToModel(model.ToEPL());
@@ -329,7 +329,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     statement => {
                         var type = statement.EventType;
                         Assert.AreEqual(7, type.PropertyNames.Length);
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("volume"));
+                        Assert.AreEqual(typeof(long?), type.GetPropertyType("Volume"));
                         Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0"));
                         Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1"));
                         Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
@@ -339,7 +339,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListenerNotInvoked("s0");
 
                 object eventTwo = SendMarketEvent(env, "E2");
-                var fields = new string[] { "s0", "s1", "symbol", "volume" };
+                var fields = new string[] { "s0", "s1", "Symbol", "Volume" };
                 env.AssertPropsNew("s0", fields, new object[] { eventOne, eventTwo, "E2", 0L });
 
                 env.UndeployAll();
@@ -363,7 +363,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     });
 
                 object theEvent = SendBeanEvent(env, "E1", 15);
-                var fields = new string[] { "theString", "intPrimitive", "s0" };
+                var fields = new string[] { "TheString", "IntPrimitive", "s0" };
                 env.AssertPropsNew("s0", fields, new object[] { "E1", 15, theEvent });
 
                 env.UndeployAll();
@@ -407,7 +407,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select theString.* as s0, intPrimitive as a, theString.* as s1, intPrimitive as b from SupportBean#length(3) as theString";
+                    "@name('s0') select TheString.* as s0, IntPrimitive as a, TheString.* as s1, IntPrimitive as b from SupportBean#length(3) as TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertStatement(
@@ -435,7 +435,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select intPrimitive, s1.* as s1stream, theString, symbol as sym, s0.* as s0stream from SupportBean#length(3) as s0, " +
+"@name('s0') select IntPrimitive, s1.* as s1stream, TheString, Symbol as sym, s0.* as s0stream from SupportBean#length(3) as s0, "+
                     "SupportMarketDataBean#keepall as s1";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -444,11 +444,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     statement => {
                         var type = statement.EventType;
                         Assert.AreEqual(5, type.PropertyNames.Length);
-                        Assert.AreEqual(typeof(int?), type.GetPropertyType("intPrimitive"));
+                        Assert.AreEqual(typeof(int?), type.GetPropertyType("IntPrimitive"));
                         Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s1stream"));
                         Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s0stream"));
                         Assert.AreEqual(typeof(string), type.GetPropertyType("sym"));
-                        Assert.AreEqual(typeof(string), type.GetPropertyType("theString"));
+                        Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
                         Assert.AreEqual(typeof(IDictionary<string, object>), type.UnderlyingType);
                     });
 
@@ -456,7 +456,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListenerNotInvoked("s0");
 
                 object eventTwo = SendMarketEvent(env, "E2");
-                var fields = new string[] { "intPrimitive", "sym", "theString", "s0stream", "s1stream" };
+                var fields = new string[] { "IntPrimitive", "sym", "TheString", "s0stream", "s1stream" };
                 env.AssertEventNew(
                     "s0",
                     @event => {
@@ -477,7 +477,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select intPrimitive as a, string.*, intPrimitive as b from SupportBean#length(3) as string";
+                    "@name('s0') select IntPrimitive as a, string.*, IntPrimitive as b from SupportBean#length(3) as string";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertStatement(
@@ -488,11 +488,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
                         Assert.AreEqual(typeof(int?), type.GetPropertyType("a"));
                         Assert.AreEqual(typeof(int?), type.GetPropertyType("b"));
-                        Assert.AreEqual(typeof(string), type.GetPropertyType("theString"));
+                        Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
                     });
 
                 SendBeanEvent(env, "E1", 10);
-                var fields = new string[] { "a", "theString", "intPrimitive", "b" };
+                var fields = new string[] { "a", "TheString", "IntPrimitive", "b" };
                 env.AssertPropsNew("s0", fields, new object[] { 10, "E1", 10, 10 });
 
                 env.UndeployAll();
@@ -503,7 +503,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select intPrimitive, s1.*, symbol as sym from SupportBean#length(3) as s0, " +
+                var epl = "@name('s0') select IntPrimitive, s1.*, Symbol as sym from SupportBean#length(3) as s0, "+
                           "SupportMarketDataBean#keepall as s1";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -512,7 +512,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     statement => {
                         var type = statement.EventType;
                         Assert.AreEqual(7, type.PropertyNames.Length);
-                        Assert.AreEqual(typeof(int?), type.GetPropertyType("intPrimitive"));
+                        Assert.AreEqual(typeof(int?), type.GetPropertyType("IntPrimitive"));
                         Assert.AreEqual(typeof(Pair<object, IDictionary<string, object>>), type.UnderlyingType);
                     });
 
@@ -520,7 +520,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListenerNotInvoked("s0");
 
                 object theEvent = SendMarketEvent(env, "E1");
-                var fields = new string[] { "intPrimitive", "sym", "symbol" };
+                var fields = new string[] { "IntPrimitive", "sym", "Symbol"};
                 env.AssertEventNew(
                     "s0",
                     @event => {
@@ -536,7 +536,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select theString.* from SupportBean#length(3) as theString";
+                var epl = "@name('s0') select TheString.* from SupportBean#length(3) as TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertStatement(
@@ -558,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select theString.* as s0 from SupportBean#length(3) as theString";
+                var epl = "@name('s0') select TheString.* as s0 from SupportBean#length(3) as TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertStatement(
@@ -636,7 +636,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     statement => {
                         var type = statement.EventType;
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("volume"));
+                        Assert.AreEqual(typeof(long?), type.GetPropertyType("Volume"));
                         Assert.AreEqual(typeof(SupportMarketDataBean), type.UnderlyingType);
                     });
 
@@ -657,7 +657,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     statement => {
                         var type = statement.EventType;
-                        Assert.AreEqual(typeof(string), type.GetPropertyType("theString"));
+                        Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
                         Assert.AreEqual(typeof(SupportBean), type.UnderlyingType);
                     });
 
@@ -676,8 +676,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile(
-                    "select theString.* as theString, theString from SupportBean#length(3) as theString",
-                    "Column name 'theString' appears more then once in select clause");
+                    "select TheString.* as TheString, TheString from SupportBean#length(3) as TheString",
+                    "Column name 'TheString' appears more then once in select clause");
 
                 env.TryInvalidCompile(
                     "select s1.* as abc from SupportBean#length(3) as s0",

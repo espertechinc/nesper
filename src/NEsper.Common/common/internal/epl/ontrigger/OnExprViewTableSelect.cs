@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
                 // And post only if we have listeners/subscribers that need the data
                 var statementResultService = agentInstanceContext.StatementResultService;
                 if (statementResultService.IsMakeNatural || statementResultService.IsMakeSynthetic) {
-                    child.Update(newData, null);
+                    Child.Update(newData, null);
                 }
             }
 

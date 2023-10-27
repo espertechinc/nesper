@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.rettype
 #if false
             // Have not yet deduced the black magic of why and when we decide the type of
             // collection.  It's not entirely clear and is a work-in-progress.
-            // TBD: fix the general determinism of this algorithm.
+            // TODO: fix the general determinism of this algorithm.
             
             if (collectionComponentType == typeof(object)) {
                 containerType = typeof(ICollection<object>);

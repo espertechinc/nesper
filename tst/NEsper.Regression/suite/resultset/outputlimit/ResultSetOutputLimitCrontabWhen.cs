@@ -229,10 +229,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 env.RuntimeSetVariable(null, "myvar", 0);
                 SendTimeEvent(env, 1, 8, 0, 0, 0);
-                env.CompileDeploy("on SupportBean set myvar = intPrimitive");
+                env.CompileDeploy("on SupportBean set myvar = IntPrimitive");
 
                 var expression =
-                    "@name('s0') select symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
+"@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
                 env.CompileDeploy(expression).AddListener("s0").SetSubscriber("s0");
                 TryAssertion(env, 1);
                 env.UndeployAll();
@@ -245,12 +245,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 env.RuntimeSetVariable(null, "myvar", 0);
                 SendTimeEvent(env, 1, 8, 0, 0, 0);
-                env.CompileDeploy("on SupportBean set myvar = intPrimitive");
+                env.CompileDeploy("on SupportBean set myvar = IntPrimitive");
 
                 var expression =
-                    "@name('s0') select symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
+"@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create("symbol");
+                model.SelectClause = SelectClause.Create("Symbol");
                 model.FromClause = FromClause.Create(
                     FilterStream.Create("SupportMarketDataBean").AddView("length", Expressions.Constant(2)));
                 model.OutputLimitClause = OutputLimitClause.Create(Expressions.Eq("myvar", 1))
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportBean("E2", 2));
-                env.AssertEqualsNew("s0", "theString", "E2");
+                env.AssertEqualsNew("s0", "TheString", "E2");
 
                 env.SendEventBean(new SupportBean("E3", 3));
                 env.SendEventBean(new SupportBean("E4", 4));
@@ -319,7 +319,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 env.SendEventBean(new SupportBean("E5", 5));
                 SendTimeEvent(env, 2, 8, 0, 1, 0);
-                env.AssertEqualsNew("s0", "theString", "E5");
+                env.AssertEqualsNew("s0", "TheString", "E5");
 
                 env.SendEventBean(new SupportBean("E6", 6));
                 env.AssertListenerNotInvoked("s0");
@@ -336,7 +336,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var path = new RegressionPath();
                 env.CompileDeploy("@name('var') @public create variable int var_cnt_total = 3", path);
                 var expressionTotal =
-                    "@name('s0') select theString from SupportBean#length(2) output when count_insert_total = var_cnt_total or count_remove_total > 2";
+                    "@name('s0') select TheString from SupportBean#length(2) output when count_insert_total = var_cnt_total or count_remove_total > 2";
                 env.CompileDeploy(expressionTotal, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.SendEventBean(new SupportBean("E3", 1));
                 env.AssertPropsPerRowLastNew(
                     "s0",
-                    "theString".SplitCsv(),
+                    "TheString".SplitCsv(),
                     new object[][] { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E3" } });
 
                 env.RuntimeSetVariable("var", "var_cnt_total", -1);
@@ -357,7 +357,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.SendEventBean(new SupportBean("E5", 1));
                 env.AssertPropsPerRowLastNew(
                     "s0",
-                    "theString".SplitCsv(),
+                    "TheString".SplitCsv(),
                     new object[][] { new object[] { "E4" }, new object[] { "E5" } });
 
                 env.UndeployAll();
@@ -369,10 +369,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 SendTimeEvent(env, 1, 8, 0, 0, 0);
-                env.CompileDeploy("on SupportBean set myint = intPrimitive, mystring = theString");
+                env.CompileDeploy("on SupportBean set myint = IntPrimitive, mystring = TheString");
 
                 var expression =
-                    "@name('s0') select symbol from SupportMarketDataBean#length(2) output when myint = 1 and mystring like 'F%'";
+"@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myint = 1 and mystring like 'F%'";
                 env.CompileDeploy(expression).SetSubscriber("s0");
                 SendEvent(env, "S1", 0);
 
@@ -421,7 +421,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var expression =
-                    "@name('s0') select symbol from SupportMarketDataBean#length(2) output when count_insert >= 3";
+"@name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_insert >= 3";
                 env.CompileDeploy(expression).SetSubscriber("s0");
 
                 SendEvent(env, "S1", 0);
@@ -458,7 +458,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var expression =
-                    "@name('s0') select symbol from SupportMarketDataBean#length(2) output when count_remove >= 2";
+"@name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_remove >= 2";
                 env.CompileDeploy(expression).SetSubscriber("s0");
 
                 SendEvent(env, "S1", 0);
@@ -496,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimeEvent(env, 1, 8, 0, 0, 0);
                 var expression =
-                    "@name('s0') select symbol from SupportMarketDataBean#length(2) output when current_timestamp - last_output_timestamp >= 2000";
+"@name('s0') select Symbol from SupportMarketDataBean#length(2) output when current_timestamp - last_output_timestamp >= 2000";
                 env.CompileDeploy(expression).SetSubscriber("s0");
 
                 SendEvent(env, "S1", 0);
@@ -554,8 +554,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "Failed to validate the output rate limiting clause: Failed to validate assignment expression '1': Assignment expression must receive a single variable value");
 
                 env.TryInvalidCompile(
-                    "select * from SupportMarketDataBean output when sum(price) > 0",
-                    "Failed to validate output limit expression '(sum(price))>0': Property named 'price' is not valid in any stream [select * from SupportMarketDataBean output when sum(price) > 0]");
+                    "select * from SupportMarketDataBean output when sum(Price) > 0",
+                    "Failed to validate output limit expression '(sum(Price))>0': Property named 'Price' is not valid in any stream [select * from SupportMarketDataBean output when sum(Price) > 0]");
 
                 env.TryInvalidCompile(
                     "select * from SupportMarketDataBean output when sum(count_insert) > 0",
@@ -566,8 +566,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "Failed to validate output limit expression 'prev(1,count_insert)=0': Previous function cannot be used in this context [select * from SupportMarketDataBean output when prev(1, count_insert) = 0]");
 
                 env.TryInvalidCompile(
-                    "select theString, count(*) from SupportBean#length(2) group by theString output all every 0 seconds",
-                    "Invalid time period expression returns a zero or negative time interval [select theString, count(*) from SupportBean#length(2) group by theString output all every 0 seconds]");
+                    "select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds",
+                    "Invalid time period expression returns a zero or negative time interval [select TheString, count(*) from SupportBean#length(2) group by TheString output all every 0 seconds]");
             }
         }
 
@@ -575,7 +575,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             RegressionEnvironment env,
             int days)
         {
-            var fields = "symbol".SplitCsv();
+            var fields = "Symbol".SplitCsv();
             SendEvent(env, "S1", 0);
             env.AssertListenerNotInvoked("s0");
 

@@ -170,7 +170,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 .AddParam(targetType, "@object")
                 .AddParam<int>("index")
                 .Block
-                .DeclareVar<object>("value", ExprDotMethod(Ref("object"), method.Name))
+                .DeclareVar<object>("value", ExprDotMethod(Ref("@object"), method.Name))
                 .IfRefNotTypeReturnConst("value", typeof(IList<object>), null)
                 .DeclareVar(
                     typeof(IList<object>),

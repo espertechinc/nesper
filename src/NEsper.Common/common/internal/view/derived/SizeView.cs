@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             // If we have child views, keep a reference to the old values, so we can update them as old data event.
             EventBean oldDataMap = null;
             if (lastSizeEvent == null) {
-                if (child != null) {
+                if (Child != null) {
                     IDictionary<string, object> postOldData = new Dictionary<string, object>();
                     postOldData.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), priorSize);
                     AddProperties(postOldData);
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             }
 
             // If there are child views, fireStatementStopped update method
-            if (child != null && priorSize != size) {
+            if (Child != null && priorSize != size) {
                 IDictionary<string, object> postNewData = new Dictionary<string, object>();
                 postNewData.Put(ViewFieldEnum.SIZE_VIEW__SIZE.GetName(), size);
                 AddProperties(postNewData);
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 EventBean[] newEvents = { newEvent };
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(sizeViewFactory, newEvents, oldEvents);
-                child.Update(newEvents, oldEvents);
+                Child.Update(newEvents, oldEvents);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                 lastSizeEvent = newEvent;

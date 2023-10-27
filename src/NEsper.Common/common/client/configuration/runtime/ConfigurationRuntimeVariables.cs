@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// <summary>
         ///     Ctor - sets up defaults.
         /// </summary>
-        internal ConfigurationRuntimeVariables()
+        public ConfigurationRuntimeVariables()
         {
             MsecVersionRelease = 15000;
         }

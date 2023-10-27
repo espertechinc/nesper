@@ -84,17 +84,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@public @buseventtype create schema CarEvent(carId string, tracked boolean);\n" +
-                    "create table StatusTable(carId string primary key, lastevent CarEvent);\n" +
-                    "on CarEvent(tracked=true) as ce merge StatusTable as st where ce.carId = st.carId \n" +
+                    "@public @buseventtype create schema CarEvent(CarId string, tracked boolean);\n" +
+                    "create table StatusTable(CarId string primary key, lastevent CarEvent);\n" +
+                    "on CarEvent(tracked=true) as ce merge StatusTable as st where ce.CarId = st.CarId \n" +
                     "  when matched \n" +
                     "    then update set lastevent = ce \n" +
                     "  when not matched \n" +
-                    "    then insert(carId, lastevent) select ce.carId, ce \n" +
+                    "    then insert(CarId, lastevent) select ce.CarId, ce \n" +
                     "    then insert into CarOutputStream select 'online' as Status, ce as outputevent;\n" +
                     "insert into CarTimeoutStream select e.* \n" +
-                    "  from pattern[every e=CarEvent(tracked=true) -> (timer:interval(1 minutes) and not CarEvent(carId = e.carId, tracked=true))];\n" +
-                    "on CarTimeoutStream as cts merge StatusTable as st where cts.carId = st.carId \n" +
+                    "  from pattern[every e=CarEvent(tracked=true) -> (timer:interval(1 minutes) and not CarEvent(CarId = e.CarId, tracked=true))];\n" +
+                    "on CarTimeoutStream as cts merge StatusTable as st where cts.CarId = st.CarId \n" +
                     "  when matched \n" +
                     "    then delete \n" +
                     "    then insert into CarOutputStream select 'offline' as Status, lastevent as outputevent;\n" +
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             Assert.AreEqual(status, received.Get("Status"));
             var got = received.Get("outputevent");
-            Assert.AreEqual(carId, received.Get("outputevent").AsStringDictionary().Get("carId"));
+            Assert.AreEqual(carId, received.Get("outputevent").AsStringDictionary().Get("CarId"));
         }
 
         private static void AssertReceivedPono(
@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             RegressionEnvironment env,
             string carId)
         {
-            env.SendEventMap(CollectionUtil.BuildMap("carId", carId, "tracked", true), "CarEvent");
+            env.SendEventMap(CollectionUtil.BuildMap("CarId", carId, "tracked", true), "CarEvent");
         }
     }
 } // end of namespace

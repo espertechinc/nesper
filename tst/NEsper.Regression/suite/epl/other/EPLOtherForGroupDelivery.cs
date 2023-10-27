@@ -88,9 +88,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                var fields = new string[] { "theString", "intPrimitive", "longPrimitive" };
+                var fields = new string[] { "TheString", "IntPrimitive", "LongPrimitive" };
                 var epl = "create context MyContext start @now end after 1 second;\n" +
-                          "@name('s0') context MyContext select * from SupportBean#keepall output snapshot when terminated for grouped_delivery (intPrimitive, longPrimitive)";
+                          "@name('s0') context MyContext select * from SupportBean#keepall output snapshot when terminated for grouped_delivery (IntPrimitive, LongPrimitive)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendSB(env, "E1", 1, 10);
@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                var fields = new string[] { "id", "intOne" };
+                var fields = new string[] { "Id", "intOne" };
                 var epl = "create context MyContext start @now end after 1 second;\n" +
                           "@name('s0') context MyContext select * from SupportEventWithManyArray#keepall output snapshot when terminated for grouped_delivery (intOne)";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -198,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "The for-clause with the discrete_delivery keyword does not allow grouping expressions");
 
                 env.TryInvalidCompile(
-                    "select * from SupportBean for discrete_delivery for grouped_delivery(intPrimitive)",
+                    "select * from SupportBean for discrete_delivery for grouped_delivery(IntPrimitive)",
                     "Incorrect syntax near 'for' (a reserved keyword) at line 1 column 48 ");
             }
         }
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var subscriber = new SupportSubscriberMRD();
                 SendTimer(env, 0);
                 env.CompileDeploy(
-                    "@name('s0') select irstream theString,intPrimitive from SupportBean#time_batch(1) for discrete_delivery");
+                    "@name('s0') select irstream TheString,IntPrimitive from SupportBean#time_batch(1) for discrete_delivery");
                 env.Statement("s0").SetSubscriber(subscriber);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -225,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
                 subscriber.Reset();
                 env.CompileDeploy(
-                    "@name('s0') select irstream theString,intPrimitive from SupportBean#time_batch(1) for grouped_delivery(intPrimitive)");
+                    "@name('s0') select irstream TheString,IntPrimitive from SupportBean#time_batch(1) for grouped_delivery(IntPrimitive)");
                 env.Statement("s0").SetSubscriber(subscriber);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -268,15 +268,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         Assert.AreEqual(3, listener.NewDataList.Count);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[0],
-                            "theString,intPrimitive".SplitCsv(),
+                            "TheString,IntPrimitive".SplitCsv(),
                             new object[][] { new object[] { "E1", 1 } });
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[1],
-                            "theString,intPrimitive".SplitCsv(),
+                            "TheString,IntPrimitive".SplitCsv(),
                             new object[][] { new object[] { "E2", 2 } });
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[2],
-                            "theString,intPrimitive".SplitCsv(),
+                            "TheString,IntPrimitive".SplitCsv(),
                             new object[][] { new object[] { "E3", 1 } });
                     });
                 env.UndeployAll();
@@ -305,7 +305,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 SendTimer(env, 0);
                 env.CompileDeploy(
-                        "@name('s0') select * from SupportBean#time_batch(1) for grouped_delivery (intPrimitive)")
+                        "@name('s0') select * from SupportBean#time_batch(1) for grouped_delivery (IntPrimitive)")
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -322,19 +322,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         Assert.AreEqual(2, listener.NewDataList[0].Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[0],
-                            "theString,intPrimitive".SplitCsv(),
+                            "TheString,IntPrimitive".SplitCsv(),
                             new object[][] { new object[] { "E1", 1 }, new object[] { "E3", 1 } });
                         Assert.AreEqual(1, listener.NewDataList[1].Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[1],
-                            "theString,intPrimitive".SplitCsv(),
+                            "TheString,IntPrimitive".SplitCsv(),
                             new object[][] { new object[] { "E2", 2 } });
                     });
 
                 // test sorted
                 env.UndeployAll();
                 env.CompileDeploy(
-                    "@name('s0') select * from SupportBean#time_batch(1) order by intPrimitive desc for grouped_delivery (intPrimitive)");
+"@name('s0') select * from SupportBean#time_batch(1) Order by IntPrimitive desc for grouped_delivery (IntPrimitive)");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -348,21 +348,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         Assert.AreEqual(1, listener.NewDataList[0].Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[0],
-                            "theString,intPrimitive".SplitCsv(),
+                            "TheString,IntPrimitive".SplitCsv(),
                             new object[][] { new object[] { "E2", 2 } });
                         Assert.AreEqual(2, listener.NewDataList[1].Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[1],
-                            "theString,intPrimitive".SplitCsv(),
+                            "TheString,IntPrimitive".SplitCsv(),
                             new object[][] { new object[] { "E1", 1 }, new object[] { "E3", 1 } });
                     });
 
                 // test multiple criteria
                 env.UndeployAll();
                 var stmtText =
-                    "@name('s0') select theString, doubleBoxed, enumValue from SupportBean#time_batch(1) order by theString, doubleBoxed, enumValue for grouped_delivery(doubleBoxed, enumValue)";
+"@name('s0') select TheString, DoubleBoxed, enumValue from SupportBean#time_batch(1) Order by TheString, DoubleBoxed, enumValue for grouped_delivery(DoubleBoxed, enumValue)";
                 env.CompileDeploy(stmtText).AddListener("s0");
-                var fields = "theString,doubleBoxed,enumValue".SplitCsv();
+                var fields = "TheString,DoubleBoxed,enumValue".SplitCsv();
 
                 SendEvent(env, "E1", 10d, SupportEnum.ENUM_VALUE_2); // A (1)
                 SendEvent(env, "E2", 11d, SupportEnum.ENUM_VALUE_1); // B (2)

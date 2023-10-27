@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var fields = "a,b".SplitCsv();
                 var pattern =
-                    "@name('s0') select a.theString as a, b.theString as b from pattern[every a=SupportBean -> b=SupportBean@consume]";
+                    "@name('s0') select a.TheString as a, b.TheString as b from pattern[every a=SupportBean -> b=SupportBean@consume]";
                 env.CompileDeploy(pattern).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 var fields = "a,b".SplitCsv();
                 var pattern =
-                    "@name('s0') select a.theString as a, b.theString as b from pattern[every (a=SupportBean and b=SupportBean)]";
+                    "@name('s0') select a.TheString as a, b.TheString as b from pattern[every (a=SupportBean and b=SupportBean)]";
                 env.CompileDeploy(pattern).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.UndeployAll();
 
                 pattern =
-                    "@name('s0') select a.theString as a, b.theString as b from pattern [every (a=SupportBean and b=SupportBean(intPrimitive=10)@consume(2))]";
+                    "@name('s0') select a.TheString as a, b.TheString as b from pattern [every (a=SupportBean and b=SupportBean(IntPrimitive=10)@consume(2))]";
                 env.CompileDeploy(pattern).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('A') select a.theString as a, b.theString as b from pattern[a=SupportBean and b=SupportBean(theString='A')@consume]";
+                    "@name('A') select a.TheString as a, b.TheString as b from pattern[a=SupportBean and b=SupportBean(TheString='A')@consume]";
                 env.CompileDeploy(epl).AddListener("A");
 
                 var fields = new string[] { "a", "b" };
@@ -162,68 +162,68 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b from pattern[every a=SupportBean or b=SupportBean] order by a asc",
+"select a.TheString as a, b.TheString as b from pattern[every a=SupportBean or b=SupportBean] Order by a asc",
                     new object[][] { new object[] { null, "E1" }, new object[] { "E1", null } });
 
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b from pattern[every a=SupportBean@consume(1) or every b=SupportBean@consume(1)] order by a asc",
+"select a.TheString as a, b.TheString as b from pattern[every a=SupportBean@consume(1) or every b=SupportBean@consume(1)] Order by a asc",
                     new object[][] { new object[] { null, "E1" }, new object[] { "E1", null } });
 
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b from pattern[every a=SupportBean@consume(2) or b=SupportBean@consume(1)] order by a asc",
+"select a.TheString as a, b.TheString as b from pattern[every a=SupportBean@consume(2) or b=SupportBean@consume(1)] Order by a asc",
                     new object[] { "E1", null });
 
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b from pattern[every a=SupportBean@consume(1) or b=SupportBean@consume(2)] order by a asc",
+"select a.TheString as a, b.TheString as b from pattern[every a=SupportBean@consume(1) or b=SupportBean@consume(2)] Order by a asc",
                     new object[] { null, "E1" });
 
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b from pattern[every a=SupportBean or b=SupportBean@consume(2)] order by a asc",
+"select a.TheString as a, b.TheString as b from pattern[every a=SupportBean or b=SupportBean@consume(2)] Order by a asc",
                     new object[] { null, "E1" });
 
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b from pattern[every a=SupportBean@consume(1) or b=SupportBean] order by a asc",
+"select a.TheString as a, b.TheString as b from pattern[every a=SupportBean@consume(1) or b=SupportBean] Order by a asc",
                     new object[] { "E1", null });
 
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b from pattern[every a=SupportBean(intPrimitive=11)@consume(1) or b=SupportBean] order by a asc",
+"select a.TheString as a, b.TheString as b from pattern[every a=SupportBean(IntPrimitive=11)@consume(1) or b=SupportBean] Order by a asc",
                     new object[] { null, "E1" });
 
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b from pattern[every a=SupportBean(intPrimitive=10)@consume(1) or b=SupportBean] order by a asc",
+"select a.TheString as a, b.TheString as b from pattern[every a=SupportBean(IntPrimitive=10)@consume(1) or b=SupportBean] Order by a asc",
                     new object[] { "E1", null });
 
                 fields = "a,b,c".SplitCsv();
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@consume(1) or b=SupportBean@consume(2) or c=SupportBean@consume(3)] order by a,b,c",
+"select a.TheString as a, b.TheString as b, c.TheString as c from pattern[every a=SupportBean@consume(1) or b=SupportBean@consume(2) or c=SupportBean@consume(3)] Order by a,b,c",
                     new object[][] { new object[] { null, null, "E1" } });
 
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@consume(1) or every b=SupportBean@consume(2) or every c=SupportBean@consume(2)] order by a,b,c",
+"select a.TheString as a, b.TheString as b, c.TheString as c from pattern[every a=SupportBean@consume(1) or every b=SupportBean@consume(2) or every c=SupportBean@consume(2)] Order by a,b,c",
                     new object[][] { new object[] { null, null, "E1" }, new object[] { null, "E1", null } });
 
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@consume(2) or every b=SupportBean@consume(2) or every c=SupportBean@consume(2)] order by a,b,c",
+"select a.TheString as a, b.TheString as b, c.TheString as c from pattern[every a=SupportBean@consume(2) or every b=SupportBean@consume(2) or every c=SupportBean@consume(2)] Order by a,b,c",
                     new object[][] {
                         new object[] { null, null, "E1" }, new object[] { null, "E1", null },
                         new object[] { "E1", null, null }
@@ -232,19 +232,19 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@consume(2) or every b=SupportBean@consume(2) or every c=SupportBean@consume(1)] order by a,b,c",
+"select a.TheString as a, b.TheString as b, c.TheString as c from pattern[every a=SupportBean@consume(2) or every b=SupportBean@consume(2) or every c=SupportBean@consume(1)] Order by a,b,c",
                     new object[][] { new object[] { null, "E1", null }, new object[] { "E1", null, null } });
 
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@consume(2) or every b=SupportBean@consume(1) or every c=SupportBean@consume(2)] order by a,b,c",
+"select a.TheString as a, b.TheString as b, c.TheString as c from pattern[every a=SupportBean@consume(2) or every b=SupportBean@consume(1) or every c=SupportBean@consume(2)] Order by a,b,c",
                     new object[][] { new object[] { null, null, "E1" }, new object[] { "E1", null, null } });
 
                 TryAssertion(
                     env,
                     fields,
-                    "select a.theString as a, b.theString as b, c.theString as c from pattern[every a=SupportBean@consume(0) or every b=SupportBean or every c=SupportBean] order by a,b,c",
+"select a.TheString as a, b.TheString as b, c.TheString as c from pattern[every a=SupportBean@consume(0) or every b=SupportBean or every c=SupportBean] Order by a,b,c",
                     new object[][] {
                         new object[] { null, null, "E1" }, new object[] { null, "E1", null },
                         new object[] { "E1", null, null }

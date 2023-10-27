@@ -32,13 +32,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var eplCreate = "@public create table MyTable (" +
                             "col0 string, " +
                             "col1 sum(int), " +
-                            "col2 sorted(intPrimitive) @type('SupportBean'), " +
+                            "col2 sorted(IntPrimitive) @type('SupportBean'), " +
                             "col3 int[], " +
                             "col4 window(*) @type('SupportBean')" +
                             ")";
             env.CompileDeploy(soda, eplCreate, path);
 
-            var eplIntoTable = "@name('into') into table MyTable select sum(intPrimitive) as col1, sorted() as col2, " +
+            var eplIntoTable = "@name('into') into table MyTable select sum(IntPrimitive) as col1, sorted() as col2, " +
                                "window(*) as col4 from SupportBean#length(3)";
             env.CompileDeploy(soda, eplIntoTable, path);
             var sentSB = new SupportBean[2];

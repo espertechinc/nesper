@@ -229,7 +229,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenClassScope classScope)
         {
             method.Block.Apply(WriteInt(output, row, size))
-                .ExprDotMethod(sortedSerde, "write", RowDotMember(row, sorted), output, unitKey, writer);
+                .ExprDotMethod(sortedSerde, "Write", RowDotMember(row, sorted), output, unitKey, writer);
             if (joinRefs != null) {
                 method.Block.ExprDotMethod(
                     joinRefsSerde,
@@ -251,7 +251,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             method.Block.Apply(ReadInt(row, size, input))
                 .AssignRef(RowDotMember(row, sorted), NewInstance(typeof(OrderedListDictionary<object, object>), comparator))
-                .ExprDotMethod(sortedSerde, "Read", RowDotMember(row, sorted), input, unitKey);
+                .ExprDotMethod(sortedSerde, "ReadValue", RowDotMember(row, sorted), input, unitKey);
             if (joinRefs != null) {
                 method.Block.AssignRef(
                     RowDotMember(row, joinRefs),

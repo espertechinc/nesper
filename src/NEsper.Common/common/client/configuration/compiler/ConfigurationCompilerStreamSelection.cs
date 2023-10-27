@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <summary>
         ///     Ctor - sets up defaults.
         /// </summary>
-        internal ConfigurationCompilerStreamSelection()
+        public ConfigurationCompilerStreamSelection()
         {
             DefaultStreamSelector = StreamSelector.ISTREAM_ONLY;
         }

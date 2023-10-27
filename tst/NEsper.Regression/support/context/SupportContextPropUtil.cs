@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.support.context
                             contextName,
                             id);
                         Assert.AreEqual(contextName, props.Get("name"));
-                        Assert.AreEqual(id, props.Get("id"));
+                        Assert.AreEqual(id, props.Get("Id"));
 
                         Assert.AreEqual(nestedContextNames.Length, fieldsCSVPerCtx.Length);
                         for (var level = 0; level < nestedContextNames.Length; level++) {
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.support.context
 
             Assert.AreEqual(contextName, props.Get("name"));
             if (assertId) {
-                Assert.AreEqual(id, props.Get("id"));
+                Assert.AreEqual(id, props.Get("Id"));
             }
 
             var col = -1;

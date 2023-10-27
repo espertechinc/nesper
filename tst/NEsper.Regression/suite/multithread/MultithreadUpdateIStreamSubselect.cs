@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy(
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // validate results, price must be 5 for each symbol
             Assert.AreEqual(numGroups, listener.NewDataList.Count);
             foreach (var newData in listener.NewDataList) {
-                var result = (SupportBean) newData[0].Underlying;
+                var result = (SupportBean)newData[0].Underlying;
                 Assert.AreEqual(numRepeats, result.LongPrimitive);
             }
 

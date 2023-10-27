@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
             CodegenClassScope classScope)
         {
             method.Block.AssignRef(sum, Constant(0))
-                .ExprDotMethod(valueSet, "clear");
+                .ExprDotMethod(valueSet, "Clear");
         }
 
         public override void GetValueCodegen(

@@ -84,17 +84,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                         //Console.WriteLine(result);
                         var expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                                        "<supportBean>\n" +
-                                       "  <boolPrimitive>false</boolPrimitive>\n" +
-                                       "  <bytePrimitive>0</bytePrimitive>\n" +
-                                       "  <charPrimitive>x</charPrimitive>\n" +
-                                       "  <doublePrimitive>0.0</doublePrimitive>\n" +
+                                       "  <BoolPrimitive>false</BoolPrimitive>\n" +
+                                       "  <BytePrimitive>0</BytePrimitive>\n" +
+                                       "  <CharPrimitive>x</CharPrimitive>\n" +
+                                       "  <DoublePrimitive>0.0</DoublePrimitive>\n" +
                                        "  <enumValue>ENUM_VALUE_2</enumValue>\n" +
-                                       "  <floatPrimitive>0.0</floatPrimitive>\n" +
-                                       "  <intBoxed>992</intBoxed>\n" +
-                                       "  <intPrimitive>1</intPrimitive>\n" +
-                                       "  <longPrimitive>0</longPrimitive>\n" +
-                                       "  <shortPrimitive>0</shortPrimitive>\n" +
-                                       "  <theString>a\\u000ac</theString>\n" +
+                                       "  <FloatPrimitive>0.0</FloatPrimitive>\n" +
+                                       "  <IntBoxed>992</IntBoxed>\n" +
+                                       "  <IntPrimitive>1</IntPrimitive>\n" +
+                                       "  <LongPrimitive>0</LongPrimitive>\n" +
+                                       "  <ShortPrimitive>0</ShortPrimitive>\n" +
+                                       "  <TheString>a\\u000ac</TheString>\n" +
                                        "</supportBean>";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             new XMLRenderingOptions().SetIsDefaultAsAttribute(true));
                         // Console.WriteLine(result);
                         var expected =
-                            "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <supportBean boolPrimitive=\"false\" bytePrimitive=\"0\" charPrimitive=\"x\" doublePrimitive=\"0.0\" enumValue=\"ENUM_VALUE_2\" floatPrimitive=\"0.0\" intBoxed=\"992\" intPrimitive=\"1\" longPrimitive=\"0\" shortPrimitive=\"0\" theString=\"a\\u000ac\"/>";
+                            "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <supportBean BoolPrimitive=\"false\" BytePrimitive=\"0\" CharPrimitive=\"x\" DoublePrimitive=\"0.0\" enumValue=\"ENUM_VALUE_2\" FloatPrimitive=\"0.0\" IntBoxed=\"992\" IntPrimitive=\"1\" LongPrimitive=\"0\" ShortPrimitive=\"0\" TheString=\"a\\u000ac\"/>";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                        "  <innerarray>\n" +
                                        "  </innerarray>\n" +
                                        "  <prop0>\n" +
-                                       "    <id>A1</id>\n" +
+                                       "    <id>A1</Id>\n" +
                                        "  </prop0>\n" +
                                        "</outerMap>";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                        "    <stringarr>a&gt;b</stringarr>\n" +
                                        "  </innerarray>\n" +
                                        "  <innerarray/>\n" +
-                                       "  <prop0 id=\"A1\"/>\n" +
+                                       "  <prop0 Id=\"A1\"/>\n" +
                                        "</outerMap>";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });

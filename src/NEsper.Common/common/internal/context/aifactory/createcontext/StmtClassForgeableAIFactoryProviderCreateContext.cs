@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
             method.Block
                 .ExprDotMethod(
                     REF_STMTINITSVC,
-                    "activateContext",
+                    "ActivateContext",
                     Constant(contextName),
                     GetDefinition(method, saiffInitializeSymbol, classScope))
                 .MethodReturn(LocalMethod(forge.InitializeCodegen(classScope, method, saiffInitializeSymbol)));
@@ -85,22 +85,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                         "controllers",
                         Constant(i),
                         LocalMethod(forges[i].MakeCodegen(classScope, method, symbols)))
-                    .ExprDotMethod(
+                    .SetProperty(
                         ArrayAtIndex(Ref("controllers"), Constant(i)),
-                        "setFactoryEnv",
+                        "FactoryEnv",
                         forges[i].FactoryEnv.ToExpression());
             }
 
             method.Block.DeclareVarNewInstance(typeof(ContextDefinition), "def")
-                .ExprDotMethod(Ref("def"), "setContextName", Constant(contextName))
-                .ExprDotMethod(Ref("def"), "setControllerFactories", Ref("controllers"))
-                .ExprDotMethod(
+                .SetProperty(Ref("def"), "ContextName", Constant(contextName))
+                .SetProperty(Ref("def"), "ControllerFactories", Ref("controllers"))
+                .SetProperty(
                     Ref("def"),
-                    "setEventTypeContextProperties",
+                    "EventTypeContextProperties",
                     EventTypeUtility.ResolveTypeCodegen(eventTypeContextProperties, EPStatementInitServicesConstants.REF))
-                .ExprDotMethod(
+                .SetProperty(
                     Ref("def"),
-                    "setPartitionIdSvcStateMgmtSettings",
+                    "PartitionIdSvcStateMgmtSettings",
                     partitionIdSvcStateMgmtSettings.ToExpression())
                 .MethodReturn(Ref("def"));
             return LocalMethod(method);

@@ -52,19 +52,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             // test expression reuse
             var epl = "@name('s0') expression q {" +
-                      "  x => (select * from Win where intPrimitive = x.p00)" +
+                      "  x => (select * from Win where IntPrimitive = x.P00)" +
                       "}" +
                       "select " +
-                      "q(st0).where(x => theString = key0) as val0, " +
-                      "q(st0).where(x => theString = key0) as val1, " +
-                      "q(st0).where(x => theString = key0) as val2, " +
-                      "q(st0).where(x => theString = key0) as val3, " +
-                      "q(st0).where(x => theString = key0) as val4, " +
-                      "q(st0).where(x => theString = key0) as val5, " +
-                      "q(st0).where(x => theString = key0) as val6, " +
-                      "q(st0).where(x => theString = key0) as val7, " +
-                      "q(st0).where(x => theString = key0) as val8, " +
-                      "q(st0).where(x => theString = key0) as val9 " +
+                      "q(st0).where(x => TheString = key0) as val0, " +
+                      "q(st0).where(x => TheString = key0) as val1, " +
+                      "q(st0).where(x => TheString = key0) as val2, " +
+                      "q(st0).where(x => TheString = key0) as val3, " +
+                      "q(st0).where(x => TheString = key0) as val4, " +
+                      "q(st0).where(x => TheString = key0) as val5, " +
+                      "q(st0).where(x => TheString = key0) as val6, " +
+                      "q(st0).where(x => TheString = key0) as val7, " +
+                      "q(st0).where(x => TheString = key0) as val8, " +
+                      "q(st0).where(x => TheString = key0) as val9 " +
                       "from SupportBean_ST0 st0";
             env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             // test expression reuse
             var epl = "@name('s0') expression q {" +
-                      "  x => Win(theString = x.key0).where(y => intPrimitive = x.p00)" +
+                      "  x => Win(TheString = x.key0).where(y => IntPrimitive = x.P00)" +
                       "}" +
                       "select " +
                       "q(st0) as val0, " +

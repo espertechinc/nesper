@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
@@ -25,7 +26,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     [Serializable]
     public class ExprEqualsAllAnyNode : ExprNodeBase
     {
-        [NonSerialized] private ExprEqualsAllAnyNodeForge _forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEqualsAllAnyNodeForge _forge;
 
         /// <summary>
         /// Ctor.

@@ -222,9 +222,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select id, mycol3, mycol2 from " +
+                var stmtText = "@name('s0') select Id, mycol3, mycol2 from " +
                                "SupportBean_S0#keepall as s0," +
-                               " sql:MyDBWithLRU100000 ['select mycol3, mycol2 from mytesttable_large'] as s1 where s0.id = s1.mycol3";
+                               " sql:MyDBWithLRU100000 ['select mycol3, mycol2 from mytesttable_large'] as s1 where s0.Id = s1.mycol3";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 // Send 100 events which all perform the join
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     env.SendEventBean(bean);
                     env.AssertPropsNew(
                         "s0",
-                        new string[] { "id", "mycol3", "mycol2" },
+                        new string[] { "Id", "mycol3", "mycol2" },
                         new object[] { num, num, col2 });
                 }
 
@@ -259,9 +259,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select theString, mycol3, mycol4 from " +
+                var stmtText = "@name('s0') select TheString, mycol3, mycol4 from " +
                                " sql:MyDBWithLRU100000 ['select mycol3, mycol4 from mytesttable_large'] as s0, " +
-                               "SupportBean#keepall as s1 where s1.doubleBoxed = s0.mycol3 and s1.byteBoxed = s0.mycol4";
+                               "SupportBean#keepall as s1 where s1.DoubleBoxed = s0.mycol3 and s1.ByteBoxed = s0.mycol4";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 // Send events which all perform the join
@@ -274,7 +274,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     env.SendEventBean(bean);
                     env.AssertPropsNew(
                         "s0",
-                        new string[] { "theString", "mycol3", "mycol4" },
+                        new string[] { "TheString", "mycol3", "mycol4" },
                         new object[] { "E" + i, 100, 10 });
                 }
 
@@ -296,9 +296,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select theString, mycol3, mycol1 from " +
+                var stmtText = "@name('s0') select TheString, mycol3, mycol1 from " +
                                " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 right outer join " +
-                               "SupportBean as s0 on theString = mycol1";
+                               "SupportBean as s0 on TheString = mycol1";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 // Send events which all perform the join
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     env.SendEventBean(beanX);
                     env.AssertPropsNew(
                         "s0",
-                        new string[] { "theString", "mycol3", "mycol1" },
+                        new string[] { "TheString", "mycol3", "mycol1" },
                         new object[] { "50", 50, "50" });
                 }
 
@@ -321,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.SendEventBean(bean);
                 env.AssertPropsNew(
                     "s0",
-                    new string[] { "theString", "mycol3", "mycol1" },
+                    new string[] { "TheString", "mycol3", "mycol1" },
                     new object[] { "-1", null, null });
 
                 // log.info("delta=" + (endTime - startTime));
@@ -340,9 +340,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select theString, mycol3, mycol1 from " +
+                var stmtText = "@name('s0') select TheString, mycol3, mycol1 from " +
                                " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 right outer join " +
-                               "SupportBean as s0 on theString = mycol1 where s1.mycol3 = s0.intPrimitive";
+                               "SupportBean as s0 on TheString = mycol1 where s1.mycol3 = s0.IntPrimitive";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 // Send events which all perform the join
@@ -354,7 +354,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     env.SendEventBean(beanX);
                     env.AssertPropsNew(
                         "s0",
-                        new string[] { "theString", "mycol3", "mycol1" },
+                        new string[] { "TheString", "mycol3", "mycol1" },
                         new object[] { "50", 50, "50" });
                 }
 
@@ -391,7 +391,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                                "select * from SupportBean_S0 s0, " +
                                " sql:MyDBWithLRU100000 ['select mycol1, mycol3 from mytesttable_large'] as s1 " +
-                               " where mycol1 in (p00, p01, p02)";
+                               " where mycol1 in (P00, P01, P02)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var historical = SupportQueryPlanIndexHook.AssertHistoricalAndReset();
@@ -426,7 +426,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                                "select * from SupportBean_S0 s0, " +
                                " sql:MyDBWithLRU100000 ['select mycol1, mycol2, mycol3 from mytesttable_large'] as s1 " +
-                               " where p00 in (mycol2, mycol1)";
+                               " where P00 in (mycol2, mycol1)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var historical = SupportQueryPlanIndexHook.AssertHistoricalAndReset();

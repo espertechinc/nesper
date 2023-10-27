@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') expression cc { (v1, v2) -> v1 || v2} " +
-                          "select cc((select p00 from SupportBean_S0#lastevent), (select p01 from SupportBean_S0#lastevent)) as c0 from SupportBean_S1";
+                          "select cc((select P00 from SupportBean_S0#lastevent), (select P01 from SupportBean_S0#lastevent)) as c0 from SupportBean_S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S1(0));
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@name('s0') expression cc { (v1, v2) -> v1 || v2} select cc(p00, p01) as c0 from SupportBean_S0")
+                        "@name('s0') expression cc { (v1, v2) -> v1 || v2} select cc(P00, P01) as c0 from SupportBean_S0")
                     .AddListener("s0");
                 AssertTypeExpected(env, typeof(string));
 
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@name('s0') expression cc { (v1, v2, v3) -> v1 || v2 || v3} select cc(p00, p01, p02) as c0 from SupportBean_S0")
+                        "@name('s0') expression cc { (v1, v2, v3) -> v1 || v2 || v3} select cc(P00, P01, P02) as c0 from SupportBean_S0")
                     .AddListener("s0");
                 AssertTypeExpected(env, typeof(string));
 
@@ -197,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@name('s0') expression cc { (e,v) -> e.p00 || v} select cc(e, p01) as c0 from SupportBean_S0 as e")
+                        "@name('s0') expression cc { (e,v) -> e.P00 || v} select cc(e, P01) as c0 from SupportBean_S0 as e")
                     .AddListener("s0");
                 AssertTypeExpected(env, typeof(string));
 
@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@name('s0') expression cc { (v1,e,v2) -> v1 || e.p01 || v2} select cc(p00, e, p02) as c0 from SupportBean_S0 as e")
+                        "@name('s0') expression cc { (v1,e,v2) -> v1 || e.P01 || v2} select cc(P00, e, P02) as c0 from SupportBean_S0 as e")
                     .AddListener("s0");
                 AssertTypeExpected(env, typeof(string));
 
@@ -231,12 +231,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 string epl;
 
-                epl = "@name('s0') expression cc { (v1,e1,v2,e2) -> v1 || e1.p01 || v2 || e2.p11} " +
-                      "select cc(e1.p00, e1, e2.p10, e2) as c0 from SupportBean_S0#lastevent as e1, SupportBean_S1#lastevent as e2";
+                epl = "@name('s0') expression cc { (v1,e1,v2,e2) -> v1 || e1.P01 || v2 || e2.P11} " +
+                      "select cc(e1.P00, e1, e2.P10, e2) as c0 from SupportBean_S0#lastevent as e1, SupportBean_S1#lastevent as e2";
                 AssertJoin(env, epl);
 
-                epl = "@name('s0') expression cc { (v1,e1,v2,e2) -> v1 || e1.p01 || v2 || e2.p11} " +
-                      "select cc(e1.p00, e1, e2.p10, e2) as c0 from SupportBean_S1#lastevent as e2, SupportBean_S0#lastevent as e1";
+                epl = "@name('s0') expression cc { (v1,e1,v2,e2) -> v1 || e1.P01 || v2 || e2.P11} " +
+                      "select cc(e1.P00, e1, e2.P10, e2) as c0 from SupportBean_S1#lastevent as e2, SupportBean_S0#lastevent as e1";
                 AssertJoin(env, epl);
             }
 
@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') expression cc { (e1,v,e2) -> e1.p00 || v || e2.p10} " +
+                var epl = "@name('s0') expression cc { (e1,v,e2) -> e1.P00 || v || e2.P10} " +
                           "select cc(e2, 'x', e1) as c0 from SupportBean_S1#lastevent as e1, SupportBean_S0#lastevent as e2";
                 env.CompileDeploy(epl).AddListener("s0");
                 AssertTypeExpected(env, typeof(string));
@@ -290,16 +290,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 var path = new RegressionPath();
 
-                var expression = "@public create expression cc { (a,v1,b,v2,c) -> a.p00 || v1 || b.p00 || v2 || c.p00}";
+                var expression = "@public create expression cc { (a,v1,b,v2,c) -> a.P00 || v1 || b.P00 || v2 || c.P00}";
                 env.CompileDeploy(expression, path);
 
                 var epl =
                     "@name('s0') select cc(e2, 'x', e3, 'y', e1) as c0 from \n" +
-                    "SupportBean_S0(id=1)#lastevent as e1, SupportBean_S0(id=2)#lastevent as e2, SupportBean_S0(id=3)#lastevent as e3;\n" +
+                    "SupportBean_S0(id=1)#lastevent as e1, SupportBean_S0(id=2)#lastevent as e2, SupportBean_S0(Id=3)#lastevent as e3;\n" +
                     "@name('s1') select cc(e2, 'x', e3, 'y', e1) as c0 from \n" +
-                    "SupportBean_S0(id=1)#lastevent as e3, SupportBean_S0(id=2)#lastevent as e2, SupportBean_S0(id=3)#lastevent as e1;\n" +
+                    "SupportBean_S0(id=1)#lastevent as e3, SupportBean_S0(id=2)#lastevent as e2, SupportBean_S0(Id=3)#lastevent as e1;\n" +
                     "@name('s2') select cc(e1, 'x', e2, 'y', e3) as c0 from \n" +
-                    "SupportBean_S0(id=1)#lastevent as e3, SupportBean_S0(id=2)#lastevent as e2, SupportBean_S0(id=3)#lastevent as e1;\n";
+                    "SupportBean_S0(id=1)#lastevent as e3, SupportBean_S0(id=2)#lastevent as e2, SupportBean_S0(Id=3)#lastevent as e1;\n";
                 env.CompileDeploy(epl, path).AddListener("s0").AddListener("s1").AddListener("s2");
                 AssertTypeExpected(env, typeof(string));
 
@@ -330,7 +330,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 var epl = "create variable ExprDefineLocalService myService = new ExprDefineLocalService();\n" +
                           "create expression doit {v -> myService.calc(v)};\n" +
-                          "@name('s0') select doit(theString) as c0 from SupportBean;\n";
+                          "@name('s0') select doit(TheString) as c0 from SupportBean;\n";
                 ExprDefineLocalService.services.Clear();
                 env.CompileDeploy(epl).AddListener("s0");
                 var service = ExprDefineLocalService.services[0];

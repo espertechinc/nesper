@@ -54,16 +54,16 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             var method = parent.MakeChild(typeof(TableMetadataColumnAggregation), GetType(), classScope);
             method.Block.DeclareVarNewInstance(typeof(TableMetadataColumnAggregation), "col");
             MakeSettersInline(Ref("col"), method.Block);
-            method.Block.ExprDotMethod(Ref("col"), "setColumn", Constant(column))
-                .ExprDotMethod(
+            method.Block.SetProperty(Ref("col"), "Column", Constant(column))
+                .SetProperty(
                     Ref("col"),
-                    "setAggregationPortableValidation",
+                    "AggregationPortableValidation",
                     aggregationPortableValidation.Make(method, symbols, classScope))
-                .ExprDotMethod(Ref("col"), "setAggregationExpression", Constant(aggregationExpression))
-                .ExprDotMethod(Ref("col"), "setMethodAgg", Constant(methodAgg))
-                .ExprDotMethod(
+                .SetProperty(Ref("col"), "AggregationExpression", Constant(aggregationExpression))
+                .SetProperty(Ref("col"), "MethodAgg", Constant(methodAgg))
+                .SetProperty(
                     Ref("col"),
-                    "setOptionalEnumerationType",
+                    "OptionalEnumerationType",
                     optionalEnumerationType == null
                         ? ConstantNull()
                         : optionalEnumerationType.Codegen(method, classScope, symbols.GetAddInitSvc(method)))

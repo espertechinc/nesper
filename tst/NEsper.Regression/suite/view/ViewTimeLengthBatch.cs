@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "symbol" };
+                var fields = new string[] { "Symbol"};
                 SendTimer(env, 1000);
 
                 var text = "@name('s0') select irstream * from SupportMarketDataBean#time_length_batch(10 sec, 3)";
@@ -314,7 +314,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "symbol" };
+                var fields = new string[] { "Symbol"};
                 SendTimer(env, 1000);
 
                 var text =
@@ -558,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 var epl =
-                    "@name('s0') select sum(price) from SupportMarketDataBean#time_length_batch(10 sec, 3, 'FORCE_UPDATE')";
+                    "@name('s0') select sum(Price) from SupportMarketDataBean#time_length_batch(10 sec, 3, 'FORCE_UPDATE')";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // Send 1 events in batch
@@ -585,7 +585,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "symbol" };
+                var fields = new string[] { "Symbol"};
                 SendTimer(env, 1000);
 
                 var text =
@@ -659,7 +659,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 var epl =
-                    "@name('s0') select sum(price) from SupportMarketDataBean#time_length_batch(10 sec, 3, 'force_update, start_eager')";
+                    "@name('s0') select sum(Price) from SupportMarketDataBean#time_length_batch(10 sec, 3, 'force_update, start_eager')";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
                 env.AssertListenerNotInvoked("s0");
 
@@ -691,7 +691,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, startTime);
 
                 var epl =
-                    "@name('s0') select sum(price) from SupportMarketDataBean#time_length_batch(10 sec, 3, 'force_update')";
+                    "@name('s0') select sum(Price) from SupportMarketDataBean#time_length_batch(10 sec, 3, 'force_update')";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // No batch as we are not start eager
@@ -715,7 +715,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var premades = Get100Events();
 
                 var epl =
-                    "@name('s0') select price, prev(1, price) as prevPrice, prior(1, price) as priorPrice from SupportMarketDataBean#time_length_batch(10 sec, 3)";
+                    "@name('s0') select Price, prev(1, Price) as prevPrice, prior(1, Price) as priorPrice from SupportMarketDataBean#time_length_batch(10 sec, 3)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // Send 3 events in batch
@@ -747,7 +747,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, startTime);
 
                 var epl =
-                    "@name('s0') select symbol, sum(price) as s from SupportMarketDataBean#time_length_batch(5, 10, \"START_EAGER\") group by symbol order by symbol asc";
+"@name('s0') select Symbol, sum(Price) as s from SupportMarketDataBean#time_length_batch(5, 10, \"START_EAGER\") group by Symbol Order by Symbol asc";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendTimer(env, startTime + 4000);
@@ -782,9 +782,9 @@ namespace com.espertech.esper.regressionlib.suite.view
                         Assert.AreEqual(1, listener.NewDataList.Count);
                         var events = listener.LastNewData;
                         Assert.AreEqual(2, events.Length);
-                        Assert.AreEqual("S1", events[0].Get("symbol"));
+                        Assert.AreEqual("S1", events[0].Get("Symbol"));
                         Assert.AreEqual(11d, events[0].Get("s"));
-                        Assert.AreEqual("S2", events[1].Get("symbol"));
+                        Assert.AreEqual("S2", events[1].Get("Symbol"));
                         Assert.AreEqual(77d, events[1].Get("s"));
                         listener.Reset();
                     });
@@ -806,7 +806,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             double? prevPrice,
             double? priorPrice)
         {
-            Assert.AreEqual(price, theEvent.Get("price"));
+            Assert.AreEqual(price, theEvent.Get("Price"));
             Assert.AreEqual(prevPrice, theEvent.Get("prevPrice"));
             Assert.AreEqual(priorPrice, theEvent.Get("priorPrice"));
         }
@@ -850,7 +850,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             RegressionEnvironment env,
             double? v)
         {
-            env.AssertEqualsNew("s0", "sum(price)", v);
+            env.AssertEqualsNew("s0", "sum(Price)", v);
         }
     }
 } // end of namespace

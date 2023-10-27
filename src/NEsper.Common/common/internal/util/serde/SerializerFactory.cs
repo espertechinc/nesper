@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
+using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.container;
 
@@ -24,9 +25,16 @@ namespace com.espertech.esper.common.@internal.util.serde
 
         public static Serializer CreateDefaultSerializer(IContainer container)
         {
-            var typeResolver = container.TypeResolver() ??
-                               container.TypeResolverProvider()?.TypeResolver;
-
+            TypeResolver typeResolver;
+            
+            if (container.Has<TypeResolver>()) {
+                typeResolver = container.Resolve<TypeResolver>();
+            } else if (container.Has<TypeResolverProvider>()) {
+                typeResolver = container.Resolve<TypeResolverProvider>().TypeResolver;
+            } else {
+                typeResolver = TypeResolverDefault.INSTANCE;
+            }
+            
             return new ObjectSerializer(typeResolver);
         }
 

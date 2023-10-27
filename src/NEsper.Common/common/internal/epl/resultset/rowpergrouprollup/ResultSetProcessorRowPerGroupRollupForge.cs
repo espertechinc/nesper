@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
         private readonly AggregationGroupByRollupDescForge groupByRollupDesc;
         private readonly bool isJoin;
         private readonly bool isHistoricalOnly;
-        private readonly ResultSetProcessorOutputConditionType outputConditionType;
+        private readonly ResultSetProcessorOutputConditionType? outputConditionType;
         private readonly OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory;
         private readonly EventType[] eventTypes;
         private readonly Type[] groupKeyTypes;
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             bool isJoin,
             bool isHistoricalOnly,
             bool iterateUnbounded,
-            ResultSetProcessorOutputConditionType outputConditionType,
+            ResultSetProcessorOutputConditionType? outputConditionType,
             OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory,
             EventType[] eventTypes,
             MultiKeyClassRef multiKeyClassRef) : base(resultEventType, typesPerStream)
@@ -127,20 +127,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 GetType(),
                 classScope,
                 methodNode => methodNode.Block.MethodReturn(MEMBER_AGGREGATIONSVC));
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
-                "GetExprEvaluatorContext",
-                EmptyList<CodegenNamedParam>.Instance,
+                "ExprEvaluatorContext",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(MEMBER_EXPREVALCONTEXT));
-            instance.Methods.AddMethod(
+                property => property.GetterBlock.BlockReturn(MEMBER_EXPREVALCONTEXT));
+            instance.Properties.AddProperty(
                 typeof(bool),
                 "IsSelectRStream",
-                EmptyList<CodegenNamedParam>.Instance,
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(Constant(isSelectRStream)));
+                property => property.GetterBlock.BlockReturn(Constant(isSelectRStream)));
             var rollupDesc = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(AggregationGroupByRollupDesc),
@@ -413,7 +411,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
         public GroupByRollupPerLevelForge PerLevelForges => perLevelForges;
 
-        public ResultSetProcessorOutputConditionType OutputConditionType => outputConditionType;
+        public ResultSetProcessorOutputConditionType? OutputConditionType => outputConditionType;
 
         public int NumStreams => eventTypes.Length;
 

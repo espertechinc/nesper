@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             _configuration.Runtime.Threading.InsertIntoDispatchLocking = Locking.SUSPEND;
 
             _runtimeProvider = new EPRuntimeProvider();
-            
+
             var runtime = _runtimeProvider.GetRuntimeInstance(GetType().Name, _configuration);
             runtime.Initialize();
             _runtime = runtime.EventService;

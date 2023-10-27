@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public void Run()
         {
             _runtimeProvider = new EPRuntimeProvider();
-            
+
             _configuration.Runtime.Threading.IsInternalTimerEnabled = true;
             RunAssertion(FilterServiceProfile.READMOSTLY, _configuration);
             RunAssertion(FilterServiceProfile.READWRITE, _configuration);

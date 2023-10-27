@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.view.sort
 
         public ViewFactory ViewFactory => factory;
 
-        public override EventType EventType => parent.EventType;
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(
             EventBean[] newData,
@@ -140,14 +140,14 @@ namespace com.espertech.esper.common.@internal.view.sort
             // If there are child views, fireStatementStopped update method
             optionalSortedRandomAccess?.Refresh(sortedEvents, eventCount, sortWindowSize);
 
-            if (child != null) {
+            if (Child != null) {
                 EventBean[] expiredArr = null;
                 if (removedEvents != null) {
                     expiredArr = removedEvents.ToArray();
                 }
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newData, expiredArr);
-                child.Update(newData, expiredArr);
+                Child.Update(newData, expiredArr);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 

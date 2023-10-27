@@ -112,10 +112,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 var annotation = $"@name('stmt_{i}')";
                 symbols[i] = "S" + i;
                 var epl = annotation +
-                          "select Symbol, sum(Volume) as sumVol " + 
+                          "select Symbol, sum(Volume) as sumVol " +
                           " from SupportMarketDataBean" +
-                          "(Symbol='" + symbols[i] + "')" +
-                          "#time(" + timeWindowSize + ")";
+                          "(Symbol='" +
+                          symbols[i] +
+                          "')" +
+                          "#time(" +
+                          timeWindowSize +
+                          ")";
                 env.CompileDeploy(epl);
                 var testStmt = env.Statement("stmt_" + i);
                 listeners[i] = new ResultUpdateListener();
@@ -201,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 try {
                     NumReceived += newEvents.Length;
 
-                    var symbol = (string) newEvents[0].Get("Symbol");
+                    var symbol = (string)newEvents[0].Get("Symbol");
                     if (lastSymbol != null) {
                         Assert.AreEqual(lastSymbol, symbol);
                     }

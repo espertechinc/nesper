@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// <summary>
         ///     Ctor.
         /// </summary>
-        internal ConfigurationRuntimeTimeSource()
+        public ConfigurationRuntimeTimeSource()
         {
             TimeSourceType = TimeSourceType.MILLI;
         }

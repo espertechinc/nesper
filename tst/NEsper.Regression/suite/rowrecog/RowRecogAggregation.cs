@@ -44,8 +44,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             {
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  measures A.theString as a_string, " +
-                           "       C.theString as c_string, " +
+                           "  measures A.TheString as a_string, " +
+                           "       C.TheString as c_string, " +
                            "       max(B.value) as maxb, " +
                            "       min(B.value) as minb, " +
                            "       2*min(B.value) as minb2x, " +
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "   B as (B.value != 1)," +
                            "   C as (C.value = 1)" +
                            ") " +
-                           "order by a_string";
+"Order by a_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -130,8 +130,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  partition by cat" +
-                           "  measures A.cat as cat, A.theString as a_string, " +
-                           "       D.theString as d_string, " +
+                           "  measures A.cat as cat, A.TheString as a_string, " +
+                           "       D.TheString as d_string, " +
                            "       sum(C.value) as sumc, " +
                            "       sum(B.value) as sumb, " +
                            "       sum(B.value + A.value) as sumaplusb, " +
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "   B as (B.value > 1)," +
                            "   C as (C.value < -1)," +
                            "   D as (D.value = 999)" +
-                           ") order by cat";
+") Order by cat";
 
                 env.CompileDeploy(text).AddListener("s0");
 

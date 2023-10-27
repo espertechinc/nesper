@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var xmlTests = new Pair<object, object>[] {
                 new Pair<object, object>("", notExists),
                 new Pair<object, object>(
-                    "<Indexed>1</Indexed><Indexed>2</Indexed><Mapped id=\"keyOne\">3</Mapped><Mapped id=\"keyTwo\">4</Mapped>",
+                    "<Indexed>1</Indexed><Indexed>2</Indexed><Mapped id=\"keyOne\">3</Mapped><Mapped Id=\"keyTwo\">4</Mapped>",
                     AllExist("1", "2", "3", "4"))
             };
             RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode), path);

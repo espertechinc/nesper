@@ -69,13 +69,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3,c4".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "contained.groupBy(c => id)");
-                builder.WithExpression(fields[1], "contained.groupBy((c, i) => id || '_' || Integer.toString(i))");
+                builder.WithExpression(fields[0], "Contained.groupBy(c => Id)");
+                builder.WithExpression(fields[1], "Contained.groupBy((c, i) => Id || '_' || Integer.toString(i))");
                 builder.WithExpression(
                     fields[2],
-                    "contained.groupBy((c, i, s) => id || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
-                builder.WithExpression(fields[3], "contained.groupBy(c => null)");
-                builder.WithExpression(fields[4], "contained.groupBy((c, i) => case when i > 1 then null else id end)");
+                    "Contained.groupBy((c, i, s) => Id || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
+                builder.WithExpression(fields[3], "Contained.groupBy(c => null)");
+                builder.WithExpression(fields[4], "Contained.groupBy((c, i) => case when i > 1 then null else Id end)");
 
                 var inner = typeof(ICollection<SupportBean_ST0>);
                 var mapOfString = typeof(IDictionary<,>).MakeGenericType(typeof(string), inner);
@@ -128,13 +128,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.groupBy(c => extractAfterUnderscore(c))");
+                builder.WithExpression(fields[0], "Strvals.groupBy(c => extractAfterUnderscore(c))");
                 builder.WithExpression(
                     fields[1],
-                    "strvals.groupBy((c, i) => extractAfterUnderscore(c) || '_' || Integer.toString(i))");
+                    "Strvals.groupBy((c, i) => extractAfterUnderscore(c) || '_' || Integer.toString(i))");
                 builder.WithExpression(
                     fields[2],
-                    "strvals.groupBy((c, i, s) => extractAfterUnderscore(c) || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
+                    "Strvals.groupBy((c, i, s) => extractAfterUnderscore(c) || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
 
                 var inner = typeof(ICollection<string>);
                 builder.WithStatementConsumer(
@@ -180,13 +180,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "contained.groupBy(k => id, v => p00)");
+                builder.WithExpression(fields[0], "Contained.groupBy(k => Id, v => P00)");
                 builder.WithExpression(
                     fields[1],
-                    "contained.groupBy((k, i) => id || '_' || Integer.toString(i), (v, i) => p00 + i*10)");
+                    "Contained.groupBy((k, i) => Id || '_' || Integer.toString(i), (v, i) => P00 + i*10)");
                 builder.WithExpression(
                     fields[2],
-                    "contained.groupBy((k, i, s) => id || '_' || Integer.toString(i) || '_' || Integer.toString(s), (v, i, s) => p00 + i*10 + s*100)");
+                    "Contained.groupBy((k, i, s) => Id || '_' || Integer.toString(i) || '_' || Integer.toString(s), (v, i, s) => P00 + i*10 + s*100)");
 
                 var inner = typeof(ICollection<int>);
                 builder.WithStatementConsumer(
@@ -234,13 +234,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.groupBy(k => extractAfterUnderscore(k), v => v)");
+                builder.WithExpression(fields[0], "Strvals.groupBy(k => extractAfterUnderscore(k), v => v)");
                 builder.WithExpression(
                     fields[1],
-                    "strvals.groupBy((k, i) => extractAfterUnderscore(k) || '_' || Integer.toString(i), (v, i) => v || '_' || Integer.toString(i))");
+                    "Strvals.groupBy((k, i) => extractAfterUnderscore(k) || '_' || Integer.toString(i), (v, i) => v || '_' || Integer.toString(i))");
                 builder.WithExpression(
                     fields[2],
-                    "strvals.groupBy((k, i, s) => extractAfterUnderscore(k) || '_' || Integer.toString(i) || '_' || Integer.toString(s), (v, i, s) => v || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
+                    "Strvals.groupBy((k, i, s) => extractAfterUnderscore(k) || '_' || Integer.toString(i) || '_' || Integer.toString(s), (v, i, s) => v || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
 
                 var inner = typeof(ICollection<string>);
                 builder.WithStatementConsumer(

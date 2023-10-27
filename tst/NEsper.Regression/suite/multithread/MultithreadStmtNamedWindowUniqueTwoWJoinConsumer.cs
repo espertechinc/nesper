@@ -37,10 +37,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         public void Run()
         {
             _runtimeProvider = new EPRuntimeProvider();
-            
+
             _configuration.Common.AddEventType(typeof(EventOne));
             _configuration.Common.AddEventType(typeof(EventTwo));
-            
+
             RunAssertion(1, true, null, null, _configuration);
             RunAssertion(2, false, true, Locking.SPIN, _configuration);
             RunAssertion(3, false, true, Locking.SUSPEND, _configuration);
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     return false;
                 }
 
-                var eventOne = (EventOne) o;
+                var eventOne = (EventOne)o;
 
                 return Key.Equals(eventOne.Key);
             }
@@ -239,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     return false;
                 }
 
-                var eventTwo = (EventTwo) o;
+                var eventTwo = (EventTwo)o;
 
                 return Key.Equals(eventTwo.Key);
             }

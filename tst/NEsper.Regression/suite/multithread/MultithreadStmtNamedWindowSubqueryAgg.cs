@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             TrySend(env, 3, 1000, false);
@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             // setup statements
             var path = new RegressionPath();
-            var schemas = 
+            var schemas =
                 "@public create schema UpdateEvent as (uekey string, ueint int);\n" +
                 "@public create schema WindowSchema as (wskey string, wsint int);\n";
             env.CompileDeploy(schemas, path);
@@ -74,14 +74,15 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // new SupportThreadFactory(typeof(MultithreadStmtNamedWindowSubqueryAgg)).ThreadFactory)
             var futures = new List<IFuture<bool?>>();
             for (var i = 0; i < numThreads; i++) {
-                futures.Add(executor.Submit(
-                    new StmtNamedWindowSubqueryAggCallable(
-                        i,
-                        env.Runtime,
-                        numEventsPerThread,
-                        env.Statement("target"))));
+                futures.Add(
+                    executor.Submit(
+                        new StmtNamedWindowSubqueryAggCallable(
+                            i,
+                            env.Runtime,
+                            numEventsPerThread,
+                            env.Statement("target"))));
             }
-            
+
             // Give the futures 10 seconds to complete the futures...
             futures.AsParallel().ForAll(future => future.Wait(TimeSpan.FromSeconds(10)));
 

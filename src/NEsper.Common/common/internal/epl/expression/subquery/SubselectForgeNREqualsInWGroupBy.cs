@@ -61,11 +61,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
                 .DeclareVar<AggregationService>(
                     "aggregationService",
-                    ExprDotMethod(aggService, "getContextPartitionAggregationService", Ref("cpid")))
+                    ExprDotMethod(aggService, "ContextPartitionAggregationService", Ref("cpid")))
                 .DeclareVar(
                     typeof(ICollection<object>),
                     "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "getGroupKeys", evalCtx))
+                    ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
                 .DeclareVar(typeof(bool?), "hasNullRow", ConstantFalse());
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         ifRightNotNull.DeclareVar(
                             typeof(bool?),
                             "eq",
-                            ExprDotMethod(left, "equals", Ref("valueRight")));
+                            ExprDotMethod(left, "Equals", Ref("valueRight")));
                     }
                     else {
                         ifRightNotNull.DeclareVar(

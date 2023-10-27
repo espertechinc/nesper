@@ -120,7 +120,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             return execs;
         }
 
-        public static IList<RegressionExecution> WithSubstParamInvalidNoCallback(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubstParamInvalidNoCallback(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamInvalidNoCallback());
@@ -148,7 +149,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             return execs;
         }
 
-        public static IList<RegressionExecution> WithSubstParamSimpleNoParameter(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubstParamSimpleNoParameter(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientCompileSubstParamSimpleNoParameter());
@@ -386,8 +388,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select * from SupportBean_S0(id=?:subs_1:int);\n" +
-                          "@name('s1') select * from SupportBean_S1(p10=?:subs_2:string);\n";
+                var epl = "@name('s0') select * from SupportBean_S0(Id=?:subs_1:int);\n" +
+                          "@name('s1') select * from SupportBean_S1(P10=?:subs_2:string);\n";
                 var compiled = env.Compile(epl);
 
                 var options = new DeploymentOptions().WithStatementSubstitutionParameter(
@@ -509,7 +511,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select ?:pint:int as c0 from SupportBean(theString=?:pstring:string and intPrimitive=?:pint:int and longPrimitive=?:plong:long)";
+                    "@name('s0') select ?:pint:int as c0 from SupportBean(TheString=?:pstring:string and IntPrimitive=?:pint:int and LongPrimitive=?:plong:long)";
                 var compiled = env.Compile(soda, epl, new CompilerArguments(new Configuration()));
                 DeployWithResolver(
                     env,
@@ -557,7 +559,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var compiled = env.Compile(
                     soda,
-                    "@name('s0') select * from SupportBean(theString=(?::SupportBean.getTheString()))",
+                    "@name('s0') select * from SupportBean(TheString=(?::SupportBean.getTheString()))",
                     new CompilerArguments(new Configuration()));
                 DeployWithResolver(
                     env,
@@ -597,7 +599,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var compiled = env.Compile(
-                    "@name('s0') select * from SupportBean(theString = ?:psb:SupportBean.getTheString())");
+                    "@name('s0') select * from SupportBean(TheString = ?:psb:SupportBean.getTheString())");
                 DeployWithResolver(
                     env,
                     compiled,
@@ -616,7 +618,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "select * from pattern[SupportBean(theString=?::string)]";
+                var epl = "select * from pattern[SupportBean(TheString=?::string)]";
                 var compiled = env.Compile(epl);
 
                 DeployWithResolver(env, compiled, "s0", new SupportPortableDeploySubstitutionParams(1, "e1"));
@@ -648,7 +650,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "select (select symbol from SupportMarketDataBean(symbol=?::string)#lastevent) as mysymbol from SupportBean";
+"select (select Symbol from SupportMarketDataBean(Symbol=?::string)#lastevent) as mysymbol from SupportBean";
                 var compiled = env.Compile(stmtText);
 
                 DeployWithResolver(env, compiled, "s0", new SupportPortableDeploySubstitutionParams(1, "S1"));
@@ -688,7 +690,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmt = "select * from SupportBean(theString=cast(?, string))";
+                var stmt = "select * from SupportBean(TheString=cast(?, string))";
                 var compiled = env.Compile(stmt);
 
                 DeployWithResolver(env, compiled, "s0", new SupportPortableDeploySubstitutionParams(1, "e1"));
@@ -751,7 +753,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmt = "select * from SupportBean(theString=?::string,intPrimitive=?::int)";
+                var stmt = "select * from SupportBean(TheString=?::string,IntPrimitive=?::int)";
                 RunSimpleTwoParameter(env, stmt, "A", true);
             }
         }
@@ -760,7 +762,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmt = "select * from SupportBean where theString=?::string and intPrimitive=?::int";
+                var stmt = "select * from SupportBean where TheString=?::string and IntPrimitive=?::int";
                 RunSimpleTwoParameter(env, stmt, "B", false);
             }
         }
@@ -769,7 +771,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                var compiled = env.Compile("select * from SupportBean(theString=\"e1\")");
+                var compiled = env.Compile("select * from SupportBean(TheString=\"e1\")");
                 DeployWithResolver(env, compiled, "s0", new SupportPortableDeploySubstitutionParams());
                 env.AddListener("s0");
 
@@ -787,13 +789,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                TryInvalidDeployNoCallbackProvided(env, "@name('s0') select * from SupportBean(theString=?::string)");
+                TryInvalidDeployNoCallbackProvided(env, "@name('s0') select * from SupportBean(TheString=?::string)");
                 TryInvalidDeployNoCallbackProvided(
                     env,
-                    "@name('s0') select * from SupportBean(theString=cast(?,string))");
+                    "@name('s0') select * from SupportBean(TheString=cast(?,string))");
                 TryInvalidDeployNoCallbackProvided(
                     env,
-                    "@name('s0') select * from SupportBean(theString=?:myname:string)");
+                    "@name('s0') select * from SupportBean(TheString=?:myname:string)");
             }
 
             public ISet<RegressionFlag> Flags()
@@ -809,7 +811,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 EPCompiled compiled;
 
                 compiled = env.Compile(
-                    "@name('s0') select * from SupportBean(theString=?::string, intPrimitive=?::int)");
+                    "@name('s0') select * from SupportBean(TheString=?::string, IntPrimitive=?::int)");
                 TryInvalidResolver(
                     env,
                     compiled,
@@ -822,7 +824,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     prepared => prepared.SetObject(1, "abc"));
 
                 compiled = env.Compile(
-                    "@name('s0') select * from SupportBean(theString=?:p0:string, intPrimitive=?:p1:int)");
+                    "@name('s0') select * from SupportBean(TheString=?:p0:string, IntPrimitive=?:p1:int)");
                 TryInvalidResolver(
                     env,
                     compiled,
@@ -848,7 +850,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 EPCompiled compiled;
                 DeploymentOptions options;
 
-                compiled = env.Compile("select * from SupportBean(theString='ABC')");
+                compiled = env.Compile("select * from SupportBean(TheString='ABC')");
                 options = new DeploymentOptions().WithStatementSubstitutionParameter(
                     prepared => {
                         TryInvalidSetObject(
@@ -863,7 +865,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 DeployWithOptionsWUndeploy(env, compiled, options);
 
                 // numbered, untyped, casted at eventService
-                compiled = env.Compile("select * from SupportBean(theString=cast(?, String))");
+                compiled = env.Compile("select * from SupportBean(TheString=cast(?, String))");
                 options = new DeploymentOptions().WithStatementSubstitutionParameter(
                     prepared => {
                         TryInvalidSetObject(
@@ -883,7 +885,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 DeployWithOptionsWUndeploy(env, compiled, options);
 
                 // named, untyped, casted at eventService
-                compiled = env.Compile("select * from SupportBean(theString=cast(?:p0, String))");
+                compiled = env.Compile("select * from SupportBean(TheString=cast(?:p0, String))");
                 options = new DeploymentOptions().WithStatementSubstitutionParameter(
                     prepared => {
                         TryInvalidSetObject(
@@ -913,7 +915,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 DeploymentOptions options;
 
                 // numbered, typed
-                compiled = env.Compile("select * from SupportBean(theString=?::string)");
+                compiled = env.Compile("select * from SupportBean(TheString=?::string)");
                 options = new DeploymentOptions().WithStatementSubstitutionParameter(
                     prepared => {
                         TryInvalidSetObject(
@@ -925,7 +927,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 DeployWithOptionsWUndeploy(env, compiled, options);
 
                 // name, typed
-                compiled = env.Compile("select * from SupportBean(theString=?:p0:string)");
+                compiled = env.Compile("select * from SupportBean(TheString=?:p0:string)");
                 options = new DeploymentOptions().WithStatementSubstitutionParameter(
                     prepared => {
                         TryInvalidSetObject(
@@ -937,7 +939,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 DeployWithOptionsWUndeploy(env, compiled, options);
 
                 // name, primitive
-                compiled = env.Compile("select * from SupportBean(intPrimitive=?:p0:int)");
+                compiled = env.Compile("select * from SupportBean(IntPrimitive=?:p0:int)");
                 options = new DeploymentOptions().WithStatementSubstitutionParameter(
                     prepared => {
                         // There is only boxed type consistent with all other column/variable/schema typing:
@@ -971,7 +973,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.AssertStatement(
                     statementName,
                     statement => Assert.AreEqual(
-                        "select * from SupportBean(theString=?::string,intPrimitive=?::int)",
+                        "select * from SupportBean(TheString=?::string,IntPrimitive=?::int)",
                         statement.GetProperty(StatementProperty.EPL)));
             }
 
@@ -985,7 +987,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.AssertStatement(
                     statementName + "__1",
                     statement => Assert.AreEqual(
-                        "select * from SupportBean(theString=?::string,intPrimitive=?::int)",
+                        "select * from SupportBean(TheString=?::string,IntPrimitive=?::int)",
                         statement.GetProperty(StatementProperty.EPL)));
             }
 

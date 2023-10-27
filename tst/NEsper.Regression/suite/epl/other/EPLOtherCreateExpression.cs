@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("@public create expression string js:myscript(p1) [\"--\"+p1+\"--\"]", path);
-                env.CompileDeploy("@public create expression myexpr {sb => '--'||theString||'--'}", path);
+                env.CompileDeploy("@public create expression myexpr {sb => '--'||TheString||'--'}", path);
 
                 // test mapped property syntax
                 var eplMapped = "@name('s0') select myscript('x') as c0, myexpr(sb) as c1 from SupportBean as sb";
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test expression chained syntax
                 var eplExpr = "" +
                               "@public create expression scalarfilter {s => " +
-                              "   strvals.where(y => y != 'E1') " +
+                              "   Strvals.where(y => y != 'E1') " +
                               "}";
                 env.CompileDeploy(eplExpr, path);
                 var eplSelect =
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean());
                 env.AssertPropsNew(
                     "s0",
-                    "val0.theString,val0.intPrimitive,val1".SplitCsv(),
+                    "val0.TheString,val0.IntPrimitive,val1".SplitCsv(),
                     new object[] { "E1", 10, "E1" });
 
                 env.UndeployAll();
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@public create expression int js:abc(p1) [p1*10]", path);
 
                 var epl =
-                    "@name('s0') select abc(intPrimitive, doublePrimitive) as c0, abc(intPrimitive) as c1 from SupportBean";
+                    "@name('s0') select abc(IntPrimitive, DoublePrimitive) as c0, abc(IntPrimitive) as c1 from SupportBean";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(MakeBean("E1", 10, 3.5));
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("@public create expression TwoPi {Math.PI * 2}", path);
-                env.CompileDeploy("@public create expression factorPi {sb => Math.PI * intPrimitive}", path);
+                env.CompileDeploy("@public create expression factorPi {sb => Math.PI * IntPrimitive}", path);
 
                 var fields = "c0,c1,c2".SplitCsv();
                 var epl = "@name('s0') select " +
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test SODA
                 var eplExpr =
-                    "@name('expr') @public create expression JoinMultiplication {(s1,s2) => s1.intPrimitive*s2.id}";
+                    "@name('expr') @public create expression JoinMultiplication {(s1,s2) => s1.IntPrimitive*s2.Id}";
                 var modelExpr = env.EplToModel(eplExpr);
                 Assert.AreEqual(eplExpr, modelExpr.ToEPL());
                 env.CompileDeploy(modelExpr, path);
@@ -261,12 +261,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 bool namedWindow)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create expression myexpr {(select intPrimitive from MyInfra)}", path);
+                env.CompileDeploy("@public create expression myexpr {(select IntPrimitive from MyInfra)}", path);
                 var eplCreate = namedWindow
                     ? "@public create window MyInfra#keepall as SupportBean"
-                    : "@public create table MyInfra(theString string, intPrimitive int)";
+                    : "@public create table MyInfra(TheString string, IntPrimitive int)";
                 env.CompileDeploy(eplCreate, path);
-                env.CompileDeploy("insert into MyInfra select theString, intPrimitive from SupportBean", path);
+                env.CompileDeploy("insert into MyInfra select TheString, IntPrimitive from SupportBean", path);
                 env.CompileDeploy("@name('s0') select myexpr() as c0 from SupportBean_S0", path).AddListener("s0");
                 AssertStatelessStmt(env, "s0", false);
 
@@ -285,16 +285,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // expression assertion
                 TryAssertionLifecycleAndFilter(
                     env,
-                    "@public create expression MyFilter {sb => intPrimitive = 1}",
+                    "@public create expression MyFilter {sb => IntPrimitive = 1}",
                     "select * from SupportBean(MyFilter(sb)) as sb",
-                    "@public create expression MyFilter {sb => intPrimitive = 2}");
+                    "@public create expression MyFilter {sb => IntPrimitive = 2}");
 
                 // script assertion
                 TryAssertionLifecycleAndFilter(
                     env,
-                    "@public create expression boolean js:MyFilter(intPrimitive) [intPrimitive==1]",
-                    "select * from SupportBean(MyFilter(intPrimitive)) as sb",
-                    "@public create expression boolean js:MyFilter(intPrimitive) [intPrimitive==2]");
+                    "@public create expression boolean js:MyFilter(IntPrimitive) [IntPrimitive==1]",
+                    "select * from SupportBean(MyFilter(IntPrimitive)) as sb",
+                    "@public create expression boolean js:MyFilter(IntPrimitive) [IntPrimitive==2]");
             }
 
             public ISet<RegressionFlag> Flags()

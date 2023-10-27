@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Configure(Configuration configuration)
         {
             configuration.Runtime.Threading.IsInternalTimerEnabled = true;
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             {
                 var theCount = eventArgs.NewEvents[0].Get("theCount").AsInt64();
                 total += theCount;
-                Console.Out.WriteLine("count " + theCount + " total " + total);
+                Console.Out.WriteLine("count " + theCount + " Total "+ total);
             }
         }
     }

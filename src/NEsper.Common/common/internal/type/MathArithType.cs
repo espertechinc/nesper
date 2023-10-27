@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.type
                 coercedType != typeof(short?) &&
                 coercedType != typeof(byte)) {
                 throw new ArgumentException(
-                    "Expected base numeric type for computation result but got type " + coercedType);
+                    $"Expected base numeric type for computation result but got type {coercedType}");
             }
 
             if (coercedType.IsTypeDecimal()) {
@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.@internal.type
                 var computer = computers.Get(key);
                 if (computer == null) {
                     throw new ArgumentException(
-                        "Could not determine process or type " + operation + " type " + coercedType);
+                        $"Could not determine process or type {operation} type {coercedType}");
                 }
 
                 return computer;
@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.type
                 return new DivideInt();
             }
 
-            throw new ArgumentException("Could not determine process or type " + operation + " type " + coercedType);
+            throw new ArgumentException($"Could not determine process or type {operation} type {coercedType}");
         }
 
         private static Computer MakeDecimalComputer(

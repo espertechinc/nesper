@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .DeclareVar(
                     typeof(ICollection<object>),
                     "groupKeys",
-                    ExprDotMethod(aggService, "getGroupKeys", evalCtx))
+                    ExprDotMethod(aggService, "GetGroupKeys", evalCtx))
                 .IfCondition(Not(EqualsIdentity(ExprDotName(Ref("groupKeys"), "Count"), Constant(1))))
                 .BlockReturn(ConstantNull())
                 .ExprDotMethod(
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(Subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
@@ -118,9 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             method.Block
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar<AggregationService>(
-                    "aggregationService",
-                    ExprDotMethod(aggService, "getContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar<AggregationService>("aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
                 .DeclareVar(typeof(ICollection<object>), "groupKeys", ExprDotMethod(aggService, "GetGroupKeys", evalCtx))
                 .IfCondition(ExprDotMethod(Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
@@ -136,9 +134,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         ConstantTrue(),
                         symbols.GetAddExprEvalCtx(method)))
                 .DeclareVar<EventBean>(
-                    "event",
+                    "@event",
                     ExprDotMethod(eventBeanSvc, "AdapterForTypedMap", Ref("row"), typeMember))
-                .ExprDotMethod(Ref("events"), "Add", Ref("event"))
+                .ExprDotMethod(Ref("events"), "Add", Ref("@event"))
                 .BlockEnd()
                 .MethodReturn(Ref("events"));
             return LocalMethod(method);

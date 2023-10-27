@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                         .MethodReturn(
                             Cast(
                                 fieldClassBoxed,
-                                ExprDotMethod(Cast(typeof(EventBean), Ref("value")), "getUnderlying")));
+                                ExprDotName(Cast(typeof(EventBean), Ref("value")), "Underlying")));
                     rhs = LocalMethod(
                         conversion,
                         CodegenLegoMayVoid.ExpressionMayVoid(
@@ -158,7 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             }
 
             methodNode.Block.MethodReturn(
-                ExprDotMethod(eventBeanFactory, "adapterForTypedJson", Ref("und"), resultEventType));
+                ExprDotMethod(eventBeanFactory, "AdapterForTypedJson", Ref("und"), resultEventType));
             return methodNode;
         }
 

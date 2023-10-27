@@ -40,7 +40,8 @@ namespace com.espertech.esper.common.client
             bool fragment)
         {
             PropertyName = propertyName;
-            PropertyType = propertyType ?? throw new ArgumentException("Null property type");
+            PropertyType = propertyType ?? typeof(object);
+            //PropertyType = propertyType ?? throw new ArgumentException("Null property type");
             IsRequiresIndex = requiresIndex;
             IsRequiresMapkey = requiresMapkey;
             IsIndexed = indexed;

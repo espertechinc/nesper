@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -85,6 +86,16 @@ namespace com.espertech.esper.common.@internal.filterspec
 
             return _xEval.Equals(other._xEval) &&
                    _yEval.Equals(other._yEval);
+        }
+
+        protected bool Equals(FilterSpecParamAdvancedIndexQuadTreePointRegionForge other)
+        {
+            return Equals(_xEval, other._xEval) && Equals(_yEval, other._yEval);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_xEval, _yEval);
         }
 
         public override void ValueExprToString(

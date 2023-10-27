@@ -14,8 +14,8 @@ namespace com.espertech.esper.common.@internal.type
 {
     public class ClassDescriptorParserWalker
     {
-        private readonly ArrayDeque<ClassDescriptorToken> tokens;
-        private ClassDescriptorToken lookahead;
+        private readonly ArrayDeque<ClassDescriptorToken> _tokens;
+        private ClassDescriptorToken _lookahead;
 
         public ClassDescriptorParserWalker(ArrayDeque<ClassDescriptorToken> tokens)
         {
@@ -23,26 +23,28 @@ namespace com.espertech.esper.common.@internal.type
                 throw new ClassDescriptorParseException("Empty class identifier");
             }
 
-            lookahead = tokens.First;
-            this.tokens = tokens;
+            _lookahead = tokens.First;
+            _tokens = tokens;
         }
 
         public ClassDescriptor Walk(bool typeParam)
         {
-            if (lookahead.Token != ClassDescriptorTokenType.IDENTIFIER) {
-                ExpectOrFail(ClassDescriptorTokenType.IDENTIFIER);
+            var name = WalkIdentifier();
+
+            if (_lookahead.Token == ClassDescriptorTokenType.PLUS) {
+                NextToken();
+                name += "+";
+                name += WalkIdentifier();
             }
 
-            var name = lookahead.Sequence;
             var ident = new ClassDescriptor(name);
 
-            NextToken();
-            if (lookahead.Token == ClassDescriptorTokenType.LESSER_THAN) {
+            if (_lookahead.Token == ClassDescriptorTokenType.LESSER_THAN) {
                 NextToken();
                 WalkTypeParams(ident);
             }
 
-            if (lookahead.Token == ClassDescriptorTokenType.LEFT_BRACKET) {
+            if (_lookahead.Token == ClassDescriptorTokenType.LEFT_BRACKET) {
                 NextToken();
                 WalkArray(ident);
             }
@@ -56,17 +58,24 @@ namespace com.espertech.esper.common.@internal.type
             }
         }
 
+        private string WalkIdentifier()
+        {
+            if (_lookahead.Token != ClassDescriptorTokenType.IDENTIFIER) {
+                ExpectOrFail(ClassDescriptorTokenType.IDENTIFIER);
+            }
+
+            var result = _lookahead.Sequence;
+            NextToken();
+            return result;
+        }
+        
         private void WalkArray(ClassDescriptor ident)
         {
-            if (lookahead.Token == ClassDescriptorTokenType.IDENTIFIER) {
-                var name = lookahead.Sequence;
+            if (_lookahead.Token == ClassDescriptorTokenType.IDENTIFIER) {
+                var name = _lookahead.Sequence;
                 if (!name.ToLowerInvariant().Trim().Equals(ClassDescriptor.PRIMITIVE_KEYWORD)) {
                     throw new ClassDescriptorParseException(
-                        "Invalid array keyword '" +
-                        name +
-                        "', expected ']' or '" +
-                        ClassDescriptor.PRIMITIVE_KEYWORD +
-                        "'");
+                        $"Invalid array keyword '{name}', expected ']' or '{ClassDescriptor.PRIMITIVE_KEYWORD}'");
                 }
 
                 ident.IsArrayOfPrimitive = true;
@@ -77,7 +86,7 @@ namespace com.espertech.esper.common.@internal.type
                 ExpectOrFail(ClassDescriptorTokenType.RIGHT_BRACKET);
                 NextToken();
                 ident.ArrayDimensions = ident.ArrayDimensions + 1;
-                if (lookahead.Token != ClassDescriptorTokenType.LEFT_BRACKET) {
+                if (_lookahead.Token != ClassDescriptorTokenType.LEFT_BRACKET) {
                     break;
                 }
                 else {
@@ -95,14 +104,14 @@ namespace com.espertech.esper.common.@internal.type
 
             parent.TypeParameters.Add(ident);
             while (true) {
-                if (lookahead.Token == ClassDescriptorTokenType.COMMA) {
+                if (_lookahead.Token == ClassDescriptorTokenType.COMMA) {
                     NextToken();
                     ident = Walk(true);
                     parent.TypeParameters.Add(ident);
                     continue;
                 }
 
-                if (lookahead.Token == ClassDescriptorTokenType.GREATER_THAN) {
+                if (_lookahead.Token == ClassDescriptorTokenType.GREATER_THAN) {
                     NextToken();
                     break;
                 }
@@ -113,25 +122,20 @@ namespace com.espertech.esper.common.@internal.type
 
         private void NextToken()
         {
-            tokens.PopBack();
-            if (tokens.IsEmpty()) {
-                lookahead = new ClassDescriptorToken(ClassDescriptorTokenType.END, "");
+            _tokens.PopFront();
+            if (_tokens.IsEmpty()) {
+                _lookahead = new ClassDescriptorToken(ClassDescriptorTokenType.END, "");
             }
             else {
-                lookahead = tokens.First;
+                _lookahead = _tokens.First;
             }
         }
 
         private void ExpectOrFail(ClassDescriptorTokenType expected)
         {
-            if (lookahead.Token != expected) {
+            if (_lookahead.Token != expected) {
                 throw new ClassDescriptorParseException(
-                    "Unexpected token " +
-                    lookahead.Token +
-                    " value '" +
-                    lookahead.Sequence +
-                    "', expecting " +
-                    expected);
+                    $"Unexpected token {_lookahead.Token} value '{_lookahead.Sequence}', expecting {expected}");
             }
         }
     }

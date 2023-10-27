@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -31,7 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     public class ExprBetweenNodeImpl : ExprNodeBase,
         ExprBetweenNode
     {
-        [NonSerialized] private ExprBetweenNodeForge _forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprBetweenNodeForge _forge;
 
         /// <summary>
         ///     Ctor.

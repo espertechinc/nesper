@@ -59,11 +59,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                     ExprDotMethod(Ref("events"), "GetEnumerator"))
                 .DeclareVar<int>("index", Constant(0))
                 .WhileLoop(ExprDotMethod(Ref("en"), "MoveNext"))
-                .DeclareVar<EventBean>("event", Cast(typeof(EventBean), ExprDotMethod(Ref("en"), "next")))
+                .DeclareVar<EventBean>("@event", Cast(typeof(EventBean), ExprDotMethod(Ref("en"), "next")))
                 .AssignArrayElement(
                     "array",
                     Ref("index"),
-                    Cast(targetType.UnderlyingType, ExprDotUnderlying(Ref("event"))))
+                    Cast(targetType.UnderlyingType, ExprDotUnderlying(Ref("@event"))))
                 .IncrementRef("index")
                 .BlockEnd()
                 .MethodReturn(Ref("array"));

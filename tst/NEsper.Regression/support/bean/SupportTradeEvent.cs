@@ -47,11 +47,11 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public override string ToString()
         {
-            return "id=" +
+            return "Id=" +
                    Id +
-                   " userId=" +
+                   " UserId=" +
                    UserId +
-                   " ccypair=" +
+                   " Ccypair=" +
                    Ccypair +
                    " direction=" +
                    Direction;

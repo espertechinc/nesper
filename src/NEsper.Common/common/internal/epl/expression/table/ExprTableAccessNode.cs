@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -39,16 +40,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         protected ExprForge[] GroupKeyEvaluators => groupKeyEvaluators;
 
+        [JsonIgnore]
         public abstract Type EvaluationType { get; }
         
         protected abstract void ValidateBindingInternal(ExprValidationContext validationContext);
 
         protected abstract bool EqualsNodeInternal(ExprTableAccessNode other);
 
+        [JsonIgnore]
         protected abstract string InstrumentationQName { get; }
 
+        [JsonIgnore]
         protected abstract CodegenExpression[] InstrumentationQParams { get; }
 
+        [JsonIgnore]
         public abstract ExprTableEvalStrategyFactoryForge TableAccessFactoryForge { get; }
 
         /// <summary>
@@ -109,10 +114,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.UNARY;
 
+        [JsonIgnore]
         public ExprNodeRenderable ForgeRenderable => this;
         
+        [JsonIgnore]
         ExprNodeRenderable ExprForge.ExprForgeRenderable => ForgeRenderable;
 
+        
+        [JsonIgnore]
         public ExprNodeRenderable EnumForgeRenderable { get; }
 
         public CodegenExpression EvaluateCodegenUninstrumented(

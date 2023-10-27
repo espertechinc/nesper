@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var stmt = "@name('s0') select * from pattern [" +
-                           " every a=SupportBean_A -> (timer:interval(10 seconds) and not (SupportBean_B(id=a.id) or SupportBean_C(id=a.id)))" +
+                           " every a=SupportBean_A -> (timer:interval(10 seconds) and not (SupportBean_B(id=a.Id) or SupportBean_C(Id=a.Id)))" +
                            "] ";
 
                 SendTimer(0, env);
@@ -558,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 // ESPER-411
                 env.CompileDeploy(
-                    "@name('s0') select * from pattern[every a=SupportBean -> b=SupportBean(b.intPrimitive <= a.intPrimitive)]");
+                    "@name('s0') select * from pattern[every a=SupportBean -> b=SupportBean(b.IntPrimitive <= a.IntPrimitive)]");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -571,7 +571,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.UndeployAll();
 
                 env.CompileDeploy(
-                    "@name('s0') select * from pattern [every a=SupportBean -> b=SupportBean(a.intPrimitive >= b.intPrimitive)]");
+                    "@name('s0') select * from pattern [every a=SupportBean -> b=SupportBean(a.IntPrimitive >= b.IntPrimitive)]");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -591,10 +591,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 env.AdvanceTime(0);
 
-                var pattern = "@name('s0') select * from pattern [every s=SupportBean(theString='E') -> " +
-                              "(timer:interval(10) and not SupportBean(theString='C1'))" +
+                var pattern = "@name('s0') select * from pattern [every s=SupportBean(TheString='E') -> " +
+                              "(timer:interval(10) and not SupportBean(TheString='C1'))" +
                               "or" +
-                              "(SupportBean(theString='C2') and not timer:interval(10))]";
+                              "(SupportBean(TheString='C2') and not timer:interval(10))]";
                 env.CompileDeploy(pattern).AddListener("s0");
 
                 env.AdvanceTime(1000);

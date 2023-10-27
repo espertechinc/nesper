@@ -24,13 +24,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var path = new RegressionPath();
             env.CompileDeploy(
                 "@public create table varagg as (" +
-                "key string primary key, total sum(int))",
+"key string primary key, Total sum(int))",
                 path);
             env.CompileDeploy(
                 "into table varagg " +
-                "select sum(IntPrimitive) as total from SupportBean group by TheString",
+"select sum(IntPrimitive) as Total from SupportBean group by TheString",
                 path);
-            env.CompileDeploy("@name('s0') on SupportBean_S0 select total as value from varagg where key = P00", path)
+            env.CompileDeploy("@name('s0') on SupportBean_S0 select Total as value from varagg where key = P00", path)
                 .AddListener("s0");
 
             AssertValues(env, "G1,G2", new int?[] { null, null });
@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportBean("G2", 200));
             AssertValues(env, "G1,G2", new int?[] { 100, 200 });
 
-            env.CompileDeploy("@name('i1') on SupportBean_S1 select total from varagg where key = P10", path)
+            env.CompileDeploy("@name('i1') on SupportBean_S1 select Total from varagg where key = P10", path)
                 .AddListener("i1");
 
             env.SendEventBean(new SupportBean("G2", 300));
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.Milestone(1);
 
             env.SendEventBean(new SupportBean_S1(0, "G2"));
-            env.AssertEqualsNew("i1", "total", 500);
+            env.AssertEqualsNew("i1", "Total", 500);
 
             env.UndeployAll();
         }

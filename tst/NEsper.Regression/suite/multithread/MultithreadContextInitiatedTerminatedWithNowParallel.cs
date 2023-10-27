@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             env.AdvanceTime(0);
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                         env.AdvanceTime(time);
                         numAdvances++;
                         time += 1000;
-                        SupportCompileDeployUtil.ThreadSleep((int) threadSleepTime);
+                        SupportCompileDeployUtil.ThreadSleep((int)threadSleepTime);
                     }
                 }
                 catch (Exception ex) {

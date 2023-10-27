@@ -155,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "bookId".SplitCsv();
+                var fields = "BookId".SplitCsv();
                 var path = new RegressionPath();
 
                 var stmtText = "@name('s0') @public insert into BookStream select * from OrderBean[books]";
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
                 env.CompileDeploy("@name('nw') @public create window MyWindow#lastevent as BookDesc", path);
                 env.CompileDeploy(
-                    "insert into MyWindow select * from BookStream bs where not exists (select * from MyWindow mw where mw.price > bs.price)",
+                    "insert into MyWindow select * from BookStream bs where not exists (select * from MyWindow mw where mw.Price > bs.Price)",
                     path);
 
                 env.SendEventBean(MakeEventOne());
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     new object[][] { new object[] { "10020" }, new object[] { "10021" }, new object[] { "10022" } });
 
                 // higest price (27 is the last value)
-                env.AssertIterator("nw", iterator => Assert.AreEqual(35.0, iterator.Advance().Get("price")));
+                env.AssertIterator("nw", iterator => Assert.AreEqual(35.0, iterator.Advance().Get("Price")));
 
                 env.UndeployAll();
             }
@@ -185,23 +185,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 var stmtText = "@name('s0') select * from " +
                                "OrderBean as orderEvent unidirectional, " +
-                               "OrderBean[select * from books] as book, " +
-                               "OrderBean[select * from orderdetail.items] as item " +
-                               "where book.bookId=item.productId " +
-                               "order by book.bookId, item.amount";
+"OrderBean[select * from books] as Book, "+
+"OrderBean[select * from orderdetail.Items] as Item "+
+"where Book.BookId=Item.ProductId "+
+"Order by Book.BookId, Item.Amount";
                 var stmtTextFormatted = "@name('s0')" +
                                         NEWLINE +
                                         "select *" +
                                         NEWLINE +
                                         "from OrderBean as orderEvent unidirectional," +
                                         NEWLINE +
-                                        "OrderBean[select * from books] as book," +
+"OrderBean[select * from books] as Book,"+
                                         NEWLINE +
-                                        "OrderBean[select * from orderdetail.items] as item" +
+"OrderBean[select * from orderdetail.Items] as Item"+
                                         NEWLINE +
-                                        "where book.bookId=item.productId" +
+"where Book.BookId=Item.ProductId"+
                                         NEWLINE +
-                                        "order by book.bookId, item.amount";
+"Order by Book.BookId, Item.Amount";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 TryAssertionUnidirectionalJoin(env);
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
             private void TryAssertionUnidirectionalJoin(RegressionEnvironment env)
             {
-                var fields = "orderEvent.orderdetail.orderId,book.bookId,book.title,item.amount".SplitCsv();
+                var fields = "orderEvent.orderdetail.OrderId,Book.BookId,Book.title,Item.Amount".SplitCsv();
                 env.SendEventBean(MakeEventOne());
                 env.AssertPropsPerRowLastNew(
                     "s0",
@@ -251,9 +251,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 var stmtText = "@name('s0') select count(*) from " +
                                "OrderBean OrderBean unidirectional, " +
-                               "OrderBean[books] as book, " +
-                               "OrderBean[orderdetail.items] item " +
-                               "where book.bookId = item.productId order by book.bookId asc, item.amount asc";
+"OrderBean[books] as Book, "+
+"OrderBean[orderdetail.Items] Item "+
+"where Book.BookId = Item.ProductId Order by Book.BookId asc, Item.Amount asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(MakeEventOne());
@@ -278,9 +278,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 var fields = "count(*)".SplitCsv();
                 var stmtText = "@name('s0') select count(*) from " +
-                               "OrderBean[books]#unique(bookId) book, " +
-                               "OrderBean[orderdetail.items]#keepall item " +
-                               "where book.bookId = item.productId";
+"OrderBean[books]#unique(BookId) Book, "+
+"OrderBean[orderdetail.Items]#keepall Item "+
+"where Book.BookId = Item.ProductId";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(MakeEventOne());
@@ -310,12 +310,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "book.bookId,item.itemId,amount".SplitCsv();
-                var stmtText = "@name('s0') select book.bookId,item.itemId,amount from " +
-                               "OrderBean[books]#firstunique(bookId) book, " +
-                               "OrderBean[orderdetail.items]#keepall item " +
-                               "where book.bookId = item.productId " +
-                               "order by book.bookId, item.itemId";
+                var fields = "Book.BookId,Item.ItemId,Amount".SplitCsv();
+                var stmtText = "@name('s0') select Book.BookId,Item.ItemId,Amount from "+
+"OrderBean[books]#firstunique(BookId) Book, "+
+"OrderBean[orderdetail.Items]#keepall Item "+
+"where Book.BookId = Item.ProductId "+
+"Order by Book.BookId, Item.ItemId";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(MakeEventOne());
@@ -387,18 +387,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') @IterableUnbound select bookId from OrderBean[books]").AddListener("s0");
+                env.CompileDeploy("@name('s0') @IterableUnbound select BookId from OrderBean[books]").AddListener("s0");
                 env.CompileDeploy(
-                    "@name('s1') @IterableUnbound select books[0].author as val from OrderBean(books[0].bookId = '10020')");
+                    "@name('s1') @IterableUnbound select books[0].author as val from OrderBean(books[0].BookId = '10020')");
 
                 env.SendEventBean(MakeEventOne());
                 env.AssertPropsPerRowLastNew(
                     "s0",
-                    "bookId".SplitCsv(),
+                    "BookId".SplitCsv(),
                     new object[][] { new object[] { "10020" }, new object[] { "10021" }, new object[] { "10022" } });
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    "bookId".SplitCsv(),
+                    "BookId".SplitCsv(),
                     new object[][] { new object[] { "10020" }, new object[] { "10021" }, new object[] { "10022" } });
                 env.AssertPropsPerRowIterator(
                     "s1",
@@ -408,11 +408,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.SendEventBean(MakeEventFour());
                 env.AssertPropsPerRowLastNew(
                     "s0",
-                    "bookId".SplitCsv(),
+                    "BookId".SplitCsv(),
                     new object[][] { new object[] { "10031" }, new object[] { "10032" } });
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    "bookId".SplitCsv(),
+                    "BookId".SplitCsv(),
                     new object[][] { new object[] { "10031" }, new object[] { "10032" } });
                 env.AssertPropsPerRowIterator(
                     "s1",
@@ -421,10 +421,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
                 // add where clause
                 env.UndeployAll();
-                env.CompileDeploy("@name('s0') select bookId from OrderBean[books where author='Orson Scott Card']")
+                env.CompileDeploy("@name('s0') select BookId from OrderBean[books where author='Orson Scott Card']")
                     .AddListener("s0");
                 env.SendEventBean(MakeEventOne());
-                env.AssertPropsPerRowLastNew("s0", "bookId".SplitCsv(), new object[][] { new object[] { "10020" } });
+                env.AssertPropsPerRowLastNew("s0", "BookId".SplitCsv(), new object[][] { new object[] { "10020" } });
 
                 env.UndeployAll();
             }
@@ -434,12 +434,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') @IterableUnbound select irstream bookId from OrderBean[books[0]]";
+                var stmtText = "@name('s0') @IterableUnbound select irstream BookId from OrderBean[books[0]]";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(MakeEventOne());
-                env.AssertPropsPerRowLastNew("s0", "bookId".SplitCsv(), new object[][] { new object[] { "10020" } });
-                env.AssertPropsPerRowIterator("s0", "bookId".SplitCsv(), new object[][] { new object[] { "10020" } });
+                env.AssertPropsPerRowLastNew("s0", "BookId".SplitCsv(), new object[][] { new object[] { "10020" } });
+                env.AssertPropsPerRowIterator("s0", "BookId".SplitCsv(), new object[][] { new object[] { "10020" } });
 
                 env.SendEventBean(MakeEventFour());
                 env.AssertListener(
@@ -448,11 +448,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                         Assert.IsNull(listener.LastOldData);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.LastNewData,
-                            "bookId".SplitCsv(),
+                            "BookId".SplitCsv(),
                             new object[][] { new object[] { "10031" } });
                         listener.Reset();
                     });
-                env.AssertPropsPerRowIterator("s0", "bookId".SplitCsv(), new object[][] { new object[] { "10031" } });
+                env.AssertPropsPerRowIterator("s0", "BookId".SplitCsv(), new object[][] { new object[] { "10031" } });
 
                 env.UndeployAll();
             }
@@ -484,7 +484,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create objectarray schema ContainedId(id string)", path);
+                env.CompileDeploy("@public create objectarray schema ContainedId(Id string)", path);
                 env.CompileDeploy(
                         "@name('s0') select * from SupportStringBeanWithArray[select topId, * from containedIds @type(ContainedId)]",
                         path)
@@ -492,7 +492,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.SendEventBean(new SupportStringBeanWithArray("A", "one,two,three".SplitCsv()));
                 env.AssertPropsPerRowLastNew(
                     "s0",
-                    "topId,id".SplitCsv(),
+                    "topId,Id".SplitCsv(),
                     new object[][]
                         { new object[] { "A", "one" }, new object[] { "A", "two" }, new object[] { "A", "three" } });
                 env.UndeployAll();

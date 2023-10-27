@@ -397,7 +397,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
 
             if (postOutput) {
                 _agentInstanceContext.InstrumentationProvider.QRegOut(outBeans);
-                child.Update(outBeans, null);
+                Child.Update(outBeans, null);
                 _agentInstanceContext.InstrumentationProvider.ARegOut();
             }
         }
@@ -1144,7 +1144,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
 
             _agentInstanceContext.InstrumentationProvider.QRegOut(outBeans);
-            child.Update(outBeans, null);
+            Child.Update(outBeans, null);
             _agentInstanceContext.InstrumentationProvider.ARegOut();
         }
 

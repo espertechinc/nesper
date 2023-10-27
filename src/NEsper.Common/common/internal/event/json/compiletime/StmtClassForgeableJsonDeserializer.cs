@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
                 ? propertiesProp.WithVirtual()
                 : propertiesProp.WithOverride();
 
-            propertiesProp.GetterBlock.BlockReturn(ConstantNull()); // TBD
+            propertiesProp.GetterBlock.BlockReturn(ConstantNull()); // TODO
 
             // --------------------------------------------------------------------------------
 

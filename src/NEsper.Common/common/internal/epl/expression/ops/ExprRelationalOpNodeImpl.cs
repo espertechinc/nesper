@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
@@ -24,7 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         ExprRelationalOpNode
     {
         private readonly RelationalOpEnum relationalOpEnum;
-        [NonSerialized] private ExprRelationalOpNodeForge forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprRelationalOpNodeForge forge;
 
         /// <summary>
         /// Ctor.

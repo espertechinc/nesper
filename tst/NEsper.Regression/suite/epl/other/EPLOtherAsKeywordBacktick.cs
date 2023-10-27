@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "on OrderBean insert into ABC select * " +
-                               "insert into DEF select `order`.reviewId from [books][reviews] `order`";
+"insert into DEF select `Order`.ReviewId from [books][reviews] `Order`";
                 env.CompileDeploy(stmtText);
                 env.UndeployAll();
             }
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select (select `order`.p00 from SupportBean_S0#lastevent as `order`) as c0 from SupportBean_S1";
+"@name('s0') select (select `Order`.P00 from SupportBean_S0#lastevent as `Order`) as c0 from SupportBean_S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "A"));
@@ -119,9 +119,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@public create window MyWindowMerge#keepall as (p0 string, p1 string)", path);
                 env.CompileExecuteFAFNoResult("insert into MyWindowMerge select 'a' as p0, 'b' as p1", path);
                 env.CompileDeploy(
-                    "on SupportBean_S0 merge MyWindowMerge as `order` when matched then update set `order`.p1 = `order`.p0",
+"on SupportBean_S0 merge MyWindowMerge as `Order` when matched then update set `Order`.p1 = `Order`.p0",
                     path);
-                env.CompileDeploy("on SupportBean_S1 update MyWindowMerge as `order` set p0 = 'x'", path);
+                env.CompileDeploy("on SupportBean_S1 update MyWindowMerge as `Order` set p0 = 'x'", path);
 
                 AssertFAF(env, path, "MyWindowMerge", "a", "b");
 
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 AssertFAF(env, path, "MyWindowMerge", "x", "a");
 
                 env.CompileDeploy(
-                        "@name('s0') on SupportBean select `order`.p0 as c0 from MyWindowMerge as `order`",
+"@name('s0') on SupportBean select `Order`.p0 as c0 from MyWindowMerge as `Order`",
                         path)
                     .AddListener("s0");
 
@@ -159,12 +159,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileExecuteFAF("insert into MyWindowFAF select 'a' as p0, 'b' as p1", path);
                 AssertFAF(env, path, "MyWindowFAF", "a", "b");
 
-                env.CompileExecuteFAF("update MyWindowFAF as `order` set `order`.p0 = `order`.p1", path);
+                env.CompileExecuteFAF("update MyWindowFAF as `Order` set `Order`.p0 = `Order`.p1", path);
                 AssertFAF(env, path, "MyWindowFAF", "b", "b");
 
                 env.Milestone(0);
 
-                env.CompileExecuteFAF("delete from MyWindowFAF as `order` where `order`.p0 = 'b'", path);
+                env.CompileExecuteFAF("delete from MyWindowFAF as `Order` where `Order`.p0 = 'b'", path);
                 Assert.AreEqual(0, env.CompileExecuteFAF("select * from MyWindowFAF", path).Array.Length);
 
                 env.UndeployAll();
@@ -180,12 +180,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("update istream SupportBean_S0 as `order` set p00=`order`.p01");
+                env.CompileDeploy("update istream SupportBean_S0 as `Order` set P00=`Order`.P01");
                 var epl = "@name('s0') select * from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "a", "x"));
-                env.AssertEqualsNew("s0", "p00", "x");
+                env.AssertEqualsNew("s0", "P00", "x");
 
                 env.UndeployAll();
             }
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileExecuteFAFNoResult("insert into MyTable select 'x' as k1, 'y' as v1", path);
                 env.CompileExecuteFAFNoResult("insert into MyTable select 'a' as k1, 'b' as v1", path);
 
-                var epl = "@name('s0') on SupportBean_S0 as `order` select v1 from MyTable where `order`.p00 = k1";
+                var epl = "@name('s0') on SupportBean_S0 as `Order` select v1 from MyTable where `Order`.P00 = k1";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "a"));
@@ -215,7 +215,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select * from SupportBean_S0#lastevent as `order`, SupportBean_S1#lastevent as `select`";
+"@name('s0') select * from SupportBean_S0#lastevent as `Order`, SupportBean_S1#lastevent as `select`";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var s0 = new SupportBean_S0(1, "S0_1");
@@ -227,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(s1);
                 env.AssertPropsNew(
                     "s0",
-                    "order,select,order.p00,select.p10".SplitCsv(),
+"Order,select,Order.P00,select.P10".SplitCsv(),
                     new object[] { s0, s1, "S0_1", "S1_1" });
 
                 env.UndeployAll();

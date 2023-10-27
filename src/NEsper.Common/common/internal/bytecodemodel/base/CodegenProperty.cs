@@ -85,6 +85,19 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public string AssignedProviderClassName { get; set; }
 
+        public CodegenProperty WithGetter(Action<CodegenBlock> getterBlock)
+        {
+            getterBlock.Invoke(GetterBlock);
+            return this;
+        }
+
+        public CodegenProperty WithSetter(Action<CodegenBlock> setterBlock)
+        {
+            setterBlock.Invoke(SetterBlock);
+            return this;
+        }
+
+        
         public CodegenProperty WithStatic(bool value = true)
         {
             Modifiers = Modifiers.Enable(MemberModifier.STATIC);
@@ -295,17 +308,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             int level,
             CodegenIndent indent)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 
@@ -321,17 +334,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             int level,
             CodegenIndent indent)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override void MergeClasses(ISet<Type> classes)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public override void TraverseExpressions(Consumer<CodegenExpression> consumer)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
     }
 } // end of namespace

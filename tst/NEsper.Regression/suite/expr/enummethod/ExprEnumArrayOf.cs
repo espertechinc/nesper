@@ -90,13 +90,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3,c4".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.arrayOf()");
-                builder.WithExpression(fields[1], "strvals.arrayOf(v => v)");
-                builder.WithExpression(fields[2], "strvals.arrayOf( (v, i) => v || '_' || Integer.toString(i))");
+                builder.WithExpression(fields[0], "Strvals.arrayOf()");
+                builder.WithExpression(fields[1], "Strvals.arrayOf(v => v)");
+                builder.WithExpression(fields[2], "Strvals.arrayOf( (v, i) => v || '_' || Integer.toString(i))");
                 builder.WithExpression(
                     fields[3],
-                    "strvals.arrayOf( (v, i, s) => v || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
-                builder.WithExpression(fields[4], "strvals.arrayOf( (v, i) => i)");
+                    "Strvals.arrayOf( (v, i, s) => v || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
+                builder.WithExpression(fields[4], "Strvals.arrayOf( (v, i) => i)");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypes(
@@ -134,9 +134,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "contained.arrayOf(x => x.p00)");
-                builder.WithExpression(fields[1], "contained.arrayOf((x, i) => x.p00 + i*10)");
-                builder.WithExpression(fields[2], "contained.arrayOf((x, i, s) => x.p00 + i*10 + s*100)");
+                builder.WithExpression(fields[0], "Contained.arrayOf(x => x.P00)");
+                builder.WithExpression(fields[1], "Contained.arrayOf((x, i) => x.P00 + i*10)");
+                builder.WithExpression(fields[2], "Contained.arrayOf((x, i, s) => x.P00 + i*10 + s*100)");
 
                 builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?[])));
 
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "contained.selectFrom(v => v.id).arrayOf()");
+                builder.WithExpression(fields[0], "Contained.selectFrom(v => v.Id).arrayOf()");
 
                 builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string[])));
 
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var builder = new SupportEvalBuilder("SupportCollection");
                 builder.WithExpression(
                     fields[0],
-                    "strvals.selectfrom((v, i) => v || '-' || Integer.toString(i)).arrayOf()");
+                    "Strvals.selectfrom((v, i) => v || '-' || Integer.toString(i)).arrayOf()");
 
                 builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string[])));
 
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.selectfrom(v => Integer.parseInt(v)).arrayOf()");
+                builder.WithExpression(fields[0], "Strvals.selectfrom(v => Integer.parseInt(v)).arrayOf()");
 
                 builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?[])));
 
@@ -270,10 +270,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string epl;
 
-                epl = "select strvals.arrayOf(v => null) from SupportCollection";
+                epl = "select Strvals.arrayOf(v => null) from SupportCollection";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'strvals.arrayOf()': Null-type is not allowed");
+                    "Failed to validate select-clause expression 'Strvals.arrayOf()': Null-type is not allowed");
             }
         }
     }

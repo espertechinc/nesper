@@ -116,7 +116,7 @@ namespace com.espertech.esper.compiler.@internal.util
 				// Determine a statement name
 				var statementNameProvided = GetNameFromAnnotation(annotations);
 				if (compilerOptions.StatementName != null) {
-					string assignedName = compilerOptions.StatementName.Invoke(
+					var assignedName = compilerOptions.StatementName.Invoke(
 						new StatementNameContext(() => compilable.ToEPL(),
 						statementNameProvided,
 						optionalModuleName,
@@ -127,8 +127,7 @@ namespace com.espertech.esper.compiler.@internal.util
 					}
 				}
 
-				var statementName =
-					statementNameProvided == null ? ("stmt-" + statementNumber) : statementNameProvided;
+				var statementName = statementNameProvided ?? $"stmt-{statementNumber}";
 				if (statementNames.Contains(statementName)) {
 					var count = 1;
 					var newStatementName = statementName + "-" + count;
@@ -182,12 +181,12 @@ namespace com.espertech.esper.compiler.@internal.util
 				}
 
 				// Stage 2(d) compile raw statement spec
-				var statementType = StatementTypeUtil.GetStatementType(raw);
+				var statementType = StatementTypeUtil.GetStatementType(raw).Value;
 				var statementRawInfo = new StatementRawInfo(
 					statementNumber,
 					statementName,
 					annotations,
-					statementType.Value,
+					statementType,
 					contextDescriptor,
 					raw.IntoTableSpec?.Name,
 					compilable,
@@ -281,22 +280,18 @@ namespace com.espertech.esper.compiler.@internal.util
 
 				// Stage 3(b) - forge-factory-to-forge
 				var classPostfix = moduleIdentPostfix + "_" + statementIdentPostfix;
-				IList<StmtClassForgeable> forgeables = new List<StmtClassForgeable>();
+				var forgeables = new List<StmtClassForgeable>();
 
 				// add forgeables from filter-related processing i.e. multikeys
 				foreach (var additional in compiledDesc.AdditionalForgeables) {
-					var packageScope = new CodegenNamespaceScope(
-						compileTimeServices.Namespace,
-						null,
-						false,
-						compileTimeServices.Configuration.Compiler.ByteCode);
-					forgeables.Add(additional.Make(packageScope, classPostfix));
+					var namespaceScope = new CodegenNamespaceScope(compileTimeServices.Namespace, null, false, compileTimeServices.Configuration.Compiler.ByteCode);
+					forgeables.Add(additional.Make(namespaceScope, classPostfix));
 				}
 
-				IList<FilterSpecTracked> filterSpecCompileds = new List<FilterSpecTracked>();
-				IList<ScheduleHandleTracked> scheduleHandleCallbackProviders = new List<ScheduleHandleTracked>();
-				IList<NamedWindowConsumerStreamSpec> namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
-				IList<FilterSpecParamExprNodeForge> filterBooleanExpressions = new List<FilterSpecParamExprNodeForge>();
+				var filterSpecCompileds = new List<FilterSpecTracked>();
+				var scheduleHandleCallbackProviders = new List<ScheduleHandleTracked>();
+				var namedWindowConsumers = new List<NamedWindowConsumerStreamSpec>();
+				var filterBooleanExpressions = new List<FilterSpecParamExprNodeForge>();
 
 				var result = forgeMethod.Make(
 					compileTimeServices.Namespace,
@@ -355,7 +350,7 @@ namespace com.espertech.esper.compiler.@internal.util
 				}
 
 				// Stage 4 - forge-to-class (forge with statement-fields last)
-				IList<CodegenClass> classes = forgeables
+				var classes = forgeables
 					.Select(_ => _.Forge(true, false))
 					.Where(_ => _ != null)
 					.ToList();
@@ -406,7 +401,7 @@ namespace com.espertech.esper.compiler.@internal.util
 					contextDescriptor,
 					fabricCharge);
 			}
-			catch (StatementSpecCompileException ex) {
+			catch (StatementSpecCompileException) {
 				throw;
 			}
 			catch (ExprValidationException ex) {
@@ -425,7 +420,7 @@ namespace com.espertech.esper.compiler.@internal.util
 		{
 			for (var i = classesInlined.Classes.Count - 1; i >= 0; i--) {
 				var clazz = classesInlined.Classes[i];
-                if (clazz.FullName.Contains("+")) { // TBD: <<-- Evaluation, converted from JVM notation to CLR
+                if (clazz.FullName.Contains("+")) { // TODO: <<-- Evaluation, converted from JVM notation to CLR
 					continue;
 				}
 

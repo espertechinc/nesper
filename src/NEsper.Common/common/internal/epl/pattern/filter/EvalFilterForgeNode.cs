@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -34,7 +35,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.filter
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [NonSerialized] private FilterSpecCompiled filterSpec;
+        [JsonIgnore]
+        [NonSerialized]
+        private FilterSpecCompiled filterSpec;
 
         /// <summary>
         ///     Constructor.

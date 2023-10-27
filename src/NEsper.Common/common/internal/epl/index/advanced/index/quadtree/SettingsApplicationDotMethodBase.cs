@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.compiletime;
@@ -33,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.index.advanced.index.quadtree
 
         internal readonly ExprDotNodeImpl parent;
 
-        [NonSerialized] private ExprForge forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprForge forge;
 
         private AdvancedIndexConfigContextPartition optionalIndexConfig;
         private string optionalIndexName;

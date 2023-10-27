@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select (select p10 from SupportBean_S1#length(100000) where id = s0.id) as value from SupportBean_S0 as s0";
+                    "@name('s0') select (select P10 from SupportBean_S1#length(100000) where Id = s0.Id) as value from SupportBean_S0 as s0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload with 10k events
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select (select p10 from SupportBean_S1#length(100000) where s0.id = id and p10 = s0.p00) as value from SupportBean_S0 as s0";
+                    "@name('s0') select (select P10 from SupportBean_S1#length(100000) where s0.Id = Id and P10 = s0.P00) as value from SupportBean_S0 as s0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload with 10k events
@@ -135,8 +135,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select (select p00 from SupportBean_S0#length(100000) where p00 = s1.p10 and p01 = s2.p20 and p02 = s3.p30) as value " +
-                    "from SupportBean_S1#length(100000) as s1, SupportBean_S2#length(100000) as s2, SupportBean_S3#length(100000) as s3 where s1.id = s2.id and s2.id = s3.id";
+                    "@name('s0') select (select P00 from SupportBean_S0#length(100000) where P00 = s1.P10 and P01 = s2.P20 and P02 = s3.P30) as value " +
+                    "from SupportBean_S1#length(100000) as s1, SupportBean_S2#length(100000) as s2, SupportBean_S3#length(100000) as s3 where s1.Id = s2.Id and s2.Id = s3.Id";
                 TryPerfJoin3Criteria(env, stmtText);
             }
         }
@@ -151,8 +151,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select (select p00 from SupportBean_S0#length(100000) where p01 = s2.p20 and p00 = s1.p10 and p02 = s3.p30 and id >= 0) as value " +
-                    "from SupportBean_S3#length(100000) as s3, SupportBean_S1#length(100000) as s1, SupportBean_S2#length(100000) as s2 where s2.id = s3.id and s1.id = s2.id";
+                    "@name('s0') select (select P00 from SupportBean_S0#length(100000) where P01 = s2.P20 and P00 = s1.P10 and P02 = s3.P30 and Id >= 0) as value " +
+                    "from SupportBean_S3#length(100000) as s3, SupportBean_S1#length(100000) as s1, SupportBean_S2#length(100000) as s2 where s2.Id = s3.Id and s1.Id = s2.Id";
                 TryPerfJoin3Criteria(env, stmtText);
             }
         }

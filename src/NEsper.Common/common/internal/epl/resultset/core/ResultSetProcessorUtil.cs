@@ -355,7 +355,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             return instance.Methods.AddMethod(
                 typeof(EventBean[]),
-                "getSelectEventsHavingWithOrderBy",
+                "GetSelectEventsHavingWithOrderBy",
                 CodegenNamedParam.From(
                     typeof(AggregationService),
                     MEMBER_AGGREGATIONSVC.Ref,
@@ -1698,7 +1698,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     events.Ref,
                     ExprDotMethod(
                         MEMBER_ORDERBYPROCESSOR,
-                        "sortWGroupKeys",
+                        "SortWGroupKeys",
                         events,
                         currentGenerators,
                         keys,
@@ -1774,7 +1774,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         "newEventsArr",
                         ExprDotMethod(
                             MEMBER_ORDERBYPROCESSOR,
-                            "sortWOrderKeys",
+                            "SortWOrderKeys",
                             Ref("newEventsArr"),
                             Ref("sortKeysNew"),
                             MEMBER_EXPREVALCONTEXT));
@@ -1786,7 +1786,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "oldEventsArr",
                             ExprDotMethod(
                                 MEMBER_ORDERBYPROCESSOR,
-                                "sortWOrderKeys",
+                                "SortWOrderKeys",
                                 Ref("oldEventsArr"),
                                 Ref("sortKeysOld"),
                                 MEMBER_EXPREVALCONTEXT));

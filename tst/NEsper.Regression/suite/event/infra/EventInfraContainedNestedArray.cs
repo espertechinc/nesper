@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Consumer<string[]> map = ids => {
                 var property = new IDictionary<string, object>[ids.Length];
                 for (var i = 0; i < ids.Length; i++) {
-                    property[i] = Collections.SingletonDataMap("leaf", Collections.SingletonDataMap("id", ids[i]));
+                    property[i] = Collections.SingletonDataMap("leaf", Collections.SingletonDataMap("Id", ids[i]));
                 }
 
                 env.SendEventMap(Collections.SingletonDataMap("property", property), "LocalEvent");
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Consumer<string[]> json = ids => {
                 var property = new JArray();
                 for (var i = 0; i < ids.Length; i++) {
-                    var inner = new JObject(new JProperty("leaf", new JObject(new JProperty("id", ids[i]))));
+                    var inner = new JObject(new JProperty("leaf", new JObject(new JProperty("Id", ids[i]))));
                     property.Add(inner);
                 }
 
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                             .Schema.AsArraySchema()
                             .ItemSchema.GetField("leaf")
                             .Schema.AsRecordSchema());
-                    leaf.Put("id", ids[i]);
+                    leaf.Put("Id", ids[i]);
                     var inner = new GenericRecord(
                         schema.GetField("property")
                             .Schema.AsArraySchema()
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             return "create " +
                    underlying +
-                   " schema LocalLeafEvent(id string);\n" +
+                   " schema LocalLeafEvent(Id string);\n" +
                    "create " +
                    underlying +
                    " schema LocalInnerEvent(leaf LocalLeafEvent);\n" +
@@ -142,8 +142,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 .AddListener("s1");
 
             sender.Invoke("a,b".SplitCsv());
-            env.AssertEqualsNew("s0", "id", "a");
-            env.AssertEqualsNew("s1", "id", "b");
+            env.AssertEqualsNew("s0", "Id", "a");
+            env.AssertEqualsNew("s1", "Id", "b");
 
             env.UndeployAll();
         }

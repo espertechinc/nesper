@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.support
 
                             count++;
                         }
-                        catch (PropertyAccessException ex) {
+                        catch (PropertyAccessException) {
                             writer.Write("-- no access --\n");
                             break;
                         }
@@ -217,7 +217,7 @@ namespace com.espertech.esper.common.@internal.support
                             writer.Write("\n");
                             count++;
                         }
-                        catch (PropertyAccessException ex) {
+                        catch (PropertyAccessException) {
                             writer.Write("-- no access --\n");
                             break;
                         }

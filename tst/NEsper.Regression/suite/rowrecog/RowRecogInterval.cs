@@ -64,13 +64,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 SendTimer(0, env);
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           " measures A.theString as a, B[0].theString as b0, B[1].theString as b1, last(B.theString) as lastb" +
+                           " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, last(B.TheString) as lastb" +
                            " pattern (A B*)" +
                            " interval 10 seconds" +
                            " define" +
-                           " A as A.theString like \"A%\"," +
-                           " B as B.theString like \"B%\"" +
-                           ") order by a, b0, b1, lastb";
+                           " A as A.TheString like \"A%\"," +
+                           " B as B.TheString like \"B%\"" +
+") Order by a, b0, b1, lastb";
 
                 var milestone = new AtomicLong();
                 env.CompileDeploy(text).AddListener("s0");
@@ -171,13 +171,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  partition by cat " +
-                           "  measures A.theString as a, B[0].theString as b0, B[1].theString as b1, last(B.theString) as lastb" +
+                           "  measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, last(B.TheString) as lastb" +
                            "  pattern (A B*) " +
                            "  INTERVAL 10 seconds " +
                            "  define " +
-                           "    A as A.theString like 'A%'," +
-                           "    B as B.theString like 'B%'" +
-                           ") order by a, b0, b1, lastb";
+                           "    A as A.TheString like 'A%'," +
+                           "    B as B.TheString like 'B%'" +
+") Order by a, b0, b1, lastb";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -250,13 +250,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a,b0,b1,lastb".SplitCsv();
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  measures A.theString as a, B[0].theString as b0, B[1].theString as b1, last(B.theString) as lastb" +
+                           "  measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, last(B.TheString) as lastb" +
                            "  pattern (A B*) " +
                            "  interval 10 seconds " +
                            "  define " +
-                           "    A as A.theString like 'A%'," +
-                           "    B as B.theString like 'B%'" +
-                           ") order by a, b0, b1, lastb";
+                           "    A as A.TheString like 'A%'," +
+                           "    B as B.TheString like 'B%'" +
+") Order by a, b0, b1, lastb";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -337,12 +337,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 SendCurrentTime(env, "2002-02-01T09:00:00.000");
                 var text = "@name('s0') select * from SupportBean " +
                            "match_recognize (" +
-                           " measures A.theString as a, B[0].theString as b0, B[1].theString as b1 " +
+                           " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1 " +
                            " pattern (A B*)" +
                            " interval 1 month" +
                            " define" +
-                           " A as A.theString like \"A%\"," +
-                           " B as B.theString like \"B%\"" +
+                           " A as A.TheString like \"A%\"," +
+                           " B as B.TheString like \"B%\"" +
                            ")";
                 env.CompileDeploy(text).AddListener("s0");
 

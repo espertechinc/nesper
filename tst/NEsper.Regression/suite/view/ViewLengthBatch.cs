@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "symbol".SplitCsv();
+                var fields = "Symbol".SplitCsv();
                 var text = "@name('s0') select irstream * from SupportMarketDataBean#length_batch(3)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // test iterator
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "symbol" },
+                    new string[] { "Symbol"},
                     new object[][] { new object[] { "E4" }, new object[] { "E5" } });
 
                 env.SendEventBean(MakeMarketDataEvent("E6"));
@@ -289,16 +289,16 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text = "@name('s0') select irstream *, " +
-                           "prev(1, symbol) as prev1, " +
-                           "prevtail(0, symbol) as prevTail0, " +
-                           "prevtail(1, symbol) as prevTail1, " +
-                           "prevcount(symbol) as prevCountSym, " +
-                           "prevwindow(symbol) as prevWindowSym " +
+"prev(1, Symbol) as prev1, "+
+"prevtail(0, Symbol) as prevTail0, "+
+"prevtail(1, Symbol) as prevTail1, "+
+"prevcount(Symbol) as prevCountSym, "+
+"prevwindow(Symbol) as prevWindowSym "+
                            "from SupportMarketDataBean#length_batch(3)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 var fields = new string[]
-                    { "symbol", "prev1", "prevTail0", "prevTail1", "prevCountSym", "prevWindowSym" };
+                    { "Symbol", "prev1", "prevTail0", "prevTail1", "prevCountSym", "prevWindowSym" };
                 env.SendEventBean(MakeMarketDataEvent("E1"));
                 env.SendEventBean(MakeMarketDataEvent("E2"));
 
@@ -330,11 +330,11 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString".SplitCsv();
+                var fields = "TheString".SplitCsv();
 
                 var epl = "create window ABCWin#length_batch(3) as SupportBean;\n" +
                           "insert into ABCWin select * from SupportBean;\n" +
-                          "on SupportBean_A delete from ABCWin where theString = id;\n" +
+                          "on SupportBean_A delete from ABCWin where TheString = Id;\n" +
                           "@name('s0') select irstream * from ABCWin;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -415,16 +415,15 @@ namespace com.espertech.esper.regressionlib.suite.view
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString".SplitCsv();
+                var fields = "TheString".SplitCsv();
 
                 string epl;
                 if (runType == ViewLengthBatchNormalRunType.VIEW) {
-                    epl = "@name('s0') select irstream theString, prev(1, theString) as prevString " +
-                          "from SupportBean" +
-                          (optionalDatawindow == null ? "#length_batch(3)" : optionalDatawindow);
+                    epl =
+                        $"@name('s0') select irstream TheString, prev(1, TheString) as prevString from SupportBean{(optionalDatawindow == null ? "#length_batch(3)" : optionalDatawindow)}";
                 }
                 else if (runType == ViewLengthBatchNormalRunType.GROUPWIN) {
-                    epl = "@name('s0') select irstream * from SupportBean#groupwin(doubleBoxed)#length_batch(3)";
+                    epl = "@name('s0') select irstream * from SupportBean#groupwin(DoubleBoxed)#length_batch(3)";
                 }
                 else if (runType == ViewLengthBatchNormalRunType.NAMEDWINDOW) {
                     epl = "create window ABCWin#length_batch(3) as SupportBean;\n" +
@@ -432,7 +431,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                           "@name('s0') select irstream * from ABCWin;\n";
                 }
                 else {
-                    throw new EPRuntimeException("Unrecognized variant " + runType);
+                    throw new EPRuntimeException($"Unrecognized variant {runType}");
                 }
 
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -515,14 +514,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "runType=" +
-                       runType +
-                       ", optionalDatawindow='" +
-                       optionalDatawindow +
-                       '\'' +
-                       '}';
+                return $"{this.GetType().Name}{{runType={runType}, optionalDatawindow='{optionalDatawindow}'}}";
             }
         }
 

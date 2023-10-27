@@ -24,9 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         StopCallback
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
         internal readonly bool acquireWriteLock;
         internal readonly AgentInstanceContext agentInstanceContext;
-
         internal readonly SubordWMatchExprLookupStrategy lookupStrategy;
         internal readonly TableInstance tableInstance;
 

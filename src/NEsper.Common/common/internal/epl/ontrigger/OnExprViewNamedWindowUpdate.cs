@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
     /// </summary>
     public class OnExprViewNamedWindowUpdate : OnExprViewNameWindowBase
     {
-        private new readonly InfraOnUpdateViewFactory parent;
+        private readonly InfraOnUpdateViewFactory parent;
 
         public OnExprViewNamedWindowUpdate(
             SubordWMatchExprLookupStrategy lookupStrategy,

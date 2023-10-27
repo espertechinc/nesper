@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             // If we have child views, keep a reference to the old values, so we can update them as old data event.
             EventBean oldDataMap = null;
             if (lastNewEvent == null) {
-                if (child != null) {
+                if (Child != null) {
                     oldDataMap = PopulateMap(
                         baseStatisticsBean,
                         agentInstanceContext.EventBeanTypedEventFactory,
@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             }
 
             // If there are child view, call update method
-            if (child != null) {
+            if (Child != null) {
                 var newDataMap = PopulateMap(
                     baseStatisticsBean,
                     agentInstanceContext.EventBeanTypedEventFactory,
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.view.derived
                 }
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newEvents, oldEvents);
-                child.Update(newEvents, oldEvents);
+                Child.Update(newEvents, oldEvents);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                 lastNewEvent = newDataMap;

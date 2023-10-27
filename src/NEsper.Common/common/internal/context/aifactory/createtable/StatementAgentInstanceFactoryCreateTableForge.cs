@@ -83,36 +83,36 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
 
             method.Block
                 .DeclareVarNewInstance(typeof(StatementAgentInstanceFactoryCreateTable), "saiff")
-                .ExprDotMethod(Ref("saiff"), "setTableName", Constant(tableName))
-                .ExprDotMethod(
+                .SetProperty(Ref("saiff"), "TableName", Constant(tableName))
+                .SetProperty(
                     Ref("saiff"),
-                    "setPublicEventType",
+                    "PublicEventType",
                     EventTypeUtility.ResolveTypeCodegen(_plan.PublicEventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("saiff"), "setEventToPublic", MakeEventToPublic(method, symbols, classScope))
-                .ExprDotMethod(
+                .SetProperty(Ref("saiff"), "EventToPublic", MakeEventToPublic(method, symbols, classScope))
+                .SetProperty(
                     Ref("saiff"),
-                    "setAggregationRowFactory",
+                    "AggregationRowFactory",
                     CodegenExpressionBuilder.NewInstanceInner(aggregationClassNames.RowFactoryTop, Ref("this")))
-                .ExprDotMethod(
+                .SetProperty(
                     Ref("saiff"),
-                    "setAggregationSerde",
+                    "AggregationSerde",
                     CodegenExpressionBuilder.NewInstanceInner(aggregationClassNames.RowSerdeTop, Ref("this")))
-                .ExprDotMethod(Ref("saiff"), "setPrimaryKeyGetter", primaryKeyGetter)
-                .ExprDotMethod(
+                .SetProperty(Ref("saiff"), "PrimaryKeyGetter", primaryKeyGetter)
+                .SetProperty(
                     Ref("saiff"),
-                    "setPrimaryKeySerde",
+                    "PrimaryKeySerde",
                     _plan.PrimaryKeyMultikeyClasses.GetExprMKSerde(method, classScope))
-                .ExprDotMethod(
+                .SetProperty(
                     Ref("saiff"),
-                    "setPropertyForges",
+                    "PropertyForges",
                     DataInputOutputSerdeForgeExtensions.CodegenArray(
                         _plan.InternalEventTypePropertySerdes,
                         method,
                         classScope,
                         ExprDotName(symbols.GetAddInitSvc(method), EPStatementInitServicesConstants.EVENTTYPERESOLVER)))
-                .ExprDotMethod(Ref("saiff"), "setPrimaryKeyObjectArrayTransform", fafTransform)
-                .ExprDotMethod(Ref("saiff"), "setPrimaryKeyIntoTableTransform", intoTableTransform)
-                .ExprDotMethod(symbols.GetAddInitSvc(method), "addReadyCallback", Ref("saiff"))
+                .SetProperty(Ref("saiff"), "PrimaryKeyObjectArrayTransform", fafTransform)
+                .SetProperty(Ref("saiff"), "PrimaryKeyIntoTableTransform", intoTableTransform)
+                .ExprDotMethod(symbols.GetAddInitSvc(method), "AddReadyCallback", Ref("saiff"))
                 .MethodReturn(Ref("saiff"));
             return method;
         }
@@ -161,7 +161,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             //             REF_EPS,
             //             REF_ISNEWDATA,
             //             REF_EXPREVALCONTEXT))
-            //     .MethodReturn(ExprDotMethod(factory, "adapterForTypedObjectArray", Ref("data"), eventType));
+            //     .MethodReturn(ExprDotMethod(factory, "AdapterForTypedObjectArray", Ref("data"), eventType));
 
             // var convertToUnd = CodegenMethod.MakeParentNode(typeof(object[]), GetType(), classScope)
             //     .AddParam<EventBean>("event")
@@ -171,7 +171,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
             //     .DeclareVar(
             //         typeof(object[]),
             //         "props",
-            //         ExprDotMethod(Cast(typeof(ObjectArrayBackedEventBean), Ref("event")), "getProperties"))
+            //         ExprDotMethod(Cast(typeof(ObjectArrayBackedEventBean), Ref("event")), "Properties"))
             //     .DeclareVar(
             //         typeof(object[]),
             //         "data",

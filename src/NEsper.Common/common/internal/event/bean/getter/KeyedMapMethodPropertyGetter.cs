@@ -219,7 +219,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             CodegenClassScope codegenClassScope)
         {
             return codegenMethodScope.MakeChild(typeof(bool), typeof(KeyedMapMethodPropertyGetter), codegenClassScope)
-                .AddParam(targetType, "object")
+                .AddParam(targetType, "@object")
                 .AddParam<object>("key")
                 .Block
                 .DeclareVar(method.ReturnType, "result", ExprDotMethod(Ref("@object"), method.Name))

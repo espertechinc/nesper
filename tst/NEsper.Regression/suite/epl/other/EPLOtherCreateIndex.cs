@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var epl = "@public create window MyWindow#keepall as (p0 string, p1 int);\n" +
                           "@public create unique index MyIndex on MyWindow(p0);\n" +
                           INDEX_CALLBACK_HOOK +
-                          "@name('s0') on SupportBean_S0 as s0 select p0,p1 from MyWindow as win where win.p0 = s0.p00;\n";
+                          "@name('s0') on SupportBean_S0 as s0 select p0,p1 from MyWindow as win where win.p0 = s0.P00;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.AssertThat(
@@ -77,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("create unique index MyIndex on MyWindow(p0);", path);
                 env.CompileDeploy(
                     INDEX_CALLBACK_HOOK +
-                    "@name('s0') on SupportBean_S0 as s0 select p0, p1 from MyWindow as win where win.p0 = s0.p00;",
+                    "@name('s0') on SupportBean_S0 as s0 select p0, p1 from MyWindow as win where win.p0 = s0.P00;",
                     path);
                 env.AddListener("s0");
 

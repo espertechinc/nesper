@@ -29,9 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.codegen
         public const string NAME_RESULTSETVISITOR = "visitor";
         public const string NAME_HAVINGEVALUATOR_ARRAYNONMEMBER = "havingEvaluatorArray";
 
-        private const string NAME_SELECTEXPRPROCESSOR_MEMBER = "o.selectExprProcessor";
-        private const string NAME_HAVINGEVALUATOR_ARRAY_MEMBER = "o." + NAME_HAVINGEVALUATOR_ARRAYNONMEMBER;
-        private const string NAME_SELECTEXPRPROCESSOR_ARRAY = "o.selectExprProcessorArray";
+        public const string NAME_SELECTEXPRPROCESSOR_MEMBER = "o.selectExprProcessor";
+        public const string NAME_HAVINGEVALUATOR_ARRAY_MEMBER = "o." + NAME_HAVINGEVALUATOR_ARRAYNONMEMBER;
+        public const string NAME_SELECTEXPRPROCESSOR_ARRAY = "o.selectExprProcessorArray";
 
         public static readonly CodegenExpressionMember MEMBER_EXPREVALCONTEXT =
             new CodegenExpressionMember(NAME_EXPREVALCONTEXT);

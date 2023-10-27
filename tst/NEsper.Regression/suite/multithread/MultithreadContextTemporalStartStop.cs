@@ -35,11 +35,13 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@public create context EverySecond as start (*, *, *, *, *, *) end (*, *, *, *, *, *)", path);
+            env.CompileDeploy(
+                "@public create context EverySecond as start (*, *, *, *, *, *) end (*, *, *, *, *, *)",
+                path);
             env.CompileDeploy("context EverySecond select * from SupportBean", path);
 
             var timerRunnable = new TimerRunnable(env, 0, 24 * 60 * 60 * 1000, 1000);

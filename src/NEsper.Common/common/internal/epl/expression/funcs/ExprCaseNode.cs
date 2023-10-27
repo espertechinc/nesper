@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.collection;
@@ -27,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     public partial class ExprCaseNode : ExprNodeBase
     {
         private readonly bool isCase2;
-        [NonSerialized] private ExprCaseNodeForge forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprCaseNodeForge forge;
 
         /// <summary>
         /// Ctor.

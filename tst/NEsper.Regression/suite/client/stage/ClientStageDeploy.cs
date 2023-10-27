@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
                 catch (EPUndeployPreconditionException ex) {
                     Assert.AreEqual(
                         ex.Message,
-                        "A precondition is not satisfied: Deployment id '" +
+                        "A precondition is not satisfied: Deployment Id '" +
                         deploymentId +
                         "' is staged and cannot be undeployed");
                 }

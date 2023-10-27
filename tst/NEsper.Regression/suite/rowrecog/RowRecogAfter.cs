@@ -79,12 +79,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var milestone = new AtomicLong();
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           " measures A.theString as a, B[0].theString as b0, B[1].theString as b1" +
+                           " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1" +
                            " after match skip to current row" +
                            " pattern (A B*)" +
                            " define" +
-                           " A as A.theString like \"A%\"," +
-                           " B as B.theString like \"B%\"" +
+                           " A as A.TheString like \"A%\"," +
+                           " B as B.TheString like \"B%\"" +
                            ")";
                 env.CompileDeploy(text).AddListener("s0");
                 TryAssertionAfterCurrentRow(env, milestone);
@@ -133,12 +133,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a,b0,b1".SplitCsv();
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  measures A.theString as a, B[0].theString as b0, B[1].theString as b1" +
+                           "  measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1" +
                            "  AFTER MATCH SKIP TO NEXT ROW " +
                            "  pattern (A B*) " +
                            "  define " +
-                           "    A as A.theString like 'A%'," +
-                           "    B as B.theString like 'B%'" +
+                           "    A as A.TheString like 'A%'," +
+                           "    B as B.TheString like 'B%'" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -174,13 +174,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a_string,b_string".SplitCsv();
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  measures A.theString as a_string, B.theString as b_string " +
+                           "  measures A.TheString as a_string, B.TheString as b_string " +
                            "  all matches " +
                            "  after match skip to next row " +
                            "  pattern (A B) " +
                            "  define B as B.value > A.value" +
                            ") " +
-                           "order by a_string, b_string";
+"Order by a_string, b_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -263,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a0,b,a1".SplitCsv();
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  measures A[0].theString as a0, B.theString as b, A[1].theString as a1 " +
+                           "  measures A[0].TheString as a0, B.TheString as b, A[1].TheString as a1 " +
                            "  all matches " +
                            "  after match skip to next row " +
                            "  pattern ( A B A ) " +
@@ -323,14 +323,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a_string,a_value,b_value".SplitCsv();
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  partition by theString" +
-                           "  measures A.theString as a_string, A.value as a_value, B.value as b_value " +
+                           "  partition by TheString" +
+                           "  measures A.TheString as a_string, A.value as a_value, B.value as b_value " +
                            "  all matches " +
                            "  after match skip to next row " +
                            "  pattern (A B) " +
                            "  define B as (B.value > A.value)" +
                            ")" +
-                           " order by a_string";
+" Order by a_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -459,13 +459,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a_string,b_string".SplitCsv();
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  measures A.theString as a_string, B.theString as b_string " +
+                           "  measures A.TheString as a_string, B.TheString as b_string " +
                            "  all matches " +
                            "  after match skip past last row" +
                            "  pattern (A B) " +
                            "  define B as B.value > A.value" +
                            ") " +
-                           "order by a_string, b_string";
+"Order by a_string, b_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 

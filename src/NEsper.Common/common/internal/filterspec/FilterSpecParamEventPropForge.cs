@@ -8,6 +8,7 @@
 
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -33,7 +34,9 @@ namespace com.espertech.esper.common.@internal.filterspec
         private readonly string _resultEventProperty;
         private readonly ExprIdentNodeEvaluator _exprIdentNodeEvaluator;
         private readonly bool _isMustCoerce;
-        [NonSerialized] private readonly Coercer _numberCoercer;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly Coercer _numberCoercer;
         private readonly Type _coercionType;
 
         /// <summary>

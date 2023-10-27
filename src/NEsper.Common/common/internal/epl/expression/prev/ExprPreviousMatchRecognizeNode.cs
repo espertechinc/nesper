@@ -101,11 +101,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 .DeclareVar<
                     RowRecogStateRandomAccess>(
                     "access",
-                    ExprDotMethod(strategy, "getAccess", symbols.GetAddExprEvalCtx(method)))
+                    ExprDotMethod(strategy, "Access", symbols.GetAddExprEvalCtx(method)))
                 .DeclareVar<
                     EventBean>(
                     "substituteEvent",
-                    ExprDotMethod(Ref("access"), "getPreviousEvent", Constant(assignedIndex)))
+                    ExprDotMethod(Ref("access"), "GetPreviousEvent", Constant(assignedIndex)))
                 .IfRefNullReturnNull("substituteEvent")
                 .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(streamNumber)))
                 .AssignArrayElement(eps, Constant(streamNumber), Ref("substituteEvent"))

@@ -85,8 +85,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     SupportEventTypeAssertionUtil.AssertConsistency(statement.EventType);
                     SupportEventPropUtil.AssertPropsEquals(
                         statement.EventType.PropertyDescriptors.ToArray(),
-                        new SupportEventPropDesc("nested1simple", typeof(XmlNode)).WithFragment(),
-                        new SupportEventPropDesc("nested4array", typeof(XmlNode[])).WithIndexed().WithFragment());
+                        new SupportEventPropDesc("Nested1simple", typeof(XmlNode)).WithFragment(),
+                        new SupportEventPropDesc("Nested4array", typeof(XmlNode[])).WithIndexed().WithFragment());
                 });
             env.AssertStatement(
                 "s0",
@@ -95,12 +95,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.AssertStatement(
                 "insert",
                 statement => {
-                    var fragmentTypeNested1 = statement.EventType.GetFragmentType("nested1simple");
+                    var fragmentTypeNested1 = statement.EventType.GetFragmentType("Nested1simple");
                     Assert.IsFalse(fragmentTypeNested1.IsIndexed);
                     Assert.AreEqual(0, fragmentTypeNested1.FragmentType.PropertyDescriptors.Count);
                     SupportEventTypeAssertionUtil.AssertConsistency(fragmentTypeNested1.FragmentType);
 
-                    var fragmentTypeNested4 = statement.EventType.GetFragmentType("nested4array");
+                    var fragmentTypeNested4 = statement.EventType.GetFragmentType("Nested4array");
                     Assert.IsTrue(fragmentTypeNested4.IsIndexed);
                     Assert.AreEqual(0, fragmentTypeNested4.FragmentType.PropertyDescriptors.Count);
                     SupportEventTypeAssertionUtil.AssertConsistency(fragmentTypeNested4.FragmentType);
@@ -115,12 +115,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     var received = iterator.Advance();
                     EPAssertionUtil.AssertProps(
                         received,
-                        "nested1simple.prop1,nested1simple.prop2,nested1simple.attr1,nested1simple.nested2.prop3[1]"
+                        "Nested1simple.prop1,nested1simple.prop2,nested1simple.attr1,nested1simple.Nested2.prop3[1]"
                             .SplitCsv(),
                         new object[] { "SAMPLE_V1", "true", "SAMPLE_ATTR1", "4" });
                     EPAssertionUtil.AssertProps(
                         received,
-                        "nested4array[0].id,nested4array[0].prop5[1],nested4array[1].id".SplitCsv(),
+                        "Nested4array[0].Id,nested4array[0].prop5[1],nested4array[1].Id".SplitCsv(),
                         new object[] { "a", "SAMPLE_V8", "b" });
                 });
 
@@ -131,11 +131,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     var wildcardStmtEvent = iterator.Advance();
                     SupportEventTypeAssertionUtil.AssertConsistency(wildcardStmtEvent);
 
-                    var eventType = wildcardStmtEvent.EventType.GetFragmentType("nested1simple");
+                    var eventType = wildcardStmtEvent.EventType.GetFragmentType("Nested1simple");
                     Assert.IsFalse(eventType.IsIndexed);
                     Assert.IsFalse(eventType.IsNative);
                     Assert.AreEqual("MyNestedEvent", eventType.FragmentType.Name);
-                    Assert.IsTrue(wildcardStmtEvent.Get("nested1simple") is XmlNode);
+                    Assert.IsTrue(wildcardStmtEvent.Get("Nested1simple") is XmlNode);
                     Assert.AreEqual(
                         "SAMPLE_V1",
                         ((EventBean)wildcardStmtEvent.GetFragment("nested1simple")).Get("prop1"));

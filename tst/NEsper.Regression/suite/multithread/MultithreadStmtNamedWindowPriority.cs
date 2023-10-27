@@ -44,7 +44,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var events = EPAssertionUtil.EnumeratorToArray(stmtWindow.GetEnumerator());
             Assert.AreEqual(numThreads * numRepeats, events.Length);
             for (var i = 0; i < events.Length; i++) {
-                var valueC1 = (string) events[i].Get("c1");
+                var valueC1 = (string)events[i].Get("c1");
                 Assert.AreEqual("y", valueC1);
             }
         }

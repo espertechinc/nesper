@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             TrySend(env, 5, 10000);
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             Assert.AreEqual(rows.Length, totals.Count);
             long totalUpdates = 0;
             foreach (var row in rows) {
-                var key = new Pair<string, int>((string) row.Get("TheString"), row.Get("IntPrimitive").AsInt32());
+                var key = new Pair<string, int>((string)row.Get("TheString"), row.Get("IntPrimitive").AsInt32());
                 var total = totals.Get(key);
                 Assert.AreEqual(total.Num, row.Get("IntBoxed"));
                 Assert.AreEqual(total.Sum, row.Get("DoublePrimitive"));

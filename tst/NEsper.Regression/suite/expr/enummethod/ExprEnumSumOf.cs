@@ -102,9 +102,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3,c4".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_Container");
-                builder.WithExpression(fields[0], "beans.sumOf(x => intBoxed)");
-                builder.WithExpression(fields[1], "beans.sumOf(x => doubleBoxed)");
-                builder.WithExpression(fields[2], "beans.sumOf(x => longBoxed)");
+                builder.WithExpression(fields[0], "beans.sumOf(x => IntBoxed)");
+                builder.WithExpression(fields[1], "beans.sumOf(x => DoubleBoxed)");
+                builder.WithExpression(fields[2], "beans.sumOf(x => LongBoxed)");
                 builder.WithExpression(fields[3], "beans.sumOf(x => bigDecimal)");
                 builder.WithExpression(fields[4], "beans.sumOf(x => bigInteger)");
 
@@ -140,9 +140,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_Container");
-                builder.WithExpression(fields[0], "beans.sumOf(x => intBoxed)");
-                builder.WithExpression(fields[1], "beans.sumOf( (x, i) => intBoxed + i*10)");
-                builder.WithExpression(fields[2], "beans.sumOf( (x, i, s) => intBoxed + i*10 + s*100)");
+                builder.WithExpression(fields[0], "beans.sumOf(x => IntBoxed)");
+                builder.WithExpression(fields[1], "beans.sumOf( (x, i) => IntBoxed + i*10)");
+                builder.WithExpression(fields[2], "beans.sumOf( (x, i, s) => IntBoxed + i*10 + s*100)");
                 builder.WithExpression(fields[3], "beans.sumOf( (x, i) => case when i = 1 then null else 1 end)");
 
                 builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
@@ -204,10 +204,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.sumOf(v => extractNum(v))");
-                builder.WithExpression(fields[1], "strvals.sumOf(v => extractDecimal(v))");
-                builder.WithExpression(fields[2], "strvals.sumOf( (v, i) => extractNum(v) + i*10)");
-                builder.WithExpression(fields[3], "strvals.sumOf( (v, i, s) => extractNum(v) + i*10 + s*100)");
+                builder.WithExpression(fields[0], "Strvals.sumOf(v => extractNum(v))");
+                builder.WithExpression(fields[1], "Strvals.sumOf(v => extractDecimal(v))");
+                builder.WithExpression(fields[2], "Strvals.sumOf( (v, i) => extractNum(v) + i*10)");
+                builder.WithExpression(fields[3], "Strvals.sumOf( (v, i, s) => extractNum(v) + i*10 + s*100)");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypes(
@@ -239,10 +239,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     epl,
                     "Failed to validate select-clause expression 'beans.sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '");
 
-                epl = "select strvals.sumOf(v => null) from SupportCollection";
+                epl = "select Strvals.sumOf(v => null) from SupportCollection";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'strvals.sumOf()': Failed to validate enumeration method 'sumOf', expected a non-null result for expression parameter 0 but received a null-typed expression");
+                    "Failed to validate select-clause expression 'Strvals.sumOf()': Failed to validate enumeration method 'sumOf', expected a non-null result for expression parameter 0 but received a null-typed expression");
             }
         }
 

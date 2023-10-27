@@ -42,25 +42,25 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         private void RunAssertionTwoStatementNoDelete(RegressionEnvironment env)
         {
             var fields = "c0".SplitCsv();
-            var eplOne = "@name('S1') select * from SupportBean(theString='A') " +
+            var eplOne = "@name('S1') select * from SupportBean(TheString='A') " +
                          "match_recognize (" +
-                         "  measures P1.longPrimitive as c0" +
+                         "  measures P1.LongPrimitive as c0" +
                          "  pattern (P1 P2 P3) " +
                          "  define " +
-                         "    P1 as P1.intPrimitive = 1," +
-                         "    P2 as P2.intPrimitive = 1," +
-                         "    P3 as P3.intPrimitive = 2 and P3.longPrimitive = P1.longPrimitive" +
+                         "    P1 as P1.IntPrimitive = 1," +
+                         "    P2 as P2.IntPrimitive = 1," +
+                         "    P3 as P3.IntPrimitive = 2 and P3.LongPrimitive = P1.LongPrimitive" +
                          ")";
             env.CompileDeploy(eplOne).AddListener("S1");
 
-            var eplTwo = "@name('S2') select * from SupportBean(theString='B') " +
+            var eplTwo = "@name('S2') select * from SupportBean(TheString='B') " +
                          "match_recognize (" +
-                         "  measures P1.longPrimitive as c0" +
+                         "  measures P1.LongPrimitive as c0" +
                          "  pattern (P1 P2 P3) " +
                          "  define " +
-                         "    P1 as P1.intPrimitive = 1," +
-                         "    P2 as P2.intPrimitive = 1," +
-                         "    P3 as P3.intPrimitive = 2 and P3.longPrimitive = P1.longPrimitive" +
+                         "    P1 as P1.IntPrimitive = 1," +
+                         "    P2 as P2.IntPrimitive = 1," +
+                         "    P3 as P3.IntPrimitive = 2 and P3.LongPrimitive = P1.LongPrimitive" +
                          ")";
             env.CompileDeploy(eplTwo).AddListener("S2");
 
@@ -130,16 +130,16 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "c0".SplitCsv();
             var path = new RegressionPath();
             var eplCtx =
-                "@public create context MyCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(p10 = s0.p00)";
+                "@public create context MyCtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(P10 = s0.P00)";
             env.CompileDeploy(eplCtx, path);
 
-            var epl = "@name('S1') context MyCtx select * from SupportBean(theString = context.s0.p00) " +
+            var epl = "@name('S1') context MyCtx select * from SupportBean(TheString = context.s0.P00) " +
                       "match_recognize (" +
-                      "  measures P2.theString as c0" +
+                      "  measures P2.TheString as c0" +
                       "  pattern (P1 P2) " +
                       "  define " +
-                      "    P1 as P1.intPrimitive = 1," +
-                      "    P2 as P2.intPrimitive = 2" +
+                      "    P1 as P1.IntPrimitive = 1," +
+                      "    P2 as P2.IntPrimitive = 2" +
                       ")";
             env.CompileDeploy(epl, path).AddListener("S1");
 
@@ -179,17 +179,17 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.CompileDeploy(namedWindow, path);
             var insert = "insert into MyWindow select * from SupportBean";
             env.CompileDeploy(insert, path);
-            var delete = "on SupportBean_S0 delete from MyWindow where theString = p00";
+            var delete = "on SupportBean_S0 delete from MyWindow where TheString = P00";
             env.CompileDeploy(delete, path);
 
             var epl = "@name('S1') select * from MyWindow " +
                       "match_recognize (" +
-                      "  partition by theString " +
-                      "  measures P1.longPrimitive as c0, P2.longPrimitive as c1" +
+                      "  partition by TheString " +
+                      "  measures P1.LongPrimitive as c0, P2.LongPrimitive as c1" +
                       "  pattern (P1 P2) " +
                       "  define " +
-                      "    P1 as P1.intPrimitive = 0," +
-                      "    P2 as P2.intPrimitive = 1" +
+                      "    P1 as P1.IntPrimitive = 0," +
+                      "    P2 as P2.IntPrimitive = 1" +
                       ")";
 
             env.CompileDeploy(epl, path).AddListener("S1");
@@ -237,18 +237,18 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.CompileDeploy(namedWindow, path);
             var insert = "insert into MyWindow select * from SupportBean";
             env.CompileDeploy(insert, path);
-            var delete = "on SupportBean_S0 delete from MyWindow where theString = p00 and intPrimitive = id";
+            var delete = "on SupportBean_S0 delete from MyWindow where TheString = P00 and IntPrimitive = Id";
             env.CompileDeploy(delete, path);
 
             var epl = "@name('S1') select * from MyWindow " +
                       "match_recognize (" +
-                      "  partition by theString " +
-                      "  measures P1.longPrimitive as c0, P2.longPrimitive as c1, P3.longPrimitive as c2" +
+                      "  partition by TheString " +
+                      "  measures P1.LongPrimitive as c0, P2.LongPrimitive as c1, P3.LongPrimitive as c2" +
                       "  pattern (P1 P2 P3) " +
                       "  define " +
-                      "    P1 as P1.intPrimitive = 0," +
-                      "    P2 as P2.intPrimitive = 1," +
-                      "    P3 as P3.intPrimitive = 2" +
+                      "    P1 as P1.IntPrimitive = 0," +
+                      "    P2 as P2.IntPrimitive = 1," +
+                      "    P3 as P3.IntPrimitive = 2" +
                       ")";
             env.CompileDeploy(epl, path).AddListener("S1");
 

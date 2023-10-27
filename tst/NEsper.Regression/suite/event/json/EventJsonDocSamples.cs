@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                         "person",
                         new JObject(
                             new JProperty("name", "Joe"),
-                            new JProperty("id", uuid.ToString())
+                            new JProperty("Id", uuid.ToString())
                         )));
                 env.SendEventJson(json.ToString(), "JsonEvent");
                 env.AssertEventNew(
@@ -150,22 +150,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public @buseventtype create json schema CarLocUpdateEvent(carId string, direction int)",
+                    "@public @buseventtype create json schema CarLocUpdateEvent(CarId string, Direction int)",
                     path);
                 env.CompileDeploy(
-                        "@name('s0') select carId, direction, count(*) as cnt from CarLocUpdateEvent(direction = 1)#time(1 min)",
+                        "@name('s0') select CarId, Direction, count(*) as cnt from CarLocUpdateEvent(Direction = 1)#time(1 min)",
                         path)
                     .AddListener("s0");
 
                 var @event = "{" +
-                             "  \"carId\" : \"A123456\",\n" +
-                             "  \"direction\" : 1\n" +
+                             "  \"CarId\" : \"A123456\",\n" +
+                             "  \"Direction\" : 1\n" +
                              "}";
                 env.SendEventJson(@event, "CarLocUpdateEvent");
 
                 env.AssertPropsNew(
                     "s0",
-                    "carId,direction,cnt".SplitCsv(),
+                    "CarId,Direction,cnt".SplitCsv(),
                     new object[] { "A123456", 1, 1L });
 
                 env.UndeployAll();
@@ -214,14 +214,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             {
                 var epl = "create json schema IdAndType(int string, type string);\n" +
                           "create json schema Batters(machine string, batter IdAndType[]);\n" +
-                          "@public @buseventtype create json schema CakeEvent(id string, type string, name string, batters Batters, topping IdAndType[]);\n" +
+                          "@public @buseventtype create json schema CakeEvent(Id string, type string, name string, batters Batters, topping IdAndType[]);\n" +
                           "@name('s0') select name, batters.batter[0].type as firstBatterType,\n" +
                           "  topping[0].type as firstToppingType, batters.machine as batterMachine, batters.batter.countOf() as countBatters,\n" +
                           "  topping.countOf() as countToppings from CakeEvent;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var json = "{\n" +
-                           "  \"id\": \"0001\",\n" +
+                           "  \"Id\": \"0001\",\n" +
                            "  \"type\": \"donut\",\n" +
                            "  \"name\": \"Cake\",\n" +
                            "  \"batters\": \t\n" +
@@ -229,18 +229,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                            "    \"machine\": \"machine A\",\n" +
                            "    \"batter\":\n" +
                            "    [\n" +
-                           "      { \"id\": \"1001\", \"type\": \"Regular\" },\n" +
-                           "      { \"id\": \"1002\", \"type\": \"Chocolate\" },\n" +
-                           "      { \"id\": \"1003\", \"type\": \"Blueberry\" },\n" +
-                           "      { \"id\": \"1004\", \"type\": \"Devil's Food\" }\n" +
+                           "      { \"Id\": \"1001\", \"type\": \"Regular\" },\n" +
+                           "      { \"Id\": \"1002\", \"type\": \"Chocolate\" },\n" +
+                           "      { \"Id\": \"1003\", \"type\": \"Blueberry\" },\n" +
+                           "      { \"Id\": \"1004\", \"type\": \"Devil's Food\" }\n" +
                            "    ]\n" +
                            "  },\n" +
                            "  \"topping\":\n" +
                            "  [\n" +
-                           "    { \"id\": \"5001\", \"type\": \"None\" },\n" +
-                           "    { \"id\": \"5002\", \"type\": \"Glazed\" },\n" +
-                           "    { \"id\": \"5005\", \"type\": \"Sugar\" },\n" +
-                           "    { \"id\": \"5007\", \"type\": \"Powdered Sugar\" }\n" +
+                           "    { \"Id\": \"5001\", \"type\": \"None\" },\n" +
+                           "    { \"Id\": \"5002\", \"type\": \"Glazed\" },\n" +
+                           "    { \"Id\": \"5005\", \"type\": \"Sugar\" },\n" +
+                           "    { \"Id\": \"5007\", \"type\": \"Powdered Sugar\" }\n" +
                            "  ]\n" +
                            "}";
                 env.SendEventJson(json, "CakeEvent");

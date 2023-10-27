@@ -64,14 +64,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var milestone = new AtomicLong();
 
-                var epl = "@name('s0') select irstream symbol," +
-                          "median(all price) as myMedian," +
-                          "median(distinct price) as myDistMedian," +
-                          "stddev(all price) as myStdev," +
-                          "avedev(all price) as myAvedev " +
+                var epl = "@name('s0') select irstream Symbol,"+
+                          "median(all Price) as myMedian," +
+                          "median(distinct Price) as myDistMedian," +
+                          "stddev(all Price) as myStdev," +
+                          "avedev(all Price) as myAvedev " +
                           "from SupportMarketDataBean#length(5) " +
-                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
-                          "group by symbol";
+"where Symbol='DELL' or Symbol='IBM' or Symbol='GE' "+
+"group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertionStmt(env, milestone);
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 // Test NaN sensitivity
                 env.UndeployAll();
 
-                epl = "@name('s0') select stddev(price) as val from SupportMarketDataBean#length(3)";
+                epl = "@name('s0') select stddev(Price) as val from SupportMarketDataBean#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "A", double.NaN);
@@ -114,11 +114,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create("symbol")
-                    .Add(Expressions.Median("price"), "myMedian")
-                    .Add(Expressions.MedianDistinct("price"), "myDistMedian")
-                    .Add(Expressions.Stddev("price"), "myStdev")
-                    .Add(Expressions.Avedev("price"), "myAvedev")
+                model.SelectClause = SelectClause.Create("Symbol")
+                    .Add(Expressions.Median("Price"), "myMedian")
+                    .Add(Expressions.MedianDistinct("Price"), "myDistMedian")
+                    .Add(Expressions.Stddev("Price"), "myStdev")
+                    .Add(Expressions.Avedev("Price"), "myAvedev")
                     .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH);
 
                 var fromClause = FromClause.Create(
@@ -130,24 +130,24 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 model.WhereClause = Expressions.And()
                     .Add(
                         Expressions.Or()
-                            .Add(Expressions.Eq("symbol", "DELL"))
-                            .Add(Expressions.Eq("symbol", "IBM"))
-                            .Add(Expressions.Eq("symbol", "GE"))
+                            .Add(Expressions.Eq("Symbol", "DELL"))
+                            .Add(Expressions.Eq("Symbol", "IBM"))
+                            .Add(Expressions.Eq("Symbol", "GE"))
                     )
-                    .Add(Expressions.EqProperty("one.theString", "two.symbol"));
-                model.GroupByClause = GroupByClause.Create("symbol");
+                    .Add(Expressions.EqProperty("one.TheString", "two.Symbol"));
+                model.GroupByClause = GroupByClause.Create("Symbol");
                 model = env.CopyMayFail(model);
 
-                var epl = "select irstream symbol, " +
-                          "median(price) as myMedian, " +
-                          "median(distinct price) as myDistMedian, " +
-                          "stddev(price) as myStdev, " +
-                          "avedev(price) as myAvedev " +
+                var epl = "select irstream Symbol, "+
+                          "median(Price) as myMedian, " +
+                          "median(distinct Price) as myDistMedian, " +
+                          "stddev(Price) as myStdev, " +
+                          "avedev(Price) as myAvedev " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(5) as two " +
-                          "where (symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\") " +
-                          "and one.theString=two.symbol " +
-                          "group by symbol";
+"where (Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\") "+
+"and one.TheString=two.Symbol "+
+"group by Symbol";
                 Assert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -167,16 +167,16 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream symbol," +
-                          "median(price) as myMedian," +
-                          "median(distinct price) as myDistMedian," +
-                          "stddev(price) as myStdev," +
-                          "avedev(price) as myAvedev " +
+                var epl = "@name('s0') select irstream Symbol,"+
+                          "median(Price) as myMedian," +
+                          "median(distinct Price) as myDistMedian," +
+                          "stddev(Price) as myStdev," +
+                          "avedev(Price) as myAvedev " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(5) as two " +
-                          "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                          "       and one.theString = two.symbol " +
-                          "group by symbol";
+"where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') "+
+"       and one.TheString = two.Symbol "+
+"group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
@@ -197,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("symbol"));
+                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
                     Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myMedian"));
                     Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myDistMedian"));
                     Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myStdev"));
@@ -323,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     Assert.AreEqual(1, oldData.Length);
                     Assert.AreEqual(1, newData.Length);
 
-                    Assert.AreEqual(symbol, oldData[0].Get("symbol"));
+                    Assert.AreEqual(symbol, oldData[0].Get("Symbol"));
                     Assert.AreEqual(oldMedian, oldData[0].Get("myMedian"), "oldData.myMedian wrong");
                     Assert.AreEqual(oldDistMedian, oldData[0].Get("myDistMedian"), "oldData.myDistMedian wrong");
                     Assert.AreEqual(oldAvedev, oldData[0].Get("myAvedev"), "oldData.myAvedev wrong");
@@ -339,7 +339,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                             "oldData.myStdev wrong");
                     }
 
-                    Assert.AreEqual(symbol, newData[0].Get("symbol"));
+                    Assert.AreEqual(symbol, newData[0].Get("Symbol"));
                     Assert.AreEqual(newMedian, newData[0].Get("myMedian"), "newData.myMedian wrong");
                     Assert.AreEqual(newDistMedian, newData[0].Get("myDistMedian"), "newData.myDistMedian wrong");
                     Assert.AreEqual(newAvedev, newData[0].Get("myAvedev"), "newData.myAvedev wrong");

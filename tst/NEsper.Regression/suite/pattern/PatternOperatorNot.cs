@@ -114,14 +114,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("B2", "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B and not a=SupportBean_A(id='A1')");
+                testCase = new EventExpressionCase("b=SupportBean_B and not a=SupportBean_A(Id='A1')");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B and not a2=SupportBean_A(id='A2')");
+                testCase = new EventExpressionCase("b=SupportBean_B and not a2=SupportBean_A(Id='A2')");
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("every (b=SupportBean_B and not b3=SupportBean_B(id='B3'))");
+                testCase = new EventExpressionCase("every (b=SupportBean_B and not b3=SupportBean_B(Id='B3'))");
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCase.Add("B2", "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
@@ -129,13 +129,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase = new EventExpressionCase("every (b=SupportBean_B or not SupportBean_D())");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("every (every b=SupportBean_B and not SupportBean_B(id='B2'))");
+                testCase = new EventExpressionCase("every (every b=SupportBean_B and not SupportBean_B(Id='B2'))");
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCase.Add("B3", "b", events.GetEvent("B3"));
                 testCase.Add("B3", "b", events.GetEvent("B3"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("every (b=SupportBean_B and not SupportBean_B(id='B2'))");
+                testCase = new EventExpressionCase("every (b=SupportBean_B and not SupportBean_B(Id='B2'))");
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCase.Add("B3", "b", events.GetEvent("B3"));
                 testCaseList.AddTest(testCase);
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 testCase = new EventExpressionCase(
                     "every (b=SupportBean_B -> d=SupportBean_D) and " +
-                    " not SupportBean_G(id='x')");
+                    " not SupportBean_G(Id='x')");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
                 testCaseList.AddTest(testCase);
@@ -207,14 +207,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("B2", "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B and not a=SupportBean_A(id='A1')");
+                testCase = new EventExpressionCase("b=SupportBean_B and not a=SupportBean_A(Id='A1')");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B and not a2=SupportBean_A(id='A2')");
+                testCase = new EventExpressionCase("b=SupportBean_B and not a2=SupportBean_A(Id='A2')");
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("every (b=SupportBean_B and not b3=SupportBean_B(id='B3'))");
+                testCase = new EventExpressionCase("every (b=SupportBean_B and not b3=SupportBean_B(Id='B3'))");
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCase.Add("B2", "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
@@ -222,13 +222,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase = new EventExpressionCase("every (b=SupportBean_B or not SupportBean_D())");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("every (every b=SupportBean_B and not SupportBean_B(id='B2'))");
+                testCase = new EventExpressionCase("every (every b=SupportBean_B and not SupportBean_B(Id='B2'))");
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCase.Add("B3", "b", events.GetEvent("B3"));
                 testCase.Add("B3", "b", events.GetEvent("B3"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("every (b=SupportBean_B and not SupportBean_B(id='B2'))");
+                testCase = new EventExpressionCase("every (b=SupportBean_B and not SupportBean_B(Id='B2'))");
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCase.Add("B3", "b", events.GetEvent("B3"));
                 testCaseList.AddTest(testCase);
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 testCase = new EventExpressionCase(
                     "every (b=SupportBean_B -> d=SupportBean_D) and " +
-                    " not SupportBean_G(id='x')");
+                    " not SupportBean_G(Id='x')");
                 testCase.Add("D1", "b", events.GetEvent("B1"), "d", events.GetEvent("D1"));
                 testCase.Add("D3", "b", events.GetEvent("B3"), "d", events.GetEvent("D3"));
                 testCaseList.AddTest(testCase);
@@ -269,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var events = EventCollectionFactory.GetSetTwoExternalClock(0, 1000);
                 var results = new CaseList();
 
-                var desc = new EventExpressionCase("every a=SupportBean_A() and not a1=SupportBean_A(id='A4')");
+                var desc = new EventExpressionCase("every a=SupportBean_A() and not a1=SupportBean_A(Id='A4')");
                 desc.Add("B1", "a", events.GetEvent("B1"));
                 desc.Add("B2", "a", events.GetEvent("B2"));
                 desc.Add("B3", "a", events.GetEvent("B3"));
@@ -284,8 +284,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select A.theString as theString from pattern " +
-                           "[every A=SupportBean(intPrimitive=123) -> (timer:interval(30 seconds) and not SupportMarketDataBean(volume=123, symbol=A.theString))]";
+                var text = "@name('s0') select A.TheString as TheString from pattern " +
+"[every A=SupportBean(IntPrimitive=123) -> (timer:interval(30 seconds) and not SupportMarketDataBean(Volume=123, Symbol=A.TheString))]";
                 env.CompileDeploy(text);
 
                 env.AddListener("s0");
@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.Milestone(1);
 
                 SendTimer(40000, env);
-                var fields = new string[] { "theString" };
+                var fields = new string[] { "TheString" };
                 env.AssertPropsNew("s0", fields, new object[] { "E2" });
 
                 env.UndeployAll();
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select * from pattern [ every( SupportBean(intPrimitive>0) -> (SupportMarketDataBean and not SupportBean(intPrimitive=0) ) ) ]";
+                    "@name('s0') select * from pattern [ every( SupportBean(IntPrimitive>0) -> (SupportMarketDataBean and not SupportBean(IntPrimitive=0) ) ) ]";
                 env.CompileDeploy(stmtText);
 
                 env.AddListener("s0");
@@ -347,7 +347,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var fields = "c0".SplitCsv();
 
                 var epl =
-                    "@name('s0') select a.theString as c0 from pattern [(every a=SupportBean(intPrimitive>=0)) and not SupportBean(intPrimitive<0)]";
+                    "@name('s0') select a.TheString as c0 from pattern [(every a=SupportBean(IntPrimitive>=0)) and not SupportBean(IntPrimitive<0)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);

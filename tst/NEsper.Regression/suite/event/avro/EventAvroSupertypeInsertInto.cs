@@ -17,18 +17,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
 {
     public class EventAvroSupertypeInsertInto : RegressionExecution
     {
-        private static readonly string[] FIELDS = new string[] { "symbol" };
+        private static readonly string[] FIELDS = new string[] { "Symbol"};
 
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@name('input') @public @buseventtype create avro schema Input(symbol string, price double);\n" +
+            var epl = "@name('input') @public @buseventtype create avro schema Input(Symbol string, Price double);\n"+
                       "\n" +
-                      "@public @buseventtype create avro schema SuperType(symbol string);\n" +
+"@public @buseventtype create avro schema SuperType(Symbol string);\n"+
                       "@public @buseventtype create avro schema B() inherits SuperType;\n" +
                       "@public @buseventtype create avro schema A() inherits SuperType;\n" +
                       "\n" +
-                      "insert into B select symbol from Input(symbol = 'B');\n" +
-                      "insert into A select symbol from Input(symbol = 'A');\n" +
+"insert into B select Symbol from Input(Symbol = 'B');\n"+
+"insert into A select Symbol from Input(Symbol = 'A');\n"+
                       "\n" +
                       "@name('ss') select * from SuperType;\n" +
                       "@name('sa') select * from A;\n" +
@@ -54,8 +54,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
         {
             var schema = env.RuntimeAvroSchemaByDeployment("input", "Input").AsRecordSchema();
             var rec = new GenericRecord(schema);
-            rec.Put("symbol", symbol);
-            rec.Put("price", 1d);
+            rec.Put("Symbol", symbol);
+            rec.Put("Price", 1d);
             env.SendEventAvro(rec, "Input");
         }
 

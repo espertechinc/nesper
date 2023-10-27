@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                         "Isaac Asimov",
                         15.00d,
                         new[] {
-                            new Review(201, "great book")
+                            new Review(201, "great Book")
                         }),
                     new BookDesc(
                         "10032", "Red Planet", "Robert A Heinlein", 13.00d, Array.Empty<Review>())
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                     "Orson Scott Card",
                     24.00d,
                     new[] {
-                        new Review(1, "best book ever"),
+                        new Review(1, "best Book ever"),
                         new Review(2, "good science fiction")
                     }),
                 new BookDesc(
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.support.bookexample
                     "Isaac Asimov",
                     35.00d,
                     new[] {
-                        new Review(10, "great book")
+                        new Review(10, "great Book")
                     }),
                 new BookDesc(
                     "10022",

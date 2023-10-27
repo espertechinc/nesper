@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             {
                 // test map containing first-level property that is an array of primitive or Class
                 env.CompileDeploy(
-                    "@name('s0') select p0[0] as a, p0[1] as b, p1[0].intPrimitive as c, p1[1] as d, p0 as e from MyArrayOA");
+                    "@name('s0') select p0[0] as a, p0[1] as b, p1[0].IntPrimitive as c, p1[1] as d, p0 as e from MyArrayOA");
                 env.AddListener("s0");
 
                 var p0 = new int[] { 1, 2, 3 };
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 // test map at the second level of a nested map that is an array of primitive or Class
                 env.CompileDeploy(
-                    "@name('s0') select outer.p0[0] as a, outer.p0[1] as b, outer.p1[0].intPrimitive as c, outer.p1[1] as d, outer.p0 as e from MyArrayOAMapOuter");
+                    "@name('s0') select outer.p0[0] as a, outer.p0[1] as b, outer.p1[0].IntPrimitive as c, outer.p1[1] as d, outer.p0 as e from MyArrayOAMapOuter");
                 env.AddListener("s0");
 
                 env.SendEventObjectArray(new object[] { eventData }, "MyArrayOAMapOuter");

@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.settings
             try {
                 resolved = importService.ResolveType(typeName, false, extension);
             }
-            catch (TypeLoadException e) {
+            catch (TypeLoadException) {
                 // expected
             }
 
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.settings
                 try {
                     resolved = TypeHelper.GetTypeForName(typeName, importService.TypeResolver);
                 }
-                catch (TypeLoadException e) {
+                catch (TypeLoadException) {
                     // expected
                 }
             }

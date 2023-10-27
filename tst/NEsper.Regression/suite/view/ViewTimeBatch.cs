@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 SendTimer(env, 0);
 
-                var fields = "symbol".SplitCsv();
+                var fields = "Symbol".SplitCsv();
                 var text = "@name('s0') select irstream * from SupportMarketDataBean#time_batch(1 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString".SplitCsv();
+                var fields = "TheString".SplitCsv();
 
                 SendTimer(env, 0);
                 var epl = "@name('s0') select irstream * from SupportBean#time_batch(10 sec)";
@@ -345,18 +345,18 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListenerNotInvoked("s0");
 
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
-                env.AssertPropsNew("s0", "theString".SplitCsv(), new object[] { "E1" });
+                env.AssertPropsNew("s0", "TheString".SplitCsv(), new object[] { "E1" });
 
                 env.SendEventBean(new SupportBean("E2", 1));
                 SendCurrentTimeWithMinus(env, "2002-04-01T09:00:00.000", 1);
                 env.AssertListenerNotInvoked("s0");
 
                 SendCurrentTime(env, "2002-04-01T09:00:00.000");
-                env.AssertPropsNew("s0", "theString".SplitCsv(), new object[] { "E2" });
+                env.AssertPropsNew("s0", "TheString".SplitCsv(), new object[] { "E2" });
 
                 env.SendEventBean(new SupportBean("E3", 1));
                 SendCurrentTime(env, "2002-05-01T09:00:00.000");
-                env.AssertPropsNew("s0", "theString".SplitCsv(), new object[] { "E3" });
+                env.AssertPropsNew("s0", "TheString".SplitCsv(), new object[] { "E3" });
 
                 env.UndeployAll();
             }
@@ -388,10 +388,10 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListenerNotInvoked("s0");
 
                 SendTimer(env, 4000);
-                env.AssertPropsNew("s0", "theString".SplitCsv(), new object[] { "E1" });
+                env.AssertPropsNew("s0", "TheString".SplitCsv(), new object[] { "E1" });
 
                 SendTimer(env, 5000);
-                env.AssertPropsOld("s0", "theString".SplitCsv(), new object[] { "E1" });
+                env.AssertPropsOld("s0", "TheString".SplitCsv(), new object[] { "E1" });
 
                 SendTimer(env, 5999);
                 env.AssertListenerNotInvoked("s0");
@@ -413,7 +413,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 0);
 
                 var text =
-                    "@name('s0') select irstream symbol from SupportMarketDataBean#time_batch(1 sec, \"START_EAGER, FORCE_UPDATE\")";
+"@name('s0') select irstream Symbol from SupportMarketDataBean#time_batch(1 sec, \"START_EAGER, FORCE_UPDATE\")";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendTimer(env, 1000);
@@ -432,7 +432,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 3000);
                 env.AssertPropsPerRowLastNew(
                     "s0",
-                    new string[] { "symbol" },
+                    new string[] { "Symbol"},
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 env.Milestone(2);
@@ -440,7 +440,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 4000);
                 env.AssertPropsPerRowLastOld(
                     "s0",
-                    new string[] { "symbol" },
+                    new string[] { "Symbol"},
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 SendTimer(env, 5000);
@@ -470,7 +470,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                     SendTimer(env, sec);
                     for (var j = 0; j < numEvents; j++) {
-                        env.SendEventBean(MakeMarketDataEvent("E_" + count));
+                        env.SendEventBean(MakeMarketDataEvent($"E_{count}"));
                         count++;
                     }
 
@@ -486,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString".SplitCsv();
+                var fields = "TheString".SplitCsv();
 
                 SendTimer(env, 0);
                 var epl = "@name('s0') select irstream * from SupportBean#time_batch(10 sec)";
@@ -569,7 +569,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString".SplitCsv();
+                var fields = "TheString".SplitCsv();
 
                 SendTimer(env, 0);
                 var epl = "@name('s0') select irstream * from SupportBean#time_batch(10 sec)";

@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat.collections;
@@ -23,7 +24,9 @@ namespace com.espertech.esper.common.@internal.util
     [Serializable]
     public sealed class ComparatorHashableMultiKeyCollating : IComparer<HashableMultiKey>
     {
-        [NonSerialized] private readonly IComparer<object> _collator;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly IComparer<object> _collator;
         private readonly bool[] _isDescendingValues;
         private readonly bool[] _stringTypedValue;
 

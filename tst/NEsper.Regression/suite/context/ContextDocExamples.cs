@@ -25,13 +25,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             Create(
                 env,
                 path,
-                "context SegmentedByCustomer select custId, account, sum(amount) from BankTxn group by account");
+                "context SegmentedByCustomer select custId, account, sum(Amount) from BankTxn group by account");
             Create(
                 env,
                 path,
                 "context SegmentedByCustomer\n" +
                 "select * from pattern [\n" +
-                "every a=BankTxn(amount > 400) -> b=BankTxn(amount > 400) where timer:within(10 minutes)\n" +
+                "every a=BankTxn(amount > 400) -> b=BankTxn(Amount > 400) where timer:within(10 minutes)\n" +
                 "]");
             UndeployClearPath(env, path);
             Create(
@@ -50,12 +50,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "@Public create context ByCustomerAndAccount partition by custId and account from BankTxn");
-            Create(env, path, "context ByCustomerAndAccount select custId, account, sum(amount) from BankTxn");
+            Create(env, path, "context ByCustomerAndAccount select custId, account, sum(Amount) from BankTxn");
             Create(
                 env,
                 path,
                 "context ByCustomerAndAccount\n" +
-                "  select context.name, context.id, context.key1, context.key2 from BankTxn");
+                "  select context.name, context.Id, context.key1, context.key2 from BankTxn");
             UndeployClearPath(env, path);
             Create(env, path, "@Public create context ByCust partition by custId from BankTxn");
             Create(
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path,
                 "context ByCust\n" +
                 "select * from BankTxn as t1 unidirectional, BankTxn#time(30) t2\n" +
-                "where t1.amount = t2.amount");
+                "where t1.amount = t2.Amount");
             Create(
                 env,
                 path,
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context CategoryByTemp\n" +
-                "select context.name, context.id, context.label from SensorEvent");
+                "select context.name, context.Id, context.label from SensorEvent");
             Create(env, path, "@Public create context NineToFive start (0, 9, *, *, *) end (0, 17, *, *, *)");
             Create(env, path, "context NineToFive select * from TrafficEvent(speed >= 100)");
             Create(
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context CtxTrainEnter\n" +
-                "select *, context.te.trainId, context.id, context.name from TrainLeaveEvent(trainId = context.te.trainId)");
+                "select *, context.te.trainId, context.Id, context.name from TrainLeaveEvent(trainId = context.te.trainId)");
             Create(
                 env,
                 path,
@@ -120,12 +120,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context CtxEachMinute\n" +
-                "select context.id, avg(temp) from SensorEvent output snapshot when terminated");
+                "select context.Id, avg(temp) from SensorEvent output snapshot when terminated");
             Create(
                 env,
                 path,
                 "context CtxEachMinute\n" +
-                "select context.id, avg(temp) from SensorEvent output snapshot every 1 minute and when terminated");
+                "select context.Id, avg(temp) from SensorEvent output snapshot every 1 minute and when terminated");
             Create(
                 env,
                 path,
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context SegmentedByCustomerHash\n" +
-                "select custId, account, sum(amount) from BankTxn group by custId, account");
+                "select custId, account, sum(Amount) from BankTxn group by custId, account");
             Create(
                 env,
                 path,
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context ByCustomerHash\n" +
-                "select context.name, context.id from BankTxn");
+                "select context.name, context.Id from BankTxn");
 
             Create(
                 env,
@@ -185,7 +185,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context NineToFiveSegmented\n" +
-                "select custId, account, sum(amount) from BankTxn group by account");
+                "select custId, account, sum(Amount) from BankTxn group by account");
             Create(
                 env,
                 path,
@@ -197,14 +197,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context CtxNestedTrainEnter\n" +
-                "select context.InitCtx.te.trainId, context.HashCtx.id,\n" +
+                "select context.InitCtx.te.trainId, context.HashCtx.Id,\n" +
                 "tagId, count(*) from PassengerScanEvent group by tagId");
             Create(
                 env,
                 path,
                 "context NineToFiveSegmented\n" +
                 "select context.NineToFive.startTime, context.SegmentedByCustomer.key1 from BankTxn");
-            Create(env, path, "context NineToFiveSegmented select context.name, context.id from BankTxn");
+            Create(env, path, "context NineToFiveSegmented select context.name, context.Id from BankTxn");
 
             Create(env, path, "@Public create context MyContext start MyStartEvent end MyEndEvent");
             Create(
@@ -216,13 +216,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path,
                 "@Public create context MyContext3 \n" +
                 "start MyEvent as myevent\n" +
-                "end MyEvent(id=myevent.id)");
+                "end MyEvent(Id=myevent.Id)");
             Create(
                 env,
                 path,
                 "@Public create context MyContext4 \n" +
                 "initiated by MyInitEvent as e1 \n" +
-                "terminated by MyTermEvent(id=e1.id, level <> e1.level)");
+                "terminated by MyTermEvent(Id=e1.Id, level <> e1.level)");
             Create(
                 env,
                 path,
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path,
                 "@Public create context MyContext7 \n" +
                 "  start pattern [a=StartEventOne or  b=StartEventTwo]\n" +
-                "  end pattern [EndEventOne(id=a.id) or EndEventTwo(id=b.id)]");
+                "  end pattern [EndEventOne(id=a.Id) or EndEventTwo(Id=b.Id)]");
             Create(
                 env,
                 path,
@@ -251,19 +251,19 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path,
                 "@Public create context CtxSample\n" +
                 "initiated by MyStartEvent as startevent\n" +
-                "terminated by MyEndEvent(id = startevent.id) as endevent");
+                "terminated by MyEndEvent(Id = startevent.Id) as endevent");
             Create(
                 env,
                 path,
-                "context CtxSample select context.endevent.id, count(*) from MyEvent output snapshot when terminated");
+                "context CtxSample select context.endevent.Id, count(*) from MyEvent output snapshot when terminated");
 
             Create(
                 env,
                 path,
                 "@Public create context TxnCategoryContext \n" +
-                "  group by amount < 100 as small, \n" +
-                "  group by amount between 100 and 1000 as medium, \n" +
-                "  group by amount > 1000 as large from BankTxn");
+                "  group by Amount < 100 as small, \n" +
+                "  group by Amount between 100 and 1000 as medium, \n" +
+                "  group by Amount > 1000 as large from BankTxn");
             Create(env, path, "@name('s0') context TxnCategoryContext select * from BankTxn#time(1 minute)");
             ContextPartitionSelectorCategory categorySmall =
                 new ProxyContextPartitionSelectorCategory(() => Collections.SingletonSet("small"));
@@ -303,11 +303,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path,
                 "@Public create context PerCustId_TriggeredByLargeAmount\n" +
                 "  partition by custId from BankTxn \n" +
-                "  initiated by BankTxn(amount>100) as largeTxn");
+                "  initiated by BankTxn(Amount>100) as largeTxn");
             Create(
                 env,
                 path,
-                "context PerCustId_TriggeredByLargeAmount select context.largeTxn, custId, sum(amount) from BankTxn");
+                "context PerCustId_TriggeredByLargeAmount select context.largeTxn, custId, sum(Amount) from BankTxn");
             Create(
                 env,
                 path,
@@ -317,28 +317,28 @@ namespace com.espertech.esper.regressionlib.suite.context
             Create(
                 env,
                 path,
-                "context PerCustId_UntilExpired select custId, sum(amount) from BankTxn output last when terminated");
+                "context PerCustId_UntilExpired select custId, sum(Amount) from BankTxn output last when terminated");
             Create(
                 env,
                 path,
                 "@Public create context PerCustId_TriggeredByLargeAmount_UntilExpired\n" +
                 "  partition by custId from BankTxn \n" +
-                "  initiated by BankTxn(amount>100) as txn\n" +
+                "  initiated by BankTxn(Amount>100) as txn\n" +
                 "  terminated by BankTxn(expired=true and user=txn.user)");
             Create(
                 env,
                 path,
                 "@Public create context PerCust_AmountGreater100\n" +
-                "  partition by custId from BankTxn(amount>100)\n" +
+                "  partition by custId from BankTxn(Amount>100)\n" +
                 "  initiated by BankTxn");
-            Create(env, path, "context PerCust_AmountGreater100 select custId, sum(amount) from BankTxn");
+            Create(env, path, "context PerCust_AmountGreater100 select custId, sum(Amount) from BankTxn");
             Create(
                 env,
                 path,
                 "@Public create context PerCust_TriggeredByLargeTxn\n" +
                 "  partition by custId from BankTxn\n" +
-                "  initiated by BankTxn(amount>100)");
-            Create(env, path, "context PerCust_TriggeredByLargeTxn select custId, sum(amount) from BankTxn");
+                "  initiated by BankTxn(Amount>100)");
+            Create(env, path, "context PerCust_TriggeredByLargeTxn select custId, sum(Amount) from BankTxn");
 
             env.UndeployAll();
         }

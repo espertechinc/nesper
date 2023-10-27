@@ -32,14 +32,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private EPRuntimeProvider _runtimeProvider = new EPRuntimeProvider();
-        
+
         private readonly Configuration _configuration;
 
         public ISet<RegressionFlag> Flags()
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public MultithreadStmtPatternFollowedBy(Configuration configuration)
         {
             _configuration = configuration;
@@ -92,8 +92,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     stmts[j].AddListener(listener);
                 }
 
-                int[] threadOneValues = {0, 2, 4, 6, 8};
-                int[] threadTwoValues = {1, 3, 5, 7, 9};
+                int[] threadOneValues = { 0, 2, 4, 6, 8 };
+                int[] threadTwoValues = { 1, 3, 5, 7, 9 };
 
                 var threadOne = new Thread(new SenderRunnable(runtime.EventService, threadOneValues).Run);
                 threadOne.Name = nameof(MultithreadStmtPatternFollowedBy) + "-one";

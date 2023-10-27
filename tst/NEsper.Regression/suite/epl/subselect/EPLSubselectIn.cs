@@ -161,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select id in (select id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                    "@name('s0') select id in (select Id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 SupportAdminUtil.AssertStatelessStmt(env, "s0", false);
 
@@ -176,16 +176,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var subquery = new EPStatementObjectModel();
-                subquery.SelectClause = SelectClause.Create("id");
+                subquery.SelectClause = SelectClause.Create("Id");
                 subquery.FromClause = FromClause.Create(
                     FilterStream.Create("SupportBean_S1").AddView(View.Create("length", Expressions.Constant(1000))));
 
                 var model = new EPStatementObjectModel();
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
-                model.SelectClause = SelectClause.Create().Add(Expressions.SubqueryIn("id", subquery), "value");
+                model.SelectClause = SelectClause.Create().Add(Expressions.SubqueryIn("Id", subquery), "value");
                 model = env.CopyMayFail(model);
 
-                var stmtText = "select id in (select id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                var stmtText = "select id in (select Id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
                 Assert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -202,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select id in (select id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                    "@name('s0') select id in (select Id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
                 env.EplToModelCompileDeploy(stmtText).AddListener("s0");
 
                 RunTestInSelect(env);
@@ -215,8 +215,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "id" };
-                var text = "@name('s0') select id from SupportBean_S0(id in (select id from SupportBean_S1#length(2)))";
+                var fields = new string[] { "Id" };
+                var text = "@name('s0') select id from SupportBean_S0(id in (select Id from SupportBean_S1#length(2)))";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select id in (select id from SupportBean_S1#length(1000) where id > 0) as value from SupportBean_S0";
+                    "@name('s0') select id in (select id from SupportBean_S1#length(1000) where Id > 0) as value from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -295,7 +295,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select 3*id in (select 2*id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                    "@name('s0') select 3*id in (select 2*Id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -322,7 +322,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select s0.anyObject in (select * from SupportBean_S1#length(1000)) as value from SupportBeanArrayCollMap s0";
+                    "@name('s0') select s0.AnyObject in (select * from SupportBean_S1#length(1000)) as value from SupportBeanArrayCollMap s0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 var s1 = new SupportBean_S1(100);
@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select id from SupportBean_S0 as s0 where p00 in (select p10 from SupportBean_S1#length(1000))";
+                    "@name('s0') select Id from SupportBean_S0 as s0 where P00 in (select P10 from SupportBean_S1#length(1000))";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -361,7 +361,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportBean_S0(4, "A"));
-                env.AssertEqualsNew("s0", "id", 4);
+                env.AssertEqualsNew("s0", "Id", 4);
 
                 env.SendEventBean(new SupportBean_S1(-2, null));
                 env.SendEventBean(new SupportBean_S0(5, null));
@@ -375,9 +375,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select longBoxed from SupportBean(theString='A') as s0 " +
-                               "where longBoxed in " +
-                               "(select intBoxed from SupportBean(theString='B')#length(1000))";
+                var stmtText = "@name('s0') select LongBoxed from SupportBean(TheString='A') as s0 " +
+                               "where LongBoxed in " +
+                               "(select IntBoxed from SupportBean(TheString='B')#length(1000))";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -397,12 +397,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SendBean(env, "A", null, null);
                 env.AssertListenerNotInvoked("s0");
                 SendBean(env, "A", null, 99L);
-                env.AssertEqualsNew("s0", "longBoxed", 99L);
+                env.AssertEqualsNew("s0", "LongBoxed", 99L);
 
                 SendBean(env, "B", 98, null);
 
                 SendBean(env, "A", null, 98L);
-                env.AssertEqualsNew("s0", "longBoxed", 98L);
+                env.AssertEqualsNew("s0", "LongBoxed", 98L);
 
                 env.UndeployAll();
             }
@@ -412,9 +412,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select intBoxed from SupportBean(theString='A') as s0 " +
-                               "where intBoxed in " +
-                               "(select longBoxed from SupportBean(theString='B')#length(1000))";
+                var stmtText = "@name('s0') select IntBoxed from SupportBean(TheString='A') as s0 " +
+                               "where IntBoxed in " +
+                               "(select LongBoxed from SupportBean(TheString='B')#length(1000))";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -424,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertListenerNotInvoked("s0");
 
                 SendBean(env, "A", 1, 1L);
-                env.AssertEqualsNew("s0", "intBoxed", 1);
+                env.AssertEqualsNew("s0", "IntBoxed", 1);
 
                 SendBean(env, "B", null, null);
 
@@ -432,7 +432,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertListenerNotInvoked("s0");
 
                 SendBean(env, "A", 1, 1L);
-                env.AssertEqualsNew("s0", "intBoxed", 1);
+                env.AssertEqualsNew("s0", "IntBoxed", 1);
 
                 env.UndeployAll();
             }
@@ -443,7 +443,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select (select p00 from SupportBean_S0#keepall() as s0 where s0.p01 in (s1.p10, s1.p11)) as c0 from SupportBean_S1 as s1";
+                    "@name('s0') select (select P00 from SupportBean_S0#keepall() as s0 where s0.P01 in (s1.P10, s1.P11)) as c0 from SupportBean_S1 as s1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 10; i++) {
@@ -467,7 +467,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select (select p00 from SupportBean_S0#keepall() as s0 where s1.p11 in (s0.p00, s0.p01)) as c0 from SupportBean_S1 as s1";
+                    "@name('s0') select (select P00 from SupportBean_S0#keepall() as s0 where s1.P11 in (s0.P00, s0.P01)) as c0 from SupportBean_S1 as s1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 10; i++) {
@@ -490,9 +490,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select intBoxed from SupportBean(theString='A') as s0 " +
-                               "where intBoxed not in " +
-                               "(select longBoxed from SupportBean(theString='B')#length(1000))";
+                var stmtText = "@name('s0') select IntBoxed from SupportBean(TheString='A') as s0 " +
+                               "where IntBoxed not in " +
+                               "(select LongBoxed from SupportBean(TheString='B')#length(1000))";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -521,7 +521,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select not id in (select id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                    "@name('s0') select not id in (select Id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -550,17 +550,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select longBoxed from SupportBean(theString='A') as s0 " +
-                               "where longBoxed not in " +
-                               "(select intBoxed from SupportBean(theString='B')#length(1000))";
+                var stmtText = "@name('s0') select LongBoxed from SupportBean(TheString='A') as s0 " +
+                               "where LongBoxed not in " +
+                               "(select IntBoxed from SupportBean(TheString='B')#length(1000))";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 SendBean(env, "A", 0, 0L);
-                env.AssertEqualsNew("s0", "longBoxed", 0L);
+                env.AssertEqualsNew("s0", "LongBoxed", 0L);
 
                 SendBean(env, "A", null, null);
-                env.AssertEqualsNew("s0", "longBoxed", null);
+                env.AssertEqualsNew("s0", "LongBoxed", null);
 
                 SendBean(env, "B", null, null);
 
@@ -613,7 +613,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile(
-                    "@name('s0') select intArr in (select intPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap",
+                    "@name('s0') select IntArr in (select IntPrimitive from SupportBean#keepall) as r1 from SupportBeanArrayCollMap",
                     "Failed to validate select-clause expression subquery number 1 querying SupportBean: Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords");
             }
         }

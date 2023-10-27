@@ -8,6 +8,7 @@
 
 using System;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
@@ -21,11 +22,12 @@ namespace com.espertech.esper.common.client.configuration.common
         {
         }
 
+        [JsonConstructor]
         public ImportNamespace(
-            string ns,
+            string @namespace,
             string assemblyName = null)
         {
-            Namespace = ns;
+            Namespace = @namespace;
             AssemblyName = assemblyName;
         }
 
@@ -35,8 +37,8 @@ namespace com.espertech.esper.common.client.configuration.common
             AssemblyName = typeInNamespace.Assembly.FullName;
         }
 
-        public string AssemblyName { get; set; }
         public string Namespace { get; set; }
+        public string AssemblyName { get; set; }
 
         public override Type Resolve(
             string providedTypeName,

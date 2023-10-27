@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var milestone = new AtomicLong();
             RunAssertionMeasurePresence(env, 0, "B.size()", 1, milestone);
             RunAssertionMeasurePresence(env, 0, "100+B.size()", 101, milestone);
-            RunAssertionMeasurePresence(env, 1000000, "B.anyOf(v=>theString='E2')", true, milestone);
+            RunAssertionMeasurePresence(env, 1000000, "B.anyOf(v=>TheString='E2')", true, milestone);
 
             RunAssertionDefineNotPresent(env, true, milestone);
             RunAssertionDefineNotPresent(env, false, milestone);
@@ -68,14 +68,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.AdvanceTime(baseTime);
             var epl = "@name('s0') select * from SupportBean  " +
                       "match_recognize (" +
-                      "    measures A as a, A.theString as id, " +
+                      "    measures A as a, A.TheString as Id, " +
                       select +
                       " as val " +
                       "    pattern (A B*) " +
                       "    interval 1 minute " +
                       "    define " +
-                      "        A as (A.intPrimitive=1)," +
-                      "        B as (B.intPrimitive=2))";
+                      "        A as (A.IntPrimitive=1)," +
+                      "        B as (B.IntPrimitive=2))";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 1));

@@ -45,6 +45,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 case BigInteger _:
                 case Array _:
                 case Type _:
+                case StringBuilder _:
                     return true;
 
                 default:
@@ -77,7 +78,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
                 builder.Append(Literal(l).ToFullString());
             }
             else if (constant is float f) {
-                builder.Append(Literal(f).ToFullString());
+                var literal = Literal(f).ToFullString();
+                if (!literal.EndsWith("f") && !literal.EndsWith("F")) {
+                    literal += "f";
+                }
+
+                builder.Append(literal);
             }
             else if (constant is double d) {
                 var literal = Literal(d).ToFullString();

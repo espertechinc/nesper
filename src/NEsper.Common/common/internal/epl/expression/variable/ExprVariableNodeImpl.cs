@@ -182,10 +182,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             CodegenExpression readerExpression =
                 classScope.AddOrGetDefaultFieldSharable(new VariableReaderCodegenFieldSharable(variableMeta));
             if (variableMeta.EventType == null) {
-                return Cast(returnClass, ExprDotMethod(readerExpression, "getValue"));
+                return Cast(returnClass, ExprDotName(readerExpression, "Value"));
             }
 
-            var unpack = ExprDotUnderlying(Cast(typeof(EventBean), ExprDotMethod(readerExpression, "getValue")));
+            var unpack = ExprDotUnderlying(Cast(typeof(EventBean), ExprDotName(readerExpression, "Value")));
             return Cast(returnClass, unpack);
         }
 

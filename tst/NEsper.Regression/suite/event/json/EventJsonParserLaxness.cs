@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                            "      ],\n" +
                            "      \"friends\": [\n" +
                            "        {\n" +
-                           "          \"id\": \"4673\",\n" +
+                           "          \"Id\": \"4673\",\n" +
                            "          \"name\": \"EqVIiZyuhSCkWXvqSxgyQihZaiwSra\"\n" +
                            "        }\n" +
                            "      ],\n" +

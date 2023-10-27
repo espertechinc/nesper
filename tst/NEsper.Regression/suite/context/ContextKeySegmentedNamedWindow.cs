@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create context SegmentedByString partition by theString from SupportBean",
+                    "@public create context SegmentedByString partition by TheString from SupportBean",
                     path);
                 env.CompileDeploy(
                     "@public context SegmentedByString create window MyWindow#keepall as SupportBean",
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Runtime.FireAndForgetService.ExecuteQuery(compiled).Array,
-                    "theString".SplitCsv(),
+                    "TheString".SplitCsv(),
                     new object[][] { new object[] { "G1" } });
 
                 env.SendEventBean(new SupportBean("G2", 0));
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     env.Runtime.FireAndForgetService.ExecuteQuery(compiled).Array,
-                    "theString".SplitCsv(),
+                    "TheString".SplitCsv(),
                     new object[][] { new object[] { "G1" }, new object[] { "G2" } });
 
                 env.UndeployAll();
@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('context') @public create context SegmentedByString partition by theString from SupportBean",
+                    "@name('context') @public create context SegmentedByString partition by TheString from SupportBean",
                     path);
                 env.CompileDeploy(
                     "@Hint('enable_window_subquery_indexshare') @public create window MyWindowTwo#keepall as SupportBean_S0",
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.CompileDeploy(
                     "@name('s0') context SegmentedByString " +
-                    "select theString, intPrimitive, (select p00 from MyWindowTwo as s0 where sb.intPrimitive = s0.id) as val0 " +
+                    "select TheString, IntPrimitive, (select P00 from MyWindowTwo as s0 where sb.IntPrimitive = s0.Id) as val0 " +
                     "from SupportBean as sb",
                     path);
                 env.AddListener("s0");
@@ -182,11 +182,11 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('context') create context SegmentedByString partition by theString from SupportBean;\n" +
+                    "@name('context') create context SegmentedByString partition by TheString from SupportBean;\n" +
                     "create window MyWindowThree#keepall as SupportBean_S0;\n" +
                     "insert into MyWindowThree select * from SupportBean_S0;\n" +
                     "@name('s0') context SegmentedByString " +
-                    "select theString, intPrimitive, (select p00 from MyWindowThree as s0 where sb.intPrimitive = s0.id) as val0 " +
+                    "select TheString, IntPrimitive, (select P00 from MyWindowThree as s0 where sb.IntPrimitive = s0.Id) as val0 " +
                     "from SupportBean as sb;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -198,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
         private static void TryAssertionSubqueryNW(RegressionEnvironment env)
         {
-            var fields = new string[] { "theString", "intPrimitive", "val0" };
+            var fields = new string[] { "TheString", "IntPrimitive", "val0" };
 
             env.SendEventBean(new SupportBean_S0(10, "s1"));
             env.SendEventBean(new SupportBean("G1", 10));
@@ -227,10 +227,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             string fromClause)
         {
             var path = new RegressionPath();
-            var epl = "@public create context Ctx partition by theString from SupportBean;\n" +
+            var epl = "@public create context Ctx partition by TheString from SupportBean;\n" +
                       "@name('window') @public context Ctx create window MyWindow#keepall as SupportBean;" +
                       "@name('insert') context Ctx insert into MyWindow select * from SupportBean;" +
-                      "@name('s0') context Ctx select irstream context.key1 as c0, a.intPrimitive as c1 from " +
+                      "@name('s0') context Ctx select irstream context.key1 as c0, a.IntPrimitive as c1 from " +
                       fromClause;
             env.CompileDeploy(epl, path).AddListener("s0");
             var fields = "c0,c1".SplitCsv();
@@ -259,8 +259,8 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             env.TryInvalidCompile(
                 path,
-                "context Ctx create window MyInvalidWindow#unique(p00) as SupportBean_S0",
-                "Segmented context 'Ctx' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [context Ctx create window MyInvalidWindow#unique(p00) as SupportBean_S0]");
+                "context Ctx create window MyInvalidWindow#unique(P00) as SupportBean_S0",
+                "Segmented context 'Ctx' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [context Ctx create window MyInvalidWindow#unique(P00) as SupportBean_S0]");
         }
     }
 } // end of namespace

@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.type
             foreach (var item in names) {
                 if (item.Name.Equals(searchForName)) {
                     if (found != null) {
-                        throw new IllegalStateException("Found multiple entries for name '" + searchForName + "'");
+                        throw new IllegalStateException($"Found multiple entries for name '{searchForName}'");
                     }
 
                     found = item;
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.type
             }
 
             if (found == null) {
-                throw new IllegalStateException("Failed to find name '" + searchForName + "'");
+                throw new IllegalStateException($"Failed to find name '{searchForName}'");
             }
 
             return found;

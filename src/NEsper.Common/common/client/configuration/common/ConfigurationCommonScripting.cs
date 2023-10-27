@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Ctor - sets up defaults.
         /// </summary>
-        internal ConfigurationCommonScripting()
+        public ConfigurationCommonScripting()
         {
             Engines = new HashSet<string>();
         }

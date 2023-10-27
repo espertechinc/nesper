@@ -15,17 +15,17 @@ namespace com.espertech.esper.common.@internal.view.core
 {
     public abstract class ViewSupport : View
     {
-        protected internal View child;
-        protected internal Viewable parent;
+        private View _child;
+        private Viewable _parent;
 
         public virtual Viewable Parent {
-            get => parent;
-            set => parent = value;
+            get => _parent;
+            set => _parent = value;
         }
 
         public virtual View Child {
-            get => child;
-            set => child = value;
+            get => _child;
+            set => _child = value;
         }
 
         IEnumerator IEnumerable.GetEnumerator()

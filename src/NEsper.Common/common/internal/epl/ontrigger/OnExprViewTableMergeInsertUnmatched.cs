@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
         StopCallback
     {
         private readonly AgentInstanceContext agentInstanceContext;
-        private new readonly InfraOnMergeViewFactory parent;
+        private readonly InfraOnMergeViewFactory parent;
         private readonly TableInstance tableInstance;
 
         public OnExprViewTableMergeInsertUnmatched(

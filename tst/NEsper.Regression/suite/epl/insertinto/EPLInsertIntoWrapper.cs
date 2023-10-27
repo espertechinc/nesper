@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean_S0(1, "true", "true", "false"));
-                env.AssertEqualsNew("final", "id", 1);
+                env.AssertEqualsNew("final", "Id", 1);
 
                 env.Milestone(1);
 
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('i1') @public insert into WrappedBean select *, intPrimitive as p0 from SupportBean",
+                    "@name('i1') @public insert into WrappedBean select *, IntPrimitive as p0 from SupportBean",
                     path);
                 env.AddListener("i1");
 
@@ -113,10 +113,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AddListener("i2");
 
                 env.SendEventBean(new SupportBean("E1", 1));
-                env.AssertPropsNew("i1", "theString,intPrimitive,p0".SplitCsv(), new object[] { "E1", 1, 1 });
+                env.AssertPropsNew("i1", "TheString,IntPrimitive,p0".SplitCsv(), new object[] { "E1", 1, 1 });
 
                 env.SendEventBean(new SupportEventContainsSupportBean(new SupportBean("E2", 2)));
-                env.AssertPropsNew("i2", "theString,intPrimitive,p0".SplitCsv(), new object[] { "E2", 2, null });
+                env.AssertPropsNew("i2", "TheString,IntPrimitive,p0".SplitCsv(), new object[] { "E2", 2, null });
 
                 env.UndeployAll();
             }

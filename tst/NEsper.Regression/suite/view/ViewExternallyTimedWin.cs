@@ -71,46 +71,46 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "symbol".SplitCsv();
-                var text = "@name('s0') select irstream * from  SupportMarketDataBean#ext_timed(volume, 1 sec)";
+                var fields = "Symbol".SplitCsv();
+                var text = "@name('s0') select irstream * from  SupportMarketDataBean#ext_timed(Volume, 1 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeMarketDataEvent("E1", 500));
-                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E1" } }, null);
+                env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E1" } }, null);
                 env.Milestone(1);
 
                 env.SendEventBean(MakeMarketDataEvent("E2", 600));
-                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E2" } }, null);
+                env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E2" } }, null);
                 env.Milestone(2);
 
                 env.SendEventBean(MakeMarketDataEvent("E3", 1500));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "symbol", "E3" } },
-                    new object[][] { new object[] { "symbol", "E1" } });
+                    new object[][] { new object[] { "Symbol", "E3" } },
+                    new object[][] { new object[] { "Symbol", "E1" } });
 
                 env.Milestone(3);
 
                 env.SendEventBean(MakeMarketDataEvent("E4", 1600));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "symbol", "E4" } },
-                    new object[][] { new object[] { "symbol", "E2" } });
+                    new object[][] { new object[] { "Symbol", "E4" } },
+                    new object[][] { new object[] { "Symbol", "E2" } });
 
                 env.Milestone(4);
 
                 env.SendEventBean(MakeMarketDataEvent("E5", 1700));
-                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E5" } }, null);
+                env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E5" } }, null);
 
                 env.Milestone(5);
 
                 env.SendEventBean(MakeMarketDataEvent("E6", 1800));
-                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E6" } }, null);
+                env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E6" } }, null);
 
                 env.Milestone(6);
 
                 env.SendEventBean(MakeMarketDataEvent("E7", 1900));
-                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E7" } }, null);
+                env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E7" } }, null);
 
                 env.Milestone(7);
 
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var fields = "c0".SplitCsv();
                 var epl =
-                    "@name('s0') select irstream theString as c0 from SupportBean#ext_timed(longPrimitive, 10 sec)";
+                    "@name('s0') select irstream TheString as c0 from SupportBean#ext_timed(LongPrimitive, 10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.AssertPropsPerRowIterator("s0", fields, Array.Empty<object[]>());
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream * from SupportBean#ext_timed(longPrimitive, 10 minutes)";
+                var epl = "@name('s0') select irstream * from SupportBean#ext_timed(LongPrimitive, 10 minutes)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendExtTimeEvent(env, 0);
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select rstream * from SupportBean#ext_timed(longPrimitive, 1 month)";
+                var epl = "@name('s0') select rstream * from SupportBean#ext_timed(LongPrimitive, 1 month)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-02-01T09:00:00.000"), "E1");
@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListenerNotInvoked("s0");
 
                 SendExtTimeEvent(env, DateTimeParsingFunctions.ParseDefaultMSec("2002-03-01T09:00:00.000"), "E3");
-                env.AssertPropsNew("s0", "theString".SplitCsv(), new object[] { "E1" });
+                env.AssertPropsNew("s0", "TheString".SplitCsv(), new object[] { "E1" });
 
                 env.UndeployAll();
             }
@@ -252,16 +252,16 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select irstream symbol," +
-                           "prev(1, symbol) as prev1, " +
-                           "prevtail(0, symbol) as prevTail0, " +
-                           "prevtail(1, symbol) as prevTail1, " +
-                           "prevcount(symbol) as prevCountSym, " +
-                           "prevwindow(symbol) as prevWindowSym " +
-                           "from SupportMarketDataBean#ext_timed(volume, 1 sec)";
+                var text = "@name('s0') select irstream Symbol,"+
+"prev(1, Symbol) as prev1, "+
+"prevtail(0, Symbol) as prevTail0, "+
+"prevtail(1, Symbol) as prevTail1, "+
+"prevcount(Symbol) as prevCountSym, "+
+"prevwindow(Symbol) as prevWindowSym "+
+                           "from SupportMarketDataBean#ext_timed(Volume, 1 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
                 var fields = new string[]
-                    { "symbol", "prev1", "prevTail0", "prevTail1", "prevCountSym", "prevWindowSym" };
+                    { "Symbol", "prev1", "prevTail0", "prevTail1", "prevCountSym", "prevWindowSym" };
 
                 env.SendEventBean(MakeMarketDataEvent("E1", 500));
                 env.AssertPropsPerRowNewFlattened(

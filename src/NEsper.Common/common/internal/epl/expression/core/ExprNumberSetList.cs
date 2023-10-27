@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -38,7 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         private const string METHOD_HANDLEEXPRNUMBERSETLISTADD = "HandleExprNumberSetListAdd";
         private const string METHOD_HANDLEEXPRNUMBERSETLISTEMPTY = "HandleExprNumberSetListEmpty";
 
-        [NonSerialized] private ExprEvaluator[] evaluators;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEvaluator[] evaluators;
 
         public override ExprForge Forge => this;
 

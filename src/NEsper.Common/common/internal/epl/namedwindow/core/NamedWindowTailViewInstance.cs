@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
 
             // Post to child views, only if there are listeners or subscribers
             if (TailView.StatementResultService.IsMakeNatural || TailView.StatementResultService.IsMakeSynthetic) {
-                child.Update(newData, oldData);
+                Child.Update(newData, oldData);
             }
 
             var delta = new NamedWindowDeltaData(newData, oldData);
@@ -210,7 +210,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
         public override IEnumerator<EventBean> GetEnumerator()
         {
             using (_agentInstanceContext.EpStatementAgentInstanceHandle.StatementAgentInstanceLock.AcquireReadLock()) {
-                var enumerator = parent.GetEnumerator();
+                var enumerator = Parent.GetEnumerator();
                 if (!enumerator.MoveNext()) {
                     return CollectionUtil.NULL_EVENT_ITERATOR;
                 }
@@ -303,7 +303,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
                 return indexedResult;
             }
 
-            var enumerator = parent.GetEnumerator();
+            var enumerator = Parent.GetEnumerator();
             if (!enumerator.MoveNext()) {
                 return EmptyList<EventBean>.Instance;
             }
@@ -342,7 +342,7 @@ namespace com.espertech.esper.common.@internal.epl.namedwindow.core
             }
 
             // fall back to window operator if snapshot doesn't resolve successfully
-            var enumerator = parent.GetEnumerator();
+            var enumerator = Parent.GetEnumerator();
             if (!enumerator.MoveNext()) {
                 return EmptyList<EventBean>.Instance;
             }

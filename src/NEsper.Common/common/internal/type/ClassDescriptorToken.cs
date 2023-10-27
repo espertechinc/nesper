@@ -23,13 +23,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public override string ToString()
         {
-            return "ClassIdentifierWArrayToken{" +
-                   "token=" +
-                   Token +
-                   ", sequence='" +
-                   Sequence +
-                   '\'' +
-                   '}';
+            return $"ClassIdentifierWArrayToken{{token={Token}, sequence='{Sequence}'}}";
         }
     }
 } // end of namespace

@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // assert result
             Assert.AreEqual(numEvents * numThreads, events.Length);
             for (var i = 0; i < numEvents * numThreads; i++) {
-                Assert.AreEqual(result[i], (long) i + 1);
+                Assert.AreEqual(result[i], (long)i + 1);
             }
 
             runtime.Destroy();

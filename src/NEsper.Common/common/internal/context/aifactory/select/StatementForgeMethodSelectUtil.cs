@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 if (streamSpec is NamedWindowConsumerStreamSpec nwSpec) {
                     if (nwSpec.OptPropertyEvaluator != null && !streamSpec.Options.IsUnidirectional) {
                         throw new ExprValidationException(
-                            "Failed to validate named window use in join, Contained-event is only allowed for named windows when marked as unidirectional");
+                            "Failed to validate named window use in join, contained-event is only allowed for named windows when marked as unidirectional");
                     }
 
                     var nwinfo = nwSpec.NamedWindow;

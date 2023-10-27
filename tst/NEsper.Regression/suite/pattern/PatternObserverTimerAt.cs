@@ -309,10 +309,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("F1");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B(id='B3') -> timer:at(20, 9, *, *, *, *)");
+                testCase = new EventExpressionCase("b=SupportBean_B(Id='B3') -> timer:at(20, 9, *, *, *, *)");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B(id='B3') -> timer:at(45, 9, *, *, *, *)");
+                testCase = new EventExpressionCase("b=SupportBean_B(Id='B3') -> timer:at(45, 9, *, *, *, *)");
                 testCase.Add("G1", "b", testData.GetEvent("B3"));
                 testCaseList.AddTest(testCase);
 
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "timer:at(22, 8, *, *, *) -> b=SupportBean_B(id='B3') -> timer:at(55, *, *, *, *)");
+                    "timer:at(22, 8, *, *, *) -> b=SupportBean_B(Id='B3') -> timer:at(55, *, *, *, *)");
                 testCase.Add("D3", "b", testData.GetEvent("B3"));
                 testCaseList.AddTest(testCase);
 
@@ -333,7 +333,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("A2", "b", testData.GetEvent("B1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("timer:at(40, 9, *, *, *, 1) or d=SupportBean_D(id='D3')");
+                testCase = new EventExpressionCase("timer:at(40, 9, *, *, *, 1) or d=SupportBean_D(Id='D3')");
                 testCase.Add("G1");
                 testCaseList.AddTest(testCase);
 
@@ -469,7 +469,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 SendTimeEvent("2008-08-3T06:00:00.000", env);
                 var expression =
-                    "@name('s0') select * from pattern [a=SupportBean -> every timer:at(2*a.intPrimitive,*,*,*,*)]";
+                    "@name('s0') select * from pattern [a=SupportBean -> every timer:at(2*a.IntPrimitive,*,*,*,*)]";
                 env.CompileDeploy(expression);
                 env.AddListener("s0");
 

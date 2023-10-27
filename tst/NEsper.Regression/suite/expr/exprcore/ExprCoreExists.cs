@@ -74,11 +74,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var builder = new SupportEvalBuilder("SupportBean")
                     .WithExpressions(
                         fields,
-                        "exists(theString)",
-                        "exists(intBoxed?)",
+                        "exists(TheString)",
+                        "exists(IntBoxed?)",
                         "exists(dummy?)",
-                        "exists(intPrimitive?)",
-                        "exists(intPrimitive)");
+                        "exists(IntPrimitive?)",
+                        "exists(IntPrimitive)");
                 builder.WithStatementConsumer(
                     stmt => {
                         for (var i = 0; i < 5; i++) {
@@ -100,17 +100,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select exists(item?.id) as t0, " +
-                          " exists(item?.id?) as t1, " +
-                          " exists(item?.item.intBoxed) as t2, " +
-                          " exists(item?.indexed[0]?) as t3, " +
-                          " exists(item?.mapped('keyOne')?) as t4, " +
-                          " exists(item?.nested?) as t5, " +
-                          " exists(item?.nested.nestedValue?) as t6, " +
-                          " exists(item?.nested.nestedNested?) as t7, " +
-                          " exists(item?.nested.nestedNested.nestedNestedValue?) as t8, " +
-                          " exists(item?.nested.nestedNested.nestedNestedValue.dummy?) as t9, " +
-                          " exists(item?.nested.nestedNested.dummy?) as t10 " +
+                var epl = "@name('s0') select exists(Item?.Id) as t0, "+
+" exists(Item?.Id?) as t1, "+
+" exists(Item?.Item.IntBoxed) as t2, "+
+" exists(Item?.indexed[0]?) as t3, "+
+" exists(Item?.mapped('keyOne')?) as t4, "+
+" exists(Item?.Nested?) as t5, "+
+" exists(Item?.Nested.NestedValue?) as t6, "+
+" exists(Item?.Nested.NestedNested?) as t7, "+
+" exists(Item?.Nested.NestedNested.NestedNestedValue?) as t8, "+
+" exists(Item?.Nested.NestedNested.NestedNestedValue.dummy?) as t9, "+
+" exists(Item?.Nested.NestedNested.dummy?) as t10 "+
                           " from SupportMarkerInterface";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -169,10 +169,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "select exists(item?.intBoxed) as t0 from SupportMarkerInterface";
+                var stmtText = "select exists(Item?.IntBoxed) as t0 from SupportMarkerInterface";
 
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create().Add(Expressions.ExistsProperty("item?.intBoxed"), "t0");
+                model.SelectClause = SelectClause.Create().Add(Expressions.ExistsProperty("Item?.IntBoxed"), "t0");
                 model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportMarkerInterface)));
                 model = env.CopyMayFail(model);
                 Assert.AreEqual(stmtText, model.ToEPL());
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select exists(item?.intBoxed) as t0 from SupportMarkerInterface";
+                var epl = "@name('s0') select exists(Item?.IntBoxed) as t0 from SupportMarkerInterface";
                 env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
 
                 AssertStringAndNull(env);

@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
                 .SetProperty(@ref, "Evaluator", evaluator)
                 .SetProperty(@ref, "LookupValueToMultiKey", transform);
             CodegenSetter(@ref, method, symbols, classScope);
-            method.Block.Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("addReadyCallback", @ref))
+            method.Block.Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", @ref))
                 .MethodReturn(@ref);
             return LocalMethod(method);
         }

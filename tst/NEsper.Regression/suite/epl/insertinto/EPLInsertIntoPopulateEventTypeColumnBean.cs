@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "sb.theString" },
+                    new string[] { "sb.TheString" },
                     new object[][] { new object[] { "E1" } });
 
                 env.UndeployAll();
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var path = new RegressionPath();
                 env.CompileDeploy("@public create schema EventOne(sbarr SupportBean[])", path);
                 env.CompileDeploy(
-                    "insert into EventOne select maxby(intPrimitive) as sbarr from SupportBean as sb",
+                    "insert into EventOne select maxby(IntPrimitive) as sbarr from SupportBean as sb",
                     path);
                 env.CompileDeploy("@name('s0') select * from EventOne#keepall", path).AddListener("s0");
 
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "sbarr[0].theString" },
+                    new string[] { "sbarr[0].TheString" },
                     new object[][] { new object[] { "E1" } });
 
                 env.UndeployAll();
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AssertEventNew("s0", @event => AssertS0(@event, s0One, s0Two));
                 env.AssertPropsPerRowIterator(
                     "s1",
-                    "sbarr[0].id,sbarr[1].id".Split(","),
+                    "sbarr[0].Id,sbarr[1].Id".Split(","),
                     new object[][] { new object[] { 1, null }, new object[] { 1, 2 } });
 
                 env.UndeployAll();
@@ -208,10 +208,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var path = new RegressionPath();
                 env.CompileDeploy("create " + typeType + " schema EventOne(sb SupportBean_S0)", path);
 
-                var fields = "sb.p00".Split(",");
+                var fields = "sb.P00".Split(",");
                 var epl = "@name('s0') insert into EventOne select " +
                           "(select * from SupportBean_S0#length(2) " +
-                          (filter ? "where id >= 100" : "") +
+                          (filter ? "where Id >= 100" : "") +
                           ") as sb " +
                           "from SupportBean;\n " +
                           "@name('s1') select * from EventOne#keepall";
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 if (!filter) {
                     env.AssertPropsPerRowIterator(
                         "s1",
-                        "sb.id".Split(","),
+                        "sb.Id".Split(","),
                         new object[][] { new object[] { 1 }, new object[] { null } });
                 }
 

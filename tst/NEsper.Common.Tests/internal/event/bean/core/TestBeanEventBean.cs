@@ -276,19 +276,19 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                 typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested),
                 eventBean.EventType.GetPropertyType("Contained.IterableNested[0]"));
             Assert.AreEqual(typeof(IEnumerable<int>), eventBean.EventType.GetPropertyType("Contained.IterableInteger"));
-            Assert.AreEqual(typeof(int?), eventBean.EventType.GetPropertyType("Contained.IterableInteger[0]"));
+            Assert.AreEqual(typeof(int), eventBean.EventType.GetPropertyType("Contained.IterableInteger[0]"));
             Assert.AreEqual(typeof(IList<SupportBeanIterableProps.SupportBeanSpecialGetterNested>), eventBean.EventType.GetPropertyType("Contained.ListNested"));
             Assert.AreEqual(
                 typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested),
                 eventBean.EventType.GetPropertyType("Contained.ListNested[0]"));
             Assert.AreEqual(typeof(IList<int>), eventBean.EventType.GetPropertyType("Contained.ListInteger"));
-            Assert.AreEqual(typeof(int?), eventBean.EventType.GetPropertyType("Contained.ListInteger[0]"));
+            Assert.AreEqual(typeof(int), eventBean.EventType.GetPropertyType("Contained.ListInteger[0]"));
             Assert.AreEqual(typeof(IDictionary<string, SupportBeanIterableProps.SupportBeanSpecialGetterNested>), eventBean.EventType.GetPropertyType("Contained.MapNested"));
             Assert.AreEqual(
                 typeof(SupportBeanIterableProps.SupportBeanSpecialGetterNested),
                 eventBean.EventType.GetPropertyType("Contained.MapNested('a')"));
             Assert.AreEqual(typeof(IDictionary<string, int>), eventBean.EventType.GetPropertyType("Contained.MapInteger"));
-            Assert.AreEqual(typeof(int?), eventBean.EventType.GetPropertyType("Contained.MapInteger('a')"));
+            Assert.AreEqual(typeof(int), eventBean.EventType.GetPropertyType("Contained.MapInteger('a')"));
 
             AssertNestedElement(
                 eventBean,

@@ -79,10 +79,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.selectFrom( (v, i) => v || '_' || Integer.toString(i))");
+                builder.WithExpression(fields[0], "Strvals.selectFrom( (v, i) => v || '_' || Integer.toString(i))");
                 builder.WithExpression(
                     fields[1],
-                    "strvals.selectFrom( (v, i, s) => v || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
+                    "Strvals.selectFrom( (v, i, s) => v || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<string>)));
@@ -117,8 +117,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "contained.selectFrom( (v, i) => new {v0=v.id,v1=i})");
-                builder.WithExpression(fields[1], "contained.selectFrom( (v, i, s) => new {v0=v.id,v1=i + 100*s})");
+                builder.WithExpression(fields[0], "Contained.selectFrom( (v, i) => new {v0=v.Id,v1=i})");
+                builder.WithExpression(fields[1], "Contained.selectFrom( (v, i, s) => new {v0=v.Id,v1=i + 100*s})");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypesAllSame(
@@ -170,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var field = "c0";
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(field, "contained.selectFrom(x => new {c0 = id||'x', c1 = key0||'y'})");
+                builder.WithExpression(field, "Contained.selectFrom(x => new {c0 = Id||'x', c1 = key0||'y'})");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypes(stmt.EventType, field, typeof(ICollection<IDictionary<string, object>>)));
@@ -211,8 +211,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "contained.selectFrom(x => id)");
-                builder.WithExpression(fields[1], "contained.selectFrom(x => null)");
+                builder.WithExpression(fields[0], "Contained.selectFrom(x => Id)");
+                builder.WithExpression(fields[1], "Contained.selectFrom(x => null)");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypes(
@@ -245,7 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var field = "c0";
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(field, "strvals.selectFrom(v => extractNum(v))");
+                builder.WithExpression(field, "Strvals.selectFrom(v => extractNum(v))");
 
                 builder.WithStatementConsumer(stmt => AssertTypes(stmt.EventType, field, typeof(ICollection<int?>)));
 

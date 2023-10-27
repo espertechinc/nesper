@@ -60,7 +60,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
         private EPRuntimeCompileReflectiveSPI _compileReflective;
         private EPRuntimeStatementSelectionSPI _statementSelection;
-        
+
         /// <summary>
         ///     Constructor - initializes services.
         /// </summary>
@@ -79,12 +79,15 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             EPRuntimeOptions options)
         {
             if (configuration == null) {
-                throw new ArgumentNullException(nameof(configuration), "Unexpected null value received for configuration");
+                throw new ArgumentNullException(
+                    nameof(configuration),
+                    "Unexpected null value received for configuration");
             }
 
             Container = configuration.Container;
             _runtimes = runtimes;
-            URI = runtimeURI ?? throw new ArgumentNullException(nameof(runtimeURI), "runtime URI should not be null at this stage");
+            URI = runtimeURI ??
+                  throw new ArgumentNullException(nameof(runtimeURI), "runtime URI should not be null at this stage");
 
             _serviceListeners = new CopyOnWriteArraySet<EPRuntimeStateListener>();
 
@@ -103,7 +106,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             // in the order configured
             foreach (var config in pluginLoaders) {
                 try {
-                    var plugin = (PluginLoader) _runtimeEnvironment.Services.RuntimeEnvContext.Lookup("plugin-loader/" + config.LoaderName);
+                    var plugin =
+                        (PluginLoader)_runtimeEnvironment.Services.RuntimeEnvContext.Lookup(
+                            "plugin-loader/" + config.LoaderName);
                     plugin.PostInitialize();
                 }
                 catch (Exception ex) {
@@ -175,12 +180,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         /// Event that occurs before the runtime has been destroyed.
         /// </summary>
         public event EventHandler Destroying;
-        
+
         /// <summary>
         /// Event that occurs after the runtime has been destroyed.
         /// </summary>
         public event EventHandler Destroyed;
-        
+
         public void Destroy()
         {
             lock (this) {
@@ -195,7 +200,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                             listener.OnEPRuntimeDestroyRequested(this);
                         }
                         catch (Exception ex) {
-                            Log.Error("Runtime exception caught during an onEPRuntimeDestroyRequested callback:" + ex.Message, ex);
+                            Log.Error(
+                                "Runtime exception caught during an onEPRuntimeDestroyRequested callback:" + ex.Message,
+                                ex);
                         }
                     }
 
@@ -218,7 +225,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                         foreach (var config in reversed) {
                             PluginLoader plugin;
                             try {
-                                plugin = (PluginLoader) runtimeToDestroy.Services.RuntimeEnvContext.Lookup("plugin-loader/" + config.LoaderName);
+                                plugin = (PluginLoader)runtimeToDestroy.Services.RuntimeEnvContext.Lookup(
+                                    "plugin-loader/" + config.LoaderName);
                                 plugin.Dispose();
                             }
                             catch (Exception e) {
@@ -241,7 +249,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     Destroyed?.Invoke(this, EventArgs.Empty);
 
                     runtimeToDestroy.Services.Initialize();
-                    
+
                 }
             }
         }
@@ -262,7 +270,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         {
             InitializeInternal(currentTime, null);
         }
-        
+
         private void InitializeInternal(
             long? currentTime,
             Consumer<EPRuntimeSPIRunAfterDestroyCtx> runAfterDestroy)
@@ -411,7 +419,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         public EPRuntimeCompileReflectiveSPI ReflectiveCompileSvc {
             get {
                 if (_compileReflective == null) {
-                    _compileReflective = new EPRuntimeCompileReflectiveSPI(new EPRuntimeCompileReflectiveService(), this);
+                    _compileReflective = new EPRuntimeCompileReflectiveSPI(
+                        new EPRuntimeCompileReflectiveService(),
+                        this);
                 }
 
                 return _compileReflective;
@@ -456,7 +466,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
         ///     Performs the initialization.
         /// </summary>
         /// <param name="startTime">optional start time</param>
-        protected void DoInitialize(long? startTime, EPRuntimeOptions options, Consumer<EPRuntimeSPIRunAfterDestroyCtx> runAfterDestroy)
+        protected void DoInitialize(
+            long? startTime,
+            EPRuntimeOptions options,
+            Consumer<EPRuntimeSPIRunAfterDestroyCtx> runAfterDestroy)
         {
             Log.Info("Initializing runtime URI '" + URI + "' version " + RuntimeVersion.RUNTIME_VERSION);
 
@@ -490,7 +503,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 _runtimeEnvironment.Runtime.Initialize();
 
                 _runtimeEnvironment.Services.Destroy();
-                
+
                 if (runAfterDestroy != null) {
                     runAfterDestroy.Invoke(new EPRuntimeSPIRunAfterDestroyCtx(URI));
                 }
@@ -502,7 +515,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             EPServicesContextFactory epServicesContextFactory;
             if (epServicesContextFactoryClassName == null) {
                 // Check system properties
-                epServicesContextFactoryClassName = Environment.GetEnvironmentVariable("ESPER_EPSERVICE_CONTEXT_FACTORY_CLASS");
+                epServicesContextFactoryClassName =
+                    Environment.GetEnvironmentVariable("ESPER_EPSERVICE_CONTEXT_FACTORY_CLASS");
             }
 
             if (epServicesContextFactoryClassName == null) {
@@ -516,7 +530,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                         .ResolveType(epServicesContextFactoryClassName);
                 }
                 catch (TypeLoadException) {
-                    throw new ConfigurationException("Class '" + epServicesContextFactoryClassName + "' cannot be loaded");
+                    throw new ConfigurationException(
+                        "Class '" + epServicesContextFactoryClassName + "' cannot be loaded");
                 }
 
                 object obj;
@@ -527,7 +542,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     throw new ConfigurationException("Class '" + clazz + "' cannot be instantiated");
                 }
 
-                epServicesContextFactory = (EPServicesContextFactory) obj;
+                epServicesContextFactory = (EPServicesContextFactory)obj;
             }
 
             EPServicesContext services;
@@ -562,7 +577,8 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
             EPContextPartitionService contextPartitionService = new EPContextPartitionServiceImpl(services);
             EPVariableService variableService = new EPVariableServiceImpl(services);
             EPMetricsService metricsService = new EPMetricsServiceImpl(services);
-            EPFireAndForgetService fireAndForgetService = new EpFireAndForgetServiceImpl(services, ServiceStatusProvider);
+            EPFireAndForgetService fireAndForgetService =
+                new EpFireAndForgetServiceImpl(services, ServiceStatusProvider);
             EPStageServiceSPI stageService = new EPStageServiceImpl(services, ServiceStatusProvider);
 
             // Build runtime environment
@@ -585,10 +601,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 long currentTimeStage;
                 if (services.EpServicesHA.CurrentTimeAsRecovered == null) {
                     currentTimeStage = services.SchedulingService.Time;
-                } else if (!services.EpServicesHA.CurrentTimeStageAsRecovered.TryGetValue(entry.Value, out currentTimeStage)) {
+                }
+                else if (!services.EpServicesHA.CurrentTimeStageAsRecovered.TryGetValue(
+                             entry.Value,
+                             out currentTimeStage)) {
                     currentTimeStage = services.SchedulingService.Time;
                 }
-                
+
                 stageService.RecoverStage(entry.Key, entry.Value, currentTimeStage);
             }
 
@@ -647,7 +666,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                         protectedVisibleTypes.Add(eventType);
                     }
                 }
-                
+
                 // handle staged deployments
                 var stageUri = services.StageRecoveryService.DeploymentGetStage(deploymentId);
                 if (stageUri != null) {
@@ -671,7 +690,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             // Schedule service init
             services.SchedulingServiceSPI.Init();
-            
+
             // Stage services init
             stageService.RecoveredStageInitialize(availableTypes);
 
@@ -685,12 +704,19 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 
             // Initialize extension services
             if (services.RuntimeExtensionServices != null) {
-                ((RuntimeExtensionServicesSPI) services.RuntimeExtensionServices).Init(services, eventService, deploymentService, stageService);
+                ((RuntimeExtensionServicesSPI)services.RuntimeExtensionServices).Init(
+                    services,
+                    eventService,
+                    deploymentService,
+                    stageService);
             }
 
             // Start metrics reporting, if any
             if (_configLastProvided.Runtime.MetricsReporting.IsEnableMetricsReporting) {
-                services.MetricReportingService.SetContext(services.FilterService, services.SchedulingService, eventService);
+                services.MetricReportingService.SetContext(
+                    services.FilterService,
+                    services.SchedulingService,
+                    eventService);
             }
 
             // Start runtimes metrics report
@@ -762,15 +788,22 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                     pluginLoaderObj = TypeHelper.Instantiate(pluginLoaderClass);
                 }
                 catch (Exception ex) {
-                    throw new ConfigurationException("Failed to instantiate adapter loader class '" + className + "' via default constructor", ex);
+                    throw new ConfigurationException(
+                        "Failed to instantiate adapter loader class '" + className + "' via default constructor",
+                        ex);
                 }
 
                 if (!(pluginLoaderObj is PluginLoader)) {
-                    throw new ConfigurationException("Failed to cast adapter loader class '" + className + "' to " + nameof(PluginLoader));
+                    throw new ConfigurationException(
+                        "Failed to cast adapter loader class '" + className + "' to " + nameof(PluginLoader));
                 }
 
-                var pluginLoader = (PluginLoader) pluginLoaderObj;
-                var context = new PluginLoaderInitContext(config.LoaderName, config.ConfigProperties, config.ConfigurationXML, this);
+                var pluginLoader = (PluginLoader)pluginLoaderObj;
+                var context = new PluginLoaderInitContext(
+                    config.LoaderName,
+                    config.ConfigProperties,
+                    config.ConfigurationXML,
+                    this);
                 pluginLoader.Init(context);
 
                 // register adapter loader in JNDI context tree
@@ -850,10 +883,14 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
                 return copy;
             }
             catch (IOException e) {
-                throw new ConfigurationException("Failed to snapshot configuration instance through serialization : " + e.Message, e);
+                throw new ConfigurationException(
+                    "Failed to snapshot configuration instance through serialization : " + e.Message,
+                    e);
             }
             catch (TypeLoadException e) {
-                throw new ConfigurationException("Failed to snapshot configuration instance through serialization : " + e.Message, e);
+                throw new ConfigurationException(
+                    "Failed to snapshot configuration instance through serialization : " + e.Message,
+                    e);
             }
         }
 

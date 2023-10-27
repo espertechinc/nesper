@@ -49,13 +49,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "a,b0,b1,b2,c".SplitCsv();
             var text = "@name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
-                       " measures A.theString as a, B[0].theString as b0, B[1].theString as b1, B[2].theString as b2, C.theString as c " +
+                       " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, B[2].TheString as b2, C.TheString as c " +
                        " pattern (A (B* | C))" +
                        " interval 10 seconds or terminated" +
                        " define" +
-                       " A as A.theString like 'A%'," +
-                       " B as B.theString like 'B%'," +
-                       " C as C.theString like 'C%'" +
+                       " A as A.TheString like 'A%'," +
+                       " B as B.TheString like 'B%'," +
+                       " C as C.TheString like 'C%'" +
                        ")";
 
             env.CompileDeploy(text).AddListener("s0");
@@ -97,12 +97,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "a,b".SplitCsv();
             var text = "@name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
-                       " measures A.theString as a, B.theString as b" +
+                       " measures A.TheString as a, B.TheString as b" +
                        " pattern (A B)" +
                        " interval 10 seconds or terminated" +
                        " define" +
-                       " A as A.theString like 'A%'," +
-                       " B as B.theString like 'B%'" +
+                       " A as A.TheString like 'A%'," +
+                       " B as B.TheString like 'B%'" +
                        ")";
 
             env.CompileDeploy(text).AddListener("s0");
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var text = "@name('s0') select * from TemperatureSensorEvent\n" +
                        "match_recognize (\n" +
                        "  partition by device\n" +
-                       "  measures A.id as a_id, count(B.id) as count_b, first(B.id) as first_b, last(B.id) as last_b\n" +
+                       "  measures A.Id as a_id, count(B.Id) as count_b, first(B.Id) as first_b, last(B.Id) as last_b\n" +
                        "  pattern (A B*)\n" +
                        "  interval 5 seconds or terminated\n" +
                        "  define\n" +
@@ -171,14 +171,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "a,b,c0,c1,c2".SplitCsv();
             var text = "@name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
-                       " measures A.theString as a, B.theString as b, " +
-                       "C[0].theString as c0, C[1].theString as c1, C[2].theString as c2 " +
+                       " measures A.TheString as a, B.TheString as b, " +
+                       "C[0].TheString as c0, C[1].TheString as c1, C[2].TheString as c2 " +
                        " pattern (A B C*)" +
                        " interval 10 seconds or terminated" +
                        " define" +
-                       " A as A.theString like 'A%'," +
-                       " B as B.theString like 'B%'," +
-                       " C as C.theString like 'C%'" +
+                       " A as A.TheString like 'A%'," +
+                       " B as B.TheString like 'B%'," +
+                       " C as C.TheString like 'C%'" +
                        ")";
             env.CompileDeploy(text).AddListener("s0");
 
@@ -233,15 +233,15 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "a,b0,b1,c0,c1".SplitCsv();
             var text = "@name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
-                       " measures A.theString as a, " +
-                       "B[0].theString as b0, B[1].theString as b1, " +
-                       "C[0].theString as c0, C[1].theString as c1 " +
+                       " measures A.TheString as a, " +
+                       "B[0].TheString as b0, B[1].TheString as b1, " +
+                       "C[0].TheString as c0, C[1].TheString as c1 " +
                        " pattern (A (B* | C*))" +
                        " interval 10 seconds or terminated" +
                        " define" +
-                       " A as A.theString like 'A%'," +
-                       " B as B.theString like 'B%'," +
-                       " C as C.theString like 'C%'" +
+                       " A as A.TheString like 'A%'," +
+                       " B as B.TheString like 'B%'," +
+                       " C as C.TheString like 'C%'" +
                        ")";
 
             env.CompileDeploy(text).AddListener("s0");
@@ -280,12 +280,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "a,b0,b1,b2".SplitCsv();
             var text = "@name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
-                       " measures A.theString as a, B[0].theString as b0, B[1].theString as b1, B[2].theString as b2" +
+                       " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, B[2].TheString as b2" +
                        " pattern (A B+)" +
                        " interval 10 seconds or terminated" +
                        " define" +
-                       " A as A.theString like 'A%'," +
-                       " B as B.theString like 'B%'" +
+                       " A as A.TheString like 'A%'," +
+                       " B as B.TheString like 'B%'" +
                        ")";
 
             env.CompileDeploy(text).AddListener("s0");
@@ -325,11 +325,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "a0,a1,a2,a3,a4".SplitCsv();
             var text = "@name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
-                       " measures A[0].theString as a0, A[1].theString as a1, A[2].theString as a2, A[3].theString as a3, A[4].theString as a4" +
+                       " measures A[0].TheString as a0, A[1].TheString as a1, A[2].TheString as a2, A[3].TheString as a3, A[4].TheString as a4" +
                        " pattern (A*)" +
                        " interval 10 seconds or terminated" +
                        " define" +
-                       " A as theString like 'A%'" +
+                       " A as TheString like 'A%'" +
                        ")";
 
             env.CompileDeploy(text).AddListener("s0");
@@ -370,13 +370,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "a,b0,b1,b2".SplitCsv();
             var text = "@name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
-                       " measures A.theString as a, B[0].theString as b0, B[1].theString as b1, B[2].theString as b2" +
+                       " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, B[2].TheString as b2" +
                        (allMatches ? " all matches" : "") +
                        " pattern (A B*)" +
                        " interval 10 seconds or terminated" +
                        " define" +
-                       " A as A.theString like \"A%\"," +
-                       " B as B.theString like \"B%\"" +
+                       " A as A.TheString like \"A%\"," +
+                       " B as B.TheString like \"B%\"" +
                        ")";
 
             env.CompileDeploy(text).AddListener("s0");
@@ -441,12 +441,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "a,b0,b1,b2".SplitCsv();
             var text = "@name('s0') select * from SupportRecogBean#keepall " +
                        "match_recognize (" +
-                       " measures A.theString as a, B[0].theString as b0, B[1].theString as b1, B[2].theString as b2" +
+                       " measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, B[2].TheString as b2" +
                        " pattern (A (B)*)" +
                        " interval 10 seconds or terminated" +
                        " define" +
-                       " A as A.theString like \"A%\"," +
-                       " B as B.theString like \"B%\"" +
+                       " A as A.TheString like \"A%\"," +
+                       " B as B.TheString like \"B%\"" +
                        ")";
 
             env.CompileDeploy(text).AddListener("s0");

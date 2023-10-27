@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@name('create') @public create table MyTableDEL as (p0 string primary key, thesum sum(int))",
                     path);
                 env.CompileDeploy(
-                    "into table MyTableDEL select theString, sum(intPrimitive) as thesum from SupportBean group by theString",
+                    "into table MyTableDEL select TheString, sum(IntPrimitive) as thesum from SupportBean group by TheString",
                     path);
                 for (var i = 0; i < 10; i++) {
                     env.SendEventBean(new SupportBean("G" + i, i));
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@name('TheTable') @public create table MyTableUPD as (p0 string primary key, p1 string, thesum sum(int))",
                     path);
                 env.CompileDeploy(
-                    "into table MyTableUPD select theString, sum(intPrimitive) as thesum from SupportBean group by theString",
+                    "into table MyTableUPD select TheString, sum(IntPrimitive) as thesum from SupportBean group by TheString",
                     path);
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", 2));
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@name('TheTable') @public create table MyTableSEL as (p0 string primary key, thesum sum(int))",
                     path);
                 env.CompileDeploy(
-                    "into table MyTableSEL select theString, sum(intPrimitive) as thesum from SupportBean group by theString",
+                    "into table MyTableSEL select TheString, sum(IntPrimitive) as thesum from SupportBean group by TheString",
                     path);
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", 2));

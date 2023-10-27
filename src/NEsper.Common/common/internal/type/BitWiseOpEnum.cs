@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.type
                 coercedType != typeof(long?) &&
                 coercedType != typeof(bool?)) {
                 throw new ArgumentException(
-                    "Expected base numeric or boolean type for computation result but got type " + coercedType);
+                    $"Expected base numeric or boolean type for computation result but got type {coercedType}");
             }
 
             return computers.Get(new BitWiseOpDesc(coercedType, this));

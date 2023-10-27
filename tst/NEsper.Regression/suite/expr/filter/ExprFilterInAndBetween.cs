@@ -111,12 +111,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var eplOne = "@name('s1') select * from SupportBean(intPrimitive in (0) and theString like 'X%')";
+                var eplOne = "@name('s1') select * from SupportBean(IntPrimitive in (0) and TheString like 'X%')";
                 env.CompileDeploy(eplOne).AddListener("s1");
 
                 env.Milestone(0);
 
-                var eplTwo = "@name('s2') select * from SupportBean(intPrimitive in (0,1) and theString like 'A%')";
+                var eplTwo = "@name('s2') select * from SupportBean(IntPrimitive in (0,1) and TheString like 'A%')";
                 env.CompileDeploy(eplTwo).AddListener("s2");
 
                 env.Milestone(1);
@@ -134,10 +134,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var eplNotMatching =
-                    "@name('A') select * from SupportBean(intPrimitive in (0,0,1) and theString like 'X%')";
+                    "@name('A') select * from SupportBean(IntPrimitive in (0,0,1) and TheString like 'X%')";
                 env.CompileDeploy(eplNotMatching).AddListener("A");
 
-                var eplMatching = "@name('B') select * from SupportBean(intPrimitive in (0,1) and theString like 'A%')";
+                var eplMatching = "@name('B') select * from SupportBean(IntPrimitive in (0,1) and TheString like 'A%')";
                 env.CompileDeploy(eplMatching).AddListener("B");
 
                 env.Milestone(0);
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select * from pattern [a=SupportBeanNumeric -> every b=SupportBean(intPrimitive in (a.intOne, a.intTwo))]";
+                    "@name('s0') select * from pattern [a=SupportBeanNumeric -> every b=SupportBean(IntPrimitive in (a.intOne, a.intTwo))]";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
 
                 SendBeanNumeric(env, 10, 20);
@@ -169,7 +169,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployAll();
 
                 epl =
-                    "@name('s0') select * from pattern [a=SupportBean_S0 -> every b=SupportBean(theString in (a.p00, a.p01, a.p02))]";
+                    "@name('s0') select * from pattern [a=SupportBean_S0 -> every b=SupportBean(TheString in (a.P00, a.P01, a.P02))]";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
 
                 env.SendEventBean(new SupportBean_S0(1, "a", "b", "c", "d"));
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select * from SupportBean(intPrimitive in (1, 10))";
+                var epl = "@name('s0') select * from SupportBean(IntPrimitive in (1, 10))";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
 
                 SendBeanInt(env, 10);
@@ -234,125 +234,125 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(theString > 'b')",
+                        "select * from SupportBean(TheString > 'b')",
                         new bool[] { false, false, true, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(theString < 'b')",
+                        "select * from SupportBean(TheString < 'b')",
                         new bool[] { true, false, false, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(theString >= 'b')",
+                        "select * from SupportBean(TheString >= 'b')",
                         new bool[] { false, true, true, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(theString <= 'b')",
+                        "select * from SupportBean(TheString <= 'b')",
                         new bool[] { true, true, false, false }));
                 MultiStmtAssertUtil.RunIsInvokedWithEventSender(
                     env,
                     assertions,
                     4,
-                    num => SendBean(env, "theString", new string[] { "a", "b", "c", "d" }[num]),
+                    num => SendBean(env, "TheString", new string[] { "a", "b", "c", "d" }[num]),
                     milestone);
 
                 assertions.Clear();
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(theString in ['b':'d'])",
+                        "select * from SupportBean(TheString in ['b':'d'])",
                         new bool[] { false, true, true, true, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(theString in ('b':'d'])",
+                        "select * from SupportBean(TheString in ('b':'d'])",
                         new bool[] { false, false, true, true, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(theString in ['b':'d'))",
+                        "select * from SupportBean(TheString in ['b':'d'))",
                         new bool[] { false, true, true, false, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(theString in ('b':'d'))",
+                        "select * from SupportBean(TheString in ('b':'d'))",
                         new bool[] { false, false, true, false, false }));
                 MultiStmtAssertUtil.RunIsInvokedWithEventSender(
                     env,
                     assertions,
                     5,
-                    num => SendBean(env, "theString", new string[] { "a", "b", "c", "d", "e" }[num]),
+                    num => SendBean(env, "TheString", new string[] { "a", "b", "c", "d", "e" }[num]),
                     milestone);
 
                 assertions.Clear();
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(boolPrimitive in (false))",
+                        "select * from SupportBean(BoolPrimitive in (false))",
                         new bool[] { false, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(boolPrimitive in (false, false, false))",
+                        "select * from SupportBean(BoolPrimitive in (false, false, false))",
                         new bool[] { false, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(boolPrimitive in (false, true, false))",
+                        "select * from SupportBean(BoolPrimitive in (false, true, false))",
                         new bool[] { true, true }));
                 MultiStmtAssertUtil.RunIsInvokedWithEventSender(
                     env,
                     assertions,
                     2,
-                    num => SendBean(env, "boolPrimitive", new object[] { true, false }[num]),
+                    num => SendBean(env, "BoolPrimitive", new object[] { true, false }[num]),
                     milestone);
 
                 assertions.Clear();
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed in (4, 6, 1))",
+                        "select * from SupportBean(IntBoxed in (4, 6, 1))",
                         new bool[] { false, true, false, false, true, false, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed in (3))",
+                        "select * from SupportBean(IntBoxed in (3))",
                         new bool[] { false, false, false, true, false, false, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed between 4 and 6)",
+                        "select * from SupportBean(IntBoxed between 4 and 6)",
                         new bool[] { false, false, false, false, true, true, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed between 2 and 1)",
+                        "select * from SupportBean(IntBoxed between 2 and 1)",
                         new bool[] { false, true, true, false, false, false, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed between 4 and -1)",
+                        "select * from SupportBean(IntBoxed between 4 and -1)",
                         new bool[] { true, true, true, true, true, false, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed in [2:4])",
+                        "select * from SupportBean(IntBoxed in [2:4])",
                         new bool[] { false, false, true, true, true, false, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed in (2:4])",
+                        "select * from SupportBean(IntBoxed in (2:4])",
                         new bool[] { false, false, false, true, true, false, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed in [2:4))",
+                        "select * from SupportBean(IntBoxed in [2:4))",
                         new bool[] { false, false, true, true, false, false, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed in (2:4))",
+                        "select * from SupportBean(IntBoxed in (2:4))",
                         new bool[] { false, false, false, true, false, false, false }));
                 MultiStmtAssertUtil.RunIsInvokedWithEventSender(
                     env,
                     assertions,
                     7,
-                    num => SendBean(env, "intBoxed", new object[] { 0, 1, 2, 3, 4, 5, 6 }[num]),
+                    num => SendBean(env, "IntBoxed", new object[] { 0, 1, 2, 3, 4, 5, 6 }[num]),
                     milestone);
 
                 assertions.Clear();
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(longBoxed in (3))",
+                        "select * from SupportBean(LongBoxed in (3))",
                         new bool[] { false, false, false, true, false, false, false }));
                 MultiStmtAssertUtil.RunIsInvokedWithEventSender(
                     env,
                     assertions,
                     7,
-                    num => SendBean(env, "longBoxed", new object[] { 0L, 1L, 2L, 3L, 4L, 5L, 6L }[num]),
+                    num => SendBean(env, "LongBoxed", new object[] { 0L, 1L, 2L, 3L, 4L, 5L, 6L }[num]),
                     milestone);
             }
         }
@@ -366,113 +366,113 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed not between 4 and 6)",
+                        "select * from SupportBean(IntBoxed not between 4 and 6)",
                         new bool[] { true, true, true, true, false, false, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed not between 2 and 1)",
+                        "select * from SupportBean(IntBoxed not between 2 and 1)",
                         new bool[] { true, false, false, true, true, true, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed not between 4 and -1)",
+                        "select * from SupportBean(IntBoxed not between 4 and -1)",
                         new bool[] { false, false, false, false, false, true, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed not in [2:4])",
+                        "select * from SupportBean(IntBoxed not in [2:4])",
                         new bool[] { true, true, false, false, false, true, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed not in (2:4])",
+                        "select * from SupportBean(IntBoxed not in (2:4])",
                         new bool[] { true, true, true, false, false, true, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed not in [2:4))",
+                        "select * from SupportBean(IntBoxed not in [2:4))",
                         new bool[] { true, true, false, false, true, true, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed not in (2:4))",
+                        "select * from SupportBean(IntBoxed not in (2:4))",
                         new bool[] { true, true, true, false, true, true, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed not in (4, 6, 1))",
+                        "select * from SupportBean(IntBoxed not in (4, 6, 1))",
                         new bool[] { true, false, true, true, false, true, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(intBoxed not in (3))",
+                        "select * from SupportBean(IntBoxed not in (3))",
                         new bool[] { true, true, true, false, true, true, true }));
                 MultiStmtAssertUtil.RunIsInvokedWithEventSender(
                     env,
                     assertions,
                     7,
-                    num => SendBean(env, "intBoxed", new object[] { 0, 1, 2, 3, 4, 5, 6 }[num]),
+                    num => SendBean(env, "IntBoxed", new object[] { 0, 1, 2, 3, 4, 5, 6 }[num]),
                     milestone);
 
                 assertions.Clear();
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(theString not in ['b':'d'])",
+                        "select * from SupportBean(TheString not in ['b':'d'])",
                         new bool[] { true, false, false, false, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(theString not in ('b':'d'])",
+                        "select * from SupportBean(TheString not in ('b':'d'])",
                         new bool[] { true, true, false, false, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(theString not in ['b':'d'))",
+                        "select * from SupportBean(TheString not in ['b':'d'))",
                         new bool[] { true, false, false, true, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(theString not in ('b':'d'))",
+                        "select * from SupportBean(TheString not in ('b':'d'))",
                         new bool[] { true, true, false, true, true }));
                 MultiStmtAssertUtil.RunIsInvokedWithEventSender(
                     env,
                     assertions,
                     5,
-                    num => SendBean(env, "theString", new string[] { "a", "b", "c", "d", "e" }[num]),
+                    num => SendBean(env, "TheString", new string[] { "a", "b", "c", "d", "e" }[num]),
                     milestone);
 
                 assertions.Clear();
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(theString not in ('a', 'b'))",
+                        "select * from SupportBean(TheString not in ('a', 'b'))",
                         new bool[] { false, true, false, true }));
                 MultiStmtAssertUtil.RunIsInvokedWithEventSender(
                     env,
                     assertions,
                     4,
-                    num => SendBean(env, "theString", new string[] { "a", "x", "b", "y" }[num]),
+                    num => SendBean(env, "TheString", new string[] { "a", "x", "b", "y" }[num]),
                     milestone);
 
                 assertions.Clear();
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(boolPrimitive not in (false))",
+                        "select * from SupportBean(BoolPrimitive not in (false))",
                         new bool[] { true, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(boolPrimitive not in (false, false, false))",
+                        "select * from SupportBean(BoolPrimitive not in (false, false, false))",
                         new bool[] { true, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(boolPrimitive not in (false, true, false))",
+                        "select * from SupportBean(BoolPrimitive not in (false, true, false))",
                         new bool[] { false, false }));
                 MultiStmtAssertUtil.RunIsInvokedWithEventSender(
                     env,
                     assertions,
                     2,
-                    num => SendBean(env, "boolPrimitive", new object[] { true, false }[num]),
+                    num => SendBean(env, "BoolPrimitive", new object[] { true, false }[num]),
                     milestone);
 
                 assertions.Clear();
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportBean(longBoxed not in (3))",
+                        "select * from SupportBean(LongBoxed not in (3))",
                         new bool[] { true, true, true, false, true, true, true }));
                 MultiStmtAssertUtil.RunIsInvokedWithEventSender(
                     env,
                     assertions,
                     7,
-                    num => SendBean(env, "longBoxed", new object[] { 0L, 1L, 2L, 3L, 4L, 5L, 6L }[num]),
+                    num => SendBean(env, "LongBoxed", new object[] { 0L, 1L, 2L, 3L, 4L, 5L, 6L }[num]),
                     milestone);
             }
         }
@@ -483,12 +483,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 if (SupportFilterOptimizableHelper.HasFilterIndexPlanBasicOrMore(env)) {
                     // we do not coerce
-                    TryInvalidFilter(env, "select * from SupportBean(intPrimitive in (1L, 10L))");
-                    TryInvalidFilter(env, "select * from SupportBean(intPrimitive in (1, 10L))");
-                    TryInvalidFilter(env, "select * from SupportBean(intPrimitive in (1, 'x'))");
+                    TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1L, 10L))");
+                    TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1, 10L))");
+                    TryInvalidFilter(env, "select * from SupportBean(IntPrimitive in (1, 'x'))");
 
                     var expr =
-                        "select * from pattern [a=SupportBean -> b=SupportBean(intPrimitive in (a.longPrimitive, a.longBoxed))]";
+                        "select * from pattern [a=SupportBean -> b=SupportBean(IntPrimitive in (a.LongPrimitive, a.LongBoxed))]";
                     TryInvalidFilter(env, expr);
                 }
             }
@@ -500,38 +500,38 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
 
-                var expr = "select * from SupportBean(intBoxed in [2:4])";
+                var expr = "select * from SupportBean(IntBoxed in [2:4])";
                 TryReuse(env, new string[] { expr, expr }, milestone);
 
-                expr = "select * from SupportBean(intBoxed in (1, 2, 3))";
+                expr = "select * from SupportBean(IntBoxed in (1, 2, 3))";
                 TryReuse(env, new string[] { expr, expr }, milestone);
 
-                var exprOne = "select * from SupportBean(intBoxed in (2:3])";
-                var exprTwo = "select * from SupportBean(intBoxed in (1:3])";
+                var exprOne = "select * from SupportBean(IntBoxed in (2:3])";
+                var exprTwo = "select * from SupportBean(IntBoxed in (1:3])";
                 TryReuse(env, new string[] { exprOne, exprTwo }, milestone);
 
-                exprOne = "select * from SupportBean(intBoxed in (2, 3, 4))";
-                exprTwo = "select * from SupportBean(intBoxed in (1, 3))";
+                exprOne = "select * from SupportBean(IntBoxed in (2, 3, 4))";
+                exprTwo = "select * from SupportBean(IntBoxed in (1, 3))";
                 TryReuse(env, new string[] { exprOne, exprTwo }, milestone);
 
-                exprOne = "select * from SupportBean(intBoxed in (2, 3, 4))";
-                exprTwo = "select * from SupportBean(intBoxed in (1, 3))";
-                var exprThree = "select * from SupportBean(intBoxed in (8, 3))";
+                exprOne = "select * from SupportBean(IntBoxed in (2, 3, 4))";
+                exprTwo = "select * from SupportBean(IntBoxed in (1, 3))";
+                var exprThree = "select * from SupportBean(IntBoxed in (8, 3))";
                 TryReuse(env, new string[] { exprOne, exprTwo, exprThree }, milestone);
 
-                exprOne = "select * from SupportBean(intBoxed in (3, 1, 3))";
-                exprTwo = "select * from SupportBean(intBoxed in (3, 3))";
-                exprThree = "select * from SupportBean(intBoxed in (1, 3))";
+                exprOne = "select * from SupportBean(IntBoxed in (3, 1, 3))";
+                exprTwo = "select * from SupportBean(IntBoxed in (3, 3))";
+                exprThree = "select * from SupportBean(IntBoxed in (1, 3))";
                 TryReuse(env, new string[] { exprOne, exprTwo, exprThree }, milestone);
 
-                exprOne = "select * from SupportBean(boolPrimitive=false, intBoxed in (1, 2, 3))";
-                exprTwo = "select * from SupportBean(boolPrimitive=false, intBoxed in (3, 4))";
-                exprThree = "select * from SupportBean(boolPrimitive=false, intBoxed in (3))";
+                exprOne = "select * from SupportBean(BoolPrimitive=false, IntBoxed in (1, 2, 3))";
+                exprTwo = "select * from SupportBean(BoolPrimitive=false, IntBoxed in (3, 4))";
+                exprThree = "select * from SupportBean(BoolPrimitive=false, IntBoxed in (3))";
                 TryReuse(env, new string[] { exprOne, exprTwo, exprThree }, milestone);
 
-                exprOne = "select * from SupportBean(intBoxed in (1, 2, 3), longPrimitive >= 0)";
-                exprTwo = "select * from SupportBean(intBoxed in (3, 4), intPrimitive >= 0)";
-                exprThree = "select * from SupportBean(intBoxed in (3), bytePrimitive < 1)";
+                exprOne = "select * from SupportBean(IntBoxed in (1, 2, 3), LongPrimitive >= 0)";
+                exprTwo = "select * from SupportBean(IntBoxed in (3, 4), IntPrimitive >= 0)";
+                exprThree = "select * from SupportBean(IntBoxed in (3), BytePrimitive < 1)";
                 TryReuse(env, new string[] { exprOne, exprTwo, exprThree }, milestone);
             }
 
@@ -547,22 +547,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
 
-                var expr = "select * from SupportBean(intBoxed not in [1:2])";
+                var expr = "select * from SupportBean(IntBoxed not in [1:2])";
                 TryReuse(env, new string[] { expr, expr }, milestone);
 
-                var exprOne = "select * from SupportBean(intBoxed in (3, 1, 3))";
-                var exprTwo = "select * from SupportBean(intBoxed not in (2, 1))";
-                var exprThree = "select * from SupportBean(intBoxed not between 0 and -3)";
+                var exprOne = "select * from SupportBean(IntBoxed in (3, 1, 3))";
+                var exprTwo = "select * from SupportBean(IntBoxed not in (2, 1))";
+                var exprThree = "select * from SupportBean(IntBoxed not between 0 and -3)";
                 TryReuse(env, new string[] { exprOne, exprTwo, exprThree }, milestone);
 
-                exprOne = "select * from SupportBean(intBoxed not in (1, 4, 5))";
-                exprTwo = "select * from SupportBean(intBoxed not in (1, 4, 5))";
-                exprThree = "select * from SupportBean(intBoxed not in (4, 5, 1))";
+                exprOne = "select * from SupportBean(IntBoxed not in (1, 4, 5))";
+                exprTwo = "select * from SupportBean(IntBoxed not in (1, 4, 5))";
+                exprThree = "select * from SupportBean(IntBoxed not in (4, 5, 1))";
                 TryReuse(env, new string[] { exprOne, exprTwo, exprThree }, milestone);
 
-                exprOne = "select * from SupportBean(intBoxed not in (3:4))";
-                exprTwo = "select * from SupportBean(intBoxed not in [1:3))";
-                exprThree = "select * from SupportBean(intBoxed not in (1,1,1,33))";
+                exprOne = "select * from SupportBean(IntBoxed not in (3:4))";
+                exprTwo = "select * from SupportBean(IntBoxed not in [1:3))";
+                exprThree = "select * from SupportBean(IntBoxed not in (1,1,1,33))";
                 TryReuse(env, new string[] { exprOne, exprTwo, exprThree }, milestone);
             }
 
@@ -590,7 +590,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             }
 
             // send event, all should receive the event
-            SendBean(env, "intBoxed", 3);
+            SendBean(env, "IntBoxed", 3);
             for (var i = 0; i < statements.Length; i++) {
                 Assert.IsTrue(listeners[i].IsInvokedAndReset());
             }
@@ -600,7 +600,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.UndeployModuleContaining("s" + toStop);
 
                 // send event, all remaining statement received it
-                SendBean(env, "intBoxed", 3);
+                SendBean(env, "IntBoxed", 3);
                 for (var i = 0; i <= toStop; i++) {
                     Assert.IsFalse(listeners[i].IsInvoked);
                 }
@@ -611,7 +611,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             }
 
             // now all statements are stopped, send event and verify no listener received
-            SendBean(env, "intBoxed", 3);
+            SendBean(env, "IntBoxed", 3);
             for (var i = 0; i < statements.Length; i++) {
                 Assert.IsFalse(listeners[i].IsInvoked);
             }
@@ -650,19 +650,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             object value)
         {
             var theEvent = new SupportBean();
-            if (fieldName.Equals("theString")) {
+            if (fieldName.Equals("TheString")) {
                 theEvent.TheString = (string)value;
             }
 
-            if (fieldName.Equals("boolPrimitive")) {
+            if (fieldName.Equals("BoolPrimitive")) {
                 theEvent.BoolPrimitive = (bool)value;
             }
 
-            if (fieldName.Equals("intBoxed")) {
+            if (fieldName.Equals("IntBoxed")) {
                 theEvent.IntBoxed = (int?)value;
             }
 
-            if (fieldName.Equals("longBoxed")) {
+            if (fieldName.Equals("LongBoxed")) {
                 theEvent.LongBoxed = (long?)value;
             }
 

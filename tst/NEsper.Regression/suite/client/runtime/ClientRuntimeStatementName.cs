@@ -53,7 +53,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             return execs;
         }
 
-        public static IList<RegressionExecution> WithStatementAllowNameDuplicate(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithStatementAllowNameDuplicate(
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientRuntimeStatementAllowNameDuplicate());
@@ -122,8 +123,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select intPrimitive from SupportBean;" +
-                    "@name('s1') select theString from SupportBean;";
+                    "@name('s0') select IntPrimitive from SupportBean;" +
+                    "@name('s1') select TheString from SupportBean;";
                 var compiled = env.Compile(epl);
 
                 env.Deploy(compiled).AddListener("s0").AddListener("s1").Milestone(0);

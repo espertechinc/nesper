@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
         private readonly bool isUnidirectional;
         private readonly OutputLimitSpec outputLimitSpec;
         private readonly bool isHistoricalOnly;
-        private readonly ResultSetProcessorOutputConditionType outputConditionType;
+        private readonly ResultSetProcessorOutputConditionType? outputConditionType;
         private readonly OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory;
         private readonly Type[] groupKeyTypes;
         private readonly MultiKeyClassRef multiKeyClassRef;
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             OutputLimitSpec outputLimitSpec,
             bool isSorting,
             bool isHistoricalOnly,
-            ResultSetProcessorOutputConditionType outputConditionType,
+            ResultSetProcessorOutputConditionType? outputConditionType,
             OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory,
             MultiKeyClassRef multiKeyClassRef) : base(resultEventType, typesPerStream)
         {
@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             this.optionalOutputFirstConditionFactory = optionalOutputFirstConditionFactory;
             groupKeyTypes = ExprNodeUtilityQuery.GetExprResultTypes(groupKeyNodeExpressions);
             this.multiKeyClassRef = multiKeyClassRef;
-            outputLastOptSettings = outputLastOptSettings;
+            //this.outputLastOptSettings = outputLastOptSettings;
         }
 
         public ExprForge OptionalHavingNode => optionalHavingNode;
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
         public bool IsOutputFirst =>
             outputLimitSpec != null && outputLimitSpec.DisplayLimit == OutputLimitLimitType.FIRST;
 
-        public ResultSetProcessorOutputConditionType OutputConditionType => outputConditionType;
+        public ResultSetProcessorOutputConditionType? OutputConditionType => outputConditionType;
 
         public int NumStreams => typesPerStream.Length;
 
@@ -128,41 +128,36 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
             CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(SelectExprProcessor),
-                "getSelectExprProcessor",
-                EmptyList<CodegenNamedParam>.Instance,
+                "SelectExprProcessor",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(MEMBER_SELECTEXPRPROCESSOR));
-            instance.Methods.AddMethod(
+                property => property.GetterBlock.BlockReturn(MEMBER_SELECTEXPRPROCESSOR));
+            instance.Properties.AddProperty(
                 typeof(AggregationService),
-                "getAggregationService",
-                EmptyList<CodegenNamedParam>.Instance,
+                "AggregationService",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(MEMBER_AGGREGATIONSVC));
-            instance.Methods.AddMethod(
+                property => property.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
+            instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
-                "GetExprEvaluatorContext",
-                EmptyList<CodegenNamedParam>.Instance, 
+                "ExprEvaluatorContext",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(MEMBER_EXPREVALCONTEXT));
-            instance.Methods.AddMethod(
+                property => property.GetterBlock.BlockReturn(MEMBER_EXPREVALCONTEXT));
+            instance.Properties.AddProperty(
                 typeof(bool),
                 "HasHavingClause",
-                EmptyList<CodegenNamedParam>.Instance, 
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(Constant(optionalHavingNode != null)));
-            instance.Methods.AddMethod(
+                property => property.GetterBlock.BlockReturn(Constant(optionalHavingNode != null)));
+            instance.Properties.AddProperty(
                 typeof(bool),
                 "IsSelectRStream",
-                EmptyList<CodegenNamedParam>.Instance, 
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(Constant(isSelectRStream)));
+                property => property.GetterBlock.BlockReturn(Constant(isSelectRStream)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(optionalHavingNode, classScope, instance);
             ResultSetProcessorAggregateGroupedImpl.RemovedAggregationGroupKeyCodegen(classScope, instance);
 

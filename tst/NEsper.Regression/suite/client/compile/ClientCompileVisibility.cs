@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         private const string CREATE_EPL =
             "${PREFIX} create schema MySchema();" +
             "${PREFIX} create variable int abc;\n" +
-            "${PREFIX} create context MyContext partition by theString from SupportBean;\n" +
+            "${PREFIX} create context MyContext partition by TheString from SupportBean;\n" +
             "${PREFIX} create window MyWindow#keepall as SupportBean;\n" +
             "${PREFIX} create table MyTable as (c count(*));\n" +
             "${PREFIX} create expression MyExpr { 1 };\n" +
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             "select 1 from MySchema;\n" +
             "select abc from SupportBean;\n" +
             "context MyContext select * from SupportBean;\n" +
-            "on SupportBean update MyWindow set theString = 'a';\n" +
+            "on SupportBean update MyWindow set TheString = 'a';\n" +
             "into table MyTable select count(*) as c from SupportBean;\n" +
             "select MyExpr() from SupportBean;\n" +
             "select myscript(1) from SupportBean;\n" +
@@ -206,16 +206,16 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 RunAssertionDisambiguate(
                     env,
-                    "create context MyContext partition by theString from SupportBean;",
-                    "create context MyContext partition by id from SupportBean_S0;",
-                    "context MyContext select p00 from SupportBean_S0",
+                    "create context MyContext partition by TheString from SupportBean;",
+                    "create context MyContext partition by Id from SupportBean_S0;",
+                    "context MyContext select P00 from SupportBean_S0",
                     () => { });
 
                 RunAssertionDisambiguate(
                     env,
                     "create window MyWindow#keepall as SupportBean",
                     "create window MyWindow#keepall as SupportBean_S0",
-                    "select p00 from MyWindow",
+                    "select P00 from MyWindow",
                     () => { });
 
                 RunAssertionDisambiguate(
@@ -378,7 +378,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var commonEPL = "@public create variable int abc;\n" +
                                 "@public create schema MySchema();" +
-                                "@public create context MyContext partition by theString from SupportBean;\n" +
+                                "@public create context MyContext partition by TheString from SupportBean;\n" +
                                 "@public create window MyWindow#keepall as SupportBean;\n" +
                                 "@public create table MyTable as (c count(*));\n" +
                                 "@public create expression MyExpr { 1 };\n" +
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.Deploy(compiledInsert);
 
                 var compiledSelect = env.Compile(
-                    "@name('s0') select theString as c0, sum(intPrimitive) as c1 from MyWindow;\n",
+                    "@name('s0') select TheString as c0, sum(IntPrimitive) as c1 from MyWindow;\n",
                     new CompilerArguments(new Configuration()).SetPath(new CompilerPath().Add(compiledCreate)));
                 env.Deploy(compiledSelect).AddListener("s0");
 
@@ -527,7 +527,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 "Context by name 'MyContext' could not be found");
             env.TryInvalidCompile(
                 path,
-                "on SupportBean update MyWindow set theString = 'a'",
+                "on SupportBean update MyWindow set TheString = 'a'",
                 "A named window or table 'MyWindow' has not been declared");
             env.TryInvalidCompile(
                 path,

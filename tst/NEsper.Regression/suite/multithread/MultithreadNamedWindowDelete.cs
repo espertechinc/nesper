@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // compute list of expected
             IList<string> expectedIdsList = new List<string>();
             for (var i = 0; i < numThreads; i++) {
-                expectedIdsList.AddAll((IList<string>) future[i].Get());
+                expectedIdsList.AddAll((IList<string>)future[i].Get());
             }
 
             var expectedIds = expectedIdsList.ToArray();
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var newEvents = listenerWindow.NewDataListFlattened;
             var receivedIds = new string[newEvents.Length];
             for (var i = 0; i < newEvents.Length; i++) {
-                receivedIds[i] = (string) newEvents[i].Get("TheString");
+                receivedIds[i] = (string)newEvents[i].Get("TheString");
             }
 
             Assert.AreEqual(receivedIds.Length, expectedIds.Length);

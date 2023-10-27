@@ -77,7 +77,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 EventTypeBusModifier.NONBUS,
                 false,
                 EventTypeIdPair.Unassigned());
-            EventType eventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
+            
+            var eventType = BaseNestableEventUtil.MakeMapTypeCompileTime(
                 metadata,
                 EmptyDictionary<string, object>.Instance, 
                 null,
@@ -88,8 +89,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 services.EventTypeCompileTimeResolver);
             services.EventTypeCompileTimeRegistry.NewType(eventType);
 
-            var statementFieldsClassName =
-                CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
+            var statementFieldsClassName = CodeGenerationIDGenerator.GenerateClassNameSimple(typeof(StatementFields), classPostfix);
             var codegenEnv = new DataFlowOpForgeCodegenEnv(@namespace, classPostfix);
 
             var dataflowForge = BuildForge(createDataFlowDesc, codegenEnv, @namespace, _base, services);
@@ -578,7 +578,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                             false,
                             services.ClassProvidedExtension);
                     }
-                    catch (ImportException e2) {
+                    catch (ImportException) {
                         // expected
                     }
 

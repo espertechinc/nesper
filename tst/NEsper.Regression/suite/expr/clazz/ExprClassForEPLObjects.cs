@@ -67,9 +67,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                 var epl =
                     "inlined_class \"\"\"\n" +
                     "  public class MyBean {\n" +
-                    "    public MyBean(int id) {this.Id = id;}\n" +
+                    "    public MyBean(int id) {this.Id = Id;}\n" +
                     "    public int Id { get; set; }\n" +
-                    "    public static MyBean GetBean(int id) {return new MyBean(id);}\n" +
+                    "    public static MyBean GetBean(int id) {return new MyBean(Id);}\n" +
                     "  }\n" +
                     "\"\"\" \n" +
                     "@name('s0') select MyBean.GetBean(IntPrimitive) as c0 from SupportBean";
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                     "       };\n" +
                     "    }\n" +
                     "    public class MyBean {\n" +
-                    "      public MyBean(int id) {Id = id;}\n" +
+                    "      public MyBean(int id) {Id = Id;}\n" +
                     "      public int Id { get; set; }\n" +
                     "    }\n" +
                     "  }\n" +

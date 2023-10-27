@@ -61,14 +61,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a,b0,c,d0,e".SplitCsv();
                 var text = "@name('s0') select * from SupportBean " +
                            "match_recognize (" +
-                           " measures A.theString as a, B[0].theString as b0, C.theString as c, D[0].theString as d0, E.theString as e" +
+                           " measures A.TheString as a, B[0].TheString as b0, C.TheString as c, D[0].TheString as d0, E.TheString as e" +
                            " pattern (A B+ C D+ E)" +
                            " define" +
-                           " A as A.theString like 'A%', " +
-                           " B as B.theString like 'B%'," +
-                           " C as C.theString like 'C%' and C.intPrimitive = B[1].intPrimitive," +
-                           " D as D.theString like 'D%'," +
-                           " E as E.theString like 'E%' and E.intPrimitive = D[1].intPrimitive and E.intPrimitive = D[0].intPrimitive" +
+                           " A as A.TheString like 'A%', " +
+                           " B as B.TheString like 'B%'," +
+                           " C as C.TheString like 'C%' and C.IntPrimitive = B[1].IntPrimitive," +
+                           " D as D.TheString like 'D%'," +
+                           " E as E.TheString like 'E%' and E.IntPrimitive = D[1].IntPrimitive and E.IntPrimitive = D[0].IntPrimitive" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -143,10 +143,10 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fieldsOne = "a0,a1,a2,b".SplitCsv();
                 var epl = "@name('s0') select * from SupportBean " +
                           "match_recognize (" +
-                          " measures A[0].theString as a0, A[1].theString as a1, A[2].theString as a2, B.theString as b" +
+                          " measures A[0].TheString as a0, A[1].TheString as a1, A[2].TheString as a2, B.TheString as b" +
                           " pattern (A* B)" +
                           " define" +
-                          " B as (coalesce(A.sumOf(v => v.intPrimitive), 0) + B.intPrimitive) > 100" +
+                          " B as (coalesce(A.sumOf(v => v.IntPrimitive), 0) + B.IntPrimitive) > 100" +
                           ")";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -173,14 +173,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.AssertPropsNew("s0", fieldsOne, new object[] { "E7", "E8", "E9", "E11" });
                 env.UndeployAll();
 
-                var fieldsTwo = "a[0].theString,a[1].theString,b.theString".SplitCsv();
+                var fieldsTwo = "a[0].TheString,a[1].TheString,b.TheString".SplitCsv();
                 var eplTwo = "@name('s0') select * from SupportBean " +
                              "match_recognize (" +
                              " measures A as a, B as b " +
                              " pattern (A+ B)" +
                              " define" +
-                             " A as theString like 'A%', " +
-                             " B as theString like 'B%' and B.intPrimitive > A.sumOf(v => v.intPrimitive)" +
+                             " A as TheString like 'A%', " +
+                             " B as TheString like 'B%' and B.IntPrimitive > A.sumOf(v => v.IntPrimitive)" +
                              ")";
 
                 env.CompileDeploy(eplTwo).AddListener("s0");
@@ -245,12 +245,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             var text = "@name('s0') select * from SupportBean " +
                        "match_recognize (" +
-                       " partition by theString " +
+                       " partition by TheString " +
                        " measures " +
                        measures +
                        " pattern (A+ B)" +
                        " define" +
-                       " B as B.intPrimitive = A[0].intPrimitive" +
+                       " B as B.IntPrimitive = A[0].IntPrimitive" +
                        ")";
             env.CompileDeploy(text).AddListener("s0");
 
@@ -279,18 +279,18 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "a0,a1,b0,b1,c".SplitCsv();
             var text = "@name('s0') select * from SupportBean " +
                        "match_recognize (" +
-                       " measures A[0].theString as a0, A[1].theString as a1, B[0].theString as b0, B[1].theString as b1, C.theString as c" +
+                       " measures A[0].TheString as a0, A[1].TheString as a1, B[0].TheString as b0, B[1].TheString as b1, C.TheString as c" +
                        " pattern (" +
                        pattern +
                        ")" +
                        " define" +
-                       " A as theString like 'A%', " +
-                       " B as theString like 'B%'," +
-                       " C as theString like 'C%' and " +
-                       "   C.intPrimitive = A[0].intPrimitive and " +
-                       "   C.intPrimitive = B[0].intPrimitive and " +
-                       "   C.intPrimitive = A[1].intPrimitive and " +
-                       "   C.intPrimitive = B[1].intPrimitive" +
+                       " A as TheString like 'A%', " +
+                       " B as TheString like 'B%'," +
+                       " C as TheString like 'C%' and " +
+                       "   C.IntPrimitive = A[0].IntPrimitive and " +
+                       "   C.IntPrimitive = B[0].IntPrimitive and " +
+                       "   C.IntPrimitive = A[1].IntPrimitive and " +
+                       "   C.IntPrimitive = B[1].IntPrimitive" +
                        ")";
             env.CompileDeploy(text).AddListener("s0");
 

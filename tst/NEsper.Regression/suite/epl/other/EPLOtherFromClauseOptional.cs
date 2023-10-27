@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create context MyContext initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(id=s0.id)",
+                    "@public create context MyContext initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(Id=s0.Id)",
                     path);
 
                 var eplOnInit = "@name('s0') context MyContext select context.s0 as ctxs0";
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                  "@public create window MyWindow#keepall as SupportBean;\n" +
                                  "on SupportBean merge MyWindow insert select *;\n" +
                                  "@public create table MyTable(field int);\n" +
-                                 "on SupportBean merge MyTable insert select intPrimitive as field;\n";
+                                 "on SupportBean merge MyTable insert select IntPrimitive as field;\n";
                 env.CompileDeploy(eplObjects, path);
                 env.SendEventBean(new SupportBean("E1", 1));
 
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var context =
-                    "@public create context MyContext initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(id=s0.id);";
+                    "@public create context MyContext initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(Id=s0.Id);";
                 env.CompileDeploy(context, path);
 
                 // subselect needs from clause
@@ -214,7 +214,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "Wildcard cannot be used when the from-clause is not provided");
 
                 // context requires a single selector
-                var compiled = env.CompileFAF("context MyContext select context.s0.p00 as id", path);
+                var compiled = env.CompileFAF("context MyContext select context.s0.P00 as Id", path);
                 try {
                     env.Runtime.FireAndForgetService.ExecuteQuery(compiled, new ContextPartitionSelector[2]);
                     Assert.Fail();
@@ -229,8 +229,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidFAFCompile(
                     env,
                     path,
-                    "context MyContext select context.s0.p00 as p00 order by p00 desc",
-                    "Fire-and-forget queries without a from-clause and with context do not allow order-by");
+"context MyContext select context.s0.P00 as P00 Order by P00 desc",
+"Fire-and-forget queries without a from-clause and with context do not allow Order-by");
 
                 env.UndeployAll();
             }
@@ -247,17 +247,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var epl =
-                    "@public create context MyContext initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(id=s0.id);\n" +
+                    "@public create context MyContext initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(Id=s0.Id);\n" +
                     "context MyContext select count(*) from SupportBean;\n";
                 env.CompileDeploy(epl, path);
 
                 env.SendEventBean(new SupportBean_S0(10, "A", "x"));
                 env.SendEventBean(new SupportBean_S0(20, "B", "x"));
-                var eplFAF = "context MyContext select context.s0.p00 as id";
+                var eplFAF = "context MyContext select context.s0.P00 as Id";
                 var compiled = env.CompileFAF(eplFAF, path);
                 AssertPropsPerRow(
                     env.Runtime.FireAndForgetService.ExecuteQuery(compiled).Array,
-                    "id".Split(","),
+                    "Id".Split(","),
                     new object[][] { new object[] { "A" }, new object[] { "B" } });
 
                 // context partition selector
@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 AssertPropsPerRow(
                     env.Runtime.FireAndForgetService.ExecuteQuery(compiled, new ContextPartitionSelector[] { selector })
                         .Array,
-                    "id".Split(","),
+                    "Id".Split(","),
                     new object[][] { new object[] { "B" } });
 
                 // SODA
@@ -274,22 +274,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 compiled = env.CompileFAF(model, path);
                 AssertPropsPerRow(
                     env.Runtime.FireAndForgetService.ExecuteQuery(compiled).Array,
-                    "id".Split(","),
+                    "Id".Split(","),
                     new object[][] { new object[] { "A" }, new object[] { "B" } });
 
                 // distinct
-                var eplFAFDistint = "context MyContext select distinct context.s0.p01 as p01";
+                var eplFAFDistint = "context MyContext select distinct context.s0.P01 as P01";
                 var result = env.CompileExecuteFAF(eplFAFDistint, path);
-                AssertPropsPerRow(result.Array, "p01".Split(","), new object[][] { new object[] { "x" } });
+                AssertPropsPerRow(result.Array, "P01".Split(","), new object[][] { new object[] { "x" } });
 
                 // where-clause and having-clause
                 RunSelectFAF(env, path, null, "context MyContext select 1 as value where 'a'='b'");
-                RunSelectFAF(env, path, "A", "context MyContext select context.s0.p00 as value where context.s0.id=10");
+                RunSelectFAF(env, path, "A", "context MyContext select context.s0.P00 as value where context.s0.Id=10");
                 RunSelectFAF(
                     env,
                     path,
                     "A",
-                    "context MyContext select context.s0.p00 as value having context.s0.id=10");
+                    "context MyContext select context.s0.P00 as value having context.s0.Id=10");
 
                 env.UndeployAll();
             }

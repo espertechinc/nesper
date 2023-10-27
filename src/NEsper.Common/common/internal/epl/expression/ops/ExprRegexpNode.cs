@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -26,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     {
         private readonly bool _isNot;
 
-        [NonSerialized] private ExprRegexpNodeForge _forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprRegexpNodeForge _forge;
 
         /// <summary>
         /// Ctor.

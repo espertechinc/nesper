@@ -123,12 +123,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     typeof(MyLocalJsonProvidedEventOut).FullName +
                     "') create json schema EventOut();\n" +
                     "@name('s0') insert into EventOut select s as startEvent, e as endEvents from pattern [" +
-                    "every s=EventOne -> e=EventTwo(id=s.id) until timer:interval(10 sec)]";
+                    "every s=EventOne -> e=EventTwo(Id=s.Id) until timer:interval(10 sec)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                env.SendEventJson("{\"id\":\"G1\"}", "EventOne");
-                env.SendEventJson("{\"id\":\"G1\",\"val\":2}", "EventTwo");
-                env.SendEventJson("{\"id\":\"G1\",\"val\":3}", "EventTwo");
+                env.SendEventJson("{\"Id\":\"G1\"}", "EventOne");
+                env.SendEventJson("{\"Id\":\"G1\",\"val\":2}", "EventTwo");
+                env.SendEventJson("{\"Id\":\"G1\",\"val\":3}", "EventTwo");
                 env.AdvanceTime(10000);
 
                 env.AssertEventNew(
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public void Run(RegressionEnvironment env)
             {
                 var schema =
-                    "create json schema Partner(id long, name string, since System.DateTimeOffset);\n" +
+                    "create json schema Partner(Id long, name string, since System.DateTimeOffset);\n" +
                     "create json schema Client(" +
                     "_id long,\n" +
                     "`index` int,\n" +
@@ -301,7 +301,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public void Run(RegressionEnvironment env)
             {
                 var schema =
-                    "create json schema Friend(id string, name string);\n" +
+                    "create json schema Friend(Id string, name string);\n" +
                     "create json schema User(" +
                     "_id string,\n" +
                     "`index` int,\n" +
@@ -538,11 +538,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             "      ],\n" +
             "      \"friends\": [\n" +
             "        {\n" +
-            "          \"id\": \"3987\",\n" +
+            "          \"Id\": \"3987\",\n" +
             "          \"name\": \"dWwKYheGgTZejIMYdglXvvrWAzUqsk\"\n" +
             "        },\n" +
             "        {\n" +
-            "          \"id\": \"4673\",\n" +
+            "          \"Id\": \"4673\",\n" +
             "          \"name\": \"EqVIiZyuhSCkWXvqSxgyQihZaiwSra\"\n" +
             "        }\n" +
             "      ],\n" +
@@ -606,12 +606,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             "      \"tags\": [],\n" +
             "      \"partners\": [\n" +
             "        {\n" +
-            "          \"id\": -4413101314901277000,\n" +
+            "          \"Id\": -4413101314901277000,\n" +
             "          \"name\": \"YjiSvZzaXYhJMkZddxlVPdHfoIthbY\",\n" +
             "          \"since\": \"1974-11-01T07:58:27.373380998Z\"\n" +
             "        },\n" +
             "        {\n" +
-            "          \"id\": -7309654308880836000,\n" +
+            "          \"Id\": -7309654308880836000,\n" +
             "          \"name\": \"HxHDrtpnXAxCooxasYVLZLqYImRLzW\",\n" +
             "          \"since\": \"1927-02-02T14:34:09.672667878Z\"\n" +
             "        }\n" +

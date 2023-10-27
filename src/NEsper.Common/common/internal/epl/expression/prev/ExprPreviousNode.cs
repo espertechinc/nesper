@@ -435,7 +435,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
 
             method.Block
                 .DeclareVar<PreviousGetterStrategy>("strategy",
-                    ExprDotMethod(GetterField(codegenClassScope), "getStrategy", exprSymbol.GetAddExprEvalCtx(method)))
+                    ExprDotMethod(GetterField(codegenClassScope), "GetStrategy", exprSymbol.GetAddExprEvalCtx(method)))
                 .Apply(new PreviousBlockGetSizeAndIterator(method, exprSymbol, StreamNumber, Ref("strategy")).Accept);
 
             var eps = exprSymbol.GetAddEPS(method);

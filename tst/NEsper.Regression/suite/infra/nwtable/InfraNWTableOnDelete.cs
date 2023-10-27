@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@name('CreateInfra') @public create window MyInfra#keepall as select theString as a, intPrimitive as b from SupportBean"
+                    ? "@name('CreateInfra') @public create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
                     : "@name('CreateInfra') @public create table MyInfra (a string primary key, b int)";
                 var path = new RegressionPath();
                 env.CompileDeploy(stmtTextCreate, path).AddListener("CreateInfra");
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "@name('Insert') insert into MyInfra select theString as a, intPrimitive as b from SupportBean";
+                    "@name('Insert') insert into MyInfra select TheString as a, IntPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // create consumer
@@ -189,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 // create infra
                 var stmtTextCreate = namedWindow
-                    ? "@name('CreateInfra') @public create window MyInfra#keepall as select theString as a, intPrimitive as b from SupportBean"
+                    ? "@name('CreateInfra') @public create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
                     : "@name('CreateInfra') @public create table MyInfra(a string primary key, b int)";
                 var path = new RegressionPath();
                 env.CompileDeploy(stmtTextCreate, path).AddListener("CreateInfra");
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(stmtTextDelete, path).AddListener("OnDelete");
 
                 // create insert into
-                var stmtTextInsertOne = "insert into MyInfra select theString as a, intPrimitive as b from SupportBean";
+                var stmtTextInsertOne = "insert into MyInfra select TheString as a, IntPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // send 1 event
@@ -273,12 +273,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create infra
                 var stmtTextCreate = namedWindow
-                    ? "@name('CreateInfra') @public create window MyInfra#keepall as select theString as a, intPrimitive as b from SupportBean"
+                    ? "@name('CreateInfra') @public create window MyInfra#keepall as select TheString as a, IntPrimitive as b from SupportBean"
                     : "@name('CreateInfra') @public create table MyInfra (a string primary key, b int)";
                 env.CompileDeploy(stmtTextCreate, path).AddListener("CreateInfra");
 
                 // create delete stmt
-                var stmtTextDelete = "on SupportBean_A delete from MyInfra where 'X' || a || 'X' = id";
+                var stmtTextDelete = "on SupportBean_A delete from MyInfra where 'X' || a || 'X' = Id";
                 env.CompileDeploy(stmtTextDelete, path);
 
                 // create delete stmt
@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(stmtTextDelete, path);
 
                 // create insert into
-                var stmtTextInsertOne = "insert into MyInfra select theString as a, intPrimitive as b from SupportBean";
+                var stmtTextInsertOne = "insert into MyInfra select TheString as a, IntPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // send 3 event

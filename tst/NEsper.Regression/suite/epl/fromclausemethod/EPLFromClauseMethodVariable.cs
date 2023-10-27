@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 // invalid footprint
                 env.TryInvalidCompile(
-                    "select * from method:MyConstantServiceVariable.fetchABean() as h0",
+                    "select * from method:MyConstantServiceVariable.FetchABean() as h0",
                     "Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find enumeration method, date-time method, instance method or property named 'fetchABean' in class '" +
                     typeof(MyConstantServiceVariable).FullName +
                     "' taking no parameters (nearest match found was 'fetchABean' taking type(s) 'int') [");
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 env.CompileDeploy(
                     "@Public create context MyContext " +
                     "initiated by SupportBean_S0 as c_s0 " +
-                    "terminated by SupportBean_S1(id=c_s0.id)",
+                    "terminated by SupportBean_S1(Id=c_s0.Id)",
                     path);
                 env.CompileDeploy(
                     "@Public context MyContext " +
@@ -135,12 +135,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     path);
                 env.CompileDeploy(
                         "@name('s0') context MyContext " +
-                        "select id as c0 from SupportBean(intPrimitive=context.c_s0.id) as sb, " +
-                        "method:var.fetchABean(intPrimitive) as h0",
+                        "select Id as c0 from SupportBean(IntPrimitive=context.c_s0.Id) as sb, " +
+                        "method:var.FetchABean(IntPrimitive) as h0",
                         path)
                     .AddListener("s0");
                 env.CompileDeploy(
-                    "context MyContext on SupportBean_S2(id = context.c_s0.id) set var.postfix=p20",
+                    "context MyContext on SupportBean_S2(Id = context.c_s0.Id) set var.postfix=P20",
                     path);
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -163,12 +163,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 // invalid context
                 env.TryInvalidCompile(
                     path,
-                    "select * from method:var.fetchABean(intPrimitive) as h0",
+                    "select * from method:var.FetchABean(IntPrimitive) as h0",
                     "Variable by name 'var' has been declared for context 'MyContext' and can only be used within the same context");
                 env.CompileDeploy("@Public create context ABC start @now end after 1 minute", path);
                 env.TryInvalidCompile(
                     path,
-                    "context ABC select * from method:var.fetchABean(intPrimitive) as h0",
+                    "context ABC select * from method:var.FetchABean(IntPrimitive) as h0",
                     "Variable by name 'var' has been declared for context 'MyContext' and can only be used within the same context");
 
                 env.UndeployAll();
@@ -179,8 +179,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select id as c0 from SupportBean as sb, " +
-                          "method:MyConstantServiceVariable.fetchABean(intPrimitive) as h0";
+                var epl = "@name('s0') select Id as c0 from SupportBean as sb, " +
+                          "method:MyConstantServiceVariable.FetchABean(IntPrimitive) as h0";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEventAssert(env, "E1", 10, "_10_");
@@ -204,11 +204,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
             public void Run(RegressionEnvironment env)
             {
-                var modifyEPL = "on SupportBean_S0 set MyNonConstantServiceVariable.postfix=p00";
+                var modifyEPL = "on SupportBean_S0 set MyNonConstantServiceVariable.postfix=P00";
                 env.CompileDeploy(soda, modifyEPL);
 
-                var epl = "@name('s0') select id as c0 from SupportBean as sb, " +
-                          "method:MyNonConstantServiceVariable.fetchABean(intPrimitive) as h0";
+                var epl = "@name('s0') select Id as c0 from SupportBean as sb, " +
+                          "method:MyNonConstantServiceVariable.FetchABean(IntPrimitive) as h0";
                 env.CompileDeploy(soda, epl).AddListener("s0");
 
                 SendEventAssert(env, "E1", 10, "_10_postfix");

@@ -102,7 +102,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
 			compilerThreadPool.Shutdown();
 			try {
-				compilerThreadPool.AwaitTermination(TimeSpan.FromSeconds(double.MaxValue));
+				compilerThreadPool.AwaitTermination(TimeSpan.FromSeconds(300)); // TimeSpan.FromSeconds(double.MaxValue)
 			}
 			catch (ThreadInterruptedException e) {
 				throw new EPRuntimeException(e);

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat.collections;
@@ -22,9 +23,13 @@ namespace com.espertech.esper.common.@internal.collection
     [Serializable]
     public sealed class HashableMultiKeyEventPair
     {
-        [NonSerialized] private readonly EventBean _eventBean;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly EventBean _eventBean;
         private readonly int _hashCode;
-        [NonSerialized] private readonly object[] _keys;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly object[] _keys;
 
         /// <summary>
         ///     Constructor for multiple keys supplied in an object array.

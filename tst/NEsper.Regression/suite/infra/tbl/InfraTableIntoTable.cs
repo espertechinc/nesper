@@ -223,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "@public create table MyTable(" +
                     "thewin window(*) @type('SupportBean')," +
-                    "thesort sorted(intPrimitive desc) @type('SupportBean')" +
+                    "thesort sorted(IntPrimitive desc) @type('SupportBean')" +
                     ")",
                     path);
 
@@ -349,9 +349,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var path = new RegressionPath();
 
             var eplDeclare = "@public create table varagg (" +
-                             "maxbyeveru maxbyever(intPrimitive) @type('SupportBean'), " +
-                             "minbyeveru minbyever(intPrimitive) @type('SupportBean'), " +
-                             "sortedb sorted(intPrimitive) @type('SupportBean'))";
+                             "maxbyeveru maxbyever(IntPrimitive) @type('SupportBean'), " +
+                             "minbyeveru minbyever(IntPrimitive) @type('SupportBean'), " +
+                             "sortedb sorted(IntPrimitive) @type('SupportBean'))";
             env.CompileDeploy(soda, eplDeclare, path);
 
             var eplIterate = "@name('iterate') select varagg from SupportBean_S0#lastevent";
@@ -378,13 +378,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             // invalid: bound aggregation into unbound max
             env.TryInvalidCompile(
                 path,
-                "into table varagg select maxby(intPrimitive) as maxbyeveru from SupportBean#length(2)",
-                "Failed to validate select-clause expression 'maxby(intPrimitive)': When specifying into-table a sort expression cannot be provided [");
+                "into table varagg select maxby(IntPrimitive) as maxbyeveru from SupportBean#length(2)",
+                "Failed to validate select-clause expression 'maxby(IntPrimitive)': When specifying into-table a sort expression cannot be provided [");
             // invalid: unbound aggregation into bound max
             env.TryInvalidCompile(
                 path,
                 "into table varagg select maxbyever() as sortedb from SupportBean#length(2)",
-                "Incompatible aggregation function for table 'varagg' column 'sortedb', expecting 'sorted(intPrimitive)' and received 'maxbyever()': The required aggregation function name is 'sorted' and provided is 'maxbyever' [");
+                "Incompatible aggregation function for table 'varagg' column 'sortedb', expecting 'sorted(IntPrimitive)' and received 'maxbyever()': The required aggregation function name is 'sorted' and provided is 'maxbyever' [");
 
             // valid: bound with unbound variable
             var eplBoundIntoUnbound = "into table varagg select " +
@@ -406,7 +406,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(eplCreateTable, path);
 
                 var eplIntoTable =
-                    "@name('Into-Table') into table MyTable select sum(intPrimitive) as sumint from SupportBean";
+                    "@name('Into-Table') into table MyTable select sum(IntPrimitive) as sumint from SupportBean";
                 env.CompileDeploy(eplIntoTable, path);
 
                 var eplQueryTable = "@name('s0') select (select sumint from MyTable) as c0 from SupportBean_S0 as s0";
@@ -474,11 +474,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(eplCreateTable, path);
 
                 var eplIntoTable =
-                    "@name('Into-Table') into table MyTable select sum(intPrimitive) as sumint from SupportBean group by theString";
+                    "@name('Into-Table') into table MyTable select sum(IntPrimitive) as sumint from SupportBean group by TheString";
                 env.CompileDeploy(eplIntoTable, path);
 
                 var eplQueryTable =
-                    "@name('s0') select (select sumint from MyTable where pkey = s0.p00) as c0 from SupportBean_S0 as s0";
+                    "@name('s0') select (select sumint from MyTable where pkey = s0.P00) as c0 from SupportBean_S0 as s0";
                 env.CompileDeploy(eplQueryTable, path).AddListener("s0");
 
                 env.Milestone(1);
@@ -617,12 +617,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportBean_S0(0));
 
             var eplBoundInto = "into table varagg select " +
-                               "max(intPrimitive) as maxb, min(intPrimitive) as minb " +
+                               "max(IntPrimitive) as maxb, min(IntPrimitive) as minb " +
                                "from SupportBean#length(2)";
             env.CompileDeploy(soda, eplBoundInto, path);
 
             var eplUnboundInto = "into table varagg select " +
-                                 "maxever(intPrimitive) as maxu, minever(intPrimitive) as minu " +
+                                 "maxever(IntPrimitive) as maxu, minever(IntPrimitive) as minu " +
                                  "from SupportBean";
             env.CompileDeploy(soda, eplUnboundInto, path);
 
@@ -645,12 +645,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             // invalid: unbound aggregation into bound max
             env.TryInvalidCompile(
                 path,
-                "into table varagg select max(intPrimitive) as maxb from SupportBean",
-                "Incompatible aggregation function for table 'varagg' column 'maxb', expecting 'max(int)' and received 'max(intPrimitive)': The table declares use with data windows and provided is unbound [");
+                "into table varagg select max(IntPrimitive) as maxb from SupportBean",
+                "Incompatible aggregation function for table 'varagg' column 'maxb', expecting 'max(int)' and received 'max(IntPrimitive)': The table declares use with data windows and provided is unbound [");
 
             // valid: bound with unbound variable
             var eplBoundIntoUnbound = "into table varagg select " +
-                                      "maxever(intPrimitive) as maxu, minever(intPrimitive) as minu " +
+                                      "maxever(IntPrimitive) as maxu, minever(IntPrimitive) as minu " +
                                       "from SupportBean#length(2)";
             env.CompileDeploy(soda, eplBoundIntoUnbound, path);
 

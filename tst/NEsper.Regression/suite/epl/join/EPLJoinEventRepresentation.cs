@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var path = new RegressionPath();
                 var jsonSchemas =
-                    $"@Public @buseventtype create json schema S0_JSON(id String, p00 int);\n@Public @buseventtype create json schema S1_JSON(id String, p00 int);\n@Public @buseventtype @JsonSchema(className='{typeof(MyLocalJsonProvidedS0).FullName}') create json schema S0_JSONCLASSPROVIDED();\n@Public @buseventtype @JsonSchema(className='{typeof(MyLocalJsonProvidedS1).FullName}') create json schema S1_JSONCLASSPROVIDED();\n";
+                    $"@Public @buseventtype create json schema S0_JSON(id String, P00 int);\n@Public @buseventtype create json schema S1_JSON(Id String, P00 int);\n@Public @buseventtype @JsonSchema(className='{typeof(MyLocalJsonProvidedS0).FullName}') create json schema S0_JSONCLASSPROVIDED();\n@Public @buseventtype @JsonSchema(className='{typeof(MyLocalJsonProvidedS1).FullName}') create json schema S1_JSONCLASSPROVIDED();\n";
                 env.CompileDeploy(jsonSchemas, path);
                 var milestone = new AtomicLong();
 
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     var s0Type = $"S0_{rep.GetName()}";
                     var s1Type = $"S1_{rep.GetName()}";
                     var eplOne =
-                        $"select S0.id as s0id, S1.id as s1id, S0.p00 as s0p00, S1.p00 as s1p00 from {s0Type}#keepall as S0, {s1Type}#keepall as S1 where S0.id = S1.id";
+                        $"select S0.Id as s0id, S1.Id as s1id, S0.P00 as s0p00, S1.P00 as s1p00 from {s0Type}#keepall as S0, {s1Type}#keepall as S1 where S0.Id = S1.Id";
                     TryJoinAssertion(
                         env,
                         eplOne,
@@ -84,12 +84,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
                     var s0Type = $"S0_{rep.GetName()}";
                     var s1Type = $"S1_{rep.GetName()}";
-                    var eplTwo = $"select * from {s0Type}#keepall as s0, {s1Type}#keepall as s1 where s0.id = s1.id";
+                    var eplTwo = $"select * from {s0Type}#keepall as s0, {s1Type}#keepall as s1 where s0.Id = s1.Id";
                     TryJoinAssertion(
                         env,
                         eplTwo,
                         rep,
-                        "s0.id,s1.id,s0.p00,s1.p00",
+                        "s0.Id,s1.Id,s0.P00,s1.P00",
                         milestone,
                         path,
                         typeof(MyLocalJsonProvidedWildcard));
@@ -139,8 +139,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 // Test for Esper-122
                 var joinStatement =
-                    "@name('s0') select S0.id, S1.id, S0.p00, S1.p00 from MapS0#keepall as S0, MapS1#keepall as S1" +
-                    " where S0.id = S1.id";
+                    "@name('s0') select S0.Id, S1.Id, S0.P00, S1.P00 from MapS0#keepall as S0, MapS1#keepall as S1" +
+                    " where S0.Id = S1.Id";
                 env.CompileDeployAddListenerMileZero(joinStatement, "s0");
 
                 for (var i = 0; i < 100; i++) {
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test for Esper-122
                 var epl = "insert into S0Stream select 's0' as streamone, * from SupportBean;\n" +
                           "insert into S1Stream select 's1' as streamtwo, * from SupportBean;\n" +
-                          "@name('s0') select * from S0Stream#keepall as a, S1Stream#keepall as b where a.intBoxed = b.intBoxed";
+                          "@name('s0') select * from S0Stream#keepall as a, S1Stream#keepall as b where a.IntBoxed = b.IntBoxed";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 for (var i = 0; i < 100; i++) {
@@ -181,8 +181,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             int p00)
         {
             IDictionary<string, object> theEvent = new Dictionary<string, object>();
-            theEvent.Put("id", id);
-            theEvent.Put("p00", p00);
+            theEvent.Put("Id", id);
+            theEvent.Put("P00", p00);
             env.SendEventMap(theEvent, name);
         }
 
@@ -195,8 +195,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             if (rep.IsMapEvent()) {
                 IDictionary<string, object> theEvent = new Dictionary<string, object>();
-                theEvent.Put("id", id);
-                theEvent.Put("p00", p00);
+                theEvent.Put("Id", id);
+                theEvent.Put("P00", p00);
                 env.SendEventMap(theEvent, name);
             }
             else if (rep.IsObjectArrayEvent()) {
@@ -204,12 +204,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             }
             else if (rep.IsAvroEvent()) {
                 var theEvent = new GenericRecord(env.RuntimeAvroSchemaPreconfigured(name).AsRecordSchema());
-                theEvent.Put("id", id);
-                theEvent.Put("p00", p00);
+                theEvent.Put("Id", id);
+                theEvent.Put("P00", p00);
                 env.SendEventAvro(theEvent, name);
             }
             else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
-                var json = $"{{\"id\": \"{id}\", \"p00\": {p00}}}";
+                var json = $"{{\"id\": \"{id}\", \"P00\": {P00}}}";
                 env.SendEventJson(json, name);
             }
             else {

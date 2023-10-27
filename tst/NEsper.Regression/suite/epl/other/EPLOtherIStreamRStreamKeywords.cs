@@ -211,14 +211,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@name('s0') @public insert into NextStream " +
-                    "select rstream s0.theString as theString from SupportBean#length(3) as s0",
+                    "select rstream s0.TheString as TheString from SupportBean#length(3) as s0",
                     path);
                 env.AddListener("s0");
                 env.CompileDeploy("@name('ii') select * from NextStream", path).AddListener("ii");
 
                 SendEvent(env, "a", 2);
                 env.AssertListenerNotInvoked("s0");
-                env.AssertEqualsNew("ii", "theString", "a");
+                env.AssertEqualsNew("ii", "TheString", "a");
 
                 SendEvents(env, new string[] { "b", "c" });
                 env.AssertListenerNotInvoked("s0");
@@ -233,13 +233,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreSame("a", listener.LastNewData[0].Get("theString")); // receive 'a' as new data
+                        Assert.AreSame("a", listener.LastNewData[0].Get("TheString")); // receive 'a' as new data
                         Assert.IsNull(listener.LastOldData); // receive no more old data
                     });
                 env.AssertListener(
                     "ii",
                     listener => {
-                        Assert.AreEqual("d", listener.LastNewData[0].Get("theString")); // insert into unchanged
+                        Assert.AreEqual("d", listener.LastNewData[0].Get("TheString")); // insert into unchanged
                         Assert.IsNull(listener.LastOldData); // receive no old data in insert into
                     });
 
@@ -254,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@name('s0') @public insert rstream into NextStream " +
-                    "select rstream s0.theString as theString from SupportBean#length(3) as s0",
+                    "select rstream s0.TheString as TheString from SupportBean#length(3) as s0",
                     path);
                 env.AddListener("s0");
 
@@ -272,13 +272,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreSame("a", listener.LastNewData[0].Get("theString")); // receive 'a' as new data
+                        Assert.AreSame("a", listener.LastNewData[0].Get("TheString")); // receive 'a' as new data
                         Assert.IsNull(listener.LastOldData); // receive no more old data
                     });
                 env.AssertListener(
                     "ii",
                     listener => {
-                        Assert.AreEqual("a", listener.LastNewData[0].Get("theString")); // insert into unchanged
+                        Assert.AreEqual("a", listener.LastNewData[0].Get("TheString")); // insert into unchanged
                         Assert.IsNull(listener.LastOldData); // receive no old data in insert into
                     });
 
@@ -291,10 +291,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@name('s0') select rstream s1.intPrimitive as aID, s2.intPrimitive as bID " +
-                        "from SupportBean(theString='a')#length(2) as s1, " +
-                        "SupportBean(theString='b')#keepall as s2" +
-                        " where s1.intPrimitive = s2.intPrimitive")
+                        "@name('s0') select rstream s1.IntPrimitive as aID, s2.IntPrimitive as bID " +
+                        "from SupportBean(TheString='a')#length(2) as s1, " +
+                        "SupportBean(TheString='b')#keepall as s2" +
+                        " where s1.IntPrimitive = s2.IntPrimitive")
                     .AddListener("s0");
 
                 SendEvent(env, "a", 1);
@@ -345,27 +345,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@name('s0') @public insert rstream into NextStream " +
-                    "select istream a.theString as theString from SupportBean#length(1) as a",
+                    "select istream a.TheString as TheString from SupportBean#length(1) as a",
                     path);
                 env.AddListener("s0");
 
                 env.CompileDeploy("@name('ii') select * from NextStream", path).AddListener("ii");
 
                 SendEvent(env, "a", 2);
-                env.AssertEqualsNew("s0", "theString", "a");
+                env.AssertEqualsNew("s0", "TheString", "a");
                 env.AssertListenerNotInvoked("ii");
 
                 SendEvent(env, "b", 2);
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual("b", listener.LastNewData[0].Get("theString"));
+                        Assert.AreEqual("b", listener.LastNewData[0].Get("TheString"));
                         Assert.IsNull(listener.LastOldData);
                     });
                 env.AssertListener(
                     "ii",
                     listener => {
-                        Assert.AreEqual("a", listener.LastNewData[0].Get("theString"));
+                        Assert.AreEqual("a", listener.LastNewData[0].Get("TheString"));
                         Assert.IsNull(listener.LastOldData);
                     });
 
@@ -379,10 +379,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 env.CompileDeploy(
                         "@name('s0') " +
-                        "select istream s1.intPrimitive as aID, s2.intPrimitive as bID " +
-                        "from SupportBean(theString='a')#length(2) as s1, " +
-                        "SupportBean(theString='b')#keepall as s2" +
-                        " where s1.intPrimitive = s2.intPrimitive")
+                        "select istream s1.IntPrimitive as aID, s2.IntPrimitive as bID " +
+                        "from SupportBean(TheString='a')#length(2) as s1, " +
+                        "SupportBean(TheString='b')#keepall as s2" +
+                        " where s1.IntPrimitive = s2.IntPrimitive")
                     .AddListener("s0");
 
                 SendEvent(env, "a", 1);

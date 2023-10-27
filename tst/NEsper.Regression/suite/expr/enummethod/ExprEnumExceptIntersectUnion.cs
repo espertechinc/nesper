@@ -110,9 +110,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "contained.except(containedTwo)");
-                builder.WithExpression(fields[1], "contained.intersect(containedTwo)");
-                builder.WithExpression(fields[2], "contained.union(containedTwo)");
+                builder.WithExpression(fields[0], "Contained.except(containedTwo)");
+                builder.WithExpression(fields[1], "Contained.intersect(containedTwo)");
+                builder.WithExpression(fields[2], "Contained.union(containedTwo)");
 
                 builder.WithStatementConsumer(
                     stmt => SupportEventPropUtil.AssertTypesAllSame(
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     " (select * from SupportBean_ST0(key0 like 'A%')#length(2)) " +
                     "}" +
                     "expression last10NonZero {" +
-                    " (select * from SupportBean_ST0(p00 > 0)#length(2)) " +
+                    " (select * from SupportBean_ST0(P00 > 0)#length(2)) " +
                     "}" +
                     "select " +
                     "last10A().except(last10NonZero()) as val0," +
@@ -203,9 +203,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.except(strvalstwo)");
-                builder.WithExpression(fields[1], "strvals.intersect(strvalstwo)");
-                builder.WithExpression(fields[2], "strvals.union(strvalstwo)");
+                builder.WithExpression(fields[0], "Strvals.except(strvalstwo)");
+                builder.WithExpression(fields[1], "Strvals.intersect(strvalstwo)");
+                builder.WithExpression(fields[2], "Strvals.union(strvalstwo)");
 
                 builder.WithStatementConsumer(
                     stmt => SupportEventPropUtil.AssertTypesAllSame(
@@ -243,28 +243,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string epl;
 
-                epl = "select contained.union(true) from SupportBean_ST0_Container";
+                epl = "select Contained.union(true) from SupportBean_ST0_Container";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'contained.union(true)': Enumeration method 'union' requires an expression yielding a collection of events of type");
+                    "Failed to validate select-clause expression 'Contained.union(true)': Enumeration method 'union' requires an expression yielding a collection of events of type");
 
                 epl =
-                    "select contained.union(prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall s1";
+                    "select Contained.union(prevwindow(s1)) from SupportBean_ST0_Container#lastevent, SupportBean#keepall s1";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'contained.union(prevwindow(s1))': Enumeration method 'union' expects event type '" +
+                    "Failed to validate select-clause expression 'Contained.union(prevwindow(s1))': Enumeration method 'union' expects event type '" +
                     typeof(SupportBean_ST0).FullName +
                     "' but receives event type 'SupportBean'");
 
-                epl = "select (select * from SupportBean#keepall).union(strvals) from SupportCollection";
+                epl = "select (select * from SupportBean#keepall).union(Strvals) from SupportCollection";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'subselect_1.union(strvals)': Enumeration method 'union' requires an expression yielding a collection of events of type 'SupportBean' as input parameter");
+                    "Failed to validate select-clause expression 'subselect_1.union(Strvals)': Enumeration method 'union' requires an expression yielding a collection of events of type 'SupportBean' as input parameter");
 
-                epl = "select strvals.union((select * from SupportBean#keepall)) from SupportCollection";
+                epl = "select Strvals.union((select * from SupportBean#keepall)) from SupportCollection";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'strvals.union(subselect_1)': Enumeration method 'union' requires an expression yielding a collection of values of type 'String' as input parameter");
+                    "Failed to validate select-clause expression 'Strvals.union(subselect_1)': Enumeration method 'union' requires an expression yielding a collection of values of type 'String' as input parameter");
             }
         }
 
@@ -273,11 +273,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') expression one {" +
-                          "  x => x.contained.where(y => p00 = 10)" +
+                          "  x => x.Contained.where(y => P00 = 10)" +
                           "} " +
                           "" +
                           "expression two {" +
-                          "  x => x.contained.where(y => p00 = 11)" +
+                          "  x => x.Contained.where(y => P00 = 11)" +
                           "} " +
                           "" +
                           "select one(bean).union(two(bean)) as val0 from SupportBean_ST0_Container as bean";

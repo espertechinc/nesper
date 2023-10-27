@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select * from SupportBean(varargsTestClient.functionWithVarargs(longBoxed, varargsTestClient.getTestObject(theString))) as t";
+                    "@name('s0') select * from SupportBean(varargsTestClient.functionWithVarargs(LongBoxed, varargsTestClient.getTestObject(TheString))) as t";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var sb = new SupportBean("5", 0);
@@ -226,7 +226,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 try {
                     latch.Await();
                 }
-                catch (ThreadInterruptedException e) {
+                catch (ThreadInterruptedException) {
                     Assert.Fail();
                 }
 
@@ -278,14 +278,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "MYCONST = intBoxed",
+                    "MYCONST = IntBoxed",
                     new object[][]
                         { new object[] { 10, true }, new object[] { 9, false }, new object[] { null, false } });
 
                 TryOperator(
                     env,
                     path,
-                    "MYCONST > intBoxed",
+                    "MYCONST > IntBoxed",
                     new object[][] {
                         new object[] { 11, false }, new object[] { 10, false }, new object[] { 9, true },
                         new object[] { 8, true }
@@ -293,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "MYCONST >= intBoxed",
+                    "MYCONST >= IntBoxed",
                     new object[][] {
                         new object[] { 11, false }, new object[] { 10, true }, new object[] { 9, true },
                         new object[] { 8, true }
@@ -301,7 +301,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "MYCONST < intBoxed",
+                    "MYCONST < IntBoxed",
                     new object[][] {
                         new object[] { 11, true }, new object[] { 10, false }, new object[] { 9, false },
                         new object[] { 8, false }
@@ -309,7 +309,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "MYCONST <= intBoxed",
+                    "MYCONST <= IntBoxed",
                     new object[][] {
                         new object[] { 11, true }, new object[] { 10, true }, new object[] { 9, false },
                         new object[] { 8, false }
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed < MYCONST",
+                    "IntBoxed < MYCONST",
                     new object[][] {
                         new object[] { 11, false }, new object[] { 10, false }, new object[] { 9, true },
                         new object[] { 8, true }
@@ -326,7 +326,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed <= MYCONST",
+                    "IntBoxed <= MYCONST",
                     new object[][] {
                         new object[] { 11, false }, new object[] { 10, true }, new object[] { 9, true },
                         new object[] { 8, true }
@@ -334,7 +334,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed > MYCONST",
+                    "IntBoxed > MYCONST",
                     new object[][] {
                         new object[] { 11, true }, new object[] { 10, false }, new object[] { 9, false },
                         new object[] { 8, false }
@@ -342,7 +342,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed >= MYCONST",
+                    "IntBoxed >= MYCONST",
                     new object[][] {
                         new object[] { 11, true }, new object[] { 10, true }, new object[] { 9, false },
                         new object[] { 8, false }
@@ -351,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed in (MYCONST)",
+                    "IntBoxed in (MYCONST)",
                     new object[][] {
                         new object[] { 11, false }, new object[] { 10, true }, new object[] { 9, false },
                         new object[] { 8, false }
@@ -359,7 +359,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed between MYCONST and MYCONST",
+                    "IntBoxed between MYCONST and MYCONST",
                     new object[][] {
                         new object[] { 11, false }, new object[] { 10, true }, new object[] { 9, false },
                         new object[] { 8, false }
@@ -368,20 +368,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "MYCONST != intBoxed",
+                    "MYCONST != IntBoxed",
                     new object[][]
                         { new object[] { 10, false }, new object[] { 9, true }, new object[] { null, false } });
                 TryOperator(
                     env,
                     path,
-                    "intBoxed != MYCONST",
+                    "IntBoxed != MYCONST",
                     new object[][]
                         { new object[] { 10, false }, new object[] { 9, true }, new object[] { null, false } });
 
                 TryOperator(
                     env,
                     path,
-                    "intBoxed not in (MYCONST)",
+                    "IntBoxed not in (MYCONST)",
                     new object[][] {
                         new object[] { 11, true }, new object[] { 10, false }, new object[] { 9, true },
                         new object[] { 8, true }
@@ -389,7 +389,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed not between MYCONST and MYCONST",
+                    "IntBoxed not between MYCONST and MYCONST",
                     new object[][] {
                         new object[] { 11, true }, new object[] { 10, false }, new object[] { 9, true },
                         new object[] { 8, true }
@@ -398,26 +398,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "MYCONST is intBoxed",
+                    "MYCONST is IntBoxed",
                     new object[][]
                         { new object[] { 10, true }, new object[] { 9, false }, new object[] { null, false } });
                 TryOperator(
                     env,
                     path,
-                    "intBoxed is MYCONST",
+                    "IntBoxed is MYCONST",
                     new object[][]
                         { new object[] { 10, true }, new object[] { 9, false }, new object[] { null, false } });
 
                 TryOperator(
                     env,
                     path,
-                    "MYCONST is not intBoxed",
+                    "MYCONST is not IntBoxed",
                     new object[][]
                         { new object[] { 10, false }, new object[] { 9, true }, new object[] { null, true } });
                 TryOperator(
                     env,
                     path,
-                    "intBoxed is not MYCONST",
+                    "IntBoxed is not MYCONST",
                     new object[][]
                         { new object[] { 10, false }, new object[] { 9, true }, new object[] { null, true } });
 
@@ -425,7 +425,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "MYCONST = shortBoxed",
+                    "MYCONST = ShortBoxed",
                     new object[][] {
                         new object[] {
                             (short)10, true
@@ -438,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "shortBoxed = MYCONST",
+                    "ShortBoxed = MYCONST",
                     new object[][] {
                         new object[] {
                             (short)10, true
@@ -452,7 +452,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "MYCONST > shortBoxed",
+                    "MYCONST > ShortBoxed",
                     new object[][] {
                         new object[] {
                             (short)11, false
@@ -470,7 +470,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "shortBoxed < MYCONST",
+                    "ShortBoxed < MYCONST",
                     new object[][] {
                         new object[] {
                             (short)11, false
@@ -489,7 +489,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "shortBoxed in (MYCONST)",
+                    "ShortBoxed in (MYCONST)",
                     new object[][] {
                         new object[] {
                             (short)11, false
@@ -548,7 +548,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed in (10, 8)",
+                    "IntBoxed in (10, 8)",
                     new object[][] {
                         new object[] { 11, false }, new object[] { 10, true }, new object[] { 9, false },
                         new object[] { 8, true }
@@ -558,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed in (var_ints)",
+                    "IntBoxed in (var_ints)",
                     new object[][] {
                         new object[] { 11, false }, new object[] { 10, true }, new object[] { 9, false },
                         new object[] { 8, true }
@@ -568,7 +568,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "intBoxed in (var_ints, var_intstwo)",
+                    "IntBoxed in (var_ints, var_intstwo)",
                     new object[][] {
                         new object[] { 11, false }, new object[] { 10, true }, new object[] { 9, true },
                         new object[] { 8, true }
@@ -642,7 +642,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 RegressionPath path,
                 string varName)
             {
-                env.CompileDeploy("@name('s0') select * from SupportBean(theString in (" + varName + "))", path)
+                env.CompileDeploy("@name('s0') select * from SupportBean(TheString in (" + varName + "))", path)
                     .AddListener("s0");
 
                 SendBeanAssert(env, "E1", true);
@@ -679,7 +679,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 Assert.AreEqual(typeof(int?), runtimeSPI.GetVariableType(null, "var1"));
                 Assert.AreEqual(typeof(string), runtimeSPI.GetVariableType(null, "var2"));
 
-                var stmtTextSet = "on SupportBean set var1 = intPrimitive, var2 = theString";
+                var stmtTextSet = "on SupportBean set var1 = IntPrimitive, var2 = TheString";
                 env.CompileDeploy(stmtTextSet);
 
                 AssertVariableValuesPreconfigured(env, new string[] { "var1", "var2" }, new object[] { -1, "abc" });
@@ -784,7 +784,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     env.Runtime.VariableService.SetVariableValue(newValues);
                     Assert.Fail();
                 }
-                catch (VariableValueException ex) {
+                catch (VariableValueException) {
                     // expected
                 }
 
@@ -799,7 +799,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     env.Runtime.VariableService.SetVariableValue(newValues);
                     Assert.Fail();
                 }
-                catch (VariableNotFoundException ex) {
+                catch (VariableNotFoundException) {
                     // expected
                 }
 
@@ -818,14 +818,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtTextSet = "@name('set') on SupportBean_S0 set var1IFB = p00, var2IFB = p01";
+                var stmtTextSet = "@name('set') on SupportBean_S0 set var1IFB = P00, var2IFB = P01";
                 env.CompileDeploy(stmtTextSet).AddListener("set");
                 var fieldsVar = new string[] { "var1IFB", "var2IFB" };
                 env.AssertPropsPerRowIterator("set", fieldsVar, new object[][] { new object[] { null, null } });
 
                 var stmtTextSelect =
-                    "@name('s0') select theString, intPrimitive from SupportBean(theString = var1IFB or theString = var2IFB)";
-                var fieldsSelect = new string[] { "theString", "intPrimitive" };
+                    "@name('s0') select TheString, IntPrimitive from SupportBean(TheString = var1IFB or TheString = var2IFB)";
+                var fieldsSelect = new string[] { "TheString", "IntPrimitive" };
                 env.CompileDeploy(stmtTextSelect).AddListener("s0");
 
                 SendSupportBean(env, null, 1);
@@ -869,13 +869,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtTextSet = "@name('set') on SupportBean_S0 set var1IF = p00";
+                var stmtTextSet = "@name('set') on SupportBean_S0 set var1IF = P00";
                 env.CompileDeploy(stmtTextSet).AddListener("set");
                 var fieldsVar = new string[] { "var1IF" };
                 env.AssertPropsPerRowIterator("set", fieldsVar, new object[][] { new object[] { null } });
 
-                var stmtTextSelect = "@name('s0') select theString, intPrimitive from SupportBean(theString = var1IF)";
-                var fieldsSelect = new string[] { "theString", "intPrimitive" };
+                var stmtTextSelect = "@name('s0') select TheString, IntPrimitive from SupportBean(TheString = var1IF)";
+                var fieldsSelect = new string[] { "TheString", "IntPrimitive" };
                 env.CompileDeploy(stmtTextSelect).AddListener("s0");
 
                 SendSupportBean(env, null, 1);
@@ -1031,7 +1031,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             object[][] testdata)
         {
             env.CompileDeploy(
-                "@name('s0') select theString as c0,intPrimitive as c1 from SupportBean(" + @operator + ")",
+                "@name('s0') select TheString as c0,IntPrimitive as c1 from SupportBean(" + @operator + ")",
                 path);
             env.AddListener("s0");
 

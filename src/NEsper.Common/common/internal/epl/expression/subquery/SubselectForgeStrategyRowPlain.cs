@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             Subselect.EvaluationType,
                             StaticMethod(
                                 typeof(EventBeanUtility),
-                                "getNonemptyFirstEventUnderlying",
+                                "GetNonemptyFirstEventUnderlying",
                                 symbols.GetAddMatchingEvents(method))));
                     return LocalMethod(method);
                 }
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             Constant(0),
                             StaticMethod(
                                 typeof(EventBeanUtility),
-                                "getNonemptyFirstEvent",
+                                "GetNonemptyFirstEvent",
                                 symbols.GetAddMatchingEvents(method)));
                 }
             }

@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
                             "KeyedFactory",
                             terminationStateMgmtSettings.ToExpression(),
                             ctxStateMgmtSettings.ToExpression()))
-                .ExprDotMethod(Ref("factory"), "setKeyedSpec", detail.MakeCodegen(method, symbols, classScope))
+                .SetProperty(Ref("factory"), "KeyedSpec", detail.MakeCodegen(method, symbols, classScope))
                 .MethodReturn(Ref("factory"));
             return method;
         }

@@ -171,11 +171,11 @@ namespace com.espertech.esper.common.@internal.view.union
                 }
             }
 
-            if (child != null) {
+            if (Child != null) {
                 // indicate new and, possibly, old data
                 var oldEvents = oldDataColl?.ToArray();
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newData, oldEvents);
-                child.Update(newData, oldEvents);
+                Child.Update(newData, oldEvents);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 
@@ -228,7 +228,7 @@ namespace com.espertech.esper.common.@internal.view.union
             if (removedEvents != null) {
                 var removed = removedEvents.ToArray();
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, null, removed);
-                child.Update(null, removed);
+                Child.Update(null, removed);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
         }

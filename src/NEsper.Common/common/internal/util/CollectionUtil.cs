@@ -555,7 +555,7 @@ namespace com.espertech.esper.common.@internal.util
             EventBean bean,
             IDictionary<object, object> eventMap)
         {
-            // TBD: ConcurrentModificationException
+            // TODO: ConcurrentModificationException
             foreach (var entry in eventMap) {
                 if (entry.Value is IList<EventBean> existingListLocal) {
                     var result = existingListLocal.Remove(bean);

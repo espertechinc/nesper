@@ -41,11 +41,11 @@ namespace com.espertech.esper.common.@internal.view.filter
             this.whereClauseEvaluatorTextForAudit = whereClauseEvaluatorTextForAudit;
         }
 
-        public override EventType EventType => parent.EventType;
+        public override EventType EventType => Parent.EventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {
-            return FilterExprViewIterator.For(parent.GetEnumerator(), exprEvaluator, exprEvaluatorContext);
+            return FilterExprViewIterator.For(Parent.GetEnumerator(), exprEvaluator, exprEvaluatorContext);
         }
 
         public override void Update(
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.view.filter
 
             if (filteredNewData != null || filteredOldData != null) {
                 instrumentationCommon.QWhereClauseIR(filteredNewData, filteredOldData);
-                child.Update(filteredNewData, filteredOldData);
+                Child.Update(filteredNewData, filteredOldData);
                 instrumentationCommon.AWhereClauseIR();
             }
         }

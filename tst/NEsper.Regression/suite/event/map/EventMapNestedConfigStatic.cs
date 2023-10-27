@@ -40,7 +40,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    var mapEventNested = mapEvent.Get("nested");
+                    var mapEventNested = mapEvent.Get("Nested");
                     Assert.That(mapEventNested, Is.InstanceOf<IDictionary<string, object>>());
                     Assert.That(theEvent.Get("a"), Is.SameAs(mapEventNested));
                     Assert.That(theEvent.Get("b"), Is.SameAs("abc"));
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             nested.Put("n2", nestedNested);
 
             IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Put("nested", nested);
+            map.Put("Nested", nested);
 
             return map;
         }

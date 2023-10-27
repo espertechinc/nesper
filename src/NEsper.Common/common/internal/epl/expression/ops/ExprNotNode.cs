@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -29,7 +30,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         ExprEvaluator,
         ExprForgeInstrumentable
     {
-        [NonSerialized] private ExprEvaluator _evaluator;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEvaluator _evaluator;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {

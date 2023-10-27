@@ -267,10 +267,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 env.CompileDeploy(
                         "@name('s0') select " +
-                        "PrimitiveConversionLib.passIntAsObject(intPrimitive) as c0," +
-                        "PrimitiveConversionLib.passIntAsNumber(intPrimitive) as c1," +
-                        "PrimitiveConversionLib.passIntAsComparable(intPrimitive) as c2," +
-                        "PrimitiveConversionLib.passIntAsSerializable(intPrimitive) as c3" +
+                        "PrimitiveConversionLib.passIntAsObject(IntPrimitive) as c0," +
+                        "PrimitiveConversionLib.passIntAsNumber(IntPrimitive) as c1," +
+                        "PrimitiveConversionLib.passIntAsComparable(IntPrimitive) as c2," +
+                        "PrimitiveConversionLib.passIntAsSerializable(IntPrimitive) as c3" +
                         " from SupportBean")
                     .AddListener("s0");
 
@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 // test passing null
-                env.CompileDeploy("@name('s0') select NullPrimitive.GetValue(intBoxed) from SupportBean")
+                env.CompileDeploy("@name('s0') select NullPrimitive.GetValue(IntBoxed) from SupportBean")
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
@@ -635,7 +635,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
-                env.AssertEqualsNew("s0", "Convert.ToString(Price*volume+volume)", Convert.ToString(44d));
+                env.AssertEqualsNew("s0", "Convert.ToString(Price*Volume+Volume)", Convert.ToString(44d));
                 env.UndeployAll();
 
                 statementText =
@@ -662,7 +662,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SendEvent(env, "IBM", 10d, 4L);
                 env.AssertPropsNew(
                     "s0",
-                    new string[] { "Math.Max(2.0d,Price)", "Math.Max(volume,4.0)" },
+                    new string[] { "Math.Max(2.0d,Price)", "Math.Max(Volume,4.0)" },
                     new object[] { 10d, 4d });
                 env.UndeployAll();
             }
@@ -677,7 +677,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
-                env.AssertEqualsNew("s0", "symbol", "IBM");
+                env.AssertEqualsNew("s0", "Symbol", "IBM");
 
                 SendEvent(env, "CAT", 4d, 100);
                 env.AssertListenerNotInvoked("s0");
@@ -690,10 +690,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
-                env.AssertEqualsNew("s0", "sum(price)", 10d);
+                env.AssertEqualsNew("s0", "sum(Price)", 10d);
 
                 SendEvent(env, "IBM", 4d, 100);
-                env.AssertEqualsNew("s0", "sum(price)", 14d);
+                env.AssertEqualsNew("s0", "sum(Price)", 14d);
                 env.UndeployAll();
 
                 // having
@@ -702,10 +702,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
-                env.AssertEqualsNew("s0", "sum(price)", 10d);
+                env.AssertEqualsNew("s0", "sum(Price)", 10d);
 
                 SendEvent(env, "IBM", 100d, 100);
-                env.AssertEqualsNew("s0", "sum(price)", 110d);
+                env.AssertEqualsNew("s0", "sum(Price)", 110d);
 
                 env.UndeployAll();
 
@@ -723,9 +723,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     listener => {
                         var newEvents = listener.GetAndResetLastNewData();
                         Assert.IsTrue(newEvents.Length == 3);
-                        Assert.AreEqual("MAT", newEvents[0].Get("symbol"));
-                        Assert.AreEqual("IBM", newEvents[1].Get("symbol"));
-                        Assert.AreEqual("CAT", newEvents[2].Get("symbol"));
+                        Assert.AreEqual("MAT", newEvents[0].Get("Symbol"));
+                        Assert.AreEqual("IBM", newEvents[1].Get("Symbol"));
+                        Assert.AreEqual("CAT", newEvents[2].Get("Symbol"));
                     });
                 env.UndeployAll();
             }
@@ -770,7 +770,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var text = "select " +
-                           "SupportStaticMethodLib.sleep(100) as val" +
+                           "SupportStaticMethodLib.Sleep(100) as val" +
                            " from SupportTemperatureBean as temp";
                 env.CompileDeploy(text);
 
@@ -792,7 +792,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var text = "select " +
-                           "SupportStaticMethodLib.sleep(SupportStaticMethodLib.passthru(100)) as val" +
+                           "SupportStaticMethodLib.Sleep(SupportStaticMethodLib.Passthru(100)) as val" +
                            " from SupportTemperatureBean as temp";
                 env.CompileDeploy(text);
 

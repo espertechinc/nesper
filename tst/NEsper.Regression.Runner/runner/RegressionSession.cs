@@ -58,9 +58,9 @@ namespace com.espertech.esper.regressionrun.runner
                 if (Directory.Exists(config.Compiler.Logging.AuditDirectory)) {
                     foreach (var subDirectory in Directory.GetDirectories(config.Compiler.Logging.AuditDirectory)) {
                         var subDirectoryName = Path.GetFileName(subDirectory);
-                        if (subDirectoryName.StartsWith("generation")) {
+                        //if (subDirectoryName.StartsWith("generation")) {
                             Directory.Delete(subDirectory, true);
-                        }
+                        //}
                     }
                 }
                 else {

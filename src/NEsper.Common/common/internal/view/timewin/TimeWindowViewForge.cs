@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.view.timewin
         }
 
         internal override Type TypeOfFactory => typeof(TimeWindowViewFactory);
-        internal override string FactoryMethod => "time";
+        internal override string FactoryMethod => "Time";
 
         internal override void Assign(
             CodegenMethod method,
@@ -71,8 +71,8 @@ namespace com.espertech.esper.common.@internal.view.timewin
             }
 
             method.Block.DeclareVar<TimePeriodCompute>("eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId));
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
+                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
         }
 
         public override AppliesTo AppliesTo()

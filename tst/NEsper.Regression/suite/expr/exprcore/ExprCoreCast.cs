@@ -342,10 +342,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                            "cast(anFloat, float) as floatVal, " +
                            "cast(anByte, byte) as byteVal, " +
                            "cast(anShort, short) as shortVal, " +
-                           "cast(intPrimitive, int) as IntOne, " +
-                           "cast(intBoxed, int) as intTwo, " +
-                           "cast(intPrimitive, System.Int64) as longOne, " +
-                           "cast(intBoxed, long) as longTwo " +
+                           "cast(IntPrimitive, int) as IntOne, " +
+                           "cast(IntBoxed, int) as intTwo, " +
+                           "cast(IntPrimitive, System.Int64) as longOne, " +
+                           "cast(IntBoxed, long) as longTwo " +
                            "from StaticTypeMapEvent";
 
                 env.CompileDeploy(stmt).AddListener("s0");
@@ -357,8 +357,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 map.Put("anFloat", "1.001");
                 map.Put("anByte", "0x0A");
                 map.Put("anShort", "223");
-                map.Put("intPrimitive", 10);
-                map.Put("intBoxed", 11);
+                map.Put("IntPrimitive", 10);
+                map.Put("IntBoxed", 11);
 
                 env.SendEventMap(map, "StaticTypeMapEvent");
                 env.AssertEventNew(
@@ -487,10 +487,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "select cast(item?,double) as t0 from SupportBeanDynRoot";
+                var epl = "select cast(Item?,double) as t0 from SupportBeanDynRoot";
 
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create().Add(Expressions.Cast("item?", "double"), "t0");
+                model.SelectClause = SelectClause.Create().Add(Expressions.Cast("Item?", "double"), "t0");
                 model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBeanDynRoot)));
                 model = env.CopyMayFail(model);
                 Assert.AreEqual(epl, model.ToEPL());
@@ -550,7 +550,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select cast(theString, int) as t0 from SupportBean";
+                var epl = "@name('s0') select cast(TheString, int) as t0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStmtType("s0", "t0", typeof(int?));
 
@@ -566,28 +566,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select" +
-                          " cast(item?, " +
+" cast(Item?, "+
                           typeof(SupportMarkerInterface).FullName +
                           ") as t0, " +
-                          " cast(item?, " +
+" cast(Item?, "+
                           typeof(ISupportA).FullName +
                           ") as t1, " +
-                          " cast(item?, " +
+" cast(Item?, "+
                           typeof(ISupportBaseAB).FullName +
                           ") as t2, " +
-                          " cast(item?, " +
+" cast(Item?, "+
                           typeof(ISupportBaseABImpl).FullName +
                           ") as t3, " +
-                          " cast(item?, " +
+" cast(Item?, "+
                           typeof(ISupportC).FullName +
                           ") as t4, " +
-                          " cast(item?, " +
+" cast(Item?, "+
                           typeof(ISupportD).FullName +
                           ") as t5, " +
-                          " cast(item?, " +
+" cast(Item?, "+
                           typeof(ISupportAImplSuperG).FullName +
                           ") as t6, " +
-                          " cast(item?, " +
+" cast(Item?, "+
                           typeof(ISupportAImplSuperGImplPlus).FullName +
                           ") as t7 " +
                           " from SupportBeanDynRoot";
@@ -656,7 +656,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select cast(item?,System.String) as t0 from SupportBeanDynRoot";
+                var epl = "@name('s0') select cast(Item?,System.String) as t0 from SupportBeanDynRoot";
 
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
 
@@ -688,9 +688,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select cast(boolPrimitive as java.lang.Boolean) as t0, " +
-                          " cast(boolBoxed | boolPrimitive, boolean) as t1, " +
-                          " cast(boolBoxed, string) as t2 " +
+                var epl = "@name('s0') select cast(BoolPrimitive as java.lang.Boolean) as t0, " +
+                          " cast(BoolBoxed | BoolPrimitive, boolean) as t1, " +
+                          " cast(BoolBoxed, string) as t2 " +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 

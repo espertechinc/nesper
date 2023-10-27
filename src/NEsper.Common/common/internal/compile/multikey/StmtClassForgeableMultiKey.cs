@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
                 .MakeParentNode(typeof(int), typeof(StmtClassForgeableMultiKey), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride();
             MakeHashMethod(_types.Length, hashMethod);
-            CodegenStackGenerator.RecursiveBuildStack(hashMethod, "hashCode", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(hashMethod, "GetHashCode", methods, properties);
             var equalsMethod = CodegenMethod
                 .MakeParentNode(typeof(bool), typeof(StmtClassForgeableMultiKey), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                 .WithOverride()

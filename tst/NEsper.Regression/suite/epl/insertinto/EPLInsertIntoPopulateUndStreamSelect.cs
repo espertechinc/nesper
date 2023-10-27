@@ -74,13 +74,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@public @buseventtype @public create objectarray schema Event();\n" +
-                          "@public @buseventtype create objectarray schema ChildEvent(id string, action string) inherits Event;\n" +
+                          "@public @buseventtype create objectarray schema ChildEvent(Id string, action string) inherits Event;\n" +
                           "@public @buseventtype create objectarray schema Incident(name string, event Event);\n" +
                           "@name('window') create window IncidentWindow#keepall as Incident;\n" +
                           "\n" +
                           "on ChildEvent e\n" +
                           "    merge IncidentWindow w\n" +
-                          "    where e.id = cast(w.event.id? as string)\n" +
+                          "    where e.Id = cast(w.event.Id? as string)\n" +
                           "    when not matched\n" +
                           "        then insert (name, event) select 'ChildIncident', e \n" +
                           "            where e.action = 'INSERT'\n" +

@@ -22,14 +22,17 @@ namespace com.espertech.esper.common.@internal.type
             string pattern,
             ClassDescriptorTokenType token)
         {
-            var regex = RegexExtensions.Compile("^(" + pattern + ")", out var regexPatternText);
+            if (!pattern.StartsWith("^")) {
+                pattern = $"^{pattern}";
+            }
+            var regex = new Regex(pattern, RegexOptions.None); 
             tokens.AddLast(new ClassDescriptorTokenInfo(regex, token));
         }
 
         public ArrayDeque<ClassDescriptorToken> Tokenize(string str)
         {
             var tokens = new ArrayDeque<ClassDescriptorToken>(4);
-            while (!str.Equals("")) {
+            while (!string.IsNullOrEmpty(str)) {
                 var match = false;
                 foreach (var info in this.tokens) {
                     var regex = info.Regex;
@@ -46,7 +49,7 @@ namespace com.espertech.esper.common.@internal.type
                 }
 
                 if (!match) {
-                    throw new ClassDescriptorParseException("Unexpected token '" + str + "'");
+                    throw new ClassDescriptorParseException($"Unexpected token '{str}'");
                 }
             }
 

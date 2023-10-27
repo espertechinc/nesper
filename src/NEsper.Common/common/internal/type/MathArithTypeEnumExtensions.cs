@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.type
                     return MathArithTypeEnum.MODULO;
             }
 
-            throw new ArgumentException("Unknown operator '" + @operator + "'");
+            throw new ArgumentException($"Unknown operator '{@operator}'");
         }
     }
 }

@@ -51,13 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                     "events",
                     enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("events")
-                .MethodReturn(
-                    Cast(
-                        typeof(EventBean[]),
-                        ExprDotMethod(
-                            Ref("events"),
-                            "toArray",
-                            NewArrayByLength(typeof(EventBean), ExprDotName(Ref("events"), "Count")))));
+                .MethodReturn(ExprDotMethod(Ref("events"), "ToArray"));
             return LocalMethod(methodNode);
         }
 

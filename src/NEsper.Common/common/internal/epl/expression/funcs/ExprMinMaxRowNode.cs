@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
@@ -21,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     {
         private readonly MinMaxTypeEnum minMaxTypeEnum;
 
-        [NonSerialized] private ExprMinMaxRowNodeForge forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprMinMaxRowNodeForge forge;
 
         /// <summary>
         /// Ctor.

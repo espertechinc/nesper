@@ -939,7 +939,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public BlockSyntax CodegenSyntax()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public CodegenBlock Debug(

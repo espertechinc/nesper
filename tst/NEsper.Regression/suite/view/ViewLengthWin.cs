@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString".SplitCsv();
+                var fields = "TheString".SplitCsv();
 
                 env.Milestone(0);
 
@@ -119,15 +119,15 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select irstream symbol, " +
-                           "prev(1, symbol) as prev1, " +
-                           "prior(1, symbol) as prio1, " +
-                           "prevtail(symbol) as prevtail0, " +
-                           "prevcount(symbol) as prevCountSym, " +
-                           "prevwindow(symbol) as prevWindowSym " +
+                var text = "@name('s0') select irstream Symbol, "+
+"prev(1, Symbol) as prev1, "+
+"prior(1, Symbol) as prio1, "+
+"prevtail(Symbol) as prevtail0, "+
+"prevcount(Symbol) as prevCountSym, "+
+"prevwindow(Symbol) as prevWindowSym "+
                            "from SupportMarketDataBean.win:length(2)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
-                var fields = new string[] { "symbol", "prev1", "prio1", "prevtail0", "prevCountSym", "prevWindowSym" };
+                var fields = new string[] { "Symbol", "prev1", "prio1", "prevtail0", "prevCountSym", "prevWindowSym" };
 
                 env.SendEventBean(MakeMarketDataEvent("E1"));
                 env.AssertPropsNew("s0", fields, new object[] { "E1", null, null, "E1", 1L, new object[] { "E1" } });
@@ -143,16 +143,16 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.Milestone(2);
 
                 for (var i = 3; i < 10; i++) {
-                    env.SendEventBean(MakeMarketDataEvent("E" + i));
+                    env.SendEventBean(MakeMarketDataEvent($"E{i}"));
 
                     env.AssertPropsNV(
                         "s0",
                         new object[][] {
-                            new object[] { "symbol", "E" + i }, new object[] { "prev1", "E" + (i - 1) },
-                            new object[] { "prio1", "E" + (i - 1) }, new object[] { "prevtail0", "E" + (i - 1) }
+                            new object[] { "Symbol", $"E{i}" }, new object[] { "prev1", $"E{(i - 1)}" },
+                            new object[] { "prio1", $"E{(i - 1)}" }, new object[] { "prevtail0", $"E{(i - 1)}" }
                         }, // new data
                         new object[][] {
-                            new object[] { "symbol", "E" + (i - 2) }, new object[] { "prev1", null },
+                            new object[] { "Symbol", $"E{(i - 2)}" }, new object[] { "prev1", null },
                             new object[] { "prevtail0", null }
                         } //  old data
                     );
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     events => {
                         for (var i = 8; i < 10; i++) {
                             var @event = events.Advance();
-                            Assert.AreEqual("E" + i, @event.Get("symbol"));
+                            Assert.AreEqual($"E{i}", @event.Get("Symbol"));
                         }
                     });
                 env.UndeployAll();
@@ -178,12 +178,12 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select mapped('keyOne') as a," +
-                          "indexed[1] as b, nested.nestedNested.nestedNestedValue as c, mapProperty, " +
-                          "arrayProperty[0] " +
+                          "indexed[1] as b, nested.NestedNested.NestedNestedValue as c, mapProperty, " +
+                          "ArrayProperty[0] " +
                           "  from SupportBeanComplexProps#length(3) " +
                           " where mapped('keyOne') = 'valueOne' and " +
                           " indexed[1] = 2 and " +
-                          " nested.nestedNested.nestedNestedValue = 'nestedNestedValue'";
+                          " nested.NestedNested.NestedNestedValue = 'NestedNestedValue'";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var eventObject = SupportBeanComplexProps.MakeDefaultBean();
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                         Assert.AreEqual(eventObject.GetIndexed(1), theEvent.Get("b"));
                         Assert.AreEqual(eventObject.Nested.NestedNested.NestedNestedValue, theEvent.Get("c"));
                         Assert.AreEqual(eventObject.MapProperty, theEvent.Get("mapProperty"));
-                        Assert.AreEqual(eventObject.ArrayProperty[0], theEvent.Get("arrayProperty[0]"));
+                        Assert.AreEqual(eventObject.ArrayProperty[0], theEvent.Get("ArrayProperty[0]"));
                     });
 
                 env.Milestone(1);
@@ -219,8 +219,8 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "symbol,price".SplitCsv();
-                var epl = "@name('s0') select symbol, price from SupportMarketDataBean#length(2)";
+                var fields = "Symbol,Price".SplitCsv();
+                var epl = "@name('s0') select Symbol, Price from SupportMarketDataBean#length(2)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "ABC", 20);

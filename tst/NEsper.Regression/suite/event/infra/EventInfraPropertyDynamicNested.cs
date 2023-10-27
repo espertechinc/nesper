@@ -81,9 +81,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var mapTests = new Pair<object, object>[] {
                 new Pair<object, object>(Collections.EmptyDataMap, NotExists()),
                 new Pair<object, object>(
-                    Collections.SingletonMap("item", Collections.SingletonMap("id", 101)),
+                    Collections.SingletonMap("Item", Collections.SingletonMap("Id", 101)),
                     Exists(101)),
-                new Pair<object, object>(Collections.SingletonMap("item", Collections.EmptyDataMap), NotExists()),
+                new Pair<object, object>(Collections.SingletonMap("Item", Collections.EmptyDataMap), NotExists()),
             };
             RunAssertion(
                 env,
@@ -115,8 +115,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // XML
             var xmlTests = new Pair<object, object>[] {
-                new Pair<object, object>("<item id=\"101\"/>", Exists("101")),
-                new Pair<object, object>("<item/>", NotExists()),
+                new Pair<object, object>("<Item Id=\"101\"/>", Exists("101")),
+                new Pair<object, object>("<Item/>", NotExists()),
             };
             if (!outputEventRep.IsAvroOrJsonEvent()) {
                 RunAssertion(
@@ -151,13 +151,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // Json
             var jsonTests = new Pair<object, object>[] {
                 new Pair<object, object>("{}", NotExists()),
-                new Pair<object, object>("{\"item\": { \"id\": 101} }", Exists(101)),
-                new Pair<object, object>("{\"item\": { \"id\": \"abc\"} }", Exists("abc")),
+                new Pair<object, object>("{\"Item\": { \"Id\": 101} }", Exists(101)),
+                new Pair<object, object>("{\"Item\": { \"Id\": \"abc\"} }", Exists("abc")),
             };
             var schemasJson = "@JsonSchema(dynamic=true) create json schema Undefined();\n" +
                               "@public @buseventtype @name('schema') create json schema " +
                               JSON_TYPENAME +
-                              "(item Undefined)";
+"(Item Undefined)";
             env.CompileDeploy(schemasJson, path);
             RunAssertion(
                 env,
@@ -179,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 typeof(MyLocalJsonProvided).FullName +
                 "') @public @buseventtype @name('schema') create json schema " +
                 JSONPROVIDED_TYPENAME +
-                "(item Item)";
+"(Item Item)";
             env.CompileDeploy(schemasJsonProvided, path);
             RunAssertion(
                 env,
@@ -208,8 +208,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                            eventRepresentationEnum.GetAnnotationText() +
                            additionalAnnotations +
                            " select " +
-                           "item.id? as myid, " +
-                           "exists(item.id?) as exists_myid " +
+"Item.Id? as myid, "+
+"exists(Item.Id?) as exists_myid "+
                            "from " +
                            typename +
                            ";\n" +
@@ -241,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env.AssertEventNew(
                     "s1",
                     @out => {
-                        var getter = @out.EventType.GetGetter("item.id?");
+                        var getter = @out.EventType.GetGetter("Item.Id?");
 
                         if (!typename.Equals(XML_TYPENAME)) {
                             Assert.AreEqual(expected.Value, getter.Get(@out));
@@ -263,11 +263,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             value,
             typeName) => {
             var schema = env.RuntimeAvroSchemaPreconfigured(typeName).AsRecordSchema();
-            var itemSchema = schema.GetField("item").Schema.AsRecordSchema();
+            var itemSchema = schema.GetField("Item").Schema.AsRecordSchema();
             var itemDatum = new GenericRecord(itemSchema);
-            itemDatum.Put("id", value);
+            itemDatum.Put("Id", value);
             var datum = new GenericRecord(schema);
-            datum.Put("item", itemDatum);
+            datum.Put("Item", itemDatum);
             env.SendEventAvro(datum, typeName);
         };
 

@@ -997,7 +997,7 @@ namespace com.espertech.esper.regressionlib.framework
 			var eventType = Runtime.EventTypeService.GetEventType(deploymentId, eventTypeName);
 			if (eventType == null) {
 				throw new ArgumentException(
-					"Failed to find event type '" + eventTypeName + "' at deployment id '" + deploymentId + "'");
+					"Failed to find event type '" + eventTypeName + "' at deployment Id '" + deploymentId + "'");
 			}
 
 			return SupportAvroUtil.GetAvroSchema(eventType);

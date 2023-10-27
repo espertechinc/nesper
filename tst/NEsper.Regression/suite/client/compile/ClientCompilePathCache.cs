@@ -34,15 +34,15 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                                            "@public create context MyContext start SupportBean_S0 end SupportBean_S1;\n" +
                                            "@public create expression myScript() [ 2 ];\n" +
                                            "@public create inlined_class \"\"\" public class MyClass { public static String doIt(String parameter) { return \"def\"; } }\"\"\";\n" +
-                                           "@public @buseventtype create json schema CarLocUpdateEvent(carId string, direction int);\n";
+                                           "@public @buseventtype create json schema CarLocUpdateEvent(CarId string, Direction int);\n";
 
         private const string EPL_CONSUME = "@name('s0') select myvariable as c0, myExpr() as c1, myScript() as c2," +
-                                           "MyClass.doIt(theString) as c4 from SupportBean;\n" +
+                                           "MyClass.doIt(TheString) as c4 from SupportBean;\n" +
                                            "select * from MySchema;" +
                                            "on SupportBean_S1 delete from MyWindow;\n" +
                                            "on SupportBean_S1 delete from MyTable;\n" +
                                            "context MyContext select * from SupportBean;\n" +
-                                           "select carId, direction, count(*) as cnt from CarLocUpdateEvent(direction = 1)#time(1 min);\n";
+                                           "select CarId, Direction, count(*) as cnt from CarLocUpdateEvent(Direction = 1)#time(1 min);\n";
 
         public static IList<RegressionExecution> Executions()
         {

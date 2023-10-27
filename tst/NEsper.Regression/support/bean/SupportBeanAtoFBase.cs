@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.support.bean
 
         public override string ToString()
         {
-            return "id=" + _id;
+            return "Id=" + _id;
         }
 
         public override bool Equals(object o)

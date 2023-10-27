@@ -211,7 +211,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
             if (newDataPosted != null || oldDataPosted != null) {
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, newDataPosted, oldDataPosted);
-                child.Update(newDataPosted, oldDataPosted);
+                Child.Update(newDataPosted, oldDataPosted);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 
@@ -266,7 +266,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
             }
 
             agentInstanceContext.InstrumentationProvider.QViewIndicate(ViewFactory, null, oldEvents);
-            child.Update(null, oldEvents);
+            Child.Update(null, oldEvents);
             agentInstanceContext.InstrumentationProvider.AViewIndicate();
         }
 

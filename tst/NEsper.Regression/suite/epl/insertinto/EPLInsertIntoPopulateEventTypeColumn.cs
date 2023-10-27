@@ -293,10 +293,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             var path = new RegressionPath();
             env.CompileDeploy("create " + typeType + " schema Item(name string, Price double)", path);
-            env.CompileDeploy("create " + typeType + " schema PurchaseOrder(OrderId string, items Item[])", path);
+            env.CompileDeploy("create " + typeType + " schema PurchaseOrder(OrderId string, Items Item[])", path);
             env.CompileDeploy("@public @buseventtype create schema TriggerEvent()", path);
             env.CompileDeploy(
-                    "@name('s0') insert into PurchaseOrder select '001' as OrderId, new {name= 'i1', Price=10} as items from TriggerEvent",
+"@name('s0') insert into PurchaseOrder select '001' as OrderId, new {name= 'i1', Price=10} as Items from TriggerEvent",
                     path)
                 .AddListener("s0");
 
@@ -304,10 +304,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
                 @event,
-                new[] { "OrderId", "items[0].name", "items[0].Price" },
+                new[] { "OrderId", "Items[0].name", "Items[0].Price"},
                 new object[] { "001", "i1", 10d });
 
-            var underlying = (EventBean[])@event.Get("items");
+            var underlying = (EventBean[])@event.Get("Items");
             Assert.AreEqual(1, underlying.Length);
             Assert.AreEqual("i1", underlying[0].Get("name"));
             Assert.AreEqual(10d, underlying[0].Get("Price"));

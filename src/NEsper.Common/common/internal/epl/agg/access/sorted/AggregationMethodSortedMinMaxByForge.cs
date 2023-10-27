@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             var method = parent.MakeChild(typeof(AggregationMethodSortedMinMaxBy), GetType(), classScope);
             method.Block.DeclareVarNewInstance(typeof(AggregationMethodSortedMinMaxBy), "strat")
-                .ExprDotMethod(Ref("strat"), "setMax", Constant(max))
+                .SetProperty(Ref("strat"), "Max", Constant(max))
                 .MethodReturn(Ref("strat"));
             return LocalMethod(method);
         }

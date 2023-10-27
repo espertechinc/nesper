@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
     {
         AggregationService AggregationService { get; }
 
-        ExprEvaluatorContext GetExprEvaluatorContext();
+        //ExprEvaluatorContext ExprEvaluatorContext { get; }
 
         bool IsSelectRStream { get; }
 

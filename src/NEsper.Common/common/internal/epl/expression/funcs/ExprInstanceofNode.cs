@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.settings;
@@ -27,7 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     {
         private readonly string[] classIdentifiers;
 
-        [NonSerialized] private ExprInstanceofNodeForge forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprInstanceofNodeForge forge;
 
         /// <summary>
         /// Ctor.

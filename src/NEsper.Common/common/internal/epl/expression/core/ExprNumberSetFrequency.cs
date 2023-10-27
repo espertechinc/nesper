@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -33,7 +34,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [NonSerialized] private ExprEvaluator evaluator;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEvaluator evaluator;
 
         public override ExprForge Forge => this;
 

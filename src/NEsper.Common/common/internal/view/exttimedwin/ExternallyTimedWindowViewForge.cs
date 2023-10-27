@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
         }
 
         internal override Type TypeOfFactory => typeof(ExternallyTimedWindowViewFactory);
-        internal override string FactoryMethod => "exttime";
+        internal override string FactoryMethod => "Exttime";
 
         internal override void Assign(
             CodegenMethod method,
@@ -78,10 +78,10 @@ namespace com.espertech.esper.common.@internal.view.exttimedwin
             CodegenClassScope classScope)
         {
             method.Block.DeclareVar<TimePeriodCompute>("eval", timePeriodComputeForge.MakeEvaluator(method, classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
+                .SetProperty(
                     factory,
-                    "setTimestampEval",
+                    "TimestampEval",
                     CodegenEvaluator(timestampExpression.Forge, method, GetType(), classScope));
         }
 

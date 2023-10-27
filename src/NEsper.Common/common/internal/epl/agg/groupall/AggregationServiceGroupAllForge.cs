@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             AggregationClassNames classNames)
         {
             explicitMembers.Add(new CodegenTypedParam(classNames.RowTop, MEMBER_ROW.Ref));
-            ctor.Block.AssignRef(MEMBER_ROW, NewInstanceInner(classNames.RowTop, Ref("o")));
+            ctor.Block.AssignRef(MEMBER_ROW, NewInstanceInner(classNames.RowTop));
         }
 
         public void GetValueCodegen(

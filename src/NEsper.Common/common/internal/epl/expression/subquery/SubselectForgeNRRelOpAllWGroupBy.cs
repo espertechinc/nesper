@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 return ConstantNull();
             }
 
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
@@ -56,8 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             method.Block
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar<AggregationService>("aggregationService",
-                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar<AggregationService>("aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
                 .DeclareVar(typeof(ICollection<object>), "groupKeys", ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
                 .DeclareVar(typeof(bool?), "hasRows", ConstantFalse())
                 .DeclareVar(typeof(bool?), "hasNullRow", ConstantFalse());

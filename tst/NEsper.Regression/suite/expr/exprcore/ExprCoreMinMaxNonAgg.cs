@@ -23,10 +23,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
     public class ExprCoreMinMaxNonAgg
     {
-        private const string EPL = "select max(longBoxed,intBoxed) as myMax, " +
-                                   "max(longBoxed,intBoxed,shortBoxed) as myMaxEx, " +
-                                   "min(longBoxed,intBoxed) as myMin, " +
-                                   "min(longBoxed,intBoxed,shortBoxed) as myMinEx" +
+        private const string EPL = "select max(LongBoxed,IntBoxed) as myMax, " +
+                                   "max(LongBoxed,IntBoxed,ShortBoxed) as myMaxEx, " +
+                                   "min(LongBoxed,IntBoxed) as myMin, " +
+                                   "min(LongBoxed,IntBoxed,ShortBoxed) as myMinEx" +
                                    " from SupportBean#length(3)";
 
         public static ICollection<RegressionExecution> Executions()
@@ -65,10 +65,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "myMax,myMaxEx,myMin,myMinEx".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean")
-                    .WithExpression(fields[0], "max(longBoxed,intBoxed)")
-                    .WithExpression(fields[1], "max(longBoxed,intBoxed,shortBoxed)")
-                    .WithExpression(fields[2], "min(longBoxed,intBoxed)")
-                    .WithExpression(fields[3], "min(longBoxed,intBoxed,shortBoxed)");
+                    .WithExpression(fields[0], "max(LongBoxed,IntBoxed)")
+                    .WithExpression(fields[1], "max(LongBoxed,IntBoxed,ShortBoxed)")
+                    .WithExpression(fields[2], "min(LongBoxed,IntBoxed)")
+                    .WithExpression(fields[3], "min(LongBoxed,IntBoxed,ShortBoxed)");
 
                 builder.WithStatementConsumer(
                     stmt => {
@@ -95,19 +95,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create()
-                    .Add(Expressions.Max("longBoxed", "intBoxed"), "myMax")
+                    .Add(Expressions.Max("LongBoxed", "IntBoxed"), "myMax")
                     .Add(
                         Expressions.Max(
-                            Expressions.Property("longBoxed"),
-                            Expressions.Property("intBoxed"),
-                            Expressions.Property("shortBoxed")),
+                            Expressions.Property("LongBoxed"),
+                            Expressions.Property("IntBoxed"),
+                            Expressions.Property("ShortBoxed")),
                         "myMaxEx")
-                    .Add(Expressions.Min("longBoxed", "intBoxed"), "myMin")
+                    .Add(Expressions.Min("LongBoxed", "IntBoxed"), "myMin")
                     .Add(
                         Expressions.Min(
-                            Expressions.Property("longBoxed"),
-                            Expressions.Property("intBoxed"),
-                            Expressions.Property("shortBoxed")),
+                            Expressions.Property("LongBoxed"),
+                            Expressions.Property("IntBoxed"),
+                            Expressions.Property("ShortBoxed")),
                         "myMinEx");
 
                 model.FromClause = FromClause.Create(

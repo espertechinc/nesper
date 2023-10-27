@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createvariable
 
                 EventBean[] newDataToPost = { eventNew };
                 EventBean[] oldDataToPost = { eventOld };
-                child.Update(newDataToPost, oldDataToPost);
+                Child.Update(newDataToPost, oldDataToPost);
             }
         }
 

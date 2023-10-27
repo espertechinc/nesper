@@ -290,10 +290,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     .DeclareVar<int>("cpid", ExprDotName(MEMBER_EXPREVALCONTEXT, "AgentInstanceId"));
 
                 {
-                    var forEach = methodNode.Block.ForEach(
-                        typeof(KeyValuePair<object, EventBean>),
-                        "entry",
-                        ExprDotMethod(Ref("keysAndEvents"), "entrySet"));
+                    var forEach = methodNode.Block.ForEachVar("entry", Ref("keysAndEvents"));
                     forEach.ExprDotMethod(
                             MEMBER_AGGREGATIONSVC,
                             "SetCurrentAccess",
@@ -377,10 +374,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     "eventsPerStream",
                     NewArrayByLength(typeof(EventBean), Constant(1)));
                 {
-                    var forLoop = method.Block.ForEach(
-                        typeof(KeyValuePair<object, EventBean>),
-                        "entry",
-                        ExprDotMethod(Ref("keysAndEvents"), "entrySet"));
+                    var forLoop = method.Block.ForEachVar("entry", Ref("keysAndEvents"));
                     forLoop.ExprDotMethod(
                             MEMBER_AGGREGATIONSVC,
                             "SetCurrentAccess",
@@ -641,10 +635,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     .DeclareVar<int>("cpid", ExprDotName(MEMBER_EXPREVALCONTEXT, "AgentInstanceId"));
 
                 {
-                    var forEach = methodNode.Block.ForEach(
-                        typeof(KeyValuePair<object, EventBean[]>),
-                        "entry",
-                        ExprDotMethod(Ref("keysAndEvents"), "entrySet"));
+                    var forEach = methodNode.Block.ForEachVar("entry", Ref("keysAndEvents"));
                     forEach.ExprDotMethod(
                             MEMBER_AGGREGATIONSVC,
                             "SetCurrentAccess",
@@ -854,8 +845,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 .AddParam<Viewable>(NAME_VIEWABLE);
             if (!forge.IsSorting) {
                 iterator.Block.MethodReturn(
-                    NewInstance(
-                        typeof(ResultSetProcessorRowPerGroupEnumerator),
+                    StaticMethod<ResultSetProcessorRowPerGroupEnumerator>(
+                        "For",
                         ExprDotMethod(REF_VIEWABLE, "GetEnumerator"),
                         Ref("this"),
                         MEMBER_AGGREGATIONSVC,
@@ -1059,7 +1050,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
             instance.Methods.AddMethod(
                 typeof(void),
-                "removedAggregationGroupKey",
+                "RemovedAggregationGroupKey",
                 CodegenNamedParam.From(typeof(object), "key"),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,
@@ -2839,7 +2830,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
 
             return instance.Methods.AddMethod(
                 typeof(UniformPair<EventBean[]>),
-                "processViewResultNewDepthOneCodegen",
+                "ProcessViewResultNewDepthOneCodegen",
                 CodegenNamedParam.From(typeof(EventBean[]), NAME_NEWDATA, typeof(bool), NAME_ISSYNTHESIZE),
                 typeof(ResultSetProcessorRowPerGroupImpl),
                 classScope,

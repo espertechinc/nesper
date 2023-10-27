@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Threading;
 using com.espertech.esper.compat.threading.locks;
 
@@ -29,6 +30,7 @@ namespace com.espertech.esper.compat.threading.threadlocal
 
         private static readonly Queue<int> IndexReclaim = new Queue<int>();
 
+        [JsonIgnore]
         [NonSerialized]
         private int _instanceId = 0;
 

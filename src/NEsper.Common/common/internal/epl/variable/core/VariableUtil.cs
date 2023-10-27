@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         public static void ConfigureVariables(
             VariableRepositoryPreconfigured repo,
             IDictionary<string, ConfigurationCommonVariable> variables,
-            ImportService classpathImportService,
+            ImportService importService,
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             EventTypeRepositoryImpl eventTypeRepositoryPreconfigured,
             BeanEventTypeFactory beanEventTypeFactory)
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         entry.Value.IsConstant,
                         entry.Value.IsConstant,
                         entry.Value.InitializationValue,
-                        classpathImportService,
+                        importService,
                         ExtensionClassEmpty.INSTANCE,
                         eventBeanTypedEventFactory,
                         eventTypeRepositoryPreconfigured,

@@ -9,6 +9,7 @@
 using System;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -18,7 +19,9 @@ namespace com.espertech.esper.common.@internal.util
     [Serializable]
     public class MethodResolverNoSuchCtorException : Exception
     {
-        [NonSerialized] private readonly ConstructorInfo nearestMissCtor;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly ConstructorInfo nearestMissCtor;
 
         /// <summary>
         ///     Ctor.

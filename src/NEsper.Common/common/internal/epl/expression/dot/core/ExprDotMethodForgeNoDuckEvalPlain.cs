@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private const string METHOD_HANDLETARGETEXCEPTION = "handleTargetException";
+        private const string METHOD_HANDLETARGETEXCEPTION = "HandleTargetException";
 
         private readonly ExprDotMethodForgeNoDuck _forge;
         private readonly ExprEvaluator[] _parameters;

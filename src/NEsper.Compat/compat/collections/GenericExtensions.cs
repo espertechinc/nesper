@@ -394,5 +394,16 @@ namespace com.espertech.esper.compat.collections
             return (t.IsGenericType) &&
                    (t.GetGenericTypeDefinition() == typeof(KeyValuePair<,>).GetGenericTypeDefinition());
         }
+
+        public static string GetBaseName(this Type t)
+        {
+            var baseName = t.Name;
+            if (t.IsGenericType) {
+                var baseIndex = baseName.IndexOf('`');
+                baseName = baseName.Substring(0, baseIndex);
+            }
+
+            return baseName;
+        }
     }
 }

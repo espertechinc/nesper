@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select `seconds`, `order` from SomeKeywords").AddListener("s0");
+                env.CompileDeploy("@name('s0') select `seconds`, `Order` from SomeKeywords").AddListener("s0");
 
                 object theEvent = new SupportBeanReservedKeyword(1, 2);
                 env.SendEventBean(theEvent, "SomeKeywords");
@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                     "s0",
                     eventBean => {
                         Assert.AreEqual(1, eventBean.Get("seconds"));
-                        Assert.AreEqual(2, eventBean.Get("order"));
+                        Assert.AreEqual(2, eventBean.Get("Order"));
                     });
 
                 env.UndeployAll();
@@ -75,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                     "s0",
                     eventBean => {
                         Assert.AreEqual(1, eventBean.Get("seconds"));
-                        Assert.AreEqual(2, eventBean.Get("order"));
+                        Assert.AreEqual(2, eventBean.Get("Order"));
                     });
 
                 env.UndeployAll();
@@ -90,12 +90,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 // test back-tick with spaces etc
                 env.CompileDeploy(
-                        "@name('s0') select `candidate book` as c0, `XML Message Type` as c1, `select` as c2, `children's books`[0] as c3, `my <> map`('xx') as c4 from MyType")
+"@name('s0') select `candidate Book` as c0, `XML Message Type` as c1, `select` as c2, `children's books`[0] as c3, `my <> map`('xx') as c4 from MyType")
                     .AddListener("s0");
 
                 IDictionary<string, object> defValues = new Dictionary<string, object>();
-                defValues.Put("candidate book", "Enders Game");
-                defValues.Put("XML Message Type", "book");
+                defValues.Put("candidate Book", "Enders Game");
+                defValues.Put("XML Message Type", "Book");
                 defValues.Put("select", 100);
                 defValues.Put("children's books", new int[] { 50, 51 });
                 defValues.Put("my <> map", Collections.SingletonMap("xx", "abc"));
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 env.AssertPropsNew(
                     "s0",
                     "c0,c1,c2,c3,c4".SplitCsv(),
-                    new object[] { "Enders Game", "book", 100, 50, "abc" });
+                    new object[] { "Enders Game", "Book", 100, 50, "abc" });
                 env.UndeployAll();
 
                 env.TryInvalidCompile(
@@ -126,13 +126,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 // test escape in column name
                 env.CompileDeploy(
-                        "@name('s0') select theString as `order`, theString as `price.for.goods` from SupportBean")
+"@name('s0') select TheString as `Order`, TheString as `Price.for.goods` from SupportBean")
                     .AddListener("s0");
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("order"));
-                        Assert.AreEqual("price.for.goods", statement.EventType.PropertyDescriptors[1].PropertyName);
+                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Order"));
+                        Assert.AreEqual("Price.for.goods", statement.EventType.PropertyDescriptors[1].PropertyName);
                     });
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -140,8 +140,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                     "s0",
                     eventBean => {
                         var @out = (IDictionary<string, object>)eventBean.Underlying;
-                        Assert.AreEqual("E1", @out.Get("order"));
-                        Assert.AreEqual("E1", @out.Get("price.for.goods"));
+                        Assert.AreEqual("E1", @out.Get("Order"));
+                        Assert.AreEqual("E1", @out.Get("Price.for.goods"));
 
                         // try control character
                         TryInvalidControlCharacter(eventBean);

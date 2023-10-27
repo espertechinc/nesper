@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             {
                 env.CompileDeploy(
                     "@name('flow') create dataflow MyDataFlowOne " +
-                    "create map schema SingleProp (id string), " +
+                    "create map schema SingleProp (Id string), " +
                     "EPStatementSource -> thedata<SingleProp> {" +
                     "  statementDeploymentId : 'MyDeploymentId'," +
                     "  statementName : 'MyStatement'," +
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean("E1", 1));
                 Assert.AreEqual(0, captureOp.Current.Length);
 
-                var epl = "@name('MyStatement') select theString as id from SupportBean";
+                var epl = "@name('MyStatement') select TheString as Id from SupportBean";
                 var compiled = env.Compile(epl);
                 try {
                     env.Deployment.Deploy(compiled, new DeploymentOptions().WithDeploymentId("MyDeploymentId"));
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 EPAssertionUtil.AssertProps(
                     env.Container,
                     captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] { "E2" });
 
                 env.UndeployModuleContaining("MyStatement");
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 EPAssertionUtil.AssertProps(
                     env.Container,
                     captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] { "E4" });
 
                 env.UndeployModuleContaining("MyStatement");
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean("E5", 5));
                 Assert.AreEqual(0, captureOp.Current.Length);
 
-                compiled = env.Compile("@name('MyStatement') select 'X'||theString||'X' as id from SupportBean");
+                compiled = env.Compile("@name('MyStatement') select 'X'||TheString||'X' as Id from SupportBean");
                 try {
                     env.Deployment.Deploy(compiled, new DeploymentOptions().WithDeploymentId("MyDeploymentId"));
                 }
@@ -152,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 EPAssertionUtil.AssertProps(
                     env.Container,
                     captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] { "XE6X" });
 
                 df.Cancel();
@@ -259,7 +259,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             public void Run(RegressionEnvironment env)
             {
                 // one statement exists before the data flow
-                env.CompileDeploy("select id from SupportBean_B");
+                env.CompileDeploy("select Id from SupportBean_B");
 
                 env.CompileDeploy(
                     "@name('flow') create dataflow MyDataFlowOne " +
@@ -281,25 +281,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 EPAssertionUtil.AssertProps(
                     env.Container,
                     captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] { "B1" });
 
-                env.CompileDeploy("select theString, intPrimitive from SupportBean");
+                env.CompileDeploy("select TheString, IntPrimitive from SupportBean");
                 env.SendEventBean(new SupportBean("E1", 1));
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
                     env.Container,
                     captureOp.GetCurrentAndReset()[0],
-                    "theString,intPrimitive".SplitCsv(),
+                    "TheString,IntPrimitive".SplitCsv(),
                     new object[] { "E1", 1 });
 
-                env.CompileDeploy("@name('s2') select id from SupportBean_A");
+                env.CompileDeploy("@name('s2') select Id from SupportBean_A");
                 env.SendEventBean(new SupportBean_A("A1"));
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
                     env.Container,
                     captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] { "A1" });
 
                 env.UndeployModuleContaining("s2");
@@ -308,14 +308,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 Sleep(50);
                 Assert.AreEqual(0, captureOp.Current.Length);
 
-                env.CompileDeploy("@name('s2') select id from SupportBean_A");
+                env.CompileDeploy("@name('s2') select Id from SupportBean_A");
 
                 env.SendEventBean(new SupportBean_A("A3"));
                 captureOp.WaitForInvocation(200, 1);
                 EPAssertionUtil.AssertProps(
                     env.Container,
                     captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] { "A3" });
 
                 env.SendEventBean(new SupportBean_B("B2"));
@@ -323,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 EPAssertionUtil.AssertProps(
                     env.Container,
                     captureOp.GetCurrentAndReset()[0],
-                    "id".SplitCsv(),
+                    "Id".SplitCsv(),
                     new object[] { "B2" });
 
                 df.Cancel();

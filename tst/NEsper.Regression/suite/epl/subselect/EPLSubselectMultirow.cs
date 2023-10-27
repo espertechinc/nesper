@@ -55,16 +55,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.CompileDeploy(epl, path);
 
                 epl =
-                    "@name('s0') select p00, (select window(intPrimitive) from SupportBean#keepall sb) as val from SupportBean_S0 as s0;\n";
+                    "@name('s0') select P00, (select window(IntPrimitive) from SupportBean#keepall sb) as val from SupportBean_S0 as s0;\n";
                 env.CompileDeploy(epl, path).AddListener("s0").Milestone(0);
 
-                var fields = "p00,val".SplitCsv();
+                var fields = "P00,val".SplitCsv();
 
                 env.AssertStatement(
                     "s0",
                     statement => {
                         var rows = new object[][] {
-                            new object[] { "p00", typeof(string) },
+                            new object[] { "P00", typeof(string) },
                             new object[] { "val", typeof(int?[]) }
                         };
                         for (var i = 0; i < rows.Length; i++) {
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.UndeployModuleContaining("s0");
 
                 epl =
-                    "@name('s0') select p00, (select window(intPrimitive) from SupportWindow) as val from SupportBean_S0 as s0";
+                    "@name('s0') select P00, (select window(IntPrimitive) from SupportWindow) as val from SupportBean_S0 as s0";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(0));
@@ -109,8 +109,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select p00, " +
-                               "(select window(sb.*) from SupportBean#keepall sb where theString = s0.p00) as val " +
+                var stmtText = "@name('s0') select P00, " +
+                               "(select window(sb.*) from SupportBean#keepall sb where TheString = s0.P00) as val " +
                                "from SupportBean_S0 as s0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     "s0",
                     statement => {
                         var rows = new object[][] {
-                            new object[] { "p00", typeof(string) },
+                            new object[] { "P00", typeof(string) },
                             new object[] { "val", typeof(SupportBean[]) }
                         };
                         for (var i = 0; i < rows.Length; i++) {

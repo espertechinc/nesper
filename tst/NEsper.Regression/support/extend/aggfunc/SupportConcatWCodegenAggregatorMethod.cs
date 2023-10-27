@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
 					typeof(string),
 					"value",
 					Cast(typeof(string), forges[0].EvaluateCodegen(typeof(string), method, symbols, classScope)))
-				.ExprDotMethod(builder, "append", @Ref("value"));
+				.ExprDotMethod(builder, "Append", @Ref("value"));
 		}
 
 		public void ApplyEvalLeaveCodegen(
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.support.extend.aggfunc
 			CodegenMethod method,
 			CodegenClassScope classScope)
 		{
-			method.Block.MethodReturn(ExprDotMethod(builder, "toString"));
+			method.Block.MethodReturn(ExprDotMethod(builder, "ToString"));
 		}
 
 		public void WriteCodegen(

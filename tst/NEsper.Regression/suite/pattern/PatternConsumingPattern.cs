@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // test order-by
                 var epl =
-                    "@name('s0') select * from pattern @DiscardPartialsOnMatch [every a=SupportIdEventA -> SupportIdEventB] order by a.id desc";
+"@name('s0') select * from pattern @DiscardPartialsOnMatch [every a=SupportIdEventA -> SupportIdEventB] Order by a.Id desc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportIdEventA("A1", null, null));
@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.SendEventBean(new SupportIdEventB("B1", null));
                 env.AssertPropsPerRowNewOnly(
                     "s0",
-                    "a.id".SplitCsv(),
+                    "a.Id".SplitCsv(),
                     new object[][] { new object[] { "A2" }, new object[] { "A1" } });
 
                 env.UndeployAll();
@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a.id,b.id".SplitCsv();
+                var fields = "a.Id,b.Id".SplitCsv();
                 SendTime(env, 0);
 
                 var epl = "@name('s0') select * from pattern " +
@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a.id".SplitCsv();
+                var fields = "a.Id".SplitCsv();
                 SendTime(env, 0);
 
                 var epl = "@name('s0') select * from pattern " +
@@ -281,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a.id,b.id,c.id".SplitCsv();
+                var fields = "a.Id,b.Id,c.Id".SplitCsv();
                 SendTime(env, 0);
 
                 var epl = "@name('s0') select * from pattern " +
@@ -318,15 +318,15 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var milestone = new AtomicLong();
 
                 TryAssertionEveryBeginState(env, milestone, "");
-                TryAssertionEveryBeginState(env, milestone, "-distinct(id)");
-                TryAssertionEveryBeginState(env, milestone, "-distinct(id, 10 seconds)");
+                TryAssertionEveryBeginState(env, milestone, "-distinct(Id)");
+                TryAssertionEveryBeginState(env, milestone, "-distinct(Id, 10 seconds)");
 
                 TryAssertionEveryChildState(env, milestone, "", true);
                 TryAssertionEveryChildState(env, milestone, "", false);
-                TryAssertionEveryChildState(env, milestone, "-distinct(id)", true);
-                TryAssertionEveryChildState(env, milestone, "-distinct(id)", false);
-                TryAssertionEveryChildState(env, milestone, "-distinct(id, 10 seconds)", true);
-                TryAssertionEveryChildState(env, milestone, "-distinct(id, 10 seconds)", false);
+                TryAssertionEveryChildState(env, milestone, "-distinct(Id)", true);
+                TryAssertionEveryChildState(env, milestone, "-distinct(Id)", false);
+                TryAssertionEveryChildState(env, milestone, "-distinct(Id, 10 seconds)", true);
+                TryAssertionEveryChildState(env, milestone, "-distinct(Id, 10 seconds)", false);
             }
         }
 
@@ -336,7 +336,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             string everySuffix,
             bool matchDiscard)
         {
-            var fields = "a.id,b.id,c.id".SplitCsv();
+            var fields = "a.Id,b.Id,c.Id".SplitCsv();
 
             var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             string distinct)
         {
-            var fields = "a.id,b.id".SplitCsv();
+            var fields = "a.Id,b.Id".SplitCsv();
 
             var epl = "@name('s0') select * from pattern " +
                       GetText(TargetEnum.DISCARD_ONLY) +
@@ -419,7 +419,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             string pattern,
             bool matchDiscard)
         {
-            var fields = "a1.id,a2.id".SplitCsv();
+            var fields = "a1.Id,a2.Id".SplitCsv();
 
             var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -468,7 +468,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             bool testSoda,
             TargetEnum target)
         {
-            var fields = "a.id,b.id,c.id".SplitCsv();
+            var fields = "a.Id,b.Id,c.Id".SplitCsv();
             var epl = "@name('s0') select * from pattern " +
                       GetText(target) +
                       "[every a=SupportIdEventA -> b=SupportIdEventB -> c=SupportIdEventC(pc=a.pa)]";
@@ -496,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = "a.id,b[0].id,b[1].id".SplitCsv();
+            var fields = "a.Id,b[0].Id,b[1].Id".SplitCsv();
 
             var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -534,7 +534,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = "a.id,b[0].id,c[0].id".SplitCsv();
+            var fields = "a.Id,b[0].Id,c[0].Id".SplitCsv();
 
             var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -571,7 +571,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "a1.id,aarr[0].id".SplitCsv();
+            var fields = "a1.Id,aarr[0].Id".SplitCsv();
             SendTime(env, 0);
 
             var epl = "@name('s0') select * from pattern " +
@@ -602,7 +602,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             bool testSoda,
             TargetEnum target)
         {
-            var fields = "a1.id,aarr[0].id,b.id".SplitCsv();
+            var fields = "a1.Id,aarr[0].Id,b.Id".SplitCsv();
             var epl = "@name('s0') select * from pattern " +
                       GetText(target) +
                       "[every a1=SupportIdEventA -> [:10] aarr=SupportIdEventA until b=SupportIdEventB]";
@@ -632,7 +632,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = "a.id,b.id,c.id".SplitCsv();
+            var fields = "a.Id,b.Id,c.Id".SplitCsv();
 
             var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -670,7 +670,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = "a.id,b.id,c.id".SplitCsv();
+            var fields = "a.Id,b.Id,c.Id".SplitCsv();
 
             var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -712,7 +712,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = "a.id,b.id,c.id".SplitCsv();
+            var fields = "a.Id,b.Id,c.Id".SplitCsv();
 
             var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +
@@ -750,7 +750,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone,
             bool matchDiscard)
         {
-            var fields = "a.id,b.id,c.id".SplitCsv();
+            var fields = "a.Id,b.Id,c.Id".SplitCsv();
 
             var epl = "@name('s0') select * from pattern " +
                       (matchDiscard ? GetText(TargetEnum.DISCARD_ONLY) : "") +

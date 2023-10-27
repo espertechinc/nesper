@@ -45,11 +45,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone)
         {
             var expressionOne =
-                "@name('S1') select * from pattern [every a=SupportBean(theString like 'A%') -[2]> b=SupportBean_A(id=a.theString)]";
+                "@name('S1') select * from pattern [every a=SupportBean(TheString like 'A%') -[2]> b=SupportBean_A(Id=a.TheString)]";
             env.CompileDeploy(expressionOne).AddListener("S1");
 
             var expressionTwo =
-                "@name('S2') select * from pattern [every a=SupportBean(theString like 'B%') -> b=SupportBean_B(id=a.theString)]";
+                "@name('S2') select * from pattern [every a=SupportBean(TheString like 'B%') -> b=SupportBean_B(Id=a.TheString)]";
             env.CompileDeploy(expressionTwo).AddListener("S2");
 
             env.SendEventBean(new SupportBean("A1", 0));
@@ -120,11 +120,11 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             AtomicLong milestone)
         {
             var expressionOne =
-                "@name('S1') select * from pattern [every a=SupportBean(theString like 'A%') -> b=SupportBean_A(id=a.theString)]";
+                "@name('S1') select * from pattern [every a=SupportBean(TheString like 'A%') -> b=SupportBean_A(Id=a.TheString)]";
             env.CompileDeploy(expressionOne).AddListener("S1");
 
             var expressionTwo =
-                "@name('S2') select * from pattern [every a=SupportBean(theString like 'B%') -> b=SupportBean_B(id=a.theString)]";
+                "@name('S2') select * from pattern [every a=SupportBean(TheString like 'B%') -> b=SupportBean_B(Id=a.TheString)]";
             env.CompileDeploy(expressionTwo).AddListener("S2");
 
             env.SendEventBean(new SupportBean("A1", 0));

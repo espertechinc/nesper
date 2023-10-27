@@ -455,16 +455,20 @@ namespace com.espertech.esper.common.@internal.@event.core
         private void ValidateMapPropertyTypes(IDictionary<string, object> propertyTypes)
         {
             foreach (var entry in propertyTypes) {
-                if (!(entry.Value is TypeBeanOrUnderlying) &&
-                    !(entry.Value is TypeBeanOrUnderlying[]) &&
-                    !(entry.Value is EventType) &&
-                    !(entry.Value is EventType[]) &&
-                    !(entry.Value is Type) &&
-                    !(entry.Value is IDictionary<string, object>)) {
-                    throw new IllegalStateException("Unrecognized nestable property type '" + entry.Value + "'");
+                var entryValue = entry.Value;
+                if (entryValue == null) {
+                    // null type is allowable
                 }
-
-                if (entry.Value is IDictionary<string, object> value) {
+                else if (
+                    !(entryValue is TypeBeanOrUnderlying) &&
+                    !(entryValue is TypeBeanOrUnderlying[]) &&
+                    !(entryValue is EventType) &&
+                    !(entryValue is EventType[]) &&
+                    !(entryValue is Type) &&
+                    !(entryValue is IDictionary<string, object>)) {
+                    throw new IllegalStateException("Unrecognized nestable property type '" + entryValue + "'");
+                }
+                else if (entryValue is IDictionary<string, object> value) {
                     ValidateMapPropertyTypes(value);
                 }
             }

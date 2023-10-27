@@ -44,20 +44,20 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var fieldsWin = "theString,intPrimitive".SplitCsv();
+                var fieldsWin = "TheString,IntPrimitive".SplitCsv();
                 var fieldsSelect = "c0".SplitCsv();
                 var path = new RegressionPath();
 
                 var eplCreate = namedWindow
                     ? "@name('create') @public create window MyInfra#keepall as SupportBean"
-                    : "@name('create') @public create table MyInfra (theString string primary key, intPrimitive int primary key)";
+                    : "@name('create') @public create table MyInfra (TheString string primary key, IntPrimitive int primary key)";
                 env.CompileDeploy(eplCreate, path);
 
-                env.CompileDeploy("insert into MyInfra select theString, intPrimitive from SupportBean", path);
+                env.CompileDeploy("insert into MyInfra select TheString, IntPrimitive from SupportBean", path);
 
                 var eplSelectDelete = "@name('s0') on SupportBean_S0 as s0 " +
-                                      "select and delete window(win.*).aggregate(0,(result,value) => result+value.intPrimitive) as c0 " +
-                                      "from MyInfra as win where s0.p00=win.theString";
+                                      "select and delete window(win.*).aggregate(0,(result,value) => result+value.IntPrimitive) as c0 " +
+                                      "from MyInfra as win where s0.P00=win.TheString";
                 env.CompileDeploy(eplSelectDelete, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));

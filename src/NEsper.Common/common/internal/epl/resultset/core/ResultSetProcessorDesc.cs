@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
         public bool HasOutputLimit => flags.HasOutputLimit;
 
-        public ResultSetProcessorOutputConditionType OutputConditionType => flags.OutputConditionType;
+        public ResultSetProcessorOutputConditionType? OutputConditionType => flags.OutputConditionType;
 
         public bool HasOutputLimitSnapshot => flags.IsOutputLimitWSnapshot;
 

@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     ";\n" +
                     "insert into LvlB event-precedence(precedence) select * from LvlA[b];\n" +
                     "insert into LvlC event-precedence(precedence) select * from LvlB[c];\n" +
-                    "@name('s0') select id from LvlC;\n";
+                    "@name('s0') select Id from LvlC;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 // precedenced
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     expected[i] = new object[] { split[i] };
                 }
 
-                env.AssertPropsPerRowNewFlattened("s0", new string[] { "id" }, expected);
+                env.AssertPropsPerRowNewFlattened("s0", new string[] { "Id" }, expected);
             }
         }
 
@@ -191,9 +191,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var epl = "on SupportBean \n" +
-                          "insert into Out event-precedence(1) select 1 as id\n" +
-                          "insert into Out event-precedence(2) select 2 as id\n" +
-                          "insert into Out event-precedence(3) select 3 as id\n" +
+                          "insert into Out event-precedence(1) select 1 as Id\n" +
+                          "insert into Out event-precedence(2) select 2 as Id\n" +
+                          "insert into Out event-precedence(3) select 3 as Id\n" +
                           "output all;\n" +
                           "@name('s0') select * from Out ";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -201,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean());
                 env.AssertPropsPerRowNewFlattened(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { 3 }, new object[] { 2 }, new object[] { 1 } });
 
                 env.UndeployAll();
@@ -212,19 +212,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('window') create window MyWindow#keepall as (id int);\n" +
-                          "insert into MyWindow event-precedence(4) select 4 as id from SupportBean;\n" +
-                          "insert into MyWindow event-precedence(2) select 2 as id from SupportBean;\n" +
-                          "insert into MyWindow select 0 as id from SupportBean;\n" +
-                          "insert into MyWindow event-precedence(5) select 5 as id from SupportBean;\n" +
-                          "insert into MyWindow event-precedence(1) select 1 as id from SupportBean;\n" +
-                          "insert into MyWindow event-precedence(3) select 3 as id from SupportBean;\n";
+                var epl = "@name('window') create window MyWindow#keepall as (Id int);\n" +
+                          "insert into MyWindow event-precedence(4) select 4 as Id from SupportBean;\n" +
+                          "insert into MyWindow event-precedence(2) select 2 as Id from SupportBean;\n" +
+                          "insert into MyWindow select 0 as Id from SupportBean;\n" +
+                          "insert into MyWindow event-precedence(5) select 5 as Id from SupportBean;\n" +
+                          "insert into MyWindow event-precedence(1) select 1 as Id from SupportBean;\n" +
+                          "insert into MyWindow event-precedence(3) select 3 as Id from SupportBean;\n";
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportBean());
                 env.AssertPropsPerRowIterator(
                     "window",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] {
                         new object[] { 5 }, new object[] { 4 }, new object[] { 3 }, new object[] { 2 },
                         new object[] { 1 }, new object[] { 0 }
@@ -239,14 +239,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create schema Out (id string)", path);
+                env.CompileDeploy("@public create schema Out (Id string)", path);
                 env.CompileDeploy(
                     true,
-                    "insert into Out event-precedence((select intOne from SupportBeanNumeric#lastevent)) select \"a\" as id from SupportBean",
+                    "insert into Out event-precedence((select intOne from SupportBeanNumeric#lastevent)) select \"a\" as Id from SupportBean",
                     path);
                 env.CompileDeploy(
                     true,
-                    "insert into Out event-precedence((select intTwo from SupportBeanNumeric#lastevent)) select \"b\" as id from SupportBean",
+                    "insert into Out event-precedence((select intTwo from SupportBeanNumeric#lastevent)) select \"b\" as Id from SupportBean",
                     path);
                 env.CompileDeploy("@name('s0') select * from Out", path).AddListener("s0");
 
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean());
                 env.AssertPropsPerRowNewFlattened(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { first }, new object[] { second } });
             }
         }
@@ -291,7 +291,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 }
 
                 epl += "@name('WindowOut') create window WindowOut#keepall as (outid string);\n" +
-                       "on SupportBean sb merge InfraMerge mw where sb.theString = mw.mergeid\n" +
+                       "on SupportBean sb merge InfraMerge mw where sb.TheString = mw.mergeid\n" +
                        "when not matched\n" +
                        "then insert into WindowOut event-precedence(0) select 'a' as outid\n" +
                        "then insert into WindowOut select 'b' as outid\n" +
@@ -323,10 +323,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create schema Out (id string)", path);
+                env.CompileDeploy("@public create schema Out (Id string)", path);
                 var epl = "on SupportBean " +
-                          "insert into Out event-precedence((select intOne from SupportBeanNumeric#lastevent)) select \"a\" as id " +
-                          "insert into Out event-precedence((select intTwo from SupportBeanNumeric#lastevent)) select \"b\" as id " +
+                          "insert into Out event-precedence((select intOne from SupportBeanNumeric#lastevent)) select \"a\" as Id " +
+                          "insert into Out event-precedence((select intTwo from SupportBeanNumeric#lastevent)) select \"b\" as Id " +
                           "output all";
                 env.CompileDeploy(true, epl, path);
                 env.CompileDeploy("@name('s0') select * from Out", path).AddListener("s0");
@@ -350,7 +350,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean());
                 env.AssertPropsPerRowNewFlattened(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { first }, new object[] { second } });
             }
         }
@@ -361,13 +361,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create window MyWindow#keepall as (id string);\n" +
-                    "@public create schema Out (id string);\n",
+                    "@public create window MyWindow#keepall as (Id string);\n" +
+                    "@public create schema Out (Id string);\n",
                     path);
-                var epl = "on SupportBean merge MyWindow where theString=id " +
+                var epl = "on SupportBean merge MyWindow where TheString=Id " +
                           "when not matched " +
-                          "then insert into Out event-precedence((select intOne from SupportBeanNumeric#lastevent)) select \"a\" as id " +
-                          "then insert into Out event-precedence((select intTwo from SupportBeanNumeric#lastevent)) select \"b\" as id";
+                          "then insert into Out event-precedence((select intOne from SupportBeanNumeric#lastevent)) select \"a\" as Id " +
+                          "then insert into Out event-precedence((select intTwo from SupportBeanNumeric#lastevent)) select \"b\" as Id";
                 env.CompileDeploy(true, epl, path);
                 env.CompileDeploy("@name('s0') select * from Out", path).AddListener("s0");
 
@@ -390,7 +390,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean());
                 env.AssertPropsPerRowNewFlattened(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { first }, new object[] { second } });
             }
         }
@@ -401,17 +401,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create schema Out (id string);\n" +
+                    "@public create schema Out (Id string);\n" +
                     "@public create window MyWindow#keepall as (value string);\n",
                     path);
                 env.CompileExecuteFAF("insert into MyWindow select 'x' as value", path);
 
                 var eplOne =
-                    "on SupportBean insert into Out event-precedence((select intOne from SupportBeanNumeric#lastevent)) select \"a\" as id from MyWindow";
+                    "on SupportBean insert into Out event-precedence((select intOne from SupportBeanNumeric#lastevent)) select \"a\" as Id from MyWindow";
                 env.CompileDeploy(true, eplOne, path);
 
                 var eplTwo =
-                    "on SupportBean insert into Out event-precedence((select intTwo from SupportBeanNumeric#lastevent)) select \"b\" as id from MyWindow;\n" +
+                    "on SupportBean insert into Out event-precedence((select intTwo from SupportBeanNumeric#lastevent)) select \"b\" as Id from MyWindow;\n" +
                     "@name('s0') select * from Out;\n";
                 env.CompileDeploy(false, eplTwo, path).AddListener("s0");
 
@@ -434,7 +434,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean());
                 env.AssertPropsPerRowNewFlattened(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] { new object[] { first }, new object[] { second } });
             }
         }
@@ -444,12 +444,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "create schema Out(id int);\n" +
-                    "insert into Out event-precedence(1) select 1 + intPrimitive * 10 as id from SupportBean output every 2 events;\n" +
-                    "insert into Out event-precedence(2) select 2 + intPrimitive * 10 as id from SupportBean output every 2 events;\n" +
+                    "create schema Out(Id int);\n" +
+                    "insert into Out event-precedence(1) select 1 + IntPrimitive * 10 as Id from SupportBean output every 2 events;\n" +
+                    "insert into Out event-precedence(2) select 2 + IntPrimitive * 10 as Id from SupportBean output every 2 events;\n" +
                     "insert into Out event-precedence(" +
                     typeof(EPLInsertIntoEventPrecedence).FullName +
-                    ".computeEventPrecedence(3, *)) select 3 + intPrimitive * 10 as id from SupportBean output every 2 events;\n" +
+                    ".computeEventPrecedence(3, *)) select 3 + IntPrimitive * 10 as Id from SupportBean output every 2 events;\n" +
                     "@name('s0') select * from Out;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -457,7 +457,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean("E2", 2));
                 env.AssertPropsPerRowNewFlattened(
                     "s0",
-                    new string[] { "id" },
+                    new string[] { "Id" },
                     new object[][] {
                         new object[] { 13 }, new object[] { 23 }, new object[] { 12 }, new object[] { 22 },
                         new object[] { 11 }, new object[] { 21 }
@@ -473,8 +473,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create window MyWindow#keepall as (id string);\n" +
-                    "@public create table MyTable(id string primary key);\n",
+                    "@public create window MyWindow#keepall as (Id string);\n" +
+                    "@public create table MyTable(Id string primary key);\n",
                     path);
 
                 env.TryInvalidCompile(
@@ -484,32 +484,32 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 env.TryInvalidCompile(
                     path,
-                    "insert into Out event-precedence(intPrimitive) select theString from SupportBean",
-                    "Failed to validate event-precedence considering only the output event type 'Out': Failed to validate event-precedence clause expression 'intPrimitive': Property named 'intPrimitive' is not valid in any stream (NOTE: this validation only considers the result event itself and not incoming streams)");
+                    "insert into Out event-precedence(IntPrimitive) select TheString from SupportBean",
+                    "Failed to validate event-precedence considering only the output event type 'Out': Failed to validate event-precedence clause expression 'IntPrimitive': Property named 'IntPrimitive' is not valid in any stream (NOTE: this validation only considers the result event itself and not incoming streams)");
 
                 env.TryInvalidCompile(
                     path,
-                    "on SupportBean insert into Out event-precedence(null) select 'a' as id",
+                    "on SupportBean insert into Out event-precedence(null) select 'a' as Id",
                     "Event-precedence expected an expression returning an integer value but the expression 'null' returns null");
 
                 env.TryInvalidCompile(
                     path,
-                    "on SupportBean merge MyWindow when not matched then insert into Out event-precedence(cast(1, short)) select 'a' as id",
+                    "on SupportBean merge MyWindow when not matched then insert into Out event-precedence(cast(1, short)) select 'a' as Id",
                     "Validation failed in when-not-matched (clause 1): Event-precedence expected an expression returning an integer value but the expression 'cast(1,short)' returns Short");
 
                 env.TryInvalidCompileFAF(
                     path,
-                    "insert into MyWindow(id) event-precedence(10) values ('a')",
+                    "insert into MyWindow(Id) event-precedence(10) values ('a')",
                     "Fire-and-forget insert-queries do not allow event-precedence");
 
                 env.TryInvalidCompile(
                     path,
-                    "insert into MyTable event-precedence(1) select 'a' as id from SupportBean",
+                    "insert into MyTable event-precedence(1) select 'a' as Id from SupportBean",
                     "Event-precedence is not allowed when inserting into a table");
 
                 env.TryInvalidCompile(
                     path,
-                    "on SupportBean merge MyWindow insert event-precedence(1) select 'a' as id",
+                    "on SupportBean merge MyWindow insert event-precedence(1) select 'a' as Id",
                     "Incorrect syntax near 'event-precedence' (a reserved keyword)");
 
                 env.UndeployAll();

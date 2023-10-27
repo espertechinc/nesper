@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 Assert.IsNotNull(schemaStream);
                 var schemaTextSimpleSchemaWithRestriction = schemaStream.ConsumeStream();
                 var epl = "@public @buseventtype " +
-                          "@XMLSchema(RootElementName='order', SchemaText='" +
+"@XMLSchema(RootElementName='Order', SchemaText='"+
                           schemaTextSimpleSchemaWithRestriction +
                           "')" +
                           "create xml schema MyEventCreateSchema()";
@@ -81,9 +81,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             SupportXML.SendXMLEvent(
                 env,
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<order>\n" +
+"<Order>\n"+
                 "<order_amount>202.1</order_amount>" +
-                "</order>",
+"</Order>",
                 "OrderEvent");
             env.AssertListener(
                 "s0",

@@ -255,7 +255,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 Consumer<CompilerOptions> options = opt =>
                     opt.SetAccessModifierContext(ctx => NameAccessModifier.PUBLIC);
                 var path = new RegressionPath();
-                var epl = "@public create context MyContext as partition by theString from SupportBean";
+                var epl = "@public create context MyContext as partition by TheString from SupportBean";
                 env.CompileDeploy(epl, path);
                 TryInvalidDeploy(env, epl, "A context by name 'MyContext'", MODULE_NAME_UNNAMED, options);
                 env.UndeployAll();
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 TryInvalidDeploy(env, compiled, "An index by name 'MyIndexOnTable'", MODULE_NAME_UNNAMED);
 
                 env.CompileDeploy("@public create window MyWindow#keepall as SupportBean", path);
-                epl = "create index MyIndexOnNW on MyWindow(intPrimitive)";
+                epl = "create index MyIndexOnNW on MyWindow(IntPrimitive)";
                 compiled = env.Compile(epl, path);
                 env.Deploy(compiled);
                 TryInvalidDeploy(env, compiled, "An index by name 'MyIndexOnNW'", MODULE_NAME_UNNAMED);

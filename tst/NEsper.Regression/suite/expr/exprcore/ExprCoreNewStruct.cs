@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "c0".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean")
-                    .WithExpressions(fields, "new { `a` = theString, `b.c` = theString, `}` = theString }");
+                    .WithExpressions(fields, "new { `a` = TheString, `b.c` = TheString, `}` = TheString }");
 
                 builder.WithAssertion(new SupportBean("E1", 0))
                     .Verify(
@@ -113,9 +113,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select " +
-                          "case theString" +
-                          " when \"A\" then new{theString=\"Q\",intPrimitive,col2=theString||\"A\"}" +
-                          " when \"B\" then new{theString,intPrimitive=10,col2=theString||\"B\"} " +
+                          "case TheString" +
+                          " when \"A\" then new{TheString=\"Q\",IntPrimitive,col2=TheString||\"A\"}" +
+                          " when \"B\" then new{TheString,IntPrimitive=10,col2=TheString||\"B\"} " +
                           "end as val0 from SupportBean as sb";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -128,15 +128,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 // test to-expression string
                 epl = "@name('s0') select " +
-                      "case theString" +
-                      " when \"A\" then new{theString=\"Q\",intPrimitive,col2=theString||\"A\" }" +
-                      " when \"B\" then new{theString,intPrimitive = 10,col2=theString||\"B\" } " +
+                      "case TheString" +
+                      " when \"A\" then new{TheString=\"Q\",IntPrimitive,col2=TheString||\"A\" }" +
+                      " when \"B\" then new{TheString,IntPrimitive = 10,col2=TheString||\"B\" } " +
                       "end from SupportBean as sb";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "s0",
                     statement => Assert.AreEqual(
-                        "case theString when \"A\" then new{theString=\"Q\",intPrimitive,col2=theString||\"A\"} when \"B\" then new{theString,intPrimitive=10,col2=theString||\"B\"} end",
+                        "case TheString when \"A\" then new{TheString=\"Q\",IntPrimitive,col2=TheString||\"A\"} when \"B\" then new{TheString,IntPrimitive=10,col2=TheString||\"B\"} end",
                         statement.EventType.PropertyNames[0]));
                 env.UndeployAll();
             }
@@ -151,12 +151,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     var fragType = statement.EventType.GetFragmentType("val0");
                     Assert.IsFalse(fragType.IsIndexed);
                     Assert.IsFalse(fragType.IsNative);
-                    Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("theString"));
-                    Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("intPrimitive"));
+                    Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("TheString"));
+                    Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("IntPrimitive"));
                     Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("col2"));
                 });
 
-            var fieldsInner = "theString,intPrimitive,col2".SplitCsv();
+            var fieldsInner = "TheString,IntPrimitive,col2".SplitCsv();
             env.SendEventBean(new SupportBean("E1", 1));
             AssertPropsMap(env, fieldsInner, new object[] { null, null, null });
 
@@ -174,15 +174,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var milestone = new AtomicLong();
                 var epl = "@name('s0') select " +
                           "case " +
-                          "  when theString = 'A' then new { col1 = 'X', col2 = 10 } " +
-                          "  when theString = 'B' then new { col1 = 'Y', col2 = 20 } " +
-                          "  when theString = 'C' then new { col1 = null, col2 = null } " +
+                          "  when TheString = 'A' then new { col1 = 'X', col2 = 10 } " +
+                          "  when TheString = 'B' then new { col1 = 'Y', col2 = 20 } " +
+                          "  when TheString = 'C' then new { col1 = null, col2 = null } " +
                           "  else new { col1 = 'Z', col2 = 30 } " +
                           "end as val0 from SupportBean sb";
                 TryAssertion(env, epl, milestone);
 
                 epl = "@name('s0') select " +
-                      "case theString " +
+                      "case TheString " +
                       "  when 'A' then new { col1 = 'X', col2 = 10 } " +
                       "  when 'B' then new { col1 = 'Y', col2 = 20 } " +
                       "  when 'C' then new { col1 = null, col2 = null } " +
@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             AtomicLong milestone)
         {
             var epl = rep.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvided)) +
-                      "@name('s0') select new { theString = 'x' || theString || 'x', intPrimitive = intPrimitive + 2} as val0 from SupportBean as sb";
+                      "@name('s0') select new { TheString = 'x' || TheString || 'x', IntPrimitive = IntPrimitive + 2} as val0 from SupportBean as sb";
             env.CompileDeploy(epl).AddListener("s0").Milestone(milestone.GetAndIncrement());
 
             env.AssertStatement(
@@ -281,14 +281,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     else {
                         Assert.IsFalse(fragType.IsIndexed);
                         Assert.IsFalse(fragType.IsNative);
-                        Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("theString"));
+                        Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("TheString"));
                         Assert.AreEqual(
                             typeof(int?),
-                            Boxing.GetBoxedType(fragType.FragmentType.GetPropertyType("intPrimitive")));
+                            Boxing.GetBoxedType(fragType.FragmentType.GetPropertyType("IntPrimitive")));
                     }
                 });
 
-            var fieldsInner = "theString,intPrimitive".SplitCsv();
+            var fieldsInner = "TheString,IntPrimitive".SplitCsv();
             env.SendEventBean(new SupportBean("E1", -5));
             env.AssertEventNew(
                 "s0",
@@ -296,8 +296,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     if (rep.IsAvroEvent()) {
                         SupportAvroUtil.AvroToJson(@event);
                         var inner = (GenericRecord)@event.Get("val0");
-                        Assert.AreEqual("xE1x", inner.Get("theString"));
-                        Assert.AreEqual(-3, inner.Get("intPrimitive"));
+                        Assert.AreEqual("xE1x", inner.Get("TheString"));
+                        Assert.AreEqual(-3, inner.Get("IntPrimitive"));
                     }
                     else {
                         EPAssertionUtil.AssertPropsMap(

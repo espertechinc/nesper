@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
         private readonly bool isSelectRStream;
         private readonly ExprForge optionalHavingNode;
         private readonly OutputLimitSpec outputLimitSpec;
-        private readonly ResultSetProcessorOutputConditionType outputConditionType;
+        private readonly ResultSetProcessorOutputConditionType? outputConditionType;
         private readonly bool isSorting;
         private readonly EventType[] eventTypes;
         private StateMgmtSetting outputAllHelperSettings;
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             ExprForge optionalHavingNode,
             bool isSelectRStream,
             OutputLimitSpec outputLimitSpec,
-            ResultSetProcessorOutputConditionType outputConditionType,
+            ResultSetProcessorOutputConditionType? outputConditionType,
             bool isSorting,
             EventType[] eventTypes) : base(resultEventType, typesPerStream)
         {
@@ -72,21 +72,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(bool),
                 "HasHavingClause",
-                EmptyList<CodegenNamedParam>.Instance, 
                 typeof(ResultSetProcessorSimple),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(Constant(optionalHavingNode != null)));
+                property => property.GetterBlock.BlockReturn(Constant(optionalHavingNode != null)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(optionalHavingNode, classScope, instance);
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
-                "GetExprEvaluatorContext",
-                EmptyList<CodegenNamedParam>.Instance, 
+                "ExprEvaluatorContext",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(MEMBER_EXPREVALCONTEXT));
+                property => property.GetterBlock.BlockReturn(MEMBER_EXPREVALCONTEXT));
         }
 
         public override void ProcessViewResultCodegen(
@@ -241,7 +239,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
 
         public ExprForge OptionalHavingNode => optionalHavingNode;
 
-        public ResultSetProcessorOutputConditionType OutputConditionType => outputConditionType;
+        public ResultSetProcessorOutputConditionType? OutputConditionType => outputConditionType;
 
         public int NumStreams => eventTypes.Length;
 

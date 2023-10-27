@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.client.util;
@@ -55,6 +56,7 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the descriptor controlling connection creation settings.
         /// </summary>
         /// <returns>connection factory settings</returns>
+        [JsonConverter(typeof(JsonConverterAbstract<ConnectionFactoryDesc>))]
         public ConnectionFactoryDesc ConnectionFactoryDesc { get; set; }
 
         /// <summary>

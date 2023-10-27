@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         private static readonly CodegenExpressionRef UNIT_KEY = Ref("unitKey");
         private static readonly CodegenExpressionRef WRITER = Ref("writer");
 
-        internal static void MakeRowSerde(
+        internal static void MakeRowSerde<T>(
             bool isTargetHA,
             AggregationClassAssignmentPerLevel assignments,
             Type forgeClass,
@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             AggregationClassNames classNames)
         {
             if (assignments.OptionalTop != null) {
-                MakeRowSerdeForLevel(
+                MakeRowSerdeForLevel<T>(
                     isTargetHA,
                     assignments.OptionalTop,
                     classNames.RowTop,
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
             if (assignments.OptionalPerLevel != null) {
                 for (var i = 0; i < assignments.OptionalPerLevel.Length; i++) {
-                    MakeRowSerdeForLevel(
+                    MakeRowSerdeForLevel<T>(
                         isTargetHA,
                         assignments.OptionalPerLevel[i],
                         classNames.GetRowPerLevel(i),
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             }
         }
 
-        private static void MakeRowSerdeForLevel(
+        private static void MakeRowSerdeForLevel<T>(
             bool isTargetHA,
             AggregationClassAssignment[] assignments,
             string classNameRow,
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             if (assignments.Length == 1 ||
                 !isTargetHA ||
                 forgeClass == AggregationServiceNullFactory.INSTANCE.GetType()) {
-                var inner = MakeRowSerdeForLevel(
+                var inner = MakeRowSerdeForLevel<T>(
                     isTargetHA,
                     assignments[0],
                     classNameRow,
@@ -101,7 +101,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                     writeConsumer,
                     classScope,
                     providerClassName);
-                inner.AddInterfaceImplemented(typeof(DataInputOutputSerde));
+                inner.BaseList.AssignType(typeof(DataInputOutputSerdeBase<T>));
+                //inner.AddInterfaceImplemented(typeof(DataInputOutputSerde<T>));
                 innerClasses.Add(inner);
                 return;
             }
@@ -110,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var classNamesSerde = new string[assignments.Length];
             for (var i = 0; i < assignments.Length; i++) {
                 classNamesSerde[i] = classNameSerde + "_" + i;
-                var inner = MakeRowSerdeForLevel(
+                var inner = MakeRowSerdeForLevel<T>(
                     isTargetHA,
                     assignments[i],
                     assignments[i].ClassName,
@@ -137,16 +138,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             }
 
             // make write
-            var writeMethod = MakeWriteMethod(classScope);
+            var writeMethod = MakeWriteMethod<T>(classScope);
             for (var i = 0; i < assignments.Length; i++) {
-                writeMethod.Block.ExprDotMethod(Ref("s" + i), "write", Ref("object"), OUTPUT, UNIT_KEY, WRITER);
+                writeMethod.Block.ExprDotMethod(Ref("s" + i), "Write", Ref("@object"), OUTPUT, UNIT_KEY, WRITER);
             }
 
             // make read
-            var readMethod = MakeReadMethod(classNameRow, classScope);
+            var readMethod = MakeReadMethod<T>(classNameRow, classScope);
             readMethod.Block.DeclareVar(classNameRow, "r", NewInstanceInner(classNameRow));
             for (var i = 0; i < assignments.Length; i++) {
-                readMethod.Block.AssignRef("r." + "l" + i, ExprDotMethod(Ref("s" + i), "read", INPUT, UNIT_KEY));
+                readMethod.Block.AssignRef("r." + "l" + i, ExprDotMethod(Ref("s" + i), "ReadValue", INPUT, UNIT_KEY));
             }
 
             readMethod.Block.MethodReturn(Ref("r"));
@@ -154,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
             CodegenStackGenerator.RecursiveBuildStack(writeMethod, "Write", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(readMethod, "Read", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(readMethod, "ReadValue", methods, properties);
 
             var serde = new CodegenInnerClass(
                 classNameSerde,
@@ -166,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             innerClasses.Add(serde);
         }
 
-        private static CodegenInnerClass MakeRowSerdeForLevel(
+        private static CodegenInnerClass MakeRowSerdeForLevel<T>(
             bool isTargetHA,
             AggregationClassAssignment assignment,
             string classNameRow,
@@ -180,8 +181,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
         {
             var ctor = MakeCtor(forgeClass, providerClassName, classScope);
 
-            var writeMethod = MakeWriteMethod(classScope);
-            var readMethod = MakeReadMethod(classNameRow, classScope);
+            var writeMethod = MakeWriteMethod<T>(classScope);
+            var readMethod = MakeReadMethod<T>(classNameRow, classScope);
 
             if (!isTargetHA) {
                 var message = "Serde not implemented because the compiler target is not HA";
@@ -189,7 +190,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 writeMethod.Block.MethodThrowUnsupported(message);
             }
             else if (forgeClass == AggregationServiceNullFactory.INSTANCE.GetType()) {
-                readMethod.Block.MethodReturn(ConstantNull());
+                readMethod.Block.MethodReturn(DefaultValue());
             }
             else {
                 readMethod.Block.DeclareVar(classNameRow, "row", NewInstanceInner(classNameRow));
@@ -197,9 +198,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
                 var methodFactories = assignment.MethodFactories;
                 var accessStates = assignment.AccessStateFactories;
-                writeMethod.Block.DeclareVar(classNameRow, "row", Cast(classNameRow, Ref("object")));
+                writeMethod.Block.DeclareVar(classNameRow, "row", Cast(classNameRow, Ref("@object")));
                 writeConsumer.Invoke(writeMethod, level);
-
+                
                 if (methodFactories != null) {
                     for (var i = 0; i < methodFactories.Length; i++) {
                         methodFactories[i]
@@ -229,7 +230,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
             CodegenStackGenerator.RecursiveBuildStack(writeMethod, "Write", methods, properties);
-            CodegenStackGenerator.RecursiveBuildStack(readMethod, "Read", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(readMethod, "ReadValue", methods, properties);
 
             return new CodegenInnerClass(
                 classNameSerde,
@@ -240,12 +241,13 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 properties);
         }
 
-        private static CodegenMethod MakeReadMethod(
+        private static CodegenMethod MakeReadMethod<T>(
             string returnType,
             CodegenClassScope classScope)
         {
-            return CodegenMethod.MakeParentNode(
-                    returnType,
+            return CodegenMethod
+                .MakeParentNode(
+                    typeof(T), // returnType <- DataInputObjectSerde<T> returns T and is not covariant
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
@@ -254,26 +256,26 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                         typeof(DataInput),
                         INPUT.Ref,
                         typeof(byte[]),
-                        UNIT_KEY.Ref));
+                        UNIT_KEY.Ref))
+                .WithOverride();
         }
 
-        private static CodegenMethod MakeWriteMethod(CodegenClassScope classScope)
+        private static CodegenMethod MakeWriteMethod<T>(
+            CodegenClassScope classScope)
         {
-            return CodegenMethod.MakeParentNode(
+            return CodegenMethod
+                .MakeParentNode(
                     typeof(void),
                     typeof(AggregationServiceFactoryCompiler),
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
                 .AddParam(
                     CodegenNamedParam.From(
-                        typeof(object),
-                        "object",
-                        typeof(DataOutput),
-                        OUTPUT.Ref,
-                        typeof(byte[]),
-                        UNIT_KEY.Ref,
-                        typeof(EventBeanCollatedWriter),
-                        WRITER.Ref));
+                        typeof(T), "@object",
+                        typeof(DataOutput), OUTPUT.Ref,
+                        typeof(byte[]), UNIT_KEY.Ref,
+                        typeof(EventBeanCollatedWriter), WRITER.Ref))
+                .WithOverride();
         }
 
         private static CodegenCtor MakeCtor(

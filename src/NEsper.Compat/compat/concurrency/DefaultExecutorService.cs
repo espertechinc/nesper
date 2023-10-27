@@ -211,8 +211,7 @@ namespace com.espertech.esper.compat.concurrency
             _isShutdown = true;
 
             // Dispose the taskFactory
-            if (_taskFactory.Scheduler is IDisposable disposableScheduler)
-            {
+            if (_taskFactory?.Scheduler is IDisposable disposableScheduler) {
                 disposableScheduler.Dispose();
             }
 

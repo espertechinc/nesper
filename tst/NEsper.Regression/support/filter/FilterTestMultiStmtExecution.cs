@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.support.filter
 
                 if (item.ExpectedPerStmt.Length != startedStatements.Length) {
                     Assert.Fail(
-                        "Number of boolean expected-values not matching number of statements for item " + eventNum);
+"Number of boolean expected-values not matching number of statements for Item "+ eventNum);
                 }
 
                 for (var i = 0; i < startedStatements.Length; i++) {

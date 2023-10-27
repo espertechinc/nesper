@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var epl =
                     "create table MyTable(dbls double[]);\n" +
                     "@priority(2) on SupportBean merge MyTable when not matched then insert select new System.Double[3] as dbls;\n" +
-                    "@priority(1) on SupportBean merge MyTable when matched then update set dbls[intPrimitive] = 1;\n" +
+                    "@priority(1) on SupportBean merge MyTable when matched then update set dbls[IntPrimitive] = 1;\n" +
                     "@name('s0') select MyTable.dbls as c0 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@public @buseventtype create schema MyEvent(id string, x double);\n" +
+                    "@public @buseventtype create schema MyEvent(Id string, x double);\n" +
                     "create constant variable int BURN_LENGTH = 5;\n" +
                     "create constant variable double ALPHA = 0.1;\n" +
                     "create table EMA(burnValues double[primitive], cnt int, value double);\n" +
@@ -134,11 +134,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "inlined_class \"\"\"\n" +
                     "  public class Helper {\n" +
                     "    public static double computeInitialValue(double alpha, double[] burnValues) {\n" +
-                    "      double total = 0;\n" +
+"      double Total = 0;\n"+
                     "      for (int i = 0; i < burnValues.length; i++) {\n" +
-                    "        total = total + burnValues[i];\n" +
+"        Total = Total + burnValues[i];\n"+
                     "      }\n" +
-                    "      double value = total / burnValues.length;\n" +
+"      double value = Total / burnValues.length;\n"+
                     "      for (int i = 0; i < burnValues.length; i++) {\n" +
                     "        value = alpha * burnValues[i] + (1 - alpha) * value;\n" +
                     "      }\n" +
@@ -194,9 +194,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@name('T0') create table TableZero(k0 string primary key, v0 int);\n" +
                     "@name('T1') create table TableOne(k1 string primary key, v1 int);\n" +
                     "on SupportBean merge TableZero " +
-                    "  where theString = k0 when not matched " +
-                    "  then insert select theString as k0, intPrimitive as v0" +
-                    "  then insert into TableOne(k1, v1) select theString, intPrimitive;\n";
+                    "  where TheString = k0 when not matched " +
+                    "  then insert select TheString as k0, IntPrimitive as v0" +
+                    "  then insert into TableOne(k1, v1) select TheString, IntPrimitive;\n";
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -229,9 +229,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy("@name('tbl') @public create table varaggKV (k1 string primary key, v1 int)", path);
                 env.CompileDeploy(
-                    "on SupportBean as sb merge varaggKV as va where sb.theString = va.k1 " +
-                    "when not matched then insert select theString as k1, intPrimitive as v1 " +
-                    "when matched then update set v1 = intPrimitive",
+                    "on SupportBean as sb merge varaggKV as va where sb.TheString = va.k1 " +
+                    "when not matched then insert select TheString as k1, IntPrimitive as v1 " +
+                    "when matched then update set v1 = IntPrimitive",
                     path);
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -270,10 +270,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy("@public create table varaggMMR (keyOne string primary key, cnt count(*))", path);
                 env.CompileDeploy(
                     "into table varaggMMR select count(*) as cnt " +
-                    "from SupportBean#lastevent group by theString",
+                    "from SupportBean#lastevent group by TheString",
                     path);
 
-                env.CompileDeploy("@name('s0') select varaggMMR[p00].keyOne as c0 from SupportBean_S0", path)
+                env.CompileDeploy("@name('s0') select varaggMMR[P00].keyOne as c0 from SupportBean_S0", path)
                     .AddListener("s0");
                 env.CompileDeploy("on SupportBean_S1 merge varaggMMR where cnt = 0 when matched then delete", path);
 
@@ -302,15 +302,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create table varaggMS (eventset window(*) @type(SupportBean), total sum(int))",
+"@public create table varaggMS (eventset window(*) @type(SupportBean), Total sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table varaggMS select window(*) as eventset, " +
-                    "sum(intPrimitive) as total from SupportBean#length(2)",
+"sum(IntPrimitive) as Total from SupportBean#length(2)",
                     path);
                 env.CompileDeploy(
                     "@public on SupportBean_S0 merge varaggMS " +
-                    "when matched then insert into ResultStream select eventset, total, eventset.takeLast(1) as c0",
+"when matched then insert into ResultStream select eventset, Total, eventset.takeLast(1) as c0",
                     path);
                 env.CompileDeploy("@name('s0') select * from ResultStream", path).AddListener("s0");
 
@@ -385,10 +385,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             // create merge
             var eplMerge = "on SupportBean merge varaggIUD" +
                            " when not matched then" +
-                           " insert select theString as p0" +
-                           " when matched and theString like \"U%\" then" +
+                           " insert select TheString as p0" +
+                           " when matched and TheString like \"U%\" then" +
                            " update set p0=\"updated\"" +
-                           " when matched and theString like \"D%\" then" +
+                           " when matched and TheString like \"D%\" then" +
                            " delete";
             env.CompileDeploy(soda, eplMerge, path);
 
@@ -448,7 +448,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var fields = "c0,c1,c2,c3".SplitCsv();
             var eplRead =
-                "@name('s0') select varaggMIU[id].p0 as c0, varaggMIU[id].p1 as c1, varaggMIU[id].p2 as c2, varaggMIU[id].sumint as c3 from SupportBean_S0";
+                "@name('s0') select varaggMIU[id].p0 as c0, varaggMIU[id].p1 as c1, varaggMIU[id].p2 as c2, varaggMIU[Id].sumint as c3 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
 
             // assert selected column types
@@ -470,12 +470,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // create merge
             var eplMerge = "@name('merge') on SupportBean merge varaggMIU" +
-                           " where intPrimitive=key" +
+                           " where IntPrimitive=key" +
                            " when not matched then" +
-                           " insert select intPrimitive as key, \"v1\" as p0, 1000 as p1, new object[] {1,2} as p2" +
-                           " when matched and theString like \"U%\" then" +
+                           " insert select IntPrimitive as key, \"v1\" as p0, 1000 as p1, new object[] {1,2} as p2" +
+                           " when matched and TheString like \"U%\" then" +
                            " update set p0=\"v2\", p1=2000, p2={3,4}" +
-                           " when matched and theString like \"D%\" then" +
+                           " when matched and TheString like \"D%\" then" +
                            " delete";
             env.CompileDeploy(soda, eplMerge, path).AddListener("merge");
 
@@ -490,7 +490,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             // also aggregate-into the same key
             env.CompileDeploy(
                 soda,
-                "into table varaggMIU select sum(50) as sumint from SupportBean_S1 group by id",
+                "into table varaggMIU select sum(50) as sumint from SupportBean_S1 group by Id",
                 path);
             env.SendEventBean(new SupportBean_S1(10));
 
@@ -536,7 +536,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var fields = "c0,c1,c2".SplitCsv();
             var eplRead =
-                "@name('s0') select varaggMIUD[id,p00].keyOne as c0, varaggMIUD[id,p00].keyTwo as c1, varaggMIUD[id,p00].prop as c2 from SupportBean_S0";
+                "@name('s0') select varaggMIUD[id,P00].keyOne as c0, varaggMIUD[id,P00].keyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
 
             // assert selected column types
@@ -558,12 +558,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // create merge
             var eplMerge = "@name('merge') on SupportBean merge varaggMIUD" +
-                           " where intPrimitive=keyOne and theString=keyTwo" +
+                           " where IntPrimitive=keyOne and TheString=keyTwo" +
                            " when not matched then" +
-                           " insert select intPrimitive as keyOne, theString as keyTwo, \"inserted\" as prop" +
-                           " when matched and longPrimitive>0 then" +
+                           " insert select IntPrimitive as keyOne, TheString as keyTwo, \"inserted\" as prop" +
+                           " when matched and LongPrimitive>0 then" +
                            " update set prop=\"updated\"" +
-                           " when matched and longPrimitive<0 then" +
+                           " when matched and LongPrimitive<0 then" +
                            " delete";
             env.CompileDeploy(soda, eplMerge, path);
             var expectedType = new object[][] {
@@ -621,7 +621,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             double? expected)
         {
             IDictionary<string, object> @event = new Dictionary<string, object>();
-            @event.Put("id", id);
+            @event.Put("Id", id);
             @event.Put("x", x);
             env.SendEventMap(@event, "MyEvent");
             env.AssertEventNew(
@@ -652,7 +652,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[] objects,
             int total)
         {
-            var fields = "eventset,total".SplitCsv();
+            var fields = "eventset,Total".SplitCsv();
             env.SendEventBean(new SupportBean_S0(0));
             env.AssertEventNew(
                 "s0",

@@ -230,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                           "    return parseFloat(stringvalue);\n" +
                           "  }\n" +
                           "]\n" +
-                          "select myJSFunc((select theString from SupportBean#lastevent)) as c0 from SupportBean_S0";
+                          "select myJSFunc((select TheString from SupportBean#lastevent)) as c0 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
                 AssertStatelessStmt(env, "s0", false);
 
@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 RunAssertionScriptReturningEvents(env, true);
 
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema ItemEvent(id string)", path);
+                env.CompileDeploy("create schema ItemEvent(Id string)", path);
                 env.TryInvalidCompile(
                     path,
                     "expression double @type(ItemEvent) fib(num) [] select fib(1) from SupportBean",
@@ -295,7 +295,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                       "  return fib(n-1) + fib(n-2); " +
                       "};" +
                       "]" +
-                      "select fib(intPrimitive) from SupportBean";
+                      "select fib(IntPrimitive) from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.UndeployAll();
@@ -650,7 +650,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                     env,
                     path,
                     "expression double js:abc(num) [ " + expression + " ]",
-                    "abc(intPrimitive)",
+                    "abc(IntPrimitive)",
                     typeof(double?),
                     testData);
                 path.Clear();
@@ -663,7 +663,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                     env,
                     path,
                     "expression js:abc(myint) [ myint * 10 ]",
-                    "abc(intPrimitive)",
+                    "abc(IntPrimitive)",
                     typeof(object),
                     testData);
                 path.Clear();
@@ -690,12 +690,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                     env,
                     path,
                     "expression mvel:abc(myint) [ myint * 10 ]",
-                    "abc(intPrimitive)",
+                    "abc(IntPrimitive)",
                     typeof(int?),
                     testData);
                 path.Clear();
 
-                expression = "if (theString.equals('E1')) " +
+                expression = "if (TheString.equals('E1')) " +
                              "  return myint * 10;" +
                              "else " +
                              "  return myint * 5;";
@@ -707,8 +707,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 TrySelect(
                     env,
                     path,
-                    "expression mvel:abc(myint, theString) [" + expression + "]",
-                    "abc(intPrimitive, theString)",
+                    "expression mvel:abc(myint, TheString) [" + expression + "]",
+                    "abc(IntPrimitive, TheString)",
                     typeof(object),
                     testData);
                 path.Clear();
@@ -716,8 +716,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 TrySelect(
                     env,
                     path,
-                    "expression int mvel:abc(myint, theString) [" + expression + "]",
-                    "abc(intPrimitive, theString)",
+                    "expression int mvel:abc(myint, TheString) [" + expression + "]",
+                    "abc(IntPrimitive, TheString)",
                     typeof(int?),
                     testData);
                 path.Clear();
@@ -732,7 +732,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                     env,
                     path,
                     "expression mvel:abc(a, b) [" + expression + "]",
-                    "abc(theString, intPrimitive)",
+                    "abc(TheString, IntPrimitive)",
                     typeof(string),
                     testData);
             }
@@ -743,7 +743,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             bool soda)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@name('type') @public create schema ItemEvent(id string)", path);
+            env.CompileDeploy("@name('type') @public create schema ItemEvent(Id string)", path);
 
             var script =
                 "@name('script') @public create expression EventBean[] @type(ItemEvent) js:myScriptReturnsEvents() [\n" +
@@ -751,9 +751,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 "function myScriptReturnsEvents() {" +
                 "  var EventBeanArray = Java.type(\"com.espertech.esper.common.client.EventBean[]\");\n" +
                 "  var events = new EventBeanArray(3);\n" +
-                "  events[0] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"id\", \"id1\"), \"ItemEvent\");\n" +
-                "  events[1] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"id\", \"id2\"), \"ItemEvent\");\n" +
-                "  events[2] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"id\", \"id3\"), \"ItemEvent\");\n" +
+                "  events[0] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"Id\", \"id1\"), \"ItemEvent\");\n" +
+                "  events[1] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"Id\", \"id2\"), \"ItemEvent\");\n" +
+                "  events[2] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"Id\", \"id3\"), \"ItemEvent\");\n" +
                 "  return events;\n" +
                 "}]";
             env.CompileDeploy(soda, script, path);
@@ -767,7 +767,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 });
 
             env.CompileDeploy(
-                "@name('s0') select myScriptReturnsEvents().where(v => v.id in ('id1', 'id3')) as c0 from SupportBean",
+                "@name('s0') select myScriptReturnsEvents().where(v => v.Id in ('id1', 'id3')) as c0 from SupportBean",
                 path);
             env.AddListener("s0");
 
@@ -778,7 +778,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                     var coll = (ICollection<IDictionary<string, object>>)@event.Get("c0");
                     EPAssertionUtil.AssertPropsPerRow(
                         coll.ToArray(),
-                        "id".SplitCsv(),
+                        "Id".SplitCsv(),
                         new object[][] { new object[] { "id1" }, new object[] { "id3" } });
                 });
 
@@ -821,7 +821,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 "  epl.setScriptAttribute('flag', flagValue);" +
                 "  flagValue;" +
                 "]" +
-                "select getFlag() as val from SupportBean(theString = 'E1' or setFlag(intPrimitive > 0))");
+                "select getFlag() as val from SupportBean(TheString = 'E1' or setFlag(IntPrimitive > 0))");
             env.AddListener("s0");
 
             env.SendEventBean(new SupportBean("E2", 10));
@@ -845,14 +845,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 new object[] { new SupportBean("E1", 20), 120L },
                 new object[] { new SupportBean("E1", 10), 110L },
             };
-            TrySelect(env, path, expression, "thresholdAdder(intPrimitive, THRESHOLD)", typeof(long?), testData);
+            TrySelect(env, path, expression, "thresholdAdder(IntPrimitive, THRESHOLD)", typeof(long?), testData);
 
             env.RuntimeSetVariable("var", "THRESHOLD", 1);
             testData = new object[][] {
                 new object[] { new SupportBean("E1", 20), 21L },
                 new object[] { new SupportBean("E1", 10), 11L },
             };
-            TrySelect(env, path, expression, "thresholdAdder(intPrimitive, THRESHOLD)", typeof(long?), testData);
+            TrySelect(env, path, expression, "thresholdAdder(IntPrimitive, THRESHOLD)", typeof(long?), testData);
 
             env.UndeployAll();
         }
@@ -896,7 +896,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean());
             env.AssertPropsNew(
                 "s0",
-                "val0.theString,val0.intPrimitive,val1".SplitCsv(),
+                "val0.TheString,val0.IntPrimitive,val1".SplitCsv(),
                 new object[] { "E1", 10, "E1" });
 
             env.UndeployAll();
@@ -1023,7 +1023,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventBean(new SupportBean());
-            env.AssertPropsNew("s0", "val0.p00".SplitCsv(), new object[] { MyImportedClass.VALUE_P00 });
+            env.AssertPropsNew("s0", "val0.P00".SplitCsv(), new object[] { MyImportedClass.VALUE_P00 });
 
             env.UndeployAll();
         }
@@ -1108,7 +1108,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             var path = new RegressionPath();
             env.CompileDeploy("@public create expression change(open, close) [ (open - close) / close ]", path);
             env.CompileDeploy(
-                    "@name('s0') select change(first(intPrimitive), last(intPrimitive)) as ch from SupportBean#time(1 day)",
+                    "@name('s0') select change(first(IntPrimitive), last(IntPrimitive)) as ch from SupportBean#time(1 day)",
                     path)
                 .AddListener("s0");
 

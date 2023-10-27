@@ -60,23 +60,23 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var createEpl = namedWindow
                     ? "@public create window MyInfra#keepall as select * from SupportBean"
-                    : "@public create table MyInfra (theString string primary key, intPrimitive int primary key)";
+                    : "@public create table MyInfra (TheString string primary key, IntPrimitive int primary key)";
                 if (enableIndexShareCreate) {
                     createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
                 }
 
                 env.CompileDeploy(createEpl);
-                env.CompileDeploy("insert into MyInfra select theString, intPrimitive from SupportBean");
+                env.CompileDeploy("insert into MyInfra select TheString, IntPrimitive from SupportBean");
 
                 if (createExplicitIndex) {
-                    env.CompileDeploy("@name('index') create index MyIndex on MyInfra(theString)");
+                    env.CompileDeploy("@name('index') create index MyIndex on MyInfra(TheString)");
                 }
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", -2));
 
                 var consumeEpl =
-                    "@name('consume') select (select intPrimitive from MyInfra(intPrimitive<0) sw where s0.p00=sw.theString) as val from S0 s0";
+                    "@name('consume') select (select IntPrimitive from MyInfra(IntPrimitive<0) sw where s0.P00=sw.TheString) as val from S0 s0";
                 if (disableIndexShareConsumer) {
                     consumeEpl = "@Hint('disable_window_subquery_indexshare') " + consumeEpl;
                 }

@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
                 // try pattern
                 var epl =
-                    "@name('s0') select a.theString from pattern [every a=SupportBean(theString like 'A%') -> b=SupportBean(theString like 'B%')] order by a.theString desc";
+"@name('s0') select a.TheString from pattern [every a=SupportBean(TheString like 'A%') -> b=SupportBean(TheString like 'B%')] Order by a.TheString desc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A1", 1));
@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                         Assert.AreEqual(2, received.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             received,
-                            "a.theString".SplitCsv(),
+                            "a.TheString".SplitCsv(),
                             new object[][] { new object[] { "A2" }, new object[] { "A1" } });
                     });
 
@@ -216,8 +216,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
                 // try pattern with output limit
                 epl =
-                    "@name('s0') select a.theString from pattern [every a=SupportBean(theString like 'A%') -> b=SupportBean(theString like 'B%')] " +
-                    "output every 3 events order by a.theString desc";
+                    "@name('s0') select a.TheString from pattern [every a=SupportBean(TheString like 'A%') -> b=SupportBean(TheString like 'B%')] " +
+"output every 3 events Order by a.TheString desc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A1", 1));
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                         Assert.AreEqual(3, receivedThree.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             receivedThree,
-                            "a.theString".SplitCsv(),
+                            "a.TheString".SplitCsv(),
                             new object[][] { new object[] { "A3" }, new object[] { "A2" }, new object[] { "A1" } });
                     });
 
@@ -243,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
                 // try grouped time window
                 epl =
-                    "@name('s0') select rstream theString from SupportBean#groupwin(theString)#time(10) order by theString desc";
+"@name('s0') select rstream TheString from SupportBean#groupwin(TheString)#time(10) Order by TheString desc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AdvanceTime(1000);
@@ -260,7 +260,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                         Assert.AreEqual(2, receivedTwo.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             receivedTwo,
-                            "theString".SplitCsv(),
+                            "TheString".SplitCsv(),
                             new object[][] { new object[] { "A2" }, new object[] { "A1" } });
                     });
 
@@ -273,11 +273,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select symbol, theString, price from " +
+                var epl = "@name('s0') select Symbol, TheString, Price from "+
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.theString " +
-                          "order by price";
+"where one.Symbol = two.TheString "+
+"Order by Price";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendJoinEvents(env, milestone);
@@ -290,7 +290,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 SendEvent(env, "IBM", 100);
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "symbol", "theString", "price" },
+                    new string[] { "Symbol", "TheString", "Price" },
                     new object[][] {
                         new object[] { "CAT", "CAT", 15d },
                         new object[] { "IBM", "IBM", 49d },
@@ -303,7 +303,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 SendEvent(env, "KGB", 75);
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "symbol", "theString", "price" },
+                    new string[] { "Symbol", "TheString", "Price" },
                     new object[][] {
                         new object[] { "CAT", "CAT", 15d },
                         new object[] { "IBM", "IBM", 49d },
@@ -321,12 +321,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select symbol, theString from " +
+                var epl = "@name('s0') select Symbol, TheString from "+
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                           "output every 6 events " +
-                          "order by price";
+"Order by Price";
                 var spv = new SymbolPricesVolumes();
                 CreateAndSend(env, epl, milestone);
 
@@ -334,22 +334,22 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceJoin(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.symbols, "theString");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "theString" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.symbols, "TheString");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "TheString" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol from " +
+                epl = "@name('s0') select Symbol from "+
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by theString, price";
+"Order by TheString, Price";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesBySymbolPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol"}));
                 ClearValuesDropStmt(env, spv);
 
                 env.UndeployAll();
@@ -360,17 +360,17 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "select symbol from " +
+                var stmtText = "select Symbol from "+
                                "SupportMarketDataBean#length(5) " +
                                "output every 6 events " +
-                               "order by price desc";
+"Order by Price desc";
 
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create("symbol");
+                model.SelectClause = SelectClause.Create("Symbol");
                 model.FromClause = FromClause.Create(
                     FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(5)));
                 model.OutputLimitClause = OutputLimitClause.Create(6);
-                model.OrderByClause = OrderByClause.Create().Add("price", true);
+                model.OrderByClause = OrderByClause.Create().Add("Price", true);
                 model = env.CopyMayFail(model);
                 Assert.AreEqual(stmtText, model.ToEPL());
 
@@ -392,7 +392,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 
                 var spv = new SymbolPricesVolumes();
                 OrderValuesByPriceDesc(spv);
-                AssertValues(env, spv.symbols, "symbol");
+                AssertValues(env, spv.symbols, "Symbol");
 
                 env.UndeployAll();
             }
@@ -403,66 +403,66 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select symbol from " +
+                var epl = "@name('s0') select Symbol from "+
                           "SupportMarketDataBean#length(5) " +
                           "output every 6 events " +
-                          "order by price desc";
+"Order by Price desc";
                 CreateAndSend(env, epl, milestone);
                 var spv = new SymbolPricesVolumes();
                 OrderValuesByPriceDesc(spv);
-                AssertValues(env, spv.symbols, "symbol");
+                AssertValues(env, spv.symbols, "Symbol");
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol from " +
+                epl = "@name('s0') select Symbol from "+
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by price desc, symbol asc";
+"Order by Price desc, Symbol asc";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
                 spv.symbols.Reverse();
-                AssertValues(env, spv.symbols, "symbol");
+                AssertValues(env, spv.symbols, "Symbol");
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol from " +
+                epl = "@name('s0') select Symbol from "+
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by price asc";
+"Order by Price asc";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
+                AssertValues(env, spv.symbols, "Symbol");
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, volume from " +
+                epl = "@name('s0') select Symbol, Volume from "+
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by symbol desc";
+"Order by Symbol desc";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbol(spv);
                 spv.symbols.Reverse();
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.volumes, "volume");
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.volumes, "Volume");
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, price from " +
+                epl = "@name('s0') select Symbol, Price from "+
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by symbol desc, price desc";
+"Order by Symbol desc, Price desc";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbolPrice(spv);
                 spv.symbols.Reverse();
                 spv.prices.Reverse();
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.prices, "price");
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.prices, "Price");
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, price from " +
+                epl = "@name('s0') select Symbol, Price from "+
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by symbol, price";
+"Order by Symbol, Price";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbolPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.prices, "price");
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.prices, "Price");
                 ClearValuesDropStmt(env, spv);
             }
         }
@@ -472,45 +472,45 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select symbol from " +
+                var epl = "@name('s0') select Symbol from "+
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
-                          "order by (price * 6) + 5";
+"Order by (Price * 6) + 5";
                 CreateAndSend(env, epl, milestone);
                 var spv = new SymbolPricesVolumes();
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol"}));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, price from " +
+                epl = "@name('s0') select Symbol, Price from "+
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
-                      "order by (price * 6) + 5, price";
+"Order by (Price * 6) + 5, Price";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "price" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Price" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, 1+volume*23 from " +
+                epl = "@name('s0') select Symbol, 1+Volume*23 from "+
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
-                      "order by (price * 6) + 5, price, volume";
+"Order by (Price * 6) + 5, Price, Volume";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "1+volume*23" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "1+Volume*23" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol from " +
+                epl = "@name('s0') select Symbol from "+
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
-                      "order by volume*price, symbol";
+"Order by Volume*Price, Symbol";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbol(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol"}));
                 ClearValuesDropStmt(env, spv);
             }
         }
@@ -520,10 +520,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select symbol as mySymbol from " +
+                var epl = "@name('s0') select Symbol as mySymbol from "+
                           "SupportMarketDataBean#length(5) " +
                           "output every 6 events " +
-                          "order by mySymbol";
+"Order by mySymbol";
                 var listener = new SupportUpdateListener();
                 CreateAndSend(env, epl, milestone);
                 var spv = new SymbolPricesVolumes();
@@ -532,10 +532,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList(new string[] { "mySymbol" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol as mySymbol, price as myPrice from " +
+                epl = "@name('s0') select Symbol as mySymbol, Price as myPrice from "+
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by myPrice";
+"Order by myPrice";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
                 AssertValues(env, spv.symbols, "mySymbol");
@@ -543,24 +543,24 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList(new string[] { "mySymbol", "myPrice" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, price as myPrice from " +
+                epl = "@name('s0') select Symbol, Price as myPrice from "+
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
-                      "order by (myPrice * 6) + 5, price";
+"Order by (myPrice * 6) + 5, Price";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "myPrice" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "myPrice" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, 1+volume*23 as myVol from " +
+                epl = "@name('s0') select Symbol, 1+Volume*23 as myVol from "+
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
-                      "order by (price * 6) + 5, price, myVol";
+"Order by (Price * 6) + 5, Price, myVol";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "myVol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "myVol" }));
                 ClearValuesDropStmt(env, spv);
             }
         }
@@ -570,57 +570,57 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select symbol from " +
+                var epl = "@name('s0') select Symbol from "+
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                           "output every 6 events " +
-                          "order by (price * 6) + 5";
+"Order by (Price * 6) + 5";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 var spv = new SymbolPricesVolumes();
                 OrderValuesByPriceJoin(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol"}));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, price from " +
+                epl = "@name('s0') select Symbol, Price from "+
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by (price * 6) + 5, price";
+"Order by (Price * 6) + 5, Price";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceJoin(spv);
-                AssertValues(env, spv.prices, "price");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "price" }));
+                AssertValues(env, spv.prices, "Price");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Price" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, 1+volume*23 from " +
+                epl = "@name('s0') select Symbol, 1+Volume*23 from "+
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by (price * 6) + 5, price, volume";
+"Order by (Price * 6) + 5, Price, Volume";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceJoin(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "1+volume*23" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "1+Volume*23" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol from " +
+                epl = "@name('s0') select Symbol from "+
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by volume*price, symbol";
+"Order by Volume*Price, Symbol";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesBySymbol(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol"}));
                 ClearValuesDropStmt(env, spv);
             }
         }
@@ -629,47 +629,47 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var message = "Aggregate functions in the order-by clause must also occur in the select expression";
-                var epl = "@name('s0') select symbol from " +
+                var message = "Aggregate functions in the Order-by clause must also occur in the select expression";
+                var epl = "@name('s0') select Symbol from "+
                           "SupportMarketDataBean#length(5) " +
                           "output every 6 events " +
-                          "order by sum(price)";
+"Order by sum(Price)";
                 env.TryInvalidCompile(epl, message);
 
-                epl = "@name('s0') select sum(price) from " +
+                epl = "@name('s0') select sum(Price) from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by sum(price + 6)";
+"Order by sum(Price + 6)";
                 env.TryInvalidCompile(epl, message);
 
-                epl = "@name('s0') select sum(price + 6) from " +
+                epl = "@name('s0') select sum(Price + 6) from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by sum(price)";
+"Order by sum(Price)";
                 env.TryInvalidCompile(epl, message);
 
-                epl = "@name('s0') select symbol from " +
+                epl = "@name('s0') select Symbol from "+
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by sum(price)";
+"Order by sum(Price)";
                 env.TryInvalidCompile(epl, message);
 
-                epl = "@name('s0') select sum(price) from " +
+                epl = "@name('s0') select sum(Price) from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by sum(price + 6)";
+"Order by sum(Price + 6)";
                 env.TryInvalidCompile(epl, message);
 
-                epl = "@name('s0') select sum(price + 6) from " +
+                epl = "@name('s0') select sum(Price + 6) from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by sum(price)";
+"Order by sum(Price)";
                 env.TryInvalidCompile(epl, message);
             }
         }
@@ -679,35 +679,35 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select symbol from " +
+                var epl = "@name('s0') select Symbol from "+
                           "SupportMarketDataBean#length(10) " +
                           "output every 6 events " +
-                          "order by symbol, price";
+"Order by Symbol, Price";
                 CreateAndSend(env, epl, milestone);
                 var spv = new SymbolPricesVolumes();
                 OrderValuesBySymbolPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol"}));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol from " +
+                epl = "@name('s0') select Symbol from "+
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
-                      "order by price, symbol, volume";
+"Order by Price, Symbol, Volume";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPriceSymbol(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol"}));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, volume*2 from " +
+                epl = "@name('s0') select Symbol, Volume*2 from "+
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
-                      "order by price, volume";
+"Order by Price, Volume";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "volume*2" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Volume*2" }));
                 ClearValuesDropStmt(env, spv);
             }
         }
@@ -717,10 +717,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select symbol as mySymbol from " +
+                var epl = "@name('s0') select Symbol as mySymbol from "+
                           "SupportMarketDataBean#length(5) " +
                           "output every 6 events " +
-                          "order by mySymbol";
+"Order by mySymbol";
                 CreateAndSend(env, epl, milestone);
                 var spv = new SymbolPricesVolumes();
                 OrderValuesBySymbol(spv);
@@ -728,10 +728,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList(new string[] { "mySymbol" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol as mySymbol, price as myPrice from " +
+                epl = "@name('s0') select Symbol as mySymbol, Price as myPrice from "+
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by myPrice";
+"Order by myPrice";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
                 AssertValues(env, spv.symbols, "mySymbol");
@@ -739,29 +739,29 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 AssertOnlyProperties(env, Arrays.AsList(new string[] { "mySymbol", "myPrice" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, price as myPrice from " +
+                epl = "@name('s0') select Symbol, Price as myPrice from "+
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
-                      "order by (myPrice * 6) + 5, price";
+"Order by (myPrice * 6) + 5, Price";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "myPrice" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "myPrice" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, 1+volume*23 as myVol from " +
+                epl = "@name('s0') select Symbol, 1+Volume*23 as myVol from "+
                       "SupportMarketDataBean#length(10) " +
                       "output every 6 events " +
-                      "order by (price * 6) + 5, price, myVol";
+"Order by (Price * 6) + 5, Price, myVol";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "myVol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "myVol" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol as mySymbol from " +
+                epl = "@name('s0') select Symbol as mySymbol from "+
                       "SupportMarketDataBean#length(5) " +
-                      "order by price, mySymbol";
+"Order by Price, mySymbol";
                 CreateAndSend(env, epl, milestone);
                 spv.symbols.Add("CAT");
                 AssertValues(env, spv.symbols, "mySymbol");
@@ -778,44 +778,44 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select symbol from " +
+                var epl = "@name('s0') select Symbol from "+
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                           "output every 6 events " +
-                          "order by symbol, price";
+"Order by Symbol, Price";
                 var spv = new SymbolPricesVolumes();
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesBySymbolPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol"}));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol from " +
+                epl = "@name('s0') select Symbol from "+
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by price, symbol, volume";
+"Order by Price, Symbol, Volume";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceSymbol(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol"}));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, volume*2 from " +
+                epl = "@name('s0') select Symbol, Volume*2 from "+
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by price, volume";
+"Order by Price, Volume";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceJoin(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "volume*2" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Volume*2" }));
                 ClearValuesDropStmt(env, spv);
             }
         }
@@ -825,69 +825,69 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select symbol from " +
+                var epl = "@name('s0') select Symbol from "+
                           "SupportMarketDataBean#length(5) " +
                           "output every 6 events " +
-                          "order by price";
+"Order by Price";
                 var spv = new SymbolPricesVolumes();
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol"}));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, price from " +
+                epl = "@name('s0') select Symbol, Price from "+
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by price";
+"Order by Price";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.prices, "price");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "price" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.prices, "Price");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Price" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, volume from " +
+                epl = "@name('s0') select Symbol, Volume from "+
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by price";
+"Order by Price";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.volumes, "volume");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "volume" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.volumes, "Volume");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Volume" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, volume*2 from " +
+                epl = "@name('s0') select Symbol, Volume*2 from "+
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by price";
+"Order by Price";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.volumes, "volume*2");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "volume*2" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.volumes, "Volume*2");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Volume*2" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, volume from " +
+                epl = "@name('s0') select Symbol, Volume from "+
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by symbol";
+"Order by Symbol";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbol(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.volumes, "volume");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "volume" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.volumes, "Volume");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Volume" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select price from " +
+                epl = "@name('s0') select Price from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by symbol";
+"Order by Symbol";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbol(spv);
-                AssertValues(env, spv.prices, "price");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "price" }));
+                AssertValues(env, spv.prices, "Price");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Price" }));
                 ClearValuesDropStmt(env, spv);
             }
         }
@@ -897,87 +897,87 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select symbol from " +
+                var epl = "@name('s0') select Symbol from "+
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                           "output every 6 events " +
-                          "order by price";
+"Order by Price";
                 var spv = new SymbolPricesVolumes();
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceJoin(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol"}));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, price from " +
+                epl = "@name('s0') select Symbol, Price from "+
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by price";
+"Order by Price";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceJoin(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.prices, "price");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "price" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.prices, "Price");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Price" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, volume from " +
+                epl = "@name('s0') select Symbol, Volume from "+
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by price";
+"Order by Price";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceJoin(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.volumes, "volume");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "volume" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.volumes, "Volume");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Volume" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, volume*2 from " +
+                epl = "@name('s0') select Symbol, Volume*2 from "+
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by price";
+"Order by Price";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceJoin(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.volumes, "volume*2");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "volume*2" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.volumes, "Volume*2");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Volume*2" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select symbol, volume from " +
+                epl = "@name('s0') select Symbol, Volume from "+
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by symbol";
+"Order by Symbol";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesBySymbol(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.volumes, "volume");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "volume" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.volumes, "Volume");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Volume" }));
                 ClearValuesDropStmt(env, spv);
 
-                epl = "@name('s0') select price from " +
+                epl = "@name('s0') select Price from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by symbol, price";
+"Order by Symbol, Price";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesBySymbolJoin(spv);
-                AssertValues(env, spv.prices, "price");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "price" }));
+                AssertValues(env, spv.prices, "Price");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Price" }));
                 ClearValuesDropStmt(env, spv);
             }
         }
@@ -990,26 +990,26 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 var epl = "@name('s0') select * from " +
                           "SupportMarketDataBean#length(5) " +
                           "output every 6 events " +
-                          "order by price";
+"Order by Price";
                 CreateAndSend(env, epl, milestone);
                 var spv = new SymbolPricesVolumes();
                 OrderValuesByPrice(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.prices, "price");
-                AssertValues(env, spv.volumes, "volume");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "id", "volume", "price", "feed" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.prices, "Price");
+                AssertValues(env, spv.volumes, "Volume");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Id", "Volume", "Price", "Feed"}));
                 ClearValuesDropStmt(env, spv);
 
                 epl = "@name('s0') select * from " +
                       "SupportMarketDataBean#length(5) " +
                       "output every 6 events " +
-                      "order by symbol";
+"Order by Symbol";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesBySymbol(spv);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertValues(env, spv.prices, "price");
-                AssertValues(env, spv.volumes, "volume");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol", "volume", "price", "feed", "id" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertValues(env, spv.prices, "Price");
+                AssertValues(env, spv.volumes, "Volume");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol", "Volume", "Price", "Feed", "Id" }));
                 ClearValuesDropStmt(env, spv);
             }
         }
@@ -1022,9 +1022,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 var epl = "@name('s0') select * from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                           "output every 6 events " +
-                          "order by price";
+"Order by Price";
                 var spv = new SymbolPricesVolumes();
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
@@ -1035,9 +1035,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 epl = "@name('s0') select * from " +
                       "SupportMarketDataBean#length(10) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
+"where one.Symbol = two.TheString "+
                       "output every 6 events " +
-                      "order by symbol, price";
+"Order by Symbol, Price";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesBySymbolJoin(spv);
@@ -1052,30 +1052,30 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             {
                 var milestone = new AtomicLong();
                 var spv = new SymbolPricesVolumes();
-                var epl = "@name('s0') select symbol from " +
+                var epl = "@name('s0') select Symbol from "+
                           "SupportMarketDataBean#length(5) " +
-                          "order by price";
+"Order by Price";
                 var listener = new SupportUpdateListener();
                 CreateAndSend(env, epl, milestone);
                 spv.symbols.Add("CAT");
-                AssertValues(env, spv.symbols, "symbol");
+                AssertValues(env, spv.symbols, "Symbol");
                 ClearValues(spv);
                 SendEvent(env, "FOX", 10);
                 spv.symbols.Add("FOX");
-                AssertValues(env, spv.symbols, "symbol");
+                AssertValues(env, spv.symbols, "Symbol");
                 ClearValuesDropStmt(env, spv);
 
                 // Set start time
                 SendTimeEvent(env, 0);
 
-                epl = "@name('s0') select symbol from " +
+                epl = "@name('s0') select Symbol from "+
                       "SupportMarketDataBean#time_batch(1 sec) " +
-                      "order by price";
+"Order by Price";
                 CreateAndSend(env, epl, milestone);
                 OrderValuesByPrice(spv);
                 SendTimeEvent(env, 1000);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol"}));
                 ClearValuesDropStmt(env, spv);
             }
         }
@@ -1085,37 +1085,37 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select symbol from " +
+                var epl = "@name('s0') select Symbol from "+
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.theString " +
-                          "order by price";
+"where one.Symbol = two.TheString "+
+"Order by Price";
                 var spv = new SymbolPricesVolumes();
                 var listener = new SupportUpdateListener();
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 spv.symbols.Add("KGB");
-                AssertValues(env, spv.symbols, "symbol");
+                AssertValues(env, spv.symbols, "Symbol");
                 ClearValues(spv);
                 SendEvent(env, "DOG", 10);
                 spv.symbols.Add("DOG");
-                AssertValues(env, spv.symbols, "symbol");
+                AssertValues(env, spv.symbols, "Symbol");
                 ClearValuesDropStmt(env, spv);
 
                 // Set start time
                 SendTimeEvent(env, 0);
 
-                epl = "@name('s0') select symbol from " +
+                epl = "@name('s0') select Symbol from "+
                       "SupportMarketDataBean#time_batch(1) as one, " +
                       "SupportBeanString#length(100) as two " +
-                      "where one.symbol = two.theString " +
-                      "order by price, symbol";
+"where one.Symbol = two.TheString "+
+"Order by Price, Symbol";
                 CreateAndSend(env, epl, milestone);
                 SendJoinEvents(env, milestone);
                 OrderValuesByPriceJoin(spv);
                 SendTimeEvent(env, 1000);
-                AssertValues(env, spv.symbols, "symbol");
-                AssertOnlyProperties(env, Arrays.AsList(new string[] { "symbol" }));
+                AssertValues(env, spv.symbols, "Symbol");
+                AssertOnlyProperties(env, Arrays.AsList(new string[] { "Symbol"}));
                 ClearValuesDropStmt(env, spv);
             }
         }

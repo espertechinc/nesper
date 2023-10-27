@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                     "key",
                     ExprDotMethod(
                         future,
-                        "getGroupKey",
+                        "GetGroupKey",
                         ExprDotName(symbol.GetAddExprEvalCtx(method), "AgentInstanceId")));
 
             method.Block.IfCondition(InstanceOf(Ref("key"), typeof(MultiKey)))
@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                 .BlockReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
                         returnType,
-                        ExprDotMethod(Ref("mk"), "getKey", Constant(groupKeyIndex))));
+                        ExprDotMethod(Ref("mk"), "GetKey", Constant(groupKeyIndex))));
 
             method.Block.IfCondition(InstanceOf(Ref("key"), typeof(MultiKeyArrayWrap)))
                 .DeclareVar<MultiKeyArrayWrap>("mk", Cast(typeof(MultiKeyArrayWrap), Ref("key")))

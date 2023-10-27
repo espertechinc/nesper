@@ -21,15 +21,15 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
 {
     public class FAFQueryInformationals
     {
-        private readonly Type[] substitutionParamsTypes;
-        private readonly IDictionary<string, int> substitutionParamsNames;
+        private readonly Type[] _substitutionParamsTypes;
+        private readonly IDictionary<string, int> _substitutionParamsNames;
 
         public FAFQueryInformationals(
             Type[] substitutionParamsTypes,
             IDictionary<string, int> substitutionParamsNames)
         {
-            this.substitutionParamsTypes = substitutionParamsTypes;
-            this.substitutionParamsNames = substitutionParamsNames;
+            this._substitutionParamsTypes = substitutionParamsTypes;
+            this._substitutionParamsNames = substitutionParamsNames;
         }
 
         public static FAFQueryInformationals From(
@@ -64,17 +64,36 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             return new FAFQueryInformationals(types, names);
         }
 
-        public Type[] SubstitutionParamsTypes => substitutionParamsTypes;
+        public Type[] SubstitutionParamsTypes => _substitutionParamsTypes;
 
-        public IDictionary<string, int> SubstitutionParamsNames => substitutionParamsNames;
+        public IDictionary<string, int> SubstitutionParamsNames => _substitutionParamsNames;
 
+        public void Make(
+            CodegenBlock block,
+            CodegenClassScope classScope)
+        {
+            if (SubstitutionParamsNames == null) {
+                block.DeclareVar<IDictionary<string, int>>("names", ConstantNull());
+            }
+            else {
+                block.DeclareVar<IDictionary<string, int>>("names", NewInstance<Dictionary<string, int>>());
+                foreach (var entry in SubstitutionParamsNames) {
+                    block.AssignArrayElement("names", Constant(entry.Key), Constant(entry.Value));
+                }
+            }
+
+            block.BlockReturn(
+                NewInstance<FAFQueryInformationals>(
+                    Constant(SubstitutionParamsTypes),
+                    Ref("names")));
+        }
+        
         public CodegenExpression Make(
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            return NewInstance(
-                typeof(FAFQueryInformationals),
-                Constant(substitutionParamsTypes),
+            return NewInstance<FAFQueryInformationals>(
+                Constant(_substitutionParamsTypes),
                 MakeNames(parent, classScope));
         }
 
@@ -82,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             CodegenMethodScope parent,
             CodegenClassScope classScope)
         {
-            if (substitutionParamsNames == null) {
+            if (_substitutionParamsNames == null) {
                 return ConstantNull();
             }
 
@@ -93,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 NewInstance(
                     typeof(Dictionary<string, int>)));
 
-            new CodegenRepetitiveValueBuilder<KeyValuePair<string, int>>(substitutionParamsNames, method, classScope, GetType())
+            new CodegenRepetitiveValueBuilder<KeyValuePair<string, int>>(_substitutionParamsNames, method, classScope, GetType())
                 .AddParam(typeof(IDictionary<string, int>), "names")
                 .SetConsumer(
                     (

@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select sb[1].intPrimitive as c0 from pattern[every [2] sb=SupportBean -> SupportBean_A(id like sb[1].theString)]";
+                    "@name('s0') select sb[1].IntPrimitive as c0 from pattern[every [2] sb=SupportBean -> SupportBean_A(Id like sb[1].TheString)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 6; i++) {
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select sb.intPrimitive as c0 from pattern[every sb=SupportBean -> SupportBean_A(id like sb.theString)]";
+                    "@name('s0') select sb.IntPrimitive as c0 from pattern[every sb=SupportBean -> SupportBean_A(Id like sb.TheString)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 10; i++) {
@@ -191,10 +191,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 // UEJ-229-28464 bug fix for type reuse for dissimilar types
-                var epl = "@public @buseventtype create objectarray schema TypeOne(symbol string, price double);\n" +
-                          "@public @buseventtype create objectarray schema TypeTwo(symbol string, market string, price double);\n" +
+                var epl = "@public @buseventtype create objectarray schema TypeOne(Symbol string, Price double);\n"+
+"@public @buseventtype create objectarray schema TypeTwo(Symbol string, market string, Price double);\n"+
                           "\n" +
-                          "@name('Out2') select a[0].symbol from pattern [ [2] a=TypeOne ]\n;" +
+"@name('Out2') select a[0].Symbol from pattern [ [2] a=TypeOne ]\n;"+
                           "@name('Out3') select a[0].market from pattern [ [2] a=TypeTwo ];";
                 env.CompileDeploy(epl, new RegressionPath());
 
@@ -224,54 +224,54 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 EventExpressionCase testCase;
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N -> nb=SupportBean_N(doublePrimitive = na.doublePrimitive)");
+                    "na=SupportBean_N -> nb=SupportBean_N(DoublePrimitive = na.DoublePrimitive)");
                 testCase.Add("N6", "na", events.GetEvent("N1"), "nb", events.GetEvent("N6"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N(intPrimitive=87) -> nb=SupportBean_N(intPrimitive > na.intPrimitive)");
+                    "na=SupportBean_N(IntPrimitive=87) -> nb=SupportBean_N(IntPrimitive > na.IntPrimitive)");
                 testCase.Add("N8", "na", events.GetEvent("N3"), "nb", events.GetEvent("N8"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N(intPrimitive=87) -> nb=SupportBean_N(intPrimitive < na.intPrimitive)");
+                    "na=SupportBean_N(IntPrimitive=87) -> nb=SupportBean_N(IntPrimitive < na.IntPrimitive)");
                 testCase.Add("N4", "na", events.GetEvent("N3"), "nb", events.GetEvent("N4"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N(intPrimitive=66) -> every nb=SupportBean_N(intPrimitive >= na.intPrimitive)");
+                    "na=SupportBean_N(IntPrimitive=66) -> every nb=SupportBean_N(IntPrimitive >= na.IntPrimitive)");
                 testCase.Add("N3", "na", events.GetEvent("N2"), "nb", events.GetEvent("N3"));
                 testCase.Add("N4", "na", events.GetEvent("N2"), "nb", events.GetEvent("N4"));
                 testCase.Add("N8", "na", events.GetEvent("N2"), "nb", events.GetEvent("N8"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N(boolBoxed=false) -> every nb=SupportBean_N(boolPrimitive = na.boolPrimitive)");
+                    "na=SupportBean_N(BoolBoxed=false) -> every nb=SupportBean_N(BoolPrimitive = na.BoolPrimitive)");
                 testCase.Add("N4", "na", events.GetEvent("N2"), "nb", events.GetEvent("N4"));
                 testCase.Add("N5", "na", events.GetEvent("N2"), "nb", events.GetEvent("N5"));
                 testCase.Add("N8", "na", events.GetEvent("N2"), "nb", events.GetEvent("N8"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every na=SupportBean_N -> every nb=SupportBean_N(intPrimitive=na.intPrimitive)");
+                    "every na=SupportBean_N -> every nb=SupportBean_N(IntPrimitive=na.IntPrimitive)");
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every na=SupportBean_N() -> every nb=SupportBean_N(doublePrimitive=na.doublePrimitive)");
+                    "every na=SupportBean_N() -> every nb=SupportBean_N(DoublePrimitive=na.DoublePrimitive)");
                 testCase.Add("N5", "na", events.GetEvent("N2"), "nb", events.GetEvent("N5"));
                 testCase.Add("N6", "na", events.GetEvent("N1"), "nb", events.GetEvent("N6"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every na=SupportBean_N(boolBoxed=false) -> every nb=SupportBean_N(boolBoxed=na.boolBoxed)");
+                    "every na=SupportBean_N(BoolBoxed=false) -> every nb=SupportBean_N(BoolBoxed=na.BoolBoxed)");
                 testCase.Add("N5", "na", events.GetEvent("N2"), "nb", events.GetEvent("N5"));
                 testCase.Add("N8", "na", events.GetEvent("N2"), "nb", events.GetEvent("N8"));
                 testCase.Add("N8", "na", events.GetEvent("N5"), "nb", events.GetEvent("N8"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N(boolBoxed=false) -> nb=SupportBean_N(intPrimitive<na.intPrimitive)" +
-                    " -> nc=SupportBean_N(intPrimitive > nb.intPrimitive)");
+                    "na=SupportBean_N(BoolBoxed=false) -> nb=SupportBean_N(IntPrimitive<na.IntPrimitive)" +
+                    " -> nc=SupportBean_N(IntPrimitive > nb.IntPrimitive)");
                 testCase.Add(
                     "N6",
                     "na",
@@ -283,8 +283,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N(intPrimitive=86) -> nb=SupportBean_N(intPrimitive<na.intPrimitive)" +
-                    " -> nc=SupportBean_N(intPrimitive > na.intPrimitive)");
+                    "na=SupportBean_N(IntPrimitive=86) -> nb=SupportBean_N(IntPrimitive<na.IntPrimitive)" +
+                    " -> nc=SupportBean_N(IntPrimitive > na.IntPrimitive)");
                 testCase.Add(
                     "N8",
                     "na",
@@ -296,42 +296,42 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N(intPrimitive=86) -> (nb=SupportBean_N(intPrimitive<na.intPrimitive)" +
-                    " or nc=SupportBean_N(intPrimitive > na.intPrimitive))");
+                    "na=SupportBean_N(IntPrimitive=86) -> (nb=SupportBean_N(IntPrimitive<na.IntPrimitive)" +
+                    " or nc=SupportBean_N(IntPrimitive > na.IntPrimitive))");
                 testCase.Add("N5", "na", events.GetEvent("N4"), "nb", events.GetEvent("N5"), "nc", null);
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N(intPrimitive=86) -> (nb=SupportBean_N(intPrimitive>na.intPrimitive)" +
-                    " or nc=SupportBean_N(intBoxed < na.intBoxed))");
+                    "na=SupportBean_N(IntPrimitive=86) -> (nb=SupportBean_N(IntPrimitive>na.IntPrimitive)" +
+                    " or nc=SupportBean_N(IntBoxed < na.IntBoxed))");
                 testCase.Add("N8", "na", events.GetEvent("N4"), "nb", events.GetEvent("N8"), "nc", null);
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N(intPrimitive=86) -> (nb=SupportBean_N(intPrimitive>na.intPrimitive)" +
-                    " and nc=SupportBean_N(intBoxed < na.intBoxed))");
+                    "na=SupportBean_N(IntPrimitive=86) -> (nb=SupportBean_N(IntPrimitive>na.IntPrimitive)" +
+                    " and nc=SupportBean_N(IntBoxed < na.IntBoxed))");
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N() -> every nb=SupportBean_N(doublePrimitive in [0:na.doublePrimitive])");
+                    "na=SupportBean_N() -> every nb=SupportBean_N(DoublePrimitive in [0:na.DoublePrimitive])");
                 testCase.Add("N4", "na", events.GetEvent("N1"), "nb", events.GetEvent("N4"));
                 testCase.Add("N6", "na", events.GetEvent("N1"), "nb", events.GetEvent("N6"));
                 testCase.Add("N7", "na", events.GetEvent("N1"), "nb", events.GetEvent("N7"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N() -> every nb=SupportBean_N(doublePrimitive in (0:na.doublePrimitive))");
+                    "na=SupportBean_N() -> every nb=SupportBean_N(DoublePrimitive in (0:na.DoublePrimitive))");
                 testCase.Add("N4", "na", events.GetEvent("N1"), "nb", events.GetEvent("N4"));
                 testCase.Add("N7", "na", events.GetEvent("N1"), "nb", events.GetEvent("N7"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N() -> every nb=SupportBean_N(intPrimitive in (na.intPrimitive:na.doublePrimitive))");
+                    "na=SupportBean_N() -> every nb=SupportBean_N(IntPrimitive in (na.IntPrimitive:na.DoublePrimitive))");
                 testCase.Add("N7", "na", events.GetEvent("N1"), "nb", events.GetEvent("N7"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "na=SupportBean_N() -> every nb=SupportBean_N(intPrimitive in (na.intPrimitive:60))");
+                    "na=SupportBean_N() -> every nb=SupportBean_N(IntPrimitive in (na.IntPrimitive:60))");
                 testCase.Add("N6", "na", events.GetEvent("N1"), "nb", events.GetEvent("N6"));
                 testCase.Add("N7", "na", events.GetEvent("N1"), "nb", events.GetEvent("N7"));
                 testCaseList.AddTest(testCase);
@@ -349,26 +349,26 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var testCaseList = new CaseList();
                 EventExpressionCase testCase;
 
-                testCase = new EventExpressionCase("X1=SupportBean_S0() -> X2=SupportBean_S0(p00=X1.p00)");
+                testCase = new EventExpressionCase("X1=SupportBean_S0() -> X2=SupportBean_S0(P00=X1.P00)");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("X1=SupportBean_S0(p00='B') -> X2=SupportBean_S0(p00=X1.p00)");
+                testCase = new EventExpressionCase("X1=SupportBean_S0(P00='B') -> X2=SupportBean_S0(P00=X1.P00)");
                 testCase.Add("e6", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e6"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("X1=SupportBean_S0(p00='B') -> every X2=SupportBean_S0(p00=X1.p00)");
+                testCase = new EventExpressionCase("X1=SupportBean_S0(P00='B') -> every X2=SupportBean_S0(P00=X1.P00)");
                 testCase.Add("e6", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e6"));
                 testCase.Add("e11", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e11"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "every X1=SupportBean_S0(p00='B') -> every X2=SupportBean_S0(p00=X1.p00)");
+                    "every X1=SupportBean_S0(P00='B') -> every X2=SupportBean_S0(P00=X1.P00)");
                 testCase.Add("e6", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e6"));
                 testCase.Add("e11", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e11"));
                 testCase.Add("e11", "X1", events.GetEvent("e6"), "X2", events.GetEvent("e11"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("every X1=SupportBean_S0() -> X2=SupportBean_S0(p00=X1.p00)");
+                testCase = new EventExpressionCase("every X1=SupportBean_S0() -> X2=SupportBean_S0(P00=X1.P00)");
                 testCase.Add("e6", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e6"));
                 testCase.Add("e8", "X1", events.GetEvent("e3"), "X2", events.GetEvent("e8"));
                 testCase.Add("e10", "X1", events.GetEvent("e9"), "X2", events.GetEvent("e10"));
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("e12", "X1", events.GetEvent("e7"), "X2", events.GetEvent("e12"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("every X1=SupportBean_S0() -> every X2=SupportBean_S0(p00=X1.p00)");
+                testCase = new EventExpressionCase("every X1=SupportBean_S0() -> every X2=SupportBean_S0(P00=X1.P00)");
                 testCase.Add("e6", "X1", events.GetEvent("e2"), "X2", events.GetEvent("e6"));
                 testCase.Add("e8", "X1", events.GetEvent("e3"), "X2", events.GetEvent("e8"));
                 testCase.Add("e10", "X1", events.GetEvent("e9"), "X2", events.GetEvent("e10"));
@@ -395,16 +395,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var expression = "@name('s0') select * from pattern [" +
-                                 "every tradeevent1=SupportTradeEvent(userId in ('U1000','U1001','U1002') ) -> " +
-                                 "(tradeevent2=SupportTradeEvent(userId in ('U1000','U1001','U1002') and " +
-                                 "  userId != tradeevent1.userId and " +
-                                 "  ccypair = tradeevent1.ccypair and " +
-                                 "  direction = tradeevent1.direction) -> " +
-                                 " tradeevent3=SupportTradeEvent(userId in ('U1000','U1001','U1002') and " +
-                                 "  userId != tradeevent1.userId and " +
-                                 "  userId != tradeevent2.userId and " +
-                                 "  ccypair = tradeevent1.ccypair and " +
-                                 "  direction = tradeevent1.direction)" +
+                                 "every tradeevent1=SupportTradeEvent(UserId in ('U1000','U1001','U1002') ) -> " +
+                                 "(tradeevent2=SupportTradeEvent(UserId in ('U1000','U1001','U1002') and " +
+                                 "  UserId != tradeevent1.UserId and " +
+                                 "  Ccypair = tradeevent1.Ccypair and " +
+                                 "  Direction = tradeevent1.Direction) -> " +
+                                 " tradeevent3=SupportTradeEvent(UserId in ('U1000','U1001','U1002') and " +
+                                 "  UserId != tradeevent1.UserId and " +
+                                 "  UserId != tradeevent2.UserId and " +
+                                 "  Ccypair = tradeevent1.Ccypair and " +
+                                 "  Direction = tradeevent1.Direction)" +
                                  ") where timer:within(600 sec)]";
 
                 env.CompileDeploy(expression);

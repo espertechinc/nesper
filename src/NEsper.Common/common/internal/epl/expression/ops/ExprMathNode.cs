@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.type;
@@ -26,7 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private readonly bool _isDivisionByZeroReturnsNull;
         private readonly bool _isIntegerDivision;
 
-        [NonSerialized] private ExprMathNodeForge _forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprMathNodeForge _forge;
 
         /// <summary>
         ///     Ctor.

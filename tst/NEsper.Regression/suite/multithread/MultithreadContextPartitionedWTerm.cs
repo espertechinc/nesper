@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Configure(Configuration configuration)
         {
             configuration.Common.AddEventType("SupportBean", typeof(SupportBean));

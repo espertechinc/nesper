@@ -26,9 +26,9 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 {
     public partial class StmtClassForgeableStmtFields : StmtClassForgeable
     {
-        private readonly string className;
-        private readonly CodegenNamespaceScope namespaceScope;
-        private readonly bool dataflowOperatorFields;
+        private readonly string _className;
+        private readonly CodegenNamespaceScope _namespaceScope;
+        private readonly bool _dataflowOperatorFields;
 
         public StmtClassForgeableStmtFields(
             string className,
@@ -42,21 +42,26 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             CodegenNamespaceScope namespaceScope,
             bool dataflowOperatorFields)
         {
-            this.className = className;
-            this.namespaceScope = namespaceScope;
-            this.dataflowOperatorFields = dataflowOperatorFields;
+            _className = className;
+            _namespaceScope = namespaceScope;
+            _dataflowOperatorFields = dataflowOperatorFields;
         }
 
         public CodegenClass Forge(
             bool includeDebugSymbols,
             bool fireAndForget)
         {
-            if (!dataflowOperatorFields && !namespaceScope.HasAnyFields) {
+            // This code can cause the statementFields to not be generated and this
+            // causes problems elsewhere.  Instead, let the class get generated because
+            // we must pass the instance to other classes. - AJ
+#if DISABLED
+            if (!_dataflowOperatorFields && !_namespaceScope.HasAnyFields) {
                 return null;
             }
+#endif
 
             var memberFields = Members;
-            int maxMembersPerClass = Math.Max(1, namespaceScope.Config.InternalUseOnlyMaxMembersPerClass);
+            var maxMembersPerClass = Math.Max(1, _namespaceScope.Config.InternalUseOnlyMaxMembersPerClass);
 
             IList<CodegenInnerClass> innerClasses = EmptyList<CodegenInnerClass>.Instance;
             IList<CodegenTypedParam> members;
@@ -69,15 +74,18 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 members = MakeInnerClasses(assignments, innerClasses);
             }
 
+            // Add a reference to "self"
+            members.Add(new CodegenTypedParam(_className, null, "statementFields", false, false));
+            
             // ctor
             var ctor = new CodegenCtor(GetType(), includeDebugSymbols, EmptyList<CodegenTypedParam>.Instance);
             ctor.Block.AssignRef(Ref("statementFields"), Ref("this"));
-            var classScope = new CodegenClassScope(includeDebugSymbols, namespaceScope, className);
+            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _className);
 
             // init method
-            var initMethod = namespaceScope.InitMethod;
+            var initMethod = _namespaceScope.InitMethod;
             new CodegenRepetitiveValueBuilder<KeyValuePair<CodegenField, CodegenExpression>>(
-                    namespaceScope.FieldsUnshared,
+                    _namespaceScope.FieldsUnshared,
                     initMethod,
                     classScope,
                     GetType())
@@ -92,22 +100,19 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             // build methods
             var methods = new CodegenClassMethods();
             var properties = new CodegenClassProperties();
-            CodegenStackGenerator.RecursiveBuildStack(initMethod, "init", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(initMethod, "Init", methods, properties);
 
             // assignment methods
-            if (namespaceScope.HasAssignableStatementFields) {
+            if (_namespaceScope.HasAssignableStatementFields) {
                 var assignMethod =
                     CodegenMethod
                         .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                         .AddParam<StatementAIFactoryAssignments>("assignments")
-                        .WithStatic(true);
-                var unassignMethod = CodegenMethod.MakeParentNode(
-                        typeof(void),
-                        GetType(),
-                        CodegenSymbolProviderEmpty.INSTANCE,
-                        classScope)
-                    .WithStatic(true);
-                GenerateAssignAndUnassign(assignMethod, unassignMethod, namespaceScope.FieldsNamed);
+                        .WithStatic(false);
+                var unassignMethod = CodegenMethod
+                    .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                    .WithStatic(false);
+                GenerateAssignAndUnassign(assignMethod, unassignMethod, _namespaceScope.FieldsNamed);
                 CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods, properties);
                 CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods, properties);
             }
@@ -115,7 +120,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             return new CodegenClass(
                 CodegenClassType.STATEMENTFIELDS,
                 typeof(StatementFields),
-                className,
+                _className,
                 classScope,
                 members,
                 ctor,
@@ -153,7 +158,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
                 // initialize member
                 var member = new CodegenTypedParam(innerClass.ClassName, memberNameAssignment)
-                    .WithStatic(true)
+                    .WithStatic(false)
                     .WithInitializer(NewInstanceInner(innerClass.ClassName));
                 members.Add(member);
 
@@ -181,10 +186,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 GenerateNamedMembers(members);
 
                 // numbered members
-                foreach (var entry in namespaceScope.FieldsUnshared) {
+                foreach (var entry in _namespaceScope.FieldsUnshared) {
                     var field = entry.Key;
                     var member = new CodegenTypedParam(field.Type, field.Name)
-                        .WithStatic(true)
+                        .WithStatic(false)
                         .WithFinal(false);
                     members.Add(new MemberFieldPair(member, field));
                 }
@@ -198,8 +203,8 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         private void GenerateSubstitutionParamMembers(IList<MemberFieldPair> members)
         {
-            var numbered = namespaceScope.SubstitutionParamsByNumber;
-            var named = namespaceScope.SubstitutionParamsByName;
+            var numbered = _namespaceScope.SubstitutionParamsByNumber;
+            var named = _namespaceScope.SubstitutionParamsByName;
 
             if (numbered.IsEmpty() && named.IsEmpty()) {
                 return;
@@ -221,7 +226,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 var field = fields[i].Field;
                 var name = field.Name;
                 var member = new CodegenTypedParam(fields[i].EntryType, name)
-                    .WithStatic(true)
+                    .WithStatic(false)
                     .WithFinal(false);
                 members.Add(new MemberFieldPair(member, field));
             }
@@ -229,10 +234,10 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
         private void GenerateNamedMembers(IList<MemberFieldPair> fields)
         {
-            foreach (var entry in namespaceScope.FieldsNamed) {
+            foreach (var entry in _namespaceScope.FieldsNamed) {
                 var member = new CodegenTypedParam(entry.Value.Type, entry.Key.Name)
                     .WithFinal(false)
-                    .WithStatic(true);
+                    .WithStatic(false);
                 fields.Add(new MemberFieldPair(member, entry.Value));
             }
         }
@@ -359,7 +364,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             }
         }
 
-        public string ClassName => className;
+        public string ClassName => _className;
 
         public StmtClassForgeableType ForgeableType => StmtClassForgeableType.FIELDS;
 

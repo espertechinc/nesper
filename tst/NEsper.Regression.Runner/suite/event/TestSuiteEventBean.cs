@@ -238,7 +238,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType("MMOuterMap", mmOuterMap);
 
             IDictionary<string, object> myTypeDef = new Dictionary<string, object>();
-            myTypeDef.Put("candidate book", typeof(string));
+            myTypeDef.Put("candidate Book", typeof(string));
             myTypeDef.Put("XML Message Type", typeof(string));
             myTypeDef.Put("select", typeof(int));
             myTypeDef.Put("children's books", typeof(int[]));

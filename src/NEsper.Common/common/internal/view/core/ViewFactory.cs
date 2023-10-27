@@ -16,7 +16,8 @@ namespace com.espertech.esper.common.@internal.view.core
     public interface ViewFactory
     {
         public static ViewFactory[] EMPTY_ARRAY { get; } = Array.Empty<ViewFactory>();
-        
+        public static ViewFactory[][] SINGLE_ELEMENT_ARRAY = new ViewFactory[][] {EMPTY_ARRAY};
+
         EventType EventType { get; set; }
 
         string ViewName { get; }

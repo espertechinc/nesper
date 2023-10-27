@@ -56,9 +56,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create schema MyRow(id String);\n" +
+                var epl = "create schema MyRow(Id String);\n" +
                           "@public @buseventtype create schema MyEvent(idsBefore string[], idsAfter string[]);\n" +
-                          "@name('s0') select id from MyEvent[select idsBefore, * from idsAfter@type(MyRow)] where id not in (idsBefore);\n";
+                          "@name('s0') select id from MyEvent[select idsBefore, * from idsAfter@type(MyRow)] where Id not in (idsBefore);\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 AssertSend(env, "A,B,C", "D,E", new object[][] { new object[] { "D" }, new object[] { "E" } });
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     env.AssertListenerNotInvoked("s0");
                 }
                 else {
-                    env.AssertPropsPerRowLastNew("s0", "id".SplitCsv(), expected);
+                    env.AssertPropsPerRowLastNew("s0", "Id".SplitCsv(), expected);
                 }
             }
         }
@@ -96,16 +96,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create schema IdContainer(id int);" +
+                    "@public create schema IdContainer(Id int);" +
                     "@public create schema MyEvent(ids int[]);" +
                     "select * from MyEvent[ids@type(IdContainer)];",
                     path);
 
                 env.CompileDeploy(
-                    "@public create window MyWindow#keepall (id int);" +
+                    "@public create window MyWindow#keepall (Id int);" +
                     "on MyEvent[ids@type(IdContainer)] as my_ids \n" +
                     "delete from MyWindow my_window \n" +
-                    "where my_ids.id = my_window.id;",
+                    "where my_ids.Id = my_window.Id;",
                     path);
 
                 env.UndeployAll();
@@ -117,10 +117,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "create objectarray schema DeleteId(id int);" +
+                var epl = "create objectarray schema DeleteId(Id int);" +
                           "@public create window MyWindow#keepall as SupportBean;" +
                           "insert into MyWindow select * from SupportBean;" +
-                          "on SupportBeanArrayCollMap[intArr@type(DeleteId)] delete from MyWindow where intPrimitive = id";
+                          "on SupportBeanArrayCollMap[IntArr@type(DeleteId)] delete from MyWindow where IntPrimitive = Id";
                 env.CompileDeploy(epl, path);
 
                 env.SendEventBean(new SupportBean("E1", 1));

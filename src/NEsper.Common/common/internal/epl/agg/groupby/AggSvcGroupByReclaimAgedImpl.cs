@@ -47,16 +47,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             IList<CodegenTypedParam> rowMembers)
         {
             rowMembers.Add(new CodegenTypedParam(typeof(long), "lastUpdateTime"));
-            namedMethods.AddMethod(
+            namedMethods
+                .AddMethod(
                 typeof(void),
-                "setLastUpdateTime",
+                "SetLastUpdateTime",
                 CodegenNamedParam.From(typeof(long), "time"),
                 typeof(AggSvcGroupByReclaimAgedImpl),
                 classScope,
                 method => method.Block.AssignRef("lastUpdateTime", Ref("time")));
             namedMethods.AddMethod(
                 typeof(long),
-                "getLastUpdateTime",
+                "GetLastUpdateTime",
                 EmptyList<CodegenNamedParam>.Instance, 
                 typeof(AggSvcGroupByReclaimAgedImpl),
                 classScope,
@@ -84,10 +85,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 new CodegenTypedParam(typeof(AggSvcGroupByReclaimAgedEvalFunc), REF_EVALUATIONFUNCTIONFREQUENCY.Ref));
             ctor.Block.AssignRef(REF_CURRENTMAXAGE, Constant(DEFAULT_MAX_AGE_MSEC))
                 .AssignRef(REF_CURRENTRECLAIMFREQUENCY, Constant(DEFAULT_MAX_AGE_MSEC))
-                .AssignRef(REF_EVALUATORFUNCTIONMAXAGE, ExprDotMethod(maxAgeFactory, "make", MEMBER_EXPREVALCONTEXT))
+                .AssignRef(REF_EVALUATORFUNCTIONMAXAGE, ExprDotMethod(maxAgeFactory, "Make", MEMBER_EXPREVALCONTEXT))
                 .AssignRef(
                     REF_EVALUATIONFUNCTIONFREQUENCY,
-                    ExprDotMethod(frequencyFactory, "make", MEMBER_EXPREVALCONTEXT));
+                    ExprDotMethod(frequencyFactory, "Make", MEMBER_EXPREVALCONTEXT));
         }
 
         public static void ApplyEnterCodegenSweep(

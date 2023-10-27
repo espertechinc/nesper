@@ -54,20 +54,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 string epl;
-                epl = "select contained.allOf(x => 1) from SupportBean_ST0_Container";
+                epl = "select Contained.allOf(x => 1) from SupportBean_ST0_Container";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'contained.allOf()': Failed to validate enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received int");
+                    "Failed to validate select-clause expression 'Contained.allOf()': Failed to validate enumeration method 'allOf', expected a boolean-type result for expression parameter 0 but received int");
 
-                epl = "select contained.anyOf(x => 1) from SupportBean_ST0_Container";
+                epl = "select Contained.anyOf(x => 1) from SupportBean_ST0_Container";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'contained.anyOf()': Failed to validate enumeration method 'anyOf', expected a boolean-type result for expression parameter 0 but received int");
+                    "Failed to validate select-clause expression 'Contained.anyOf()': Failed to validate enumeration method 'anyOf', expected a boolean-type result for expression parameter 0 but received int");
 
-                epl = "select contained.anyOf(x => null) from SupportBean_ST0_Container";
+                epl = "select Contained.anyOf(x => null) from SupportBean_ST0_Container";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'contained.anyOf()': Failed to validate enumeration method 'anyOf', expected a non-null result for expression parameter 0 but received a null-typed expression");
+                    "Failed to validate select-clause expression 'Contained.anyOf()': Failed to validate enumeration method 'anyOf', expected a non-null result for expression parameter 0 but received a null-typed expression");
             }
         }
 

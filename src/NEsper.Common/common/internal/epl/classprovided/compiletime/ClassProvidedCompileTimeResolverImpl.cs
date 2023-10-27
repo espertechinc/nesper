@@ -243,7 +243,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             Func<T, ISet<string>> namesProvider)
             where T : Attribute
         {
-            // TBD: Verify that annotationType is derived from T
+            // TODO: Verify that annotationType is derived from T
             if (!typeof(T).IsAssignableFrom(annotationType)) {
                 throw new ArgumentException("cannot assign annotationType from " + typeof(T).FullName);
             }

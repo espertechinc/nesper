@@ -43,14 +43,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 typeof(ExprEvalEnumerationEventBeanToUnderlyingArrayForge),
                 codegenClassScope);
             methodNode.Block
-                .DeclareVar<EventBean>("event",
+                .DeclareVar<EventBean>("@event",
                     enumerationForge.EvaluateGetEventBeanCodegen(methodNode, exprSymbol, codegenClassScope))
-                .IfRefNullReturnNull("event")
+                .IfRefNullReturnNull("@event")
                 .DeclareVar(EvaluationType, "array", NewArrayByLength(targetType.UnderlyingType, Constant(1)))
                 .AssignArrayElement(
                     Ref("array"),
                     Constant(0),
-                    Cast(targetType.UnderlyingType, ExprDotUnderlying(Ref("event"))))
+                    Cast(targetType.UnderlyingType, ExprDotUnderlying(Ref("@event"))))
                 .MethodReturn(Ref("array"));
             return LocalMethod(methodNode);
         }

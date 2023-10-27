@@ -293,8 +293,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@name('ctx') @public create context MyContext " +
-                    "context ContextPosNeg group by intPrimitive > 0 as pos, group by intPrimitive < 0 as neg from SupportBean, " +
-                    "context ByString partition by theString from SupportBean",
+                    "context ContextPosNeg group by IntPrimitive > 0 as pos, group by IntPrimitive < 0 as neg from SupportBean, " +
+                    "context ByString partition by TheString from SupportBean",
                     path);
                 var depIdCtx = env.DeploymentId("ctx");
                 listener.AssertAndReset(
@@ -368,7 +368,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('ctx') @public create context MyContext group by intPrimitive > 0 as pos, group by intPrimitive < 0 as neg from SupportBean",
+                    "@name('ctx') @public create context MyContext group by IntPrimitive > 0 as pos, group by IntPrimitive < 0 as neg from SupportBean",
                     path);
                 env.CompileDeploy("@name('s0') context MyContext select count(*) from SupportBean", path);
 
@@ -396,7 +396,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.Runtime.ContextPartitionService.AddContextStateListener(listener);
 
                 var epl =
-                    "@name('ctx') create context MyContext coalesce by consistent_hash_crc32(theString) from SupportBean granularity 2 preallocate;\n" +
+                    "@name('ctx') create context MyContext coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 2 preallocate;\n" +
                     "@name('s0') context MyContext select count(*) from SupportBean;\n";
                 env.CompileDeploy(epl);
                 var deploymentId = env.DeploymentId("s0");

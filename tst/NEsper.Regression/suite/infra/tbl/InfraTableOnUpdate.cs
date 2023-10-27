@@ -70,8 +70,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var epl =
                     "@name('tbl') create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, v int);\n" +
-                    "on SupportBean_S0 update MyTable set v = id where k1 = toIntArray(p00) and k2 = toIntArray(p01);\n" +
-                    "on SupportEventWithManyArray(id like 'I%') insert into MyTable select intOne as k1, intTwo as k2, value as v;\n";
+                    "on SupportBean_S0 update MyTable set v = Id where k1 = toIntArray(P00) and k2 = toIntArray(P01);\n" +
+                    "on SupportEventWithManyArray(Id like 'I%') insert into MyTable select intOne as k1, intTwo as k2, value as v;\n";
                 env.CompileDeploy(epl);
 
                 SendManyArray(env, "I1", new int[] { 1 }, new int[] { 1, 2 }, 10);
@@ -125,8 +125,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var epl =
                     "@name('tbl') create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, v int);\n" +
-                    "on SupportEventWithManyArray(id like 'U%') update MyTable set v = value where k1 = intOne and k2 = intTwo;\n" +
-                    "on SupportEventWithManyArray(id like 'I%') insert into MyTable select intOne as k1, intTwo as k2, value as v;\n";
+                    "on SupportEventWithManyArray(Id like 'U%') update MyTable set v = value where k1 = intOne and k2 = intTwo;\n" +
+                    "on SupportEventWithManyArray(Id like 'I%') insert into MyTable select intOne as k1, intTwo as k2, value as v;\n";
                 env.CompileDeploy(epl);
 
                 SendManyArray(env, "I1", new int[] { 1 }, new int[] { 1, 2 }, 10);
@@ -170,8 +170,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('tbl') create table MyTable(k1 int[primitive] primary key, v int);\n" +
-                          "on SupportEventWithManyArray(id like 'U%') update MyTable set v = value where k1 = intOne;\n" +
-                          "on SupportEventWithManyArray(id like 'I%') insert into MyTable select intOne as k1, value as v;\n";
+                          "on SupportEventWithManyArray(Id like 'U%') update MyTable set v = value where k1 = intOne;\n" +
+                          "on SupportEventWithManyArray(Id like 'I%') insert into MyTable select intOne as k1, value as v;\n";
                 env.CompileDeploy(epl);
 
                 SendManyArray(env, "I1", new int[] { 1, 2 }, 10);
@@ -219,10 +219,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "keyOne string primary key, keyTwo int primary key, p0 long)",
                     path);
                 env.CompileDeploy(
-                    "on SupportBean merge varagg where theString = keyOne and " +
-                    "intPrimitive = keyTwo when not matched then insert select theString as keyOne, intPrimitive as keyTwo, 1 as p0",
+                    "on SupportBean merge varagg where TheString = keyOne and " +
+                    "IntPrimitive = keyTwo when not matched then insert select TheString as keyOne, IntPrimitive as keyTwo, 1 as p0",
                     path);
-                env.CompileDeploy("@name('s0') select varagg[p00, id].p0 as value from SupportBean_S0", path)
+                env.CompileDeploy("@name('s0') select varagg[P00, Id].p0 as value from SupportBean_S0", path)
                     .AddListener("s0");
                 env.CompileDeploy(
                         "@name('update') on SupportTwoKeyEvent update varagg set p0 = newValue " +

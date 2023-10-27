@@ -87,10 +87,10 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 CreateStmt(
                     env,
-                    "@name('A') @public create table MyTableAggs(theString String primary key, thecnt count(*), thewin window(*) @type(SupportBean))");
+                    "@name('A') @public create table MyTableAggs(TheString String primary key, thecnt count(*), thewin window(*) @type(SupportBean))");
                 CreateStmt(
                     env,
-                    "@name('B') into table MyTableAggs select count(*) as thecnt, window(*) as thewin from SupportBean#keepall() group by theString");
+                    "@name('B') into table MyTableAggs select count(*) as thecnt, window(*) as thewin from SupportBean#keepall() group by TheString");
 
                 env.UndeployAll();
             }
@@ -107,11 +107,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 CreateStmt(
                     env,
-                    "@name('Create') @public create table MyTable(id String primary key, theGroup int primary key)");
-                CreateStmt(env, "@name('Index') create unique index I1 on MyTable(id)");
+                    "@name('Create') @public create table MyTable(Id String primary key, theGroup int primary key)");
+                CreateStmt(env, "@name('Index') create unique index I1 on MyTable(Id)");
 
                 CreateStmt(env, "@name('Create') @public create window MyWindow#keepall as SupportBean");
-                CreateStmt(env, "@name('Index') create unique index I1 on MyWindow(theString)");
+                CreateStmt(env, "@name('Index') create unique index I1 on MyWindow(TheString)");
 
                 env.UndeployAll();
             }
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 var epl =
                     "@name('s0') select myvariable as c0, myExpr() as c1, myScript() as c2, preconfigured_variable as c3," +
-                    "MyClass.doIt(theString) as c4 from SupportBean;\n" +
+                    "MyClass.doIt(TheString) as c4 from SupportBean;\n" +
                     "select * from MySchema;" +
                     "on SupportBean_S1 delete from MyWindow;\n" +
                     "on SupportBean_S1 delete from MyTable;\n" +

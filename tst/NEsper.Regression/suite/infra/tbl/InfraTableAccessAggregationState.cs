@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 var eplInto = "into table varagg " +
                               "select window(*) as windowSupportBean from SupportBean#length(2)" +
-                              (grouped ? " group by theString" : "");
+                              (grouped ? " group by TheString" : "");
                 env.CompileDeploy(soda, eplInto, path);
 
                 var key = grouped ? "[\"E1\"]" : "";
@@ -101,13 +101,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                                 ".windowSupportBean.first(*) as c2, " +
                                 "varagg" +
                                 key +
-                                ".windowSupportBean.last(intPrimitive) as c3, " +
+                                ".windowSupportBean.last(IntPrimitive) as c3, " +
                                 "varagg" +
                                 key +
-                                ".windowSupportBean.window(intPrimitive) as c4, " +
+                                ".windowSupportBean.window(IntPrimitive) as c4, " +
                                 "varagg" +
                                 key +
-                                ".windowSupportBean.first(intPrimitive) as c5" +
+                                ".windowSupportBean.first(IntPrimitive) as c5" +
                                 " from SupportBean_S0";
                 env.CompileDeploy(soda, eplSelect, path).AddListener("s0");
 
@@ -211,19 +211,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 var eplDeclare = "@public create table varTotal (key0 string primary key, key1 int primary key," +
-                                 "key2 long primary key, total sum(double), cnt count(*))";
+"key2 long primary key, Total sum(double), cnt count(*))";
                 env.CompileDeploy(eplDeclare, path);
 
                 var eplBind = "into table varTotal " +
-                              "select sum(doublePrimitive) as total, count(*) as cnt " +
-                              "from SupportBean group by theString, intPrimitive, longPrimitive";
+"select sum(DoublePrimitive) as Total, count(*) as cnt "+
+                              "from SupportBean group by TheString, IntPrimitive, LongPrimitive";
                 env.CompileDeploy(eplBind, path);
 
                 env.Milestone(0);
 
                 var fields = "c0,c1".SplitCsv();
                 var eplUse =
-                    "@name('s0') select varTotal[p00, id, 100L].total as c0, varTotal[p00, id, 100L].cnt as c1 from SupportBean_S0";
+"@name('s0') select varTotal[P00, id, 100L].Total as c0, varTotal[P00, Id, 100L].cnt as c1 from SupportBean_S0";
                 env.CompileDeploy(eplUse, path).AddListener("s0");
 
                 MakeSendBean(env, "E1", 10, 100, 1000);
@@ -266,20 +266,20 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 // create into-table aggregation
                 var eplBind = "into table varMyAgg select " +
                               "count(*) as c0, " +
-                              "count(distinct intPrimitive) as c1, " +
+                              "count(distinct IntPrimitive) as c1, " +
                               "window(*) as c2, " +
-                              "sum(longPrimitive) as c3 " +
-                              "from SupportBean#length(3) group by theString";
+                              "sum(LongPrimitive) as c3 " +
+                              "from SupportBean#length(3) group by TheString";
                 env.CompileDeploy(eplBind, path);
 
                 env.Milestone(1);
 
                 // create query for state
                 var eplSelect = "@name('s0') select " +
-                                "varMyAgg[p00].c0 as c0, " +
-                                "varMyAgg[p00].c1 as c1, " +
-                                "varMyAgg[p00].c2 as c2, " +
-                                "varMyAgg[p00].c3 as c3" +
+                                "varMyAgg[P00].c0 as c0, " +
+                                "varMyAgg[P00].c1 as c1, " +
+                                "varMyAgg[P00].c2 as c2, " +
+                                "varMyAgg[P00].c3 as c3" +
                                 " from SupportBean_S0";
                 env.CompileDeploy(eplSelect, path).AddListener("s0");
                 var fields = "c0,c1,c2,c3".SplitCsv();

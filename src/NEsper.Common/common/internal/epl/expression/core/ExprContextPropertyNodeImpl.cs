@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -32,7 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprEvaluator,
         ExprForgeInstrumentable
     {
-        [NonSerialized] private EventPropertyGetterSPI getter;
+        [JsonIgnore]
+        [NonSerialized]
+        private EventPropertyGetterSPI getter;
 
         public ExprContextPropertyNodeImpl(string propertyName)
         {

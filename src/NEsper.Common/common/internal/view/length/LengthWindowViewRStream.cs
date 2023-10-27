@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.view.length
 
         public ViewFactory ViewFactory => _lengthWindowViewFactory;
 
-        public override EventType EventType => parent.EventType;
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(
             EventBean[] newData,
@@ -110,12 +110,12 @@ namespace com.espertech.esper.common.@internal.view.length
             }
 
             // If there are child views, call update method
-            if (child != null) {
+            if (Child != null) {
                 _agentInstanceContext.InstrumentationProvider.QViewIndicate(
                     _lengthWindowViewFactory,
                     newData,
                     expiredArr);
-                child.Update(newData, expiredArr);
+                Child.Update(newData, expiredArr);
                 _agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 

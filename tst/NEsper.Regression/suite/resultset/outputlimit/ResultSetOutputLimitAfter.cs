@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 SendTimer(env, 0);
                 var stmtText =
-                    "select theString from SupportBean#keepall output after 0 days 0 hours 0 minutes 20 seconds 0 milliseconds every 0 days 0 hours 0 minutes 5 seconds 0 milliseconds";
+                    "select TheString from SupportBean#keepall output after 0 days 0 hours 0 minutes 20 seconds 0 milliseconds every 0 days 0 hours 0 minutes 5 seconds 0 milliseconds";
                 env.CompileDeploy("@name('s0') " + stmtText).AddListener("s0");
 
                 TryAssertionEveryPolicy(env, milestone);
@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.UndeployAll();
 
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create("theString");
+                model.SelectClause = SelectClause.Create("TheString");
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean").AddView("keepall"));
                 model.OutputLimitClause = OutputLimitClause.Create(Expressions.TimePeriod(0, 0, 0, 5, 0))
                     .WithAfterTimePeriodExpression(Expressions.TimePeriod(0, 0, 0, 20, 0));
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 SendCurrentTime(env, "2002-03-01T09:00:00.000");
                 env.SendEventBean(new SupportBean("E3", 3));
-                env.AssertPropsNew("s0", "theString".SplitCsv(), new object[] { "E3" });
+                env.AssertPropsNew("s0", "TheString".SplitCsv(), new object[] { "E3" });
 
                 env.UndeployAll();
             }
@@ -150,8 +150,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString".SplitCsv();
-                var stmtText = "@name('s0') select theString from SupportBean#keepall output after 3 events";
+                var fields = "TheString".SplitCsv();
+                var stmtText = "@name('s0') select TheString from SupportBean#keepall output after 3 events";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "E1");
@@ -173,10 +173,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.UndeployAll();
 
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create("theString");
+                model.SelectClause = SelectClause.Create("TheString");
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean").AddView("keepall"));
                 model.OutputLimitClause = OutputLimitClause.CreateAfter(3);
-                Assert.AreEqual("select theString from SupportBean#keepall output after 3 events ", model.ToEPL());
+                Assert.AreEqual("select TheString from SupportBean#keepall output after 3 events ", model.ToEPL());
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 
                 env.CompileDeploy(model).AddListener("s0");
@@ -192,8 +192,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendEvent(env, "E5");
                 env.AssertPropsNew("s0", fields, new object[] { "E5" });
 
-                model = env.EplToModel("select theString from SupportBean#keepall output after 3 events");
-                Assert.AreEqual("select theString from SupportBean#keepall output after 3 events ", model.ToEPL());
+                model = env.EplToModel("select TheString from SupportBean#keepall output after 3 events");
+                Assert.AreEqual("select TheString from SupportBean#keepall output after 3 events ", model.ToEPL());
 
                 env.UndeployAll();
             }
@@ -204,8 +204,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 0);
-                var fields = "theString".SplitCsv();
-                var stmtText = "@name('s0') select theString from SupportBean#keepall output after 20 seconds";
+                var fields = "TheString".SplitCsv();
+                var stmtText = "@name('s0') select TheString from SupportBean#keepall output after 20 seconds";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.Milestone(0);
@@ -247,7 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 SendTimer(env, 0);
                 var stmtText =
-                    "@name('s0') select theString from SupportBean#keepall output after 20 seconds snapshot when myvar_local=1";
+                    "@name('s0') select TheString from SupportBean#keepall output after 20 seconds snapshot when myvar_local=1";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 TryAssertionSnapshotVar(env);
@@ -302,7 +302,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
             SendTimer(env, 20000);
             SendEvent(env, "E4");
-            var fields = "theString".SplitCsv();
+            var fields = "TheString".SplitCsv();
             env.AssertPropsPerRowLastNew(
                 "s0",
                 fields,
@@ -326,7 +326,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "theString".SplitCsv();
+            var fields = "TheString".SplitCsv();
             SendTimer(env, 1);
             SendEvent(env, "E1");
 
@@ -375,7 +375,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             AtomicLong milestone)
         {
             var epl = opt.GetHint() +
-                      "@name('s0') select sum(intPrimitive) as thesum " +
+                      "@name('s0') select sum(IntPrimitive) as thesum " +
                       "from SupportBean#keepall " +
                       "output after 4 events last every 2 events";
             env.CompileDeploy(epl).AddListener("s0");

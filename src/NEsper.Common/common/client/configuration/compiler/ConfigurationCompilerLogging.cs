@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         /// <summary>
         ///     Ctor - sets up defaults.
         /// </summary>
-        internal ConfigurationCompilerLogging()
+        public ConfigurationCompilerLogging()
         {
             IsEnableCode = false;
             IsEnableFilterPlan = false;

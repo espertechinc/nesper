@@ -387,15 +387,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var resultType = resultTypeMayNull;
             var method = parent.MakeChild(resultType, typeof(ExprSubselectNode), classScope);
 
-            CodegenExpression eps = symbols.GetAddEPS(method);
+            var eps = symbols.GetAddEPS(method);
             var newData = symbols.GetAddIsNewData(method);
-            CodegenExpression evalCtx = symbols.GetAddExprEvalCtx(method);
+            var evalCtx = symbols.GetAddExprEvalCtx(method);
 
             // get matching events
-            CodegenExpression future = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            var future = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryResult(subselectNode.SubselectNumber),
                 typeof(SubordTableLookupStrategy));
-            var evalMatching = ExprDotMethod(future, "lookup", eps, evalCtx);
+            var evalMatching = ExprDotMethod(future, "Lookup", eps, evalCtx);
             method.Block.DeclareVar(typeof(ICollection<EventBean>), NAME_MATCHINGEVENTS, evalMatching);
 
             // process matching events

@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 var epl = "insert into MySchema select transpose(" +
                           generateFunction +
-                          "(theString, intPrimitive)) from SupportBean";
+                          "(TheString, IntPrimitive)) from SupportBean";
                 env.CompileDeploy("@name('s0') " + epl, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 var stmtTextOne =
-                    "@public insert into MyStream select 1 as dummy, transpose(custom('O' || theString, 10)) from SupportBean(theString like 'I%')";
+                    "@public insert into MyStream select 1 as dummy, transpose(custom('O' || TheString, 10)) from SupportBean(TheString like 'I%')";
                 env.CompileDeploy(stmtTextOne, path);
 
                 var stmtTextTwo = "@name('s0') select * from MyStream";
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                         var underlying = (Pair<object, IDictionary<string, object>>)result.Underlying;
                         EPAssertionUtil.AssertProps(
                             result,
-                            "dummy,theString,intPrimitive".SplitCsv(),
+                            "dummy,TheString,IntPrimitive".SplitCsv(),
                             new object[] { 1, "OI1", 10 });
                         Assert.AreEqual("OI1", ((SupportBean)underlying.First).TheString);
                     });
@@ -251,10 +251,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 var stmtTextOne =
-                    "insert into OtherStream select transpose(custom('O' || theString, 10)) from SupportBean(theString like 'I%')";
+                    "insert into OtherStream select transpose(custom('O' || TheString, 10)) from SupportBean(TheString like 'I%')";
                 env.CompileDeploy("@name('first') @public " + stmtTextOne, path).AddListener("first");
 
-                var stmtTextTwo = "@name('s0') select * from OtherStream(theString like 'O%')";
+                var stmtTextTwo = "@name('s0') select * from OtherStream(TheString like 'O%')";
                 env.CompileDeploy(stmtTextTwo, path).AddListener("s0");
 
                 env.AssertStatement(
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     result => {
                         EPAssertionUtil.AssertProps(
                             result,
-                            "theString,intPrimitive".SplitCsv(),
+                            "TheString,IntPrimitive".SplitCsv(),
                             new object[] { "OI1", 10 });
                         Assert.AreEqual("OI1", ((SupportBean)result.Underlying).TheString);
                     });
@@ -276,7 +276,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.CompileDeploy("@name('second') " + stmtTextOne).AddListener("second");
                 env.UndeployModuleContaining("s0");
                 env.SendEventBean(new SupportBean("I2", 2));
-                env.AssertPropsNew("second", "theString,intPrimitive".SplitCsv(), new object[] { "OI2", 10 });
+                env.AssertPropsNew("second", "TheString,IntPrimitive".SplitCsv(), new object[] { "OI2", 10 });
 
                 env.UndeployAll();
             }
@@ -288,7 +288,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 // with transpose and same input and output
                 var stmtTextOne =
-                    "@name('s0') insert into SupportBean select transpose(customOne('O' || theString, 10)) from SupportBean(theString like 'I%')";
+                    "@name('s0') insert into SupportBean select transpose(customOne('O' || TheString, 10)) from SupportBean(TheString like 'I%')";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
                 env.AssertStatement(
                     "s0",
@@ -300,7 +300,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     resultOne => {
                         EPAssertionUtil.AssertProps(
                             resultOne,
-                            "theString,intPrimitive".SplitCsv(),
+                            "TheString,IntPrimitive".SplitCsv(),
                             new object[] { "OI1", 10 });
                         Assert.AreEqual("OI1", ((SupportBean)resultOne.Underlying).TheString);
                     });
@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 // with transpose but different input and output (also test ignore column name)
                 var stmtTextTwo =
-                    "@name('s0') insert into SupportBeanNumeric select transpose(customTwo(intPrimitive, intPrimitive+1)) as col1 from SupportBean(theString like 'I%')";
+                    "@name('s0') insert into SupportBeanNumeric select transpose(customTwo(IntPrimitive, IntPrimitive+1)) as col1 from SupportBean(TheString like 'I%')";
                 env.CompileDeploy(stmtTextTwo).AddListener("s0");
                 env.AssertStatement(
                     "s0",
@@ -402,15 +402,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "@public insert into MyStreamTE select a, b from AEventTE#keepall as a, BEventTE#keepall as b";
                 env.CompileDeploy(stmtTextOne, path);
 
-                var stmtTextTwo = "@name('s0') select a.id, b.id from MyStreamTE";
+                var stmtTextTwo = "@name('s0') select a.Id, b.Id from MyStreamTE";
                 env.CompileDeploy(stmtTextTwo, path).AddListener("s0");
 
-                var eventOne = MakeMap(new object[][] { new object[] { "id", "A1" } });
-                var eventTwo = MakeMap(new object[][] { new object[] { "id", "B1" } });
+                var eventOne = MakeMap(new object[][] { new object[] { "Id", "A1" } });
+                var eventTwo = MakeMap(new object[][] { new object[] { "Id", "B1" } });
                 env.SendEventMap(eventOne, "AEventTE");
                 env.SendEventMap(eventTwo, "BEventTE");
 
-                env.AssertPropsNew("s0", "a.id,b.id".SplitCsv(), new object[] { "A1", "B1" });
+                env.AssertPropsNew("s0", "a.Id,b.Id".SplitCsv(), new object[] { "A1", "B1" });
 
                 env.UndeployAll();
             }
@@ -425,12 +425,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "@public insert into MyStream2Bean select a.* as a, b.* as b from SupportBean_A#keepall as a, SupportBean_B#keepall as b";
                 env.CompileDeploy(stmtTextOne, path);
 
-                var stmtTextTwo = "@name('s0') select a.id, b.id from MyStream2Bean";
+                var stmtTextTwo = "@name('s0') select a.Id, b.Id from MyStream2Bean";
                 env.CompileDeploy(stmtTextTwo, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_B("B1"));
-                env.AssertPropsNew("s0", "a.id,b.id".SplitCsv(), new object[] { "A1", "B1" });
+                env.AssertPropsNew("s0", "a.Id,b.Id".SplitCsv(), new object[] { "A1", "B1" });
 
                 env.UndeployAll();
             }
@@ -445,11 +445,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "@public insert into MyStreamComplex select nested as inneritem from SupportBeanComplexProps";
                 env.CompileDeploy(stmtTextOne, path);
 
-                var stmtTextTwo = "@name('s0') select inneritem.nestedValue as result from MyStreamComplex";
+                var stmtTextTwo = "@name('s0') select inneritem.NestedValue as result from MyStreamComplex";
                 env.CompileDeploy(stmtTextTwo, path).AddListener("s0");
 
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
-                env.AssertPropsNew("s0", "result".SplitCsv(), new object[] { "nestedValue" });
+                env.AssertPropsNew("s0", "result".SplitCsv(), new object[] { "NestedValue" });
 
                 env.UndeployAll();
             }
@@ -465,8 +465,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 env.TryInvalidCompile(
                     path,
-                    "select inneritem.nestedValue as result from MyStreamComplexMap",
-                    "Failed to validate select-clause expression 'inneritem.nestedValue': Failed to resolve property 'inneritem.nestedValue' (property 'inneritem' is a mapped property and requires keyed access) [select inneritem.nestedValue as result from MyStreamComplexMap]");
+                    "select inneritem.NestedValue as result from MyStreamComplexMap",
+                    "Failed to validate select-clause expression 'inneritem.NestedValue': Failed to resolve property 'inneritem.NestedValue' (property 'inneritem' is a mapped property and requires keyed access) [select inneritem.NestedValue as result from MyStreamComplexMap]");
 
                 // test invalid unwrap-properties
                 env.TryInvalidCompile(
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "insert into EnrichedE2 " +
                     "select e2.* as event, e1.otherId as playerId " +
                     "from E1#length(20) as e1, E2#length(1) as e2 " +
-                    "where e1.id = e2.id ",
+                    "where e1.Id = e2.Id ",
                     "The 'e2.* as event' syntax is not allowed when inserting into an existing bean event type, use the 'e2 as event' syntax instead");
 
                 env.TryInvalidCompile(

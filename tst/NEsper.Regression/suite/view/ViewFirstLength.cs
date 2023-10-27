@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.Milestone(0);
 
                 var fields = "c0".SplitCsv();
-                var epl = "@name('s0') select irstream theString as c0 from SupportBean#firstlength(2)";
+                var epl = "@name('s0') select irstream TheString as c0 from SupportBean#firstlength(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(1);
@@ -92,25 +92,25 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeMarketDataEvent("E1"));
-                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E1" } }, null);
-                env.AssertPropsPerRowIterator("s0", "symbol".SplitCsv(), new object[][] { new object[] { "E1" } });
+                env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E1" } }, null);
+                env.AssertPropsPerRowIterator("s0", "Symbol".SplitCsv(), new object[][] { new object[] { "E1" } });
 
                 env.Milestone(1);
 
                 env.SendEventBean(MakeMarketDataEvent("E2"));
-                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E2" } }, null);
+                env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E2" } }, null);
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    "symbol".SplitCsv(),
+"Symbol".SplitCsv(),
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 env.Milestone(2);
 
                 env.SendEventBean(MakeMarketDataEvent("E3"));
-                env.AssertPropsNV("s0", new object[][] { new object[] { "symbol", "E3" } }, null);
+                env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E3" } }, null);
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    "symbol".SplitCsv(),
+"Symbol".SplitCsv(),
                     new object[][] { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E3" } });
 
                 env.Milestone(3);
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListenerNotInvoked("s0");
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    "symbol".SplitCsv(),
+"Symbol".SplitCsv(),
                     new object[][] { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E3" } });
 
                 env.UndeployAll();

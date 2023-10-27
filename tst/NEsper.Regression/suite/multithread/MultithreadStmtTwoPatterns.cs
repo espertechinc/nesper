@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 {
     /// <summary>
     ///     Test for multithread-safety for case of 2 patterns:
-    ///     1. Thread 1 starts pattern "every event1=SupportTradeEvent(userID in ('100','101'), amount&gt;=1000)"
+    ///     1. Thread 1 starts pattern "every event1=SupportTradeEvent(userID in ('100','101'), Amount&gt;=1000)"
     ///     2. Thread 1 repeats sending 100 events and tests 5% received
     ///     3. Main thread starts pattern:
     ///     ( every event1=SupportTradeEvent(userID in ('100','101')) -&gt;
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             var statementTwo = "select * from pattern[( every event1=SupportTradeEvent(UserId in ('100','101')) ->\n" +

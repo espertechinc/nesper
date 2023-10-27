@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     ///     Named streams provide an as-name for the stream, for example "select * from MyEvents(id=10) as StreamZero".
     ///     Unnamed streams provide no as-name for the stream, for example "select * from MyEvents(id=10)".
     /// </summary>
-    [Serializable]
     public abstract class Stream
     {
         private string streamName;

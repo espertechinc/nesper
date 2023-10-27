@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -19,7 +20,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
     /// </summary>
     public class ExprPriorEvalStrategyRelativeAccess : PriorEvalStrategy
     {
-        [NonSerialized] private readonly RelativeAccessByEventNIndex _relativeAccess;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly RelativeAccessByEventNIndex _relativeAccess;
 
         public ExprPriorEvalStrategyRelativeAccess(RelativeAccessByEventNIndex relativeAccess)
         {

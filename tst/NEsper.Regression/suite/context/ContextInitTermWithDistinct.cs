@@ -83,10 +83,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@public create context MyContext initiated by distinct(array) SupportEventWithIntArray as se",
                     path);
                 env.CompileDeploy(
-                    "@name('s0') context MyContext select context.se.id as id, sum(intPrimitive) as thesum from SupportBean",
+                    "@name('s0') context MyContext select context.se.Id as Id, sum(IntPrimitive) as thesum from SupportBean",
                     path);
                 env.AddListener("s0");
-                var fields = "id,thesum".SplitCsv();
+                var fields = "Id,thesum".SplitCsv();
 
                 env.SendEventBean(new SupportEventWithIntArray("SE1", new int[] { 1, 2 }, 0));
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -122,13 +122,13 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 // require stream name assignment using 'as'
                 env.TryInvalidCompile(
-                    "create context MyContext initiated by distinct(theString) SupportBean terminated after 15 seconds",
-                    "Distinct-expressions require that a stream name is assigned to the stream using 'as' [create context MyContext initiated by distinct(theString) SupportBean terminated after 15 seconds]");
+                    "create context MyContext initiated by distinct(TheString) SupportBean terminated after 15 seconds",
+                    "Distinct-expressions require that a stream name is assigned to the stream using 'as' [create context MyContext initiated by distinct(TheString) SupportBean terminated after 15 seconds]");
 
                 // require stream
                 env.TryInvalidCompile(
-                    "create context MyContext initiated by distinct(a.theString) pattern [a=SupportBean] terminated after 15 seconds",
-                    "Distinct-expressions require a stream as the initiated-by condition [create context MyContext initiated by distinct(a.theString) pattern [a=SupportBean] terminated after 15 seconds]");
+                    "create context MyContext initiated by distinct(a.TheString) pattern [a=SupportBean] terminated after 15 seconds",
+                    "Distinct-expressions require a stream as the initiated-by condition [create context MyContext initiated by distinct(a.TheString) pattern [a=SupportBean] terminated after 15 seconds]");
 
                 // invalid distinct-clause expression
                 env.TryInvalidCompile(
@@ -142,8 +142,8 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // non-overlapping context not allowed with distinct
                 env.TryInvalidCompile(
-                    "create context MyContext start distinct(theString) SupportBean end after 15 seconds",
-                    "Incorrect syntax near 'distinct' (a reserved keyword) at line 1 column 31 [create context MyContext start distinct(theString) SupportBean end after 15 seconds]");
+                    "create context MyContext start distinct(TheString) SupportBean end after 15 seconds",
+                    "Incorrect syntax near 'distinct' (a reserved keyword) at line 1 column 31 [create context MyContext start distinct(TheString) SupportBean end after 15 seconds]");
             }
         }
 
@@ -154,14 +154,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@public create context MyContext " +
-                    "  initiated by distinct(s0.theString) SupportBean(intPrimitive = 0) s0" +
-                    "  terminated by SupportBean(theString = s0.theString and intPrimitive = 1)",
+                    "  initiated by distinct(s0.TheString) SupportBean(IntPrimitive = 0) s0" +
+                    "  terminated by SupportBean(TheString = s0.TheString and IntPrimitive = 1)",
                     path);
 
-                var fields = "theString,longPrimitive,cnt".SplitCsv();
+                var fields = "TheString,LongPrimitive,cnt".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context MyContext " +
-                    "select theString, longPrimitive, count(*) as cnt from SupportBean(theString = context.s0.theString)",
+                    "select TheString, LongPrimitive, count(*) as cnt from SupportBean(TheString = context.s0.TheString)",
                     path);
                 env.AddListener("s0");
 
@@ -239,15 +239,15 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var epl = "@public create context MyContext as " +
-                          "initiated by distinct(theString, intPrimitive) SupportBean as sb " +
+                          "initiated by distinct(TheString, IntPrimitive) SupportBean as sb " +
                           "terminated SupportBean_S1"; // any S1 ends the contexts
                 env.EplToModelCompileDeploy(epl, path);
 
-                var fields = "id,p00,p01,cnt".SplitCsv();
+                var fields = "Id,P00,P01,cnt".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context MyContext " +
-                    "select id, p00, p01, count(*) as cnt " +
-                    "from SupportBean_S0(id = context.sb.intPrimitive and p00 = context.sb.theString)",
+                    "select Id, P00, P01, count(*) as cnt " +
+                    "from SupportBean_S0(Id = context.sb.IntPrimitive and P00 = context.sb.TheString)",
                     path);
                 env.AddListener("s0");
 
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create context MyContext initiated by distinct(theString) SupportBean as sb terminated after 24 hours",
+                    "@public create context MyContext initiated by distinct(TheString) SupportBean as sb terminated after 24 hours",
                     path);
                 env.CompileDeploy("@name('s0') context MyContext select count(*) as cnt from SupportBean", path);
                 env.AddListener("s0");
@@ -348,7 +348,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create context MyContext initiated by distinct(theString, intBoxed, intPrimitive) SupportBean as sb terminated after 100 hours",
+                    "@public create context MyContext initiated by distinct(TheString, IntBoxed, IntPrimitive) SupportBean as sb terminated after 100 hours",
                     path);
                 env.CompileDeploy("@name('s0') context MyContext select count(*) as cnt from SupportBean", path);
                 env.AddListener("s0");

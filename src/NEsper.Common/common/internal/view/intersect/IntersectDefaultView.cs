@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
 
                 // indicate new and, possibly, old data
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newData, oldData);
-                child.Update(newData, oldData);
+                Child.Update(newData, oldData);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
             else if (oldData != null) {
@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
                 }
 
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, oldData);
-                child.Update(null, oldData);
+                Child.Update(null, oldData);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 
@@ -201,7 +201,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
             }
 
             agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, null, oldEvents);
-            child.Update(null, oldEvents);
+            Child.Update(null, oldEvents);
             agentInstanceContext.InstrumentationProvider.AViewIndicate();
         }
 

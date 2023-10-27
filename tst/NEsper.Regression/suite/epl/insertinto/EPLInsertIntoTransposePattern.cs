@@ -55,41 +55,41 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('window') @public create window OneWindow#time(1 day) as select theString as alertId, this from SupportBeanWithThis",
+                    "@name('window') @public create window OneWindow#time(1 day) as select TheString as alertId, this from SupportBeanWithThis",
                     path);
                 env.CompileDeploy(
                     "insert into OneWindow select '1' as alertId, stream0.quote.this as this " +
-                    " from pattern [every quote=SupportBeanWithThis(theString='A')] as stream0",
+                    " from pattern [every quote=SupportBeanWithThis(TheString='A')] as stream0",
                     path);
                 env.CompileDeploy(
                     "insert into OneWindow select '2' as alertId, stream0.quote as this " +
-                    " from pattern [every quote=SupportBeanWithThis(theString='B')] as stream0",
+                    " from pattern [every quote=SupportBeanWithThis(TheString='B')] as stream0",
                     path);
 
                 env.SendEventBean(new SupportBeanWithThis("A", 10));
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "window",
-                    new string[] { "alertId", "this.intPrimitive" },
+                    new string[] { "alertId", "this.IntPrimitive" },
                     new object[][] { new object[] { "1", 10 } });
 
                 env.SendEventBean(new SupportBeanWithThis("B", 20));
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "window",
-                    new string[] { "alertId", "this.intPrimitive" },
+                    new string[] { "alertId", "this.IntPrimitive" },
                     new object[][] { new object[] { "1", 10 }, new object[] { "2", 20 } });
 
                 env.CompileDeploy(
-                    "@name('window-2') @public create window TwoWindow#time(1 day) as select theString as alertId, * from SupportBeanWithThis",
+                    "@name('window-2') @public create window TwoWindow#time(1 day) as select TheString as alertId, * from SupportBeanWithThis",
                     path);
                 env.CompileDeploy(
                     "insert into TwoWindow select '3' as alertId, quote.* " +
-                    " from pattern [every quote=SupportBeanWithThis(theString='C')] as stream0",
+                    " from pattern [every quote=SupportBeanWithThis(TheString='C')] as stream0",
                     path);
 
                 env.SendEventBean(new SupportBeanWithThis("C", 30));
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "window-2",
-                    new string[] { "alertId", "intPrimitive" },
+                    new string[] { "alertId", "IntPrimitive" },
                     new object[][] { new object[] { "3", 30 } });
 
                 env.UndeployAll();
@@ -105,12 +105,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "@public insert into MyStreamABBean select a, b from pattern [a=SupportBean_A -> b=SupportBean_B]";
                 env.CompileDeploy(stmtTextOne, path);
 
-                var stmtTextTwo = "@name('s0') select a.id, b.id from MyStreamABBean";
+                var stmtTextTwo = "@name('s0') select a.Id, b.Id from MyStreamABBean";
                 env.CompileDeploy(stmtTextTwo, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_B("B1"));
-                env.AssertPropsNew("s0", "a.id,b.id".SplitCsv(), new object[] { "A1", "B1" });
+                env.AssertPropsNew("s0", "a.Id,b.Id".SplitCsv(), new object[] { "A1", "B1" });
 
                 env.UndeployAll();
             }
@@ -131,22 +131,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                         Assert.AreEqual(typeof(IDictionary<string, object>), statement.EventType.GetPropertyType("b"));
                     });
 
-                var stmtTextTwo = "@name('s0') select a.id, b.id from MyStreamABMap";
+                var stmtTextTwo = "@name('s0') select a.Id, b.Id from MyStreamABMap";
                 env.CompileDeploy(stmtTextTwo, path).AddListener("s0");
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a.id"));
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("b.id"));
+                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a.Id"));
+                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("b.Id"));
                     });
 
-                var eventOne = MakeMap(new object[][] { new object[] { "id", "A1" } });
-                var eventTwo = MakeMap(new object[][] { new object[] { "id", "B1" } });
+                var eventOne = MakeMap(new object[][] { new object[] { "Id", "A1" } });
+                var eventTwo = MakeMap(new object[][] { new object[] { "Id", "B1" } });
 
                 env.SendEventMap(eventOne, "AEventMap");
                 env.SendEventMap(eventTwo, "BEventMap");
 
-                env.AssertPropsNew("s0", "a.id,b.id".SplitCsv(), new object[] { "A1", "B1" });
+                env.AssertPropsNew("s0", "a.Id,b.Id".SplitCsv(), new object[] { "A1", "B1" });
                 env.AssertPropsNew("i1", "a,b".SplitCsv(), new object[] { eventOne, eventTwo });
 
                 env.UndeployAll();

@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
     public class EPLOuterFullJoin3Stream
     {
         private static readonly string[] FIELDS = new string[]
-            { "s0.p00", "s0.p01", "s1.p10", "s1.p11", "s2.p20", "s2.p21" };
+            { "s0.P00", "s0.P01", "s1.P10", "s1.P11", "s2.P20", "s2.P21" };
 
         public static IList<RegressionExecution> Executions()
         {
@@ -58,10 +58,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 EventRepresentationChoice eventRepresentationEnum,
                 AtomicLong milestone)
             {
-                var fields = "s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11, s2.id, s2.p20, s2.p21".SplitCsv();
+                var fields = "s0.Id, s0.P00, s0.P01, s1.Id, s1.P10, s1.P11, s2.Id, s2.P20, s2.P21".SplitCsv();
 
                 var epl =
-                    $"{eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvided))} @name('s0') select * from SupportBean_S0#length(1000) as s0  full outer join SupportBean_S1#length(1000) as s1 on s0.p00 = s1.p10 and s0.p01 = s1.p11 full outer join SupportBean_S2#length(1000) as s2 on s0.p00 = s2.p20 and s0.p01 = s2.p21";
+                    $"{eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvided))} @name('s0') select * from SupportBean_S0#length(1000) as s0  full outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 and s0.P01 = s1.P11 full outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 and s0.P01 = s2.P21";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
                 env.SendEventBean(new SupportBean_S1(10, "A_1", "B_1"));
@@ -127,8 +127,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // s0
                 var joinStatement = "@name('s0') select * from " +
                                     "SupportBean_S0#length(1000) as s0 " +
-                                    " full outer join SupportBean_S1#length(1000) as s1 on s0.p00 = s1.p10 " +
-                                    " full outer join SupportBean_S2#length(1000) as s2 on s0.p00 = s2.p20 ";
+                                    " full outer join SupportBean_S1#length(1000) as s1 on s0.P00 = s1.P10 " +
+                                    " full outer join SupportBean_S2#length(1000) as s2 on s0.P00 = s2.P20 ";
                 env.CompileDeployAddListenerMileZero(joinStatement, "s0");
 
                 TryAssertsFullJoin_2sides(env);

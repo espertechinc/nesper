@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 TryOptimizableEquals(
                     env,
                     new RegressionPath(),
-                    "select * from SupportBean(libSplit(theString) = !NUM!)",
+                    "select * from SupportBean(libSplit(TheString) = !NUM!)",
                     10);
             }
         }
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 // func(...) implied true
-                TryOptimizableBoolean(env, new RegressionPath(), "select * from SupportBean(libE1True(theString))");
+                TryOptimizableBoolean(env, new RegressionPath(), "select * from SupportBean(libE1True(TheString))");
             }
         }
 
@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 // declared expression (...) = value
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                        "@name('create-expr') @public create expression thesplit {theString => libSplit(theString)}",
+                        "@name('create-expr') @public create expression thesplit {TheString => libSplit(TheString)}",
                         path)
                     .AddListener("create-expr");
                 TryOptimizableEquals(env, path, "select * from SupportBean(thesplit(*) = !NUM!)", 10);
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 // declared expression (...) implied true
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                        "@name('create-expr') @public create expression theE1Test {theString => libE1True(theString)}",
+                        "@name('create-expr') @public create expression theE1Test {TheString => libE1True(TheString)}",
                         path)
                     .AddListener("create-expr");
                 TryOptimizableBoolean(env, path, "select * from SupportBean(theE1Test(*))");
@@ -159,9 +159,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 for (var i = 0; i < 100; i++) {
                     var epl = "@name('s" +
                               i +
-                              "') select * from SupportBean(theString = '" +
+                              "') select * from SupportBean(TheString = '" +
                               i +
-                              "' or intPrimitive=" +
+                              "' or IntPrimitive=" +
                               i +
                               ")";
                     var compiled = env.Compile(epl);

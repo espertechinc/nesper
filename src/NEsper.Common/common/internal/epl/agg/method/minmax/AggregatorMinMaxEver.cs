@@ -177,7 +177,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
                 .BlockReturnNoValue()
                 .IfCondition(
                     Relational(
-                        ExprDotMethod(_currentMinMax, "compareTo", valueComparableTyped),
+                        ExprDotMethod(_currentMinMax, "CompareTo", valueComparableTyped),
                         _factory.Parent.MinMaxTypeEnum == MAX ? LT : GT,
                         Constant(0)))
                 .AssignRef(_currentMinMax, valueComparableTyped);

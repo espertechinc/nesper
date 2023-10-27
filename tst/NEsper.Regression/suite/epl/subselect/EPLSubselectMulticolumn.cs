@@ -62,9 +62,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "id", "s1totals.v1", "s1totals.v2" };
+                var fields = new string[] { "Id", "s1totals.v1", "s1totals.v2" };
                 var text =
-                    "@name('s0') select id, (select count(*) as v1, sum(id) as v2 from SupportBean_S1#length(3)) as s1totals " +
+                    "@name('s0') select id, (select count(*) as v1, sum(Id) as v2 from SupportBean_S1#length(3)) as s1totals " +
                     "from SupportBean_S0 s0";
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -96,45 +96,45 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "select (select theString, sum(intPrimitive) from SupportBean#lastevent as sb) from SupportBean_S0";
+                    "select (select TheString, sum(IntPrimitive) from SupportBean#lastevent as sb) from SupportBean_S0";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to plan subquery number 1 querying SupportBean: Subquery with multi-column select requires that either all or none of the selected columns are under aggregation, unless a group-by clause is also specified [select (select theString, sum(intPrimitive) from SupportBean#lastevent as sb) from SupportBean_S0]");
+                    "Failed to plan subquery number 1 querying SupportBean: Subquery with multi-column select requires that either all or none of the selected columns are under aggregation, unless a group-by clause is also specified [select (select TheString, sum(IntPrimitive) from SupportBean#lastevent as sb) from SupportBean_S0]");
 
-                epl = "select (select theString, theString from SupportBean#lastevent as sb) from SupportBean_S0";
+                epl = "select (select TheString, TheString from SupportBean#lastevent as sb) from SupportBean_S0";
                 env.TryInvalidCompile(
                     epl,
-                    "Column 1 in subquery does not have a unique column name assigned [select (select theString, theString from SupportBean#lastevent as sb) from SupportBean_S0]");
-
-                epl =
-                    "select * from SupportBean_S0(p00 = (select theString, theString from SupportBean#lastevent as sb))";
-                env.TryInvalidCompile(
-                    epl,
-                    "Failed to validate subquery number 1 querying SupportBean: Subquery multi-column select is not allowed in this context. [select * from SupportBean_S0(p00 = (select theString, theString from SupportBean#lastevent as sb))]");
+                    "Column 1 in subquery does not have a unique column name assigned [select (select TheString, TheString from SupportBean#lastevent as sb) from SupportBean_S0]");
 
                 epl =
-                    "select exists(select sb.* as v1, intPrimitive*2 as v3 from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0";
+                    "select * from SupportBean_S0(P00 = (select TheString, TheString from SupportBean#lastevent as sb))";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to plan subquery number 1 querying SupportBean: Subquery multi-column select does not allow wildcard or stream wildcard when selecting multiple columns. [select exists(select sb.* as v1, intPrimitive*2 as v3 from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0]");
+                    "Failed to validate subquery number 1 querying SupportBean: Subquery multi-column select is not allowed in this context. [select * from SupportBean_S0(P00 = (select TheString, TheString from SupportBean#lastevent as sb))]");
 
                 epl =
-                    "select (select sb.* as v1, intPrimitive*2 as v3 from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0";
+                    "select exists(select sb.* as v1, IntPrimitive*2 as v3 from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to plan subquery number 1 querying SupportBean: Subquery multi-column select does not allow wildcard or stream wildcard when selecting multiple columns. [select (select sb.* as v1, intPrimitive*2 as v3 from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0]");
+                    "Failed to plan subquery number 1 querying SupportBean: Subquery multi-column select does not allow wildcard or stream wildcard when selecting multiple columns. [select exists(select sb.* as v1, IntPrimitive*2 as v3 from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0]");
 
                 epl =
-                    "select (select *, intPrimitive from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0";
+                    "select (select sb.* as v1, IntPrimitive*2 as v3 from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to plan subquery number 1 querying SupportBean: Subquery multi-column select does not allow wildcard or stream wildcard when selecting multiple columns. [select (select *, intPrimitive from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0]");
+                    "Failed to plan subquery number 1 querying SupportBean: Subquery multi-column select does not allow wildcard or stream wildcard when selecting multiple columns. [select (select sb.* as v1, IntPrimitive*2 as v3 from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0]");
 
                 epl =
-                    "select * from SupportBean_S0(p00 in (select theString, theString from SupportBean#lastevent as sb))";
+                    "select (select *, IntPrimitive from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate subquery number 1 querying SupportBean: Subquery multi-column select is not allowed in this context. [select * from SupportBean_S0(p00 in (select theString, theString from SupportBean#lastevent as sb))]");
+                    "Failed to plan subquery number 1 querying SupportBean: Subquery multi-column select does not allow wildcard or stream wildcard when selecting multiple columns. [select (select *, IntPrimitive from SupportBean#lastevent as sb) as subrow from SupportBean_S0 as s0]");
+
+                epl =
+                    "select * from SupportBean_S0(P00 in (select TheString, TheString from SupportBean#lastevent as sb))";
+                env.TryInvalidCompile(
+                    epl,
+                    "Failed to validate subquery number 1 querying SupportBean: Subquery multi-column select is not allowed in this context. [select * from SupportBean_S0(P00 in (select TheString, TheString from SupportBean#lastevent as sb))]");
             }
         }
 
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var milestone = new AtomicLong();
                 var stmtText = "@name('s0') select " +
-                               "(select theString as v1, intPrimitive as v2 from SupportBean#lastevent) as subrow " +
+                               "(select TheString as v1, IntPrimitive as v2 from SupportBean#lastevent) as subrow " +
                                "from SupportBean_S0 as s0";
                 env.CompileDeployAddListenerMile(stmtText, "s0", milestone.GetAndIncrement());
 
@@ -164,14 +164,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select p00, " +
+                var stmtText = "@name('s0') select P00, " +
                                "(select " +
-                               "  sum(intPrimitive) as v1, " +
-                               "  sum(intPrimitive + 1) as v2, " +
-                               "  window(intPrimitive) as v3, " +
+                               "  sum(IntPrimitive) as v1, " +
+                               "  sum(IntPrimitive + 1) as v2, " +
+                               "  window(IntPrimitive) as v3, " +
                                "  window(sb.*) as v4 " +
                                "  from SupportBean#keepall sb " +
-                               "  where theString = s0.p00) as subrow " +
+                               "  where TheString = s0.P00) as subrow " +
                                "from SupportBean_S0 as s0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -179,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     "s0",
                     statement => {
                         var rows = new object[][] {
-                            new object[] { "p00", typeof(string), false },
+                            new object[] { "P00", typeof(string), false },
                             new object[] { "subrow", typeof(IDictionary<string, object>), true }
                         };
                         for (var i = 0; i < rows.Length; i++) {
@@ -207,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         }
                     });
 
-                var fields = "p00,subrow.v1,subrow.v2".SplitCsv();
+                var fields = "P00,subrow.v1,subrow.v2".SplitCsv();
 
                 env.SendEventBean(new SupportBean_S0(1, "T1"));
                 env.AssertEventNew(

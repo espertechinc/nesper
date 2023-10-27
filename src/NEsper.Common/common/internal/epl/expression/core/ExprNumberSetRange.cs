@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -35,10 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         
-        public const string METHOD_HANDLENUMBERSETRANGELOWERNULL = "handleNumberSetRangeLowerNull";
-        public const string METHOD_HANDLENUMBERSETRANGEUPPERNULL = "handleNumberSetRangeUpperNull";
+        public const string METHOD_HANDLENUMBERSETRANGELOWERNULL = "HandleNumberSetRangeLowerNull";
+        public const string METHOD_HANDLENUMBERSETRANGEUPPERNULL = "HandleNumberSetRangeUpperNull";
         
-        [NonSerialized] private ExprEvaluator[] evaluators;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEvaluator[] evaluators;
 
         public override void ToPrecedenceFreeEPL(
             TextWriter writer,

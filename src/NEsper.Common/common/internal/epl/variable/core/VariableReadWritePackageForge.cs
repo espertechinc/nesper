@@ -272,18 +272,18 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             var method = parent.MakeChild(typeof(VariableReadWritePackage), GetType(), classScope);
             var @ref = Ref("rw");
             method.Block.DeclareVarNewInstance(typeof(VariableReadWritePackage), @ref.Ref)
-                .ExprDotMethod(@ref, "setCopyMethods", MakeCopyMethods(copyMethods, method, symbols, classScope))
-                .ExprDotMethod(
+                .SetProperty(@ref, "CopyMethods", MakeCopyMethods(copyMethods, method, symbols, classScope))
+                .SetProperty(
                     @ref,
-                    "setAssignments",
+                    "Assignments",
                     MakeAssignments(assignments, variables, method, symbols, classScope))
-                .ExprDotMethod(@ref, "setVariables", MakeVariables(variables, method, symbols, classScope))
-                .ExprDotMethod(@ref, "setWriters", MakeWriters(writers, method, symbols, classScope))
-                .ExprDotMethod(
+                .SetProperty(@ref, "Variables", MakeVariables(variables, method, symbols, classScope))
+                .SetProperty(@ref, "Writers", MakeWriters(writers, method, symbols, classScope))
+                .SetProperty(
                     @ref,
-                    "setReadersForGlobalVars",
+                    "ReadersForGlobalVars",
                     MakeReadersForGlobalVars(variables, method, symbols, classScope))
-                .ExprDotMethod(@ref, "setMustCoerce", Constant(mustCoerce))
+                .SetProperty(@ref, "MustCoerce", Constant(mustCoerce))
                 .MethodReturn(@ref);
             return LocalMethod(method);
         }

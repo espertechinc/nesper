@@ -30,14 +30,13 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@name('s0') select * from SupportMarketDataBean(symbol='" +
-                      SYMBOL +
-                      "')#time(3.0)#weighted_avg(price, volume, symbol, feed)";
+            var epl =
+                $"@name('s0') select * from SupportMarketDataBean(Symbol='{SYMBOL}')#time(3.0)#weighted_avg(Price, Volume, Symbol, Feed)";
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             env.AssertStatement(
                 "s0",
-                statement => { Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("average")); });
+                statement => { Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("Average")); });
 
             // Send 2 events, E1 and E2 at +0sec
             env.SendEventBean(MakeBean(SYMBOL, 10, 500));
@@ -109,8 +108,8 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             var avg = GetDoubleValue(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE, values);
             Assert.IsTrue(DoubleValueAssertionUtil.Equals(avg, avgE, 6));
-            Assert.AreEqual(FEED, values.Get("feed"));
-            Assert.AreEqual(SYMBOL, values.Get("symbol"));
+            Assert.AreEqual(FEED, values.Get("Feed"));
+            Assert.AreEqual(SYMBOL, values.Get("Symbol"));
         }
 
         private double GetDoubleValue(

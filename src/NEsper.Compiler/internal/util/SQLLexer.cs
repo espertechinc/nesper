@@ -56,24 +56,26 @@ namespace com.espertech.esper.compiler.@internal.util
                 }
 
                 var text = token.Text.ToLowerInvariant().Trim();
-                if (text.Equals("where")) {
-                    whereIndex = token.Column + 1;
-                }
+                switch (text) {
+                    case "where":
+                        whereIndex = token.Column + 1;
+                        break;
 
-                if (text.Equals("group")) {
-                    groupbyIndex = token.Column + 1;
-                }
+                    case "group":
+                        groupbyIndex = token.Column + 1;
+                        break;
 
-                if (text.Equals("having")) {
-                    havingIndex = token.Column + 1;
-                }
+                    case "having":
+                        havingIndex = token.Column + 1;
+                        break;
 
-                if (text.Equals("order")) {
-                    orderByIndex = token.Column + 1;
-                }
+                    case "order":
+                        orderByIndex = token.Column + 1;
+                        break;
 
-                if (text.Equals("union")) {
-                    unionIndexes.Add(token.Column + 1);
+                    case "union":
+                        unionIndexes.Add(token.Column + 1);
+                        break;
                 }
             }
 

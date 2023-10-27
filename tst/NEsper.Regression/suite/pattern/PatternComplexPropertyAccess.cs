@@ -88,31 +88,31 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase = new EventExpressionCase("s=SupportBeanComplexProps(indexed[0] = 2)");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("s=SupportBeanComplexProps(arrayProperty[1] = 20)");
+                testCase = new EventExpressionCase("s=SupportBeanComplexProps(ArrayProperty[1] = 20)");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("s=SupportBeanComplexProps(arrayProperty[1] in (10:30))");
+                testCase = new EventExpressionCase("s=SupportBeanComplexProps(ArrayProperty[1] in (10:30))");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("s=SupportBeanComplexProps(arrayProperty[2] = 20)");
+                testCase = new EventExpressionCase("s=SupportBeanComplexProps(ArrayProperty[2] = 20)");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("s=SupportBeanComplexProps(nested.nestedValue = 'nestedValue')");
+                testCase = new EventExpressionCase("s=SupportBeanComplexProps(nested.NestedValue = 'nestedValue')");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("s=SupportBeanComplexProps(nested.nestedValue = 'dummy')");
+                testCase = new EventExpressionCase("s=SupportBeanComplexProps(nested.NestedValue = 'dummy')");
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "s=SupportBeanComplexProps(nested.nestedNested.nestedNestedValue = 'nestedNestedValue')");
+                    "s=SupportBeanComplexProps(nested.NestedNested.NestedNestedValue = 'NestedNestedValue')");
                 testCase.Add("e1", "s", events.GetEvent("e1"));
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "s=SupportBeanComplexProps(nested.nestedNested.nestedNestedValue = 'x')");
+                    "s=SupportBeanComplexProps(nested.NestedNested.NestedNestedValue = 'x')");
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(

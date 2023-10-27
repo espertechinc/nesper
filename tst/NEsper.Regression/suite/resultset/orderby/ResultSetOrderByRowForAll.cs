@@ -54,9 +54,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select irstream sum(intPrimitive) as c0, last(theString) as c1 from SupportBean#length(2) " +
+                    "@name('s0') select irstream sum(IntPrimitive) as c0, last(TheString) as c1 from SupportBean#length(2) " +
                     (join ? ",SupportBean_A#keepall " : "") +
-                    "output every 3 events order by sum(intPrimitive) desc";
+"output every 3 events Order by sum(IntPrimitive) desc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -94,11 +94,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var fields = new string[] { "sumPrice" };
-                var epl = "@name('s0')select sum(price) as sumPrice from " +
+                var epl = "@name('s0')select sum(Price) as sumPrice from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-                          "where one.symbol = two.theString " +
-                          "order by price";
+"where one.Symbol = two.TheString "+
+"Order by Price";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendJoinEvents(env);

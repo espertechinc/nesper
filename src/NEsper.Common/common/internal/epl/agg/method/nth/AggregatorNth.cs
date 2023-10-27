@@ -147,11 +147,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
                         unitKey,
                         serdeValue,
                         Constant(factory.SizeOfBuf)))
-                .AssignRef(RowDotMember(row, circularBuffer), ExprDotMethod(state, "getCircularBuffer"))
+                .AssignRef(RowDotMember(row, circularBuffer), ExprDotName(state, "CircularBuffer"))
                 .AssignRef(
                     RowDotMember(row, currentBufferElementPointer),
-                    ExprDotMethod(state, "getCurrentBufferElementPointer"))
-                .AssignRef(RowDotMember(row, numDataPoints), ExprDotMethod(state, "getNumDataPoints"));
+                    ExprDotName(state, "CurrentBufferElementPointer"))
+                .AssignRef(RowDotMember(row, numDataPoints), ExprDotName(state, "NumDataPoints"));
         }
 
         protected override void AppendFormatWODistinct(FabricTypeCollector collector)

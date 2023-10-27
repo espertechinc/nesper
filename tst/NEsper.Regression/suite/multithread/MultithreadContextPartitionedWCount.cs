@@ -31,10 +31,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
-            var choices = new [] { "A","B","C","D" };
+            var choices = new[] { "A", "B", "C", "D" };
             TrySend(env, 4, 1000, choices);
         }
 
@@ -51,7 +51,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             env.AdvanceTime(0);
             var path = new RegressionPath();
             env.CompileDeploy("@name('var') @public create variable boolean myvar = false", path);
-            env.CompileDeploy("@public create context SegmentedByString as partition by TheString from SupportBean", path);
+            env.CompileDeploy(
+                "@public create context SegmentedByString as partition by TheString from SupportBean",
+                path);
             env.CompileDeploy(
                 "@name('s0') context SegmentedByString select TheString, count(*) - 1 as cnt from SupportBean output snapshot when myvar = true",
                 path);
@@ -107,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var result = listener.LastNewData;
             Assert.AreEqual(choices.Length, result.Length);
             foreach (var item in result) {
-                var theString = (string) item.Get("TheString");
+                var theString = (string)item.Get("TheString");
                 var count = item.Get("cnt").AsInt64();
                 //Console.WriteLine("String " + string + " count " + count);
                 Assert.AreEqual(count, totals.Get(theString));

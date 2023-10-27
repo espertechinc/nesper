@@ -142,14 +142,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "contained.distinctOf(x => p00)");
+                builder.WithExpression(fields[0], "Contained.distinctOf(x => P00)");
                 builder.WithExpression(
                     fields[1],
-                    "contained.distinctOf( (x, i) => case when i<2 then p00 else -1*p00 end)");
+                    "Contained.distinctOf( (x, i) => case when i<2 then P00 else -1*P00 end)");
                 builder.WithExpression(
                     fields[2],
-                    "contained.distinctOf( (x, i, s) => case when s<=2 then p00 else 0 end)");
-                builder.WithExpression(fields[3], "contained.distinctOf(x => null)");
+                    "Contained.distinctOf( (x, i, s) => case when s<=2 then P00 else 0 end)");
+                builder.WithExpression(fields[3], "Contained.distinctOf(x => null)");
 
                 builder.WithStatementConsumer(
                     stmt =>
@@ -198,15 +198,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3,c4".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.distinctOf()");
-                builder.WithExpression(fields[1], "strvals.distinctOf(v => extractNum(v))");
+                builder.WithExpression(fields[0], "Strvals.distinctOf()");
+                builder.WithExpression(fields[1], "Strvals.distinctOf(v => extractNum(v))");
                 builder.WithExpression(
                     fields[2],
-                    "strvals.distinctOf((v, i) => case when i<2 then extractNum(v) else 0 end)");
+                    "Strvals.distinctOf((v, i) => case when i<2 then extractNum(v) else 0 end)");
                 builder.WithExpression(
                     fields[3],
-                    "strvals.distinctOf((v, i, s) => case when s<=2 then extractNum(v) else 0 end)");
-                builder.WithExpression(fields[4], "strvals.distinctOf(v => null)");
+                    "Strvals.distinctOf((v, i, s) => case when s<=2 then extractNum(v) else 0 end)");
+                builder.WithExpression(fields[4], "Strvals.distinctOf(v => null)");
 
                 builder.WithStatementConsumer(
                     stmt => SupportEventPropUtil.AssertTypesAllSame(

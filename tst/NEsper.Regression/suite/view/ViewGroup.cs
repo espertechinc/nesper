@@ -202,15 +202,8 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create schema event as " +
-                          typeof(EventWithTags).FullName +
-                          ";\n" +
-                          "\n" +
-                          "insert into stream1\n" +
-                          "select name, tags from event;\n" +
-                          "\n" +
-                          "select name, tags('a\\.b') from stream1.std:groupwin(name, tags('a\\.b')).win:length(10)\n" +
-                          "having count(1) >= 5;\n";
+                var epl =
+                    $"create schema event as {typeof(EventWithTags).FullName};\n\ninsert into stream1\nselect name, tags from event;\n\nselect name, tags('a\\.b') from stream1.std:groupwin(name, tags('a\\.b')).win:length(10)\nhaving count(1) >= 5;\n";
                 env.CompileDeploy(epl).UndeployAll();
             }
 
@@ -226,22 +219,22 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 string epl;
 
-                epl = "select * from SupportBean#groupwin(theString)#length(1)#groupwin(theString)#uni(intPrimitive)";
+                epl = "select * from SupportBean#groupwin(TheString)#length(1)#groupwin(TheString)#uni(IntPrimitive)";
                 env.TryInvalidCompile(
                     epl,
                     "Failed to validate data window declaration: Multiple groupwin-declarations are not supported");
 
-                epl = "select avg(price), symbol from SupportMarketDataBean#length(100)#groupwin(symbol)";
+                epl = "select avg(Price), Symbol from SupportMarketDataBean#length(100)#groupwin(Symbol)";
                 env.TryInvalidCompile(
                     epl,
                     "Failed to validate data window declaration: Invalid use of the 'groupwin' view, the view requires one or more child views to group, or consider using the group-by clause");
 
-                epl = "select * from SupportBean#keepall#groupwin(theString)#length(2)";
+                epl = "select * from SupportBean#keepall#groupwin(TheString)#length(2)";
                 env.TryInvalidCompile(
                     epl,
                     "Failed to validate data window declaration: The 'groupwin' declaration must occur in the first position");
 
-                epl = "select * from SupportBean#groupwin(theString)#length(2)#merge(theString)#keepall";
+                epl = "select * from SupportBean#groupwin(TheString)#length(2)#merge(TheString)#keepall";
                 env.TryInvalidCompile(
                     epl,
                     "Failed to validate data window declaration: The 'merge' declaration cannot be used in conjunction with multiple data windows");
@@ -258,15 +251,15 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "symbol,feed,volume,size".SplitCsv();
+                var fields = "Symbol,Feed,Volume,size".SplitCsv();
                 var symbolMsft = "MSFT";
                 var symbolGe = "GE";
                 var feedInfo = "INFO";
                 var feedReu = "REU";
 
                 // Listen to all ticks
-                var epl = "@name('s0') select irstream datapoints as size, symbol, feed, volume " +
-                          "from SupportMarketDataBean#groupwin(symbol, feed, volume)#uni(price) order by symbol, feed, volume";
+                var epl = "@name('s0') select irstream datapoints as size, Symbol, Feed, Volume "+
+"from SupportMarketDataBean#groupwin(Symbol, Feed, Volume)#uni(Price) Order by Symbol, Feed, Volume";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, symbolGe, feedInfo, 1);
@@ -316,7 +309,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(0);
                 var epl = "@name('create_var') create variable long ENGINE_TIME;\n" +
                           "@name('runtime_time_update') on pattern[every timer:interval(10 seconds)] set ENGINE_TIME = current_timestamp();\n" +
-                          "@name('out_null') select window(*) from SupportBean#groupwin(theString)#expr_batch(oldest_timestamp.plus(9 seconds) < ENGINE_TIME);";
+                          "@name('out_null') select window(*) from SupportBean#groupwin(TheString)#expr_batch(oldest_timestamp.plus(9 seconds) < ENGINE_TIME);";
                 env.CompileDeploy(epl).AddListener("out_null");
 
                 env.AdvanceTime(5000);
@@ -362,7 +355,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(0);
 
                 var epl = "@name('s0') @Hint('reclaim_group_aged=30,reclaim_group_freq=5') " +
-                          "select longPrimitive, count(*) from SupportBean#groupwin(theString)#time(3000000)";
+                          "select LongPrimitive, count(*) from SupportBean#groupwin(TheString)#time(3000000)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 for (var i = 0; i < 10; i++) {
@@ -400,7 +393,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl = "@name('s0') @Hint('reclaim_group_aged=5,reclaim_group_freq=1') " +
-                          "select * from SupportBean#groupwin(theString)#keepall";
+                          "select * from SupportBean#groupwin(TheString)#keepall";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var maxEventsPerSlot = 1000;
@@ -408,7 +401,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     env.AdvanceTime(timeSlot * 1000 + 1);
 
                     for (var i = 0; i < maxEventsPerSlot; i++) {
-                        env.SendEventBean(new SupportBean("E" + timeSlot, 0));
+                        env.SendEventBean(new SupportBean($"E{timeSlot}", 0));
                     }
                 }
 
@@ -443,20 +436,16 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string epl;
                 var filter = "select * from SupportMarketDataBean";
 
-                epl = "@name('priceLast3Stats')" +
-                      filter +
-                      "#groupwin(symbol)#length(3)#uni(price) order by symbol asc";
+                epl = $"@name('priceLast3Stats'){filter}#groupwin(Symbol)#length(3)#uni(Price) Order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("priceLast3Stats");
 
-                epl = "@name('volumeLast3Stats')" +
-                      filter +
-                      "#groupwin(symbol)#length(3)#uni(volume) order by symbol asc";
+                epl = $"@name('volumeLast3Stats'){filter}#groupwin(Symbol)#length(3)#uni(Volume) Order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("volumeLast3Stats");
 
-                epl = "@name('priceAllStats')" + filter + "#groupwin(symbol)#uni(price) order by symbol asc";
+                epl = $"@name('priceAllStats'){filter}#groupwin(Symbol)#uni(Price) Order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("priceAllStats");
 
-                epl = "@name('volumeAllStats')" + filter + "#groupwin(symbol)#uni(volume) order by symbol asc";
+                epl = $"@name('volumeAllStats'){filter}#groupwin(Symbol)#uni(Volume) Order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("volumeAllStats");
 
                 var expectedList = new List<IDictionary<string, object>>();
@@ -504,7 +493,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 AssertLastNewRow(env, "volumeLast3Stats", SYMBOL_GE, 1200d);
 
                 // Check iterator results
-                var fields = new string[] { "symbol", "average" };
+                var fields = new string[] { "Symbol", "Average"};
                 env.AssertPropsPerRowIterator(
                     "priceAllStats",
                     fields,
@@ -558,7 +547,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 // further math tests can be found in the view unit test
                 var epl =
-                    "@name('s0') select * from SupportMarketDataBean#groupwin(symbol)#length(1000000)#correl(price, volume, feed)";
+"@name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#correl(Price, Volume, Feed)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertStatement(
@@ -567,7 +556,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("correlation"));
                     });
 
-                var fields = new string[] { "symbol", "correlation", "feed" };
+                var fields = new string[] { "Symbol", "correlation", "Feed"};
 
                 env.SendEventBean(new SupportMarketDataBean("ABC", 10.0, 1000L, "f1"));
                 env.AssertPropsNew("s0", fields, new object[] { "ABC", double.NaN, "f1" });
@@ -593,13 +582,13 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 // further math tests can be found in the view unit test
                 var epl =
-                    "@name('s0') select * from SupportMarketDataBean#groupwin(symbol)#length(1000000)#linest(price, volume, feed)";
+"@name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#linest(Price, Volume, Feed)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("slope"));
+                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("Slope"));
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YIntercept"));
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XAverage"));
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XStandardDeviationPop"));
@@ -624,7 +613,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumYSq"));
                     });
 
-                var fields = new string[] { "symbol", "slope", "YIntercept", "feed" };
+                var fields = new string[] { "Symbol", "Slope", "YIntercept", "Feed"};
 
                 env.SendEventBean(new SupportMarketDataBean("ABC", 10.0, 50000L, "f1"));
                 env.AssertPropsNew("s0", fields, new object[] { "ABC", double.NaN, double.NaN, "f1" });
@@ -688,9 +677,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 else {
                     // 0.53 sec for 100k
                     for (var i = 0; i < 10; i++) {
-                        var stmtString = "SELECT * FROM SupportSensorEvent(type='A" +
-                                         i +
-                                         "')#length(1000000)#weighted_avg(measurement,confidence)";
+                        var stmtString =
+                            $"SELECT * FROM SupportSensorEvent(type='A{i}')#length(1000000)#weighted_avg(measurement,confidence)";
                         env.CompileDeploy(stmtString).AddListener("s0");
                     }
                 }
@@ -706,7 +694,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 for (var i = 0; i < numEvents; i++) {
                     //int modulo = i % 10;
                     var modulo = 1;
-                    var type = "A" + modulo;
+                    var type = $"A{modulo}";
                     env.SendEventBean(new SupportSensorEvent(0, type, "1", i, i));
                 }
 
@@ -733,7 +721,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(0);
 
                 var epl =
-                    "@name('s0') @Hint('reclaim_group_aged=1,reclaim_group_freq=5') select * from SupportBean#groupwin(theString)#keepall";
+                    "@name('s0') @Hint('reclaim_group_aged=1,reclaim_group_freq=5') select * from SupportBean#groupwin(TheString)#keepall";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
@@ -757,11 +745,11 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "price".SplitCsv();
+                var fields = "Price".SplitCsv();
                 env.AdvanceTime(1000);
 
                 var text =
-                    "@name('s0') select irstream * from  SupportMarketDataBean#groupwin(symbol)#time_accum(10 sec)";
+"@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_accum(10 sec)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 // 1st event S1 group
@@ -803,11 +791,11 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "price".SplitCsv();
+                var fields = "Price".SplitCsv();
                 env.AdvanceTime(1000);
 
                 var text =
-                    "@name('s0') select irstream * from  SupportMarketDataBean#groupwin(symbol)#time_batch(10 sec)";
+"@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_batch(10 sec)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 // 1st event S1 group
@@ -863,7 +851,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "id".SplitCsv();
+                var fields = "Id".SplitCsv();
                 env.AdvanceTime(1000);
 
                 var text =
@@ -922,11 +910,11 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "price".SplitCsv();
+                var fields = "Price".SplitCsv();
                 env.AdvanceTime(1000);
 
                 var text =
-                    "@name('s0') select irstream * from  SupportMarketDataBean#groupwin(symbol)#time_length_batch(10 sec, 100)";
+"@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_length_batch(10 sec, 100)";
                 env.CompileDeploy(text).AddListener("s0").Milestone(0);
 
                 // 1st event S1 group
@@ -982,9 +970,9 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "symbol,price".SplitCsv();
+                var fields = "Symbol,Price".SplitCsv();
                 var text =
-                    "@name('s0') select irstream * from SupportMarketDataBean#groupwin(symbol)#length_batch(3) order by symbol asc";
+"@name('s0') select irstream * from SupportMarketDataBean#groupwin(Symbol)#length_batch(3) Order by Symbol asc";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeMarketDataEvent("S1", 1));
@@ -1007,7 +995,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // test iterator
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "price" },
+                    new string[] { "Price" },
                     new object[][]
                         { new object[] { 1.0 }, new object[] { 2.0 }, new object[] { 20.0 }, new object[] { 21.0 } });
 
@@ -1077,10 +1065,10 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "price".SplitCsv();
+                var fields = "Price".SplitCsv();
                 env.AdvanceTime(1000);
 
-                var text = "@name('s0') select irstream * from  SupportMarketDataBean#groupwin(symbol)#time(10 sec)";
+                var text = "@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time(10 sec)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 // 1st event S1 group
@@ -1133,7 +1121,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.Milestone(0);
 
                 var epl =
-                    "@name('s0') select irstream theString as c0,intPrimitive as c1 from SupportBean#groupwin(theString)#length(3)";
+                    "@name('s0') select irstream TheString as c0,IntPrimitive as c1 from SupportBean#groupwin(TheString)#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(1);
@@ -1259,7 +1247,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             string symbol,
             double average)
         {
-            var fields = "symbol,average".SplitCsv();
+            var fields = "Symbol,Average".SplitCsv();
             env.AssertListener(
                 statementName,
                 listener => EPAssertionUtil.AssertPropsPerRow(
@@ -1272,14 +1260,14 @@ namespace com.espertech.esper.regressionlib.suite.view
             RegressionEnvironment env,
             string expected)
         {
-            env.AssertEqualsNew("s0", "id", expected);
+            env.AssertEqualsNew("s0", "Id", expected);
         }
 
         private static void AssertPrice(
             RegressionEnvironment env,
             double expected)
         {
-            env.AssertEqualsNew("s0", "price", expected);
+            env.AssertEqualsNew("s0", "Price", expected);
         }
 
         [Serializable]

@@ -72,9 +72,9 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create context SegmentedSB as partition by theString from SupportBean",
+                    "@public create context SegmentedSB as partition by TheString from SupportBean",
                     path);
-                env.CompileDeploy("@public create context SegmentedS0 as partition by p00 from SupportBean_S0", path);
+                env.CompileDeploy("@public create context SegmentedS0 as partition by P00 from SupportBean_S0", path);
                 env.CompileDeploy("@public context SegmentedSB create window WinSB#keepall as SupportBean", path);
                 env.CompileDeploy("@public context SegmentedS0 create window WinS0#keepall as SupportBean_S0", path);
                 env.CompileDeploy("@public create window WinS1#keepall as SupportBean_S1", path);
@@ -88,13 +88,13 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // test join
                 env.CompileDeploy(
-                    "@public create context PartitionedByString partition by theString from SupportBean",
+                    "@public create context PartitionedByString partition by TheString from SupportBean",
                     path);
                 env.CompileDeploy(
                     "@public context PartitionedByString create window MyWindowOne#keepall as SupportBean",
                     path);
 
-                env.CompileDeploy("@public create context PartitionedByP00 partition by p00 from SupportBean_S0", path);
+                env.CompileDeploy("@public create context PartitionedByP00 partition by P00 from SupportBean_S0", path);
                 env.CompileDeploy(
                     "@public context PartitionedByP00 create window MyWindowTwo#keepall as SupportBean_S0",
                     path);
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 TryInvalidCompileQuery(
                     env,
                     path,
-                    "select mw1.intPrimitive as c1, mw2.id as c2 from MyWindowOne mw1, MyWindowTwo mw2 where mw1.theString = mw2.p00",
+                    "select mw1.IntPrimitive as c1, mw2.Id as c2 from MyWindowOne mw1, MyWindowTwo mw2 where mw1.TheString = mw2.P00",
                     "Joins against named windows that are under context are not supported");
 
                 env.UndeployAll();
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create context PartitionedByString partition by theString from SupportBean",
+                    "@public create context PartitionedByString partition by TheString from SupportBean",
                     path);
                 env.CompileDeploy(
                     "@public context PartitionedByString create window MyWindow#keepall as SupportBean",
@@ -143,21 +143,21 @@ namespace com.espertech.esper.regressionlib.suite.context
                 RunQueryAll(
                     env,
                     path,
-                    "select sum(intPrimitive) as c1 from MyWindow",
+                    "select sum(IntPrimitive) as c1 from MyWindow",
                     "c1",
                     new object[][] { new object[] { 51 } },
                     1);
                 RunQueryAll(
                     env,
                     path,
-                    "select sum(intPrimitive) as c1 from MyWindow where intPrimitive > 15",
+                    "select sum(IntPrimitive) as c1 from MyWindow where IntPrimitive > 15",
                     "c1",
                     new object[][] { new object[] { 41 } },
                     1);
                 RunQuery(
                     env,
                     path,
-                    "select sum(intPrimitive) as c1 from MyWindow",
+                    "select sum(IntPrimitive) as c1 from MyWindow",
                     "c1",
                     new object[][] { new object[] { 41 } },
                     new ContextPartitionSelector[]
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 RunQuery(
                     env,
                     path,
-                    "select sum(intPrimitive) as c1 from MyWindow",
+                    "select sum(IntPrimitive) as c1 from MyWindow",
                     "c1",
                     new object[][] { new object[] { 41 } },
                     new ContextPartitionSelector[] { new SupportSelectorById(Collections.SingletonSet(1)) });
@@ -174,14 +174,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 RunQueryAll(
                     env,
                     path,
-                    "context PartitionedByString select context.key1 as c0, intPrimitive as c1 from MyWindow",
+                    "context PartitionedByString select context.key1 as c0, IntPrimitive as c1 from MyWindow",
                     "c0,c1",
                     new object[][] { new object[] { "E1", 10 }, new object[] { "E2", 20 }, new object[] { "E2", 21 } },
                     1);
                 RunQueryAll(
                     env,
                     path,
-                    "context PartitionedByString select context.key1 as c0, intPrimitive as c1 from MyWindow where intPrimitive > 15",
+                    "context PartitionedByString select context.key1 as c0, IntPrimitive as c1 from MyWindow where IntPrimitive > 15",
                     "c0,c1",
                     new object[][] { new object[] { "E2", 20 }, new object[] { "E2", 21 } },
                     1);
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 RunQuery(
                     env,
                     path,
-                    "context PartitionedByString select context.key1 as c0, intPrimitive as c1 from MyWindow where intPrimitive > 15",
+                    "context PartitionedByString select context.key1 as c0, IntPrimitive as c1 from MyWindow where IntPrimitive > 15",
                     "c0,c1",
                     new object[][] { new object[] { "E2", 20 }, new object[] { "E2", 21 } },
                     new SupportSelectorPartitioned[]
@@ -227,8 +227,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@public create context NestedContext " +
-                    "context ACtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(id=s0.id), " +
-                    "context BCtx group by intPrimitive < 0 as grp1, group by intPrimitive = 0 as grp2, group by intPrimitive > 0 as grp3 from SupportBean",
+                    "context ACtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(Id=s0.Id), " +
+                    "context BCtx group by IntPrimitive < 0 as grp1, group by IntPrimitive = 0 as grp2, group by IntPrimitive > 0 as grp3 from SupportBean",
                     path);
                 env.CompileDeploy("@public context NestedContext create window MyWindow#keepall as SupportBean", path);
                 env.CompileDeploy("insert into MyWindow select * from SupportBean", path);
@@ -249,14 +249,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 RunQueryAll(
                     env,
                     path,
-                    "select theString as c1, sum(intPrimitive) as c2 from MyWindow group by theString",
+                    "select TheString as c1, sum(IntPrimitive) as c2 from MyWindow group by TheString",
                     "c1,c2",
                     new object[][] { new object[] { "E1", 5 }, new object[] { "E2", -2 }, new object[] { "E3", 10 } },
                     1);
                 RunQuery(
                     env,
                     path,
-                    "select theString as c1, sum(intPrimitive) as c2 from MyWindow group by theString",
+                    "select TheString as c1, sum(IntPrimitive) as c2 from MyWindow group by TheString",
                     "c1,c2",
                     new object[][] { new object[] { "E1", 3 }, new object[] { "E3", 5 } },
                     new ContextPartitionSelector[] { new SupportSelectorById(Collections.SingletonSet(2)) });
@@ -264,7 +264,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 RunQuery(
                     env,
                     path,
-                    "context NestedContext select context.ACtx.s0.p00 as c1, context.BCtx.label as c2, theString as c3, sum(intPrimitive) as c4 from MyWindow group by theString",
+                    "context NestedContext select context.ACtx.s0.P00 as c1, context.BCtx.label as c2, TheString as c3, sum(IntPrimitive) as c4 from MyWindow group by TheString",
                     "c1,c2,c3,c4",
                     new object[][]
                         { new object[] { "S0_1", "grp3", "E1", 3 }, new object[] { "S0_1", "grp3", "E3", 5 } },
@@ -284,8 +284,8 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var fields = "c0,c1".SplitCsv();
-                var epl = "create context PartitionedByString partition by theString from SupportBean;\n" +
-                          "@name('s0') context PartitionedByString select context.key1 as c0, sum(intPrimitive) as c1 from SupportBean#length(5);\n";
+                var epl = "create context PartitionedByString partition by TheString from SupportBean;\n" +
+                          "@name('s0') context PartitionedByString select context.key1 as c0, sum(IntPrimitive) as c1 from SupportBean#length(5);\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));

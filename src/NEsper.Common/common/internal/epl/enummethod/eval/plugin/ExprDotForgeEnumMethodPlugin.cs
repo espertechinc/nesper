@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
             this.forgeFactory = forgeFactory;
         }
 
-        public void Initialize(
+        public override void Initialize(
             DotMethodFP footprint,
             EnumMethodEnum enumMethod,
             string enumMethodUsedName,

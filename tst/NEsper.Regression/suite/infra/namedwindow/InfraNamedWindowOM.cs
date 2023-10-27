@@ -60,12 +60,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var path = new RegressionPath();
                 var fields = new string[] { "key", "value" };
                 var stmtTextCreate =
-                    "@name('create') @public create window MyWindow#keepall as select theString as key, longBoxed as value from " +
+                    "@name('create') @public create window MyWindow#keepall as select TheString as key, LongBoxed as value from " +
                     nameof(SupportBean);
                 var modelCreate = env.EplToModel(stmtTextCreate);
                 env.CompileDeploy(modelCreate, path).AddListener("create");
                 Assert.AreEqual(
-                    "@name('create') @public create window MyWindow#keepall as select theString as key, longBoxed as value from SupportBean",
+                    "@name('create') @public create window MyWindow#keepall as select TheString as key, LongBoxed as value from SupportBean",
                     modelCreate.ToEPL());
 
                 var stmtTextOnSelect = "@name('onselect') on SupportBean_B select mywin.* from MyWindow as mywin";
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(modelOnSelect, path).AddListener("onselect");
 
                 var stmtTextInsert =
-                    "@name('insert') insert into MyWindow select theString as key, longBoxed as value from SupportBean";
+                    "@name('insert') insert into MyWindow select TheString as key, LongBoxed as value from SupportBean";
                 var modelInsert = env.EplToModel(stmtTextInsert);
                 env.CompileDeploy(modelInsert, path).AddListener("insert");
 
@@ -94,11 +94,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create delete stmt
                 var stmtTextDelete =
-                    "@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol=s1.key";
+"@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.key";
                 var modelDelete = env.EplToModel(stmtTextDelete);
                 env.CompileDeploy(modelDelete, path).AddListener("delete");
                 Assert.AreEqual(
-                    "@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol=s1.key",
+"@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.key",
                     modelDelete.ToEPL());
 
                 // send delete event
@@ -153,16 +153,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     .AddView("keepall")
                     .WithAsEventTypeName("SupportBean");
                 model.SelectClause = SelectClause.Create()
-                    .AddWithAsProvidedName("theString", "key")
-                    .AddWithAsProvidedName("longBoxed", "value");
+                    .AddWithAsProvidedName("TheString", "key")
+                    .AddWithAsProvidedName("LongBoxed", "value");
 
                 var stmtTextCreate =
-                    "@name('create') @public create window MyWindow#keepall as select theString as key, longBoxed as value from SupportBean";
+                    "@name('create') @public create window MyWindow#keepall as select TheString as key, LongBoxed as value from SupportBean";
                 Assert.AreEqual(stmtTextCreate, model.ToEPL());
                 env.CompileDeploy(model, path).AddListener("create");
 
                 var stmtTextInsert =
-                    "insert into MyWindow select theString as key, longBoxed as value from SupportBean";
+                    "insert into MyWindow select TheString as key, LongBoxed as value from SupportBean";
                 env.EplToModelCompileDeploy(stmtTextInsert, path);
 
                 // Consumer statement object model
@@ -192,9 +192,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 model = new EPStatementObjectModel();
                 model.OnExpr = OnClause.CreateOnDelete("MyWindow", "s1");
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportMarketDataBean", "s0"));
-                model.WhereClause = Expressions.EqProperty("s0.symbol", "s1.key");
+                model.WhereClause = Expressions.EqProperty("s0.Symbol", "s1.key");
 
-                var stmtTextDelete = "on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.symbol=s1.key";
+                var stmtTextDelete = "on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.key";
                 Assert.AreEqual(stmtTextDelete, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("ondelete"));
@@ -218,11 +218,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 // On-select object model
                 model = new EPStatementObjectModel();
                 model.OnExpr = OnClause.CreateOnSelect("MyWindow", "s1");
-                model.WhereClause = Expressions.EqProperty("s0.id", "s1.key");
+                model.WhereClause = Expressions.EqProperty("s0.Id", "s1.key");
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_B", "s0"));
                 model.SelectClause = SelectClause.CreateStreamWildcard("s1");
 
-                var stmtTextOnSelect = "on SupportBean_B as s0 select s1.* from MyWindow as s1 where s0.id=s1.key";
+                var stmtTextOnSelect = "on SupportBean_B as s0 select s1.* from MyWindow as s1 where s0.Id=s1.key";
                 Assert.AreEqual(stmtTextOnSelect, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("onselect"));

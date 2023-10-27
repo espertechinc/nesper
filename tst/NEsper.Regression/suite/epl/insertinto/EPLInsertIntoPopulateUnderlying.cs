@@ -183,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 // simple type and null values
                 var eplOne =
-                    "@name('s0') insert into SupportBeanCtorOne select theString, intBoxed, intPrimitive, boolPrimitive from SupportBean";
+                    "@name('s0') insert into SupportBeanCtorOne select TheString, IntBoxed, IntPrimitive, BoolPrimitive from SupportBean";
                 env.CompileDeploy(eplOne).AddListener("s0");
 
                 SendReceive(env, "E1", 2, true, 100);
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 // boxable type and null values
                 var eplTwo =
-                    "@name('s0') insert into SupportBeanCtorOne select theString, null, intBoxed from SupportBean";
+                    "@name('s0') insert into SupportBeanCtorOne select TheString, null, IntBoxed from SupportBean";
                 env.CompileDeploy(eplTwo).AddListener("s0");
                 SendReceiveTwo(env, "E1", 100);
                 env.UndeployModuleContaining("s0");
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 // test (should not use column names)
                 var eplFour =
-                    "@name('s0') insert into SupportBeanCtorOne(theString, intPrimitive) select 'E1', 5 from SupportBean";
+                    "@name('s0') insert into SupportBeanCtorOne(TheString, IntPrimitive) select 'E1', 5 from SupportBean";
                 env.CompileDeploy(eplFour).AddListener("s0");
                 env.SendEventBean(new SupportBean("x", -1));
                 env.AssertEventNew(
@@ -231,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 // test Ctor accepting same types
                 env.UndeployAll();
                 var epl =
-                    "@name('s0') insert into SupportEventWithCtorSameType select c1,c2 from SupportBean(theString='b1')#lastevent as c1, SupportBean(theString='b2')#lastevent as c2";
+                    "@name('s0') insert into SupportEventWithCtorSameType select c1,c2 from SupportBean(TheString='b1')#lastevent as c1, SupportBean(TheString='b2')#lastevent as c2";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("b1", 1));
@@ -357,15 +357,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     typeof(SupportBeanCtorOne).FullName +
                     "' with matching parameter number and expected parameter type(s) 'int'");
 
-                text = "insert into SupportBean(intPrimitive) select 1L from SupportBean";
+                text = "insert into SupportBean(IntPrimitive) select 1L from SupportBean";
                 env.TryInvalidCompile(
                     text,
-                    "Invalid assignment of column 'intPrimitive' of type 'long' to event property 'intPrimitive' typed as 'int', column and parameter types mismatch [insert into SupportBean(intPrimitive) select 1L from SupportBean]");
+                    "Invalid assignment of column 'IntPrimitive' of type 'long' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [insert into SupportBean(IntPrimitive) select 1L from SupportBean]");
 
-                text = "insert into SupportBean(intPrimitive) select null from SupportBean";
+                text = "insert into SupportBean(IntPrimitive) select null from SupportBean";
                 env.TryInvalidCompile(
                     text,
-                    "Invalid assignment of column 'intPrimitive' of null type to event property 'intPrimitive' typed as 'int', nullable type mismatch [insert into SupportBean(intPrimitive) select null from SupportBean]");
+                    "Invalid assignment of column 'IntPrimitive' of null type to event property 'IntPrimitive' typed as 'int', nullable type mismatch [insert into SupportBean(IntPrimitive) select null from SupportBean]");
 
                 text = "insert into SupportBeanReadOnly select 'a' as geom from SupportBean";
                 env.TryInvalidCompile(
@@ -461,13 +461,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.UndeployAll();
 
                 // surprise - wrong type than defined
-                stmtTextOne = "@name('s0') insert into SupportBean(intPrimitive) select anint from MyMap";
+                stmtTextOne = "@name('s0') insert into SupportBean(IntPrimitive) select anint from MyMap";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
                 IDictionary<string, object> map = new Dictionary<string, object>();
                 map.Put("anint", "notAnInt");
                 try {
                     env.SendEventBean(map, "MyMap");
-                    env.AssertEqualsNew("s0", "intPrimitive", 0);
+                    env.AssertEqualsNew("s0", "IntPrimitive", 0);
                 }
                 catch (Exception ex) {
                     // an exception is possible and up to the implementation.
@@ -506,11 +506,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 // test select column names
                 var stmtTextOne = "@name('i1') insert into SupportBean select " +
-                                  "'E1' as theString, 1 as intPrimitive, 2 as intBoxed, 3L as longPrimitive," +
-                                  "null as longBoxed, true as boolPrimitive, " +
-                                  "'x' as charPrimitive, 0xA as bytePrimitive, " +
-                                  "8.0f as floatPrimitive, 9.0d as doublePrimitive, " +
-                                  "0x05 as shortPrimitive, SupportEnum.ENUM_VALUE_2 as enumValue " +
+                                  "'E1' as TheString, 1 as IntPrimitive, 2 as IntBoxed, 3L as LongPrimitive," +
+                                  "null as LongBoxed, true as BoolPrimitive, " +
+                                  "'x' as CharPrimitive, 0xA as BytePrimitive, " +
+                                  "8.0f as FloatPrimitive, 9.0d as DoublePrimitive, " +
+                                  "0x05 as ShortPrimitive, SupportEnum.ENUM_VALUE_2 as enumValue " +
                                   " from MyMap";
                 env.CompileDeploy(stmtTextOne);
 
@@ -525,7 +525,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                         Assert.AreEqual("E1", received.TheString);
                         SupportBean.Compare(
                             received,
-                            "intPrimitive,intBoxed,longPrimitive,longBoxed,boolPrimitive,charPrimitive,bytePrimitive,floatPrimitive,doublePrimitive,shortPrimitive,enumValue"
+                            "IntPrimitive,IntBoxed,LongPrimitive,LongBoxed,BoolPrimitive,CharPrimitive,BytePrimitive,FloatPrimitive,DoublePrimitive,ShortPrimitive,enumValue"
                                 .SplitCsv(),
                             new object[]
                                 { 1, 2, 3L, null, true, 'x', (byte)10, 8f, 9d, (short)5, SupportEnum.ENUM_VALUE_2 });
@@ -534,14 +534,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.UndeployModuleContaining("s0");
                 env.UndeployModuleContaining("i1");
 
-                stmtTextOne = "@name('s0') insert into SupportBean(theString, intPrimitive, intBoxed, longPrimitive," +
-                              "longBoxed, boolPrimitive, charPrimitive, bytePrimitive, floatPrimitive, doublePrimitive, " +
-                              "shortPrimitive, enumValue) select " +
+                stmtTextOne = "@name('s0') insert into SupportBean(TheString, IntPrimitive, IntBoxed, LongPrimitive," +
+                              "LongBoxed, BoolPrimitive, CharPrimitive, BytePrimitive, FloatPrimitive, DoublePrimitive, " +
+                              "ShortPrimitive, enumValue) select " +
                               "'E1', 1, 2, 3L," +
                               "null, true, " +
                               "'x', 0xA, " +
                               "8.0f, 9.0d, " +
-                              "0x05 as shortPrimitive, SupportEnum.ENUM_VALUE_2 " +
+                              "0x05 as ShortPrimitive, SupportEnum.ENUM_VALUE_2 " +
                               " from MyMap";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
@@ -553,7 +553,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                         Assert.AreEqual("E1", received.TheString);
                         SupportBean.Compare(
                             received,
-                            "intPrimitive,intBoxed,longPrimitive,longBoxed,boolPrimitive,charPrimitive,bytePrimitive,floatPrimitive,doublePrimitive,shortPrimitive,enumValue"
+                            "IntPrimitive,IntBoxed,LongPrimitive,LongBoxed,BoolPrimitive,CharPrimitive,BytePrimitive,FloatPrimitive,DoublePrimitive,ShortPrimitive,enumValue"
                                 .SplitCsv(),
                             new object[]
                                 { 1, 2, 3L, null, true, 'x', (byte)10, 8f, 9d, (short)5, SupportEnum.ENUM_VALUE_2 });
@@ -562,20 +562,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 // test convert Integer boxed to Long boxed
                 env.UndeployModuleContaining("s0");
                 stmtTextOne =
-                    "@name('s0') insert into SupportBean(longBoxed, doubleBoxed) select intBoxed, floatBoxed from MyMap";
+                    "@name('s0') insert into SupportBean(LongBoxed, DoubleBoxed) select IntBoxed, FloatBoxed from MyMap";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 IDictionary<string, object> vals = new Dictionary<string, object>();
-                vals.Put("intBoxed", 4);
-                vals.Put("floatBoxed", 0f);
+                vals.Put("IntBoxed", 4);
+                vals.Put("FloatBoxed", 0f);
                 env.SendEventMap(vals, "MyMap");
-                env.AssertPropsNew("s0", "longBoxed,doubleBoxed".SplitCsv(), new object[] { 4L, 0d });
+                env.AssertPropsNew("s0", "LongBoxed,DoubleBoxed".SplitCsv(), new object[] { 4L, 0d });
                 env.UndeployAll();
 
                 // test new-to-map conversion
                 env.CompileDeploy(
-                        "@name('s0') insert into MyEventWithMapFieldSetter(id, themap) " +
-                        "select 'test' as id, new {somefield = theString} as themap from SupportBean")
+                        "@name('s0') insert into MyEventWithMapFieldSetter(Id, themap) " +
+                        "select 'test' as Id, new {somefield = TheString} as themap from SupportBean")
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -598,15 +598,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 IDictionary<string, object> vals = new Dictionary<string, object>();
-                vals.Put("intPrimitive", 4);
-                vals.Put("longBoxed", 100L);
-                vals.Put("theString", "E1");
-                vals.Put("boolPrimitive", true);
+                vals.Put("IntPrimitive", 4);
+                vals.Put("LongBoxed", 100L);
+                vals.Put("TheString", "E1");
+                vals.Put("BoolPrimitive", true);
 
                 env.SendEventMap(vals, "MySupportMap");
                 env.AssertPropsNew(
                     "s0",
-                    "intPrimitive,longBoxed,theString,boolPrimitive".SplitCsv(),
+                    "IntPrimitive,LongBoxed,TheString,BoolPrimitive".SplitCsv(),
                     new object[] { 4, 100L, "E1", true });
 
                 env.UndeployAll();
@@ -619,13 +619,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 // arrays and maps
                 var stmtTextOne =
-                    "@name('s0') insert into SupportBeanComplexProps(arrayProperty,objectArray,mapProperty) select " +
-                    "intArr,{10,20,30},mapProp" +
+                    "@name('s0') insert into SupportBeanComplexProps(ArrayProperty,objectArray,mapProperty) select " +
+                    "IntArr,{10,20,30},mapProp" +
                     " from MyMap as m";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 IDictionary<string, object> mymapVals = new Dictionary<string, object>();
-                mymapVals.Put("intArr", new int[] { -1, -2 });
+                mymapVals.Put("IntArr", new int[] { -1, -2 });
                 IDictionary<string, object> inner = new Dictionary<string, object>();
                 inner.Put("mykey", "myval");
                 mymapVals.Put("mapProp", inner);
@@ -662,7 +662,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 mymapVals = new Dictionary<string, object>();
-                mymapVals.Put("nested", new SupportBeanComplexProps.SupportBeanSpecialGetterNested("111", "222"));
+                mymapVals.Put("Nested", new SupportBeanComplexProps.SupportBeanSpecialGetterNested("111", "222"));
                 env.SendEventMap(mymapVals, "MyMap");
                 env.AssertEventNew(
                     "s0",
@@ -674,7 +674,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 // object to Object
                 stmtTextOne =
-                    "@name('s0') insert into SupportBeanArrayCollMap(anyObject) select nested from SupportBeanComplexProps";
+                    "@name('s0') insert into SupportBeanArrayCollMap(AnyObject) select nested from SupportBeanComplexProps";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
@@ -683,14 +683,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     @event => {
                         var eventFour = (SupportBeanArrayCollMap)@event.Underlying;
                         Assert.AreEqual(
-                            "nestedValue",
+                            "NestedValue",
                             ((SupportBeanComplexProps.SupportBeanSpecialGetterNested)eventFour.AnyObject).NestedValue);
                     });
                 env.UndeployModuleContaining("s0");
 
                 // test null value
                 var stmtTextThree =
-                    "@name('s0') insert into SupportBean select 'B' as theString, intBoxed as intPrimitive from SupportBean(theString='A')";
+                    "@name('s0') insert into SupportBean select 'B' as TheString, IntBoxed as IntPrimitive from SupportBean(TheString='A')";
                 env.CompileDeploy(stmtTextThree).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A", 0));
@@ -749,23 +749,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 // test factory method on the same event class
-                var stmtTextOne = "@name('s0') insert into SupportBeanString select 'abc' as theString from MyMap";
+                var stmtTextOne = "@name('s0') insert into SupportBeanString select 'abc' as TheString from MyMap";
                 env.CompileDeploy(stmtTextOne).AddListener("s0").SetSubscriber("s0");
 
                 env.SendEventMap(new Dictionary<string, object>(), "MyMap");
-                env.AssertEventNew("s0", @event => { Assert.AreEqual("abc", @event.Get("theString")); });
+                env.AssertEventNew("s0", @event => { Assert.AreEqual("abc", @event.Get("TheString")); });
                 env.AssertSubscriber("s0", subscriber => Assert.AreEqual("abc", subscriber.AssertOneGetNewAndReset()));
                 env.UndeployModuleContaining("s0");
 
                 // test factory method fully-qualified
-                stmtTextOne = "@name('s0') insert into SupportSensorEvent(id, type, device, measurement, confidence)" +
+                stmtTextOne = "@name('s0') insert into SupportSensorEvent(Id, type, device, measurement, confidence)" +
                               "select 2, 'A01', 'DHC1000', 100, 5 from MyMap";
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
 
                 env.SendEventMap(new Dictionary<string, object>(), "MyMap");
                 env.AssertPropsNew(
                     "s0",
-                    "id,type,device,measurement,confidence".SplitCsv(),
+                    "Id,type,device,measurement,confidence".SplitCsv(),
                     new object[] { 2, "A01", "DHC1000", 100.0, 5.0 });
 
                 Assert.That(
@@ -800,7 +800,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 // Test valid case of array insert
                 var validEpl =
                     "@name('s0') INSERT INTO FinalEventValid SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                    "every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:interval(10 sec)]";
+                    "every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]";
                 env.CompileDeploy(validEpl, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "G1"));
@@ -822,7 +822,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 // Test invalid case of non-array destination insert
                 var invalidEpl =
                     "INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                    "every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:interval(10 sec)]";
+                    "every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]";
                 env.TryInvalidCompile(
                     path,
                     invalidEpl,
@@ -830,12 +830,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     typeof(SupportBean).FullName +
                     "[]' to event property 'endEvent' typed as '" +
                     typeof(SupportBean).FullName +
-                    "', column and parameter types mismatch [INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:interval(10 sec)]]");
+                    "', column and parameter types mismatch [INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]]");
 
                 // Test invalid case of array destination insert from non-array var
                 var invalidEplTwo =
                     "INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                    "every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:interval(10 sec)]";
+                    "every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]";
                 env.TryInvalidCompile(
                     path,
                     invalidEplTwo,
@@ -843,7 +843,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     typeof(SupportBean_S0).FullName +
                     "' to event property 'startEvent' typed as '" +
                     typeof(SupportBean_S0).FullName +
-                    "[]', column and parameter types mismatch [INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(theString=s.p00) until timer:interval(10 sec)]]");
+                    "[]', column and parameter types mismatch [INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [every s=SupportBean_S0 -> e=SupportBean(TheString=s.P00) until timer:interval(10 sec)]]");
 
                 env.UndeployAll();
             }
@@ -871,9 +871,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var path = new RegressionPath();
             var schema =
                 eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedEventOne)) +
-                " @public @buseventtype create schema EventOne(id string);\n" +
+                " @public @buseventtype create schema EventOne(Id string);\n" +
                 eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedEventTwo)) +
-                " @public @buseventtype create schema EventTwo(id string, val int);\n" +
+                " @public @buseventtype create schema EventTwo(Id string, val int);\n" +
                 eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedFinalEventValid)) +
                 " @public @buseventtype create schema FinalEventValid (startEvent EventOne, endEvent EventTwo[]);\n" +
                 eventRepresentationEnum.GetAnnotationTextWJsonProvided(
@@ -889,7 +889,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             // Test valid case of array insert
             var validEpl =
                 "@name('s0') INSERT INTO FinalEventValid SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                "every s=EventOne -> e=EventTwo(id=s.id) until timer:interval(10 sec)]";
+                "every s=EventOne -> e=EventTwo(Id=s.Id) until timer:interval(10 sec)]";
             env.CompileDeploy(validEpl, path).AddListener("s0");
 
             SendEventOne(env, eventRepresentationEnum, "G1");
@@ -927,7 +927,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                         throw new IllegalStateException("Unrecognized enum " + eventRepresentationEnum);
                     }
 
-                    Assert.AreEqual("G1", startEventOne.Get("id"));
+                    Assert.AreEqual("G1", startEventOne.Get("Id"));
                     Assert.AreEqual(2, endEventOne.Get("val"));
                     Assert.AreEqual(3, endEventTwo.Get("val"));
                 });
@@ -935,7 +935,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             // Test invalid case of non-array destination insert
             var invalidEplOne =
                 "INSERT INTO FinalEventInvalidNonArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                "every s=EventOne -> e=EventTwo(id=s.id) until timer:interval(10 sec)]";
+                "every s=EventOne -> e=EventTwo(Id=s.Id) until timer:interval(10 sec)]";
             env.AssertThat(
                 () => {
                     try {
@@ -960,7 +960,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             // Test invalid case of array destination insert from non-array var
             var invalidEplTwo =
                 "INSERT INTO FinalEventInvalidArray SELECT s as startEvent, e as endEvent FROM PATTERN [" +
-                "every s=EventOne -> e=EventTwo(id=s.id) until timer:interval(10 sec)]";
+                "every s=EventOne -> e=EventTwo(Id=s.Id) until timer:interval(10 sec)]";
             env.AssertThat(
                 () => {
                     try {
@@ -996,20 +996,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 IDictionary<string, object> theEvent = new LinkedHashMap<string, object>();
-                theEvent.Put("id", id);
+                theEvent.Put("Id", id);
                 theEvent.Put("val", val);
                 env.SendEventMap(theEvent, "EventTwo");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
-                var schema = SchemaBuilder.Record("name", RequiredString("id"), RequiredInt("val")).AsRecordSchema();
+                var schema = SchemaBuilder.Record("name", RequiredString("Id"), RequiredInt("val")).AsRecordSchema();
                 var record = new GenericRecord(schema);
-                record.Put("id", id);
+                record.Put("Id", id);
                 record.Put("val", val);
                 env.SendEventAvro(record, "EventTwo");
             }
             else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
                 var @object = new JObject();
-                @object.Add("id", id);
+                @object.Add("Id", id);
                 @object.Add("val", val);
                 env.SendEventJson(@object.ToString(), "EventTwo");
             }
@@ -1028,18 +1028,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 IDictionary<string, object> theEvent = new LinkedHashMap<string, object>();
-                theEvent.Put("id", id);
+                theEvent.Put("Id", id);
                 env.SendEventMap(theEvent, "EventOne");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
-                var schema = SchemaBuilder.Record("name", RequiredString("id"));
+                var schema = SchemaBuilder.Record("name", RequiredString("Id"));
                 var record = new GenericRecord(schema);
-                record.Put("id", id);
+                record.Put("Id", id);
                 env.SendEventAvro(record, "EventOne");
             }
             else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
                 var @object = new JObject();
-                @object.Add("id", id);
+                @object.Add("Id", id);
                 env.SendEventJson(@object.ToString(), "EventOne");
             }
             else {
@@ -1153,7 +1153,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             var stmtTextOne = "@name('s0') insert into " +
                               typeName +
-                              " select intPrimitive as intVal, theString as stringVal, doubleBoxed as doubleVal from SupportBean";
+                              " select IntPrimitive as intVal, TheString as stringVal, DoubleBoxed as doubleVal from SupportBean";
             env.CompileDeploy(stmtTextOne).AddListener("s0");
 
             env.AssertThat(() => Assert.AreSame(env.Statement("select").EventType, env.Statement("s0").EventType));

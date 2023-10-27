@@ -157,9 +157,9 @@ namespace com.espertech.esper.common.@internal.view.expression
             viewUpdatedCollection?.Update(newData, expiredArr);
 
             // If there are child views, call update method
-            if (child != null) {
+            if (Child != null) {
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newData, expiredArr);
-                child.Update(newData, expiredArr);
+                Child.Update(newData, expiredArr);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
         }

@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             ifResultNull.IfCondition(Ref("forceUpdate"))
                 .ExprDotMethod(
                     MEMBER_CHILD,
-                    "newResult",
+                    "NewResult",
                     PublicConstValue(typeof(UniformPair<EventBean[]>), "EMPTY_PAIR"));
 
             return method;
@@ -192,9 +192,9 @@ namespace com.espertech.esper.common.@internal.epl.output.core
 
             forEach.Expression(
                 ExprDotMethodChain(MEMBER_AGENTINSTANCECONTEXT)
-                    .Add("getInternalEventRouter")
+                    .Get("InternalEventRouter")
                     .Add(
-                        "route",
+                        "Route",
                         Ref("routed"),
                         MEMBER_AGENTINSTANCECONTEXT,
                         Constant(routeToFront),

@@ -113,13 +113,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var epl = "@name('s0') select " +
                           "new char[][] {} as c0, " +
                           "new double[][] {{1}} as c1, " +
-                          "new int[][] {{1},{intPrimitive,10}} as c2, " +
+                          "new int[][] {{1},{IntPrimitive,10}} as c2, " +
                           "new float[][] {{},{1},{2.0f}} as c3, " +
                           "new long[][] {{1L,Long.MaxValue,-1L}} as c4, " +
                           "new String[][] {} as c5, " +
                           "new String[][] {{},{},{\"x\"},{}} as c6, " +
                           "new String[][] {{\"x\",\"y\"},{\"z\"}} as c7, " +
-                          "new Integer[][] {{intPrimitive,intPrimitive+1},{intPrimitive+2,intPrimitive+3}} as c8, " +
+                          "new Integer[][] {{IntPrimitive,IntPrimitive+1},{IntPrimitive+2,IntPrimitive+3}} as c8, " +
                           $"new {typeof(DateTimeEx).FullName}[][] {{}} as c9, " +
                           "new Object[][] {{}} as c10, " +
                           "new Object[][] {{1}} as c11, " +
@@ -198,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var builder = new SupportEvalBuilder("SupportBean")
                     .WithExpression(fields[0], "new char[] {}")
                     .WithExpression(fields[1], "new double[] {1}")
-                    .WithExpression(fields[2], "new int[] {1,intPrimitive,10}")
+                    .WithExpression(fields[2], "new int[] {1,IntPrimitive,10}")
                     .WithExpression(fields[3], "new float[] {1,2.0f}")
                     .WithExpression(fields[4], "new long[] {1L,Long.MAX_VALUE,-1L}")
                     .WithExpression(fields[5], "new String[] {}")
@@ -206,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .WithExpression(fields[7], "new String[] {\"x\",\"y\"}")
                     .WithExpression(
                         fields[8],
-                        "new Integer[] {intPrimitive,intPrimitive+1,intPrimitive+2,intPrimitive+3}")
+                        "new Integer[] {IntPrimitive,IntPrimitive+1,IntPrimitive+2,IntPrimitive+3}")
                     .WithExpression(fields[9], "new java.util.Calendar[] {}")
                     .WithExpression(fields[10], "new Object[] {}")
                     .WithExpression(fields[11], "new Object[] {1}")
@@ -418,16 +418,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "Failed to validate select-clause expression 'new String[] {1}': Array element type mismatch: Expecting type String but received type int");
 
                 env.TryInvalidCompile(
-                    "select new String[] {intPrimitive} from SupportBean",
-                    "Failed to validate select-clause expression 'new String[] {intPrimitive}': Array element type mismatch: Expecting type String but received type Integer");
+                    "select new String[] {IntPrimitive} from SupportBean",
+                    "Failed to validate select-clause expression 'new String[] {IntPrimitive}': Array element type mismatch: Expecting type String but received type Integer");
 
                 env.TryInvalidCompile(
-                    "select new String[][] {intPrimitive} from SupportBean",
-                    "Failed to validate select-clause expression 'new String[] {intPrimitive}': Two-dimensional array element does not allow element expression 'intPrimitive'");
+                    "select new String[][] {IntPrimitive} from SupportBean",
+                    "Failed to validate select-clause expression 'new String[] {IntPrimitive}': Two-dimensional array element does not allow element expression 'IntPrimitive'");
 
                 env.TryInvalidCompile(
-                    "select new String[][] {{intPrimitive}} from SupportBean",
-                    "Failed to validate select-clause expression 'new String[] {{intPrimitive}}': Array element type mismatch: Expecting type String but received type Integer");
+                    "select new String[][] {{IntPrimitive}} from SupportBean",
+                    "Failed to validate select-clause expression 'new String[] {{IntPrimitive}}': Array element type mismatch: Expecting type String but received type Integer");
 
                 env.TryInvalidCompile(
                     "select new String[] {{'x'}} from SupportBean",
@@ -435,7 +435,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 // Runtime null handling
                 //
-                var eplNullDimension = "@name('s0') select new double[intBoxed] from SupportBean";
+                var eplNullDimension = "@name('s0') select new double[IntBoxed] from SupportBean";
                 env.CompileDeploy(eplNullDimension).AddListener("s0");
                 try {
                     env.SendEventBean(new SupportBean());
@@ -448,7 +448,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 env.UndeployAll();
 
-                var eplNullValuePrimitiveArray = "@name('s0') select new double[] {intBoxed} from SupportBean";
+                var eplNullValuePrimitiveArray = "@name('s0') select new double[] {IntBoxed} from SupportBean";
                 env.CompileDeploy(eplNullValuePrimitiveArray).AddListener("s0");
                 try {
                     env.SendEventBean(new SupportBean());
@@ -513,15 +513,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select " +
-                          "new SupportBean(\"A\",intPrimitive) as c0, " +
-                          "new SupportBean(\"B\",intPrimitive+10), " +
+                          "new SupportBean(\"A\",IntPrimitive) as c0, " +
+                          "new SupportBean(\"B\",IntPrimitive+10), " +
                           "new SupportBean() as c2, " +
                           "new SupportBean(\"ABC\",0).getTheString() as c3 " +
                           "from SupportBean";
                 env.CompileDeploy(soda, epl).AddListener("s0");
                 var expectedAggType = new object[][] {
                     new object[] { "c0", typeof(SupportBean) },
-                    new object[] { "new SupportBean(\"B\",intPrimitive+10)", typeof(SupportBean) }
+                    new object[] { "new SupportBean(\"B\",IntPrimitive+10)", typeof(SupportBean) }
                 };
                 env.AssertStatement(
                     "s0",
@@ -538,7 +538,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         AssertSupportBean(@event.Get("c0"), new object[] { "A", 10 });
                         AssertSupportBean(
                             ((IDictionary<string, object>)@event.Underlying).Get(
-                                "new SupportBean(\"B\",intPrimitive+10)"),
+                                "new SupportBean(\"B\",IntPrimitive+10)"),
                             new object[] { "B", 20 });
                         AssertSupportBean(@event.Get("c2"), new object[] { null, 0 });
                         Assert.AreEqual("ABC", @event.Get("c3"));

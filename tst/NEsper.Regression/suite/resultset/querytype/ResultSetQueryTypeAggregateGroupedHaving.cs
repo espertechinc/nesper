@@ -65,8 +65,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = !join
-                    ? "@name('s0') select * from SupportBean#length_batch(3) group by theString having count(*) > 1"
-                    : "@name('s0') select theString, intPrimitive from SupportBean_S0#lastevent, SupportBean#length_batch(3) group by theString having count(*) > 1";
+                    ? "@name('s0') select * from SupportBean#length_batch(3) group by TheString having count(*) > 1"
+                    : "@name('s0') select TheString, IntPrimitive from SupportBean_S0#lastevent, SupportBean#length_batch(3) group by TheString having count(*) > 1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 env.AssertPropsPerRowNewFlattened(
                     "s0",
-                    "theString,intPrimitive".SplitCsv(),
+                    "TheString,IntPrimitive".SplitCsv(),
                     new object[][] { new object[] { "E2", 20 }, new object[] { "E2", 21 } });
 
                 env.UndeployAll();
@@ -100,11 +100,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@name('s0') select irstream symbol, volume, sum(price) as mySum " +
+                var epl = "@name('s0') select irstream Symbol, Volume, sum(Price) as mySum "+
                           "from SupportMarketDataBean#length(3) " +
-                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
-                          "group by symbol " +
-                          "having sum(price) >= 50";
+"where Symbol='DELL' or Symbol='IBM' or Symbol='GE' "+
+"group by Symbol "+
+                          "having sum(Price) >= 50";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertionSum(env);
@@ -118,13 +118,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@name('s0') select irstream symbol, volume, sum(price) as mySum " +
+                var epl = "@name('s0') select irstream Symbol, Volume, sum(Price) as mySum "+
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
-                          "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                          "  and one.theString = two.symbol " +
-                          "group by symbol " +
-                          "having sum(price) >= 50";
+"where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') "+
+"  and one.TheString = two.Symbol "+
+"group by Symbol "+
+                          "having sum(Price) >= 50";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
@@ -142,12 +142,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("symbol"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("volume"));
+                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("Volume"));
                     Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
                 });
 
-            var fields = "symbol,volume,mySum".SplitCsv();
+            var fields = "Symbol,Volume,mySum".SplitCsv();
             SendEvent(env, SYMBOL_DELL, 10000, 49);
             env.AssertListenerNotInvoked("s0");
 

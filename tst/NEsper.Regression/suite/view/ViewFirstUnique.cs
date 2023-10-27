@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 var fields = "c0,c1".SplitCsv();
                 var epl =
-                    "@name('s0') select irstream theString as c0, intPrimitive as c1 from SupportBean#firstunique(theString)";
+                    "@name('s0') select irstream TheString as c0, IntPrimitive as c1 from SupportBean#firstunique(TheString)";
                 if (optionalAnnotations != null) {
                     epl = optionalAnnotations + epl;
                 }
@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@name('s0') select irstream symbol, price from SupportMarketDataBean#firstunique(symbol) order by symbol";
+"@name('s0') select irstream Symbol, Price from SupportMarketDataBean#firstunique(Symbol) Order by Symbol";
                 if (optionalAnnotation != null) {
                     text = optionalAnnotation + text;
                 }
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S1", 100));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "symbol", "S1" }, new object[] { "price", 100.0 } },
+                    new object[][] { new object[] { "Symbol", "S1" }, new object[] { "Price", 100.0 } },
                     null);
 
                 env.Milestone(1);
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S2", 5));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "symbol", "S2" }, new object[] { "price", 5.0 } },
+                    new object[][] { new object[] { "Symbol", "S2" }, new object[] { "Price", 5.0 } },
                     null);
 
                 env.Milestone(2);
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // test iterator
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "price" },
+                    new string[] { "Price" },
                     new object[][] { new object[] { 100.0 }, new object[] { 5.0 } });
 
                 env.Milestone(4);
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(MakeMarketDataEvent("S3", 6));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "symbol", "S3" }, new object[] { "price", 6.0 } },
+                    new object[][] { new object[] { "Symbol", "S3" }, new object[] { "Price", 6.0 } },
                     null);
 
                 env.UndeployAll();

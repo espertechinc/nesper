@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             env.CompileDeploy("@name('s0') select TheString from SupportBean");
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             env.Statement("s0").Events += (
                     sender,
                     updateEventArgs) =>
-                strings.Add((string) updateEventArgs.NewEvents[0].Get("TheString"));
+                strings.Add((string)updateEventArgs.NewEvents[0].Get("TheString"));
 
             TrySend(env, 2, 50000);
 

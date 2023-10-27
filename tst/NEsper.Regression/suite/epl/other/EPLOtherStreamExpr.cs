@@ -198,15 +198,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var textOne = "@name('s0') select symbol, s1.getTheString() as theString from " +
+                var textOne = "@name('s0') select Symbol, s1.getTheString() as TheString from "+
                               "SupportMarketDataBean#keepall as s0 " +
                               "left outer join " +
-                              "SupportBean#keepall as s1 on s0.symbol=s1.theString";
+"SupportBean#keepall as s1 on s0.Symbol=s1.TheString";
                 env.CompileDeploy(textOne).AddListener("s0");
 
                 var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
                 env.SendEventBean(eventA);
-                env.AssertPropsNew("s0", new string[] { "symbol", "theString" }, new object[] { "ACME", null });
+                env.AssertPropsNew("s0", new string[] { "Symbol", "TheString" }, new object[] { "ACME", null });
 
                 env.UndeployAll();
             }
@@ -217,10 +217,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var textOne =
-                    "@name('s0') select symbol, s1.getSimpleProperty() as simpleprop, s1.makeDefaultBean() as def from " +
+"@name('s0') select Symbol, s1.getSimpleProperty() as simpleprop, s1.makeDefaultBean() as def from "+
                     "SupportMarketDataBean#keepall as s0 " +
                     "left outer join " +
-                    "SupportBeanComplexProps#keepall as s1 on s0.symbol=s1.simpleProperty";
+"SupportBeanComplexProps#keepall as s1 on s0.Symbol=s1.SimpleProperty";
                 env.CompileDeploy(textOne).AddListener("s0");
 
                 var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     theEvent => {
                         EPAssertionUtil.AssertProps(
                             theEvent,
-                            new string[] { "symbol", "simpleprop" },
+                            new string[] { "Symbol", "simpleprop" },
                             new object[] { "ACME", null });
                         Assert.IsNull(theEvent.Get("def"));
                     });
@@ -243,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     @event => {
                         EPAssertionUtil.AssertProps(
                             @event,
-                            new string[] { "symbol", "simpleprop" },
+                            new string[] { "Symbol", "simpleprop" },
                             new object[] { "ACME", "ACME" });
                         Assert.IsNotNull(@event.Get("def"));
                     });
@@ -257,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var textOne =
-                    "@name('s0') select s0.getVolume() as volume, s0.getSymbol() as symbol, s0.getPriceTimesVolume(2) as pvf from " +
+"@name('s0') select s0.getVolume() as Volume, s0.getSymbol() as Symbol, s0.getPriceTimesVolume(2) as pvf from "+
                     "SupportMarketDataBean as s0 ";
                 env.CompileDeploy(textOne).AddListener("s0");
 
@@ -266,8 +266,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     statement => {
                         var type = statement.EventType;
                         Assert.AreEqual(3, type.PropertyNames.Length);
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("volume"));
-                        Assert.AreEqual(typeof(string), type.GetPropertyType("symbol"));
+                        Assert.AreEqual(typeof(long?), type.GetPropertyType("Volume"));
+                        Assert.AreEqual(typeof(string), type.GetPropertyType("Symbol"));
                         Assert.AreEqual(typeof(double?), type.GetPropertyType("pvf"));
                     });
 
@@ -275,7 +275,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(eventA);
                 env.AssertPropsNew(
                     "s0",
-                    new string[] { "volume", "symbol", "pvf" },
+                    new string[] { "Volume", "Symbol", "pvf" },
                     new object[] { 99L, "ACME", 4d * 99L * 2 });
 
                 env.UndeployAll();
@@ -312,8 +312,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                           typeof(MyTestEvent).FullName +
                           ";\n" +
                           "@name('s0') select " +
-                          "s0.getValueAsInt(s0, 'id') as c0," +
-                          "s0.getValueAsInt(*, 'id') as c1" +
+                          "s0.getValueAsInt(s0, 'Id') as c0," +
+                          "s0.getValueAsInt(*, 'Id') as c1" +
                           " from MyTestEvent as s0";
                 env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
 
@@ -416,8 +416,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "' taking no parameters [");
 
                 env.TryInvalidCompile(
-                    "select s.theString from pattern [every [2] s=SupportBean] ee",
-                    "Failed to validate select-clause expression 's.theString': Failed to resolve property 's.theString' (property 's' is an indexed property and requires an index or enumeration method to access values)");
+                    "select s.TheString from pattern [every [2] s=SupportBean] ee",
+                    "Failed to validate select-clause expression 's.TheString': Failed to resolve property 's.TheString' (property 's' is an indexed property and requires an index or enumeration method to access values)");
             }
         }
 

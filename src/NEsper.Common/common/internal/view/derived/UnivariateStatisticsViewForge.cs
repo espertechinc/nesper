@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.view.derived
         }
 
         internal override Type TypeOfFactory => typeof(UnivariateStatisticsViewFactory);
-        internal override string FactoryMethod => "uni";
+        internal override string FactoryMethod => "Uni";
 
         internal override void Assign(
             CodegenMethod method,
@@ -84,12 +84,12 @@ namespace com.espertech.esper.common.@internal.view.derived
             CodegenClassScope classScope)
         {
             if (AdditionalProps != null) {
-                method.Block.ExprDotMethod(factory, "setAdditionalProps", AdditionalProps.Codegen(method, classScope));
+                method.Block.SetProperty(factory, "AdditionalProps", AdditionalProps.Codegen(method, classScope));
             }
 
-            method.Block.ExprDotMethod(
+            method.Block.SetProperty(
                 factory,
-                "setFieldEval",
+                "FieldEval",
                 CodegenEvaluator(fieldExpression.Forge, method, GetType(), classScope));
         }
 

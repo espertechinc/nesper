@@ -241,29 +241,29 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 // invalid use of function
                 var expected =
-                    "Failed to validate select-clause expression 'grouping(theString)': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select grouping(theString) from SupportBean]";
-                env.TryInvalidCompile("select grouping(theString) from SupportBean", expected);
+"Failed to validate select-clause expression 'grouping(TheString)': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or Order-by-clause [select grouping(TheString) from SupportBean]";
+                env.TryInvalidCompile("select grouping(TheString) from SupportBean", expected);
                 env.TryInvalidCompile(
-                    "select theString, sum(intPrimitive) from SupportBean(grouping(theString) = 1) group by rollup(theString)",
-                    "Failed to validate filter expression 'grouping(theString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select theString, sum(intPrimitive) from SupportBean(grouping(theString) = 1) group by rollup(theString)]");
+                    "select TheString, sum(IntPrimitive) from SupportBean(grouping(TheString) = 1) group by rollup(TheString)",
+"Failed to validate filter expression 'grouping(TheString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or Order-by-clause [select TheString, sum(IntPrimitive) from SupportBean(grouping(TheString) = 1) group by rollup(TheString)]");
                 env.TryInvalidCompile(
-                    "select theString, sum(intPrimitive) from SupportBean where grouping(theString) = 1 group by rollup(theString)",
-                    "Failed to validate filter expression 'grouping(theString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select theString, sum(intPrimitive) from SupportBean where grouping(theString) = 1 group by rollup(theString)]");
+                    "select TheString, sum(IntPrimitive) from SupportBean where grouping(TheString) = 1 group by rollup(TheString)",
+"Failed to validate filter expression 'grouping(TheString)=1': The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or Order-by-clause [select TheString, sum(IntPrimitive) from SupportBean where grouping(TheString) = 1 group by rollup(TheString)]");
                 env.TryInvalidCompile(
-                    "select theString, sum(intPrimitive) from SupportBean group by rollup(grouping(theString))",
-                    "The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or order-by-clause [select theString, sum(intPrimitive) from SupportBean group by rollup(grouping(theString))]");
+                    "select TheString, sum(IntPrimitive) from SupportBean group by rollup(grouping(TheString))",
+"The grouping function requires the group-by clause to specify rollup, cube or grouping sets, and may only be used in the select-clause, having-clause or Order-by-clause [select TheString, sum(IntPrimitive) from SupportBean group by rollup(grouping(TheString))]");
 
                 // invalid parameters
                 env.TryInvalidCompile(
-                    "select theString, sum(intPrimitive), grouping(longPrimitive) from SupportBean group by rollup(theString)",
-                    "Failed to find expression 'longPrimitive' among group-by expressions");
+                    "select TheString, sum(IntPrimitive), grouping(LongPrimitive) from SupportBean group by rollup(TheString)",
+                    "Failed to find expression 'LongPrimitive' among group-by expressions");
                 env.TryInvalidCompile(
-                    "select theString, sum(intPrimitive), grouping(theString||'x') from SupportBean group by rollup(theString)",
-                    "Failed to find expression 'theString||\"x\"' among group-by expressions [select theString, sum(intPrimitive), grouping(theString||'x') from SupportBean group by rollup(theString)]");
+                    "select TheString, sum(IntPrimitive), grouping(TheString||'x') from SupportBean group by rollup(TheString)",
+                    "Failed to find expression 'TheString||\"x\"' among group-by expressions [select TheString, sum(IntPrimitive), grouping(TheString||'x') from SupportBean group by rollup(TheString)]");
 
                 env.TryInvalidCompile(
-                    "select theString, sum(intPrimitive), grouping_id(theString, theString) from SupportBean group by rollup(theString)",
-                    "Duplicate expression 'theString' among grouping function parameters [select theString, sum(intPrimitive), grouping_id(theString, theString) from SupportBean group by rollup(theString)]");
+                    "select TheString, sum(IntPrimitive), grouping_id(TheString, TheString) from SupportBean group by rollup(TheString)",
+                    "Duplicate expression 'TheString' among grouping function parameters [select TheString, sum(IntPrimitive), grouping_id(TheString, TheString) from SupportBean group by rollup(TheString)]");
             }
 
             public ISet<RegressionFlag> Flags()

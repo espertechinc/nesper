@@ -81,14 +81,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean")
-                    .WithExpression(fields[0], "instanceof(theString, string)")
-                    .WithExpression(fields[1], "instanceof(intBoxed, int)")
-                    .WithExpression(fields[2], "instanceof(floatBoxed, System.Single)")
-                    .WithExpression(fields[3], "instanceof(theString, System.Single, char, byte)")
-                    .WithExpression(fields[4], "instanceof(intPrimitive, System.Int32)")
-                    .WithExpression(fields[5], "instanceof(intPrimitive, long)")
-                    .WithExpression(fields[6], "instanceof(intPrimitive, long, long, System.Object)")
-                    .WithExpression(fields[7], "instanceof(floatBoxed, long, float)");
+                    .WithExpression(fields[0], "instanceof(TheString, string)")
+                    .WithExpression(fields[1], "instanceof(IntBoxed, int)")
+                    .WithExpression(fields[2], "instanceof(FloatBoxed, System.Single)")
+                    .WithExpression(fields[3], "instanceof(TheString, System.Single, char, byte)")
+                    .WithExpression(fields[4], "instanceof(IntPrimitive, System.Int32)")
+                    .WithExpression(fields[5], "instanceof(IntPrimitive, long)")
+                    .WithExpression(fields[6], "instanceof(IntPrimitive, long, long, System.Object)")
+                    .WithExpression(fields[7], "instanceof(FloatBoxed, long, float)");
 
                 builder.WithStatementConsumer(
                     stmt => {
@@ -114,14 +114,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "select instanceof(theString,string) as t0, " +
-                               "instanceof(theString,float,string,int) as t1 " +
+                var stmtText = "select instanceof(TheString,string) as t0, " +
+                               "instanceof(TheString,float,string,int) as t1 " +
                                "from SupportBean";
 
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create()
-                    .Add(Expressions.InstanceOf("theString", "string"), "t0")
-                    .Add(Expressions.InstanceOf(Expressions.Property("theString"), "float", "string", "int"), "t1");
+                    .Add(Expressions.InstanceOf("TheString", "string"), "t0")
+                    .Add(Expressions.InstanceOf(Expressions.Property("TheString"), "float", "string", "int"), "t1");
                 model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
                 model = env.CopyMayFail(model);
                 Assert.AreEqual(stmtText, model.ToEPL());
@@ -153,8 +153,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select instanceof(theString,string) as t0, " +
-                          "instanceof(theString,float,string,int) as t1 " +
+                var epl = "@name('s0') select instanceof(TheString,string) as t0, " +
+                          "instanceof(TheString,float,string,int) as t1 " +
                           "from SupportBean";
                 env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
 
@@ -182,14 +182,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select instanceof(item?, string) as t0, " +
-                          " instanceof(item?, int) as t1, " +
-                          " instanceof(item?, System.Single) as t2, " +
-                          " instanceof(item?, System.Single, char, byte) as t3, " +
-                          " instanceof(item?, System.Int32) as t4, " +
-                          " instanceof(item?, long) as t5, " +
-                          " instanceof(item?, long, long, System.Object) as t6, " +
-                          " instanceof(item?, long, float) as t7 " +
+                var epl = "@name('s0') select instanceof(Item?, string) as t0, "+
+" instanceof(Item?, int) as t1, "+
+" instanceof(Item?, System.Single) as t2, "+
+" instanceof(Item?, System.Single, char, byte) as t3, "+
+" instanceof(Item?, System.Int32) as t4, "+
+" instanceof(Item?, long) as t5, "+
+" instanceof(Item?, long, long, System.Object) as t6, "+
+" instanceof(Item?, long, float) as t7 "+
                           " from SupportBeanDynRoot";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -235,34 +235,34 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select instanceof(item?, " +
+                var epl = "@name('s0') select instanceof(Item?, "+
                           typeof(SupportMarkerInterface).FullName +
                           ") as t0, " +
-                          " instanceof(item?, " +
+" instanceof(Item?, "+
                           typeof(ISupportA).FullName +
                           ") as t1, " +
-                          " instanceof(item?, " +
+" instanceof(Item?, "+
                           typeof(ISupportBaseAB).FullName +
                           ") as t2, " +
-                          " instanceof(item?, " +
+" instanceof(Item?, "+
                           typeof(ISupportBaseABImpl).FullName +
                           ") as t3, " +
-                          " instanceof(item?, " +
+" instanceof(Item?, "+
                           typeof(ISupportA).FullName +
                           ", " +
                           typeof(ISupportB).FullName +
                           ") as t4, " +
-                          " instanceof(item?, " +
+" instanceof(Item?, "+
                           typeof(ISupportBaseAB).FullName +
                           ", " +
                           typeof(ISupportB).FullName +
                           ") as t5, " +
-                          " instanceof(item?, " +
+" instanceof(Item?, "+
                           typeof(ISupportAImplSuperG).FullName +
                           ", " +
                           typeof(ISupportB).FullName +
                           ") as t6, " +
-                          " instanceof(item?, " +
+" instanceof(Item?, "+
                           typeof(ISupportAImplSuperGImplPlus).FullName +
                           ", " +
                           typeof(SupportBeanAtoFBase).FullName +

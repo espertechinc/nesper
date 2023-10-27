@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') @public create window MyInfra#keepall as select theString as a, longPrimitive as b, longBoxed as c from SupportBean"
+                    ? "@name('create') @public create window MyInfra#keepall as select TheString as a, LongPrimitive as b, LongBoxed as c from SupportBean"
                     : "@name('create') @public create table MyInfra(a string primary key, b long, c long)";
                 if (enableIndexShareCreate) {
                     stmtTextCreate = "@Hint('enable_window_subquery_indexshare') " + stmtTextCreate;
@@ -70,12 +70,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "insert into MyInfra select theString as a, longPrimitive as b, longBoxed as c from SupportBean";
+                    "insert into MyInfra select TheString as a, LongPrimitive as b, LongBoxed as c from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // create consumer
                 var stmtTextSelectOne =
-                    "@name('select') select irstream (select a from MyInfra) as value, symbol from SupportMarketDataBean";
+"@name('select') select irstream (select a from MyInfra) as value, Symbol from SupportMarketDataBean";
                 if (disableIndexShareConsumer) {
                     stmtTextSelectOne = "@Hint('disable_window_subquery_indexshare') " + stmtTextSelectOne;
                 }
@@ -86,13 +86,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     statement => {
                         EPAssertionUtil.AssertEqualsAnyOrder(
                             statement.EventType.PropertyNames,
-                            new string[] { "value", "symbol" });
+                            new string[] { "value", "Symbol"});
                         Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("value"));
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("symbol"));
+                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
                     });
 
                 SendMarketBean(env, "M1");
-                var fieldsStmt = new string[] { "value", "symbol" };
+                var fieldsStmt = new string[] { "value", "Symbol"};
                 env.AssertPropsNew("select", fieldsStmt, new object[] { null, "M1" });
 
                 SendSupportBean(env, "S1", 1L, 2L);
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create consumer 2 -- note that this one should not start empty now
                 var stmtTextSelectTwo =
-                    "@name('selectTwo') select irstream (select a from MyInfra) as value, symbol from SupportMarketDataBean";
+"@name('selectTwo') select irstream (select a from MyInfra) as value, Symbol from SupportMarketDataBean";
                 if (disableIndexShareConsumer) {
                     stmtTextSelectTwo = "@Hint('disable_window_subquery_indexshare') " + stmtTextSelectTwo;
                 }
@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.AssertPropsNew("selectTwo", fieldsStmt, new object[] { null, "M2" });
 
                 // create delete stmt
-                var stmtTextDelete = "@name('delete') on SupportBean_A delete from MyInfra where id = a";
+                var stmtTextDelete = "@name('delete') on SupportBean_A delete from MyInfra where Id = a";
                 env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
 
                 // delete S1

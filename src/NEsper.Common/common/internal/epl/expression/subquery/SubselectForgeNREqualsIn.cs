@@ -86,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 var ifRight = foreachX.IfCondition(NotEqualsNull(Ref("valueRight")));
                 {
                     if (coercer == null) {
-                        ifRight.IfCondition(ExprDotMethod(left, "equals", Ref("valueRight")))
+                        ifRight.IfCondition(ExprDotMethod(left, "Equals", Ref("valueRight")))
                             .BlockReturn(Constant(!isNotIn));
                     }
                     else {

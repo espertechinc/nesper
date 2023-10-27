@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.view.time_accum
         }
 
         internal override Type TypeOfFactory => typeof(TimeAccumViewFactory);
-        internal override string FactoryMethod => "timeaccum";
+        internal override string FactoryMethod => "Timeaccum";
 
         internal override void Assign(
             CodegenMethod method,
@@ -71,8 +71,8 @@ namespace com.espertech.esper.common.@internal.view.time_accum
             }
 
             method.Block.DeclareVar<TimePeriodCompute>("eval", timePeriodCompute.MakeEvaluator(method, classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId));
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
+                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId));
         }
 
         public override AppliesTo AppliesTo()

@@ -48,27 +48,38 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             bool fireAndForget)
         {
             // REGION: Constructor
-            var ctorParms = new List<CodegenTypedParam> {
-                new CodegenTypedParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref, false)
+            var ctorParams = new List<CodegenTypedParam> {
+                new CodegenTypedParam(
+                    typeof(EPStatementInitServices),
+                    EPStatementInitServicesConstants.REF.Ref,
+                    false)
             };
-            var codegenCtor = new CodegenCtor(GetType(), includeDebugSymbols, ctorParms);
-            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _className);
-            
-            // REGION: Members
-            var members = new List<CodegenTypedParam>();
-            members.Add(new CodegenTypedParam(typeof(Guid), MEMBERNAME_ID));
-            members.Add(new CodegenTypedParam(TypeOfFactory(), MEMBERNAME_STATEMENTAIFACTORY));
             
             if (_namespaceScope.FieldsClassNameOptional != null) {
-                codegenCtor.Block.StaticMethod(
-                    _namespaceScope.FieldsClassNameOptional,
+                ctorParams.Add(
+                    new CodegenTypedParam(
+                        _namespaceScope.FieldsClassNameOptional,
+                        MEMBERNAME_STATEMENT_FIELDS));
+            }
+            
+            var ctor = new CodegenCtor(GetType(), includeDebugSymbols, ctorParams);
+            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _className);
+            
+            if (_namespaceScope.FieldsClassNameOptional != null) {
+                ctor.Block.ExprDotMethod(
+                    Ref(MEMBERNAME_STATEMENT_FIELDS),
                     "Init",
                     EPStatementInitServicesConstants.REF);
             }
 
-            codegenCtor.Block.AssignMember(
+            ctor.Block.AssignMember(
                 MEMBERNAME_STATEMENTAIFACTORY,
-                LocalMethod(CodegenConstructorInit(codegenCtor, classScope), SAIFFInitializeSymbol.REF_STMTINITSVC));
+                LocalMethod(CodegenConstructorInit(ctor, classScope), SAIFFInitializeSymbol.REF_STMTINITSVC));
+
+            // REGION: Members
+            var members = new List<CodegenTypedParam>();
+            members.Add(new CodegenTypedParam(typeof(Guid), MEMBERNAME_ID));
+            members.Add(new CodegenTypedParam(TypeOfFactory(), MEMBERNAME_STATEMENTAIFACTORY));
             
             // REGION: Properties
             var properties = new CodegenClassProperties();
@@ -81,7 +92,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             
             // REGION: Methods
             var methods = new CodegenClassMethods();
-            
+
             CodegenMethod assignMethod = null;
             CodegenMethod unassignMethod = null;
             
@@ -90,12 +101,12 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                     .AddParam<StatementAIFactoryAssignments>("assignments");
                 assignMethod.Block.ExprDotMethod(Ref(MEMBERNAME_STATEMENT_FIELDS), "Assign", Ref("assignments"));
-                assignMethod.Block.StaticMethod(_namespaceScope.FieldsClassNameOptional, "Assign", Ref("assignments"));
+                //assignMethod.Block.StaticMethod(_namespaceScope.FieldsClassNameOptional, "Assign", Ref("assignments"));
                 
                 unassignMethod = CodegenMethod
                     .MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope);
                 unassignMethod.Block.ExprDotMethod(Ref(MEMBERNAME_STATEMENT_FIELDS), "Unassign");
-                unassignMethod.Block.StaticMethod(_namespaceScope.FieldsClassNameOptional, "Unassign");
+                //unassignMethod.Block.StaticMethod(_namespaceScope.FieldsClassNameOptional, "Unassign");
             }
 
             CodegenMethod setValueMethod = null;
@@ -109,6 +120,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             }
 
             CodegenStackGenerator.RecursiveBuildStack(factoryProp, "Factory", methods, properties);
+
             if (assignMethod != null) {
                 CodegenStackGenerator.RecursiveBuildStack(assignMethod, "Assign", methods, properties);
                 CodegenStackGenerator.RecursiveBuildStack(unassignMethod, "Unassign", methods, properties);
@@ -118,14 +130,14 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 CodegenStackGenerator.RecursiveBuildStack(setValueMethod, "SetValue", methods, properties);
             }
 
-            CodegenStackGenerator.RecursiveBuildStack(codegenCtor, "ctor", methods, properties);
+            CodegenStackGenerator.RecursiveBuildStack(ctor, "ctor", methods, properties);
             return new CodegenClass(
                 CodegenClassType.STATEMENTAIFACTORYPROVIDER,
                 typeof(StatementAIFactoryProvider),
                 _className,
                 classScope,
                 members,
-                codegenCtor,
+                ctor,
                 methods,
                 properties,
                 EmptyList<CodegenInnerClass>.Instance);

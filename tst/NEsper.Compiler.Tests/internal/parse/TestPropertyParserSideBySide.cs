@@ -42,9 +42,9 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        RunAssertion("prop?", new SimplePropAssertion("prop", true));
 	        RunAssertion("a[1]?", new IndexedPropAssertion("a", 1, true));
 	        RunAssertion("a('key')?", new MappedPropAssertion("a", "key", true));
-	        RunAssertion("item?.id", new NestedPropAssertion(new SimplePropAssertion("item", true), new SimplePropAssertion("id", true)));
-	        RunAssertion("item[0]?.id", new NestedPropAssertion(new IndexedPropAssertion("item", 0, true), new SimplePropAssertion("id")));
-	        RunAssertion("item('a')?.id", new NestedPropAssertion(new MappedPropAssertion("item", "a", true), new SimplePropAssertion("id")));
+	        RunAssertion("Item?.Id", new NestedPropAssertion(new SimplePropAssertion("Item", true), new SimplePropAssertion("id", true)));
+	        RunAssertion("Item[0]?.Id", new NestedPropAssertion(new IndexedPropAssertion("Item", 0, true), new SimplePropAssertion("id")));
+	        RunAssertion("Item('a')?.Id", new NestedPropAssertion(new MappedPropAssertion("Item", "a", true), new SimplePropAssertion("id")));
 	    }
 
 	    private void RunAssertion(

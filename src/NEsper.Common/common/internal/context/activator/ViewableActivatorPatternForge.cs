@@ -59,25 +59,25 @@ namespace com.espertech.esper.common.@internal.context.activator
                     "activator",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.VIEWABLEACTIVATORFACTORY)
-                        .Add("createPattern"))
-                .ExprDotMethod(Ref("activator"), "setRootFactoryNode", Ref("root"))
-                .ExprDotMethod(
+                        .Add("CreatePattern"))
+                .SetProperty(Ref("activator"), "RootFactoryNode", Ref("root"))
+                .SetProperty(
                     Ref("activator"),
-                    "setEventBeanTypedEventFactory",
+                    "EventBeanTypedEventFactory",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.EVENTBEANTYPEDEVENTFACTORY))
                 .DeclareVar<EventType>(
                     "eventType",
                     EventTypeUtility.ResolveTypeCodegen(eventType, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("activator"), "setEventType", Ref("eventType"))
-                .ExprDotMethod(Ref("activator"), "setPatternContext", patternContext.Make(method, symbols, classScope))
-                .ExprDotMethod(Ref("activator"), "setHasConsumingFilter", Constant(spec.IsConsumingFilters))
-                .ExprDotMethod(
+                .SetProperty(Ref("activator"), "EventType", Ref("eventType"))
+                .SetProperty(Ref("activator"), "PatternContext", patternContext.Make(method, symbols, classScope))
+                .SetProperty(Ref("activator"), "HasConsumingFilter", Constant(spec.IsConsumingFilters))
+                .SetProperty(
                     Ref("activator"),
-                    "setSuppressSameEventMatches",
+                    "SuppressSameEventMatches",
                     Constant(spec.IsSuppressSameEventMatches))
-                .ExprDotMethod(Ref("activator"), "setDiscardPartialsOnMatch", Constant(spec.IsDiscardPartialsOnMatch))
-                .ExprDotMethod(Ref("activator"), "setCanIterate", Constant(isCanIterate))
+                .SetProperty(Ref("activator"), "DiscardPartialsOnMatch", Constant(spec.IsDiscardPartialsOnMatch))
+                .SetProperty(Ref("activator"), "CanIterate", Constant(isCanIterate))
                 .MethodReturn(Ref("activator"));
 
             return LocalMethod(method);

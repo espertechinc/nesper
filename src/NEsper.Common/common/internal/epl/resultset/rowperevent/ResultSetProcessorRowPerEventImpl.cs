@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 .DeclareVarNoInit(typeof(EventBean[]), "selectNewEvents");
 
             if (forge.IsUnidirectional) {
-                method.Block.ExprDotMethod(Ref("this"), "clear");
+                method.Block.ExprDotMethod(Ref("this"), "Clear");
             }
 
             method.Block.StaticMethod(
@@ -162,8 +162,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 .AddParam<Viewable>(NAME_VIEWABLE);
             if (!forge.IsSorting) {
                 iterator.Block.MethodReturn(
-                    NewInstance(
+                    StaticMethod(
                         typeof(ResultSetProcessorRowPerEventEnumerator),
+                        "For",
                         ExprDotMethod(REF_VIEWABLE, "GetEnumerator"),
                         Ref("this"),
                         MEMBER_EXPREVALCONTEXT));

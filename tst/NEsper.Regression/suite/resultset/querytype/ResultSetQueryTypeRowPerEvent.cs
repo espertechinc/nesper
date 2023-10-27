@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream longPrimitive, sum(longBoxed) as mySum " +
+                var epl = "@name('s0') select irstream LongPrimitive, sum(LongBoxed) as mySum " +
                           "from SupportBean#length(3)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -104,9 +104,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream longPrimitive, sum(longBoxed) as mySum " +
+                var epl = "@name('s0') select irstream LongPrimitive, sum(LongBoxed) as mySum " +
                           "from SupportBeanString#length(3) as one, SupportBean#length(3) as two " +
-                          "where one.theString = two.theString";
+                          "where one.TheString = two.TheString";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBeanString(JOIN_KEY));
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var epl = "@name('s0') select window(s0.*) as rows, sb " +
                           "from SupportBean#keepall as sb, SupportBean_S0#keepall as s0 " +
-                          "where sb.theString = s0.p00";
+                          "where sb.TheString = s0.P00";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "K1", "V1"));
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 // ESPER-571
                 var epl =
-                    "@name('s0') select max(intPrimitive) as val from SupportBean#time(1) having max(intPrimitive) > intBoxed";
+                    "@name('s0') select max(IntPrimitive) as val from SupportBean#time(1) having max(IntPrimitive) > IntBoxed";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "E1", 10, 1);
@@ -196,9 +196,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select 'IBM stats' as title, volume, avg(volume) as myAvg, sum(volume) as mySum " +
+                    "@name('s0') select 'IBM stats' as title, Volume, avg(Volume) as myAvg, sum(Volume) as mySum " +
                     "from SupportMarketDataBean#length(3)" +
-                    "where symbol='IBM'";
+"where Symbol='IBM'";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendMarketDataEvent(env, "GE", 10L);
@@ -227,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@name('s0') select irstream symbol, sum(distinct volume) as volSum " +
+                var epl = "@name('s0') select irstream Symbol, sum(distinct Volume) as volSum "+
                           "from SupportMarketDataBean#length(3) ";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("symbol"));
+                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
                         Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("volSum"));
                     });
 
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select irstream " +
-                          "avg(distinct volume) as avgVolume, count(distinct symbol) as countDistinctSymbol " +
+"avg(distinct Volume) as avgVolume, count(distinct Symbol) as countDistinctSymbol "+
                           "from SupportMarketDataBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -395,7 +395,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
         private static void TryAssert(RegressionEnvironment env)
         {
-            var fields = new string[] { "longPrimitive", "mySum" };
+            var fields = new string[] { "LongPrimitive", "mySum" };
 
             // assert select result type
             env.AssertStatement(
@@ -484,7 +484,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     Assert.IsNull(oldData);
                     Assert.AreEqual(1, newData.Length);
 
-                    Assert.AreEqual(symbol, newData[0].Get("symbol"));
+                    Assert.AreEqual(symbol, newData[0].Get("Symbol"));
                     Assert.AreEqual(volSum, newData[0].Get("volSum"));
 
                     listener.Reset();
@@ -507,10 +507,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     Assert.AreEqual(1, oldData.Length);
                     Assert.AreEqual(1, newData.Length);
 
-                    Assert.AreEqual(symbolOld, oldData[0].Get("symbol"));
+                    Assert.AreEqual(symbolOld, oldData[0].Get("Symbol"));
                     Assert.AreEqual(volSumOld, oldData[0].Get("volSum"));
 
-                    Assert.AreEqual(symbolNew, newData[0].Get("symbol"));
+                    Assert.AreEqual(symbolNew, newData[0].Get("Symbol"));
                     Assert.AreEqual(volSumNew, newData[0].Get("volSum"));
 
                     listener.Reset();

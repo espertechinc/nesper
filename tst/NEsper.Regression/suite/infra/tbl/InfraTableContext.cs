@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "Failed to plan subquery number 1 querying MyTable: Mismatch in context specification, the context for the table 'MyTable' is 'SimpleCtx' and the query specifies no context  [select (select * from MyTable) from SupportBean]");
                 env.TryInvalidCompile(
                     path,
-                    "insert into MyTable select theString as pkey from SupportBean",
+                    "insert into MyTable select TheString as pkey from SupportBean",
                     "Table by name 'MyTable' has been declared for context 'SimpleCtx' and can only be used within the same context [");
 
                 env.UndeployAll();
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@public context CtxNowTillS0 create table MyTable(pkey string primary key, thesum sum(int), col0 string)",
                     path);
                 env.CompileDeploy(
-                    "context CtxNowTillS0 into table MyTable select sum(intPrimitive) as thesum from SupportBean group by theString",
+                    "context CtxNowTillS0 into table MyTable select sum(IntPrimitive) as thesum from SupportBean group by TheString",
                     path);
                 env.CompileDeploy(
                         "@name('s0') context CtxNowTillS0 select pkey as c0, thesum as c1 from MyTable output snapshot when terminated",
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     new object[][] { new object[] { "E1", 110 }, new object[] { "E2", 20 } });
 
                 env.CompileDeploy("context CtxNowTillS0 create index MyIdx on MyTable(col0)", path);
-                env.CompileDeploy("context CtxNowTillS0 select * from MyTable, SupportBean_S1 where col0 = p11", path);
+                env.CompileDeploy("context CtxNowTillS0 select * from MyTable, SupportBean_S1 where col0 = P11", path);
 
                 env.SendEventBean(new SupportBean("E3", 90));
                 env.SendEventBean(new SupportBean("E1", 30));
@@ -131,11 +131,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@public create context CtxPerString " +
-                    "partition by theString from SupportBean, p00 from SupportBean_S0",
+                    "partition by TheString from SupportBean, P00 from SupportBean_S0",
                     path);
                 env.CompileDeploy("@public context CtxPerString create table MyTable(thesum sum(int))", path);
                 env.CompileDeploy(
-                    "context CtxPerString into table MyTable select sum(intPrimitive) as thesum from SupportBean",
+                    "context CtxPerString into table MyTable select sum(IntPrimitive) as thesum from SupportBean",
                     path);
                 env.CompileDeploy(
                         "@name('s0') context CtxPerString select MyTable.thesum as c0 from SupportBean_S0",

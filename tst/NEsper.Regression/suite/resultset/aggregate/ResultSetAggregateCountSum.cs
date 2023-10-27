@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 // Test for ESPER-118
-                var fields = "symbol,cnt".SplitCsv();
+                var fields = "Symbol,cnt".SplitCsv();
                 var statementText = "@name('s0') select *, count(*) as cnt from SupportMarketDataBean";
                 env.CompileDeploy(statementText).AddListener("s0");
 
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var statementText =
-                    "@name('s0') select irstream sum(intPrimitive) as mysum from SupportBean having sum(intPrimitive) = 2";
+                    "@name('s0') select irstream sum(IntPrimitive) as mysum from SupportBean having sum(IntPrimitive) = 2";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env);
@@ -283,26 +283,26 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create()
                     .SetStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
-                    .Add("symbol")
+                    .Add("Symbol")
                     .Add(Expressions.CountStar(), "countAll")
-                    .Add(Expressions.CountDistinct("volume"), "countDistVol")
-                    .Add(Expressions.Count("volume"), "countVol");
+                    .Add(Expressions.CountDistinct("Volume"), "countDistVol")
+                    .Add(Expressions.Count("Volume"), "countVol");
                 model.FromClause = FromClause.Create(
                     FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(3)));
                 model.WhereClause = Expressions.Or()
-                    .Add(Expressions.Eq("symbol", "DELL"))
-                    .Add(Expressions.Eq("symbol", "IBM"))
-                    .Add(Expressions.Eq("symbol", "GE"));
-                model.GroupByClause = GroupByClause.Create("symbol");
+                    .Add(Expressions.Eq("Symbol", "DELL"))
+                    .Add(Expressions.Eq("Symbol", "IBM"))
+                    .Add(Expressions.Eq("Symbol", "GE"));
+                model.GroupByClause = GroupByClause.Create("Symbol");
                 model = env.CopyMayFail(model);
 
-                var epl = "select irstream symbol, " +
+                var epl = "select irstream Symbol, "+
                           "count(*) as countAll, " +
-                          "count(distinct volume) as countDistVol, " +
-                          "count(volume) as countVol" +
+                          "count(distinct Volume) as countDistVol, " +
+                          "count(Volume) as countVol" +
                           " from SupportMarketDataBean#length(3) " +
-                          "where symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\" " +
-                          "group by symbol";
+"where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" "+
+"group by Symbol";
                 Assert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -320,31 +320,31 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 // test for ESPER-328
                 var epl =
-                    "@name('s0') select symbol, count(*) as cnt, avg(count(*)) as val from SupportMarketDataBean#length(3)" +
-                    "group by symbol order by symbol asc";
+"@name('s0') select Symbol, count(*) as cnt, avg(count(*)) as val from SupportMarketDataBean#length(3)"+
+"group by Symbol Order by Symbol asc";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, SYMBOL_DELL, 50L);
-                env.AssertPropsNew("s0", "symbol,cnt,val".SplitCsv(), new object[] { "DELL", 1L, 1d });
+                env.AssertPropsNew("s0", "Symbol,cnt,val".SplitCsv(), new object[] { "DELL", 1L, 1d });
 
                 SendEvent(env, SYMBOL_DELL, 51L);
-                env.AssertPropsNew("s0", "symbol,cnt,val".SplitCsv(), new object[] { "DELL", 2L, 1.5d });
+                env.AssertPropsNew("s0", "Symbol,cnt,val".SplitCsv(), new object[] { "DELL", 2L, 1.5d });
 
                 env.Milestone(1);
 
                 SendEvent(env, SYMBOL_DELL, 52L);
-                env.AssertPropsNew("s0", "symbol,cnt,val".SplitCsv(), new object[] { "DELL", 3L, 2d });
+                env.AssertPropsNew("s0", "Symbol,cnt,val".SplitCsv(), new object[] { "DELL", 3L, 2d });
 
                 SendEvent(env, "IBM", 52L);
                 env.AssertPropsPerRowNewOnly(
                     "s0",
-                    "symbol,cnt,val".SplitCsv(),
+"Symbol,cnt,val".SplitCsv(),
                     new object[][] { new object[] { "DELL", 2L, 2d }, new object[] { "IBM", 1L, 1d } });
 
                 env.Milestone(2);
 
                 SendEvent(env, SYMBOL_DELL, 53L);
-                env.AssertPropsNew("s0", "symbol,cnt,val".SplitCsv(), new object[] { "DELL", 2L, 2.5d });
+                env.AssertPropsNew("s0", "Symbol,cnt,val".SplitCsv(), new object[] { "DELL", 2L, 2.5d });
 
                 env.UndeployAll();
             }
@@ -354,13 +354,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream symbol, " +
+                var epl = "@name('s0') select irstream Symbol, "+
                           "count(*) as countAll, " +
-                          "count(distinct volume) as countDistVol, " +
-                          "count(volume) as countVol" +
+                          "count(distinct Volume) as countDistVol, " +
+                          "count(Volume) as countVol" +
                           " from SupportMarketDataBean#length(3) " +
-                          "where symbol=\"DELL\" or symbol=\"IBM\" or symbol=\"GE\" " +
-                          "group by symbol";
+"where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" "+
+"group by Symbol";
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
 
                 TryAssertionCount(env, new AtomicLong());
@@ -374,13 +374,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select irstream symbol, " +
+                var epl = "@name('s0') select irstream Symbol, "+
                           "count(*) as countAll," +
-                          "count(distinct volume) as countDistVol," +
-                          "count(all volume) as countVol" +
+                          "count(distinct Volume) as countDistVol," +
+                          "count(all Volume) as countVol" +
                           " from SupportMarketDataBean#length(3) " +
-                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
-                          "group by symbol";
+"where Symbol='DELL' or Symbol='IBM' or Symbol='GE' "+
+"group by Symbol";
 
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
@@ -395,15 +395,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select irstream symbol, " +
+                var epl = "@name('s0') select irstream Symbol, "+
                           "count(*) as countAll," +
-                          "count(distinct volume) as countDistVol," +
-                          "count(volume) as countVol " +
+                          "count(distinct Volume) as countDistVol," +
+                          "count(Volume) as countVol " +
                           " from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
-                          "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-                          "  and one.theString = two.symbol " +
-                          "group by symbol";
+"where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') "+
+"  and one.TheString = two.Symbol "+
+"group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
@@ -421,8 +421,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream symbol, count(distinct price) as countDistinctPrice " +
-                          "from SupportMarketDataBean group by symbol";
+                var epl = "@name('s0') select irstream Symbol, count(distinct Price) as countDistinctPrice "+
+"from SupportMarketDataBean group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -437,12 +437,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString,mysum".SplitCsv();
+                var fields = "TheString,mysum".SplitCsv();
                 var epl = "create window MyWindow.win:keepall() as select * from SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "on SupportBean_A a delete from MyWindow w where w.theString = a.id;\n" +
+                          "on SupportBean_A a delete from MyWindow w where w.TheString = a.Id;\n" +
                           "on SupportBean_B delete from MyWindow;\n" +
-                          "@name('s0') select theString, sum(intPrimitive) as mysum from MyWindow group by theString order by theString";
+"@name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString Order by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A", 100));
@@ -507,7 +507,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("symbol"));
+                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
                     Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("countAll"));
                     Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("countDistVol"));
                     Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("countVol"));
@@ -620,12 +620,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     Assert.AreEqual(1, oldData.Length);
                     Assert.AreEqual(1, newData.Length);
 
-                    Assert.AreEqual(symbolOld, oldData[0].Get("symbol"));
+                    Assert.AreEqual(symbolOld, oldData[0].Get("Symbol"));
                     Assert.AreEqual(countAllOld, oldData[0].Get("countAll"));
                     Assert.AreEqual(countDistVolOld, oldData[0].Get("countDistVol"));
                     Assert.AreEqual(countVolOld, oldData[0].Get("countVol"));
 
-                    Assert.AreEqual(symbolNew, newData[0].Get("symbol"));
+                    Assert.AreEqual(symbolNew, newData[0].Get("Symbol"));
                     Assert.AreEqual(countAllNew, newData[0].Get("countAll"));
                     Assert.AreEqual(countDistVolNew, newData[0].Get("countDistVol"));
                     Assert.AreEqual(countVolNew, newData[0].Get("countVol"));
@@ -661,7 +661,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             long expectedC0,
             long expectedC1)
         {
-            env.SendEventBean(new SupportEventWithManyArray("id").WithIntOne(intOne).WithIntTwo(intTwo));
+            env.SendEventBean(new SupportEventWithManyArray("Id").WithIntOne(intOne).WithIntTwo(intTwo));
             env.AssertPropsNew("s0", "c0,c1".SplitCsv(), new object[] { expectedC0, expectedC1 });
         }
     }

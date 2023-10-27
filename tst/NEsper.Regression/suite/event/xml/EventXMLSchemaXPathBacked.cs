@@ -89,21 +89,21 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
                     SupportEventPropUtil.AssertPropsEquals(
                         type.PropertyDescriptors.ToArray(),
-                        new SupportEventPropDesc("nested1", typeof(XmlNode)).WithFragment(!xpath),
+                        new SupportEventPropDesc("Nested1", typeof(XmlNode)).WithFragment(!xpath),
                         new SupportEventPropDesc("prop4", typeof(string)),
-                        new SupportEventPropDesc("nested3", typeof(XmlNode)).WithFragment(!xpath),
+                        new SupportEventPropDesc("Nested3", typeof(XmlNode)).WithFragment(!xpath),
                         new SupportEventPropDesc("customProp", typeof(double?)));
                 });
             env.UndeployModuleContaining("s0");
 
             var stmt = "@name('s0') select nested1 as nodeProp," +
                        "prop4 as nested1Prop," +
-                       "nested1.prop2 as nested2Prop," +
-                       "nested3.nested4('a').prop5[1] as complexProp," +
-                       "nested1.nested2.prop3[2] as indexedProp," +
+                       "Nested1.prop2 as nested2Prop," +
+                       "Nested3.Nested4('a').prop5[1] as complexProp," +
+                       "Nested1.Nested2.prop3[2] as indexedProp," +
                        "customProp," +
                        "prop4.attr2 as attrOneProp," +
-                       "nested3.nested4[2].id as attrTwoProp" +
+                       "Nested3.Nested4[2].Id as attrTwoProp" +
                        " from " +
                        typeName +
                        "#length(100)";
@@ -117,8 +117,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     SupportEventPropUtil.AssertPropsEquals(
                         type.PropertyDescriptors.ToArray(),
                         new SupportEventPropDesc("nodeProp", typeof(XmlNode)).WithFragment(!xpath),
-                        new SupportEventPropDesc("nested1Prop", typeof(string)),
-                        new SupportEventPropDesc("nested2Prop", typeof(bool?)),
+                        new SupportEventPropDesc("Nested1Prop", typeof(string)),
+                        new SupportEventPropDesc("Nested2Prop", typeof(bool?)),
                         new SupportEventPropDesc("complexProp", typeof(string)),
                         new SupportEventPropDesc("indexedProp", typeof(int?)),
                         new SupportEventPropDesc("customProp", typeof(double?)),
@@ -136,8 +136,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     var theEvent = listener.LastNewData[0];
 
                     Assert.AreSame(doc.DocumentElement.ChildNodes.Item(1), theEvent.Get("nodeProp"));
-                    Assert.AreEqual("SAMPLE_V6", theEvent.Get("nested1Prop"));
-                    Assert.AreEqual(true, theEvent.Get("nested2Prop"));
+                    Assert.AreEqual("SAMPLE_V6", theEvent.Get("Nested1Prop"));
+                    Assert.AreEqual(true, theEvent.Get("Nested2Prop"));
                     Assert.AreEqual("SAMPLE_V8", theEvent.Get("complexProp"));
                     Assert.AreEqual(5, theEvent.Get("indexedProp"));
                     Assert.AreEqual(3.0, theEvent.Get("customProp"));

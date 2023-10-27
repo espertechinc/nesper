@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.util;
@@ -25,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 	public class ExprArrayNode : ExprNodeBase
 	{
 
-		[NonSerialized] private ExprArrayNodeForge forge;
+		[NonSerialized] [JsonIgnore] private ExprArrayNodeForge forge;
 		private Type optionalRequiredType;
 
 		/// <summary>

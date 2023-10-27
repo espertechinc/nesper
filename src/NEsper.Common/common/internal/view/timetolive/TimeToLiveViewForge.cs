@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
         }
 
         internal override Type TypeOfFactory => typeof(TimeOrderViewFactory);
-        internal override string FactoryMethod => "timeorder";
+        internal override string FactoryMethod => "Timeorder";
 
         internal override void Assign(
             CodegenMethod method,
@@ -74,13 +74,13 @@ namespace com.espertech.esper.common.@internal.view.timetolive
                     typeof(TimePeriodCompute),
                     "eval",
                     new TimePeriodComputeConstGivenDeltaForge(0).MakeEvaluator(method, classScope))
-                .ExprDotMethod(
+                .SetProperty(
                     factory,
-                    "setTimestampEval",
+                    "TimestampEval",
                     CodegenEvaluator(timestampExpression.Forge, method, typeof(TimeOrderViewForge), classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId))
-                .ExprDotMethod(factory, "setTimeToLive", ConstantTrue());
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
+                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))
+                .SetProperty(factory, "TimeToLive", ConstantTrue());
         }
 
         public override AppliesTo AppliesTo()

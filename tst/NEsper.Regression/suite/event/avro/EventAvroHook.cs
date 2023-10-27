@@ -183,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
 
                 var eventBean = env.GetEnumerator("NamedWindow").Advance();
                 Assert.AreEqual(
-                    "{\"sb\":{\"SupportBeanSchema\":{\"theString\":\"E1\",\"intPrimitive\":10}}}",
+                    "{\"sb\":{\"SupportBeanSchema\":{\"TheString\":\"E1\",\"IntPrimitive\":10}}}",
                     SupportAvroUtil.AvroToJson(eventBean));
 
                 env.UndeployAll();

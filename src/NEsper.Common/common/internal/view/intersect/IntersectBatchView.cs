@@ -198,7 +198,7 @@ namespace com.espertech.esper.common.@internal.view.intersect
             // handle case where irstream originates from view, i.e. timer-based
             if (streamId == factory.BatchViewIndex) {
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, newEvents, oldEvents);
-                child.Update(newEvents, oldEvents);
+                Child.Update(newEvents, oldEvents);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                 if (newEvents != null) {

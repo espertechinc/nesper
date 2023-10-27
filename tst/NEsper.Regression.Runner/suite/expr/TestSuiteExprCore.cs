@@ -86,8 +86,8 @@ namespace com.espertech.esper.regressionrun.suite.expr
             map.Put("anFloat", typeof(string));
             map.Put("anByte", typeof(string));
             map.Put("anShort", typeof(string));
-            map.Put("intPrimitive", typeof(int));
-            map.Put("intBoxed", typeof(int?));
+            map.Put("IntPrimitive", typeof(int));
+            map.Put("IntBoxed", typeof(int?));
             configuration.Common.AddEventType("StaticTypeMapEvent", map);
 
             configuration.Compiler.ByteCode.IsAllowSubscriber =true;

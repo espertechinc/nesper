@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.view.rank
 
         internal override Type TypeOfFactory => typeof(RankWindowViewFactory);
 
-        internal override string FactoryMethod => "rank";
+        internal override string FactoryMethod => "Rank";
 
         internal override void Assign(
             CodegenMethod method,

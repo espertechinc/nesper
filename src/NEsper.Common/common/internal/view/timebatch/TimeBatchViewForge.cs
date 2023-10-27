@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.view.timebatch
         }
 
         internal override Type TypeOfFactory => typeof(TimeBatchViewFactory);
-        internal override string FactoryMethod => "timebatch";
+        internal override string FactoryMethod => "Timebatch";
 
         internal override void Assign(
             CodegenMethod method,
@@ -110,11 +110,11 @@ namespace com.espertech.esper.common.@internal.view.timebatch
             }
 
             method.Block.DeclareVar<TimePeriodCompute>("eval", timePeriodCompute.MakeEvaluator(method, classScope))
-                .ExprDotMethod(factory, "setTimePeriodCompute", Ref("eval"))
-                .ExprDotMethod(factory, "setScheduleCallbackId", Constant(scheduleCallbackId))
-                .ExprDotMethod(factory, "setForceUpdate", Constant(isForceUpdate))
-                .ExprDotMethod(factory, "setStartEager", Constant(isStartEager))
-                .ExprDotMethod(factory, "setOptionalReferencePoint", Constant(optionalReferencePoint));
+                .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
+                .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))
+                .SetProperty(factory, "IsForceUpdate", Constant(isForceUpdate))
+                .SetProperty(factory, "IsStartEager", Constant(isStartEager))
+                .SetProperty(factory, "OptionalReferencePoint", Constant(optionalReferencePoint));
         }
 
         public override AppliesTo AppliesTo()

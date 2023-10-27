@@ -108,6 +108,9 @@ namespace com.espertech.esper.compiler.@internal.util
 			// ctor
 			GenerateCodeCtor(builder, clazz.ClassName, false, clazz.OptionalCtor, imports, 0);
 
+			// properties
+			GenerateCodeProperties(builder, false, clazz.PublicProperties, clazz.PrivateProperties, 0);
+			
 			// methods
 			GenerateCodeMethods(builder, false, clazz.PublicMethods, clazz.PrivateMethods, 0);
 
@@ -120,7 +123,7 @@ namespace com.espertech.esper.compiler.@internal.util
 					inner.ClassName,
 					inner.BaseList,
 					true,
-					true);
+					false);
 
 				GenerateCodeMembers(
 					builder,
@@ -362,6 +365,9 @@ namespace com.espertech.esper.compiler.@internal.util
 				
 				if (param.IsPublic) {
 					builder.Append("public ");
+				}
+				else {
+					builder.Append("internal ");
 				}
 
 				if (!param.IsPublic && param.IsReadonly) {

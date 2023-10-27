@@ -22,10 +22,10 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
         {
             SendTimer(env, 0);
 
-            env.CompileDeploy("@name('GroupOne') select * from SupportBean(intPrimitive = 1)#keepall");
-            env.CompileDeploy("@name('GroupTwo') select * from SupportBean(intPrimitive = 2)#keepall")
+            env.CompileDeploy("@name('GroupOne') select * from SupportBean(IntPrimitive = 1)#keepall");
+            env.CompileDeploy("@name('GroupTwo') select * from SupportBean(IntPrimitive = 2)#keepall")
                 .SetSubscriber("GroupTwo");
-            env.CompileDeploy("@name('Default') select * from SupportBean(intPrimitive = 3)#keepall"); // no listener
+            env.CompileDeploy("@name('Default') select * from SupportBean(IntPrimitive = 3)#keepall"); // no listener
 
             env.CompileDeploy("@name('StmtMetrics') select * from " + typeof(StatementMetric).FullName)
                 .AddListener("StmtMetrics");

@@ -88,36 +88,36 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
             CodegenClassScope classScope)
         {
             method.Block
-                .ExprDotMethod(
+                .SetProperty(
                     saiff,
-                    "setResultSetProcessorFactoryProvider",
+                    "ResultSetProcessorFactoryProvider",
                     NewInstanceInner(
                         resultSetProcessorProviderClassName,
                         symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(saiff, "setInsertInto", Constant(insertInto))
-                .ExprDotMethod(saiff, "setAddToFront", Constant(addToFront))
-                .ExprDotMethod(saiff, "setSelectAndDelete", Constant(selectAndDelete))
-                .ExprDotMethod(saiff, "setDistinct", Constant(distinct))
-                .ExprDotMethod(
+                .SetProperty(saiff, "InsertInto", Constant(insertInto))
+                .SetProperty(saiff, "AddToFront", Constant(addToFront))
+                .SetProperty(saiff, "SelectAndDelete", Constant(selectAndDelete))
+                .SetProperty(saiff, "Distinct", Constant(distinct))
+                .SetProperty(
                     saiff,
-                    "setDistinctKeyGetter",
+                    "DistinctKeyGetter",
                     MultiKeyCodegen.CodegenGetterEventDistinct(
                         distinct,
                         ResultEventType,
                         distinctMultiKey,
                         method,
                         classScope))
-                .ExprDotMethod(
+                .SetProperty(
                     saiff,
-                    "setOptionalInsertIntoTable",
+                    "OptionalInsertIntoTable",
                     optionalInsertIntoTable == null
                         ? ConstantNull()
                         : TableDeployTimeResolver.MakeResolveTable(
                             optionalInsertIntoTable,
                             symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
+                .SetProperty(
                     saiff,
-                    "setEventPrecedence",
+                    "EventPrecedence",
                     eventPrecedence == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(

@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
         public void Run(RegressionEnvironment env)
         {
-            var stmtText = "@name('s0') select simpleProperty?, " +
+            var stmtText = "@name('s0') select SimpleProperty?, " +
                            "indexed[1]? as indexed, " +
                            "mapped('keyOne')? as mapped " +
                            "from SupportBeanComplexProps";
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 "s0",
                 statement => {
                     var type = statement.EventType;
-                    Assert.AreEqual(typeof(object), type.GetPropertyType("simpleProperty?"));
+                    Assert.AreEqual(typeof(object), type.GetPropertyType("SimpleProperty?"));
                     Assert.AreEqual(typeof(object), type.GetPropertyType("indexed"));
                     Assert.AreEqual(typeof(object), type.GetPropertyType("mapped"));
                 });
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual(inner.SimpleProperty, theEvent.Get("simpleProperty?"));
+                    Assert.AreEqual(inner.SimpleProperty, theEvent.Get("SimpleProperty?"));
                     Assert.AreEqual(inner.GetIndexed(1), theEvent.Get("indexed"));
                     Assert.AreEqual(inner.GetMapped("keyOne"), theEvent.Get("mapped"));
                 });

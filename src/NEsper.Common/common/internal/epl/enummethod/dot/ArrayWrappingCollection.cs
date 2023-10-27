@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
 
         public bool Contains(EventBean item)

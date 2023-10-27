@@ -194,7 +194,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             var future = GetAggFuture(codegenClassScope);
             return ExprDotMethod(
                 future,
-                "getCollectionOfEvents",
+                "GetCollectionOfEvents",
                 Constant(column),
                 exprSymbol.GetAddEPS(parent),
                 exprSymbol.GetAddIsNewData(parent),
@@ -398,7 +398,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
             var future = GetAggFuture(codegenClassScope);
             return ExprDotMethod(
                 future,
-                "getEventBean",
+                "GetEventBean",
                 Constant(column),
                 exprSymbol.GetAddEPS(parent),
                 exprSymbol.GetAddIsNewData(parent),

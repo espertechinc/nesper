@@ -68,30 +68,30 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
         {
             var method = parent.MakeChild(typeof(OnSplitItemEval), GetType(), classScope);
             method.Block.DeclareVarNewInstance(typeof(OnSplitItemEval), "eval")
-                .ExprDotMethod(
+                .SetProperty(
                     Ref("eval"),
-                    "setWhereClause",
+                    "WhereClause",
                     whereClause == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(whereClause.Forge, method, GetType(), classScope))
-                .ExprDotMethod(Ref("eval"), "setNamedWindowInsert", Constant(isNamedWindowInsert))
-                .ExprDotMethod(
+                .SetProperty(Ref("eval"), "NamedWindowInsert", Constant(isNamedWindowInsert))
+                .SetProperty(
                     Ref("eval"),
-                    "setInsertIntoTable",
+                    "InsertIntoTable",
                     insertIntoTable == null
                         ? ConstantNull()
                         : TableDeployTimeResolver.MakeResolveTable(insertIntoTable, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
+                .SetProperty(
                     Ref("eval"),
-                    "setRspFactoryProvider",
+                    "RspFactoryProvider",
                     CodegenExpressionBuilder.NewInstanceInner(resultSetProcessorClassName, symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(
+                .SetProperty(
                     Ref("eval"),
-                    "setPropertyEvaluator",
+                    "PropertyEvaluator",
                     propertyEvaluator == null ? ConstantNull() : propertyEvaluator.Make(method, symbols, classScope))
-                .ExprDotMethod(
+                .SetProperty(
                     Ref("eval"),
-                    "setEventPrecedence",
+                    "EventPrecedence",
                     eventPrecedence == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(eventPrecedence.Forge, method, GetType(), classScope))

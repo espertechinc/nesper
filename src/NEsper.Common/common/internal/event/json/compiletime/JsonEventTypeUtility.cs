@@ -498,7 +498,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
         }
 
         /// <summary>
-        /// TBD: Understand what this method does...
+        /// TODO: Understand what this method does...
         /// </summary>
         /// <param name="compiledTyping"></param>
         /// <param name="fields"></param>

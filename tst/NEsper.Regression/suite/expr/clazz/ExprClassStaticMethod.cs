@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                           "    }\n" +
                           "  }\n" +
                           "\"\"\"\n" +
-                          "@name('s0') select MyUtility.Fib(intPrimitive) from SupportBean";
+                          "@name('s0') select MyUtility.Fib(IntPrimitive) from SupportBean";
 
                 var support = new MySupportInlinedClassInspection();
                 env.Compile(epl, compilerOptions => compilerOptions.InlinedClassInspection = support);

@@ -8,6 +8,7 @@
 
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -24,7 +25,9 @@ namespace com.espertech.esper.common.@internal.filterspec
 {
     public class FilterForEvalContextPropDoubleForge : FilterSpecParamFilterForEvalDoubleForge
     {
-        [NonSerialized] private readonly EventPropertyGetterSPI _getter;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly EventPropertyGetterSPI _getter;
         private readonly string _propertyName;
 
         public FilterForEvalContextPropDoubleForge(

@@ -31,20 +31,22 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
     public class StatementAgentInstanceFactorySelectForge : StatementAgentInstanceFactoryForge
     {
         private const string RSPFACTORYPROVIDER = "rspFactoryProvider";
+        private const string STATEMENTFIELDS = "statementFields";
 
-        private readonly string[] streamNames;
-        private readonly ViewableActivatorForge[] viewableActivatorForges;
-        private readonly string resultSetProcessorProviderClassName;
-        private readonly IList<ViewFactoryForge>[] views;
-        private readonly ViewResourceDelegateDesc[] viewResourceDelegates;
-        private readonly ExprForge whereClauseForge;
-        private readonly JoinSetComposerPrototypeForge joinSetComposerPrototypeForge;
-        private readonly string outputProcessViewProviderClassName;
-        private readonly bool outputProcessViewDirectSimple;
-        private readonly IDictionary<ExprSubselectNode, SubSelectFactoryForge> subselects;
-        private readonly IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> tableAccesses;
-        private readonly bool orderByWithoutOutputRateLimit;
-        private readonly bool unidirectionalJoin;
+        private readonly JoinSetComposerPrototypeForge _joinSetComposerPrototypeForge;
+        private readonly bool _orderByWithoutOutputRateLimit;
+        private readonly string _outputProcessViewProviderClassName;
+        private readonly bool _outputProcessViewDirectSimple;
+        private readonly string _resultSetProcessorProviderClassName;
+
+        private readonly string[] _streamNames;
+        private readonly IDictionary<ExprSubselectNode, SubSelectFactoryForge> _subselects;
+        private readonly IDictionary<ExprTableAccessNode, ExprTableEvalStrategyFactoryForge> _tableAccesses;
+        private readonly bool _unidirectionalJoin;
+        private readonly ViewableActivatorForge[] _viewableActivatorForges;
+        private readonly ViewResourceDelegateDesc[] _viewResourceDelegates;
+        private readonly IList<ViewFactoryForge>[] _views;
+        private readonly ExprForge _whereClauseForge;
 
         public StatementAgentInstanceFactorySelectForge(
             string[] streamNames,
@@ -61,19 +63,19 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
             bool orderByWithoutOutputRateLimit,
             bool unidirectionalJoin)
         {
-            this.streamNames = streamNames;
-            this.viewableActivatorForges = viewableActivatorForges;
-            this.resultSetProcessorProviderClassName = resultSetProcessorProviderClassName;
-            this.views = views;
-            this.viewResourceDelegates = viewResourceDelegates;
-            this.whereClauseForge = whereClauseForge;
-            this.joinSetComposerPrototypeForge = joinSetComposerPrototypeForge;
-            this.outputProcessViewProviderClassName = outputProcessViewProviderClassName;
-            this.outputProcessViewDirectSimple = outputProcessViewDirectSimple;
-            this.subselects = subselects;
-            this.tableAccesses = tableAccesses;
-            this.orderByWithoutOutputRateLimit = orderByWithoutOutputRateLimit;
-            this.unidirectionalJoin = unidirectionalJoin;
+            _streamNames = streamNames;
+            _viewableActivatorForges = viewableActivatorForges;
+            _resultSetProcessorProviderClassName = resultSetProcessorProviderClassName;
+            _views = views;
+            _viewResourceDelegates = viewResourceDelegates;
+            _whereClauseForge = whereClauseForge;
+            _joinSetComposerPrototypeForge = joinSetComposerPrototypeForge;
+            _outputProcessViewProviderClassName = outputProcessViewProviderClassName;
+            _outputProcessViewDirectSimple = outputProcessViewDirectSimple;
+            _subselects = subselects;
+            _tableAccesses = tableAccesses;
+            _orderByWithoutOutputRateLimit = orderByWithoutOutputRateLimit;
+            _unidirectionalJoin = unidirectionalJoin;
         }
 
         public CodegenMethod InitializeCodegen(
@@ -86,36 +88,36 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 .DeclareVarNewInstance(typeof(StatementAgentInstanceFactorySelect), "saiff");
 
             // stream names
-            method.Block.ExprDotMethod(Ref("saiff"), "setStreamNames", Constant(streamNames));
+            method.Block.SetProperty(Ref("saiff"), "StreamNames", Constant(_streamNames));
 
             // activators
             method.Block.DeclareVar<ViewableActivator[]>(
                 "activators",
-                NewArrayByLength(typeof(ViewableActivator), Constant(viewableActivatorForges.Length)));
-            for (var i = 0; i < viewableActivatorForges.Length; i++) {
+                NewArrayByLength(typeof(ViewableActivator), Constant(_viewableActivatorForges.Length)));
+            for (var i = 0; i < _viewableActivatorForges.Length; i++) {
                 method.Block.AssignArrayElement(
                     "activators",
                     Constant(i),
-                    viewableActivatorForges[i].MakeCodegen(method, symbols, classScope));
+                    _viewableActivatorForges[i].MakeCodegen(method, symbols, classScope));
             }
 
-            method.Block.ExprDotMethod(Ref("saiff"), "setViewableActivators", Ref("activators"));
+            method.Block.SetProperty(Ref("saiff"), "ViewableActivators", Ref("activators"));
 
             // views
-            if (views.Length == 1 && views[0].IsEmpty()) {
-                method.Block.ExprDotMethod(
+            if (_views.Length == 1 && _views[0].IsEmpty()) {
+                method.Block.SetProperty(
                     Ref("saiff"),
-                    "setViewFactories",
+                    "ViewFactories",
                     PublicConstValue(typeof(ViewFactory), "SINGLE_ELEMENT_ARRAY"));
             }
             else {
                 method.Block.DeclareVar<ViewFactory[][]>(
                     "viewFactories",
-                    NewArrayByLength(typeof(ViewFactory[]), Constant(views.Length)));
-                for (var i = 0; i < views.Length; i++) {
-                    if (views[i] != null) {
+                    NewArrayByLength(typeof(ViewFactory[]), Constant(_views.Length)));
+                for (var i = 0; i < _views.Length; i++) {
+                    if (_views[i] != null) {
                         var array = ViewFactoryForgeUtil.CodegenForgesWInit(
-                            views[i],
+                            _views[i],
                             i,
                             null,
                             method,
@@ -125,84 +127,86 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                     }
                 }
 
-                method.Block.ExprDotMethod(Ref("saiff"), "setViewFactories", Ref("viewFactories"));
+                method.Block.SetProperty(Ref("saiff"), "ViewFactories", Ref("viewFactories"));
             }
 
             // view delegate information ('prior' and 'prev')
-            method.Block.ExprDotMethod(
+            method.Block.SetProperty(
                 Ref("saiff"),
-                "setViewResourceDelegates",
-                ViewResourceDelegateDesc.ToExpression(viewResourceDelegates));
+                "ViewResourceDelegates",
+                ViewResourceDelegateDesc.ToExpression(_viewResourceDelegates));
 
             // result set processor
-            method.Block.DeclareVar(
-                    resultSetProcessorProviderClassName,
+            method.Block
+                .DeclareVar(
+                    _resultSetProcessorProviderClassName,
                     RSPFACTORYPROVIDER,
-                    CodegenExpressionBuilder.NewInstanceInner(
-                        resultSetProcessorProviderClassName,
-                        symbols.GetAddInitSvc(method)))
-                .ExprDotMethod(Ref("saiff"), "setResultSetProcessorFactoryProvider", Ref(RSPFACTORYPROVIDER));
+                    NewInstanceInner(
+                        _resultSetProcessorProviderClassName,
+                        symbols.GetAddInitSvc(method),
+                        Ref(STATEMENTFIELDS)))
+                .SetProperty(Ref("saiff"), "ResultSetProcessorFactoryProvider", Ref(RSPFACTORYPROVIDER));
 
             // where-clause evaluator
-            if (whereClauseForge != null) {
-                var whereEval = CodegenEvaluator(whereClauseForge, method, GetType(), classScope);
-                method.Block.ExprDotMethod(Ref("saiff"), "setWhereClauseEvaluator", whereEval);
+            if (_whereClauseForge != null) {
+                var whereEval = CodegenEvaluator(_whereClauseForge, method, GetType(), classScope);
+                method.Block.SetProperty(Ref("saiff"), "WhereClauseEvaluator", whereEval);
                 if (classScope.IsInstrumented) {
-                    method.Block.ExprDotMethod(
+                    method.Block.SetProperty(
                         Ref("saiff"),
-                        "setWhereClauseEvaluatorTextForAudit",
-                        Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(whereClauseForge)));
+                        "WhereClauseEvaluatorTextForAudit",
+                        Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedence(_whereClauseForge)));
                 }
             }
 
             // joins
-            if (joinSetComposerPrototypeForge != null) {
-                method.Block.ExprDotMethod(
+            if (_joinSetComposerPrototypeForge != null) {
+                method.Block.SetProperty(
                     Ref("saiff"),
-                    "setJoinSetComposerPrototype",
-                    joinSetComposerPrototypeForge.Make(method, symbols, classScope));
+                    "JoinSetComposerPrototype",
+                    _joinSetComposerPrototypeForge.Make(method, symbols, classScope));
             }
 
             // output process view
             CodegenExpression opv;
-            if (outputProcessViewDirectSimple) {
+            if (_outputProcessViewDirectSimple) {
                 opv = PublicConstValue(typeof(OutputProcessViewDirectSimpleFactoryProvider), "INSTANCE");
             }
             else {
-                opv = CodegenExpressionBuilder.NewInstanceInner(
-                    outputProcessViewProviderClassName,
+                opv = NewInstanceInner(
+                    _outputProcessViewProviderClassName,
                     symbols.GetAddInitSvc(method));
             }
 
-            method.Block.ExprDotMethod(Ref("saiff"), "setOutputProcessViewFactoryProvider", opv);
+            method.Block.SetProperty(Ref("saiff"), "OutputProcessViewFactoryProvider", opv);
 
             // subselects
-            if (!subselects.IsEmpty()) {
-                method.Block.ExprDotMethod(
+            if (!_subselects.IsEmpty()) {
+                method.Block.SetProperty(
                     Ref("saiff"),
-                    "setSubselects",
-                    SubSelectFactoryForge.CodegenInitMap(subselects, GetType(), method, symbols, classScope));
+                    "Subselects",
+                    SubSelectFactoryForge.CodegenInitMap(_subselects, GetType(), method, symbols, classScope));
             }
 
             // table-access
-            if (!tableAccesses.IsEmpty()) {
-                method.Block.ExprDotMethod(
+            if (!_tableAccesses.IsEmpty()) {
+                method.Block.SetProperty(
                     Ref("saiff"),
-                    "setTableAccesses",
-                    ExprTableEvalStrategyUtil.CodegenInitMap(tableAccesses, GetType(), method, symbols, classScope));
+                    "TableAccesses",
+                    ExprTableEvalStrategyUtil.CodegenInitMap(_tableAccesses, GetType(), method, symbols, classScope));
             }
 
             // order-by with no output-limit
-            if (orderByWithoutOutputRateLimit) {
-                method.Block.ExprDotMethod(
+            if (_orderByWithoutOutputRateLimit) {
+                method.Block.SetProperty(
                     Ref("saiff"),
-                    "setOrderByWithoutOutputRateLimit",
-                    Constant(orderByWithoutOutputRateLimit));
+                    "OrderByWithoutOutputRateLimit",
+                    Constant(_orderByWithoutOutputRateLimit));
             }
 
             // unidirectional join
-            if (unidirectionalJoin) {
-                method.Block.ExprDotMethod(Ref("saiff"), "setUnidirectionalJoin", Constant(unidirectionalJoin));
+            if (_unidirectionalJoin) {
+                method.Block.SetProperty(Ref("saiff"), "UnidirectionalJoin", Constant(_unidirectionalJoin));
             }
 
             method.Block.MethodReturn(Ref("saiff"));

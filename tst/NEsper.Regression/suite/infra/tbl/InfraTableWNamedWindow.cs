@@ -21,15 +21,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@name('var') @public create table varagg (key string primary key, total sum(int))",
+"@name('var') @public create table varagg (key string primary key, Total sum(int))",
                 path);
             env.CompileDeploy("@name('win') @public create window MyWindow#keepall as SupportBean", path);
             env.CompileDeploy("@name('insert') insert into MyWindow select * from SupportBean", path);
             env.CompileDeploy(
-                "@name('populate') into table varagg select sum(IntPrimitive) as total from MyWindow group by TheString",
+"@name('populate') into table varagg select sum(IntPrimitive) as Total from MyWindow group by TheString",
                 path);
             env.CompileDeploy(
-                    "@name('s0') on SupportBean_S0 select TheString, varagg[P00].total as c0 from MyWindow where TheString = P00",
+"@name('s0') on SupportBean_S0 select TheString, varagg[P00].Total as c0 from MyWindow where TheString = P00",
                     path)
                 .AddListener("s0");
             var fields = new[] { "TheString", "c0" };

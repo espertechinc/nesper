@@ -51,6 +51,6 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
 
         public new Type InputValueType { get; set; }
 
-        public bool HasFilter { get; set; }
+        public override bool HasFilter { get; set; }
     }
 } // end of namespace

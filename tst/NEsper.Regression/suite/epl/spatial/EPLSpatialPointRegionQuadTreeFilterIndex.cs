@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
                 SendRectangle(env, "R1", 0, 0, 5, 10);
                 SendRectangle(env, "R2", 4, 3, 2, 20);
-                env.AssertEqualsNew("s0", "id", "R2");
+                env.AssertEqualsNew("s0", "Id", "R2");
 
                 env.UndeployAll();
             }
@@ -240,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') expression myindex {pointregionquadtree(0, 0, 100, 100)}" +
-                          "select p.id as c0 from pattern [every p=SupportSpatialPoint -> every SupportSpatialAABB(point(p.px, p.py, filterindex:myindex).inside(rectangle(x, y, width, height)))]";
+                          "select p.Id as c0 from pattern [every p=SupportSpatialPoint -> every SupportSpatialAABB(point(p.px, p.py, filterindex:myindex).inside(rectangle(x, y, width, height)))]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -279,9 +279,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "create context PointContext initiated by SupportSpatialPoint ssp terminated by SupportBean(theString=ssp.id);\n" +
+                    "create context PointContext initiated by SupportSpatialPoint ssp terminated by SupportBean(TheString=ssp.Id);\n" +
                     "@name('s0') expression myindex {pointregionquadtree(0, 0, 10, 10)}" +
-                    "context PointContext select context.ssp.id as c0 from SupportSpatialAABB(point(context.ssp.px, context.ssp.py, filterindex:myindex).inside(rectangle(x, y, width, height)))";
+                    "context PointContext select context.ssp.Id as c0 from SupportSpatialAABB(point(context.ssp.px, context.ssp.py, filterindex:myindex).inside(rectangle(x, y, width, height)))";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var points = new List<SupportSpatialPoint>();

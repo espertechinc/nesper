@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             nmwspPropertiesNested.Put("n2", nmwspPropertiesNestedNested);
 
             IDictionary<string, object> nmwspRoot = new Dictionary<string, object>();
-            nmwspRoot.Put("nested", nmwspPropertiesNested);
+            nmwspRoot.Put("Nested", nmwspPropertiesNested);
 
             configuration.Common.AddEventType("NestedMapWithSimpleProps", nmwspRoot);
         }

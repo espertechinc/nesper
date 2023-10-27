@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var fields = "c0,c1".SplitCsv();
 
                 var epl =
-                    "@name('s0') select a.theString as c0, b.theString as c1 from pattern [a=SupportBean(intPrimitive=0) and b=SupportBean(intPrimitive=1)]";
+                    "@name('s0') select a.TheString as c0, b.TheString as c1 from pattern [a=SupportBean(IntPrimitive=0) and b=SupportBean(IntPrimitive=1)]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -106,8 +106,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     "@name('s0') insert into NumberOfWaitingCalls(calls) " +
                     " select count(*)" +
                     " from pattern[every call=SupportBean_A ->" +
-                    " (not SupportBean_B(id=call.id) and" +
-                    " not SupportBean_C(id=call.id))]";
+                    " (not SupportBean_B(Id=call.Id) and" +
+                    " not SupportBean_C(Id=call.Id))]";
                 env.CompileDeploy(pattern).AddListener("s0");
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_B("B1"));
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 env.AddListener("s0");
                 env.SendEventBean(new SupportBean_B("B_last"));
-                env.AssertPropsNew("s0", "a.id,b.id".SplitCsv(), new object[] { "A1", "B_last" });
+                env.AssertPropsNew("s0", "a.Id,b.Id".SplitCsv(), new object[] { "A1", "B_last" });
 
                 env.UndeployAll();
             }

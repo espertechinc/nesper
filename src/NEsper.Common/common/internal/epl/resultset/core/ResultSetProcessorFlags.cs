@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         public ResultSetProcessorFlags(
             bool join,
             OutputLimitSpec spec,
-            ResultSetProcessorOutputConditionType outputConditionType)
+            ResultSetProcessorOutputConditionType? outputConditionType)
         {
             IsJoin = join;
             this.spec = spec;
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
         public bool HasOutputLimit => spec != null;
 
-        public ResultSetProcessorOutputConditionType OutputConditionType { get; }
+        public ResultSetProcessorOutputConditionType? OutputConditionType { get; }
 
         public bool IsOutputLimitWSnapshot => spec != null && spec.DisplayLimit == OutputLimitLimitType.SNAPSHOT;
 

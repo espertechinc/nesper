@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@name('create') @public create table MyTableEUIV as (pkey0 string primary key, pkey1 int primary key, thecnt count(*))",
                     path);
                 env.CompileDeploy(
-                    "into table MyTableEUIV select count(*) as thecnt from SupportBean group by theString, intPrimitive",
+                    "into table MyTableEUIV select count(*) as thecnt from SupportBean group by TheString, IntPrimitive",
                     path);
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E1", 20));
@@ -170,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path);
 
                 env.CompileDeploy(
-                    "into table MyTableLUIV select count(*) as thecnt from SupportBean group by theString, intPrimitive",
+                    "into table MyTableLUIV select count(*) as thecnt from SupportBean group by TheString, IntPrimitive",
                     path);
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.SendEventBean(new SupportBean("E2", 20));
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy("create index MyIndex on MyTableFAFU(col0)", path);
 
                 env.CompileDeploy(
-                    "into table MyTableFAFU select count(*) as thecnt from SupportBean group by theString",
+                    "into table MyTableFAFU select count(*) as thecnt from SupportBean group by TheString",
                     path);
                 env.SendEventBean(new SupportBean("E1", 0));
                 env.SendEventBean(new SupportBean("E2", 0));
@@ -275,9 +275,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@name('s1') @public create table MyTableMultiKey(pkey0 string primary key, pkey1 int primary key, c0 long)",
                     path);
                 env.CompileDeploy(
-                    "insert into MyTableMultiKey select theString as pkey0, intPrimitive as pkey1, longPrimitive as c0 from SupportBean",
+                    "insert into MyTableMultiKey select TheString as pkey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean",
                     path);
-                env.CompileDeploy("on SupportBean_S0 update MyTableMultiKey set pkey0 = p01 where pkey0 = p00", path);
+                env.CompileDeploy("on SupportBean_S0 update MyTableMultiKey set pkey0 = P01 where pkey0 = P00", path);
 
                 SendSupportBean(env, "E1", 10, 100);
                 SendSupportBean(env, "E2", 20, 200);
@@ -334,9 +334,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@name('s0') @public create table MyTableSingleKey(pkey0 string primary key, c0 int)",
                     path);
                 env.CompileDeploy(
-                    "insert into MyTableSingleKey select theString as pkey0, intPrimitive as c0 from SupportBean",
+                    "insert into MyTableSingleKey select TheString as pkey0, IntPrimitive as c0 from SupportBean",
                     path);
-                env.CompileDeploy("on SupportBean_S0 update MyTableSingleKey set pkey0 = p01 where pkey0 = p00", path);
+                env.CompileDeploy("on SupportBean_S0 update MyTableSingleKey set pkey0 = P01 where pkey0 = P00", path);
 
                 SendSupportBean(env, "E1", 10);
                 SendSupportBean(env, "E2", 20);

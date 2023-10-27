@@ -125,14 +125,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public override void Run(RegressionEnvironment env)
             {
-                var queryColummTypeConversion = "@name('s0') @Hook(type=HookType.SQLCOL, hook='" +
+                var queryColummTypeConversion = "@name('s0') @Hook(HookType=HookType.SQLCOL, hook='" +
                                                 typeof(SupportSQLColumnTypeConversion).Name +
                                                 "')" +
                                                 "select * from sql:MyDBPooled ['select myint as myintTurnedBoolean from mytesttable where myint = 50']";
                 var resultColType = env.CompileExecuteFAF(queryColummTypeConversion);
                 AssertSingleRowResult(resultColType, "myintTurnedBoolean", true);
 
-                var queryRowConversion = "@name('s0') @Hook(type=HookType.SQLROW, hook='" +
+                var queryRowConversion = "@name('s0') @Hook(HookType=HookType.SQLROW, hook='" +
                                          typeof(SupportSQLOutputRowConversion).Name +
                                          "')" +
                                          "select * from sql:MyDBPooled ['select * from mytesttable where myint = 10']";
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var resultRowConv = env.CompileExecuteFAF(queryRowConversion);
                 EPAssertionUtil.AssertPropsPerRow(
                     resultRowConv.Array,
-                    new string[] { "theString", "intPrimitive" },
+                    new string[] { "TheString", "IntPrimitive" },
                     new object[][] { new object[] { ">10<", 99010 } });
             }
         }
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@public create variable int myvar = 20;\n" +
-                    "on SupportBean set myvar = intPrimitive;\n",
+                    "on SupportBean set myvar = IntPrimitive;\n",
                     path);
 
                 var epl =
@@ -284,7 +284,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     path);
 
                 var epl =
-                    "select * from sql:MyDBPlain['select * from mytesttable where myint = ${(select intPrimitive from MyWindow)}']";
+                    "select * from sql:MyDBPlain['select * from mytesttable where myint = ${(select IntPrimitive from MyWindow)}']";
                 var compiled = env.CompileFAF(epl, path);
 
                 var prepared = env.Runtime.FireAndForgetService.PrepareQuery(compiled);
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             public override void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create context MyContext partition by theString from SupportBean", path);
+                env.CompileDeploy("@public create context MyContext partition by TheString from SupportBean", path);
 
                 // invalid join
                 var eplJoin =

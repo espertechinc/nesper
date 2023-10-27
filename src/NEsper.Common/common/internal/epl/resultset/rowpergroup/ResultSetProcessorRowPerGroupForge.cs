@@ -22,6 +22,7 @@ using com.espertech.esper.common.@internal.context.module;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.output.polled;
+using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.core;
 using com.espertech.esper.common.@internal.epl.resultset.grouped;
 using com.espertech.esper.common.@internal.epl.resultset.rowforall;
@@ -31,6 +32,7 @@ using com.espertech.esper.common.@internal.fabric;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.epl.expression.codegen.ExprForgeCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.codegen.ResultSetProcessorCodegenNames;
 using static com.espertech.esper.common.@internal.epl.resultset.core.ResultSetProcessorOutputConditionType;
 using static com.espertech.esper.common.@internal.epl.resultset.grouped.ResultSetProcessorGroupedUtil;
@@ -53,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         private readonly OutputLimitSpec outputLimitSpec;
         private readonly bool unboundedProcessor;
         private readonly bool isHistoricalOnly;
-        private readonly ResultSetProcessorOutputConditionType outputConditionType;
+        private readonly ResultSetProcessorOutputConditionType? outputConditionType;
         private readonly OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory;
         private readonly Type[] groupKeyTypes;
         private readonly MultiKeyClassRef multiKeyClassRef;
@@ -76,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             OutputLimitSpec outputLimitSpec,
             bool isSorting,
             bool isHistoricalOnly,
-            ResultSetProcessorOutputConditionType outputConditionType,
+            ResultSetProcessorOutputConditionType? outputConditionType,
             OutputConditionPolledFactoryForge optionalOutputFirstConditionFactory,
             MultiKeyClassRef multiKeyClassRef,
             bool unboundedProcessor) : base(resultEventType, typesPerStream)
@@ -124,47 +126,45 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(SelectExprProcessor),
-                "getSelectExprProcessor",
-                EmptyList<CodegenNamedParam>.Instance, 
+                "SelectExprProcessor",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(MEMBER_SELECTEXPRPROCESSOR));
-            instance.Methods.AddMethod(
+                propertyNode => propertyNode.GetterBlock.BlockReturn(MEMBER_SELECTEXPRPROCESSOR));
+            instance.Properties.AddProperty(
                 typeof(AggregationService),
-                "getAggregationService",
-                EmptyList<CodegenNamedParam>.Instance,
+                "AggregationService",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(MEMBER_AGGREGATIONSVC));
-            instance.Methods.AddMethod(
+                propertyNode => propertyNode.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
+
+#if DEFINED_IN_BASECLASS
+            instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
-                "getExprEvaluatorContext",
-                EmptyList<CodegenNamedParam>.Instance,
+                "ExprEvaluatorContext",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(MEMBER_EXPREVALCONTEXT));
-            instance.Methods.AddMethod(
+                node => {
+                    node.GetterBlock.BlockReturn(MEMBER_EXPREVALCONTEXT);
+                    node.SetterBlock.AssignMember(NAME_EXPREVALCONTEXT, Ref("value"));
+                });
+#endif
+            
+            instance.Properties.AddProperty(
                 typeof(bool),
-                "hasHavingClause",
-                EmptyList<CodegenNamedParam>.Instance,
+                "HasHavingClause",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(Constant(optionalHavingNode != null)));
-            instance.Methods.AddMethod(
+                propertyNode => propertyNode.GetterBlock.BlockReturn(Constant(optionalHavingNode != null)));
+            instance.Properties.AddProperty(
                 typeof(bool),
-                "isSelectRStream",
-                EmptyList<CodegenNamedParam>.Instance,
+                "IsSelectRStream",
                 typeof(ResultSetProcessorRowForAll),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(Constant(isSelectRStream)));
+                propertyNode => propertyNode.GetterBlock.BlockReturn(Constant(isSelectRStream)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(optionalHavingNode, classScope, instance);
-            generateGroupKeySingle = GenerateGroupKeySingleCodegen(
-                GroupKeyNodeExpressions,
-                multiKeyClassRef,
-                classScope,
-                instance);
+            generateGroupKeySingle = GenerateGroupKeySingleCodegen(GroupKeyNodeExpressions, multiKeyClassRef, classScope, instance);
             generateGroupKeyArrayView = GenerateGroupKeyArrayViewCodegen(generateGroupKeySingle, classScope, instance);
             generateGroupKeyArrayJoin = GenerateGroupKeyArrayJoinCodegen(generateGroupKeySingle, classScope, instance);
             ResultSetProcessorRowPerGroupImpl.GenerateOutputBatchedNoSortWMapCodegen(this, classScope, instance);
@@ -189,10 +189,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                             eventType,
                             unboundGroupRepSettings.ToExpression(),
                             MEMBER_EXPREVALCONTEXT))
-                    .ExprDotMethod(MEMBER_AGGREGATIONSVC, "setRemovedCallback", Member(NAME_GROUPREPS));
+                    .ExprDotMethod(MEMBER_AGGREGATIONSVC, "SetRemovedCallback", Member(NAME_GROUPREPS));
             }
             else {
-                instance.ServiceCtor.Block.ExprDotMethod(MEMBER_AGGREGATIONSVC, "setRemovedCallback", Ref("this"));
+                instance.ServiceCtor.Block.ExprDotMethod(MEMBER_AGGREGATIONSVC, "SetRemovedCallback", Ref("this"));
             }
         }
 
@@ -413,7 +413,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         public OutputConditionPolledFactoryForge OptionalOutputFirstConditionFactory =>
             optionalOutputFirstConditionFactory;
 
-        public ResultSetProcessorOutputConditionType OutputConditionType => outputConditionType;
+        public ResultSetProcessorOutputConditionType? OutputConditionType => outputConditionType;
 
         public int NumStreams => typesPerStream.Length;
 

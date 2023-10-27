@@ -71,14 +71,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select s0.id as id, h0.val as valh0, h1.val as valh1 " +
+                var expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 " +
                                  "from SupportBeanInt#lastevent as s0, " +
-                                 "method:SupportJoinMethods.fetchVal('H0', 100) as h0, " +
-                                 "method:SupportJoinMethods.fetchVal('H1', 100) as h1 " +
-                                 "where h0.index = p00 and h1.index = p00";
+                                 "method:SupportJoinMethods.FetchVal('H0', 100) as h0, " +
+                                 "method:SupportJoinMethods.FetchVal('H1', 100) as h1 " +
+                                 "where h0.index = P00 and h1.index = P00";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1".SplitCsv();
+                var fields = "Id,valh0,valh1".SplitCsv();
                 var random = new Random();
 
                 var start = PerformanceObserver.MilliTime;
@@ -106,17 +106,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select s0.id as id, h0.val as valh0, h1.val as valh1 " +
+                var expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 " +
                                  "from SupportBeanInt#lastevent as s0 " +
                                  " left outer join " +
-                                 "method:SupportJoinMethods.fetchVal('H0', 100) as h0 " +
-                                 " on h0.index = p00 " +
+                                 "method:SupportJoinMethods.FetchVal('H0', 100) as h0 " +
+                                 " on h0.index = P00 " +
                                  " left outer join " +
-                                 "method:SupportJoinMethods.fetchVal('H1', 100) as h1 " +
-                                 " on h1.index = p00";
+                                 "method:SupportJoinMethods.FetchVal('H1', 100) as h1 " +
+                                 " on h1.index = P00";
                 env.CompileDeploy(expression).AddListener("s0");
 
-                var fields = "id,valh0,valh1".SplitCsv();
+                var fields = "Id,valh0,valh1".SplitCsv();
                 var random = new Random();
 
                 var start = PerformanceObserver.MilliTime;
@@ -144,11 +144,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
             public void Run(RegressionEnvironment env)
             {
-                var expression = "@name('s0') select s0.id as s0id, s1.id as s1id, h0.val as valh0 " +
-                                 "from SupportBeanInt(id like 'E%')#lastevent as s0, " +
-                                 "method:SupportJoinMethods.fetchVal('H0', 100) as h0, " +
-                                 "SupportBeanInt(id like 'F%')#lastevent as s1 " +
-                                 "where h0.index = s0.p00 and h0.index = s1.p00";
+                var expression = "@name('s0') select s0.Id as s0id, s1.Id as s1id, h0.val as valh0 " +
+                                 "from SupportBeanInt(Id like 'E%')#lastevent as s0, " +
+                                 "method:SupportJoinMethods.FetchVal('H0', 100) as h0, " +
+                                 "SupportBeanInt(Id like 'F%')#lastevent as s1 " +
+                                 "where h0.index = s0.P00 and h0.index = s1.P00";
                 env.CompileDeploy(expression).AddListener("s0");
 
                 var fields = "s0id,s1id,valh0".SplitCsv();
@@ -186,11 +186,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             public void Run(RegressionEnvironment env)
             {
                 var expression =
-                    "@name('s0') select s0.id as s0id, s1.id as s1id, h0.val as valh0, h0.index as indexh0 from " +
-                    "method:SupportJoinMethods.fetchVal('H0', 100) as h0, " +
-                    "SupportBeanInt(id like 'H%')#lastevent as s1, " +
-                    "SupportBeanInt(id like 'E%')#lastevent as s0 " +
-                    "where h0.index = s0.p00 and h0.val = s1.id";
+                    "@name('s0') select s0.Id as s0id, s1.Id as s1id, h0.val as valh0, h0.index as indexh0 from " +
+                    "method:SupportJoinMethods.FetchVal('H0', 100) as h0, " +
+                    "SupportBeanInt(Id like 'H%')#lastevent as s1, " +
+                    "SupportBeanInt(Id like 'E%')#lastevent as s0 " +
+                    "where h0.index = s0.P00 and h0.val = s1.Id";
                 env.CompileDeploy(expression).AddListener("s0");
 
                 var fields = "s0id,s1id,valh0,indexh0".SplitCsv();

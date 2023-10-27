@@ -22,13 +22,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             IList<CodegenTypedParam> explicitMembers,
             CodegenClassMethods methods,
             CodegenClassProperties properties)
-            : this(className, ctor, explicitMembers, methods, properties)
         {
+            ClassName = className.CodeInclusionTypeName();
+            BaseList = new CodegenClassBaseList();
             if (optionalInterfaceImplemented != null) {
+                BaseList.AssignType(optionalInterfaceImplemented);
             }
 
-            ClassName = className.CodeInclusionTypeName();
-            BaseList.AssignType(optionalInterfaceImplemented);
             Ctor = ctor;
             ExplicitMembers = explicitMembers;
             Methods = methods;
@@ -64,9 +64,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
 
         public string InterfaceGenericClass { get; set; }
 
-        public void AddInterfaceImplemented(Type type)
+        public CodegenInnerClass AddInterfaceImplemented(Type type)
         {
             BaseList.AddInterface(type);
+            return this;
+        }
+        
+        public CodegenInnerClass AddInterfaceImplemented(string typeName)
+        {
+            BaseList.AddInterface(typeName);
+            return this;
         }
     }
 } // end of namespace

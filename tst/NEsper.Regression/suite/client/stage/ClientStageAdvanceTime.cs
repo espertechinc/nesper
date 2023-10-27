@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
                 var epl = "@name('s0') select * from SupportBean#time_batch(10)";
                 env.CompileDeploy(epl).AddListener("s0");
                 var deploymentId = env.DeploymentId("s0");
-                var fields = new string[] { "theString" };
+                var fields = new string[] { "TheString" };
 
                 env.SendEventBean(new SupportBean("E1", 1));
 
@@ -188,14 +188,14 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
                 env.AdvanceTimeStage("P1", 9999);
                 Assert.IsFalse(env.ListenerStage("P1", "s0").GetAndClearIsInvoked());
                 env.AdvanceTimeStage("P1", 10000);
-                Assert.AreEqual("E1", env.ListenerStage("P1", "s0").AssertOneGetOldAndReset().Get("theString"));
+                Assert.AreEqual("E1", env.ListenerStage("P1", "s0").AssertOneGetOldAndReset().Get("TheString"));
 
                 env.Milestone(2);
 
                 env.AdvanceTimeStage("P1", 11999);
                 Assert.IsFalse(env.ListenerStage("P1", "s0").GetAndClearIsInvoked());
                 env.AdvanceTimeStage("P1", 12000);
-                Assert.AreEqual("E2", env.ListenerStage("P1", "s0").AssertOneGetOldAndReset().Get("theString"));
+                Assert.AreEqual("E2", env.ListenerStage("P1", "s0").AssertOneGetOldAndReset().Get("TheString"));
 
                 env.AdvanceTime(12000);
                 Assert.IsFalse(env.ListenerStage("P1", "s0").GetAndClearIsInvoked());
@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
                 env.AdvanceTimeStage("P1", 14000);
                 env.AssertListenerNotInvoked("s0");
                 env.AdvanceTime(14000);
-                env.AssertEqualsOld("s0", "theString", "E3");
+                env.AssertEqualsOld("s0", "TheString", "E3");
 
                 env.UndeployAll();
             }

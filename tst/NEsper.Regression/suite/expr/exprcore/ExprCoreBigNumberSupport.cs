@@ -459,7 +459,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fieldList = "bigint,bigdec".SplitCsv();
                 var epl = "@name('s0') select bigint,bigdec from SupportBeanNumeric#keepall(), SupportBean#keepall " +
-                          "where intPrimitive = bigint and doublePrimitive = bigdec";
+                          "where IntPrimitive = bigint and DoublePrimitive = bigdec";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendSupportBean(env, 2, 3);
@@ -479,7 +479,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select SupportStaticMethodLib.myBigIntFunc(cast(2, BigInteger)) as v1, SupportStaticMethodLib.myBigDecFunc(cast(3d, decimal)) as v2 from SupportBeanNumeric";
+                    "@name('s0') select SupportStaticMethodLib.MyBigIntFunc(cast(2, BigInteger)) as v1, SupportStaticMethodLib.MyBigDecFunc(cast(3d, decimal)) as v2 from SupportBeanNumeric";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fieldList = "v1,v2".SplitCsv();

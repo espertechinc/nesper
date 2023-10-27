@@ -20,25 +20,21 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 {
     public class CodegenSubstitutionParamEntry
     {
-        private readonly CodegenField field;
-        private readonly string name;
-        private readonly Type type;
-
         public CodegenSubstitutionParamEntry(
             CodegenField field,
             string name,
             Type type)
         {
-            this.field = field;
-            this.name = name;
-            this.type = type;
+            Field = field;
+            Name = name;
+            EntryType = type;
         }
 
-        public CodegenField Field => field;
+        public CodegenField Field { get; }
 
-        public string Name => name;
+        public string Name { get; }
 
-        public Type EntryType => type;
+        public Type EntryType { get; }
 
         public static void CodegenSetterBody(
             CodegenClassScope classScope,
@@ -46,7 +42,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             CodegenBlock enclosingBlock,
             CodegenExpression stmtFieldsInstance)
         {
-            int targetMethodComplexity = Math.Max(
+            var targetMethodComplexity = Math.Max(
                 64,
                 classScope.NamespaceScope.Config.InternalUseOnlyMaxMethodComplexity);
             var numbered = classScope.NamespaceScope.SubstitutionParamsByNumber;

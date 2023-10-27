@@ -74,8 +74,8 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var eplOne = "@Public create context CtxSegmentedByTarget partition by theString from SupportBean;" +
-                             "@name('out') @public context CtxSegmentedByTarget on SupportBean insert into NewSupportBean select * where intPrimitive = 100;";
+                var eplOne = "@Public create context CtxSegmentedByTarget partition by TheString from SupportBean;" +
+                             "@name('out') @public context CtxSegmentedByTarget on SupportBean insert into NewSupportBean select * where IntPrimitive = 100;";
                 env.CompileDeploy(eplOne, path);
                 env.CompileDeploy("@name('s0') select * from NewSupportBean", path).AddListener("s0");
 
@@ -89,11 +89,11 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // test with subquery
                 var fields = "mymax".SplitCsv();
-                var eplTwo = "@Public create context CtxSegmentedByTarget partition by theString from SupportBean;" +
-                             "@Public context CtxSegmentedByTarget create window NewEvent#unique(theString) as SupportBean;" +
+                var eplTwo = "@Public create context CtxSegmentedByTarget partition by TheString from SupportBean;" +
+                             "@Public context CtxSegmentedByTarget create window NewEvent#unique(TheString) as SupportBean;" +
                              "@name('out') @public context CtxSegmentedByTarget on SupportBean " +
-                             "insert into NewEvent select * where intPrimitive = 100 " +
-                             "insert into NewEventTwo select (select max(intPrimitive) from NewEvent) as mymax  " +
+                             "insert into NewEvent select * where IntPrimitive = 100 " +
+                             "insert into NewEventTwo select (select max(IntPrimitive) from NewEvent) as mymax  " +
                              "output all;";
                 env.CompileDeploy(eplTwo, path);
                 env.CompileDeploy("@name('s0') select * from NewEventTwo", path).AddListener("s0");
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Public create context CtxSegmented as partition by theString from SupportBean",
+                    "@Public create context CtxSegmented as partition by TheString from SupportBean",
                     path);
                 env.CompileDeploy(
                     "@Public context CtxSegmented create window TestVDWWindow.test:vdw() as SupportBean",
@@ -163,13 +163,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
                 env.TryInvalidCompile(
                     path,
-                    "on SupportBean_S0 s0 merge MyWindow mw when matched then update set intPrimitive = 1",
+                    "on SupportBean_S0 s0 merge MyWindow mw when matched then update set IntPrimitive = 1",
                     "Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please declare the same context name");
 
                 // Trigger in different context
                 env.TryInvalidCompile(
                     path,
-                    "context TenToFive on SupportBean_S0 s0 merge MyWindow mw when matched then update set intPrimitive = 1",
+                    "context TenToFive on SupportBean_S0 s0 merge MyWindow mw when matched then update set IntPrimitive = 1",
                     "Cannot create on-trigger expression: Named window 'MyWindow' was declared with context 'NineToFive', please use the same context instead");
 
                 // Named window not in context, trigger in different context
@@ -177,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy("@Public create window MyWindowTwo#keepall as SupportBean", path);
                 env.TryInvalidCompile(
                     path,
-                    "context TenToFive on SupportBean_S0 s0 merge MyWindowTwo mw when matched then update set intPrimitive = 1",
+                    "context TenToFive on SupportBean_S0 s0 merge MyWindowTwo mw when matched then update set IntPrimitive = 1",
                     "Cannot create on-trigger expression: Named window 'MyWindowTwo' was declared without a context");
 
                 env.UndeployAll();
@@ -269,11 +269,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // test update: update is not allowed as it is processed out-of-context by eventService
                 env.CompileDeploy("@Public insert into ABCStream select * from SupportBean", path);
                 env.CompileDeploy(
-                    "@name('context') @public create context SegmentedByAString partition by theString from ABCStream",
+                    "@name('context') @public create context SegmentedByAString partition by TheString from ABCStream",
                     path);
                 env.TryInvalidCompile(
                     path,
-                    "context SegmentedByAString update istream ABCStream set intPrimitive = (select id from SupportBean_S0#lastevent) where intPrimitive < 0",
+                    "context SegmentedByAString update istream ABCStream set IntPrimitive = (select Id from SupportBean_S0#lastevent) where IntPrimitive < 0",
                     "Update IStream is not supported in conjunction with a context");
 
                 // context declaration for create-context
@@ -285,8 +285,8 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 // statement references context but there is none
                 env.TryInvalidCompile(
-                    "select context.sb.theString from SupportBean as sb",
-                    "Failed to validate select-clause expression 'context.sb.theString': Failed to resolve property 'context.sb.theString' to a stream or nested property in a stream");
+                    "select context.sb.TheString from SupportBean as sb",
+                    "Failed to validate select-clause expression 'context.sb.TheString': Failed to resolve property 'context.sb.TheString' to a stream or nested property in a stream");
 
                 env.UndeployAll();
             }

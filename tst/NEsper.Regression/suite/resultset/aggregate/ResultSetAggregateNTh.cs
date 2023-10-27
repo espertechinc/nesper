@@ -19,10 +19,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             var milestone = new AtomicLong();
 
             var epl = "@name('s0') select " +
-                      "theString, " +
-                      "nth(intPrimitive,0) as int1, " + // current
-                      "nth(intPrimitive,1) as int2 " + // one before
-                      "from SupportBean#keepall group by theString output last every 3 events order by theString";
+                      "TheString, " +
+                      "nth(IntPrimitive,0) as int1, " + // current
+                      "nth(IntPrimitive,1) as int2 " + // one before
+"from SupportBean#keepall group by TheString output last every 3 events Order by TheString";
             env.CompileDeploy(epl).AddListener("s0");
 
             RunAssertion(env, milestone);
@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             RegressionEnvironment env,
             AtomicLong milestone)
         {
-            var fields = "theString,int1,int2".SplitCsv();
+            var fields = "TheString,int1,int2".SplitCsv();
 
             env.SendEventBean(new SupportBean("G1", 10));
             env.SendEventBean(new SupportBean("G2", 11));

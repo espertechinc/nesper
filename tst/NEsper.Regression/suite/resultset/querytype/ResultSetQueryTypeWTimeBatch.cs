@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTimer(env, 0);
                 var stmtText =
-                    "@name('s0') select irstream sum(price) as sumPrice from SupportMarketDataBean#time_batch(1 sec)";
+                    "@name('s0') select irstream sum(Price) as sumPrice from SupportMarketDataBean#time_batch(1 sec)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 // send first batch
@@ -141,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTimer(env, 0);
                 var stmtText =
-                    "@name('s0') select irstream sum(price) as sumPrice from SupportMarketDataBean#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.symbol = S1.theString";
+"@name('s0') select irstream sum(Price) as sumPrice from SupportMarketDataBean#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.Symbol = S1.TheString";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendSupportEvent(env, "DELL");
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTimer(env, 0);
                 var stmtText =
-                    "@name('s0') select irstream symbol, sum(price) as sumPrice from SupportMarketDataBean#time_batch(1 sec)";
+"@name('s0') select irstream Symbol, sum(Price) as sumPrice from SupportMarketDataBean#time_batch(1 sec)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 // send first batch
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTimer(env, 0);
                 var stmtText =
-                    "@name('s0') select irstream symbol, sum(price) as sumPrice from SupportMarketDataBean#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.symbol = S1.theString";
+"@name('s0') select irstream Symbol, sum(Price) as sumPrice from SupportMarketDataBean#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.Symbol = S1.TheString";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendSupportEvent(env, "DELL");
@@ -284,7 +284,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTimer(env, 0);
                 var stmtText =
-                    "@name('s0') select irstream symbol, sum(price) as sumPrice from SupportMarketDataBean#time_batch(1 sec) group by symbol order by symbol asc";
+"@name('s0') select irstream Symbol, sum(Price) as sumPrice from SupportMarketDataBean#time_batch(1 sec) group by Symbol Order by Symbol asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 // send first batch
@@ -329,10 +329,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 0);
-                var stmtText = "@name('s0') select irstream symbol, sum(price) as sumPrice " +
+                var stmtText = "@name('s0') select irstream Symbol, sum(Price) as sumPrice "+
                                " from SupportMarketDataBean#time_batch(1 sec) as S0, SupportBean#keepall as S1" +
-                               " where S0.symbol = S1.theString " +
-                               " group by symbol";
+" where S0.Symbol = S1.TheString "+
+" group by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendSupportEvent(env, "DELL");
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 SendMDEvent(env, "DELL", 20, 0L);
                 SendTimer(env, 1000);
 
-                var fields = "symbol,sumPrice".SplitCsv();
+                var fields = "Symbol,sumPrice".SplitCsv();
                 env.AssertPropsPerRowLastNewAnyOrder(
                     "s0",
                     fields,
@@ -377,7 +377,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTimer(env, 0);
                 var stmtText =
-                    "@name('s0') select irstream symbol, sum(price) as sumPrice, volume from SupportMarketDataBean#time_batch(1 sec) group by symbol";
+"@name('s0') select irstream Symbol, sum(Price) as sumPrice, Volume from SupportMarketDataBean#time_batch(1 sec) group by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendMDEvent(env, "DELL", 10, 200L);
@@ -420,10 +420,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 0);
-                var stmtText = "@name('s0') select irstream symbol, sum(price) as sumPrice, volume " +
+                var stmtText = "@name('s0') select irstream Symbol, sum(Price) as sumPrice, Volume "+
                                "from SupportMarketDataBean#time_batch(1 sec) as S0, SupportBean#keepall as S1" +
-                               " where S0.symbol = S1.theString " +
-                               " group by symbol";
+" where S0.Symbol = S1.TheString "+
+" group by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendSupportEvent(env, "DELL");
@@ -486,9 +486,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             double? sumPrice,
             long? volume)
         {
-            Assert.AreEqual(symbol, theEvent.Get("symbol"));
+            Assert.AreEqual(symbol, theEvent.Get("Symbol"));
             Assert.AreEqual(sumPrice, theEvent.Get("sumPrice"));
-            Assert.AreEqual(volume, theEvent.Get("volume"));
+            Assert.AreEqual(volume, theEvent.Get("Volume"));
         }
 
         private static void AssertEvent(
@@ -496,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             string symbol,
             double? sumPrice)
         {
-            Assert.AreEqual(symbol, theEvent.Get("symbol"));
+            Assert.AreEqual(symbol, theEvent.Get("Symbol"));
             Assert.AreEqual(sumPrice, theEvent.Get("sumPrice"));
         }
 

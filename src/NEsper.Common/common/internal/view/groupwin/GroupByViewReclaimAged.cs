@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
         }
 
-        public override EventType EventType => parent.EventType;
+        public override EventType EventType => Parent.EventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {

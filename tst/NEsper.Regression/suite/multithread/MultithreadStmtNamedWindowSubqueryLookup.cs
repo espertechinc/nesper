@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             TrySend(env, 3, 10000);
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             threadPool.Shutdown();
-            
+
             SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
             SupportCompileDeployUtil.AssertFutures(future);
 

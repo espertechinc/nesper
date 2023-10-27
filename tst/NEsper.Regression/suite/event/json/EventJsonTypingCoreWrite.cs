@@ -148,8 +148,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create json schema Book(bookId string, price decimal);\n", path);
-                env.CompileDeploy("@public create json schema Shelf(shelfId string, book Book);\n", path);
+                env.CompileDeploy("@public create json schema Book(BookId string, Price decimal);\n", path);
+                env.CompileDeploy("@public create json schema Shelf(shelfId string, Book Book);\n", path);
                 env.CompileDeploy("@public create json schema Isle(isleId string, shelf Shelf);\n", path);
                 env.CompileDeploy(
                     "@public @buseventtype create json schema Library(libraryId string, isle Isle);\n",
@@ -163,9 +163,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                        "    \"isleId\": \"I1\",\n" +
                        "    \"shelf\": {\n" +
                        "      \"shelfId\": \"S11\",\n" +
-                       "      \"book\": {\n" +
-                       "        \"bookId\": \"B111\",\n" +
-                       "        \"price\": 20\n" +
+"      \"Book\": {\n"+
+                       "        \"BookId\": \"B111\",\n" +
+                       "        \"Price\": 20\n" +
                        "      }\n" +
                        "    }\n" +
                        "  }\n" +
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                        "    \"isleId\": \"I1\",\n" +
                        "    \"shelf\": {\n" +
                        "      \"shelfId\": \"S11\",\n" +
-                       "      \"book\": null\n" +
+"      \"Book\": null\n"+
                        "    }\n" +
                        "  }\n" +
                        "}";
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                         AssertJsonWrite(json, @event);
                         EPAssertionUtil.AssertProps(
                             @event,
-                            "libraryId,isle.isleId,isle.shelf.shelfId,isle.shelf.book.bookId".SplitCsv(),
+"libraryId,isle.isleId,isle.shelf.shelfId,isle.shelf.Book.BookId".SplitCsv(),
                             new object[] { libraryId, isleId, shelfId, bookId });
                     });
             }
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create json schema Book(bookId string, price decimal);\n", path);
+                env.CompileDeploy("@public create json schema Book(BookId string, Price decimal);\n", path);
                 env.CompileDeploy("@public create json schema Shelf(shelfId string, books Book[]);\n", path);
                 env.CompileDeploy("@public create json schema Isle(isleId string, shelfs Shelf[]);\n", path);
                 env.CompileDeploy(
@@ -246,8 +246,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                               "          \"shelfId\": \"S1\",\n" +
                               "          \"books\": [\n" +
                               "            {\n" +
-                              "              \"bookId\": \"B1\",\n" +
-                              "              \"price\": 10\n" +
+                              "              \"BookId\": \"B1\",\n" +
+                              "              \"Price\": 10\n" +
                               "            }\n" +
                               "          ]\n" +
                               "        }\n" +
@@ -929,8 +929,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             int price)
         {
             var book = new JObject();
-            book.Add("bookId", bookId);
-            book.Add("price", price);
+            book.Add("BookId", bookId);
+            book.Add("Price", price);
             return book;
         }
 

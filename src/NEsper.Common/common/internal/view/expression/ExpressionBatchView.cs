@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.view.expression
                 // post
                 if (batchNewData != null || lastBatch != null) {
                     agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, batchNewData, lastBatch);
-                    child.Update(batchNewData, lastBatch);
+                    Child.Update(batchNewData, lastBatch);
                     agentInstanceContext.InstrumentationProvider.AViewIndicate();
                 }
 
@@ -149,7 +149,7 @@ namespace com.espertech.esper.common.@internal.view.expression
 
                 // post
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(factory, batchNewData, lastBatch);
-                child.Update(batchNewData, lastBatch);
+                Child.Update(batchNewData, lastBatch);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
                 // clear

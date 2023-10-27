@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     new RegressionPath().Add(type));
                 var selectSB = env.Compile("@name('s0') select * from SupportBean");
                 var selectSBParameterized =
-                    env.Compile("@name('s0') select * from SupportBean(theString = ?::string)");
+                    env.Compile("@name('s0') select * from SupportBean(TheString = ?::string)");
                 env.CompileDeploy("@name('s1') select * from SupportBean");
 
                 // dependency not found
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 // duplicate deployment id
                 TryInvalidRollout(
                     env,
-                    "Deployment id 'a' occurs multiple times in the rollout",
+                    "Deployment Id 'a' occurs multiple times in the rollout",
                     1,
                     typeof(EPDeployException),
                     new EPDeploymentRolloutCompiled(selectSB, new DeploymentOptions().WithDeploymentId("a")),
@@ -189,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 // deployment id exists
                 TryInvalidRollout(
                     env,
-                    "Deployment by id '" + env.DeploymentId("s1") + "' already exists",
+                    "Deployment by Id '" + env.DeploymentId("s1") + "' already exists",
                     1,
                     typeof(EPDeployDeploymentExistsException),
                     new EPDeploymentRolloutCompiled(selectSB, new DeploymentOptions().WithDeploymentId("a")),

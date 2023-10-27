@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             configDB.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
             configuration.Common.AddDatabaseReference("MyDB", configDB);
         }
-        
+
         public ISet<RegressionFlag> Flags()
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);

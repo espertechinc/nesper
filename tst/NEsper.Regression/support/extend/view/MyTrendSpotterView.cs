@@ -79,10 +79,10 @@ namespace com.espertech.esper.regressionlib.support.extend.view
                 }
             }
 
-            if (child != null) {
+            if (Child != null) {
                 var newDataPost = PopulateMap(trendcount);
                 lastInsertStreamEvent = newDataPost;
-                child.Update(new[] {newDataPost}, removeStreamToPost);
+                Child.Update(new[] {newDataPost}, removeStreamToPost);
             }
         }
 

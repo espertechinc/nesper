@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var eplOne = "@name('s0') select * " +
                              "from SupportBean_S0#keepall as s0, SupportBean_S1#keepall as s1 " +
-                             "where s0.p00 = s1.p10 and s0.p01 = s1.p11 and s0.p02 > s1.p12";
+                             "where s0.P00 = s1.P10 and s0.P01 = s1.P11 and s0.P02 > s1.P12";
                 env.CompileDeploy(eplOne).AddListener("s0");
 
                 SendS0(env, 10, "a0", "b0", "X");
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 RegressionEnvironment env,
                 object[][] expected)
             {
-                var fields = "s0.id,s1.id".SplitCsv();
+                var fields = "s0.Id,s1.Id".SplitCsv();
                 env.AssertPropsPerRowLastNew("s0", fields, expected);
             }
 
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 RegressionEnvironment env,
                 object[][] expected)
             {
-                var fields = "si.id,sm.id".SplitCsv();
+                var fields = "si.Id,sm.Id".SplitCsv();
                 env.AssertPropsPerRowLastNewAnyOrder("s0", fields, expected);
             }
 
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 RegressionEnvironment env,
                 object[][] expected)
             {
-                var fields = "si.id,sm.id".SplitCsv();
+                var fields = "si.Id,sm.Id".SplitCsv();
                 env.AssertPropsPerRowLastNew("s0", fields, expected);
             }
 
@@ -260,11 +260,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var eplOne =
-                    "@name('s0') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where intBoxed between rangeStart and rangeEnd";
+                    "@name('s0') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where IntBoxed between rangeStart and rangeEnd";
                 env.CompileDeploy(eplOne).AddListener("s0");
 
                 var eplTwo =
-                    "@name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where theString = key and intBoxed in [rangeStart: rangeEnd]";
+                    "@name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where TheString = key and IntBoxed in [rangeStart: rangeEnd]";
                 env.CompileDeploy(eplTwo).AddListener("s1");
 
                 // null join lookups
@@ -301,7 +301,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test string compare
                 var eplThree =
-                    "@name('s2') select sb.* from SupportBeanRange#keepall sb, SupportBean#lastevent where theString in [rangeStartStr:rangeEndStr]";
+                    "@name('s2') select sb.* from SupportBeanRange#keepall sb, SupportBean#lastevent where TheString in [rangeStartStr:rangeEndStr]";
                 env.CompileDeploy(eplThree).AddListener("s2");
 
                 SendSupportBean(env, "P", 1, 1);
@@ -317,12 +317,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var joinStatement = "@name('s0') select * from " +
-                                    "SupportBean(theString like 'A%')#length(3) as streamA," +
-                                    "SupportBean(theString like 'B%')#length(3) as streamB" +
-                                    " where streamA.intPrimitive = streamB.intPrimitive " +
-                                    "and streamA.intBoxed = streamB.intBoxed";
+                                    "SupportBean(TheString like 'A%')#length(3) as streamA," +
+                                    "SupportBean(TheString like 'B%')#length(3) as streamB" +
+                                    " where streamA.IntPrimitive = streamB.IntPrimitive " +
+                                    "and streamA.IntBoxed = streamB.IntBoxed";
                 env.CompileDeploy(joinStatement).AddListener("s0");
-                var fields = "streamA.theString,streamB.theString".SplitCsv();
+                var fields = "streamA.TheString,streamB.TheString".SplitCsv();
 
                 env.AssertStatement(
                     "s0",

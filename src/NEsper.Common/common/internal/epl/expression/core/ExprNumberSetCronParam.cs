@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -37,7 +38,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         public const string METHOD_HANDLENUMBERSETCRONPARAMNULLVALUE = "HandleNumberSetCronParamNullValue";
 
-        [NonSerialized] private ExprEvaluator evaluator;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprEvaluator evaluator;
 
         /// <summary>
         ///     Ctor.

@@ -50,10 +50,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("insert into MyInfra select * from SupportMaxAmountEvent", path);
 
-                var stmtText = "@name('s0') select theString as c0, sum(intPrimitive) as c1 " +
-                               "from SupportBean#groupwin(theString)#length(2) as sb " +
-                               "group by theString " +
-                               "having sum(intPrimitive) > (select maxAmount from MyInfra as mw where sb.theString = mw.key)";
+                var stmtText = "@name('s0') select TheString as c0, sum(IntPrimitive) as c1 " +
+                               "from SupportBean#groupwin(TheString)#length(2) as sb " +
+                               "group by TheString " +
+                               "having sum(IntPrimitive) > (select maxAmount from MyInfra as mw where sb.TheString = mw.key)";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 var fields = "c0,c1".SplitCsv();

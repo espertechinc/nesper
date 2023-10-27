@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
 
                         //Console.WriteLine(result);
                         var valuesOnly =
-                            "{ \"bigDecimal\": null, \"bigInteger\": null, \"boolBoxed\": null, \"boolPrimitive\": false, \"byteBoxed\": null, \"bytePrimitive\": 0, \"charBoxed\": null, \"charPrimitive\": \"x\", \"doubleBoxed\": null, \"doublePrimitive\": 0.0, \"enumValue\": \"ENUM_VALUE_1\", \"floatBoxed\": null, \"floatPrimitive\": 0.0, \"intBoxed\": 992, \"intPrimitive\": 1, \"longBoxed\": null, \"longPrimitive\": 0, \"shortBoxed\": null, \"shortPrimitive\": 0, \"theString\": \"a\\nc>\" }";
+                            "{ \"bigDecimal\": null, \"bigInteger\": null, \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"enumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\" }";
                         var expected = "{ \"supportBean\": " + valuesOnly + " }";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
 
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                        "        \"stringarr\": []\n" +
                                        "      }],\n" +
                                        "    \"prop0\": {\n" +
-                                       "      \"id\": \"A1\"\n" +
+                                       "      \"Id\": \"A1\"\n" +
                                        "    }\n" +
                                        "  }\n" +
                                        "}";

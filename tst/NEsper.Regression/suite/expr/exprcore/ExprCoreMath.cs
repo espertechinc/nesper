@@ -224,14 +224,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "c0,c1,c2,c3,c4,c5,c6,c7".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean")
-                    .WithExpression(fields[0], "intPrimitive/intBoxed")
-                    .WithExpression(fields[1], "intPrimitive*intBoxed")
-                    .WithExpression(fields[2], "intPrimitive+intBoxed")
-                    .WithExpression(fields[3], "intPrimitive-intBoxed")
-                    .WithExpression(fields[4], "intBoxed/intPrimitive")
-                    .WithExpression(fields[5], "intBoxed*intPrimitive")
-                    .WithExpression(fields[6], "intBoxed+intPrimitive")
-                    .WithExpression(fields[7], "intBoxed-intPrimitive")
+                    .WithExpression(fields[0], "IntPrimitive/IntBoxed")
+                    .WithExpression(fields[1], "IntPrimitive*IntBoxed")
+                    .WithExpression(fields[2], "IntPrimitive+IntBoxed")
+                    .WithExpression(fields[3], "IntPrimitive-IntBoxed")
+                    .WithExpression(fields[4], "IntBoxed/IntPrimitive")
+                    .WithExpression(fields[5], "IntBoxed*IntPrimitive")
+                    .WithExpression(fields[6], "IntBoxed+IntPrimitive")
+                    .WithExpression(fields[7], "IntBoxed-IntPrimitive")
                     .WithStatementConsumer(
                         stmt => AssertTypes(
                             stmt,

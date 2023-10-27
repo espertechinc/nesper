@@ -49,9 +49,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 .IfCondition(EqualsIdentity(ExprDotName(Ref("events"), "Count"), Constant(0)))
                 .BlockReturn(ConstantNull())
                 .DeclareVar<EventBean>(
-                    "event",
-                    StaticMethod(typeof(EventBeanUtility), "getNonemptyFirstEvent", Ref("events")))
-                .MethodReturn(Cast(EvaluationType, ExprDotUnderlying(Ref("event"))));
+                    "@event",
+                    StaticMethod(typeof(EventBeanUtility), "GetNonemptyFirstEvent", Ref("events")))
+                .MethodReturn(Cast(EvaluationType, ExprDotUnderlying(Ref("@event"))));
             return LocalMethod(methodNode);
         }
 

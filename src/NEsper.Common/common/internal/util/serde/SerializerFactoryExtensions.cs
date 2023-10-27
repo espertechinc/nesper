@@ -6,12 +6,22 @@ namespace com.espertech.esper.common.@internal.util.serde
     {
         public static SerializerFactory SerializerFactory(this IContainer container)
         {
-            var serializerFactory = container.Resolve<SerializerFactory>();
-            if (serializerFactory == null) {
-                serializerFactory = new SerializerFactory(container);
+            container.CheckContainer();
+
+            lock (container) {
+                if (container.DoesNotHave<SerializerFactory>()) {
+                    container.Register<SerializerFactory>(
+                        GetDefaultSerializerFactory,
+                        Lifespan.Singleton);
+                }
             }
 
-            return serializerFactory;
+            return container.Resolve<SerializerFactory>();
+        }
+        
+        public static SerializerFactory GetDefaultSerializerFactory(IContainer container)
+        {
+            return new SerializerFactory(container);
         }
     }
 }

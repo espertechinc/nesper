@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     })
                 .Build();
 
-            block.MethodReturn(ExprDotMethod(manufacturer, "make", Ref("values")));
+            block.MethodReturn(ExprDotMethod(manufacturer, "Make", Ref("values")));
             return methodNode;
         }
     }

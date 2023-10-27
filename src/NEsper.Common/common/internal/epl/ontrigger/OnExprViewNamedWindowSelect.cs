@@ -85,11 +85,11 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 
             // The on-select listeners receive the events selected
             if (newData != null && newData.Length > 0) {
-                if (child != null) {
+                if (Child != null) {
                     // And post only if we have listeners/subscribers that need the data
                     var statementResultService = agentInstanceContext.StatementResultService;
                     if (statementResultService.IsMakeNatural || statementResultService.IsMakeSynthetic) {
-                        child.Update(newData, null);
+                        Child.Update(newData, null);
                     }
                 }
             }

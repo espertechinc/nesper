@@ -56,8 +56,8 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
             var itemWhereClause = items[index].WhereClause;
             if (itemWhereClause != null) {
                 agentInstanceContext.InstrumentationProvider.QSplitStreamWhere(index);
-                var passEvent = (bool)itemWhereClause.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (passEvent == null || !passEvent) {
+                var passEvent = itemWhereClause.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                if (passEvent == null || false.Equals(passEvent)) {
                     pass = false;
                 }
 

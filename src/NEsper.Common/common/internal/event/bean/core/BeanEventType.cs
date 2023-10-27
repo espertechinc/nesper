@@ -371,7 +371,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                         new bool[2],
                         new bool[2]);
                 }
-                catch (MethodResolverNoSuchMethodException e) {
+                catch (MethodResolverNoSuchMethodException) {
                     Log.Info(
                         "Failed to find mapped property setter method '" +
                         methodName +
@@ -396,7 +396,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
                         new bool[2],
                         new bool[2]);
                 }
-                catch (MethodResolverNoSuchMethodException e) {
+                catch (MethodResolverNoSuchMethodException) {
                     Log.Info(
                         "Failed to find indexed property setter method '" +
                         methodName +

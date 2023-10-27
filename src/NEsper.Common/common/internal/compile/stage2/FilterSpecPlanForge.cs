@@ -114,14 +114,14 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
             method.Block
                 .DeclareVarNewInstance(typeof(FilterSpecPlan), "plan")
-                .ExprDotMethod(Ref("plan"), "setPaths", Ref("paths"))
-                .ExprDotMethod(Ref("plan"), "setFilterConfirm", OptionalEvaluator(FilterConfirm, method, classScope))
-                .ExprDotMethod(Ref("plan"), "setFilterNegate", OptionalEvaluator(FilterNegate, method, classScope))
-                .ExprDotMethod(
+                .SetProperty(Ref("plan"), "Paths", Ref("paths"))
+                .SetProperty(Ref("plan"), "FilterConfirm", OptionalEvaluator(FilterConfirm, method, classScope))
+                .SetProperty(Ref("plan"), "FilterNegate", OptionalEvaluator(FilterNegate, method, classScope))
+                .SetProperty(
                     Ref("plan"),
-                    "setConvertor",
+                    "Convertor",
                     ConvertorForge == null ? ConstantNull() : ConvertorForge.MakeAnonymous(method, classScope))
-                .ExprDotMethod(Ref("plan"), "initialize")
+                .ExprDotMethod(Ref("plan"), "Initialize")
                 .MethodReturn(Ref("plan"));
             return method;
         }

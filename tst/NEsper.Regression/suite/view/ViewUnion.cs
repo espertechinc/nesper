@@ -151,12 +151,12 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "create window MyWindowOne#firstunique(theString)#firstlength(3) retain-union as SupportBean;\n" +
+                    "create window MyWindowOne#firstunique(TheString)#firstlength(3) retain-union as SupportBean;\n" +
                     "insert into MyWindowOne select * from SupportBean;\n" +
-                    "on SupportBean_S0 delete from MyWindowOne where theString = p00;\n" +
+                    "on SupportBean_S0 delete from MyWindowOne where TheString = P00;\n" +
                     "@name('s0') select irstream * from MyWindowOne;\n";
                 env.CompileDeploy(epl).AddListener("s0");
-                var fields = new string[] { "theString", "intPrimitive" };
+                var fields = new string[] { "TheString", "IntPrimitive" };
 
                 SendEvent(env, "E1", 1);
                 env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { "E1", 1 } });
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { "E2", 2 } });
                 env.AssertPropsPerRowIRPair(
                     "s0",
-                    "theString".SplitCsv(),
+                    "TheString".SplitCsv(),
                     null,
                     new object[][] { new object[] { "E1" }, new object[] { "E1" } });
 
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var milestone = new AtomicLong();
                 var epl =
-                    "@name('s0') select irstream theString, intPrimitive from SupportBean#firstlength(3)#firstunique(theString) retain-union";
+                    "@name('s0') select irstream TheString, IntPrimitive from SupportBean#firstlength(3)#firstunique(TheString) retain-union";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
                 TryAssertionFirstUniqueAndFirstLength(env);
@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.UndeployAll();
 
                 epl =
-                    "@name('s0') select irstream theString, intPrimitive from SupportBean#firstunique(theString)#firstlength(3) retain-union";
+                    "@name('s0') select irstream TheString, IntPrimitive from SupportBean#firstunique(TheString)#firstlength(3) retain-union";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
                 TryAssertionFirstUniqueAndFirstLength(env);
@@ -226,10 +226,10 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "theString" };
+                var fields = new string[] { "TheString" };
 
                 var epl =
-                    "@name('s0') select irstream theString from SupportBean#length_batch(3)#unique(intPrimitive) retain-union";
+                    "@name('s0') select irstream TheString from SupportBean#length_batch(3)#unique(IntPrimitive) retain-union";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "E1", 1);
@@ -283,10 +283,10 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "total" };
+                var fields = new string[] { "Total"};
 
                 var epl =
-                    "@name('s0') select * from SupportBean#unique(intPrimitive)#unique(intBoxed)#uni(doublePrimitive) retain-union";
+                    "@name('s0') select * from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#uni(DoublePrimitive) retain-union";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "E1", 1, 10, 100d);
@@ -309,10 +309,10 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "theString" };
+                var fields = new string[] { "TheString" };
 
                 var text =
-                    "@name('s0') select irstream theString from SupportBean#groupwin(intPrimitive)#length(2)#unique(intBoxed) retain-union";
+                    "@name('s0') select irstream TheString from SupportBean#groupwin(IntPrimitive)#length(2)#unique(IntBoxed) retain-union";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendEvent(env, "E1", 1, 10);
@@ -368,7 +368,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@name('s0') select * from SupportBean_S0 where p00 in (select theString from SupportBean#length(2)#unique(intPrimitive) retain-union)";
+                    "@name('s0') select * from SupportBean_S0 where P00 in (select TheString from SupportBean#length(2)#unique(IntPrimitive) retain-union)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendEvent(env, "E1", 1);
@@ -409,10 +409,10 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "theString" };
+                var fields = new string[] { "TheString" };
 
                 var epl =
-                    "@name('s0') select irstream theString from SupportBean#unique(intPrimitive)#unique(intBoxed)#unique(doublePrimitive) retain-union";
+                    "@name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#unique(DoublePrimitive) retain-union";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "E1", 1, 10, 100d);
@@ -448,7 +448,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields = new string[] { "string" };
 
                 var text =
-                    "@name('s0') select irstream a.p00||b.p10 as string from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]#unique(a.id)#unique(b.id) retain-union";
+                    "@name('s0') select irstream a.P00||b.P10 as string from pattern [every a=SupportBean_S0 -> b=SupportBean_S1]#unique(a.Id)#unique(b.Id) retain-union";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "E1"));
@@ -478,10 +478,10 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "theString" };
+                var fields = new string[] { "TheString" };
 
                 var epl =
-                    "@name('s0') select irstream theString from SupportBean#unique(intPrimitive)#unique(intBoxed) retain-union";
+                    "@name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#unique(IntBoxed) retain-union";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "E1", 1, 10);
@@ -554,10 +554,10 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "theString" };
+                var fields = new string[] { "TheString" };
 
                 var epl =
-                    "@name('s0') select irstream theString from SupportBean#sort(2, intPrimitive)#sort(2, intBoxed) retain-union";
+                    "@name('s0') select irstream TheString from SupportBean#sort(2, IntPrimitive)#sort(2, IntBoxed) retain-union";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "E1", 1, 10);
@@ -585,7 +585,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     listener => {
                         Assert.AreEqual(2, listener.LastOldData.Length);
                         object[] result =
-                            { listener.LastOldData[0].Get("theString"), listener.LastOldData[1].Get("theString") };
+                            { listener.LastOldData[0].Get("TheString"), listener.LastOldData[1].Get("TheString") };
                         EPAssertionUtil.AssertEqualsAnyOrder(result, new string[] { "E1", "E2" });
                         EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[] { "E4" });
                         listener.Reset();
@@ -627,7 +627,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@name('s0') select irstream theString from SupportBean#unique(intPrimitive)#time(10 sec) retain-union";
+                    "@name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#time(10 sec) retain-union";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryAssertionTimeWinUnique(env);
@@ -642,7 +642,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@name('s0') select irstream theString from SupportBean#time(10 seconds)#unique(intPrimitive) retain-union";
+                    "@name('s0') select irstream TheString from SupportBean#time(10 seconds)#unique(IntPrimitive) retain-union";
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
 
                 TryAssertionTimeWinUnique(env);
@@ -657,9 +657,9 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@name('s0') create window MyWindowTwo#time(10 sec)#unique(intPrimitive) retain-union as select * from SupportBean;\n" +
+                    "@name('s0') create window MyWindowTwo#time(10 sec)#unique(IntPrimitive) retain-union as select * from SupportBean;\n" +
                     "insert into MyWindowTwo select * from SupportBean;\n" +
-                    "on SupportBean_S0 delete from MyWindowTwo where intBoxed = id;\n";
+                    "on SupportBean_S0 delete from MyWindowTwo where IntBoxed = Id;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryAssertionTimeWinUnique(env);
@@ -674,12 +674,12 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@name('s0') create window MyWindowThree#time(10 sec)#unique(intPrimitive) retain-union as select * from SupportBean;\n" +
+                    "@name('s0') create window MyWindowThree#time(10 sec)#unique(IntPrimitive) retain-union as select * from SupportBean;\n" +
                     "insert into MyWindowThree select * from SupportBean;\n" +
-                    "on SupportBean_S0 delete from MyWindowThree where intBoxed = id;\n";
+                    "on SupportBean_S0 delete from MyWindowThree where IntBoxed = Id;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var fields = new string[] { "theString" };
+                var fields = new string[] { "TheString" };
 
                 env.AdvanceTime(1000);
                 SendEvent(env, "E1", 1, 10);
@@ -733,7 +733,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     listener => {
                         Assert.AreEqual(2, listener.LastOldData.Length);
                         object[] result =
-                            { listener.LastOldData[0].Get("theString"), listener.LastOldData[1].Get("theString") };
+                            { listener.LastOldData[0].Get("TheString"), listener.LastOldData[1].Get("TheString") };
                         EPAssertionUtil.AssertEqualsAnyOrder(result, new string[] { "E5", "E6" });
                         listener.Reset();
                     });
@@ -759,7 +759,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         private static void TryAssertionTimeWinUnique(RegressionEnvironment env)
         {
-            var fields = new string[] { "theString" };
+            var fields = new string[] { "TheString" };
 
             env.AdvanceTime(1000);
             SendEvent(env, "E1", 1);
@@ -852,22 +852,22 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string text = null;
 
                 text =
-                    "select theString from SupportBean#groupwin(theString)#unique(theString)#merge(intPrimitive) retain-union";
+                    "select TheString from SupportBean#groupwin(TheString)#unique(TheString)#merge(IntPrimitive) retain-union";
                 env.TryInvalidCompile(
                     text,
                     "Failed to validate data window declaration: Mismatching parameters between 'group' and 'merge'");
 
                 text =
-                    "select theString from SupportBean#groupwin(theString)#groupwin(intPrimitive)#unique(theString)#unique(intPrimitive) retain-union";
+                    "select TheString from SupportBean#groupwin(TheString)#groupwin(IntPrimitive)#unique(TheString)#unique(IntPrimitive) retain-union";
                 env.TryInvalidCompile(
                     text,
-                    "Failed to validate data window declaration: Multiple groupwin-declarations are not supported [select theString from SupportBean#groupwin(theString)#groupwin(intPrimitive)#unique(theString)#unique(intPrimitive) retain-union]");
+                    "Failed to validate data window declaration: Multiple groupwin-declarations are not supported [select TheString from SupportBean#groupwin(TheString)#groupwin(IntPrimitive)#unique(TheString)#unique(IntPrimitive) retain-union]");
             }
         }
 
         private static void TryAssertionFirstUniqueAndFirstLength(RegressionEnvironment env)
         {
-            var fields = new string[] { "theString", "intPrimitive" };
+            var fields = new string[] { "TheString", "IntPrimitive" };
 
             SendEvent(env, "E1", 1);
             env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { "E1", 1 } });

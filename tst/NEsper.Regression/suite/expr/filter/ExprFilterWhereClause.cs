@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select * from SupportMarketDataBean#length(3) where symbol='CSCO'";
+                var epl = "@name('s0') select * from SupportMarketDataBean#length(3) where Symbol='CSCO'";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendMarketDataEvent(env, "IBM");
@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 // invalid return type for filter during compilation time
                 env.TryInvalidCompile(
-                    "Select theString From SupportBean#time(30 seconds) where intPrimitive group by theString",
+                    "Select TheString From SupportBean#time(30 seconds) where IntPrimitive group by TheString",
                     "Failed to validate expression: The where-clause filter expression must return a boolean value");
 
                 // invalid return type for filter at eventService
@@ -90,11 +90,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select " +
-                          " intPrimitive + longPrimitive as p1," +
-                          " intPrimitive * doublePrimitive as p2," +
-                          " floatPrimitive / doublePrimitive as p3" +
+                          " IntPrimitive + LongPrimitive as p1," +
+                          " IntPrimitive * DoublePrimitive as p2," +
+                          " FloatPrimitive / DoublePrimitive as p3" +
                           " from SupportBean#length(3) where " +
-                          "intPrimitive=longPrimitive and intPrimitive=doublePrimitive and floatPrimitive=doublePrimitive";
+                          "IntPrimitive=LongPrimitive and IntPrimitive=DoublePrimitive and FloatPrimitive=DoublePrimitive";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendSupportBeanEvent(env, 1, 2, 3, 4);

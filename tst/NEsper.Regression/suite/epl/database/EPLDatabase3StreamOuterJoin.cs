@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var stmtText = "@name('s0') select * from SupportBean#lastevent sb" +
                                " inner join " +
                                " SupportBeanTwo#lastevent sbt" +
-                               " on sb.theString = sbt.stringTwo " +
+                               " on sb.TheString = sbt.stringTwo " +
                                " inner join " +
                                " sql:MyDBWithRetain ['select myint from mytesttable'] as s1 " +
                                "  on s1.myint = sbt.intPrimitiveTwo";
@@ -59,14 +59,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.SendEventBean(new SupportBean("T2", -1));
                 env.AssertPropsNew(
                     "s0",
-                    "sb.theString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    "sb.TheString,sbt.stringTwo,s1.myint".SplitCsv(),
                     new object[] { "T2", "T2", 30 });
 
                 env.SendEventBean(new SupportBean("T3", -1));
                 env.SendEventBean(new SupportBeanTwo("T3", 40));
                 env.AssertPropsNew(
                     "s0",
-                    "sb.theString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    "sb.TheString,sbt.stringTwo,s1.myint".SplitCsv(),
                     new object[] { "T3", "T3", 40 });
 
                 env.UndeployAll();
@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var stmtText = "@name('s0') select * from SupportBean#lastevent sb" +
                                " left outer join " +
                                " SupportBeanTwo#lastevent sbt" +
-                               " on sb.theString = sbt.stringTwo " +
+                               " on sb.TheString = sbt.stringTwo " +
                                " left outer join " +
                                " sql:MyDBWithRetain ['select myint from mytesttable'] as s1 " +
                                "  on s1.myint = sbt.intPrimitiveTwo";
@@ -90,26 +90,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.SendEventBean(new SupportBean("T1", 3));
                 env.AssertPropsNew(
                     "s0",
-                    "sb.theString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    "sb.TheString,sbt.stringTwo,s1.myint".SplitCsv(),
                     new object[] { "T1", "T1", null });
 
                 env.SendEventBean(new SupportBeanTwo("T2", 30));
                 env.SendEventBean(new SupportBean("T2", -2));
                 env.AssertPropsNew(
                     "s0",
-                    "sb.theString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    "sb.TheString,sbt.stringTwo,s1.myint".SplitCsv(),
                     new object[] { "T2", "T2", 30 });
 
                 env.SendEventBean(new SupportBean("T3", -1));
                 env.AssertPropsNew(
                     "s0",
-                    "sb.theString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    "sb.TheString,sbt.stringTwo,s1.myint".SplitCsv(),
                     new object[] { "T3", null, null });
 
                 env.SendEventBean(new SupportBeanTwo("T3", 40));
                 env.AssertPropsNew(
                     "s0",
-                    "sb.theString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    "sb.TheString,sbt.stringTwo,s1.myint".SplitCsv(),
                     new object[] { "T3", "T3", 40 });
 
                 env.UndeployAll();

@@ -181,8 +181,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
 
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') @public create window MyInfraPC#keepall as (id string, array int[], value int)"
-                    : "@name('create') @public create table MyInfraPC(id string primary key, array int[], value int)";
+                    ? "@name('create') @public create window MyInfraPC#keepall as (Id string, array int[], value int)"
+                    : "@name('create') @public create table MyInfraPC(Id string primary key, array int[], value int)";
                 env.CompileDeploy(stmtTextCreate, path);
 
                 var stmtTextSelect =
@@ -244,10 +244,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.CompileDeploy("create index MyIndex on MyInfra(value)", path);
                 env.CompileDeploy(
-                    "insert into MyInfra select intPrimitive as numericKey, theString as value from SupportBean",
+                    "insert into MyInfra select IntPrimitive as numericKey, TheString as value from SupportBean",
                     path);
 
-                var epl = "@name('out') on SupportBean_S0 as s0 select value from MyInfra where value = p00";
+                var epl = "@name('out') on SupportBean_S0 as s0 select value from MyInfra where value = P00";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 SendSupportBean(env, "E1", 1);
@@ -289,18 +289,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') @public create window MyInfraPC#keepall as select theString as a, intPrimitive as b from SupportBean"
+                    ? "@name('create') @public create window MyInfraPC#keepall as select TheString as a, IntPrimitive as b from SupportBean"
                     : "@name('create') @public create table MyInfraPC(a string primary key, b int primary key)";
                 env.CompileDeploy(stmtTextCreate, path);
 
                 // create select stmt
                 var stmtTextSelect =
-                    "@name('select') on pattern [every ea=SupportBean_A or every eb=SupportBean_B] select mywin.* from MyInfraPC as mywin where a = coalesce(ea.id, eb.id)";
+                    "@name('select') on pattern [every ea=SupportBean_A or every eb=SupportBean_B] select mywin.* from MyInfraPC as mywin where a = coalesce(ea.Id, eb.Id)";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "insert into MyInfraPC select theString as a, intPrimitive as b from SupportBean";
+                    "insert into MyInfraPC select TheString as a, IntPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // send 3 event
@@ -367,11 +367,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var fields = new string[] { "a", "b" };
 
                 var epl = namedWindow
-                    ? "@name('create') @public create window MyInfraSCD#keepall as select theString as a, intPrimitive as b from SupportBean;\n"
+                    ? "@name('create') @public create window MyInfraSCD#keepall as select TheString as a, IntPrimitive as b from SupportBean;\n"
                     : "@name('create') @public create table MyInfraSCD(a string primary key, b int primary key);\n";
-                epl += "@name('select') on SupportBean_A select mywin.* from MyInfraSCD as mywin where id = a;\n";
-                epl += "insert into MyInfraSCD select theString as a, intPrimitive as b from SupportBean;\n";
-                epl += "@name('delete') on SupportBean_B delete from MyInfraSCD where a = id;\n";
+                epl += "@name('select') on SupportBean_A select mywin.* from MyInfraSCD as mywin where Id = a;\n";
+                epl += "insert into MyInfraSCD select TheString as a, IntPrimitive as b from SupportBean;\n";
+                epl += "@name('delete') on SupportBean_B delete from MyInfraSCD where a = Id;\n";
                 env.CompileDeploy(epl).AddListener("select");
 
                 // send 3 event
@@ -450,14 +450,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 var path = new RegressionPath();
                 var epl = namedWindow
-                    ? "@name('create') @public create window MyInfraSAG#keepall as select theString as a, intPrimitive as b from SupportBean;\n"
+                    ? "@name('create') @public create window MyInfraSAG#keepall as select TheString as a, IntPrimitive as b from SupportBean;\n"
                     : "@name('create') @public create table MyInfraSAG(a string primary key, b int primary key);\n";
                 epl +=
-                    "@name('select') on SupportBean_A select a, sum(b) as sumb from MyInfraSAG group by a order by a desc;\n";
+"@name('select') on SupportBean_A select a, sum(b) as sumb from MyInfraSAG group by a Order by a desc;\n";
                 epl +=
-                    "@name('selectTwo') on SupportBean_A select a, sum(b) as sumb from MyInfraSAG group by a having sum(b) > 5 order by a desc;\n";
+"@name('selectTwo') on SupportBean_A select a, sum(b) as sumb from MyInfraSAG group by a having sum(b) > 5 Order by a desc;\n";
                 epl +=
-                    "@name('insert') insert into MyInfraSAG select theString as a, intPrimitive as b from SupportBean;\n";
+                    "@name('insert') insert into MyInfraSAG select TheString as a, IntPrimitive as b from SupportBean;\n";
                 env.CompileDeploy(epl, path).AddListener("select").AddListener("selectTwo");
 
                 // fire trigger
@@ -501,7 +501,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         { new object[] { "E4", -1 }, new object[] { "E2", 12 }, new object[] { "E1", 106 } });
 
                 // create delete stmt, delete E2
-                var stmtTextDelete = "on SupportBean_B delete from MyInfraSAG where id = a";
+                var stmtTextDelete = "on SupportBean_B delete from MyInfraSAG where Id = a";
                 env.CompileDeploy(stmtTextDelete, path);
                 SendSupportBean_B(env, "E2");
 
@@ -548,10 +548,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var fields = new string[] { "sumb" };
 
                 var epl = namedWindow
-                    ? "@name('create') @public create window MyInfraSAC#keepall as select theString as a, intPrimitive as b from SupportBean;\n"
+                    ? "@name('create') @public create window MyInfraSAC#keepall as select TheString as a, IntPrimitive as b from SupportBean;\n"
                     : "@name('create') @public create table MyInfraSAC(a string primary key, b int primary key);\n";
-                epl += "@name('select') on SupportBean_A select sum(b) as sumb from MyInfraSAC where a = id;\n";
-                epl += "insert into MyInfraSAC select theString as a, intPrimitive as b from SupportBean;\n";
+                epl += "@name('select') on SupportBean_A select sum(b) as sumb from MyInfraSAC where a = Id;\n";
+                epl += "insert into MyInfraSAC select TheString as a, IntPrimitive as b from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 
                 // send 3 event
@@ -617,7 +617,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') @public create window MyInfraSA#keepall as select theString as a, intPrimitive as b from SupportBean"
+                    ? "@name('create') @public create window MyInfraSA#keepall as select TheString as a, IntPrimitive as b from SupportBean"
                     : "@name('create') @public create table MyInfraSA (a string primary key, b int primary key)";
                 env.CompileDeploy(stmtTextCreate, path);
 
@@ -627,7 +627,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "insert into MyInfraSA select theString as a, intPrimitive as b from SupportBean";
+                    "insert into MyInfraSA select TheString as a, IntPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // send 3 event
@@ -643,7 +643,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.AssertPropsNew("select", fields, new object[] { 6 });
 
                 // create delete stmt
-                var stmtTextDelete = "on SupportBean_B delete from MyInfraSA where id = a";
+                var stmtTextDelete = "on SupportBean_B delete from MyInfraSA where Id = a";
                 env.CompileDeploy(stmtTextDelete, path);
 
                 // Delete E2
@@ -696,18 +696,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create window
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') @public create window MyInfraSA#keepall as select theString as a, intPrimitive as b from SupportBean"
+                    ? "@name('create') @public create window MyInfraSA#keepall as select TheString as a, IntPrimitive as b from SupportBean"
                     : "@name('create') @public create table MyInfraSA (a string primary key, b int)";
                 env.CompileDeploy(stmtTextCreate, path);
 
                 // create select stmt
                 var stmtTextSelect =
-                    "@name('select') on SupportBean_A as trigger select trigger.id as triggerid, win.a as wina, b from MyInfraSA as win order by wina";
+"@name('select') on SupportBean_A as trigger select trigger.Id as triggerid, win.a as wina, b from MyInfraSA as win Order by wina";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "insert into MyInfraSA select theString as a, intPrimitive as b from SupportBean";
+                    "insert into MyInfraSA select TheString as a, IntPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // send 3 event
@@ -730,7 +730,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // try limit clause
                 env.UndeployModuleContaining("select");
                 stmtTextSelect =
-                    "@name('select') on SupportBean_A as trigger select trigger.id as triggerid, win.a as wina, b from MyInfraSA as win order by wina limit 1";
+"@name('select') on SupportBean_A as trigger select trigger.Id as triggerid, win.a as wina, b from MyInfraSA as win Order by wina limit 1";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
 
                 env.Milestone(1);
@@ -763,7 +763,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             public void Run(RegressionEnvironment env)
             {
                 var fieldsCreate = new string[] { "a", "b" };
-                var fieldsOnSelect = new string[] { "a", "b", "id" };
+                var fieldsOnSelect = new string[] { "a", "b", "Id" };
                 var path = new RegressionPath();
 
                 // create window
@@ -771,16 +771,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var stmtTextCreate = namedWindow
                     ? "@name('create') @public create window " +
                       infraName +
-                      "#keepall as select theString as a, intPrimitive as b from SupportBean"
+                      "#keepall as select TheString as a, IntPrimitive as b from SupportBean"
                     : "@name('create') @public create table " + infraName + " (a string primary key, b int)";
                 env.CompileDeploy(stmtTextCreate, path);
 
                 // create select stmt
-                var stmtTextSelect = "@name('select') on SupportBean_A select mywin.*, id from " +
+                var stmtTextSelect = "@name('select') on SupportBean_A select mywin.*, Id from " +
                                      infraName +
                                      " as mywin where " +
                                      infraName +
-                                     ".b < 3 order by a asc";
+".b < 3 Order by a asc";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
                 env.AssertStatement(
                     "select",
@@ -791,7 +791,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // create insert into
                 var stmtTextInsertOne = "@name('insert') insert into " +
                                         infraName +
-                                        " select theString as a, intPrimitive as b from SupportBean";
+                                        " select TheString as a, IntPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // send 3 event
@@ -875,12 +875,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 var stmtTextCreate = namedWindow
                     ? "@public @public create window MyInfraInvalid#keepall as select * from SupportBean"
-                    : "@public @public create table MyInfraInvalid (theString string, intPrimitive int)";
+                    : "@public @public create table MyInfraInvalid (TheString string, IntPrimitive int)";
                 env.CompileDeploy(stmtTextCreate, path);
 
                 env.TryInvalidCompile(
                     path,
-                    "on SupportBean_A select * from MyInfraInvalid where sum(intPrimitive) > 100",
+                    "on SupportBean_A select * from MyInfraInvalid where sum(IntPrimitive) > 100",
                     "Failed to validate expression: An aggregate function may not appear in a WHERE clause (use the HAVING clause) [");
 
                 env.TryInvalidCompile(
@@ -890,8 +890,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.TryInvalidCompile(
                     path,
-                    "on SupportBean_A select prev(1, theString) from MyInfraInvalid",
-                    "Failed to validate select-clause expression 'prev(1,theString)': Previous function cannot be used in this context [");
+                    "on SupportBean_A select prev(1, TheString) from MyInfraInvalid",
+                    "Failed to validate select-clause expression 'prev(1,TheString)': Previous function cannot be used in this context [");
 
                 env.UndeployAll();
             }
@@ -923,7 +923,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 var stmtTextCreate = namedWindow
                     ? "@public create window MyInfraPTS#keepall as select * from SupportBean"
-                    : "@public create table MyInfraPTS as (theString string)";
+                    : "@public create table MyInfraPTS as (TheString string)";
                 env.CompileDeploy(stmtTextCreate, path);
 
                 var stmtCount =
@@ -931,12 +931,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(stmtCount, path);
 
                 var stmtTextOnSelect =
-                    "@name('select') on pattern [every timer:interval(10 sec)] select theString from MyInfraPTS having count(theString) > 0";
+                    "@name('select') on pattern [every timer:interval(10 sec)] select TheString from MyInfraPTS having count(TheString) > 0";
                 env.CompileDeploy(stmtTextOnSelect, path).AddListener("select");
 
                 var stmtTextInsertOne = namedWindow
                     ? "insert into MyInfraPTS select * from SupportBean"
-                    : "insert into MyInfraPTS select theString from SupportBean";
+                    : "insert into MyInfraPTS select TheString from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 SendTimer(11000, env);
@@ -949,7 +949,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 SendSupportBean(env, "E1", 1);
                 SendTimer(31000, env);
-                env.AssertEqualsNew("select", "theString", "E1");
+                env.AssertEqualsNew("select", "TheString", "E1");
 
                 env.UndeployAll();
             }
@@ -983,11 +983,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(stmtTextCreate, path);
 
                 var stmtTextInsertOne =
-                    "insert into MyInfraSHS select theString as a, intPrimitive as b from SupportBean";
+                    "insert into MyInfraSHS select TheString as a, IntPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 var stmtTextSelect =
-                    "@name('select') on SupportBean_A select mwc.* as mwcwin from MyInfraSHS mwc where id = a group by a having sum(b) = 20";
+                    "@name('select') on SupportBean_A select mwc.* as mwcwin from MyInfraSHS mwc where Id = a group by a having sum(b) = 20";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
                 env.AssertStatement(
                     "select",
@@ -1039,18 +1039,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
                     ? "@public create window MyInfraWA#keepall as SupportBean"
-                    : "@public create table MyInfraWA(theString string primary key, intPrimitive int)";
+                    : "@public create table MyInfraWA(TheString string primary key, IntPrimitive int)";
                 env.CompileDeploy(eplCreate, path);
                 var eplInsert = namedWindow
                     ? "insert into MyInfraWA select * from SupportBean"
-                    : "insert into MyInfraWA select theString, intPrimitive from SupportBean";
+                    : "insert into MyInfraWA select TheString, IntPrimitive from SupportBean";
                 env.CompileDeploy(eplInsert, path);
-                env.CompileDeploy("on SupportBean_S1 as s1 delete from MyInfraWA where s1.p10 = theString", path);
+                env.CompileDeploy("on SupportBean_S1 as s1 delete from MyInfraWA where s1.P10 = TheString", path);
 
                 var epl = "@name('select') on SupportBean_S0 as s0 " +
                           "select window(win.*) as c0," +
-                          "window(win.*).where(v => v.intPrimitive < 2) as c1, " +
-                          "window(win.*).toMap(k=>k.theString,v=>v.intPrimitive) as c2 " +
+                          "window(win.*).where(v => v.IntPrimitive < 2) as c1, " +
+                          "window(win.*).toMap(k=>k.TheString,v=>v.IntPrimitive) as c2 " +
                           "from MyInfraWA as win";
                 env.CompileDeploy(epl, path).AddListener("select");
 

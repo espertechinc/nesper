@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
@@ -23,7 +24,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     public class ExprLikeNode : ExprNodeBase
     {
         private readonly bool isNot;
-        [NonSerialized] private ExprLikeNodeForge forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprLikeNodeForge forge;
 
         /// <summary>
         /// Ctor.

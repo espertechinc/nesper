@@ -98,21 +98,21 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var testCaseList = new CaseList();
                 EventExpressionCase testCase;
 
-                testCase = new EventExpressionCase("b=SupportBean_B(id='B1') where timer:within(2 sec)");
+                testCase = new EventExpressionCase("b=SupportBean_B(Id='B1') where timer:within(2 sec)");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B(id='B1') where timer:within(2001 msec)");
+                testCase = new EventExpressionCase("b=SupportBean_B(Id='B1') where timer:within(2001 msec)");
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B(id='B1') where timer:within(1999 msec)");
+                testCase = new EventExpressionCase("b=SupportBean_B(Id='B1') where timer:within(1999 msec)");
                 testCaseList.AddTest(testCase);
 
-                var text = "select * from pattern [b=SupportBean_B(id=\"B3\") where timer:within(10.001d)]";
+                var text = "select * from pattern [b=SupportBean_B(Id=\"B3\") where timer:within(10.001d)]";
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.CreateWildcard();
                 model = env.CopyMayFail(model);
-                Expression filter = Expressions.Eq("id", "B3");
+                Expression filter = Expressions.Eq("Id", "B3");
                 PatternExpr pattern = Patterns.TimerWithin(
                     10.001,
                     Patterns.Filter(Filter.Create("SupportBean_B", filter), "b"));
@@ -122,14 +122,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("B3", "b", events.GetEvent("B3"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B(id='B3') where timer:within(10001 msec)");
+                testCase = new EventExpressionCase("b=SupportBean_B(Id='B3') where timer:within(10001 msec)");
                 testCase.Add("B3", "b", events.GetEvent("B3"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B(id='B3') where timer:within(10 sec)");
+                testCase = new EventExpressionCase("b=SupportBean_B(Id='B3') where timer:within(10 sec)");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("b=SupportBean_B(id='B3') where timer:within(9.999)");
+                testCase = new EventExpressionCase("b=SupportBean_B(Id='B3') where timer:within(9.999)");
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase("(every b=SupportBean_B) where timer:within(2.001)");
@@ -374,7 +374,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // Set up a timer:within
                 env.CompileDeploy(
-                    "@name('s0') select b.theString as id from pattern[a=SupportBean -> (every b=SupportBean) where timer:within(a.intPrimitive seconds)]");
+                    "@name('s0') select b.TheString as Id from pattern[a=SupportBean -> (every b=SupportBean) where timer:within(a.IntPrimitive seconds)]");
                 env.AddListener("s0");
 
                 // seed
@@ -382,13 +382,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 SendTimer(2000, env);
                 env.SendEventBean(new SupportBean("E2", -1));
-                env.AssertEqualsNew("s0", "id", "E2");
+                env.AssertEqualsNew("s0", "Id", "E2");
 
                 env.Milestone(0);
 
                 SendTimer(2999, env);
                 env.SendEventBean(new SupportBean("E3", -1));
-                env.AssertEqualsNew("s0", "id", "E3");
+                env.AssertEqualsNew("s0", "Id", "E3");
 
                 env.Milestone(1);
 

@@ -11,7 +11,7 @@ using System;
 namespace com.espertech.esper.compat.concurrency
 {
     /// <summary>
-    /// TBD: Replace with .NET Task Model
+    /// TODO: Replace with .NET Task Model
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public interface IFuture<T>

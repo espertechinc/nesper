@@ -221,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 "@name('schema') @public @buseventtype create schema MyEvent as " +
                 typeName +
                 ";\n" +
-                "@name('s0') select simpleProperty as c0 from MyEvent;\n";
+                "@name('s0') select SimpleProperty as c0 from MyEvent;\n";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.AssertStatement(
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                     var mapped = received[0].IsMapped; // ignore fragment, mapped, indexed flags
                     SupportEventPropUtil.AssertPropsEquals(
                         received,
-                        new SupportEventPropDesc("simpleProperty", expectedProperty)
+                        new SupportEventPropDesc("SimpleProperty", expectedProperty)
                             .WithFragment(fragment)
                             .WithIndexed(indexed)
                             .WithMapped(mapped));

@@ -65,13 +65,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "contained.toMap(c => id, d=> p00)");
+                builder.WithExpression(fields[0], "Contained.toMap(c => Id, d=> P00)");
                 builder.WithExpression(
                     fields[1],
-                    "contained.toMap((c, index) => id || '_' || Integer.toString(index), (d, index) => p00 + 10*index)");
+                    "Contained.toMap((c, index) => Id || '_' || Integer.toString(index), (d, index) => P00 + 10*index)");
                 builder.WithExpression(
                     fields[2],
-                    "contained.toMap((c, index, size) => id || '_' || Integer.toString(index) || '_' || Integer.toString(size), (d, index, size) => p00 + 10*index + 100*size)");
+                    "Contained.toMap((c, index, size) => Id || '_' || Integer.toString(index) || '_' || Integer.toString(size), (d, index, size) => P00 + 10*index + 100*size)");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, int>)));
@@ -107,13 +107,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.toMap(k => k, v => extractNum(v))");
+                builder.WithExpression(fields[0], "Strvals.toMap(k => k, v => extractNum(v))");
                 builder.WithExpression(
                     fields[1],
-                    "strvals.toMap((k, i) => k || '_' || Integer.toString(i), (v, idx) => extractNum(v) + 10*idx)");
+                    "Strvals.toMap((k, i) => k || '_' || Integer.toString(i), (v, idx) => extractNum(v) + 10*idx)");
                 builder.WithExpression(
                     fields[2],
-                    "strvals.toMap((k, i, s) => k || '_' || Integer.toString(i) || '_' || Integer.toString(s), (v, idx, sz) => extractNum(v) + 10*idx + 100*sz)");
+                    "Strvals.toMap((k, i, s) => k || '_' || Integer.toString(i) || '_' || Integer.toString(s), (v, idx, sz) => extractNum(v) + 10*idx + 100*sz)");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, int>)));
@@ -146,10 +146,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "select strvals.toMap(k => k, (v, i) => extractNum(v)) from SupportCollection";
+                var epl = "select Strvals.toMap(k => k, (v, i) => extractNum(v)) from SupportCollection";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'strvals.toMap(,)': Parameters mismatch for enumeration method 'toMap', the method requires a lambda expression providing key-selector and a lambda expression providing value-selector, but receives a lambda expression and a 2-parameter lambda expression");
+                    "Failed to validate select-clause expression 'Strvals.toMap(,)': Parameters mismatch for enumeration method 'toMap', the method requires a lambda expression providing key-selector and a lambda expression providing value-selector, but receives a lambda expression and a 2-parameter lambda expression");
             }
         }
 

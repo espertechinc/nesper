@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Map
             Consumer<NullableObject<string>> map = nullable => {
-                var property = nullable == null ? null : Collections.SingletonDataMap("id", nullable.Value);
+                var property = nullable == null ? null : Collections.SingletonDataMap("Id", nullable.Value);
                 env.SendEventMap(Collections.SingletonDataMap("property", property), "LocalEvent");
             };
             RunAssertion(env, GetEpl("map"), map);
@@ -65,10 +65,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 var @event = new JObject();
                 if (nullable != null) {
                     if (nullable.Value != null) {
-                        @event.Add("property", new JObject(new JProperty("id", nullable.Value)));
+                        @event.Add("property", new JObject(new JProperty("Id", nullable.Value)));
                     }
                     else {
-                        @event.Add("property", new JObject(new JProperty("id")));
+                        @event.Add("property", new JObject(new JProperty("Id")));
                     }
                 }
 
@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 var @event = new GenericRecord(schema);
                 if (nullable != null) {
                     var inside = new GenericRecord(schema.GetField("property").Schema.AsRecordSchema());
-                    inside.Put("id", nullable.Value);
+                    inside.Put("Id", nullable.Value);
                     @event.Put("property", inside);
                 }
 
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             var epl = createSchemaEPL +
                       "@name('s0') select * from LocalEvent;\n" +
-                      "@name('s1') select property.id as c0, exists(property.id) as c1, typeof(property.id) as c2 from LocalEvent;\n";
+                      "@name('s1') select property.Id as c0, exists(property.Id) as c1, typeof(property.Id) as c2 from LocalEvent;\n";
             env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
             sender.Invoke(new NullableObject<string>("a"));
@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             bool exists,
             string value)
         {
-            var getter = @event.EventType.GetGetter("property.id");
+            var getter = @event.EventType.GetGetter("property.Id");
             Assert.AreEqual(exists, getter.IsExistsProperty(@event));
             Assert.AreEqual(value, getter.Get(@event));
             Assert.IsNull(getter.GetFragment(@event));
@@ -147,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             return "@public @buseventtype create " +
                    underlying +
-                   " schema LocalInnerEvent(id string);\n" +
+                   " schema LocalInnerEvent(Id string);\n" +
                    "@name('schema') @public @buseventtype create " +
                    underlying +
                    " schema LocalEvent(property LocalInnerEvent);\n";

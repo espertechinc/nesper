@@ -296,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@name('infra') @public create context MyContext partition by theString from SupportBean",
+                    "@name('infra') @public create context MyContext partition by TheString from SupportBean",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency context 'MyContext'";
@@ -328,25 +328,25 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 TryInvalidDeploy(
                     env,
                     path,
-                    "select * from SupportBean as sb, MyTable as mt where mt.col2 = sb.theString",
+                    "select * from SupportBean as sb, MyTable as mt where mt.col2 = sb.TheString",
                     text);
                 TryInvalidDeploy(
                     env,
                     path,
-                    "select * from SupportBean as sb where exists (select * from MyTable as mt where mt.col2 = sb.theString)",
+                    "select * from SupportBean as sb where exists (select * from MyTable as mt where mt.col2 = sb.TheString)",
                     text);
 
                 // Named Window
                 env.CompileDeploy("@name('infra') @public create window MyWindow#keepall as SupportBean", path);
                 env.Compile(
-                    "@name('infra') create index MyIndexForNW on MyWindow(intPrimitive)",
+                    "@name('infra') create index MyIndexForNW on MyWindow(IntPrimitive)",
                     path); // Note: not deploying, just adding to path
 
                 text = "dependency index 'MyIndexForNW'";
                 TryInvalidDeploy(
                     env,
                     path,
-                    "on SupportBean_S0 as sb update MyWindow as mw set theString='a' where sb.id = mw.intPrimitive",
+                    "on SupportBean_S0 as sb update MyWindow as mw set TheString='a' where sb.Id = mw.IntPrimitive",
                     text);
 
                 env.UndeployAll();

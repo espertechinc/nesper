@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
@@ -21,7 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     [Serializable]
     public class ExprConcatNode : ExprNodeBase
     {
-        [NonSerialized] private ExprConcatNodeForge _forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprConcatNodeForge _forge;
         public bool IsConstantResult => false;
 
         public override ExprPrecedenceEnum Precedence => ExprPrecedenceEnum.CONCAT;

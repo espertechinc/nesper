@@ -53,10 +53,10 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
         public override string ToString()
         {
             return "SupportMarketDataBean " +
-                   "symbol=" + Symbol +
+"Symbol="+ Symbol +
                    " Price=" + Price +
                    " Volume=" + Volume +
-                   " feed=" + Feed;
+" Feed="+ Feed;
         }
     }
 } // end of namespace

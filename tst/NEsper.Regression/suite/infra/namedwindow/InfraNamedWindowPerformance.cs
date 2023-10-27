@@ -108,11 +108,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 }
 
                 var eplSingleIdx =
-                    "on SupportBean_S1 select sum(mw.id) as sumi from MyWindow mw where p00 in (p10, p11)";
+                    "on SupportBean_S1 select sum(mw.Id) as sumi from MyWindow mw where P00 in (P10, P11)";
                 RunOnDemandAssertion(env, path, eplSingleIdx, 1, new SupportBean_S1(0, "x", "p00_6523"), 6523);
 
                 var eplMultiIndex =
-                    "on SupportBean_S1 select sum(mw.id) as sumi from MyWindow mw where p10 in (p00, p01)";
+                    "on SupportBean_S1 select sum(mw.Id) as sumi from MyWindow mw where P10 in (P00, P01)";
                 RunOnDemandAssertion(env, path, eplMultiIndex, 2, new SupportBean_S1(0, "p00_6524"), 6524);
 
                 env.UndeployAll();
@@ -146,11 +146,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventBean(new SupportBean("B", 100));
 
                 var eplIdx1One =
-                    "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where intPrimitive = sbr.rangeStart";
+                    "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow where IntPrimitive = sbr.rangeStart";
                 RunOnDemandAssertion(env, path, eplIdx1One, 1, new SupportBeanRange("R", 5501, 0), 5501);
 
                 var eplIdx1Two =
-                    "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where intPrimitive between sbr.rangeStart and sbr.rangeEnd";
+                    "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow where IntPrimitive between sbr.rangeStart and sbr.rangeEnd";
                 RunOnDemandAssertion(
                     env,
                     path,
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     5501 + 5502 + 5503);
 
                 var eplIdx1Three =
-                    "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow where theString = key and intPrimitive between sbr.rangeStart and sbr.rangeEnd";
+                    "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow where TheString = key and IntPrimitive between sbr.rangeStart and sbr.rangeEnd";
                 RunOnDemandAssertion(
                     env,
                     path,
@@ -169,14 +169,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     new SupportBeanRange("R", "A", 4998, 5503),
                     4998 + 4999);
 
-                var eplIdx1Four = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow " +
-                                  "where theString = key and longPrimitive = rangeStart and intPrimitive between rangeStart and rangeEnd " +
-                                  "and longBoxed between rangeStart and rangeEnd";
+                var eplIdx1Four = "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow " +
+                                  "where TheString = key and LongPrimitive = rangeStart and IntPrimitive between rangeStart and rangeEnd " +
+                                  "and LongBoxed between rangeStart and rangeEnd";
                 RunOnDemandAssertion(env, path, eplIdx1Four, 1, new SupportBeanRange("R", "A", 4998, 5503), 4998);
 
-                var eplIdx1Five = "on SupportBeanRange sbr select sum(intPrimitive) as sumi from MyWindow " +
-                                  "where intPrimitive between rangeStart and rangeEnd " +
-                                  "and longBoxed between rangeStart and rangeEnd";
+                var eplIdx1Five = "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow " +
+                                  "where IntPrimitive between rangeStart and rangeEnd " +
+                                  "and LongBoxed between rangeStart and rangeEnd";
                 RunOnDemandAssertion(
                     env,
                     path,
@@ -199,9 +199,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('create') create window MyWindow#keepall as select theString as a, intPrimitive as b from SupportBean;\n" +
-                    "on SupportBean_A delete from MyWindow where id = a;\n" +
-                    "insert into MyWindow select theString as a, intPrimitive as b from SupportBean;\n";
+                    "@name('create') create window MyWindow#keepall as select TheString as a, IntPrimitive as b from SupportBean;\n" +
+                    "on SupportBean_A delete from MyWindow where Id = a;\n" +
+                    "insert into MyWindow select TheString as a, IntPrimitive as b from SupportBean;\n";
                 env.CompileDeploy(epl);
 
                 // load window
@@ -240,9 +240,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('create') create window MyWindow#keepall as select theString as a, longPrimitive as b from SupportBean;\n" +
-                    "on SupportMarketDataBean delete from MyWindow where b = price;\n" +
-                    "insert into MyWindow select theString as a, longPrimitive as b from SupportBean;\n";
+                    "@name('create') create window MyWindow#keepall as select TheString as a, LongPrimitive as b from SupportBean;\n" +
+                    "on SupportMarketDataBean delete from MyWindow where b = Price;\n" +
+                    "insert into MyWindow select TheString as a, LongPrimitive as b from SupportBean;\n";
                 env.CompileDeploy(epl);
 
                 // load window
@@ -281,10 +281,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('create') create window MyWindow#keepall as select theString as a, longPrimitive as b from SupportBean;\n" +
-                    "on SupportMarketDataBean delete from MyWindow where b = price;\n" +
-                    "on SupportBean_A delete from MyWindow where id = a;\n" +
-                    "insert into MyWindow select theString as a, longPrimitive as b from SupportBean;\n";
+                    "@name('create') create window MyWindow#keepall as select TheString as a, LongPrimitive as b from SupportBean;\n" +
+                    "on SupportMarketDataBean delete from MyWindow where b = Price;\n" +
+                    "on SupportBean_A delete from MyWindow where Id = a;\n" +
+                    "insert into MyWindow select TheString as a, LongPrimitive as b from SupportBean;\n";
                 env.CompileDeploy(epl);
 
                 // load window
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create window
                 var stmtTextCreate =
-                    "@name('create') @public create window MyWindow#keepall as select theString as a, longPrimitive as b from SupportBean";
+                    "@name('create') @public create window MyWindow#keepall as select TheString as a, LongPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextCreate, path);
 
                 // create delete stmt
@@ -333,14 +333,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 for (var i = 0; i < statements.Length; i++) {
                     var name = "s" + i;
                     var stmtTextDelete =
-                        "@name('" + name + "') on SupportMarketDataBean delete from MyWindow where b = price";
+                        "@name('" + name + "') on SupportMarketDataBean delete from MyWindow where b = Price";
                     env.CompileDeploy(stmtTextDelete, path);
                     statements[i] = name;
                 }
 
                 // create insert into
                 var stmtTextInsertOne =
-                    "insert into MyWindow select theString as a, longPrimitive as b from SupportBean";
+                    "insert into MyWindow select TheString as a, LongPrimitive as b from SupportBean";
                 env.CompileDeploy(stmtTextInsertOne, path);
 
                 // load window

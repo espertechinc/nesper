@@ -95,10 +95,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // create window one
                 var eplCreate = namedWindow
                     ? "@public create window MyInfraFAFKB#keepall as SupportBean"
-                    : "@public create table MyInfraFAFKB (theString string primary key, intPrimitive int primary key)";
+                    : "@public create table MyInfraFAFKB (TheString string primary key, IntPrimitive int primary key)";
                 env.CompileDeploy(eplCreate, path);
-                env.CompileDeploy("insert into MyInfraFAFKB select theString, intPrimitive from SupportBean", path);
-                env.CompileDeploy("@name('idx') create index idx1 on MyInfraFAFKB(intPrimitive btree)", path);
+                env.CompileDeploy("insert into MyInfraFAFKB select TheString, IntPrimitive from SupportBean", path);
+                env.CompileDeploy("@name('idx') create index idx1 on MyInfraFAFKB(IntPrimitive btree)", path);
 
                 // insert X rows
                 var maxRows = 10000; //for performance testing change to int maxRows = 100000;
@@ -109,27 +109,27 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean("B", 100));
 
                 // fire single-key queries
-                var eplIdx1One = "select intPrimitive as sumi from MyInfraFAFKB where intPrimitive = 5501";
+                var eplIdx1One = "select IntPrimitive as sumi from MyInfraFAFKB where IntPrimitive = 5501";
                 RunFAFAssertion(env, path, eplIdx1One, 5501);
 
-                var eplIdx1Two = "select sum(intPrimitive) as sumi from MyInfraFAFKB where intPrimitive > 9997";
+                var eplIdx1Two = "select sum(IntPrimitive) as sumi from MyInfraFAFKB where IntPrimitive > 9997";
                 RunFAFAssertion(env, path, eplIdx1Two, 9998 + 9999);
 
                 // drop index, create multikey btree
                 env.UndeployModuleContaining("idx");
 
-                env.CompileDeploy("create index idx2 on MyInfraFAFKB(intPrimitive btree, theString btree)", path);
+                env.CompileDeploy("create index idx2 on MyInfraFAFKB(IntPrimitive btree, TheString btree)", path);
 
                 var eplIdx2One =
-                    "select intPrimitive as sumi from MyInfraFAFKB where intPrimitive = 5501 and theString = 'A'";
+                    "select IntPrimitive as sumi from MyInfraFAFKB where IntPrimitive = 5501 and TheString = 'A'";
                 RunFAFAssertion(env, path, eplIdx2One, 5501);
 
                 var eplIdx2Two =
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKB where intPrimitive in [5000:5004) and theString = 'A'";
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKB where IntPrimitive in [5000:5004) and TheString = 'A'";
                 RunFAFAssertion(env, path, eplIdx2Two, 5000 + 5001 + 5003 + 5002);
 
                 var eplIdx2Three =
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKB where intPrimitive=5001 and theString between 'A' and 'B'";
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKB where IntPrimitive=5001 and TheString between 'A' and 'B'";
                 RunFAFAssertion(env, path, eplIdx2Three, 5001);
 
                 env.UndeployAll();
@@ -165,10 +165,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // create window one
                 var eplCreate = namedWindow
                     ? "@public create window MyInfraFAFKR#keepall as SupportBean"
-                    : "@public create table MyInfraFAFKR (theString string primary key, intPrimitive int primary key)";
+                    : "@public create table MyInfraFAFKR (TheString string primary key, IntPrimitive int primary key)";
                 env.CompileDeploy(eplCreate, path);
-                env.CompileDeploy("insert into MyInfraFAFKR select theString, intPrimitive from SupportBean", path);
-                env.CompileDeploy("create index idx1 on MyInfraFAFKR(theString hash, intPrimitive btree)", path);
+                env.CompileDeploy("insert into MyInfraFAFKR select TheString, IntPrimitive from SupportBean", path);
+                env.CompileDeploy("create index idx1 on MyInfraFAFKR(TheString hash, IntPrimitive btree)", path);
 
                 // insert X rows
                 var maxRows = 10000; //for performance testing change to int maxRows = 100000;
@@ -179,91 +179,91 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive not in [3:9997]",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive not in [3:9997]",
                     1 + 2 + 9998 + 9999);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive not in [3:9997)",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive not in [3:9997)",
                     1 + 2 + 9997 + 9998 + 9999);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive not in (3:9997]",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive not in (3:9997]",
                     1 + 2 + 3 + 9998 + 9999);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive not in (3:9997)",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive not in (3:9997)",
                     1 + 2 + 3 + 9997 + 9998 + 9999);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'B' and intPrimitive not in (3:9997)",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'B' and IntPrimitive not in (3:9997)",
                     null);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive between 200 and 202",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive between 200 and 202",
                     603);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive between 202 and 199",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive between 202 and 199",
                     199 + 200 + 201 + 202);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive >= 200 and intPrimitive <= 202",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive >= 200 and IntPrimitive <= 202",
                     603);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive >= 202 and intPrimitive <= 200",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive >= 202 and IntPrimitive <= 200",
                     null);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive > 9997",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive > 9997",
                     9998 + 9999);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive >= 9997",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive >= 9997",
                     9997 + 9998 + 9999);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive < 5",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive < 5",
                     4 + 3 + 2 + 1);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive <= 5",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive <= 5",
                     5 + 4 + 3 + 2 + 1);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive in [200:202]",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive in [200:202]",
                     603);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive in [200:202)",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive in [200:202)",
                     401);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive in (200:202]",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive in (200:202]",
                     403);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraFAFKR where theString = 'A' and intPrimitive in (200:202)",
+                    "select sum(IntPrimitive) as sumi from MyInfraFAFKR where TheString = 'A' and IntPrimitive in (200:202)",
                     201);
 
                 // test no value returned
-                var query = Prepare(env, path, "select * from MyInfraFAFKR where theString = 'A' and intPrimitive < 0");
+                var query = Prepare(env, path, "select * from MyInfraFAFKR where TheString = 'A' and IntPrimitive < 0");
                 var result = query.Execute();
                 Assert.AreEqual(0, result.Array.Length);
 
@@ -300,10 +300,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // create window one
                 var eplCreate = namedWindow
                     ? "@public create window MyInfraRP#keepall as SupportBean"
-                    : "@public create table MyInfraRP (theString string primary key, intPrimitive int primary key)";
+                    : "@public create table MyInfraRP (TheString string primary key, IntPrimitive int primary key)";
                 env.CompileDeploy(eplCreate, path);
-                env.CompileDeploy("insert into MyInfraRP select theString, intPrimitive from SupportBean", path);
-                env.CompileDeploy("create index idx1 on MyInfraRP(intPrimitive btree)", path);
+                env.CompileDeploy("insert into MyInfraRP select TheString, IntPrimitive from SupportBean", path);
+                env.CompileDeploy("create index idx1 on MyInfraRP(IntPrimitive btree)", path);
 
                 // insert X rows
                 var maxRows = 10000; //for performance testing change to int maxRows = 100000;
@@ -314,86 +314,86 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive between 200 and 202",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive between 200 and 202",
                     603);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive between 202 and 199",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive between 202 and 199",
                     199 + 200 + 201 + 202);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive >= 200 and intPrimitive <= 202",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive >= 200 and IntPrimitive <= 202",
                     603);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive >= 202 and intPrimitive <= 200",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive >= 202 and IntPrimitive <= 200",
                     null);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive > 9997",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive > 9997",
                     9998 + 9999);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive >= 9997",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive >= 9997",
                     9997 + 9998 + 9999);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive < 5",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive < 5",
                     4 + 3 + 2 + 1);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive <= 5",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive <= 5",
                     5 + 4 + 3 + 2 + 1);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive in [200:202]",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive in [200:202]",
                     603);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive in [200:202)",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive in [200:202)",
                     401);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive in (200:202]",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive in (200:202]",
                     403);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive in (200:202)",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive in (200:202)",
                     201);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive not in [3:9997]",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive not in [3:9997]",
                     1 + 2 + 9998 + 9999);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive not in [3:9997)",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive not in [3:9997)",
                     1 + 2 + 9997 + 9998 + 9999);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive not in (3:9997]",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive not in (3:9997]",
                     1 + 2 + 3 + 9998 + 9999);
                 RunFAFAssertion(
                     env,
                     path,
-                    "select sum(intPrimitive) as sumi from MyInfraRP where intPrimitive not in (3:9997)",
+                    "select sum(IntPrimitive) as sumi from MyInfraRP where IntPrimitive not in (3:9997)",
                     1 + 2 + 3 + 9997 + 9998 + 9999);
 
                 // test no value returned
-                var query = Prepare(env, path, "select * from MyInfraRP where intPrimitive < 0");
+                var query = Prepare(env, path, "select * from MyInfraRP where IntPrimitive < 0");
                 var result = query.Execute();
                 Assert.AreEqual(0, result.Array.Length);
 
@@ -433,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "@public create table MyInfraOne (f1 string primary key, f2 int primary key)";
                 env.CompileDeploy(stmtTextCreateOne, path);
                 env.CompileDeploy(
-                    "insert into MyInfraOne(f1, f2) select theString, intPrimitive from SupportBean",
+                    "insert into MyInfraOne(f1, f2) select TheString, IntPrimitive from SupportBean",
                     path);
                 env.CompileDeploy("create index MyInfraOneIndex on MyInfraOne(f1)", path);
 
@@ -483,7 +483,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // test two values
                 env.SendEventBean(new SupportBean(null, -1));
-                query = Prepare(env, path, "select * from MyInfraOne where f1 is null order by f2 asc");
+                query = Prepare(env, path, "select * from MyInfraOne where f1 is null Order by f2 asc");
                 result = query.Execute();
                 Assert.AreEqual(2, result.Array.Length);
                 Assert.AreEqual(-2, result.Array[0].Get("f2"));
@@ -521,10 +521,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
                     ? "@public create window MyInfraIKW#keepall as SupportBean"
-                    : "@public create table MyInfraIKW (theString string primary key)";
+                    : "@public create table MyInfraIKW (TheString string primary key)";
                 env.CompileDeploy(eplCreate, path);
-                env.CompileDeploy("create index idx on MyInfraIKW(theString)", path);
-                env.CompileDeploy("insert into MyInfraIKW select theString from SupportBean", path);
+                env.CompileDeploy("create index idx on MyInfraIKW(TheString)", path);
+                env.CompileDeploy("insert into MyInfraIKW select TheString from SupportBean", path);
 
                 var eventCount = 10;
                 for (var i = 0; i < eventCount; i++) {
@@ -532,7 +532,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 InvocationCounter.SetCount(0);
-                var fafEPL = "select * from MyInfraIKW as mw where justCount(mw) and theString in ('notfound')";
+                var fafEPL = "select * from MyInfraIKW as mw where justCount(mw) and TheString in ('notfound')";
                 env.CompileExecuteFAF(fafEPL, path);
                 Assert.AreEqual(0, InvocationCounter.GetCount());
 

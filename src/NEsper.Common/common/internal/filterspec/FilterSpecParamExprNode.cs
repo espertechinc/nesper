@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             ExprEvaluatorContext exprEvaluatorContext,
             StatementContextFilterEvalEnv filterEvalEnv)
         {
-            return ProcGetFilterValue(matchedEvents, exprEvaluatorContext, filterEvalEnv);
+            return ProcGetFilterValue?.Invoke(matchedEvents, exprEvaluatorContext, filterEvalEnv);
         }
     }
 } // end of namespace

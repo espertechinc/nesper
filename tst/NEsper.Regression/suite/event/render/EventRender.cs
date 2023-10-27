@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 Assert.AreEqual("someProperties", context.PropertyName);
 
                 var expectedJson =
-                    "{ \"MyEvent\": { \"id\": \"id1\", \"someProperties\": [\"index#0=1;index#1=x\", \"index#0=2;index#1=y\"], \"mappedProperty\": { \"key\": \"value\" } } }";
+                    "{ \"MyEvent\": { \"Id\": \"id1\", \"someProperties\": [\"index#0=1;index#1=x\", \"index#0=2;index#1=y\"], \"mappedProperty\": { \"key\": \"value\" } } }";
                 Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
 
                 MyRenderer.Contexts.Clear();
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                     env.GetEnumerator("s0").Advance(),
                     xmlOptions);
                 var expected =
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <id>id1</id> <someProperties>index#0=1;index#1=x</someProperties> <someProperties>index#0=2;index#1=y</someProperties> <mappedProperty> <key>value</key> </mappedProperty> </MyEvent>";
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <id>id1</Id> <someProperties>index#0=1;index#1=x</someProperties> <someProperties>index#0=2;index#1=y</someProperties> <mappedProperty> <key>value</key> </mappedProperty> </MyEvent>";
                 Assert.AreEqual(4, MyRenderer.Contexts.Count);
                 Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
 
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
         {
             public void Run(RegressionEnvironment env)
             {
-                object[] values = { "abc", 1, new SupportBean_S0(1, "p00"), 2L, 3d };
+                object[] values = { "abc", 1, new SupportBean_S0(1, "P00"), 2L, 3d };
                 env.CompileDeploy("@name('s0') select * from MyObjectArrayType");
                 env.SendEventObjectArray(values, "MyObjectArrayType");
 
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             "MyEvent",
                             env.GetEnumerator("s0").Advance());
                         var expectedJson =
-                            "{ \"MyEvent\": { \"p0\": \"abc\", \"p1\": 1, \"p3\": 2, \"p4\": 3.0, \"p2\": { \"id\": 1, \"p00\": \"p00\", \"p01\": null, \"p02\": null, \"p03\": null } } }";
+                            "{ \"MyEvent\": { \"p0\": \"abc\", \"p1\": 1, \"p3\": 2, \"p4\": 3.0, \"p2\": { \"Id\": 1, \"P00\": \"P00\", \"P01\": null, \"P02\": null, \"P03\": null } } }";
                         Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
                     });
 
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             "MyEvent",
                             env.GetEnumerator("s0").Advance());
                         var expected =
-                            "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <p0>abc</p0> <p1>1</p1> <p3>2</p3> <p4>3.0</p4> <p2> <id>1</id> <p00>p00</p00> </p2> </MyEvent>";
+                            "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <p0>abc</p0> <p1>1</p1> <p3>2</p3> <p4>3.0</p4> <p2> <id>1</Id> <P00>P00</P00> </p2> </MyEvent>";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
                     });
 

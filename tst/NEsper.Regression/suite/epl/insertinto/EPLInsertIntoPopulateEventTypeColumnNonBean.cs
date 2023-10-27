@@ -105,14 +105,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@public @buseventtype create schema EventA(id string);\n" +
+                var epl = "@public @buseventtype create schema EventA(Id string);\n" +
                           "select * from EventA#keepall;\n" +
                           "@public create schema EventB(aArray EventA[]);\n" +
-                          "insert into EventB select maxby(id) as aArray from EventA;\n" +
+                          "insert into EventB select maxby(Id) as aArray from EventA;\n" +
                           "@name('s0') select * from EventB#keepall;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var aOne = Collections.SingletonDataMap("id", "x1");
+                var aOne = Collections.SingletonDataMap("Id", "x1");
                 env.SendEventMap(aOne, "EventA");
                 env.AssertEventNew(
                     "s0",
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    "aArray[0].id".Split(","),
+                    "aArray[0].Id".Split(","),
                     new object[][] { new object[] { "x1" } });
 
                 env.UndeployAll();
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 var fields = "e0_0".Split(",");
                 var epl = "@name('s0') insert into EventOne select " +
-                          "(select p00 as e0_0, p01 as e0_1 from SupportBean_S0#keepall where id between 10 and 20) as ez " +
+                          "(select P00 as e0_0, P01 as e0_1 from SupportBean_S0#keepall where Id between 10 and 20) as ez " +
                           "from SupportBean;\n" +
                           "@name('s1') select * from EventOne#keepall";
                 env.CompileDeploy(epl, path).AddListener("s0");
@@ -199,13 +199,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create " + typeType + " schema Item(name string, price double)", path);
+                env.CompileDeploy("@public create " + typeType + " schema Item(name string, Price double)", path);
                 env.CompileDeploy(
-                    "@public create " + typeType + " schema PurchaseOrder(orderId string, items Item[])",
+                    "@public create " + typeType + " schema PurchaseOrder(OrderId string, Items Item[])",
                     path);
                 env.CompileDeploy("@public @buseventtype create schema TriggerEvent()", path);
                 env.CompileDeploy(
-                        "@name('s0') insert into PurchaseOrder select '001' as orderId, new {name= 'i1', price=10} as items from TriggerEvent",
+"@name('s0') insert into PurchaseOrder select '001' as OrderId, new {name= 'i1', Price=10} as Items from TriggerEvent",
                         path)
                     .AddListener("s0");
                 env.CompileDeploy("@name('s1') select * from PurchaseOrder#keepall", path);
@@ -216,13 +216,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     @event => {
                         EPAssertionUtil.AssertProps(
                             @event,
-                            "orderId,items[0].name,items[0].price".Split(","),
+"OrderId,Items[0].name,Items[0].Price".Split(","),
                             new object[] { "001", "i1", 10d });
 
-                        var underlying = (EventBean[])@event.Get("items");
+                        var underlying = (EventBean[])@event.Get("Items");
                         Assert.AreEqual(1, underlying.Length);
                         Assert.AreEqual("i1", underlying[0].Get("name"));
-                        Assert.AreEqual(10d, underlying[0].Get("price"));
+                        Assert.AreEqual(10d, underlying[0].Get("Price"));
                     });
 
                 env.Milestone(0);
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var epl = "@name('out') " +
                           "expression computeNested {\n" +
                           "  sb => case\n" +
-                          "  when intPrimitive = 1 \n" +
+                          "  when IntPrimitive = 1 \n" +
                           "    then new { p0 = 'a', p1 = 1}\n" +
                           "  else new { p0 = 'b', p1 = 2 }\n" +
                           "  end\n" +
@@ -327,20 +327,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public @buseventtype create schema AEvent (symbol string)", path);
+                env.CompileDeploy("@public @buseventtype create schema AEvent (Symbol string)", path);
 
                 env.CompileDeploy("@public create window MyEventWindow#lastevent (e AEvent)", path);
                 env.CompileDeploy(
-                    "insert into MyEventWindow select (select * from AEvent#lastevent) as e from SupportBean(theString = 'A')",
+                    "insert into MyEventWindow select (select * from AEvent#lastevent) as e from SupportBean(TheString = 'A')",
                     path);
                 env.CompileDeploy("@public create schema BEvent (e AEvent)", path);
                 env.CompileDeploy(
-                        "@name('s0') insert into BEvent select (select e from MyEventWindow) as e from SupportBean(theString = 'B')",
+                        "@name('s0') insert into BEvent select (select e from MyEventWindow) as e from SupportBean(TheString = 'B')",
                         path)
                     .AddListener("s0");
                 env.CompileDeploy("@name('s1') select * from BEvent#keepall", path);
 
-                env.SendEventMap(Collections.SingletonDataMap("symbol", "GE"), "AEvent");
+                env.SendEventMap(Collections.SingletonDataMap("Symbol", "GE"), "AEvent");
                 env.SendEventBean(new SupportBean("A", 1));
 
                 env.Milestone(0);
@@ -351,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     result => {
                         var fragment = (EventBean)result.Get("e");
                         Assert.AreEqual("AEvent", fragment.EventType.Name);
-                        Assert.AreEqual("GE", fragment.Get("symbol"));
+                        Assert.AreEqual("GE", fragment.Get("Symbol"));
                     });
 
                 env.UndeployAll();
@@ -379,8 +379,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 var fields = "ez.e0_0,ez.e0_1".Split(",");
                 var epl = "@name('s0') insert into EventOne select " +
-                          "(select p00 as e0_0, p01 as e0_1 from SupportBean_S0#lastevent" +
-                          (filter ? " where id >= 100" : "") +
+                          "(select P00 as e0_0, P01 as e0_1 from SupportBean_S0#lastevent" +
+                          (filter ? " where Id >= 100" : "") +
                           ") as ez " +
                           "from SupportBean;\n" +
                           "@name('s1') select * from EventOne#keepall;\n";
@@ -442,9 +442,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var fields = "e1_0,ez[0].e0_0,ez[0].e0_1,ez[1].e0_0,ez[1].e0_1".Split(",");
                 var epl = "@name('s0')" +
                           "expression thequery {" +
-                          "  (select p00 as e0_0, p01 as e0_1 from SupportBean_S0#keepall)" +
+                          "  (select P00 as e0_0, P01 as e0_1 from SupportBean_S0#keepall)" +
                           "} " +
-                          "insert into EventOne select theString as e1_0, thequery() as ez from SupportBean;\n" +
+                          "insert into EventOne select TheString as e1_0, thequery() as ez from SupportBean;\n" +
                           "@name('s1') select * from EventOne#keepall;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 

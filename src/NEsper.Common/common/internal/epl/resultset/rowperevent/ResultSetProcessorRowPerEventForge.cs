@@ -78,20 +78,18 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(SelectExprProcessor),
-                "getSelectExprProcessor",
-                EmptyList<CodegenNamedParam>.Instance, 
+                "SelectExprProcessor",
                 typeof(ResultSetProcessorRowPerEvent),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(MEMBER_SELECTEXPRPROCESSOR));
-            instance.Methods.AddMethod(
+                node => node.GetterBlock.BlockReturn(MEMBER_SELECTEXPRPROCESSOR));
+            instance.Properties.AddProperty(
                 typeof(bool),
-                "hasHavingClause",
-                EmptyList<CodegenNamedParam>.Instance, 
+                "HasHavingClause",
                 typeof(ResultSetProcessorRowPerEvent),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(Constant(optionalHavingNode != null)));
+                node => node.GetterBlock.BlockReturn(Constant(optionalHavingNode != null)));
             ResultSetProcessorUtil.EvaluateHavingClauseCodegen(optionalHavingNode, classScope, instance);
         }
 

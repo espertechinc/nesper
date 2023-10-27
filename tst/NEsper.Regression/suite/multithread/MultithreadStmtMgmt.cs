@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             "select a.* from pattern[every a=" + EVENT_NAME + "(Feed='RT', Price < 1000)]",
             "select a.* from pattern[every a=" + EVENT_NAME + "(Symbol='IBM', Feed='RT')]"
         };
-        
+
         public ISet<RegressionFlag> Flags()
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
@@ -70,19 +70,19 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var numThreads = 3;
             StmtMgmtCallablePair[] statements;
 
-            statements = new[] {eplAndStmt[10]};
+            statements = new[] { eplAndStmt[10] };
             TryStatementCreateSendAndStop(env, numThreads, statements, 10);
             env.UndeployAll();
 
-            statements = new[] {eplAndStmt[10], eplAndStmt[11]};
+            statements = new[] { eplAndStmt[10], eplAndStmt[11] };
             TryStatementCreateSendAndStop(env, numThreads, statements, 10);
             env.UndeployAll();
 
-            statements = new[] {eplAndStmt[10], eplAndStmt[11], eplAndStmt[12]};
+            statements = new[] { eplAndStmt[10], eplAndStmt[11], eplAndStmt[12] };
             TryStatementCreateSendAndStop(env, numThreads, statements, 10);
             env.UndeployAll();
 
-            statements = new[] {eplAndStmt[10], eplAndStmt[11], eplAndStmt[12], eplAndStmt[13]};
+            statements = new[] { eplAndStmt[10], eplAndStmt[11], eplAndStmt[12], eplAndStmt[13] };
             TryStatementCreateSendAndStop(env, numThreads, statements, 10);
             env.UndeployAll();
         }
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             var numThreads = 4;
             for (var i = 0; i < eplAndStmt.Length; i++) {
-                StmtMgmtCallablePair[] statements = {eplAndStmt[i]};
+                StmtMgmtCallablePair[] statements = { eplAndStmt[i] };
                 TryStatementCreateSendAndStop(env, numThreads, statements, 10);
                 env.UndeployAll();
             }
@@ -105,11 +105,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             var numThreads = 2;
             StmtMgmtCallablePair[] statements =
-                {eplAndStmt[1], eplAndStmt[4], eplAndStmt[6], eplAndStmt[7], eplAndStmt[8]};
+                { eplAndStmt[1], eplAndStmt[4], eplAndStmt[6], eplAndStmt[7], eplAndStmt[8] };
             TryStatementCreateSendAndStop(env, numThreads, statements, 10);
             env.UndeployAll();
 
-            statements = new[] {eplAndStmt[1], eplAndStmt[7], eplAndStmt[8], eplAndStmt[11], eplAndStmt[12]};
+            statements = new[] { eplAndStmt[1], eplAndStmt[7], eplAndStmt[8], eplAndStmt[11], eplAndStmt[12] };
             TryStatementCreateSendAndStop(env, numThreads, statements, 10);
             env.UndeployAll();
         }

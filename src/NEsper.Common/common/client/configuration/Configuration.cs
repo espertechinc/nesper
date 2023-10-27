@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using System.Xml;
 
 using com.espertech.esper.common.client.configuration.common;
@@ -36,7 +37,8 @@ namespace com.espertech.esper.common.client.configuration
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        [NonSerialized] private IContainer _container;
+        [NonSerialized]
+        private IContainer _container;
 
         /// <summary>
         /// Default name of the configuration file.
@@ -46,6 +48,7 @@ namespace com.espertech.esper.common.client.configuration
         /// <summary>
         /// Gets or sets the container.
         /// </summary>
+        [JsonIgnore]
         public IContainer Container {
             get => _container;
             set => _container = value;
@@ -54,6 +57,7 @@ namespace com.espertech.esper.common.client.configuration
         /// <summary>
         /// Gets the resource manager.
         /// </summary>
+        [JsonIgnore]
         public IResourceManager ResourceManager => Container.ResourceManager();
 
         /// <summary>

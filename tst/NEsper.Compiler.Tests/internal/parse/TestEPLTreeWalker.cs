@@ -180,20 +180,20 @@ namespace com.espertech.esper.compiler.@internal.parse
 		public void TestWalkViewExpressions()
 		{
 			var className = typeof(SupportBean).FullName;
-			var expression = "select * from " + className + ".win:x(intPrimitive, a.nested)";
+			var expression = "select * from " + className + ".win:x(IntPrimitive, a.Nested)";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var viewSpecs = walker.StatementSpec.StreamSpecs[0].ViewSpecs;
 			var parameters = viewSpecs[0].ObjectParameters;
-			Assert.AreEqual("intPrimitive", ((ExprIdentNode) parameters[0]).FullUnresolvedName);
-			Assert.AreEqual("a.nested", ((ExprIdentNode) parameters[1]).FullUnresolvedName);
+			Assert.AreEqual("IntPrimitive", ((ExprIdentNode) parameters[0]).FullUnresolvedName);
+			Assert.AreEqual("a.Nested", ((ExprIdentNode) parameters[1]).FullUnresolvedName);
 		}
 
 		[Test]
 		public void TestWalkJoinMethodStatement()
 		{
 			var className = typeof(SupportBean).FullName;
-			var expression = "select distinct * from " + className + " unidirectional, method:com.MyClass.myMethod(string, 2*intPrimitive) as s0";
+			var expression = "select distinct * from " + className + " unidirectional, method:com.MyClass.myMethod(string, 2*IntPrimitive) as s0";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var statementSpec = walker.StatementSpec;
@@ -303,7 +303,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		public void TestWalkOnSelectInsert()
 		{
 			var expression = "on pattern [com.MyClass] as pat insert into MyStream(a, b) select c, d from MyNamedWindow as mywin " +
-			                 " where a=b group by symbol having c=d order by e";
+" where a=b group by Symbol having c=d Order by e";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var raw = walker.StatementSpec;
 
@@ -401,7 +401,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestWalkCreateWindow()
 		{
-			var expression = "create window MyWindow#groupwin(symbol)#length(20) as select *, aprop, bprop as someval from com.MyClass insert where a=b";
+			var expression = "create window MyWindow#groupwin(Symbol)#length(20) as select *, aprop, bprop as someval from com.MyClass insert where a=b";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
 			var raw = walker.StatementSpec;
 
@@ -704,7 +704,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestWalkView()
 		{
-			var text = "select * from " + typeof(SupportBean).FullName + "(string=\"IBM\").win:lenght(10, 1.1, \"a\").stat:uni(price, false)";
+			var text = "select * from " + typeof(SupportBean).FullName + "(string=\"IBM\").win:lenght(10, 1.1, \"a\").stat:uni(Price, false)";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			var filterSpec = ((FilterStreamSpecRaw) walker.StatementSpec.StreamSpecs[0]).RawFilterSpec;
@@ -729,7 +729,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("stat", specTwo.ObjectNamespace);
 			Assert.AreEqual("uni", specTwo.ObjectName);
 			Assert.AreEqual(2, specTwo.ObjectParameters.Count);
-			Assert.AreEqual("price", ((ExprIdentNode) specTwo.ObjectParameters[0]).FullUnresolvedName);
+			Assert.AreEqual("Price", ((ExprIdentNode) specTwo.ObjectParameters[0]).FullUnresolvedName);
 			Assert.AreEqual(false, ((ExprConstantNode) specTwo.ObjectParameters[1]).ConstantValue);
 		}
 
@@ -758,7 +758,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestSelectList()
 		{
-			var text = "select intPrimitive, 2 * intBoxed, 5 as myConst, stream0.string as theString from " +
+			var text = "select IntPrimitive, 2 * IntBoxed, 5 as myConst, stream0.string as TheString from "+
 			           typeof(SupportBean).FullName +
 			           "().win:lenght(10) as stream0";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
@@ -777,7 +777,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			rawSpec = (SelectClauseExprRawSpec) selectExpressions[3];
 			Assert.IsTrue(rawSpec.SelectExpression is ExprIdentNode);
-			Assert.AreEqual("theString", rawSpec.OptionalAsName);
+			Assert.AreEqual("TheString", rawSpec.OptionalAsName);
 			Assert.IsNull(walker.StatementSpec.InsertIntoDesc);
 
 			text = "select * from " + typeof(SupportBean).FullName + "().win:lenght(10)";
@@ -823,7 +823,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestNoPackageName()
 		{
-			var text = "select intPrimitive from SupportBean_N().win:lenght(10) as win1";
+			var text = "select IntPrimitive from SupportBean_N().win:lenght(10) as win1";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 		}
 
@@ -831,33 +831,33 @@ namespace com.espertech.esper.compiler.@internal.parse
 		public void TestAggregateFunction()
 		{
 			var fromClause = "from " + typeof(SupportBean_N).FullName + "().win:lenght(10) as win1";
-			var text = "select max(distinct intPrimitive) " + fromClause;
+			var text = "select max(distinct IntPrimitive) "+ fromClause;
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 
-			text = "select sum(intPrimitive)," +
-			       "sum(distinct doubleBoxed)," +
-			       "avg(doubleBoxed)," +
-			       "avg(distinct doubleBoxed)," +
+			text = "select sum(IntPrimitive),"+
+"sum(distinct DoubleBoxed),"+
+"avg(DoubleBoxed),"+
+"avg(distinct DoubleBoxed),"+
 			       "count(*)," +
-			       "count(intPrimitive)," +
-			       "count(distinct intPrimitive)," +
-			       "max(distinct intPrimitive)," +
-			       "min(distinct intPrimitive)," +
-			       "max(intPrimitive)," +
-			       "min(intPrimitive), " +
-			       "median(intPrimitive), " +
-			       "median(distinct intPrimitive)," +
-			       "stddev(intPrimitive), " +
-			       "stddev(distinct intPrimitive)," +
-			       "avedev(intPrimitive)," +
-			       "avedev(distinct intPrimitive) " +
+"count(IntPrimitive),"+
+"count(distinct IntPrimitive),"+
+"max(distinct IntPrimitive),"+
+"min(distinct IntPrimitive),"+
+"max(IntPrimitive),"+
+"min(IntPrimitive), "+
+"median(IntPrimitive), "+
+"median(distinct IntPrimitive),"+
+"stddev(IntPrimitive), "+
+"stddev(distinct IntPrimitive),"+
+"avedev(IntPrimitive),"+
+"avedev(distinct IntPrimitive) "+
 			       fromClause;
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			// try min-max aggregate versus row functions
-			text = "select max(intPrimitive), min(intPrimitive)," +
-			       "max(intPrimitive,intBoxed), min(intPrimitive,intBoxed)," +
-			       "max(distinct intPrimitive), min(distinct intPrimitive)" +
+			text = "select max(IntPrimitive), min(IntPrimitive),"+
+"max(IntPrimitive,IntBoxed), min(IntPrimitive,IntBoxed),"+
+"max(distinct IntPrimitive), min(distinct IntPrimitive)"+
 			       fromClause;
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 		}
@@ -865,8 +865,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestGroupBy()
 		{
-			var text = "select sum(intPrimitive) from SupportBean_N().win:lenght(10) as win1 where intBoxed > 5 " +
-			           "group by intBoxed, 3 * doubleBoxed, max(2, doublePrimitive)";
+			var text = "select sum(IntPrimitive) from SupportBean_N().win:lenght(10) as win1 where IntBoxed > 5 "+
+"group by IntBoxed, 3 * DoubleBoxed, max(2, DoublePrimitive)";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			var groupByList = walker.StatementSpec.GroupByExpressions;
@@ -887,8 +887,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestHaving()
 		{
-			var text = "select sum(intPrimitive) from SupportBean_N().win:lenght(10) as win1 where intBoxed > 5 " +
-			           "group by intBoxed having sum(intPrimitive) > 5";
+			var text = "select sum(IntPrimitive) from SupportBean_N().win:lenght(10) as win1 where IntBoxed > 5 "+
+"group by IntBoxed having sum(IntPrimitive) > 5";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			var havingNode = walker.StatementSpec.HavingClause;
@@ -897,8 +897,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.IsTrue(havingNode.ChildNodes[0] is ExprSumNode);
 			Assert.IsTrue(havingNode.ChildNodes[1] is ExprConstantNode);
 
-			text = "select sum(intPrimitive) from SupportBean_N().win:lenght(10) as win1 where intBoxed > 5 " +
-			       "having intPrimitive < avg(intPrimitive)";
+			text = "select sum(IntPrimitive) from SupportBean_N().win:lenght(10) as win1 where IntBoxed > 5 "+
+"having IntPrimitive < avg(IntPrimitive)";
 			walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			havingNode = walker.StatementSpec.HavingClause;
@@ -908,7 +908,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestDistinct()
 		{
-			var text = "select sum(distinct intPrimitive) from SupportBean_N().win:lenght(10) as win1";
+			var text = "select sum(distinct IntPrimitive) from SupportBean_N().win:lenght(10) as win1";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			var rawElement = walker.StatementSpec.SelectClauseSpec.SelectExprList[0];
@@ -920,9 +920,9 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestComplexProperty()
 		{
-			var text = "select array [ 1 ],s0.map('a'),nested.nested2, a[1].b as x, nested.abcdef? " +
+			var text = "select array [ 1 ],s0.map('a'),nested.Nested2, a[1].b as x, nested.abcdef? " +
 			           " from SupportBean_N().win:lenght(10) as win1 " +
-			           " where a[1].b('a').nested.c[0] = 4";
+			           " where a[1].b('a').Nested.c[0] = 4";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 
 			var identNode = (ExprIdentNode) GetSelectExprSpec(walker.StatementSpec, 0).SelectExpression;
@@ -934,8 +934,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("s0", identNode.StreamOrPropertyName);
 
 			identNode = (ExprIdentNode) GetSelectExprSpec(walker.StatementSpec, 2).SelectExpression;
-			Assert.AreEqual("nested2", identNode.UnresolvedPropertyName);
-			Assert.AreEqual("nested", identNode.StreamOrPropertyName);
+			Assert.AreEqual("Nested2", identNode.UnresolvedPropertyName);
+			Assert.AreEqual("Nested", identNode.StreamOrPropertyName);
 
 			identNode = (ExprIdentNode) GetSelectExprSpec(walker.StatementSpec, 3).SelectExpression;
 			Assert.AreEqual("a[1].b", identNode.UnresolvedPropertyName);
@@ -943,17 +943,17 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			identNode = (ExprIdentNode) GetSelectExprSpec(walker.StatementSpec, 4).SelectExpression;
 			Assert.AreEqual("abcdef?", identNode.UnresolvedPropertyName);
-			Assert.AreEqual("nested", identNode.StreamOrPropertyName);
+			Assert.AreEqual("Nested", identNode.StreamOrPropertyName);
 
 			identNode = (ExprIdentNode) walker.StatementSpec.WhereClause.ChildNodes[0];
-			Assert.AreEqual("a[1].b('a').nested.c[0]", identNode.UnresolvedPropertyName);
+			Assert.AreEqual("a[1].b('a').Nested.c[0]", identNode.UnresolvedPropertyName);
 			Assert.AreEqual(null, identNode.StreamOrPropertyName);
 		}
 
 		[Test]
 		public void TestBitWise()
 		{
-			var text = "select intPrimitive & intBoxed from " + typeof(SupportBean).FullName + "().win:lenght(10) as stream0";
+			var text = "select IntPrimitive & IntBoxed from "+ typeof(SupportBean).FullName + "().win:lenght(10) as stream0";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
 			var selectExpressions = walker.StatementSpec.SelectClauseSpec.SelectExprList;
 			Assert.AreEqual(1, selectExpressions.Count);
@@ -1027,24 +1027,24 @@ namespace com.espertech.esper.compiler.@internal.parse
 		public void TestIfThenElseCase()
 		{
 			string text;
-			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) end from " + typeof(SupportBean).FullName + "().win:lenght(10) as win";
+			text = "select case when IntPrimitive > ShortPrimitive then count(IntPrimitive) end from "+ typeof(SupportBean).FullName + "().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
-			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) end as p1 from " +
+			text = "select case when IntPrimitive > ShortPrimitive then count(IntPrimitive) end as p1 from "+
 			       typeof(SupportBean).FullName +
 			       "().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
-			text = "select case when intPrimitive > shortPrimitive then count(intPrimitive) else shortPrimitive end from " +
+			text = "select case when IntPrimitive > ShortPrimitive then count(IntPrimitive) else ShortPrimitive end from "+
 			       typeof(SupportBean).FullName +
 			       "().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
 			text =
-				"select case when intPrimitive > shortPrimitive then count(intPrimitive) when longPrimitive > intPrimitive then count(longPrimitive) else shortPrimitive end from " +
+"select case when IntPrimitive > ShortPrimitive then count(IntPrimitive) when LongPrimitive > IntPrimitive then count(LongPrimitive) else ShortPrimitive end from "+
 				typeof(SupportBean).FullName +
 				"().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
-			text = "select case intPrimitive  when 1 then count(intPrimitive) end from " + typeof(SupportBean).FullName + "().win:lenght(10) as win";
+			text = "select case IntPrimitive  when 1 then count(IntPrimitive) end from "+ typeof(SupportBean).FullName + "().win:lenght(10) as win";
 			SupportParserHelper.ParseAndWalkEPL(container, text);
-			text = "select case intPrimitive when longPrimitive then (intPrimitive + longPrimitive) end" +
+			text = "select case IntPrimitive when LongPrimitive then (IntPrimitive + LongPrimitive) end"+
 			       " from " +
 			       typeof(SupportBean).FullName +
 			       "#length(3)";
@@ -1055,7 +1055,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			string outerType,
 			OuterJoinType typeExpected)
 		{
-			var text = "select intPrimitive from " +
+			var text = "select IntPrimitive from "+
 			           typeof(SupportBean_A).FullName +
 			           "().win:lenght(10) as win1 " +
 			           outerType +
@@ -1074,7 +1074,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("f2[1]", desc.OptRightNode.UnresolvedPropertyName);
 			Assert.AreEqual("win2", desc.OptRightNode.StreamOrPropertyName);
 
-			text = "select intPrimitive from " +
+			text = "select IntPrimitive from "+
 			       typeof(SupportBean_A).FullName +
 			       "().win:lenght(10) as win1 " +
 			       outerType +
@@ -1164,7 +1164,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestWalkPattern()
 		{
-			var text = "every g=" + typeof(SupportBean).FullName + "(string=\"IBM\", intPrimitive != 1) where timer:within(20)";
+			var text = "every g=" + typeof(SupportBean).FullName + "(string=\"IBM\", IntPrimitive != 1) where timer:within(20)";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, "select * from pattern[" + text + "]");
 
@@ -1206,7 +1206,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		public void TestWalkPatternUseResult()
 		{
 			var EVENT = typeof(SupportBean_N).FullName;
-			var text = "na=" + EVENT + "() -> every nb=" + EVENT + "(doublePrimitive in [0:na.doublePrimitive])";
+			var text = "na=" + EVENT + "() -> every nb=" + EVENT + "(DoublePrimitive in [0:na.DoublePrimitive])";
 			SupportParserHelper.ParseAndWalkEPL(container, "select * from pattern[" + text + "]");
 		}
 
@@ -1329,7 +1329,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		public void TestWalkDBJoinStatement()
 		{
 			var className = typeof(SupportBean).FullName;
-			var sql = "select a from b where $x.id=c.d";
+			var sql = "select a from b where $x.Id=c.d";
 			var expression = "select * from " + className + ", sql:mydb ['" + sql + "']";
 
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, expression);
@@ -1354,10 +1354,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 		public void TestRangeBetweenAndIn()
 		{
 			var className = typeof(SupportBean).FullName;
-			var expression = "select * from " + className + "(intPrimitive in [1:2], intBoxed in (1,2), doubleBoxed between 2 and 3)";
+			var expression = "select * from " + className + "(IntPrimitive in [1:2], IntBoxed in (1,2), DoubleBoxed between 2 and 3)";
 			SupportParserHelper.ParseAndWalkEPL(container, expression);
 
-			expression = "select * from " + className + "(intPrimitive not in [1:2], intBoxed not in (1,2), doubleBoxed not between 2 and 3)";
+			expression = "select * from " + className + "(IntPrimitive not in [1:2], IntBoxed not in (1,2), DoubleBoxed not between 2 and 3)";
 			SupportParserHelper.ParseAndWalkEPL(container, expression);
 		}
 

@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             method.Block.DeclareVar(
                 typeof(int),
                 "num",
-                ExprDotMethod(REF_ORDERROLLUPLEVEL, "getLevelNumber"));
+                ExprDotName(REF_ORDERROLLUPLEVEL, "LevelNumber"));
             var blocks = method.Block.SwitchBlockOfLength(Ref("num"), forge.OrderByRollup.Length, true);
             for (var i = 0; i < blocks.Length; i++) {
                 var getSortKey = GenerateOrderKeyCodegen(
@@ -302,7 +302,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             method.Block.MethodReturn(
                 StaticMethod(
                     typeof(OrderByProcessorUtil),
-                    "sortWOrderKeys",
+                    "SortWOrderKeys",
                     REF_OUTGOINGEVENTS,
                     REF_ORDERKEYS,
                     comparator));
@@ -315,7 +315,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenNamedMethods namedMethods)
         {
             CodegenExpression comparator = classScope.AddOrGetDefaultFieldSharable(forge.IComparer);
-            var compare = ExprDotMethod(comparator, "compare", REF_ORDERFIRSTSORTKEY, REF_ORDERSECONDSORTKEY);
+            var compare = ExprDotMethod(comparator, "Compare", REF_ORDERFIRSTSORTKEY, REF_ORDERSECONDSORTKEY);
             method.Block.IfCondition(Relational(compare, LE, Constant(0)))
                 .BlockReturn(NewArrayWithInit(typeof(EventBean), REF_ORDERFIRSTEVENT, REF_ORDERSECONDEVENT))
                 .MethodReturn(NewArrayWithInit(typeof(EventBean), REF_ORDERSECONDEVENT, REF_ORDERFIRSTEVENT));
@@ -343,7 +343,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                         ExprDotName(Ref("rollup"), "Level"));
                 }
 
-                forEach.DeclareVar<int>("num", ExprDotMethodChain(Ref("rollup")).Add("getLevel").Add("getLevelNumber"));
+                forEach.DeclareVar<int>("num", ExprDotMethodChain(Ref("rollup")).Get("Level").Get("LevelNumber"));
                 var blocks = forEach.SwitchBlockOfLength(Ref("num"), forge.OrderByRollup.Length, false);
                 for (var i = 0; i < blocks.Length; i++) {
                     var getSortKey = GenerateOrderKeyCodegen(
@@ -412,7 +412,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             Or(
                                 EqualsNull(Ref("localMinMax")),
                                 Relational(
-                                    ExprDotMethod(comparator, "compare", Ref("localMinMax"), Ref("sortKey")),
+                                    ExprDotMethod(comparator, "Compare", Ref("localMinMax"), Ref("sortKey")),
                                     GT,
                                     Constant(0))))
                         .AssignRef("localMinMax", Ref("sortKey"))
@@ -433,7 +433,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             MEMBER_AGGREGATIONSVC,
                             "SetCurrentAccess",
                             ArrayAtIndex(Ref("groupByKeys"), Ref("count")),
-                            ExprDotMethod(REF_EXPREVALCONTEXT, "getAgentInstanceId", ConstantNull()));
+                            ExprDotMethod(REF_EXPREVALCONTEXT, "GetAgentInstanceId", ConstantNull()));
                     }
 
                     for (var i = 0; i < elements.Length; i++) {
@@ -454,7 +454,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                             Or(
                                 EqualsNull(Ref("localMinMax")),
                                 Relational(
-                                    ExprDotMethod(comparator, "compare", Ref("localMinMax"), Ref("valuesMk")),
+                                    ExprDotMethod(comparator, "Compare", Ref("localMinMax"), Ref("valuesMk")),
                                     GT,
                                     Constant(0))))
                         .AssignRef("localMinMax", Ref("valuesMk"))

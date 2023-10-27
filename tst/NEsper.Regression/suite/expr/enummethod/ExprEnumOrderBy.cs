@@ -77,16 +77,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
                 builder.WithExpression(
                     fields[0],
-                    "contained.orderBy( (x, i) => case when i <= 2 then p00 else i-10 end)");
+                    "Contained.orderBy( (x, i) => case when i <= 2 then P00 else i-10 end)");
                 builder.WithExpression(
                     fields[1],
-                    "contained.orderByDesc( (x, i) => case when i <= 2 then p00 else i-10 end)");
+                    "Contained.orderByDesc( (x, i) => case when i <= 2 then P00 else i-10 end)");
                 builder.WithExpression(
                     fields[2],
-                    "contained.orderBy( (x, i, s) => case when s <= 2 then p00 else i-10 end)");
+                    "Contained.orderBy( (x, i, s) => case when s <= 2 then P00 else i-10 end)");
                 builder.WithExpression(
                     fields[3],
-                    "contained.orderByDesc( (x, i, s) => case when s <= 2 then p00 else i-10 end)");
+                    "Contained.orderByDesc( (x, i, s) => case when s <= 2 then P00 else i-10 end)");
 
                 builder.WithStatementConsumer(
                     stmt => SupportEventPropUtil.AssertTypesAllSame(
@@ -125,12 +125,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "contained.orderBy(x => p00)");
-                builder.WithExpression(fields[1], "contained.orderBy(x => 10 - p00)");
-                builder.WithExpression(fields[2], "contained.orderBy(x => 0)");
-                builder.WithExpression(fields[3], "contained.orderByDesc(x => p00)");
-                builder.WithExpression(fields[4], "contained.orderByDesc(x => 10 - p00)");
-                builder.WithExpression(fields[5], "contained.orderByDesc(x => 0)");
+                builder.WithExpression(fields[0], "Contained.orderBy(x => P00)");
+                builder.WithExpression(fields[1], "Contained.orderBy(x => 10 - P00)");
+                builder.WithExpression(fields[2], "Contained.orderBy(x => 0)");
+                builder.WithExpression(fields[3], "Contained.orderByDesc(x => P00)");
+                builder.WithExpression(fields[4], "Contained.orderByDesc(x => 10 - P00)");
+                builder.WithExpression(fields[5], "Contained.orderByDesc(x => 0)");
 
                 builder.WithStatementConsumer(
                     stmt => SupportEventPropUtil.AssertTypesAllSame(
@@ -175,8 +175,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.orderBy()");
-                builder.WithExpression(fields[1], "strvals.orderByDesc()");
+                builder.WithExpression(fields[0], "Strvals.orderBy()");
+                builder.WithExpression(fields[1], "Strvals.orderByDesc()");
 
                 builder.WithStatementConsumer(
                     stmt => SupportEventPropUtil.AssertTypesAllSame(
@@ -199,20 +199,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "strvals.orderBy(v => extractNum(v))");
-                builder.WithExpression(fields[1], "strvals.orderByDesc(v => extractNum(v))");
+                builder.WithExpression(fields[0], "Strvals.orderBy(v => extractNum(v))");
+                builder.WithExpression(fields[1], "Strvals.orderByDesc(v => extractNum(v))");
                 builder.WithExpression(
                     fields[2],
-                    "strvals.orderBy( (v, i) => case when i <= 2 then extractNum(v) else i-10 end)");
+                    "Strvals.orderBy( (v, i) => case when i <= 2 then extractNum(v) else i-10 end)");
                 builder.WithExpression(
                     fields[3],
-                    "strvals.orderByDesc( (v, i) => case when i <= 2 then extractNum(v) else i-10 end)");
+                    "Strvals.orderByDesc( (v, i) => case when i <= 2 then extractNum(v) else i-10 end)");
                 builder.WithExpression(
                     fields[4],
-                    "strvals.orderBy( (v, i, s) => case when s <= 2 then extractNum(v) else i-10 end)");
+                    "Strvals.orderBy( (v, i, s) => case when s <= 2 then extractNum(v) else i-10 end)");
                 builder.WithExpression(
                     fields[5],
-                    "strvals.orderByDesc( (v, i, s) => case when s <= 2 then extractNum(v) else i-10 end)");
+                    "Strvals.orderByDesc( (v, i, s) => case when s <= 2 then extractNum(v) else i-10 end)");
 
                 builder.WithStatementConsumer(
                     stmt => SupportEventPropUtil.AssertTypesAllSame(
@@ -248,17 +248,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string epl;
 
-                epl = "select contained.orderBy() from SupportBean_ST0_Container";
+                epl = "select Contained.orderBy() from SupportBean_ST0_Container";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'contained.orderBy()': Invalid input for built-in enumeration method 'orderBy' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
+                    "Failed to validate select-clause expression 'Contained.orderBy()': Invalid input for built-in enumeration method 'orderBy' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
                     typeof(SupportBean_ST0).FullName +
                     "'");
 
-                epl = "select strvals.orderBy(v => null) from SupportCollection";
+                epl = "select Strvals.orderBy(v => null) from SupportCollection";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'strvals.orderBy()': Null-type is not allowed");
+                    "Failed to validate select-clause expression 'Strvals.orderBy()': Null-type is not allowed");
             }
         }
     }

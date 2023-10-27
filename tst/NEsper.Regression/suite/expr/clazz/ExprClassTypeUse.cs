@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
             {
                 var text = "public class MyResult {\n" +
                            "  private readonly string _id;\n" +
-                           "  public MyResult(string id) {this._id = id;}\n" +
+                           "  public MyResult(string id) {this._id = Id;}\n" +
                            "  public string Id => _id;\n" +
                            "}";
                 var epl = EscapeClass(text) +
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                 var text = "public enum MyLevel {\n" +
                            "  HIGH, MEDIUM, LOW\n" +
                            "}\n" +
-                           "public class MyLevelExtensions {\n" +
+                           "public static class MyLevelExtensions {\n" +
                            "  public static int GetLevelCode(this MyLevel value) {\n" +
                            "    switch(value) {\n" +
                            "        case MyLevel.HIGH: return 3;\n" +

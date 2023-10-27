@@ -1880,7 +1880,7 @@ namespace com.espertech.esper.common.@internal.util
                         .Select(_ => _.GetText())
                         .Select(
                             _ => {
-                                // TBD: Consider the need for handling escaped arguments.  In ASTUtil, there is some handling for unescaping these
+                                // TODO: Consider the need for handling escaped arguments.  In ASTUtil, there is some handling for unescaping these
                                 // values.  We need to move the content into NEsper.Grammar so that it is usable across multiple projects.
                                 var result = GetTypeForBuiltin(_, false);
                                 return result ?? ResolveType(_, assemblySearchPath, throwOnError);

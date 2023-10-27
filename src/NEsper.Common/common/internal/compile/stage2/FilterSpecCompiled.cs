@@ -239,7 +239,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 .Expression(
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.FILTERSPECACTIVATABLEREGISTRY)
-                        .Add("register", Ref("activatable")))
+                        .Add("Register", Ref("activatable")))
                 .MethodReturn(Ref("activatable"));
 
             return method;

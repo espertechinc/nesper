@@ -149,9 +149,9 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 env.UndeployAll();
 
-                epl = "@name('s0') select size, symbol, feed from SupportMarketDataBean#size(symbol, feed)";
+                epl = "@name('s0') select size, Symbol, Feed from SupportMarketDataBean#size(Symbol, Feed)";
                 env.CompileDeployAddListenerMile(epl, "s0", 1);
-                var fields = "size,symbol,feed".SplitCsv();
+                var fields = "size,Symbol,Feed".SplitCsv();
 
                 SendEvent(env, "DELL", 1L);
                 env.AssertPropsNew("s0", fields, new object[] { 1L, "DELL", "feed1" });
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.Milestone(2);
 
                 for (var i = 3; i < 10; i++) {
-                    env.SendEventBean(MakeMarketDataEvent("E" + i));
+                    env.SendEventBean(MakeMarketDataEvent($"E{i}"));
                     env.AssertPropsNV(
                         "s0",
                         new object[][] { new object[] { "size", (long)i } }, // new data
@@ -208,26 +208,26 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select irstream * from  SupportMarketDataBean#size(symbol)";
+                var text = "@name('s0') select irstream * from  SupportMarketDataBean#size(Symbol)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeMarketDataEvent("E1"));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "size", 1L }, new object[] { "symbol", "E1" } },
-                    new object[][] { new object[] { "size", 0L }, new object[] { "symbol", null } });
+                    new object[][] { new object[] { "size", 1L }, new object[] { "Symbol", "E1" } },
+                    new object[][] { new object[] { "size", 0L }, new object[] { "Symbol", null } });
 
                 env.Milestone(0);
 
                 env.SendEventBean(MakeMarketDataEvent("E2"));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "size", 2L }, new object[] { "symbol", "E2" } },
-                    new object[][] { new object[] { "size", 1L }, new object[] { "symbol", "E1" } });
+                    new object[][] { new object[] { "size", 2L }, new object[] { "Symbol", "E2" } },
+                    new object[][] { new object[] { "size", 1L }, new object[] { "Symbol", "E1" } });
 
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "size", "symbol" },
+                    new string[] { "size", "Symbol"},
                     new object[][] { new object[] { 2L, "E2" } });
 
                 env.UndeployAll();
@@ -238,7 +238,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select irstream * from  SupportMarketDataBean#length(3)#uni(price)";
+                var text = "@name('s0') select irstream * from  SupportMarketDataBean#length(3)#uni(Price)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeBean(50, "f1"));
@@ -287,9 +287,8 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream * from SupportMarketDataBean(symbol='" +
-                          SYMBOL +
-                          "')#length(3)#uni(price, symbol, feed)";
+                var epl =
+                    $"@name('s0') select irstream * from SupportMarketDataBean(Symbol='{SYMBOL}')#length(3)#uni(Price, Symbol, Feed)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.AssertStatement(
@@ -328,7 +327,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.UndeployAll();
 
                 // test select-star
-                var eplWildcard = "@name('s0') select * from SupportBean#length(3)#uni(intPrimitive, *)";
+                var eplWildcard = "@name('s0') select * from SupportBean#length(3)#uni(IntPrimitive, *)";
                 env.CompileDeployAddListenerMile(eplWildcard, "s0", 1);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -336,8 +335,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                     "s0",
                     @event => {
                         Assert.AreEqual(1.0, @event.Get("average"));
-                        Assert.AreEqual("E1", @event.Get("theString"));
-                        Assert.AreEqual(1, @event.Get("intPrimitive"));
+                        Assert.AreEqual("E1", @event.Get("TheString"));
+                        Assert.AreEqual(1, @event.Get("IntPrimitive"));
                     });
 
                 env.UndeployAll();
@@ -348,17 +347,17 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select irstream * from SupportMarketDataBean#length(3)#uni(price, feed)";
+                var text = "@name('s0') select irstream * from SupportMarketDataBean#length(3)#uni(Price, Feed)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeBean(50, "f1"));
                 env.AssertPropsNV(
                     "s0",
                     new object[][] {
-                        new object[] { "total", 50d }, new object[] { "datapoints", 1L }, new object[] { "feed", "f1" }
+                        new object[] { "total", 50d }, new object[] { "datapoints", 1L }, new object[] { "Feed", "f1" }
                     },
                     new object[][] {
-                        new object[] { "total", 0.0 }, new object[] { "datapoints", 0L }, new object[] { "feed", null }
+                        new object[] { "total", 0.0 }, new object[] { "datapoints", 0L }, new object[] { "Feed", null }
                     });
 
                 env.Milestone(0);
@@ -367,10 +366,10 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsNV(
                     "s0",
                     new object[][] {
-                        new object[] { "total", 75.0 }, new object[] { "datapoints", 2L }, new object[] { "feed", "f2" }
+                        new object[] { "total", 75.0 }, new object[] { "datapoints", 2L }, new object[] { "Feed", "f2" }
                     },
                     new object[][] {
-                        new object[] { "total", 50d }, new object[] { "datapoints", 1L }, new object[] { "feed", "f1" }
+                        new object[] { "total", 50d }, new object[] { "datapoints", 1L }, new object[] { "Feed", "f1" }
                     });
 
                 env.UndeployAll();
@@ -382,7 +381,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@name('s0') select irstream * from SupportMarketDataBean#length(3)#weighted_avg(price, volume)";
+                    "@name('s0') select irstream * from SupportMarketDataBean#length(3)#weighted_avg(Price, Volume)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeBean(10, 1000));
@@ -412,7 +411,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // test iterator
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "average" },
+                    new string[] { "average"},
                     new object[][] { new object[] { 10.61111111111111 } });
 
                 env.SendEventBean(MakeBean(9.5, 600));
@@ -432,30 +431,30 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@name('s0') select irstream * from SupportMarketDataBean#length(3)#weighted_avg(price, volume, feed)";
+"@name('s0') select irstream * from SupportMarketDataBean#length(3)#weighted_avg(Price, Volume, Feed)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeBean(10, 1000, "f1"));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "average", 10d }, new object[] { "feed", "f1" } },
-                    new object[][] { new object[] { "average", double.NaN }, new object[] { "feed", null } });
+                    new object[][] { new object[] { "average", 10d }, new object[] { "Feed", "f1" } },
+                    new object[][] { new object[] { "average", double.NaN }, new object[] { "Feed", null } });
 
                 env.Milestone(0);
 
                 env.SendEventBean(MakeBean(11, 2000, "f2"));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "average", 10.666666666666666 }, new object[] { "feed", "f2" } },
-                    new object[][] { new object[] { "average", 10.0 }, new object[] { "feed", "f1" } });
+                    new object[][] { new object[] { "average", 10.666666666666666 }, new object[] { "Feed", "f2" } },
+                    new object[][] { new object[] { "average", 10.0 }, new object[] { "Feed", "f1" } });
 
                 env.Milestone(1);
 
                 env.SendEventBean(MakeBean(10.5, 1500, "f3"));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "average", 10.61111111111111 }, new object[] { "feed", "f3" } },
-                    new object[][] { new object[] { "average", 10.666666666666666 }, new object[] { "feed", "f2" } });
+                    new object[][] { new object[] { "average", 10.61111111111111 }, new object[] { "Feed", "f3" } },
+                    new object[][] { new object[] { "average", 10.666666666666666 }, new object[] { "Feed", "f2" } });
 
                 env.UndeployAll();
             }
@@ -465,7 +464,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select irstream * from SupportMarketDataBean#length(3)#linest(price, volume)";
+                var text = "@name('s0') select irstream * from SupportMarketDataBean#length(3)#linest(Price, Volume)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeBean(70, 1000));
@@ -517,7 +516,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@name('s0') select irstream * from SupportMarketDataBean#length(3)#linest(price, volume, feed)";
+"@name('s0') select irstream * from SupportMarketDataBean#length(3)#linest(Price, Volume, Feed)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeBean(70, 1000, "f1"));
@@ -525,11 +524,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                     "s0",
                     new object[][] {
                         new object[] { "slope", double.NaN }, new object[] { "YIntercept", double.NaN },
-                        new object[] { "feed", "f1" }
+                        new object[] { "Feed", "f1" }
                     },
                     new object[][] {
                         new object[] { "slope", double.NaN }, new object[] { "YIntercept", double.NaN },
-                        new object[] { "feed", null }
+                        new object[] { "Feed", null }
                     });
 
                 env.Milestone(0);
@@ -539,17 +538,17 @@ namespace com.espertech.esper.regressionlib.suite.view
                     "s0",
                     new object[][] {
                         new object[] { "slope", 1000.0 }, new object[] { "YIntercept", -69000.0 },
-                        new object[] { "feed", "f2" }
+                        new object[] { "Feed", "f2" }
                     },
                     new object[][] {
                         new object[] { "slope", double.NaN }, new object[] { "YIntercept", double.NaN },
-                        new object[] { "feed", "f1" }
+                        new object[] { "Feed", "f1" }
                     });
 
                 // test iterator
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "slope", "YIntercept", "feed" },
+                    new string[] { "slope", "YIntercept", "Feed"},
                     new object[][] { new object[] { 1000.0, -69000.0, "f2" } });
 
                 env.SendEventBean(MakeBean(70.1, 1200, "f3"));
@@ -557,11 +556,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                     "s0",
                     new object[][] {
                         new object[] { "slope", 928.571428587354 }, new object[] { "YIntercept", -63952.38095349892 },
-                        new object[] { "feed", "f3" }
+                        new object[] { "Feed", "f3" }
                     },
                     new object[][] {
                         new object[] { "slope", 1000.0 }, new object[] { "YIntercept", -69000.0 },
-                        new object[] { "feed", "f2" }
+                        new object[] { "Feed", "f2" }
                     });
 
                 env.UndeployAll();
@@ -572,7 +571,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select irstream * from SupportMarketDataBean#length(3)#correl(price, volume)";
+                var text = "@name('s0') select irstream * from SupportMarketDataBean#length(3)#correl(Price, Volume)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeBean(70, 1000));
@@ -625,7 +624,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 // correlation
                 var f1 = "correlation".SplitCsv();
-                epl = "@name('S1') select irstream * from SupportMarketDataBean#correl(price, volume)";
+                epl = "@name('S1') select irstream * from SupportMarketDataBean#correl(Price, Volume)";
                 env.CompileDeploy(epl).AddListener("S1");
 
                 // size
@@ -635,17 +634,17 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 // regression
                 var f3 = "slope,YIntercept".SplitCsv();
-                epl = "@name('S3') select irstream * from SupportMarketDataBean#linest(price, volume)";
+                epl = "@name('S3') select irstream * from SupportMarketDataBean#linest(Price, Volume)";
                 env.CompileDeploy(epl).AddListener("S3");
 
                 // stat:uni
                 var f4 = "total,datapoints".SplitCsv();
-                epl = "@name('S4') select irstream * from SupportMarketDataBean#uni(volume)";
+                epl = "@name('S4') select irstream * from SupportMarketDataBean#uni(Volume)";
                 env.CompileDeploy(epl).AddListener("S4");
 
                 // stat:weighted_avg
                 var f5 = "average".SplitCsv();
-                epl = "@name('S5') select irstream * from SupportMarketDataBean#weighted_avg(price, volume)";
+                epl = "@name('S5') select irstream * from SupportMarketDataBean#weighted_avg(Price, Volume)";
                 env.CompileDeploy(epl).AddListener("S5");
 
                 env.Milestone(0);
@@ -843,12 +842,12 @@ namespace com.espertech.esper.regressionlib.suite.view
             Assert.IsTrue(DoubleValueAssertionUtil.Equals(stdev, stdevE, 6));
             Assert.IsTrue(DoubleValueAssertionUtil.Equals(variance, varianceE, 6));
             if (isFirst && !isNewData) {
-                Assert.AreEqual(null, values.Get("symbol"));
-                Assert.AreEqual(null, values.Get("feed"));
+                Assert.AreEqual(null, values.Get("Symbol"));
+                Assert.AreEqual(null, values.Get("Feed"));
             }
             else {
-                Assert.AreEqual(SYMBOL, values.Get("symbol"));
-                Assert.AreEqual(FEED, values.Get("feed"));
+                Assert.AreEqual(SYMBOL, values.Get("Symbol"));
+                Assert.AreEqual(FEED, values.Get("Feed"));
             }
         }
 

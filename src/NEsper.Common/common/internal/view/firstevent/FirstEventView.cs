@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.view.firstevent
 
         public override EventType EventType =>
             // The schema is the parent view's schema
-            parent.EventType;
+            Parent.EventType;
 
         public override void Update(
             EventBean[] newData,
@@ -69,9 +69,9 @@ namespace com.espertech.esper.common.@internal.view.firstevent
                 }
             }
 
-            if (child != null && (newDataToPost != null || oldDataToPost != null)) {
+            if (Child != null && (newDataToPost != null || oldDataToPost != null)) {
                 agentInstanceContext.InstrumentationProvider.QViewIndicate(viewFactory, newDataToPost, oldDataToPost);
-                child.Update(newDataToPost, oldDataToPost);
+                Child.Update(newDataToPost, oldDataToPost);
                 agentInstanceContext.InstrumentationProvider.AViewIndicate();
             }
 

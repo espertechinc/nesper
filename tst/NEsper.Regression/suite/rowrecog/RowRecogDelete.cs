@@ -82,16 +82,16 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.CompileDeploy("@public create window MyNamedWindow#keepall as SupportRecogBean", path);
                 env.CompileDeploy("insert into MyNamedWindow select * from SupportRecogBean", path);
                 env.CompileDeploy(
-                    "on SupportBean as d delete from MyNamedWindow w where d.intPrimitive = w.value",
+                    "on SupportBean as d delete from MyNamedWindow w where d.IntPrimitive = w.value",
                     path);
 
                 var fields = "a_string,b_string".SplitCsv();
                 var text = "@name('s0') select * from MyNamedWindow " +
                            "match_recognize (" +
-                           "  measures A.theString as a_string, B.theString as b_string" +
+                           "  measures A.TheString as a_string, B.TheString as b_string" +
                            "  all matches pattern (A B) " +
                            "  define " +
-                           "    A as PREV(A.theString, 3) = 'P3' and PREV(A.theString, 2) = 'P2' and PREV(A.theString, 4) = 'P4'," +
+                           "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4'," +
                            "    B as B.value in (PREV(B.value, 4), PREV(B.value, 2))" +
                            ")";
 
@@ -175,13 +175,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.CompileDeploy("@public create window MyWindow#keepall as SupportRecogBean", path);
                 env.CompileDeploy("insert into MyWindow select * from SupportRecogBean", path);
                 env.CompileDeploy(
-                    "on SupportBean as s delete from MyWindow as w where s.theString = w.theString",
+                    "on SupportBean as s delete from MyWindow as w where s.TheString = w.TheString",
                     path);
 
                 var fields = "a0,a1,b0,b1,c".SplitCsv();
                 var text = "@name('s0') select * from MyWindow " +
                            "match_recognize (" +
-                           "  measures A[0].theString as a0, A[1].theString as a1, B[0].theString as b0, B[1].theString as b1, C.theString as c" +
+                           "  measures A[0].TheString as a0, A[1].TheString as a1, B[0].TheString as b0, B[1].TheString as b1, C.TheString as c" +
                            "  pattern ( A+ B* C ) " +
                            "  define " +
                            "    A as (A.value = 1)," +
@@ -274,13 +274,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.CompileDeploy("@public create window MyWindow#keepall as SupportRecogBean", path);
                 env.CompileDeploy("insert into MyWindow select * from SupportRecogBean", path);
                 env.CompileDeploy(
-                    "on SupportBean as s delete from MyWindow as w where s.theString = w.theString",
+                    "on SupportBean as s delete from MyWindow as w where s.TheString = w.TheString",
                     path);
 
                 var fields = "a0,a1,b".SplitCsv();
                 var text = "@name('s0') select * from MyWindow " +
                            "match_recognize (" +
-                           "  measures A[0].theString as a0, A[1].theString as a1, B.theString as b" +
+                           "  measures A[0].TheString as a0, A[1].TheString as a1, B.TheString as b" +
                            "  pattern ( A* B ) " +
                            "  define " +
                            "    A as (A.value = 1)," +

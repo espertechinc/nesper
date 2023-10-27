@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public override string ToString()
         {
-            return "IntArrayKey" + Arrays.AsList(keys);
+            return $"IntArrayKey{Arrays.AsList(keys)}";
         }
 
         public int[] Keys => keys;

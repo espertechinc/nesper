@@ -183,31 +183,31 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 TryInvalidCompileGraph(
                     env,
-                    "insert into ABC select theString from ME",
+                    "insert into ABC select TheString from ME",
                     false,
                     "Failed to obtain operator 'Select': Insert-into clause is not supported");
 
                 TryInvalidCompileGraph(
                     env,
-                    "select irstream theString from ME",
+                    "select irstream TheString from ME",
                     false,
                     "Failed to obtain operator 'Select': Selecting remove-stream is not supported");
 
                 TryInvalidCompileGraph(
                     env,
-                    "select theString from pattern[SupportBean]",
+                    "select TheString from pattern[SupportBean]",
                     false,
                     "Failed to obtain operator 'Select': From-clause must contain only streams and cannot contain patterns or other constructs");
 
                 TryInvalidCompileGraph(
                     env,
-                    "select theString from DUMMY",
+                    "select TheString from DUMMY",
                     false,
                     "Failed to obtain operator 'Select': Failed to find stream 'DUMMY' among input ports, input ports are [ME]");
 
                 TryInvalidCompileGraph(
                     env,
-                    "select theString from ME output every 10 seconds",
+                    "select TheString from ME output every 10 seconds",
                     true,
                     "Failed to obtain operator 'Select': Output rate limiting is not supported with 'iterate'");
 
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var graph = "@name('flow') create dataflow MySelect\n" +
                             "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
                             "@Audit Select(instream_s0 as ALIAS) -> outstream {\n" +
-                            "  select: (select theString, sum(intPrimitive) as sumInt from ALIAS group by theString order by theString asc),\n" +
+"  select: (select TheString, sum(IntPrimitive) as sumInt from ALIAS group by TheString Order by TheString asc),\n"+
                             "  iterate: true" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
@@ -264,7 +264,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 EPAssertionUtil.AssertPropsPerRow(
                     env.Container,
                     capture.Current,
-                    "theString,sumInt".SplitCsv(),
+                    "TheString,sumInt".SplitCsv(),
                     new object[][] { new object[] { "E1", 6 }, new object[] { "E2", 5 }, new object[] { "E3", 4 } });
 
                 instance.Cancel();
@@ -288,7 +288,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var graph = "@name('flow') create dataflow MySelect\n" +
                             "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
                             "Select(instream_s0) -> outstream {\n" +
-                            "  select: (select sum(intPrimitive) as sumInt from instream_s0 output snapshot every 1 minute)\n" +
+                            "  select: (select sum(IntPrimitive) as sumInt from instream_s0 output snapshot every 1 minute)\n" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
                 env.AdvanceTime(0);
@@ -354,7 +354,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var graph = "@name('flow') create dataflow MySelect\n" +
                             "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
                             "Select(instream_s0) -> outstream {\n" +
-                            "  select: (select sum(intPrimitive) as sumInt from instream_s0#time(1 minute))\n" +
+                            "  select: (select sum(IntPrimitive) as sumInt from instream_s0#time(1 minute))\n" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
                 env.AdvanceTime(0);
@@ -414,7 +414,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                             "Emitter -> instream_s0<SupportBean_S0>{name: 'emitterS0'}\n" +
                             "Emitter -> instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
                             "Select(instream_s0 as S0, instream_s1 as S1) -> outstream {\n" +
-                            "  select: (select p00, p10 from S0#keepall full outer join S1#keepall)\n" +
+                            "  select: (select P00, P10 from S0#keepall full outer join S1#keepall)\n" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
                 env.CompileDeploy(graph);
@@ -433,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 EPAssertionUtil.AssertProps(
                     env.Container,
                     capture.GetCurrentAndReset()[0],
-                    "p00,p11".SplitCsv(),
+                    "P00,P11".SplitCsv(),
                     new object[] { "S0_1", null });
 
                 instance.Cancel();
@@ -473,7 +473,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                             "Emitter -> instream_s1<SupportBean_S1>{name: 'emitterS1'}\n" +
                             "Emitter -> instream_s2<SupportBean_S2>{name: 'emitterS2'}\n" +
                             "Select(instream_s0 as S0, instream_s1 as S1, instream_s2 as S2) -> outstream {\n" +
-                            "  select: (select s0.id as s0id, s1.id as s1id, s2.id as s2id " +
+                            "  select: (select s0.Id as s0id, s1.Id as s1id, s2.Id as s2id " +
                             fromClause +
                             ")\n" +
                             "}\n" +
@@ -617,7 +617,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                         "DefaultSupportSourceOp -> instream<" +
                         typeName +
                         ">{}\n" +
-                        "Select(instream as ME) -> outstream {select: (select myString, sum(myInt) as total from ME)}\n" +
+"Select(instream as ME) -> outstream {select: (select myString, sum(myInt) as Total from ME)}\n"+
                         "DefaultSupportCaptureOp(outstream) {}";
             env.CompileDeploy(graph);
 
@@ -633,7 +633,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             EPAssertionUtil.AssertPropsPerRow(
                 env.Container,
                 result,
-                "myString,total".SplitCsv(),
+"myString,Total".SplitCsv(),
                 new object[][] {
                     new object[] { "one", 1 },
                     new object[] { "two", 3 }

@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var fields = "c0".SplitCsv();
 
                 var epl =
-                    "@name('s0') select a.theString as c0 from pattern [(every a=SupportBean) while (a.theString like 'E%')]";
+                    "@name('s0') select a.TheString as c0 from pattern [(every a=SupportBean) while (a.TheString like 'E%')]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -100,25 +100,25 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var testCaseList = new CaseList();
                 EventExpressionCase testCase = null;
 
-                testCase = new EventExpressionCase("a=SupportBean_A -> (every b=SupportBean_B) while(b.id != 'B2')");
+                testCase = new EventExpressionCase("a=SupportBean_A -> (every b=SupportBean_B) while(b.Id != 'B2')");
                 testCase.Add("B1", "a", events.GetEvent("A1"), "b", events.GetEvent("B1"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("a=SupportBean_A -> (every b=SupportBean_B) while(b.id != 'B3')");
+                testCase = new EventExpressionCase("a=SupportBean_A -> (every b=SupportBean_B) while(b.Id != 'B3')");
                 testCase.Add("B1", "a", events.GetEvent("A1"), "b", events.GetEvent("B1"));
                 testCase.Add("B2", "a", events.GetEvent("A1"), "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("(every b=SupportBean_B) while(b.id != 'B3')");
+                testCase = new EventExpressionCase("(every b=SupportBean_B) while(b.Id != 'B3')");
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCase.Add("B2", "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
-                var text = "select * from pattern [(every b=SupportBean_B) while (b.id!=\"B3\")]";
+                var text = "select * from pattern [(every b=SupportBean_B) while (b.Id!=\"B3\")]";
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.CreateWildcard();
                 model = env.CopyMayFail(model);
-                Expression guardExpr = Expressions.Neq("b.id", "B3");
+                Expression guardExpr = Expressions.Neq("b.Id", "B3");
                 PatternExpr every = Patterns.Every(Patterns.Filter(Filter.Create("SupportBean_B"), "b"));
                 PatternExpr patternGuarded = Patterns.WhileGuard(every, guardExpr);
                 model.FromClause = FromClause.Create(PatternStream.Create(patternGuarded));
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCase.Add("B2", "b", events.GetEvent("B2"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("(every b=SupportBean_B) while(b.id != 'B1')");
+                testCase = new EventExpressionCase("(every b=SupportBean_B) while(b.Id != 'B1')");
                 testCaseList.AddTest(testCase);
 
                 var util = new PatternTestHarness(events, testCaseList);
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.CompileDeploy("@name('var') @public create variable boolean myVariable = true", path);
 
                 var expression =
-                    "@name('s0') select * from pattern [every a=SupportBean(theString like 'A%') -> (every b=SupportBean(theString like 'B%')) while (myVariable)]";
+                    "@name('s0') select * from pattern [every a=SupportBean(TheString like 'A%') -> (every b=SupportBean(TheString like 'B%')) while (myVariable)]";
                 env.CompileDeploy(expression, path);
                 env.AddListener("s0");
 

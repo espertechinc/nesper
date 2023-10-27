@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.name;
 using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.epl.resultset.codegen;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -336,13 +337,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
 
         public ExprNode OptionalFilter => optionalFilter;
 
-        protected bool IsExprTextWildcardWhenNoParams => true;
+        protected virtual bool IsExprTextWildcardWhenNoParams => true;
 
         public CodegenExpression GetAggFuture(CodegenClassScope codegenClassScope)
         {
-            return codegenClassScope.NamespaceScope.AddOrGetFieldWellKnown(
+            var fieldExpression = codegenClassScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 aggregationResultFutureMemberName,
                 typeof(AggregationResultFuture));
+            return fieldExpression;
         }
     }
 } // end of namespace

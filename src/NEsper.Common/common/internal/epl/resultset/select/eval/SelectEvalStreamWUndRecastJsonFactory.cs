@@ -180,7 +180,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 				}
 
 				methodNode.Block.MethodReturn(
-					ExprDotMethod(eventBeanFactory, "adapterForTypedJson", Ref("und"), resultEventType));
+					ExprDotMethod(eventBeanFactory, "AdapterForTypedJson", Ref("und"), resultEventType));
 				return methodNode;
 			}
 		}

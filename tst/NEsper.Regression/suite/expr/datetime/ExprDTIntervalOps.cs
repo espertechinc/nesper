@@ -237,11 +237,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = "c0,c1,c2,c3,c4".SplitCsv();
                 var epl = "@name('s0') select " +
-                          "longdate.set('month', 1).before(longPrimitive) as c0, " +
-                          "utildate.set('month', 1).before(longPrimitive) as c1," +
-                          "caldate.set('month', 1).before(longPrimitive) as c2," +
-                          "localdate.set('month', 1).before(longPrimitive) as c3," +
-                          "zoneddate.set('month', 1).before(longPrimitive) as c4 " +
+                          "longdate.set('month', 1).before(LongPrimitive) as c0, " +
+                          "utildate.set('month', 1).before(LongPrimitive) as c1," +
+                          "caldate.set('month', 1).before(LongPrimitive) as c2," +
+                          "localdate.set('month', 1).before(LongPrimitive) as c3," +
+                          "zoneddate.set('month', 1).before(LongPrimitive) as c4 " +
                           "from SupportDateTime unidirectional, SupportBean#lastevent";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -330,8 +330,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 // wrong target
                 env.TryInvalidCompile(
-                    "select theString.before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
-                    "Failed to validate select-clause expression 'theString.before(a)': Date-time enumeration method 'before' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property but received String");
+                    "select TheString.before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
+                    "Failed to validate select-clause expression 'TheString.before(a)': Date-time enumeration method 'before' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property but received String");
                 env.TryInvalidCompile(
                     "select b.before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
                     "Failed to validate select-clause expression 'b.before(a)': Date-time enumeration method 'before' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property");

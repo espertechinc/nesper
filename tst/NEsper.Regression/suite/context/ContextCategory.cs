@@ -104,8 +104,8 @@ namespace com.espertech.esper.regressionlib.suite.context
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('context') create context CategoryContext\n" +
-                          "group theString = 'A' as cat1,\n" +
-                          "group theString = 'B' as cat2 \n" +
+                          "group TheString = 'A' as cat1,\n" +
+                          "group TheString = 'B' as cat2 \n" +
                           "from SupportBean;\n" +
                           "@name('s0') context CategoryContext select count(*) as c0, context.label as c1 from SupportBean;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
@@ -189,9 +189,9 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var fields = "c1,c2,c3,c4,c5".SplitCsv();
                 var epl = "@name('CTX') create context CtxCategory " +
-                          "group by intPrimitive > 0 as cat1," +
-                          "group by intPrimitive < 0 as cat2 from SupportBean;\n" +
-                          "@name('s0') context CtxCategory select theString as c1, sum(intPrimitive) as c2, context.label as c3, context.name as c4, context.id as c5 from SupportBean;\n";
+                          "group by IntPrimitive > 0 as cat1," +
+                          "group by IntPrimitive < 0 as cat2 from SupportBean;\n" +
+                          "@name('s0') context CtxCategory select TheString as c1, sum(IntPrimitive) as c2, context.label as c3, context.name as c4, context.Id as c5 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
                 AssertPartitionInfo(env);
 
@@ -263,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 var eplCtx =
-                    "@name('ctx') @public create context Ctx600a group by theString like 'A%' as agroup, group by theString like 'B%' as bgroup, group by theString like 'C%' as cgroup from SupportBean";
+                    "@name('ctx') @public create context Ctx600a group by TheString like 'A%' as agroup, group by TheString like 'B%' as bgroup, group by TheString like 'C%' as cgroup from SupportBean";
                 env.CompileDeploy(eplCtx, path);
                 var eplSum = "@name('s0') context Ctx600a select context.label as c0, count(*) as c1 from SupportBean";
                 env.CompileDeploy(eplSum, path).AddListener("s0");
@@ -304,10 +304,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
 
                 env.CompileDeploy(
-                    "@name('ctx') @public create context MyCtx as group by intPrimitive < -5 as grp1, group by intPrimitive between -5 and +5 as grp2, group by intPrimitive > 5 as grp3 from SupportBean",
+                    "@name('ctx') @public create context MyCtx as group by IntPrimitive < -5 as grp1, group by IntPrimitive between -5 and +5 as grp2, group by IntPrimitive > 5 as grp3 from SupportBean",
                     path);
                 env.CompileDeploy(
-                    "@name('s0') context MyCtx select context.id as c0, context.label as c1, theString as c2, sum(intPrimitive) as c3 from SupportBean#keepall group by theString",
+                    "@name('s0') context MyCtx select context.Id as c0, context.label as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
                     path);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -408,18 +408,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 string epl;
 
                 // invalid filter spec
-                epl = "create context ACtx group theString is not null as cat1 from SupportBean(dummy = 1)";
+                epl = "create context ACtx group TheString is not null as cat1 from SupportBean(dummy = 1)";
                 env.TryInvalidCompile(
                     epl,
                     "Failed to validate filter expression 'dummy=1': Property named 'dummy' is not valid in any stream [");
 
                 // not a boolean expression
-                epl = "create context ACtx group intPrimitive as grp1 from SupportBean";
-                env.TryInvalidCompile(epl, "Filter expression not returning a boolean value: 'intPrimitive' [");
+                epl = "create context ACtx group IntPrimitive as grp1 from SupportBean";
+                env.TryInvalidCompile(epl, "Filter expression not returning a boolean value: 'IntPrimitive' [");
 
                 // validate statement not applicable filters
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create context ACtx group intPrimitive < 10 as cat1 from SupportBean", path);
+                env.CompileDeploy("@public create context ACtx group IntPrimitive < 10 as cat1 from SupportBean", path);
                 epl = "context ACtx select * from SupportBean_S0";
                 env.TryInvalidCompile(
                     path,
@@ -441,12 +441,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var epl = "@name('context') create context " +
                           ctx +
                           " " +
-                          "group intPrimitive < 10 as cat1, " +
-                          "group intPrimitive between 10 and 20 as cat2, " +
-                          "group intPrimitive > 20 as cat3 " +
+                          "group IntPrimitive < 10 as cat1, " +
+                          "group IntPrimitive between 10 and 20 as cat2, " +
+                          "group IntPrimitive > 20 as cat3 " +
                           "from SupportBean;\n";
                 epl += "@name('s0') context CategorizedContext " +
-                       "select context.name as c0, context.label as c1, sum(intPrimitive) as c2 from SupportBean;\n";
+                       "select context.name as c0, context.label as c1, sum(IntPrimitive) as c2 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertThat(
@@ -522,12 +522,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var eplCtx = "@name('context') @public create context " +
                              ctx +
                              " as " +
-                             "group intPrimitive<10 as cat1 " +
+                             "group IntPrimitive<10 as cat1 " +
                              "from SupportBean";
                 env.CompileDeploy(eplCtx, path);
 
                 var eplStmt =
-                    "@name('s0') context CategorizedContext select context.name as c0, context.label as c1, prior(1,intPrimitive) as c2 from SupportBean";
+                    "@name('s0') context CategorizedContext select context.name as c0, context.label as c1, prior(1,IntPrimitive) as c2 from SupportBean";
                 env.CompileDeploy(eplStmt, path).AddListener("s0");
 
                 RunAssertion(env, ctx, milestone);
@@ -580,8 +580,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@name('ctx') @public create context MyCtx as " +
-                    "group by intPrimitive < 0 as n, " +
-                    "group by intPrimitive > 0 as p " +
+                    "group by IntPrimitive < 0 as n, " +
+                    "group by IntPrimitive > 0 as p " +
                     "from SupportBean",
                     path);
                 env.CompileDeploy("@name('expr-1') @public create expression getLabelOne { context.label }", path);
@@ -659,7 +659,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var id = (ContextPartitionIdentifierCategory)contextPartitionIdentifier;
                 if (matchCategory == null && cpids.Contains(id.ContextPartitionId)) {
-                    throw new EPRuntimeException("Already exists context id: " + id.ContextPartitionId);
+                    throw new EPRuntimeException("Already exists context Id: " + id.ContextPartitionId);
                 }
 
                 cpids.Add(id.ContextPartitionId);

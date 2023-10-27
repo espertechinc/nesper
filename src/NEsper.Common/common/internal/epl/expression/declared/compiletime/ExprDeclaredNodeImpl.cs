@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
@@ -41,9 +42,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
         
         private readonly ExpressionDeclItem prototypeWVisibility;
         private IList<ExprNode> chainParameters;
-        [NonSerialized] private ExprForge forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprForge forge;
         private ExprNode expressionBodyCopy;
-        [NonSerialized] private ExprValidationContext exprValidationContext;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprValidationContext exprValidationContext;
         private bool allStreamIdsMatch;
 
         public ExprDeclaredNodeImpl(

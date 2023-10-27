@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
@@ -49,7 +50,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         private readonly bool _isDuckTyping;
         private readonly bool _isUDFCache;
 
-        [NonSerialized] private ExprDotNodeForge forge;
+        [JsonIgnore]
+        [NonSerialized]
+        private ExprDotNodeForge forge;
 
         public ExprDotNodeImpl(
             IList<Chainable> chainSpec,
@@ -174,7 +177,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         try {
                             evalsX = chainEval.Invoke(rootEvalTypeNonEnum, null);
                         }
-                        catch (ExprValidationException further) {
+                        catch (ExprValidationException) {
                             throw ex;
                         }
                     }

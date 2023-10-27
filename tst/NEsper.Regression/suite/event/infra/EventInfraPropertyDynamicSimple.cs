@@ -55,8 +55,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // Map
             var mapTests = new Pair<object, object>[] {
                 new Pair<object, object>(Collections.SingletonMap("somekey", "10"), NotExists()),
-                new Pair<object, object>(Collections.SingletonMap("id", "abc"), Exists("abc")),
-                new Pair<object, object>(Collections.SingletonMap("id", 10), Exists(10)),
+                new Pair<object, object>(Collections.SingletonMap("Id", "abc"), Exists("abc")),
+                new Pair<object, object>(Collections.SingletonMap("Id", 10), Exists(10)),
             };
             RunAssertion(env, MAP_TYPENAME, FMAP, null, mapTests, typeof(object), path);
 
@@ -71,8 +71,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // XML
             var xmlTests = new Pair<object, object>[] {
                 new Pair<object, object>("", NotExists()),
-                new Pair<object, object>("<id>10</id>", Exists("10")),
-                new Pair<object, object>("<id>abc</id>", Exists("abc")),
+                new Pair<object, object>("<id>10</Id>", Exists("10")),
+                new Pair<object, object>("<id>abc</Id>", Exists("abc")),
             };
             RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode), path);
 
@@ -80,9 +80,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var avroSchema = env.RuntimeAvroSchemaPreconfigured(AVRO_TYPENAME).AsRecordSchema();
             var datumEmpty = new GenericRecord(avroSchema);
             var datumOne = new GenericRecord(avroSchema);
-            datumOne.Put("id", 101);
+            datumOne.Put("Id", 101);
             var datumTwo = new GenericRecord(avroSchema);
-            datumTwo.Put("id", null);
+            datumTwo.Put("Id", null);
             var avroTests = new Pair<object, object>[] {
                 new Pair<object, object>(datumEmpty, Exists(null)),
                 new Pair<object, object>(datumOne, Exists(101)),
@@ -96,8 +96,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 path);
             var jsonTests = new Pair<object, object>[] {
                 new Pair<object, object>("{}", NotExists()),
-                new Pair<object, object>("{\"id\": 10}", Exists(10)),
-                new Pair<object, object>("{\"id\": \"abc\"}", Exists("abc"))
+                new Pair<object, object>("{\"Id\": 10}", Exists(10)),
+                new Pair<object, object>("{\"Id\": \"abc\"}", Exists("abc"))
             };
             RunAssertion(env, JSON_TYPENAME, FJSON, null, jsonTests, typeof(object), path);
         }
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Type expectedPropertyType,
             RegressionPath path)
         {
-            var stmtText = "@name('s0') select id? as myid, exists(id?) as exists_myid from " + typename;
+            var stmtText = "@name('s0') select id? as myid, exists(Id?) as exists_myid from " + typename;
             env.CompileDeploy(stmtText, path).AddListener("s0");
 
             env.AssertStatement(

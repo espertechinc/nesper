@@ -67,7 +67,10 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public static CodegenExpression CodegenNew(CodegenExpression filterForValue)
         {
-            return NewInstance<FilterValueSetParamImpl>(REF_LOOKUPABLE, REF_FILTEROPERATOR, filterForValue);
+            return NewInstance<FilterValueSetParamImpl>(
+                REF_LOOKUPABLE,
+                REF_FILTEROPERATOR,
+                filterForValue);
         }
     }
 } // end of namespace

@@ -15,6 +15,7 @@ namespace com.espertech.esper.common.@internal.type
         RIGHT_BRACKET,
         LESSER_THAN,
         GREATER_THAN,
+        PLUS,
         COMMA,
         END
     }

@@ -57,15 +57,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fieldsOut = "theString,total".SplitCsv();
+                var fieldsOut = "TheString,Total".SplitCsv();
                 var path = new RegressionPath();
 
-                env.CompileDeploy("@public create table MyTableR1D(pk string primary key, total sum(int))", path);
+                env.CompileDeploy("@public create table MyTableR1D(pk string primary key, Total sum(int))", path);
                 env.CompileDeploy(
-                        "@name('into') into table MyTableR1D insert into MyStreamOne select theString, sum(intPrimitive) as total from SupportBean#length(4) group by rollup(theString)",
+"@name('into') into table MyTableR1D insert into MyStreamOne select TheString, sum(IntPrimitive) as Total from SupportBean#length(4) group by rollup(TheString)",
                         path)
                     .AddListener("into");
-                env.CompileDeploy("@name('s0') select MyTableR1D[p00].total as c0 from SupportBean_S0", path)
+                env.CompileDeploy("@name('s0') select MyTableR1D[P00].Total as c0 from SupportBean_S0", path)
                     .AddListener("s0");
 
                 env.Milestone(0);
@@ -134,17 +134,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "k0,k1,total".SplitCsv();
+                var fields = "k0,k1,Total".SplitCsv();
 
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@public @buseventtype create objectarray schema MyEventTwo(k0 int, k1 int, col int)",
                     path);
                 env.CompileDeploy(
-                    "@public create table MyTableR2D(k0 int primary key, k1 int primary key, total sum(int))",
+"@public create table MyTableR2D(k0 int primary key, k1 int primary key, Total sum(int))",
                     path);
                 env.CompileDeploy(
-                    "into table MyTableR2D insert into MyStreamTwo select sum(col) as total from MyEventTwo#length(3) group by rollup(k0,k1)",
+"into table MyTableR2D insert into MyStreamTwo select sum(col) as Total from MyEventTwo#length(3) group by rollup(k0,k1)",
                     path);
 
                 env.SendEventObjectArray(new object[] { 1, 10, 100 }, "MyEventTwo");
@@ -189,13 +189,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path);
 
                 env.CompileDeploy(
-                    "@public create table MyTableGS3D(k0 int primary key, k1 int primary key, k2 int primary key, total sum(int))",
+"@public create table MyTableGS3D(k0 int primary key, k1 int primary key, k2 int primary key, Total sum(int))",
                     path);
                 env.CompileDeploy(
-                    "into table MyTableGS3D insert into MyStreamThree select sum(col) as total from MyEventThree#length(3) group by grouping sets(k0,k1,k2)",
+"into table MyTableGS3D insert into MyStreamThree select sum(col) as Total from MyEventThree#length(3) group by grouping sets(k0,k1,k2)",
                     path);
 
-                var fields = "k0,k1,k2,total".SplitCsv();
+                var fields = "k0,k1,k2,Total".SplitCsv();
                 env.SendEventObjectArray(new object[] { 1, 10, 100, 1000 }, "MyEventThree");
                 env.SendEventObjectArray(new object[] { 2, 10, 200, 2000 }, "MyEventThree");
 

@@ -142,28 +142,28 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                           "  myStddev stddev(int),\n" +
                           "  myFirstEver firstever(string),\n" +
                           "  myCountEver countever(*)," +
-                          "  myMaxByEver maxbyever(intPrimitive) @type(SupportBean)," +
+                          "  myMaxByEver maxbyever(IntPrimitive) @type(SupportBean)," +
                           "  myPluginAggSingle myaggsingle(*)," +
                           "  myPluginAggAccess referenceCountedMap(string)," +
                           "  myWordcms countMinSketch()" +
                           ");\n" +
                           "into table MyTable select" +
-                          "  avedev(intPrimitive) as myAvedev," +
+                          "  avedev(IntPrimitive) as myAvedev," +
                           "  count(*) as myCount," +
-                          "  count(distinct intPrimitive) as myCountDistinct," +
-                          "  max(intPrimitive) as myMax," +
-                          "  median(intPrimitive) as myMedian," +
-                          "  stddev(intPrimitive) as myStddev," +
-                          "  firstever(theString) as myFirstEver," +
+                          "  count(distinct IntPrimitive) as myCountDistinct," +
+                          "  max(IntPrimitive) as myMax," +
+                          "  median(IntPrimitive) as myMedian," +
+                          "  stddev(IntPrimitive) as myStddev," +
+                          "  firstever(TheString) as myFirstEver," +
                           "  countever(*) as myCountEver," +
                           "  maxbyever(*) as myMaxByEver," +
                           "  myaggsingle(*) as myPluginAggSingle," +
-                          "  referenceCountedMap(theString) as myPluginAggAccess," +
-                          "  countMinSketchAdd(theString) as myWordcms" +
+                          "  referenceCountedMap(TheString) as myPluginAggAccess," +
+                          "  countMinSketchAdd(TheString) as myWordcms" +
                           "   " +
                           "from SupportBean#keepall;\n" +
                           "on SupportBean_S0 merge MyTable mt when matched then update set mt.reset();\n" +
-                          "@name('s0') select MyTable.myWordcms.countMinSketchFrequency(p10) as c0 from SupportBean_S1;\n";
+                          "@name('s0') select MyTable.myWordcms.countMinSketchFrequency(P10) as c0 from SupportBean_S1;\n";
                 env.CompileDeploy(epl).AddListener("s0");
                 var fieldSetOne =
                     "myAvedev,myCount,myCountDistinct,myMax,myMedian,myStddev,myFirstEver,myCountEver,myMaxByEver"
@@ -243,12 +243,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                           "  avgone avg(int), avgtwo avg(int)," +
                           "  winone window(*) @type(SupportBean), wintwo window(*) @type(SupportBean)" +
                           ");\n" +
-                          "into table MyTable select theString, " +
-                          "  avg(intPrimitive) as avgone, avg(intPrimitive) as avgtwo," +
+                          "into table MyTable select TheString, " +
+                          "  avg(IntPrimitive) as avgone, avg(IntPrimitive) as avgtwo," +
                           "  window(*) as winone, window(*) as wintwo " +
-                          "from SupportBean#keepall group by theString;\n" +
-                          "on SupportBean_S0 merge MyTable where p00 = k  when matched then update set avgone.reset(), winone.reset();\n" +
-                          "on SupportBean_S1 merge MyTable where p10 = k  when matched then update set avgtwo.reset(), wintwo.reset();\n";
+                          "from SupportBean#keepall group by TheString;\n" +
+                          "on SupportBean_S0 merge MyTable where P00 = k  when matched then update set avgone.reset(), winone.reset();\n" +
+                          "on SupportBean_S1 merge MyTable where P10 = k  when matched then update set avgtwo.reset(), wintwo.reset();\n";
                 env.CompileDeploy(epl);
                 var propertyNames = "k,avgone,avgtwo,winone,wintwo".SplitCsv();
 
@@ -313,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             string onMerge)
         {
             var epl = "@name('table') create table MyTable(asum sum(int));\n" +
-                      "into table MyTable select sum(intPrimitive) as asum from SupportBean;\n" +
+                      "into table MyTable select sum(IntPrimitive) as asum from SupportBean;\n" +
                       onMerge;
             env.CompileDeploy(epl);
 

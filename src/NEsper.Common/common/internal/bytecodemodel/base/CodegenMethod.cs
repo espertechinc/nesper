@@ -294,7 +294,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
         public CodegenMethod AddParam<T>(
             string name)
         {
-            return AddParam<T>(name);
+            return AddParam(typeof(T), name);
         }
 
         public CodegenMethod AddParam(

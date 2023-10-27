@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .IfRefNullReturnNull("rhs");
 
             if (coercer == null) {
-                method.Block.DeclareVar(typeof(bool?), "eq", ExprDotMethod(left, "equals", Ref("rhs")));
+                method.Block.DeclareVar(typeof(bool?), "eq", ExprDotMethod(left, "Equals", Ref("rhs")));
                 if (isNot) {
                     method.Block.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());
                 }

@@ -15,6 +15,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading;
 
 using com.espertech.esper.client.annotation;
@@ -36,7 +37,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
     /// that you use driver specific semantics.  This code exists to allow
     /// developers to integrate their own database models.
     /// </summary>
-    [Serializable]
     public abstract class BaseDbDriver : DbDriver,
         ISerializable
     {
@@ -169,14 +169,18 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// referenced table.  The table allows us to reuse connections to
         /// database that are continually accessed on the same thread.
         /// </summary>
-        [NonSerialized] private static readonly Dictionary<DbConnection, long>
+        [JsonIgnore]
+        [NonSerialized]
+        private static readonly Dictionary<DbConnection, long>
             sdbConnectionTable = new Dictionary<DbConnection, long>();
 
         /// <summary>
         /// Periodically removes unused connections from the sdbConnectionTable
         /// and allows them to be reclaimed.
         /// </summary>
-        [NonSerialized] private static Timer releaseTimer = null;
+        [JsonIgnore]
+        [NonSerialized]
+        private static Timer releaseTimer = null;
 
         public virtual void GetObjectData(
             SerializationInfo info,

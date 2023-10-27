@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     /// </summary>
     public class InfraTableIterate : RegressionExecution
     {
-        private const string METHOD_NAME = "method:SupportStaticMethodLib.fetchTwoRows3Cols()";
+        private const string METHOD_NAME = "method:SupportStaticMethodLib.FetchTwoRows3Cols()";
 
         public void Run(RegressionEnvironment env)
         {
@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "@public create table MyTable(pkey0 string primary key, pkey1 int primary key, c0 long)",
                 path);
             env.CompileDeploy(
-                "insert into MyTable select theString as pkey0, intPrimitive as pkey1, longPrimitive as c0 from SupportBean",
+                "insert into MyTable select TheString as pkey0, IntPrimitive as pkey1, LongPrimitive as c0 from SupportBean",
                 path);
 
             SendSupportBean(env, "E1", 10, 100);

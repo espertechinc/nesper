@@ -43,8 +43,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
     ///     ------ Example 1   a 3 table join
     ///     </para>
     ///     <para>
-    ///         " where streamA.id = streamB.id " +
-    ///         "   and streamB.id = streamC.id";
+    ///         " where streamA.Id = streamB.Id " +
+    ///         "   and streamB.Id = streamC.Id";
     ///     </para>
     ///     <para>
     ///         =&gt; Index propery names for each stream
@@ -80,9 +80,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
     ///         ------ Example 2  a 4 table join
     ///     </para>
     ///     <para>
-    ///         " where streamA.id = streamB.id " +
-    ///         "   and streamB.id = streamC.id";
-    ///         "   and streamC.id = streamD.id";
+    ///         " where streamA.Id = streamB.Id " +
+    ///         "   and streamB.Id = streamC.Id";
+    ///         "   and streamC.Id = streamD.Id";
     ///     </para>
     ///     <para>
     ///         =&gt; join order, ie.
@@ -123,8 +123,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
     ///         ------ Example 4  a 4 table join, orphan table
     ///     </para>
     ///     <para>
-    ///         " where streamA.id = streamB.id " +
-    ///         "   and streamB.id = streamC.id"; (no table D join criteria)
+    ///         " where streamA.Id = streamB.Id " +
+    ///         "   and streamB.Id = streamC.Id"; (no table D join criteria)
     ///     </para>
     ///     <para>
     ///         ------ Example 5  a 3 table join with 2 indexes for stream B

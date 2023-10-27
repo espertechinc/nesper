@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.@event.wrap
             var method = codegenMethodScope
                 .MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam<object>("und");
-            // TBD - fix this, this type is not right... below
+            // TODO - fix this, this type is not right... below
             if (wrapperEventType.UnderlyingType == typeof(Pair<object, object>)) {
                 method
                     .Block

@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') expression myindex {mxcifquadtree(0, 0, 100, 100)}" +
-                          "select p.id as c0 from pattern [every p=SupportSpatialEventRectangle -> every SupportSpatialAABB(rectangle(p.x, p.y, p.width, p.height, filterindex:myindex).intersects(rectangle(x, y, width, height)))]";
+                          "select p.Id as c0 from pattern [every p=SupportSpatialEventRectangle -> every SupportSpatialAABB(rectangle(p.x, p.y, p.width, p.height, filterindex:myindex).intersects(rectangle(x, y, width, height)))]";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.Milestone(0);
 
@@ -181,9 +181,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "create context RectangleContext initiated by SupportSpatialEventRectangle ssr terminated by SupportBean(theString=ssr.id);\n" +
+                    "create context RectangleContext initiated by SupportSpatialEventRectangle ssr terminated by SupportBean(TheString=ssr.Id);\n" +
                     "@name('s0') expression myindex {mxcifquadtree(0, 0, 10, 10)}" +
-                    "context RectangleContext select context.ssr.id as c0 from SupportSpatialAABB(rectangle(context.ssr.x, context.ssr.y, context.ssr.width, context.ssr.height, filterindex:myindex).intersects(rectangle(x, y, width, height)))";
+                    "context RectangleContext select context.ssr.Id as c0 from SupportSpatialAABB(rectangle(context.ssr.x, context.ssr.y, context.ssr.width, context.ssr.height, filterindex:myindex).intersects(rectangle(x, y, width, height)))";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 IList<SupportSpatialEventRectangle> rectangles = new List<SupportSpatialEventRectangle>();

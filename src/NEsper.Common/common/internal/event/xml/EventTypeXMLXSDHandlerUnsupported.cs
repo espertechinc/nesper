@@ -22,12 +22,12 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         public XmlQualifiedName SimpleTypeToQName(short type)
         {
-            throw Unsupported;
+            throw ThrowUnsupported();
         }
 
         public XPathResultType SimpleTypeToResultType(XmlSchemaSimpleType type)
         {
-            throw Unsupported;
+            throw ThrowUnsupported();
         }
 
         public Type ToReturnType(
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             string typeName,
             int? optionalFractionDigits)
         {
-            throw Unsupported;
+            throw ThrowUnsupported();
         }
 
         public SchemaModel LoadAndMap(
@@ -43,10 +43,13 @@ namespace com.espertech.esper.common.@internal.@event.xml
             string schemaText,
             ImportService importService)
         {
-            throw Unsupported;
+            throw ThrowUnsupported();
         }
 
-        public UnsupportedOperationException Unsupported => throw new UnsupportedOperationException(
-            "Esper-Compiler-XMLXSD is not enabled in the configuration or is not part of your classpath");
+        public UnsupportedOperationException ThrowUnsupported()
+        {
+            return new UnsupportedOperationException(
+                "Esper-Compiler-XMLXSD is not enabled in the configuration or is not part of your classpath");
+        }
     }
 } // end of namespace

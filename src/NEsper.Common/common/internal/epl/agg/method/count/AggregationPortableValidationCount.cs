@@ -75,10 +75,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.count
             ModuleTableInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.ExprDotMethod(@ref, "setEver", Constant(ever))
-                .ExprDotMethod(@ref, "setHasFilter", Constant(hasFilter))
-                .ExprDotMethod(@ref, "setCountedValueType", Constant(countedValueType))
-                .ExprDotMethod(@ref, "setIgnoreNulls", Constant(ignoreNulls));
+            method.Block.SetProperty(@ref, "Ever", Constant(ever))
+                .SetProperty(@ref, "HasFilter", Constant(hasFilter))
+                .SetProperty(@ref, "CountedValueType", Constant(countedValueType))
+                .SetProperty(@ref, "IgnoreNulls", Constant(ignoreNulls));
         }
 
         public bool Ever {

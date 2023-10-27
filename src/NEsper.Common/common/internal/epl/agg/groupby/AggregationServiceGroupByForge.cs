@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     "rowFactory",
                     NewInstanceInner(classNames.RowFactoryTop, Ref("this")))
                 .DeclareVar<
-                    DataInputOutputSerde>(
+                    DataInputOutputSerde<AggregationRow>>(
                     "rowSerde",
                     NewInstanceInner(classNames.RowSerdeTop, Ref("this")))
                 .DeclareVar<
@@ -166,7 +166,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             explicitMembers.Add(new CodegenTypedParam(EPTYPE_MAP_OBJECT_AGGROW, MEMBER_AGGREGATORSPERGROUP.Ref));
             explicitMembers.Add(new CodegenTypedParam(typeof(object), MEMBER_CURRENTGROUPKEY.Ref).WithFinal(false));
             explicitMembers.Add(new CodegenTypedParam(classNames.RowTop, MEMBER_CURRENTROW.Ref).WithFinal(false));
-            ctor.Block.AssignRef(MEMBER_AGGREGATORSPERGROUP, NewInstance(typeof(Dictionary<object, object>)));
+            ctor.Block.AssignRef(MEMBER_AGGREGATORSPERGROUP, NewInstance(typeof(Dictionary<object, AggregationRow>)));
             if (aggGroupByDesc.IsReclaimAged) {
                 AggSvcGroupByReclaimAgedImpl.CtorCodegenReclaim(
                     ctor,
@@ -385,7 +385,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         {
             method.Block
                 .ExprDotMethod(REF_AGGVISITOR, "VisitGrouped", ExprDotName(MEMBER_AGGREGATORSPERGROUP, "Count"))
-                .ForEach(typeof(KeyValuePair<object, object>), "entry", MEMBER_AGGREGATORSPERGROUP)
+                .ForEachVar("entry", MEMBER_AGGREGATORSPERGROUP)
                 .ExprDotMethod(
                     REF_AGGVISITOR,
                     "VisitGroup",
@@ -424,7 +424,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 .ForEach(typeof(object), "removedKey", MEMBER_REMOVEDKEYS)
                 .ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Remove", Ref("removedKey"))
                 .BlockEnd()
-                .ExprDotMethod(MEMBER_REMOVEDKEYS, "clear");
+                .ExprDotMethod(MEMBER_REMOVEDKEYS, "Clear");
             return method;
         }
 

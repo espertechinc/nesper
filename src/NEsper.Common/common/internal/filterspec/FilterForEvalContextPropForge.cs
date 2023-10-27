@@ -8,6 +8,7 @@
 
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -27,10 +28,16 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// </summary>
     public class FilterForEvalContextPropForge : FilterSpecParamInValueForge
     {
-        [NonSerialized] private readonly EventPropertyGetterSPI _getter;
-        [NonSerialized] private readonly Coercer _numberCoercer;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly EventPropertyGetterSPI _getter;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly Coercer _numberCoercer;
         private readonly string _propertyName;
-        [NonSerialized] private readonly Type _returnType;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly Type _returnType;
 
         public FilterForEvalContextPropForge(
             string propertyName,

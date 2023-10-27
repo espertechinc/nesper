@@ -50,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             return execs;
         }
 
-        //@Hook(type=HookType.SQLCOL, hook="this is a sample and not used")
+        //@Hook(HookType=HookType.SQLCOL, hook="this is a sample and not used")
         private class EPLDatabaseOutputColumnConversion : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var fields = new string[] { "myint" };
                 var columnTypeName = typeof(SupportSQLColumnTypeConversion).FullName;
                 var stmtText =
-                    $"@name('s0') @Hook(type=HookType.SQLCOL, hook='{columnTypeName}')select * from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where myint = ${{myvariableOCC}}']";
+                    $"@name('s0') @Hook(HookType=HookType.SQLCOL, hook='{columnTypeName}')select * from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where myint = ${{myvariableOCC}}']";
                 env.CompileDeploy(stmtText);
 
                 env.AssertStatement(
@@ -99,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 SupportSQLColumnTypeConversion.Reset();
 
                 var fields = new string[] { "myint" };
-                var stmtText = "@name('s0') @Hook(type=HookType.SQLCOL, hook='" +
+                var stmtText = "@name('s0') @Hook(HookType=HookType.SQLCOL, hook='" +
                                typeof(SupportSQLColumnTypeConversion).FullName +
                                "')" +
                                "select * from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where myint = ${myvariableIPC}']";
@@ -125,8 +125,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             {
                 SupportSQLColumnTypeConversion.Reset();
 
-                var fields = "theString,intPrimitive".SplitCsv();
-                var stmtText = "@name('s0') @Hook(type=HookType.SQLROW, hook='" +
+                var fields = "TheString,IntPrimitive".SplitCsv();
+                var stmtText = "@name('s0') @Hook(HookType=HookType.SQLROW, hook='" +
                                typeof(SupportSQLOutputRowConversion).FullName +
                                "')" +
                                "select * from sql:MyDBWithTxnIso1WithReadOnly ['select * from mytesttable where myint = ${myvariableORC}']";

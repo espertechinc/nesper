@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.view.timebatch
     public class TimeBatchViewFactory : DataWindowViewFactory,
         DataWindowViewWithPrevious
     {
-        protected internal EventType eventType;
+        private EventType eventType;
         protected internal bool isForceUpdate;
         protected internal bool isStartEager;
 
@@ -30,8 +30,8 @@ namespace com.espertech.esper.common.@internal.view.timebatch
         /// </summary>
         protected internal long? optionalReferencePoint;
 
-        protected internal int scheduleCallbackId;
-        protected internal TimePeriodCompute timePeriodCompute;
+        private int scheduleCallbackId;
+        private TimePeriodCompute timePeriodCompute;
 
         public TimePeriodCompute TimePeriodCompute {
             get => timePeriodCompute;

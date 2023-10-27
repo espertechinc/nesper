@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             var properties = new CodegenClassProperties();
             // members
             IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
-            members.Add(new CodegenTypedParam(_namespaceScope.FieldsClassNameOptional, MEMBERNAME_STATEMENT_FIELDS));
+            members.Add(new CodegenTypedParam(_namespaceScope.FieldsClassNameOptional, MEMBERNAME_STATEMENT_FIELDS).WithFinal(false));
             members.Add(new CodegenTypedParam(typeof(StatementInformationalsRuntime), MEMBERNAME_INFORMATION));
             members.Add(new CodegenTypedParam(typeof(StatementAIFactoryProvider), MEMBERNAME_FACTORY_PROVIDER).WithFinal(false));
             
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                     classScope);
                 
             statementInformationalsProp
-                .Block.BlockReturn(Ref(MEMBERNAME_INFORMATION));
+                .GetterBlock.BlockReturn(Ref(MEMBERNAME_INFORMATION));
 
             CodegenStackGenerator.RecursiveBuildStack(
                 statementInformationalsProp,

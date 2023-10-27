@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -32,7 +33,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
         /// <summary>
         ///     For converting matched-events maps to events-per-stream.
         /// </summary>
-        [NonSerialized] protected MatchedEventConvertorForge convertor;
+        [JsonIgnore]
+        [NonSerialized]
+        protected MatchedEventConvertorForge convertor;
 
         private ExprNode numCountToExpr;
         private int scheduleCallbackId = -1;

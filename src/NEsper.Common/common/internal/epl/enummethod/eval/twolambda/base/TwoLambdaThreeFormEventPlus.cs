@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.@ba
                 .DeclareVar(typeof(object[]), "props", ExprDotName(Ref("indexEvent"), "Properties"))
                 .DeclareVar<int>("count", Constant(-1));
             if (hasSize) {
-                methodNode.Block.AssignArrayElement(Ref("props"), Constant(1), ExprDotMethod(REF_ENUMCOLL, "size"));
+                methodNode.Block.AssignArrayElement(Ref("props"), Constant(1), ExprDotName(REF_ENUMCOLL, "Count"));
             }
 
             var forEach = methodNode.Block.ForEach(typeof(EventBean), "next", REF_ENUMCOLL)

@@ -21,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         public static CodegenExpression ToExpression(SortedSet<int> values)
         {
             if (values.IsEmpty()) {
-                return StaticMethod(typeof(Collections), "GetEmptySortedSet");
+                return StaticMethod(typeof(Collections), "GetEmptySortedSet", new []{ typeof(int) });
             }
 
             var arr = values.ToArray();

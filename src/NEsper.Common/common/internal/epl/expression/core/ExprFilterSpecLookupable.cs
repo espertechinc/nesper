@@ -8,6 +8,7 @@
 
 using System;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.serde;
 using com.espertech.esper.common.@internal.filterspec;
@@ -18,11 +19,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     public class ExprFilterSpecLookupable
     {
         private readonly string _expression;
-        [NonSerialized] private readonly ExprEventEvaluator _eval;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly ExprEventEvaluator _eval;
         private readonly Type _returnType;
         private readonly bool _isNonPropertyEval;
         private readonly DataInputOutputSerde _valueSerde;
-        [NonSerialized] private readonly ExprEvaluator _expr;
+        [JsonIgnore]
+        [NonSerialized]
+        private readonly ExprEvaluator _expr;
 
         public ExprFilterSpecLookupable(
             string expression,

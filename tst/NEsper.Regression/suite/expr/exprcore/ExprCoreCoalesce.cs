@@ -92,8 +92,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select coalesce(a.theString, b.theString) as myString, coalesce(a, b) as myBean" +
-                    " from pattern [every (a=SupportBean(theString='s0') or b=SupportBean(theString='s1'))]";
+                    "@name('s0') select coalesce(a.TheString, b.TheString) as myString, coalesce(a, b) as myBean" +
+                    " from pattern [every (a=SupportBean(TheString='s0') or b=SupportBean(TheString='s1'))]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var theEventOne = SendEvent(env, "s0");
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@name('s0')  select coalesce(longBoxed, intBoxed, shortBoxed) as result from SupportBean")
+                        "@name('s0')  select coalesce(LongBoxed, IntBoxed, ShortBoxed) as result from SupportBean")
                     .AddListener("s0");
 
                 env.AssertStmtType("s0", "result", typeof(long?));
@@ -136,16 +136,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "select coalesce(longBoxed,intBoxed,shortBoxed) as result" +
+                var epl = "select coalesce(LongBoxed,IntBoxed,ShortBoxed) as result" +
                           " from SupportBean#length(1000)";
 
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create()
                     .Add(
                         Expressions.Coalesce(
-                            "longBoxed",
-                            "intBoxed",
-                            "shortBoxed"),
+                            "LongBoxed",
+                            "IntBoxed",
+                            "ShortBoxed"),
                         "result");
                 model.FromClause = FromClause.Create(
                     FilterStream.Create(nameof(SupportBean)).AddView("length", Expressions.Constant(1000)));
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select coalesce(longBoxed,intBoxed,shortBoxed) as result" +
+                var epl = "@name('s0') select coalesce(LongBoxed,IntBoxed,ShortBoxed) as result" +
                           " from SupportBean#length(1000)";
 
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var builder = new SupportEvalBuilder("SupportBean")
                     .WithExpressions(
                         fields,
-                        "coalesce(null, byteBoxed, shortBoxed, intBoxed, longBoxed, floatBoxed, doubleBoxed)")
+                        "coalesce(null, ByteBoxed, ShortBoxed, IntBoxed, LongBoxed, FloatBoxed, DoubleBoxed)")
                     .WithStatementConsumer(
                         stmt => Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));
 
@@ -217,15 +217,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                TryCoalesceInvalid(env, "coalesce(intPrimitive)");
-                TryCoalesceInvalid(env, "coalesce(intPrimitive, string)");
-                TryCoalesceInvalid(env, "coalesce(intPrimitive, xxx)");
-                TryCoalesceInvalid(env, "coalesce(intPrimitive, booleanBoxed)");
-                TryCoalesceInvalid(env, "coalesce(charPrimitive, longBoxed)");
-                TryCoalesceInvalid(env, "coalesce(charPrimitive, string, string)");
-                TryCoalesceInvalid(env, "coalesce(string, longBoxed)");
-                TryCoalesceInvalid(env, "coalesce(null, longBoxed, string)");
-                TryCoalesceInvalid(env, "coalesce(null, null, boolBoxed, 1l)");
+                TryCoalesceInvalid(env, "coalesce(IntPrimitive)");
+                TryCoalesceInvalid(env, "coalesce(IntPrimitive, string)");
+                TryCoalesceInvalid(env, "coalesce(IntPrimitive, xxx)");
+                TryCoalesceInvalid(env, "coalesce(IntPrimitive, BooleanBoxed)");
+                TryCoalesceInvalid(env, "coalesce(CharPrimitive, LongBoxed)");
+                TryCoalesceInvalid(env, "coalesce(CharPrimitive, string, string)");
+                TryCoalesceInvalid(env, "coalesce(string, LongBoxed)");
+                TryCoalesceInvalid(env, "coalesce(null, LongBoxed, string)");
+                TryCoalesceInvalid(env, "coalesce(null, null, BoolBoxed, 1l)");
             }
         }
 

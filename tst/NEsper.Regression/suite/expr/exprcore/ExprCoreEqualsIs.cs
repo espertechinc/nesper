@@ -72,10 +72,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var builder = new SupportEvalBuilder("SupportBean")
                     .WithExpressions(
                         fields,
-                        "theString = null",
-                        "theString is null",
-                        "null = theString",
-                        "null is theString",
+                        "TheString = null",
+                        "TheString is null",
+                        "null = TheString",
+                        "null is TheString",
                         "null = null",
                         "null is null");
                 builder.WithStatementConsumer(

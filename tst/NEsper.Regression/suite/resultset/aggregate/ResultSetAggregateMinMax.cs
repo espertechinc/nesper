@@ -71,10 +71,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.CompileDeploy(epl, path);
 
                 epl = "@name('s0') select " +
-                      "min(intPrimitive) as lower, " +
-                      "max(intPrimitive) as upper, " +
-                      "minever(intPrimitive) as lowerever, " +
-                      "maxever(intPrimitive) as upperever from NamedWindow5m";
+                      "min(IntPrimitive) as lower, " +
+                      "max(IntPrimitive) as upper, " +
+                      "minever(IntPrimitive) as lowerever, " +
+                      "maxever(IntPrimitive) as upperever from NamedWindow5m";
                 env.CompileDeploy(soda, epl, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean(null, 1));
@@ -111,8 +111,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = "maxi,mini,max0,min0".SplitCsv();
-                var epl = "@name('s0') select max(intPrimitive) as maxi, min(intPrimitive) as mini," +
-                          "(select max(id) from SupportBean_S0#lastevent) as max0, (select min(id) from SupportBean_S0#lastevent) as min0" +
+                var epl = "@name('s0') select max(IntPrimitive) as maxi, min(IntPrimitive) as mini," +
+                          "(select max(id) from SupportBean_S0#lastevent) as max0, (select min(Id) from SupportBean_S0#lastevent) as min0" +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -155,9 +155,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public void Run(RegressionEnvironment env)
             {
-                var statementText = "@name('s0') select price, min(price) as minPrice " +
+                var statementText = "@name('s0') select Price, min(Price) as minPrice " +
                                     "from SupportMarketDataBean#time(30)" +
-                                    "having price >= min(price) * (1.02)";
+                                    "having Price >= min(Price) * (1.02)";
 
                 env.CompileDeploy(statementText).AddListener("s0");
 

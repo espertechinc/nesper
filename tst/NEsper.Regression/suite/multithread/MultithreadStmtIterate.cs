@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             RunAssertionIteratorSingleStmt(env);
@@ -39,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         private static void RunAssertionIteratorSingleStmt(RegressionEnvironment env)
         {
             env.CompileDeploy("@name('s0') select TheString from SupportBean#time(5 min)");
-            EPStatement[] stmt = {env.Statement("s0")};
+            EPStatement[] stmt = { env.Statement("s0") };
             TrySend(env, 2, 10, stmt);
             env.UndeployAll();
         }

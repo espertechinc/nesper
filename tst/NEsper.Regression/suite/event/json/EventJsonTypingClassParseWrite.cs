@@ -147,10 +147,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     return new JObject();
                 }
 
-                var parent = new JObject(new JProperty("id", split[0]));
+                var parent = new JObject(new JProperty("Id", split[0]));
                 var current = parent;
                 for (var i = 1; i < split.Length; i++) {
-                    var child = new JObject(new JProperty("id", split[i]));
+                    var child = new JObject(new JProperty("Id", split[i]));
                     current.Add("child", child);
                     current = child;
                 }
@@ -847,8 +847,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 
                 var json = "{\n" +
                            "  \"local\": {\n" +
-                           "    \"theString\": \"abc\",\n" +
-                           "    \"intPrimitive\" : 10\n" +
+                           "    \"TheString\": \"abc\",\n" +
+                           "    \"IntPrimitive\" : 10\n" +
                            "  }\n" +
                            "}";
                 env.SendEventJson(json, "JsonEvent");

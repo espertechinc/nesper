@@ -76,9 +76,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             {
                 // test select-clause
                 var fields = new string[] { "c0", "c1" };
-                var text = "@name('s0') select isNullValue(*, 'theString') as c0," +
+                var text = "@name('s0') select isNullValue(*, 'TheString') as c0," +
                            nameof(ClientExtendSingleRowFunction) +
-                           ".localIsNullValue(*, 'theString') as c1 from SupportBean";
+                           ".localIsNullValue(*, 'TheString') as c1 from SupportBean";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("a", 1));
@@ -90,15 +90,15 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
                 // test pattern
                 var textPattern =
-                    "@name('s0') select * from pattern [a=SupportBean -> b=SupportBean(theString=getValueAsString(a, 'theString'))]";
+                    "@name('s0') select * from pattern [a=SupportBean -> b=SupportBean(TheString=getValueAsString(a, 'TheString'))]";
                 env.CompileDeploy(textPattern).AddListener("s0");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E1", 2));
-                env.AssertPropsNew("s0", "a.intPrimitive,b.intPrimitive".SplitCsv(), new object[] { 1, 2 });
+                env.AssertPropsNew("s0", "a.IntPrimitive,b.IntPrimitive".SplitCsv(), new object[] { 1, 2 });
                 env.UndeployAll();
 
                 // test filter
-                var textFilter = "@name('s0') select * from SupportBean('E1'=getValueAsString(*, 'theString'))";
+                var textFilter = "@name('s0') select * from SupportBean('E1'=getValueAsString(*, 'TheString'))";
                 env.CompileDeploy(textFilter).AddListener("s0");
                 env.SendEventBean(new SupportBean("E2", 1));
                 env.SendEventBean(new SupportBean("E1", 2));
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
                 // test "first"
                 var textAccessAgg =
-                    "@name('s0') select * from SupportBean#keepall having 'E2' = getValueAsString(last(*), 'theString')";
+                    "@name('s0') select * from SupportBean#keepall having 'E2' = getValueAsString(last(*), 'TheString')";
                 env.CompileDeploy(textAccessAgg).AddListener("s0");
                 env.SendEventBean(new SupportBean("E2", 1));
                 env.SendEventBean(new SupportBean("E1", 2));
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
                 // test "window"
                 var textWindowAgg =
-                    "@name('s0') select * from SupportBean#keepall having eventsCheckStrings(window(*), 'theString', 'E1')";
+                    "@name('s0') select * from SupportBean#keepall having eventsCheckStrings(window(*), 'TheString', 'E1')";
                 env.CompileDeploy(textWindowAgg).AddListener("s0");
                 env.SendEventBean(new SupportBean("E2", 1));
                 env.SendEventBean(new SupportBean("E1", 2));
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select chainTop().chainValue(12,intPrimitive) as val from SupportBean";
+                var text = "@name('s0') select chainTop().chainValue(12,IntPrimitive) as val from SupportBean";
 
                 env.CompileDeploy(text).AddListener("s0");
                 TryAssertionChainMethod(env);
@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select power3(intPrimitive) as val from SupportBean";
+                var text = "@name('s0') select power3(IntPrimitive) as val from SupportBean";
 
                 env.CompileDeploy(text).AddListener("s0");
                 TryAssertionSingleMethod(env);
@@ -171,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 TryAssertionSingleMethod(env);
 
                 // test passing a context as well
-                text = "@name('s0') select power3Context(intPrimitive) as val from SupportBean";
+                text = "@name('s0') select power3Context(IntPrimitive) as val from SupportBean";
                 var args = new CompilerArguments(env.Configuration);
                 args.Options.StatementUserObject = (env) => "my_user_object";
                 var compiled = env.Compile(text, args);
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.UndeployAll();
 
                 // NPE when boxed is null
-                env.CompileDeploy("@name('s0') select power3Rethrow(intBoxed) from SupportBean").AddListener("s0");
+                env.CompileDeploy("@name('s0') select power3Rethrow(IntBoxed) from SupportBean").AddListener("s0");
                 env.AssertThat(
                     () => {
                         try {

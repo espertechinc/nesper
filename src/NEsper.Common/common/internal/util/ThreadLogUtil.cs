@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
@@ -85,14 +84,6 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             Write(lockAction + " " + GetLockInfo(@lock));
-        }
-
-        private static string GetLockInfo(object lockObj)
-        {
-            var lockid = $"Lock@{Marshal.GetIUnknownForObject(lockObj).ToInt64():X8}";
-            return "lock " + lockid;
-            //return "lock " + lockid + " held=" + lockObj.HoldCount + " isHeldMe=" + lockObj.IsHeldByCurrentThread() +
-            //        " hasQueueThreads=" + lockObj.HasQueuedThreads();
         }
 
         private static string GetLockInfo(IReaderWriterLock lockObj)

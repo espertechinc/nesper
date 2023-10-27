@@ -82,8 +82,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var epl =
                     "@public create table MyTable(k0 string primary key, k1 string primary key, k2 string primary key, v string);\n" +
                     "create index MyIndex on MyTable(k0, k1, v btree);\n" +
-                    "insert into MyTable select p00 as k0, p01 as k1, p02 as k2, p03 as v from SupportBean_S0;\n" +
-                    "@name('s0') select t.v as v from SupportBean_S1, MyTable as t where k0 = p10 and k1 = p11 and v > p12;\n";
+                    "insert into MyTable select P00 as k0, P01 as k1, P02 as k2, P03 as v from SupportBean_S0;\n" +
+                    "@name('s0') select t.v as v from SupportBean_S1, MyTable as t where k0 = P10 and k1 = P11 and v > P12;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 SendS0(env, "A", "BB", "CCC", "X1");
@@ -135,8 +135,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 var epl =
                     "@public create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, value int);\n" +
-                    "insert into MyTable select intOne as k1, intTwo as k2, value from SupportEventWithManyArray(id = 'I');\n" +
-                    "@name('s0') select t.value as c0 from SupportEventWithManyArray(id='Q'), MyTable as t where k1 = intOne and k2 = intTwo;\n";
+                    "insert into MyTable select intOne as k1, intTwo as k2, value from SupportEventWithManyArray(Id = 'I');\n" +
+                    "@name('s0') select t.value as c0 from SupportEventWithManyArray(Id='Q'), MyTable as t where k1 = intOne and k2 = intTwo;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 SendManyArray(env, "I", new int[] { 1, 2 }, new int[] { 3, 4 }, 10);
@@ -270,17 +270,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy(
                     "into table MyTable " +
-                    "select sum(intPrimitive) as totalInt, sum(longPrimitive) as totalLong," +
-                    "window(*) as winsb from SupportBean#keepall group by theString",
+                    "select sum(IntPrimitive) as totalInt, sum(LongPrimitive) as totalLong," +
+                    "window(*) as winsb from SupportBean#keepall group by TheString",
                     path);
                 env.CompileDeploy(
                     "into table MyTable " +
-                    "select window(*) as winsb0 from SupportBean_S0#keepall group by p00",
+                    "select window(*) as winsb0 from SupportBean_S0#keepall group by P00",
                     path);
                 env.CompileDeploy(
                     "on SupportBean_S1 " +
-                    "merge MyTable where p10 = key when matched then " +
-                    "update set p0 = p11, p1 = p12",
+                    "merge MyTable where P10 = key when matched then " +
+                    "update set p0 = P11, p1 = P12",
                     path);
 
                 var e1Sb = MakeSupportBean("G1", 10, 100);
@@ -558,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[][] expectedType,
             object[] rowValues)
         {
-            var joinEpl = "@name('s0') select mt.* from MyTable as mt, SupportBean_S2 where key = p20";
+            var joinEpl = "@name('s0') select mt.* from MyTable as mt, SupportBean_S2 where key = P20";
             env.CompileDeploy(joinEpl, path).AddListener("s0");
             var subscriber = new SupportSubscriberMultirowObjectArrayNStmt();
             env.AssertStatement("s0", statement => statement.Subscriber = subscriber);
@@ -587,7 +587,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[][] expectedType,
             object[] rowValues)
         {
-            var joinEpl = "@name('s0') select mt.* as mymt from MyTable as mt, SupportBean_S2 where key = p20";
+            var joinEpl = "@name('s0') select mt.* as mymt from MyTable as mt, SupportBean_S2 where key = P20";
             env.CompileDeploy(joinEpl, path).AddListener("s0");
             var subscriber = new SupportSubscriberMultirowObjectArrayNStmt();
             env.AssertStatement(
@@ -623,7 +623,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[][] expectedType,
             object[] rowValues)
         {
-            var joinEpl = "@name('s0') select mt from MyTable as mt, SupportBean_S2 where key = p20";
+            var joinEpl = "@name('s0') select mt from MyTable as mt, SupportBean_S2 where key = P20";
             env.CompileDeploy(joinEpl, path).AddListener("s0");
 
             env.AssertStatement(
@@ -648,7 +648,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[][] expectedType,
             object[] rowValues)
         {
-            var joinEpl = "@name('s0') select * from MyTable, SupportBean_S2 where key = p20";
+            var joinEpl = "@name('s0') select * from MyTable, SupportBean_S2 where key = P20";
             env.CompileDeploy(joinEpl, path).AddListener("s0");
             var subscriber = new SupportSubscriberMultirowObjectArrayNStmt();
             env.AssertThat(() => { env.Statement("s0").SetSubscriber(subscriber); });

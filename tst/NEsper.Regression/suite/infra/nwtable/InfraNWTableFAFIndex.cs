@@ -102,10 +102,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var epl = namedWindow
-                    ? "@public create window MyInfra#keepall as (id string, arrayOne string[], arrayTwo string[], value int);\n"
-                    : "@public create table MyInfra(id string primary key, arrayOne string[], arrayTwo string[], value int);\n";
+                    ? "@public create window MyInfra#keepall as (Id string, arrayOne string[], arrayTwo string[], value int);\n"
+                    : "@public create table MyInfra(Id string primary key, arrayOne string[], arrayTwo string[], value int);\n";
                 epl +=
-                    "insert into MyInfra select id, stringOne as arrayOne, stringTwo as arrayTwo, value from SupportEventWithManyArray;\n" +
+                    "insert into MyInfra select Id, stringOne as arrayOne, stringTwo as arrayTwo, value from SupportEventWithManyArray;\n" +
                     "create index MyInfraIndex on MyInfra(arrayOne, arrayTwo, value btree);\n";
                 env.CompileDeploy(epl, path);
 
@@ -164,9 +164,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var epl = namedWindow
-                    ? "@public create window MyInfra#keepall as (id string, arrayOne string[], value int);\n"
-                    : "@public create table MyInfra(id string primary key, arrayOne string[], value int);\n";
-                epl += "insert into MyInfra select id, stringOne as arrayOne, value from SupportEventWithManyArray;\n" +
+                    ? "@public create window MyInfra#keepall as (Id string, arrayOne string[], value int);\n"
+                    : "@public create table MyInfra(Id string primary key, arrayOne string[], value int);\n";
+                epl += "insert into MyInfra select Id, stringOne as arrayOne, value from SupportEventWithManyArray;\n" +
                        "create index MyInfraIndex on MyInfra(arrayOne, value btree);\n";
                 env.CompileDeploy(epl, path);
 
@@ -222,10 +222,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var epl = namedWindow
-                    ? "@public create window MyInfra#keepall as (id string, arrayOne string[], arrayTwo string[]);\n"
-                    : "@public create table MyInfra(id string primary key, arrayOne string[], arrayTwo string[]);\n";
+                    ? "@public create window MyInfra#keepall as (Id string, arrayOne string[], arrayTwo string[]);\n"
+                    : "@public create table MyInfra(Id string primary key, arrayOne string[], arrayTwo string[]);\n";
                 epl +=
-                    "insert into MyInfra select id, stringOne as arrayOne, stringTwo as arrayTwo from SupportEventWithManyArray;\n" +
+                    "insert into MyInfra select Id, stringOne as arrayOne, stringTwo as arrayTwo from SupportEventWithManyArray;\n" +
                     "create index MyInfraIndex on MyInfra(arrayOne, arrayTwo);\n";
                 env.CompileDeploy(epl, path);
 
@@ -279,9 +279,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var epl = namedWindow
-                    ? "@public create window MyInfra#keepall as (id string, array string[]);\n"
-                    : "@public create table MyInfra(id string primary key, array string[]);\n";
-                epl += "insert into MyInfra select id, stringOne as array from SupportEventWithManyArray;\n" +
+                    ? "@public create window MyInfra#keepall as (Id string, array string[]);\n"
+                    : "@public create table MyInfra(Id string primary key, array string[]);\n";
+                epl += "insert into MyInfra select Id, stringOne as array from SupportEventWithManyArray;\n" +
                        "create index MyInfraIndex on MyInfra(array);\n";
                 env.CompileDeploy(epl, path);
 
@@ -763,7 +763,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             var faf = "@Hint('index(MyInfraIndex, bust)') select * from MyInfra where " + epl;
             var result = env.CompileExecuteFAF(faf, path);
             Assert.AreEqual(1, result.Array.Length);
-            Assert.AreEqual(expectedId, result.Array[0].Get("id"));
+            Assert.AreEqual(expectedId, result.Array[0].Get("Id"));
         }
 
         private static void AssertFAFNot(

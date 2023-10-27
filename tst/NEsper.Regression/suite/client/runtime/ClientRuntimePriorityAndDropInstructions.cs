@@ -168,22 +168,22 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.CompileDeploy(stmtText, path);
 
                 stmtText =
-                    "@name('s1') @Priority(1) on MyWindow e select e.theString as theString, 1 as prio from MyWindow";
+                    "@name('s1') @Priority(1) on MyWindow e select e.TheString as TheString, 1 as prio from MyWindow";
                 env.CompileDeploy(stmtText, path);
                 env.Statement("s1").AddListener(listener);
 
                 stmtText =
-                    "@name('s3') @Priority(3) on MyWindow e select e.theString as theString, 3 as prio from MyWindow";
+                    "@name('s3') @Priority(3) on MyWindow e select e.TheString as TheString, 3 as prio from MyWindow";
                 env.CompileDeploy(stmtText, path);
                 env.Statement("s3").AddListener(listener);
 
                 stmtText =
-                    "@name('s2') @Priority(2) on MyWindow e select e.theString as theString, 2 as prio from MyWindow";
+                    "@name('s2') @Priority(2) on MyWindow e select e.TheString as TheString, 2 as prio from MyWindow";
                 env.CompileDeploy(stmtText, path);
                 env.Statement("s2").AddListener(listener);
 
                 stmtText =
-                    "@name('s4') @Priority(4) on MyWindow e select e.theString as theString, 4 as prio from MyWindow";
+                    "@name('s4') @Priority(4) on MyWindow e select e.TheString as TheString, 4 as prio from MyWindow";
                 env.CompileDeploy(stmtText, path);
                 env.Statement("s4").AddListener(listener);
 
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 env.UndeployModuleContaining("s2");
                 env.CompileDeploy(
-                    "@name('s0') on MyWindow e select e.theString as theString, 0 as prio from MyWindow",
+                    "@name('s0') on MyWindow e select e.TheString as TheString, 0 as prio from MyWindow",
                     path);
                 env.Statement("s0").AddListener(listener);
 
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 AssertPrio(listener, "E2", new int[] { 4, 3, 1, 0 });
 
                 stmtText =
-                    "@name('s2') @Priority(2) on MyWindow e select e.theString as theString, 2 as prio from MyWindow";
+                    "@name('s2') @Priority(2) on MyWindow e select e.TheString as TheString, 2 as prio from MyWindow";
                 env.CompileDeploy(stmtText, path);
                 env.Statement("s2").AddListener(listener);
 
@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 AssertPrio(listener, "E3", new int[] { 4, 3, 2, 1, 0 });
 
                 stmtText =
-                    "@name('sx') @Priority(3) on MyWindow e select e.theString as theString, 3 as prio from MyWindow";
+                    "@name('sx') @Priority(3) on MyWindow e select e.TheString as TheString, 3 as prio from MyWindow";
                 env.CompileDeploy(stmtText, path);
                 env.Statement("sx").AddListener(listener);
 
@@ -238,16 +238,16 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 stmtText = "insert into MyWindow select * from SupportBean";
                 env.CompileDeploy(stmtText, path);
 
-                stmtText = "@name('s2') @Drop on MyWindow e select e.theString as theString, 2 as prio from MyWindow";
+                stmtText = "@name('s2') @Drop on MyWindow e select e.TheString as TheString, 2 as prio from MyWindow";
                 env.CompileDeploy(stmtText, path);
                 env.Statement("s2").AddListener(listener);
 
                 stmtText =
-                    "@name('s3') @Priority(3) on MyWindow e select e.theString as theString, 3 as prio from MyWindow";
+                    "@name('s3') @Priority(3) on MyWindow e select e.TheString as TheString, 3 as prio from MyWindow";
                 env.CompileDeploy(stmtText, path);
                 env.Statement("s3").AddListener(listener);
 
-                stmtText = "@name('s4') on MyWindow e select e.theString as theString, 0 as prio from MyWindow";
+                stmtText = "@name('s4') on MyWindow e select e.TheString as TheString, 0 as prio from MyWindow";
                 env.CompileDeploy(stmtText, path);
                 env.Statement("s4").AddListener(listener);
 
@@ -320,10 +320,10 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 var stmtSelectText = "@name('s0') insert into ABCStream select * from SupportBean";
                 env.CompileDeploy(stmtSelectText, path).AddListener("s0");
 
-                var stmtOneText = "@name('l0') @Drop select * from SupportBean where intPrimitive = 1";
+                var stmtOneText = "@name('l0') @Drop select * from SupportBean where IntPrimitive = 1";
                 env.CompileDeploy(stmtOneText).AddListener("l0");
 
-                var stmtTwoText = "@name('l1') @Drop select * from SupportBean where intPrimitive = 2";
+                var stmtTwoText = "@name('l1') @Drop select * from SupportBean where IntPrimitive = 2";
                 env.CompileDeploy(stmtTwoText).AddListener("l1");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -339,10 +339,10 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 AssertReceivedSingle(env, "l0,l1", 0, "E3");
 
                 env.SendEventBean(new SupportBean("E4", 3));
-                env.AssertEqualsNew("s0", "theString", "E4");
+                env.AssertEqualsNew("s0", "TheString", "E4");
                 AssertReceivedNone(env, "l0,l1");
 
-                var stmtThreeText = "@name('l2') @Drop select * from SupportBean where intPrimitive = 3";
+                var stmtThreeText = "@name('l2') @Drop select * from SupportBean where IntPrimitive = 3";
                 env.CompileDeploy(stmtThreeText).AddListener("l2");
 
                 env.SendEventBean(new SupportBean("E5", 3));
@@ -355,15 +355,15 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 env.UndeployModuleContaining("l0");
                 env.SendEventBean(new SupportBean("E7", 1));
-                env.AssertEqualsNew("s0", "theString", "E7");
+                env.AssertEqualsNew("s0", "TheString", "E7");
                 AssertReceivedNone(env, "l1,l2");
 
                 var stmtSelectTextTwo = "@name('s1') @Priority(50) select * from SupportBean";
                 env.CompileDeploy(stmtSelectTextTwo).AddListener("s1");
 
                 env.SendEventBean(new SupportBean("E8", 1));
-                env.AssertEqualsNew("s0", "theString", "E8");
-                env.AssertEqualsNew("s1", "theString", "E8");
+                env.AssertEqualsNew("s0", "TheString", "E8");
+                env.AssertEqualsNew("s1", "TheString", "E8");
                 AssertReceivedNone(env, "l1,l2");
 
                 env.SendEventBean(new SupportBean("E9", 2));
@@ -394,7 +394,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 Assert.IsFalse(env.Listener(names[i]).IsInvoked);
             }
 
-            Assert.AreEqual(stringValue, env.Listener(names[index]).AssertOneGetNewAndReset().Get("theString"));
+            Assert.AreEqual(stringValue, env.Listener(names[index]).AssertOneGetNewAndReset().Get("TheString"));
         }
 
         private static void AssertPrio(
@@ -407,7 +407,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             for (var i = 0; i < prioValues.Length; i++) {
                 Assert.AreEqual(prioValues[i], events[i].Get("prio"));
                 if (theString != null) {
-                    Assert.AreEqual(theString, events[i].Get("theString"));
+                    Assert.AreEqual(theString, events[i].Get("TheString"));
                 }
             }
 

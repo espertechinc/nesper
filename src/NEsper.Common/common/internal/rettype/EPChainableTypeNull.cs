@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.rettype
             CodegenClassScope classScope,
             CodegenExpression typeInitSvcRef)
         {
-            // TBD: Shouldn't this be a static field reference?
+            // TODO: Shouldn't this be a static field reference?
             return CodegenExpressionBuilder.EnumValue(typeof(EPChainableTypeNull), "INSTANCE");
         }
     }

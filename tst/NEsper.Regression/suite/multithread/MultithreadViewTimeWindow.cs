@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Run(RegressionEnvironment env)
         {
             var numThreads = 2;
@@ -47,7 +47,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 listeners[i] = new SupportCountListener();
                 var stmtName = "stmt" + i;
                 var nameAnnotation = "@name('" + stmtName + "')";
-                var epl = $"{nameAnnotation}select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)";
+                var epl =
+                    $"{nameAnnotation}select irstream IntPrimitive, TheString as key from SupportBean#time(1 sec)";
                 env.CompileDeploy(epl).Statement(stmtName).AddListener(listeners[i]);
             }
 

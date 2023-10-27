@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.view.keepall
 
         public LinkedHashSet<EventBean> IndexedEvents => _indexedEvents;
 
-        public override EventType EventType => parent.EventType;
+        public override EventType EventType => Parent.EventType;
 
         public override void Update(
             EventBean[] newData,
@@ -82,7 +82,7 @@ namespace com.espertech.esper.common.@internal.view.keepall
             _viewUpdatedCollection?.Update(newData, oldData);
 
             _agentInstanceContext.InstrumentationProvider.QViewIndicate(_keepAllViewFactory, newData, oldData);
-            child.Update(newData, oldData);
+            Child.Update(newData, oldData);
             _agentInstanceContext.InstrumentationProvider.AViewIndicate();
 
             _agentInstanceContext.InstrumentationProvider.AViewProcessIRStream();

@@ -51,17 +51,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var createEpl = namedWindow
-                    ? "@Public create window MyInfra#unique(theString) as select * from SupportBean"
-                    : "@Public create table MyInfra(theString string primary key, intPrimitive int primary key)";
+                    ? "@Public create window MyInfra#unique(TheString) as select * from SupportBean"
+                    : "@Public create table MyInfra(TheString string primary key, IntPrimitive int primary key)";
                 if (enableIndexShareCreate) {
                     createEpl = "@Hint('enable_window_subquery_indexshare') " + createEpl;
                 }
 
                 env.CompileDeploy(createEpl, path);
-                env.CompileDeploy("insert into MyInfra select theString, intPrimitive from SupportBean", path);
+                env.CompileDeploy("insert into MyInfra select TheString, IntPrimitive from SupportBean", path);
 
                 var consumeEpl =
-                    "@name('s0') select (select intPrimitive from MyInfra where theString = s1.p10) as val from SupportBean_S0#lastevent as s0, SupportBean_S1#lastevent as s1";
+                    "@name('s0') select (select IntPrimitive from MyInfra where TheString = s1.P10) as val from SupportBean_S0#lastevent as s0, SupportBean_S1#lastevent as s1";
                 env.CompileDeploy(consumeEpl, path).AddListener("s0");
 
                 var fields = "val".SplitCsv();

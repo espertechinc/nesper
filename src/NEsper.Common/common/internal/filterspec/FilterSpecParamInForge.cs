@@ -166,7 +166,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
                 .DeclareVar<FilterOperator>(
-                    "op",
+                    "filterOperator",
                     EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             // var param = NewAnonymousClass(method.Block, typeof(FilterSpecParam), Arrays.AsList(Ref("lookupable"), Ref("op")));
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 getFilterValueLambda.Block.DeclareVar(
                     typeof(ArrayDeque<object>),
                     "values",
-                    NewInstance(typeof(ArrayDeque<object>), Constant(_listOfValues.Count)));
+                    NewInstance<ArrayDeque<object>>(Constant(_listOfValues.Count)));
                 for (var i = 0; i < _listOfValues.Count; i++) {
                     var valueName = "value" + i;
                     var adderName = "adder" + i;
@@ -218,12 +218,13 @@ namespace com.espertech.esper.common.@internal.filterspec
                         .BlockEnd();
                 }
 
-                filterForValue = NewInstance(typeof(HashableMultiKey), ExprDotMethod(Ref("values"), "toArray"));
+                filterForValue = NewInstance(typeof(HashableMultiKey), ExprDotMethod(Ref("values"), "ToArray"));
             }
 
-            getFilterValueLambda.Block
+            getFilterValueLambda
+                .Block
                 .DeclareVar<object>("val", filterForValue)
-                .MethodReturn(FilterValueSetParamImpl.CodegenNew(Ref("val")));
+                .BlockReturn(FilterValueSetParamImpl.CodegenNew(Ref("val")));
 
             method.Block.MethodReturn(getFilterValueProxy);
             return LocalMethod(method);

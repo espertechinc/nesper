@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                           "SupportHierarchyEvent#groupwin(Event_criteria_id)#lastevent as p " +
                           "where c2.Event_criteria_id in (c1.Event_criteria_id,2,1) " +
                           "and p.Event_criteria_id in (c1.Parent_event_criteria_id, c1.Event_criteria_id) " +
-                          "order by c2.Priority asc";
+"Order by c2.Priority asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, 1, 1, null);

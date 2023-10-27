@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "@MyAnnotationSimple " +
                     "@MyAnnotationValue('abc') " +
                     "@MyAnnotationValueDefaulted " +
-                    "@MyAnnotationValueEnum(supportEnum=" +
+                    "@MyAnnotationValueEnum(SupportEnum=" +
                     typeof(SupportEnum).Name +
                     ".ENUM_VALUE_3) " +
                     "@MyAnnotationValuePair(stringVal='a',intVal=-1,longVal=2,booleanVal=true,charVal='x',byteVal=10,shortVal=20,doubleVal=2.5) " +
@@ -141,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                                         NEWLINE +
                                         "@MyAnnotationValueDefaulted" +
                                         NEWLINE +
-                                        "@MyAnnotationValueEnum(supportEnum=" +
+                                        "@MyAnnotationValueEnum(SupportEnum=" +
                                         typeof(SupportEnum).Name +
                                         ".ENUM_VALUE_3)" +
                                         NEWLINE +
@@ -533,7 +533,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 string text)
             {
                 env.CompileDeploy(
-                    "@MyAnnotationValueEnum(supportEnum = " + text + ") @name('s0') select * from SupportBean");
+                    "@MyAnnotationValueEnum(SupportEnum = " + text + ") @name('s0') select * from SupportBean");
                 env.AssertStatement(
                     "s0",
                     statement => {
@@ -550,11 +550,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             {
                 // init-time import
                 env.CompileDeploy(
-                    "@MyAnnotationValueEnum(supportEnum = SupportEnum.ENUM_VALUE_1) " +
+                    "@MyAnnotationValueEnum(SupportEnum = SupportEnum.ENUM_VALUE_1) " +
                     "select * from SupportBean");
 
                 // try invalid annotation not yet imported
-                var epl = "@MyAnnotationValueEnumTwo(supportEnum = SupportEnum.ENUM_VALUE_1) select * from SupportBean";
+                var epl = "@MyAnnotationValueEnumTwo(SupportEnum = SupportEnum.ENUM_VALUE_1) select * from SupportBean";
                 env.TryInvalidCompile(epl, "Failed to process statement annotations: Failed to resolve @-annotation");
 
                 // try invalid use : these are annotation-specific imports of an annotation and an enum

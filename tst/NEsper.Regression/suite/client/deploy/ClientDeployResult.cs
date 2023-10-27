@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 }
                 catch (EPDeployException ex) {
                     Assert.That(ex.RolloutItemNumber, Is.EqualTo(-1));
-                    SupportMessageAssertUtil.AssertMessage(ex, "Deployment by id 'ABC' already exists");
+                    SupportMessageAssertUtil.AssertMessage(ex, "Deployment by Id 'ABC' already exists");
                 }
 
                 env.UndeployAll();
@@ -155,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     statement => Assert.AreEqual(
                         "@Name(\"StmtOne\")" +
                         NEWLINE +
-                        "create schema MyEvent(id String, val1 int, val2 int)",
+                        "create schema MyEvent(Id String, val1 int, val2 int)",
                         statement.GetProperty(StatementProperty.EPL)));
                 env.AssertStatement(
                     "StmtTwo",
@@ -255,7 +255,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     Assert.Fail();
                 }
                 catch (ArgumentException ex) {
-                    Assert.AreEqual("Missing deployment-id parameter", ex.Message);
+                    Assert.AreEqual("Missing deployment-Id parameter", ex.Message);
                 }
 
                 try {

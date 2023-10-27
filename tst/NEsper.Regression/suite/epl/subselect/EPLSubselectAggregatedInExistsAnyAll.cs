@@ -181,8 +181,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "c0,c1".SplitCsv();
                 var epl =
-                    "@name('s0') select value in (select sum(intPrimitive) from SupportBean#keepall having last(theString) != 'E1') as c0," +
-                    "value not in (select sum(intPrimitive) from SupportBean#keepall having last(theString) != 'E1') as c1 " +
+                    "@name('s0') select value in (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c0," +
+                    "value not in (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c1 " +
                     "from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -210,8 +210,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "c0,c1".SplitCsv();
                 var epl =
-                    "@name('s0') select value in (select sum(intPrimitive) from SupportBean#keepall group by theString having last(theString) != 'E1') as c0," +
-                    "value not in (select sum(intPrimitive) from SupportBean#keepall group by theString having last(theString) != 'E1') as c1 " +
+                    "@name('s0') select value in (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) != 'E1') as c0," +
+                    "value not in (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) != 'E1') as c1 " +
                     "from SupportValueEvent";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -235,8 +235,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "c0,c1".SplitCsv();
                 var epl =
-                    "@name('s0') select value in (select sum(intPrimitive) from SupportBean#keepall group by theString) as c0," +
-                    "value not in (select sum(intPrimitive) from SupportBean#keepall group by theString) as c1 " +
+                    "@name('s0') select value in (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c0," +
+                    "value not in (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c1 " +
                     "from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -256,8 +256,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var fields = "c0,c1".SplitCsv();
-                var epl = "@name('s0') select value in (select sum(intPrimitive) from SupportBean#keepall) as c0," +
-                          "value not in (select sum(intPrimitive) from SupportBean#keepall) as c1 " +
+                var epl = "@name('s0') select value in (select sum(IntPrimitive) from SupportBean#keepall) as c0," +
+                          "value not in (select sum(IntPrimitive) from SupportBean#keepall) as c1 " +
                           "from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -282,9 +282,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var epl = "@name('s0') select " +
-                          "value < all (select sum(intPrimitive) from SupportBean#keepall group by theString) as c0, " +
-                          "value < any (select sum(intPrimitive) from SupportBean#keepall group by theString) as c1, " +
-                          "value < some (select sum(intPrimitive) from SupportBean#keepall group by theString) as c2 " +
+                          "value < all (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c0, " +
+                          "value < any (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c1, " +
+                          "value < some (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c2 " +
                           "from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -307,9 +307,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var epl = "@name('s0') select " +
-                          "value < all (select sum(intPrimitive) from SupportBean#keepall group by theString having last(theString) not in ('E1', 'E3')) as c0, " +
-                          "value < any (select sum(intPrimitive) from SupportBean#keepall group by theString having last(theString) not in ('E1', 'E3')) as c1, " +
-                          "value < some (select sum(intPrimitive) from SupportBean#keepall group by theString having last(theString) not in ('E1', 'E3')) as c2 " +
+                          "value < all (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) not in ('E1', 'E3')) as c0, " +
+                          "value < any (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) not in ('E1', 'E3')) as c1, " +
+                          "value < some (select sum(IntPrimitive) from SupportBean#keepall group by TheString having last(TheString) not in ('E1', 'E3')) as c2 " +
                           "from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -337,9 +337,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var epl = "@name('s0') select " +
-                          "value = all (select sum(intPrimitive) from SupportBean#keepall group by theString) as c0, " +
-                          "value = any (select sum(intPrimitive) from SupportBean#keepall group by theString) as c1, " +
-                          "value = some (select sum(intPrimitive) from SupportBean#keepall group by theString) as c2 " +
+                          "value = all (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c0, " +
+                          "value = any (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c1, " +
+                          "value = some (select sum(IntPrimitive) from SupportBean#keepall group by TheString) as c2 " +
                           "from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -361,9 +361,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var epl = "@name('s0') select " +
-                          "value = all (select sum(intPrimitive) from SupportBean#keepall) as c0, " +
-                          "value = any (select sum(intPrimitive) from SupportBean#keepall) as c1, " +
-                          "value = some (select sum(intPrimitive) from SupportBean#keepall) as c2 " +
+                          "value = all (select sum(IntPrimitive) from SupportBean#keepall) as c0, " +
+                          "value = any (select sum(IntPrimitive) from SupportBean#keepall) as c1, " +
+                          "value = some (select sum(IntPrimitive) from SupportBean#keepall) as c2 " +
                           "from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -385,9 +385,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var epl = "@name('s0') select " +
-                          "value = all (select sum(intPrimitive) from SupportBean#keepall having last(theString) != 'E1') as c0, " +
-                          "value = any (select sum(intPrimitive) from SupportBean#keepall having last(theString) != 'E1') as c1, " +
-                          "value = some (select sum(intPrimitive) from SupportBean#keepall having last(theString) != 'E1') as c2 " +
+                          "value = all (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c0, " +
+                          "value = any (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c1, " +
+                          "value = some (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) != 'E1') as c2 " +
                           "from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -415,9 +415,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var epl = "@name('s0') select " +
-                          "value = all (select sum(intPrimitive) from SupportBean#keepall group by theString having first(theString) != 'E1') as c0, " +
-                          "value = any (select sum(intPrimitive) from SupportBean#keepall group by theString having first(theString) != 'E1') as c1, " +
-                          "value = some (select sum(intPrimitive) from SupportBean#keepall group by theString having first(theString) != 'E1') as c2 " +
+                          "value = all (select sum(IntPrimitive) from SupportBean#keepall group by TheString having first(TheString) != 'E1') as c0, " +
+                          "value = any (select sum(IntPrimitive) from SupportBean#keepall group by TheString having first(TheString) != 'E1') as c1, " +
+                          "value = some (select sum(IntPrimitive) from SupportBean#keepall group by TheString having first(TheString) != 'E1') as c2 " +
                           "from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -442,8 +442,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "c0,c1".SplitCsv();
                 var epl =
-                    "@name('s0') select exists (select sum(intPrimitive) from SupportBean having sum(intPrimitive) < 15) as c0," +
-                    "not exists (select sum(intPrimitive) from SupportBean  having sum(intPrimitive) < 15) as c1 from SupportValueEvent";
+                    "@name('s0') select exists (select sum(IntPrimitive) from SupportBean having sum(IntPrimitive) < 15) as c0," +
+                    "not exists (select sum(IntPrimitive) from SupportBean  having sum(IntPrimitive) < 15) as c1 from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendVEAndAssert(env, fields, new object[] { false, true });
@@ -463,8 +463,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var fields = "c0,c1".SplitCsv();
-                var epl = "@name('s0') select exists (select sum(intPrimitive) from SupportBean) as c0," +
-                          "not exists (select sum(intPrimitive) from SupportBean) as c1 from SupportValueEvent";
+                var epl = "@name('s0') select exists (select sum(IntPrimitive) from SupportBean) as c0," +
+                          "not exists (select sum(IntPrimitive) from SupportBean) as c1 from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendVEAndAssert(env, fields, new object[] { true, false });
@@ -482,7 +482,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var path = new RegressionPath();
                 var epl = "@Public create window MyWindow#keepall as (key string, anint int);\n" +
-                          "insert into MyWindow(key, anint) select id, value from SupportIdAndValueEvent;\n" +
+                          "insert into MyWindow(key, anint) select Id, value from SupportIdAndValueEvent;\n" +
                           "@name('s0') select exists (select sum(anint) from MyWindow group by key) as c0," +
                           "not exists (select sum(anint) from MyWindow group by key) as c1 from SupportValueEvent;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
@@ -507,7 +507,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var path = new RegressionPath();
                 var epl = "@Public create window MyWindow#keepall as (key string, anint int);\n" +
-                          "insert into MyWindow(key, anint) select id, value from SupportIdAndValueEvent;\n" +
+                          "insert into MyWindow(key, anint) select Id, value from SupportIdAndValueEvent;\n" +
                           "@name('s0') select exists (select sum(anint) from MyWindow group by key having sum(anint) < 15) as c0," +
                           "not exists (select sum(anint) from MyWindow group by key having sum(anint) < 15) as c1 from SupportValueEvent";
                 var fields = "c0,c1".SplitCsv();
@@ -535,9 +535,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var epl = "@name('s0') select " +
-                          "value < all (select sum(intPrimitive) from SupportBean#keepall having last(theString) not in ('E1', 'E3')) as c0, " +
-                          "value < any (select sum(intPrimitive) from SupportBean#keepall having last(theString) not in ('E1', 'E3')) as c1, " +
-                          "value < some (select sum(intPrimitive) from SupportBean#keepall having last(theString) not in ('E1', 'E3')) as c2 " +
+                          "value < all (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) not in ('E1', 'E3')) as c0, " +
+                          "value < any (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) not in ('E1', 'E3')) as c1, " +
+                          "value < some (select sum(IntPrimitive) from SupportBean#keepall having last(TheString) not in ('E1', 'E3')) as c2 " +
                           "from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -565,9 +565,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var epl = "@name('s0') select " +
-                          "value < all (select sum(intPrimitive) from SupportBean#keepall) as c0, " +
-                          "value < any (select sum(intPrimitive) from SupportBean#keepall) as c1, " +
-                          "value < some (select sum(intPrimitive) from SupportBean#keepall) as c2 " +
+                          "value < all (select sum(IntPrimitive) from SupportBean#keepall) as c0, " +
+                          "value < any (select sum(IntPrimitive) from SupportBean#keepall) as c1, " +
+                          "value < some (select sum(IntPrimitive) from SupportBean#keepall) as c2 " +
                           "from SupportValueEvent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -588,15 +588,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select id from SupportBean_S0 where exists (select max(id) from SupportBean_S1#length(3))";
+                    "@name('s0') select Id from SupportBean_S0 where exists (select max(Id) from SupportBean_S1#length(3))";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEventS0(env, 1);
-                env.AssertEqualsNew("s0", "id", 1);
+                env.AssertEqualsNew("s0", "Id", 1);
 
                 SendEventS1(env, 100);
                 SendEventS0(env, 2);
-                env.AssertEqualsNew("s0", "id", 2);
+                env.AssertEqualsNew("s0", "Id", 2);
 
                 env.UndeployAll();
             }
@@ -607,7 +607,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select id from SupportBean_S0 where id in (select max(id) from SupportBean_S1#length(2))";
+                    "@name('s0') select Id from SupportBean_S0 where Id in (select max(Id) from SupportBean_S1#length(2))";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEventS0(env, 1);
@@ -618,7 +618,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertListenerNotInvoked("s0");
 
                 SendEventS0(env, 100);
-                env.AssertEqualsNew("s0", "id", 100);
+                env.AssertEqualsNew("s0", "Id", 100);
 
                 SendEventS0(env, 200);
                 env.AssertListenerNotInvoked("s0");
@@ -626,7 +626,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SendEventS1(env, -1);
                 SendEventS1(env, -1);
                 SendEventS0(env, -1);
-                env.AssertEqualsNew("s0", "id", -1);
+                env.AssertEqualsNew("s0", "Id", -1);
 
                 env.UndeployAll();
             }

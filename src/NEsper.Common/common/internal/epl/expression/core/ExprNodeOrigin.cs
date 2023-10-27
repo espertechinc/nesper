@@ -156,7 +156,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     return "method-chain";
 
                 case ExprNodeOrigin.CONTAINEDEVENT:
-                    return "Contained-event";
+                    return "contained-event";
 
                 case ExprNodeOrigin.CREATEWINDOWFILTER:
                     return "create-window filter";

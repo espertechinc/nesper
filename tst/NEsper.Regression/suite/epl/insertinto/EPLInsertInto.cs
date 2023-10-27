@@ -263,8 +263,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "@public create " +
                     rep.GetName() +
                     " schema MyTwoColEvent(c0 string, c1 int);\n" +
-                    "insert into MyTwoColEvent select theString as c0 from SupportBean;\n" +
-                    "insert into MyTwoColEvent select id as c1 from SupportBean_S0;\n" +
+                    "insert into MyTwoColEvent select TheString as c0 from SupportBean;\n" +
+                    "insert into MyTwoColEvent select Id as c1 from SupportBean_S0;\n" +
                     "@name('s0') select * from MyTwoColEvent";
                 env.CompileDeploy(epl, path).AddListener("s0");
                 var fields = "c0,c1".Split(",");
@@ -299,7 +299,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     und => { EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E1", 10 }, (object[])und); });
                 Consumer<object> mapAssertion = und => EPAssertionUtil.AssertPropsMap(
                     (IDictionary<string, object>)und,
-                    "theString,intPrimitive".Split(","),
+                    "TheString,IntPrimitive".Split(","),
                     "E1",
                     10);
                 assertions.Put(EventRepresentationChoice.MAP, mapAssertion);
@@ -308,15 +308,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     EventRepresentationChoice.AVRO,
                     und => {
                         var rec = (GenericRecord)und;
-                        Assert.AreEqual("E1", rec.Get("theString"));
-                        Assert.AreEqual(10, rec.Get("intPrimitive"));
+                        Assert.AreEqual("E1", rec.Get("TheString"));
+                        Assert.AreEqual(10, rec.Get("IntPrimitive"));
                     });
                 assertions.Put(
                     EventRepresentationChoice.JSON,
                     und => {
                         var rec = (JsonEventObject)und;
-                        Assert.AreEqual("E1", rec.Get("theString"));
-                        Assert.AreEqual(10, rec.Get("intPrimitive"));
+                        Assert.AreEqual("E1", rec.Get("TheString"));
+                        Assert.AreEqual(10, rec.Get("IntPrimitive"));
                     });
                 assertions.Put(
                     EventRepresentationChoice.JSONCLASSPROVIDED,
@@ -338,7 +338,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             IDictionary<EventRepresentationChoice, Consumer<object>> assertions)
         {
             var epl = rep.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvided)) +
-                      " insert into SomeStream select theString, intPrimitive from SupportBean;\n" +
+                      " insert into SomeStream select TheString, IntPrimitive from SupportBean;\n" +
                       "@name('s0') select * from SomeStream;\n";
             env.CompileDeploy(epl).AddListener("s0");
 
@@ -362,13 +362,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "Event_1_RSOM",
                     Array.Empty<string>(),
                     StreamSelector.RSTREAM_ONLY);
-                model.SelectClause = SelectClause.Create().Add("intPrimitive", "intBoxed");
+                model.SelectClause = SelectClause.Create().Add("IntPrimitive", "IntBoxed");
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean"));
                 model = env.CopyMayFail(model);
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 
                 var epl = "@name('s0') insert rstream into Event_1_RSOM " +
-                          "select intPrimitive, intBoxed " +
+                          "select IntPrimitive, IntBoxed " +
                           "from SupportBean";
                 Assert.AreEqual(epl, model.ToEPL());
 
@@ -386,8 +386,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 model.Annotations = Collections.SingletonList(new AnnotationPart("public"));
                 model.InsertInto = InsertIntoClause.Create("Event_1_OMS", "delta", "product");
                 model.SelectClause = SelectClause.Create()
-                    .Add(Expressions.Minus("intPrimitive", "intBoxed"), "deltaTag")
-                    .Add(Expressions.Multiply("intPrimitive", "intBoxed"), "productTag");
+                    .Add(Expressions.Minus("IntPrimitive", "IntBoxed"), "deltaTag")
+                    .Add(Expressions.Multiply("IntPrimitive", "IntBoxed"), "productTag");
                 model.FromClause = FromClause.Create(
                     FilterStream.Create("SupportBean").AddView(View.Create("length", Expressions.Constant(100))));
                 model = env.CopyMayFail(model);
@@ -395,7 +395,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 TryAssertsVariant(env, null, model, "Event_1_OMS");
 
                 var epl = "@name('fl') @public insert into Event_1_OMS(delta, product) " +
-                          "select intPrimitive-intBoxed as deltaTag, intPrimitive*intBoxed as productTag " +
+                          "select IntPrimitive-IntBoxed as deltaTag, IntPrimitive*IntBoxed as productTag " +
                           "from SupportBean#length(100)";
                 Assert.AreEqual(epl, model.ToEPL());
                 env.AssertStatement(
@@ -411,7 +411,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('fl') @public insert into Event_1_EPL(delta, product) " +
-                          "select intPrimitive-intBoxed as deltaTag, intPrimitive*intBoxed as productTag " +
+                          "select IntPrimitive-IntBoxed as deltaTag, IntPrimitive*IntBoxed as productTag " +
                           "from SupportBean#length(100)";
 
                 var model = env.EplToModel(epl);
@@ -431,7 +431,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "insert into Event_1VO (delta, product) " +
-                               "select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
+                               "select IntPrimitive - IntBoxed as deltaTag, IntPrimitive * IntBoxed as productTag " +
                                "from SupportBean#length(100)";
 
                 TryAssertsVariant(env, stmtText, null, "Event_1VO");
@@ -444,7 +444,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var stmtTextStateless = "insert into Event_1VOS (delta, product) " +
-                                        "select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
+                                        "select IntPrimitive - IntBoxed as deltaTag, IntPrimitive * IntBoxed as productTag " +
                                         "from SupportBean";
                 TryAssertsVariant(env, stmtTextStateless, null, "Event_1VOS");
                 env.UndeployAll();
@@ -457,7 +457,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var stmtText = "insert into Event_1W (delta, product) " +
                                "select * from SupportBean#length(100)";
-                env.TryInvalidCompile(stmtText, "Wildcard not allowed when insert-into specifies column order");
+                env.TryInvalidCompile(stmtText, "Wildcard not allowed when insert-into specifies column Order");
 
                 // test insert wildcard to wildcard
                 var stmtSelectText = "@name('i0') insert into ABCStream select * from SupportBean";
@@ -468,7 +468,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AssertListener(
                     "i0",
                     listener => {
-                        Assert.AreEqual("E1", listener.AssertOneGetNew().Get("theString"));
+                        Assert.AreEqual("E1", listener.AssertOneGetNew().Get("TheString"));
                         Assert.IsTrue(listener.AssertOneGetNew().Underlying is SupportBean);
                     });
 
@@ -481,10 +481,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "insert into Event_1J (delta, product) " +
-                               "select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
+                               "select IntPrimitive - IntBoxed as deltaTag, IntPrimitive * IntBoxed as productTag " +
                                "from SupportBean#length(100) as s0," +
                                "SupportBean_A#length(100) as s1 " +
-                               " where s0.theString = s1.id";
+                               " where s0.TheString = s1.Id";
 
                 TryAssertsVariant(env, stmtText, null, "Event_1J");
                 env.UndeployAll();
@@ -499,7 +499,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                                "select * " +
                                "from SupportBean#length(100) as s0," +
                                "SupportBean_A#length(100) as s1 " +
-                               " where s0.theString = s1.id";
+                               " where s0.TheString = s1.Id";
 
                 try {
                     env.CompileWCheckedEx(stmtText);
@@ -521,7 +521,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "insert into Event_1_2 " +
-                               "select intPrimitive - intBoxed as delta, intPrimitive * intBoxed as product " +
+                               "select IntPrimitive - IntBoxed as delta, IntPrimitive * IntBoxed as product " +
                                "from SupportBean#length(100)";
 
                 TryAssertsVariant(env, stmtText, null, "Event_1_2");
@@ -547,8 +547,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     listener => {
                         Assert.IsTrue(listener.GetAndClearIsInvoked());
                         Assert.AreEqual(1, listener.LastNewData.Length);
-                        Assert.AreEqual(10, listener.LastNewData[0].Get("intPrimitive"));
-                        Assert.AreEqual(11, listener.LastNewData[0].Get("intBoxed"));
+                        Assert.AreEqual(10, listener.LastNewData[0].Get("IntPrimitive"));
+                        Assert.AreEqual(11, listener.LastNewData[0].Get("IntBoxed"));
                         Assert.AreEqual(20, listener.LastNewData[0].EventType.PropertyNames.Length);
                         Assert.AreSame(theEvent, listener.LastNewData[0].Underlying);
                     });
@@ -558,8 +558,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     listener => {
                         Assert.IsTrue(listener.GetAndClearIsInvoked());
                         Assert.AreEqual(1, listener.LastNewData.Length);
-                        Assert.AreEqual(10, listener.LastNewData[0].Get("intPrimitive"));
-                        Assert.AreEqual(11, listener.LastNewData[0].Get("intBoxed"));
+                        Assert.AreEqual(10, listener.LastNewData[0].Get("IntPrimitive"));
+                        Assert.AreEqual(11, listener.LastNewData[0].Get("IntBoxed"));
                         Assert.AreEqual(20, listener.LastNewData[0].EventType.PropertyNames.Length);
                         Assert.AreSame(theEvent, listener.LastNewData[0].Underlying);
                     });
@@ -573,10 +573,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "insert into Event_1_2J " +
-                               "select intPrimitive - intBoxed as delta, intPrimitive * intBoxed as product " +
+                               "select IntPrimitive - IntBoxed as delta, IntPrimitive * IntBoxed as product " +
                                "from SupportBean#length(100) as s0," +
                                "SupportBean_A#length(100) as s1 " +
-                               " where s0.theString = s1.id";
+                               " where s0.TheString = s1.Id";
 
                 TryAssertsVariant(env, stmtText, null, "Event_1_2J");
 
@@ -945,8 +945,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 var fields = "p0,p1".Split(",");
                 var epl =
-                    "insert into AStream (p0, p1) select intPrimitive as somename, theString from SupportBean(intPrimitive between 0 and 10);\n" +
-                    "insert into AStream (p0) select intPrimitive as somename from SupportBean(intPrimitive > 10);\n" +
+                    "insert into AStream (p0, p1) select IntPrimitive as somename, TheString from SupportBean(IntPrimitive between 0 and 10);\n" +
+                    "insert into AStream (p0) select IntPrimitive as somename from SupportBean(IntPrimitive > 10);\n" +
                     "@name('s0') select * from AStream;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -967,9 +967,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 // NOTICE: we are inserting the RSTREAM (removed events)
                 var path = new RegressionPath();
                 var stmtText = "@public insert rstream into StockTicks(mySymbol, myPrice) " +
-                               "select symbol, price from SupportMarketDataBean#time(60) " +
+"select Symbol, Price from SupportMarketDataBean#time(60) "+
                                "output every 5 seconds " +
-                               "order by symbol asc";
+"Order by Symbol asc";
                 env.CompileDeploy(stmtText, path);
 
                 stmtText = "@name('s0') select mySymbol, sum(myPrice) as pricesum from StockTicks#length(100)";
@@ -1168,22 +1168,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var text = "@public insert into S0 select irstream symbol, 0 as val from SupportMarketDataBean";
+                var text = "@public insert into S0 select irstream Symbol, 0 as val from SupportMarketDataBean";
                 env.CompileDeploy(text, path);
 
                 env.Milestone(0);
 
-                text = "@public insert into S1 select irstream symbol, 1 as val from S0";
+                text = "@public insert into S1 select irstream Symbol, 1 as val from S0";
                 env.CompileDeploy(text, path);
 
                 env.Milestone(1);
 
-                text = "@public insert into S2 select irstream symbol, 2 as val from S1";
+                text = "@public insert into S2 select irstream Symbol, 2 as val from S1";
                 env.CompileDeploy(text, path);
 
                 env.Milestone(2);
 
-                text = "@name('s0') insert into S3 select irstream symbol, 3 as val from S2";
+                text = "@name('s0') insert into S3 select irstream Symbol, 3 as val from S2";
                 env.CompileDeploy(text, path).AddListener("s0");
 
                 env.Milestone(3);
@@ -1191,7 +1191,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(MakeMarketDataEvent("E1"));
                 env.AssertPropsNV(
                     "s0",
-                    new object[][] { new object[] { "symbol", "E1" }, new object[] { "val", 3 } },
+                    new object[][] { new object[] { "Symbol", "E1" }, new object[] { "val", 3 } },
                     null);
 
                 env.UndeployAll();
@@ -1280,21 +1280,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                          ";\n";
             }
             else if (rep.Value.IsMapEvent()) {
-                schema = "@name('schema1') @buseventtype @public create map schema S0 as (theString string);\n" +
-                         "@name('schema2') @buseventtype @public create map schema S1 as (id string);\n";
+                schema = "@name('schema1') @buseventtype @public create map schema S0 as (TheString string);\n" +
+                         "@name('schema2') @buseventtype @public create map schema S1 as (Id string);\n";
             }
             else if (rep.Value.IsObjectArrayEvent()) {
                 schema =
-                    "@name('schema1') @buseventtype @public create objectarray schema S0 as (theString string);\n" +
-                    "@name('schema2') @buseventtype @public create objectarray schema S1 as (id string);\n";
+                    "@name('schema1') @buseventtype @public create objectarray schema S0 as (TheString string);\n" +
+                    "@name('schema2') @buseventtype @public create objectarray schema S1 as (Id string);\n";
             }
             else if (rep.Value.IsAvroEvent()) {
-                schema = "@name('schema1') @buseventtype @public create avro schema S0 as (theString string);\n" +
-                         "@name('schema2') @buseventtype @public create avro schema S1 as (id string);\n";
+                schema = "@name('schema1') @buseventtype @public create avro schema S0 as (TheString string);\n" +
+                         "@name('schema2') @buseventtype @public create avro schema S1 as (Id string);\n";
             }
             else if (rep.Value.IsJsonEvent()) {
-                schema = "@name('schema1') @buseventtype @public create json schema S0 as (theString string);\n" +
-                         "@name('schema2') @buseventtype @public create json schema S1 as (id string);\n";
+                schema = "@name('schema1') @buseventtype @public create json schema S0 as (TheString string);\n" +
+                         "@name('schema2') @buseventtype @public create json schema S1 as (Id string);\n";
             }
             else if (rep.Value.IsJsonProvidedClassEvent()) {
                 schema = "@name('schema1') @buseventtype @public @JsonSchema(className='" +
@@ -1316,7 +1316,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                           (bean ? "" : rep.Value.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedJoin))) +
                           "insert into event2 select * " +
                           "from S0#length(100) as s0, S1#length(5) as s1 " +
-                          "where s0.theString = s1.id";
+                          "where s0.TheString = s1.Id";
             env.CompileDeploy(textOne, path).AddListener("s1");
 
             var textTwo = "@name('s2') " +
@@ -1331,7 +1331,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(eventS1, "S1");
             }
             else if (rep.Value.IsMapEvent()) {
-                eventS1 = Collections.SingletonDataMap("id", "myId");
+                eventS1 = Collections.SingletonDataMap("Id", "myId");
                 env.SendEventMap((IDictionary<string, object>)eventS1, "S1");
             }
             else if (rep.Value.IsObjectArrayEvent()) {
@@ -1341,13 +1341,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             else if (rep.Value.IsAvroEvent()) {
                 var schemaAvro = env.RuntimeAvroSchemaByDeployment("schema1", "S1");
                 var theEvent = new GenericRecord(schemaAvro.AsRecordSchema());
-                theEvent.Put("id", "myId");
+                theEvent.Put("Id", "myId");
                 eventS1 = theEvent;
                 env.SendEventAvro(theEvent, "S1");
             }
             else if (rep.Value.IsJsonEvent() || rep.Value.IsJsonProvidedClassEvent()) {
                 var @object = new JObject();
-                @object.Add("id", "myId");
+                @object.Add("Id", "myId");
                 eventS1 = @object.ToString();
                 env.SendEventJson((string)eventS1, "S1");
             }
@@ -1361,7 +1361,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(eventS0, "S0");
             }
             else if (rep.Value.IsMapEvent()) {
-                eventS0 = Collections.SingletonDataMap("theString", "myId");
+                eventS0 = Collections.SingletonDataMap("TheString", "myId");
                 env.SendEventMap((IDictionary<string, object>)eventS0, "S0");
             }
             else if (rep.Value.IsObjectArrayEvent()) {
@@ -1371,13 +1371,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             else if (rep.Value.IsAvroEvent()) {
                 var schemaAvro = env.RuntimeAvroSchemaByDeployment("schema1", "S0");
                 var theEvent = new GenericRecord(schemaAvro.AsRecordSchema());
-                theEvent.Put("theString", "myId");
+                theEvent.Put("TheString", "myId");
                 eventS0 = theEvent;
                 env.SendEventAvro(theEvent, "S0");
             }
             else if (rep.Value.IsJsonEvent() || rep.Value.IsJsonProvidedClassEvent()) {
                 var @object = new JObject();
-                @object.Add("theString", "myId");
+                @object.Add("TheString", "myId");
                 eventS0 = @object.ToString();
                 env.SendEventJson((string)eventS0, "S0");
             }
@@ -1582,7 +1582,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             public override string ToString()
             {
-                return "{\"theString\":\"" + theString + "\"}";
+                return "{\"TheString\":\"" + theString + "\"}";
             }
         }
 

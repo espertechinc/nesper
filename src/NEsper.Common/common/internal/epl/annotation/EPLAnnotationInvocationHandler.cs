@@ -173,7 +173,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
             }
 
 #if false
-// Don't know if Castle will create a real proxy or a fake proxy - TBD
+// Don't know if Castle will create a real proxy or a fake proxy - TODO
             if (!(other is EPLAnnotationInvocationHandler handler)) {
                 return false;
             }

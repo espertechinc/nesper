@@ -489,7 +489,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         services);
             }
 
-            var flags = new ResultSetProcessorFlags(join, outputLimitSpec, outputConditionType.Value);
+            var flags = new ResultSetProcessorFlags(join, outputLimitSpec, outputConditionType);
 
             if (hasOutputLimitOpt && flags.HasOutputLimit) {
                 PlanSerdes(selectExprProcessorForge.ResultEventType, additionalForgeables, statementRawInfo, services);
@@ -539,7 +539,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     optionalHavingForge,
                     isSelectRStream,
                     outputLimitSpec,
-                    outputConditionType.Value,
+                    outputConditionType,
                     hasOrderBy,
                     typeService.EventTypes);
                 forgeX.PlanStateSettings(fabricCharge, statementRawInfo, services);
@@ -572,7 +572,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     optionalHavingForge,
                     isSelectRStream,
                     outputLimitSpec,
-                    outputConditionType.Value,
+                    outputConditionType,
                     hasOrderBy,
                     typeService.EventTypes);
                 forgeX.PlanStateSettings(fabricCharge, statementRawInfo, services);
@@ -731,7 +731,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         typeService.EventTypes.Length > 1,
                         isHistoricalOnly,
                         iterateUnbounded,
-                        outputConditionType.Value,
+                        outputConditionType,
                         optionalOutputFirstConditionFactoryForge,
                         typeService.EventTypes,
                         groupByMultiKey);
@@ -761,7 +761,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         outputLimitSpec,
                         hasOrderBy,
                         isHistoricalOnly,
-                        outputConditionType.Value,
+                        outputConditionType,
                         optionalOutputFirstConditionFactoryForge,
                         groupByMultiKey,
                         unboundedProcessor);
@@ -805,7 +805,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 outputLimitSpec,
                 hasOrderBy,
                 isHistoricalOnly,
-                outputConditionType.Value,
+                outputConditionType,
                 optionalOutputFirstConditionFactoryForge,
                 groupByMultiKey);
             forge.PlanStateSettings(fabricCharge, statementRawInfo, flags, services);

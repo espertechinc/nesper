@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             var milestone = new AtomicLong();
             var expression =
-                "@name('A') select a.id as a, b.id as b from pattern [every a=SupportBean_A -> b=SupportBean_B]";
+                "@name('A') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -> b=SupportBean_B]";
             env.CompileDeploy(expression).AddListener("A");
 
             env.SendEventBean(new SupportBean_A("A1"));

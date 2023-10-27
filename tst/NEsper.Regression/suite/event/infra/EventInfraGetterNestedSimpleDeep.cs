@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     @event.Put("property", inner);
                 }
                 else {
-                    var leaf = Collections.SingletonDataMap("id", val.Id);
+                    var leaf = Collections.SingletonDataMap("Id", val.Id);
                     var inner = Collections.SingletonDataMap("leaf", leaf);
                     @event.Put("property", inner);
                 }
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     @event.Add("property", new JObject(new JProperty("leaf")));
                 }
                 else {
-                    var leaf = new JObject(new JProperty("id", val.Id));
+                    var leaf = new JObject(new JProperty("Id", val.Id));
                     var inner = new JObject(new JProperty("leaf", leaf));
                     @event.Add("property", inner);
                 }
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                             .GetField("leaf")
                             .Schema.AsRecordSchema());
 
-                    leaf.Put("id", val.Id);
+                    leaf.Put("Id", val.Id);
                     var inner = new GenericRecord(schema.GetField("property").Schema.AsRecordSchema());
                     inner.Put("leaf", leaf);
                     @event.Put("property", inner);
@@ -151,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             var epl = createSchemaEPL +
                       "@name('s0') select * from LocalEvent;\n" +
-                      "@name('s1') select property.leaf.id as c0, exists(property.leaf.id) as c1, typeof(property.leaf.id) as c2 from LocalEvent;\n";
+                      "@name('s1') select property.leaf.Id as c0, exists(property.leaf.Id) as c1, typeof(property.leaf.Id) as c2 from LocalEvent;\n";
             env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
             sender.Invoke(new Nullable2Lvl(false, false, "a"));
@@ -189,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             bool exists,
             string value)
         {
-            var getter = @event.EventType.GetGetter("property.leaf.id");
+            var getter = @event.EventType.GetGetter("property.leaf.Id");
             Assert.AreEqual(exists, getter.IsExistsProperty(@event));
             Assert.AreEqual(value, getter.Get(@event));
             Assert.IsNull(getter.GetFragment(@event));
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             return "@public @buseventtype create " +
                    underlying +
-                   " schema LocalLeafEvent(id string);\n" +
+                   " schema LocalLeafEvent(Id string);\n" +
                    "@public @buseventtype create " +
                    underlying +
                    " schema LocalInnerEvent(leaf LocalLeafEvent);\n" +

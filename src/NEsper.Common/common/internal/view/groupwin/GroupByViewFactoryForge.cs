@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         internal override Type TypeOfFactory => typeof(GroupByViewFactory);
 
-        internal override string FactoryMethod => "group";
+        internal override string FactoryMethod => "Group";
 
         public IList<ViewFactoryForge> Groupeds { set; get; }
 
@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 try {
                     reclaimMaxAge = timeAbacus.DeltaForSecondsDouble(double.Parse(hintValueMaxAge));
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     throw new ViewParameterException(
                         "Required hint value for hint '" +
                         HintEnum.RECLAIM_GROUP_AGED +
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                     try {
                         reclaimFrequency = timeAbacus.DeltaForSecondsDouble(double.Parse(hintValueFrequency));
                     }
-                    catch (Exception ex) {
+                    catch (Exception) {
                         throw new ViewParameterException(
                             "Required hint value for hint '" +
                             HintEnum.RECLAIM_GROUP_FREQ +
@@ -179,19 +179,13 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
 
             method.Block
-                .ExprDotMethod(factory, "setReclaimAged", Constant(isReclaimAged))
-                .ExprDotMethod(factory, "setReclaimMaxAge", Constant(reclaimMaxAge))
-                .ExprDotMethod(factory, "setReclaimFrequency", Constant(reclaimFrequency))
-                .ExprDotMethod(factory, "setPropertyNames", Constant(propertyNames))
-                .ExprDotMethod(
-                    factory,
-                    "setGroupeds",
-                    LocalMethod(MakeViewFactories(Groupeds, GetType(), method, classScope, symbols)))
-                .ExprDotMethod(
-                    factory,
-                    "setEventType",
-                    EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF))
-                .ExprDotMethod(factory, "setAddingProperties", Constant(addingProperties));
+                .SetProperty(factory, "IsReclaimAged", Constant(isReclaimAged))
+                .SetProperty(factory, "ReclaimMaxAge", Constant(reclaimMaxAge))
+                .SetProperty(factory, "ReclaimFrequency", Constant(reclaimFrequency))
+                .SetProperty(factory, "PropertyNames", Constant(propertyNames))
+                .SetProperty(factory, "Groupeds", LocalMethod(MakeViewFactories(Groupeds, GetType(), method, classScope, symbols)))
+                .SetProperty(factory, "EventType", EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF))
+                .SetProperty(factory, "IsAddingProperties", Constant(addingProperties));
             ViewMultiKeyHelper.Assign(CriteriaExpressions, MultiKeyClassNames, method, factory, symbols, classScope);
         }
 
@@ -232,7 +226,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                         }
                     }
                 }
-                catch (PropertyAccessException ex) {
+                catch (PropertyAccessException) {
                     // expected
                     parentContainsMergeKeys = false;
                 }

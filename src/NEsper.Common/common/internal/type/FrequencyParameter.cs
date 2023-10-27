@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public string Formatted()
         {
-            return "*/" + _frequency;
+            return $"*/{_frequency}";
         }
     }
 }

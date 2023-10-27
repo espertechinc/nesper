@@ -87,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     try {
                         prop = PropertyParser.ParseAndWalkLaxToSimple(identNode.FullUnresolvedName);
                     }
-                    catch (Exception ex) {
+                    catch (Exception) {
                         throw new ExprValidationException(
                             "Failed to parse property '" + identNode.FullUnresolvedName + "'");
                     }

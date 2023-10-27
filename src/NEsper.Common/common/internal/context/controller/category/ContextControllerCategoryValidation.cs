@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.stage2;
@@ -23,16 +25,16 @@ namespace com.espertech.esper.common.@internal.context.controller.category
 {
     public class ContextControllerCategoryValidation : ContextControllerPortableInfo
     {
-        private readonly EventType categoryEventType;
+        private readonly EventType _categoryEventType;
 
         public EventType CategoryEventType {
-            get => categoryEventType;
-            set => throw new System.NotImplementedException();
+            get => _categoryEventType;
+            set => throw new NotSupportedException();
         }
 
         public ContextControllerCategoryValidation(EventType categoryEventType)
         {
-            CategoryEventType = categoryEventType;
+            _categoryEventType = categoryEventType;
         }
 
         public CodegenExpression Make(CodegenExpressionRef addInitSvc)

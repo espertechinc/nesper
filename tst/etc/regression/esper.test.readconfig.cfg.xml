@@ -95,10 +95,10 @@
     <variable name="var2" type="string"/>
     <variable name="var3" type="string" constant="true"/>
 
-    <event-meta>
+    <event-meta enable-xmlxsd="true">
       <class-property-resolution style="distinct_case_insensitive" accessor-style="public"/>
       <event-representation type="map"/>
-      <avro-settings enable-avro="false" enable-native-string="false" enable-schema-default-nonnull="false" objectvalue-typewidener-factory-class="myObjectValueTypeWidenerFactoryClass" type-representation-mapper-class="myTypeToRepresentationMapperClass"/>
+      <avro-settings enable-avro="true" enable-native-string="false" enable-schema-default-nonnull="false" objectvalue-typewidener-factory-class="myObjectValueTypeWidenerFactoryClass" type-representation-mapper-class="myTypeToRepresentationMapperClass"/>
     </event-meta>
 
     <logging>
@@ -155,6 +155,7 @@
               access-modifier-script="internal" 
               access-modifier-table="public" 
               access-modifier-variable="internal" 
+              access-modifier-inlined-class="public" 
               bus-modifier-event-type="bus" 
               threadpool-compiler-num-threads="1234" 
               threadpool-compiler-capacity="4321" 
@@ -216,6 +217,7 @@
       <execution-path enabled="true"/>
       <timer-debug enabled="false"/>
       <audit pattern="[%u] %m"/>
+      <lock-activity enabled="true"/>
     </logging>
 
     <variables>
@@ -258,7 +260,7 @@
 
     <expression self-subselect-preeval="false" time-zone="GMT-4:00" />
 
-    <execution prioritized="true" fairlock="true" disable-locking="true" filter-service-profile="readwrite" declared-expr-value-cache-size="101"/>
+    <execution prioritized="true" fairlock="true" disable-locking="true" filter-service-profile="readwrite" declared-expr-value-cache-size="101" precedence-enabled="true"/>
   </runtime>
 
 </esper-configuration>

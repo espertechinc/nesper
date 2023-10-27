@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.type
                     return "inner";
 
                 default:
-                    throw new ArgumentException("Unknown joinType " + joinType);
+                    throw new ArgumentException($"Unknown joinType {joinType}");
             }
         }
     }

@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var milestone = new AtomicLong();
                 env.AdvanceTime(1000);
 
-                var stmtTextLO = "@name('s0') select sum(intPrimitive) as c0, count(*) as c1 " +
+                var stmtTextLO = "@name('s0') select sum(IntPrimitive) as c0, count(*) as c1 " +
                                  "from pattern [every timer:interval(1)] unidirectional " +
                                  "left outer join " +
                                  "SupportBean#keepall";
@@ -203,7 +203,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // test 2-stream inner join
                 //
                 var fieldsIJ = "c0,c1".SplitCsv();
-                var stmtTextIJ = "@name('s0') select sum(intPrimitive) as c0, count(*) as c1 " +
+                var stmtTextIJ = "@name('s0') select sum(IntPrimitive) as c0, count(*) as c1 " +
                                  "from SupportBean_S0 unidirectional " +
                                  "inner join " +
                                  "SupportBean#keepall";
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // test 3-stream inner join
                 //
                 var fields3IJ = "c0,c1".SplitCsv();
-                var stmtText3IJ = "@name('s0') select sum(intPrimitive) as c0, count(*) as c1 " +
+                var stmtText3IJ = "@name('s0') select sum(IntPrimitive) as c0, count(*) as c1 " +
                                   "from " +
                                   "SupportBean_S0#keepall " +
                                   "inner join " +
@@ -251,8 +251,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test 3-stream full outer join
                 //
-                var fields3FOJ = "p00,p10,theString".SplitCsv();
-                var stmtText3FOJ = "@name('s0') select p00, p10, theString " +
+                var fields3FOJ = "P00,P10,TheString".SplitCsv();
+                var stmtText3FOJ = "@name('s0') select P00, P10, TheString " +
                                    "from " +
                                    "SupportBean_S0#keepall " +
                                    "full outer join " +
@@ -296,15 +296,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test 3-stream full outer join with where-clause
                 //
-                var fields3FOJW = "p00,p10,theString".SplitCsv();
-                var stmtText3FOJW = "@name('s0') select p00, p10, theString " +
+                var fields3FOJW = "P00,P10,TheString".SplitCsv();
+                var stmtText3FOJW = "@name('s0') select P00, P10, TheString " +
                                     "from " +
                                     "SupportBean_S0#keepall as s0 " +
                                     "full outer join " +
                                     "SupportBean_S1#keepall as s1 " +
                                     "full outer join " +
                                     "SupportBean#keepall as sb " +
-                                    "where s0.p00 = s1.p10";
+                                    "where s0.P00 = s1.P10";
                 env.CompileDeployAddListenerMile(stmtText3FOJW, "s0", milestone.GetAndIncrement());
 
                 env.SendEventBean(new SupportBean_S0(1, "X1"));
@@ -324,14 +324,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select irstream symbol, count(*) as cnt " +
+                var stmtText = "@name('s0') select irstream Symbol, count(*) as cnt "+
                                "from SupportMarketDataBean unidirectional, SupportBean#keepall " +
-                               "where theString = symbol group by theString, symbol";
+"where TheString = Symbol group by TheString, Symbol";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // send event, expect result
                 SendEventMD(env, "E1", 1L);
-                var fields = "symbol,cnt".SplitCsv();
+                var fields = "Symbol,cnt".SplitCsv();
                 env.AssertListenerNotInvoked("s0");
 
                 SendEvent(env, "E1", 10);
@@ -372,7 +372,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var stmtText = "@name('s0') select irstream count(*) as cnt " +
                                "from SupportMarketDataBean unidirectional, SupportBean#keepall " +
-                               "where theString = symbol";
+"where TheString = Symbol";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 TryUnsupportedIterator(env);
 
@@ -405,12 +405,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select s0.id, s1.id, s2.id " +
+                var stmtText = "@name('s0') select s0.Id, s1.Id, s2.Id " +
                                "from SupportBean_S0 as s0 unidirectional " +
                                " full outer join SupportBean_S1#keepall as s1" +
-                               " on p00 = p10 " +
+                               " on P00 = P10 " +
                                " full outer join SupportBean_S2#keepall as s2" +
-                               " on p10 = p20";
+                               " on P10 = P20";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 Try3TableOuterJoin(env);
                 env.UndeployAll();
@@ -421,11 +421,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select s0.id, s1.id, s2.id from SupportBean_S0 as s0 unidirectional " +
+                var stmtText = "@name('s0') select s0.Id, s1.Id, s2.Id from SupportBean_S0 as s0 unidirectional " +
                                " left outer join SupportBean_S1#keepall as s1 " +
-                               " on p00 = p10 " +
+                               " on P00 = P10 " +
                                " left outer join SupportBean_S2#keepall as s2 " +
-                               " on p10 = p20";
+                               " on P10 = P20";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 Try3TableOuterJoin(env);
                 env.UndeployAll();
@@ -441,9 +441,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // no iterator allowed
                 var stmtText = "@name('s0') select count(*) as num " +
                                "from pattern [every timer:at(*/1,*,*,*,*)] unidirectional,\n" +
-                               "SupportBean(intPrimitive=1)#unique(theString) a,\n" +
-                               "SupportBean(intPrimitive=2)#unique(theString) b\n" +
-                               "where a.theString = b.theString";
+                               "SupportBean(IntPrimitive=1)#unique(TheString) a,\n" +
+                               "SupportBean(IntPrimitive=2)#unique(TheString) b\n" +
+                               "where a.TheString = b.TheString";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 SendEvent(env, "A", 1);
@@ -471,9 +471,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // no iterator allowed
                 var stmtText = "@name('s0') select count(*) as num " +
                                "from pattern [every timer:at(*/1,*,*,*,*)] unidirectional,\n" +
-                               "SupportBean(intPrimitive=1)#unique(theString) a,\n" +
-                               "SupportBean(intPrimitive=2)#unique(theString) b\n" +
-                               "where a.theString = b.theString output every 2 minutes";
+                               "SupportBean(IntPrimitive=1)#unique(TheString) a,\n" +
+                               "SupportBean(IntPrimitive=2)#unique(TheString) b\n" +
+                               "where a.TheString = b.TheString output every 2 minutes";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 SendEvent(env, "A", 1);
@@ -501,12 +501,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select s0.id, s1.id, s2.id " +
+                var stmtText = "@name('s0') select s0.Id, s1.Id, s2.Id " +
                                "from " +
                                "SupportBean_S0 as s0 unidirectional, " +
                                "SupportBean_S1#keepall as s1, " +
                                "SupportBean_S2#keepall as s2 " +
-                               "where p00 = p10 and p10 = p20";
+                               "where P00 = P10 and P10 = P20";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 Try3TableJoin(env);
                 env.UndeployAll();
@@ -517,12 +517,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select s0.id, s1.id, s2.id " +
+                var stmtText = "@name('s0') select s0.Id, s1.Id, s2.Id " +
                                "from " +
                                "SupportBean_S1#keepall as s1, " +
                                "SupportBean_S0 as s0 unidirectional, " +
                                "SupportBean_S2#keepall as s2 " +
-                               "where p00 = p10 and p10 = p20";
+                               "where P00 = P10 and P10 = P20";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 Try3TableJoin(env);
                 env.UndeployAll();
@@ -533,12 +533,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select s0.id, s1.id, s2.id " +
+                var stmtText = "@name('s0') select s0.Id, s1.Id, s2.Id " +
                                "from " +
                                "SupportBean_S2#keepall as s2, " +
                                "SupportBean_S0 as s0 unidirectional, " +
                                "SupportBean_S1#keepall as s1 " +
-                               "where p00 = p10 and p10 = p20";
+                               "where P00 = P10 and P10 = P20";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 Try3TableJoin(env);
                 env.UndeployAll();
@@ -549,12 +549,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select s0.id, s1.id, s2.id " +
+                var stmtText = "@name('s0') select s0.Id, s1.Id, s2.Id " +
                                "from " +
                                "SupportBean_S1#keepall as s1, " +
                                "SupportBean_S2#keepall as s2, " +
                                "SupportBean_S0 as s0 unidirectional " +
-                               "where p00 = p10 and p10 = p20";
+                               "where P00 = P10 and P10 = P20";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 Try3TableJoin(env);
                 env.UndeployAll();
@@ -565,9 +565,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select symbol, volume, theString, intPrimitive " +
+                var stmtText = "@name('s0') select Symbol, Volume, TheString, IntPrimitive "+
                                "from SupportMarketDataBean unidirectional " +
-                               "full outer join SupportBean#keepall on theString = symbol";
+"full outer join SupportBean#keepall on TheString = Symbol";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 TryFullOuterPassive2Stream(env);
                 env.UndeployAll();
@@ -578,9 +578,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select symbol, volume, theString, intPrimitive " +
+                var stmtText = "@name('s0') select Symbol, Volume, TheString, IntPrimitive "+
                                "from SupportMarketDataBean unidirectional " +
-                               "full outer join SupportBean#keepall on theString = symbol";
+"full outer join SupportBean#keepall on TheString = Symbol";
                 env.EplToModelCompileDeploy(stmtText).AddListener("s0");
 
                 TryFullOuterPassive2Stream(env);
@@ -594,16 +594,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var model = new EPStatementObjectModel();
-                model.SelectClause = SelectClause.Create("symbol", "volume", "theString", "intPrimitive");
+                model.SelectClause = SelectClause.Create("Symbol", "Volume", "TheString", "IntPrimitive");
                 model.FromClause =
                     FromClause.Create(FilterStream.Create(nameof(SupportMarketDataBean)).Unidirectional(true));
                 model.FromClause.Add(FilterStream.Create(nameof(SupportBean)).AddView("keepall"));
-                model.FromClause.Add(OuterJoinQualifier.Create("theString", OuterJoinType.FULL, "symbol"));
+                model.FromClause.Add(OuterJoinQualifier.Create("TheString", OuterJoinType.FULL, "Symbol"));
 
-                var stmtText = "select symbol, volume, theString, intPrimitive " +
+                var stmtText = "select Symbol, Volume, TheString, IntPrimitive "+
                                "from SupportMarketDataBean unidirectional " +
                                "full outer join SupportBean" +
-                               "#keepall on theString = symbol";
+"#keepall on TheString = Symbol";
                 Assert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -619,10 +619,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select symbol, volume, theString, intPrimitive " +
+                var stmtText = "@name('s0') select Symbol, Volume, TheString, IntPrimitive "+
                                "from SupportBean#keepall full outer join " +
                                "SupportMarketDataBean unidirectional " +
-                               "on theString = symbol";
+"on TheString = Symbol";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 TryFullOuterPassive2Stream(env);
@@ -635,9 +635,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select symbol, volume, theString, intPrimitive " +
+                var stmtText = "@name('s0') select Symbol, Volume, TheString, IntPrimitive "+
                                "from SupportMarketDataBean unidirectional, SupportBean" +
-                               "#keepall where theString = symbol";
+"#keepall where TheString = Symbol";
 
                 TryJoinPassive2Stream(env, stmtText);
             }
@@ -647,9 +647,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select symbol, volume, theString, intPrimitive " +
+                var stmtText = "@name('s0') select Symbol, Volume, TheString, IntPrimitive "+
                                "from SupportBean#keepall, SupportMarketDataBean unidirectional " +
-                               "where theString = symbol";
+"where TheString = Symbol";
 
                 TryJoinPassive2Stream(env, stmtText);
             }
@@ -661,14 +661,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var text = "select * from SupportBean unidirectional " +
                            "full outer join SupportMarketDataBean#keepall unidirectional " +
-                           "on theString = symbol";
+"on TheString = Symbol";
                 env.TryInvalidCompile(
                     text,
                     "The unidirectional keyword requires that no views are declared onto the stream (applies to stream 1)");
 
                 text = "select * from SupportBean#length(2) unidirectional " +
                        "full outer join SupportMarketDataBean#keepall " +
-                       "on theString = symbol";
+"on TheString = Symbol";
                 env.TryInvalidCompile(
                     text,
                     "The unidirectional keyword requires that no views are declared onto the stream");
@@ -681,7 +681,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             // send event, expect result
             SendEventMD(env, "E1", 1L);
-            var fields = "symbol,volume,theString,intPrimitive".SplitCsv();
+            var fields = "Symbol,Volume,TheString,IntPrimitive".SplitCsv();
             env.AssertPropsNew("s0", fields, new object[] { "E1", 1L, null, null });
 
             SendEvent(env, "E1", 10);
@@ -703,7 +703,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             // send event, expect result
             SendEventMD(env, "E1", 1L);
-            var fields = "symbol,volume,theString,intPrimitive".SplitCsv();
+            var fields = "Symbol,Volume,TheString,IntPrimitive".SplitCsv();
             env.AssertListenerNotInvoked("s0");
 
             SendEvent(env, "E1", 10);
@@ -765,10 +765,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         private static void TryAssertion2StreamInnerWGroupBy(RegressionEnvironment env)
         {
-            var epl = "@buseventtype @public create objectarray schema E1 (id string, grp string, value int);\n" +
-                      "@buseventtype @public create objectarray schema E2 (id string, value2 int);\n" +
-                      "@name('s0') select count(*) as c0, sum(E1.value) as c1, E1.id as c2 " +
-                      "from E1 unidirectional inner join E2#keepall on E1.id = E2.id group by E1.grp";
+            var epl = "@buseventtype @public create objectarray schema E1 (Id string, grp string, value int);\n" +
+                      "@buseventtype @public create objectarray schema E2 (Id string, value2 int);\n" +
+                      "@name('s0') select count(*) as c0, sum(E1.value) as c1, E1.Id as c2 " +
+                      "from E1 unidirectional inner join E2#keepall on E1.Id = E2.Id group by E1.grp";
             env.CompileDeploy(epl, new RegressionPath());
             env.AddListener("s0");
             var fields = "c0,c1,c2".SplitCsv();
@@ -787,7 +787,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         private static void Try3TableOuterJoin(RegressionEnvironment env)
         {
-            var fields = "s0.id,s1.id,s2.id".SplitCsv();
+            var fields = "s0.Id,s1.Id,s2.Id".SplitCsv();
 
             env.SendEventBean(new SupportBean_S0(1, "E1"));
             env.AssertPropsNew("s0", fields, new object[] { 1, null, null });
@@ -841,7 +841,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.AssertListenerNotInvoked("s0");
 
             env.SendEventBean(new SupportBean_S0(11, "E4"));
-            var fields = "s0.id,s1.id,s2.id".SplitCsv();
+            var fields = "s0.Id,s1.Id,s2.Id".SplitCsv();
             env.AssertPropsNew("s0", fields, new object[] { 11, 21, 31 });
 
             env.SendEventBean(new SupportBean_S2(32, "E4"));

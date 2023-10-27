@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
         public override EventType EventType =>
             // The schema is the parent view's schema
-            parent.EventType;
+            Parent.EventType;
 
         public override IEnumerator<EventBean> GetEnumerator()
         {

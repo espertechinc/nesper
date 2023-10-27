@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -31,7 +32,9 @@ namespace com.espertech.esper.common.@internal.epl.pattern.everydistinct
     /// </summary>
     public class EvalEveryDistinctForgeNode : EvalForgeNodeBase
     {
-        [NonSerialized] private MatchedEventConvertorForge _convertor;
+        [JsonIgnore]
+        [NonSerialized]
+        private MatchedEventConvertorForge _convertor;
 
         private ExprNode _expiryTimeExp;
         private TimePeriodComputeForge _timePeriodComputeForge;

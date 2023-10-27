@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var fields = "c0".SplitCsv();
 
-                var epl = "@name('s0') select irstream theString as c0 from SupportBean#keepall()";
+                var epl = "@name('s0') select irstream TheString as c0 from SupportBean#keepall()";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.AssertPropsPerRowIterator("s0", fields, Array.Empty<object[]>());
@@ -100,8 +100,8 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "symbol,price".SplitCsv();
-                var epl = "@name('s0') select symbol, price from SupportMarketDataBean#keepall";
+                var fields = "Symbol,Price".SplitCsv();
+                var epl = "@name('s0') select Symbol, Price from SupportMarketDataBean#keepall";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "ABC", 20);
@@ -130,11 +130,11 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select irstream symbol, count(*) as cnt, sum(price) as mysum from SupportMarketDataBean#keepall group by symbol";
+"@name('s0') select irstream Symbol, count(*) as cnt, sum(Price) as mysum from SupportMarketDataBean#keepall group by Symbol";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "S1", 100);
-                var fields = new string[] { "symbol", "cnt", "mysum" };
+                var fields = new string[] { "Symbol", "cnt", "mysum" };
                 env.AssertPropsIRPair("s0", fields, new object[] { "S1", 1L, 100d }, new object[] { "S1", 0L, null });
 
                 SendEvent(env, "S2", 50);

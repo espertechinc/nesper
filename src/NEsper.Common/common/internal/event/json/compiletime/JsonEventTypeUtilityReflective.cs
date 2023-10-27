@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
                     services);
                 return false;
             }
-            catch (UnsupportedOperationException ex) {
+            catch (UnsupportedOperationException) {
                 return true;
             }
         }

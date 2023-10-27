@@ -30,7 +30,7 @@ namespace com.espertech.esper.regressionlib.support.extend.view
 
         public void Stop(AgentInstanceStopServices services)
         {
-            child.Update(events.ToArray(), null);
+            Child.Update(events.ToArray(), null);
             events = new List<EventBean>();
         }
 

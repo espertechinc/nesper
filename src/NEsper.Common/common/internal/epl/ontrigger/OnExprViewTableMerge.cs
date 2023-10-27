@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.ontrigger
 {
     public class OnExprViewTableMerge : OnExprViewTableBase
     {
-        private new readonly InfraOnMergeViewFactory parent;
+        private readonly InfraOnMergeViewFactory parent;
 
         public OnExprViewTableMerge(
             SubordWMatchExprLookupStrategy lookupStrategy,

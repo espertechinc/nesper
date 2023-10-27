@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 var epl = "@name('s0') select * from SupportEventWithManyArray as e,\n" +
                           "method:" +
                           typeof(SupportJoinResultIsArray).FullName +
-                          ".getResultTwoField(e.id, e.intOne) as s";
+                          ".getResultTwoField(e.Id, e.intOne) as s";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var sb1 = SendManyArrayGetSB(env, "MA1", new int[] { 1, 2 });
@@ -243,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             env.AssertPropsNew(
                 "s0",
-                "e.id,s.id".SplitCsv(),
+                "e.Id,s.Id".SplitCsv(),
                 new object[] { idOne, idTwo });
         }
 

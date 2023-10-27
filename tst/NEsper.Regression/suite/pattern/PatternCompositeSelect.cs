@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                         var typeFragB = theEvent.EventType.GetFragmentType("b");
                         Assert.IsFalse(typeFragB.IsIndexed);
                         Assert.AreEqual("SupportBean_B", typeFragB.FragmentType.Name);
-                        Assert.AreEqual(typeof(string), typeFragB.FragmentType.GetPropertyType("id"));
+                        Assert.AreEqual(typeof(string), typeFragB.FragmentType.GetPropertyType("Id"));
 
                         var eventFragB = (EventBean)theEvent.GetFragment("b");
                         Assert.AreEqual("SupportBean_B", eventFragB.EventType.Name);
@@ -114,15 +114,15 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                         var typeFragA = theEvent.EventType.GetFragmentType("a");
                         Assert.IsTrue(typeFragA.IsIndexed);
                         Assert.AreEqual("SupportBean_A", typeFragA.FragmentType.Name);
-                        Assert.AreEqual(typeof(string), typeFragA.FragmentType.GetPropertyType("id"));
+                        Assert.AreEqual(typeof(string), typeFragA.FragmentType.GetPropertyType("Id"));
 
                         Assert.IsTrue(theEvent.GetFragment("a") is EventBean[]);
                         var eventFragA1 = (EventBean)theEvent.GetFragment("a[0]");
                         Assert.AreEqual("SupportBean_A", eventFragA1.EventType.Name);
-                        Assert.AreEqual("A1", eventFragA1.Get("id"));
+                        Assert.AreEqual("A1", eventFragA1.Get("Id"));
                         var eventFragA2 = (EventBean)theEvent.GetFragment("a[1]");
                         Assert.AreEqual("SupportBean_A", eventFragA2.EventType.Name);
-                        Assert.AreEqual("A2", eventFragA2.Get("id"));
+                        Assert.AreEqual("A2", eventFragA2.Get("Id"));
                     });
 
                 env.UndeployAll();

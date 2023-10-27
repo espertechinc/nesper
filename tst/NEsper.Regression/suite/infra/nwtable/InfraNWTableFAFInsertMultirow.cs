@@ -161,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean("x", 50));
                 env.CompileExecuteFAF(
                     "insert into MyInfra values ('a', 1), " +
-                    "((select theString from LastSupportBean), (select intPrimitive from LastSupportBean))",
+                    "((select TheString from LastSupportBean), (select IntPrimitive from LastSupportBean))",
                     path);
                 env.AssertPropsPerRowIterator(
                     "infra",

@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             WithCoerceSimpleWithNamedWindowsShare(execs);
             WithCoerceSimpleWithNamedWindowsDisableShare(execs);
             WithCoerceSimpleWithTables(execs);
-            
+
             return execs;
         }
 
@@ -40,7 +40,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return execs;
         }
 
-        public static IList<RegressionExecution> WithCoerceSimpleWithNamedWindowsNoShare(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithCoerceSimpleWithNamedWindowsNoShare(
+            IList<RegressionExecution> execs = null)
         {
             // named window tests
             execs = execs ?? new List<RegressionExecution>();
@@ -49,7 +50,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return execs;
         }
 
-        public static IList<RegressionExecution> WithCoerceSimpleWithNamedWindowsShare(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithCoerceSimpleWithNamedWindowsShare(
+            IList<RegressionExecution> execs = null)
         {
             // named window tests
             execs = execs ?? new List<RegressionExecution>();
@@ -58,7 +60,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return execs;
         }
 
-        public static IList<RegressionExecution> WithCoerceSimpleWithNamedWindowsDisableShare(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithCoerceSimpleWithNamedWindowsDisableShare(
+            IList<RegressionExecution> execs = null)
         {
             // named window tests
             execs = execs ?? new List<RegressionExecution>();

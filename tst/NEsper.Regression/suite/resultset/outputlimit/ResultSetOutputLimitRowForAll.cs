@@ -260,7 +260,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select sum(price) " +
+                var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec)";
                 TryAssertion12(env, stmtText, "none", new AtomicLong());
             }
@@ -270,9 +270,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select sum(price) " +
+                var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec), " +
-                               "SupportBean#keepall where theString=symbol";
+"SupportBean#keepall where TheString=Symbol";
                 TryAssertion12(env, stmtText, "none", new AtomicLong());
             }
         }
@@ -281,9 +281,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select sum(price) " +
+                var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec) " +
-                               " having sum(price) > 100";
+                               " having sum(Price) > 100";
                 TryAssertion34(env, stmtText, "none", new AtomicLong());
             }
         }
@@ -292,10 +292,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select sum(price) " +
+                var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec), " +
-                               "SupportBean#keepall where theString=symbol " +
-                               " having sum(price) > 100";
+"SupportBean#keepall where TheString=Symbol "+
+                               " having sum(Price) > 100";
                 TryAssertion34(env, stmtText, "none", new AtomicLong());
             }
         }
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select sum(price) " +
+                var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec) " +
                                "output every 1 seconds";
                 TryAssertion56(env, stmtText, "default", new AtomicLong());
@@ -315,9 +315,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select sum(price) " +
+                var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec), " +
-                               "SupportBean#keepall where theString=symbol " +
+"SupportBean#keepall where TheString=Symbol "+
                                "output every 1 seconds";
                 TryAssertion56(env, stmtText, "default", new AtomicLong());
             }
@@ -327,9 +327,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select sum(price) " +
+                var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec) \n" +
-                               "having sum(price) > 100" +
+                               "having sum(Price) > 100" +
                                "output every 1 seconds";
                 TryAssertion78(env, stmtText, "default", new AtomicLong());
             }
@@ -339,10 +339,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select sum(price) " +
+                var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec), " +
-                               "SupportBean#keepall where theString=symbol " +
-                               "having sum(price) > 100" +
+"SupportBean#keepall where TheString=Symbol "+
+                               "having sum(Price) > 100" +
                                "output every 1 seconds";
                 TryAssertion78(env, stmtText, "default", new AtomicLong());
             }
@@ -365,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             AtomicLong milestone)
         {
             var stmtText = opt.GetHint() +
-                           "@name('s0') select sum(price) " +
+                           "@name('s0') select sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec) " +
                            "output all every 1 seconds";
             TryAssertion56(env, stmtText, "all", milestone);
@@ -388,9 +388,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             AtomicLong milestone)
         {
             var stmtText = opt.GetHint() +
-                           "@name('s0') select sum(price) " +
+                           "@name('s0') select sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+"SupportBean#keepall where TheString=Symbol "+
                            "output all every 1 seconds";
             TryAssertion56(env, stmtText, "all", milestone);
         }
@@ -412,9 +412,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             AtomicLong milestone)
         {
             var stmtText = opt.GetHint() +
-                           "@name('s0') select sum(price) " +
+                           "@name('s0') select sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec) " +
-                           "having sum(price) > 100" +
+                           "having sum(Price) > 100" +
                            "output all every 1 seconds";
             TryAssertion78(env, stmtText, "all", milestone);
         }
@@ -436,10 +436,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             AtomicLong milestone)
         {
             var stmtText = opt.GetHint() +
-                           "@name('s0') select sum(price) " +
+                           "@name('s0') select sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
-                           "having sum(price) > 100" +
+"SupportBean#keepall where TheString=Symbol "+
+                           "having sum(Price) > 100" +
                            "output all every 1 seconds";
             TryAssertion78(env, stmtText, "all", milestone);
         }
@@ -461,7 +461,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             AtomicLong milestone)
         {
             var stmtText = opt.GetHint() +
-                           "@name('s0') select sum(price) " +
+                           "@name('s0') select sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec)" +
                            "output last every 1 seconds";
             TryAssertion13_14(env, stmtText, "last", milestone);
@@ -484,9 +484,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             AtomicLong milestone)
         {
             var stmtText = opt.GetHint() +
-                           "@name('s0') select sum(price) " +
+                           "@name('s0') select sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
+"SupportBean#keepall where TheString=Symbol "+
                            "output last every 1 seconds";
             TryAssertion13_14(env, stmtText, "last", milestone);
         }
@@ -508,9 +508,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             AtomicLong milestone)
         {
             var stmtText = opt.GetHint() +
-                           "@name('s0') select sum(price) " +
+                           "@name('s0') select sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec)" +
-                           "having sum(price) > 100 " +
+                           "having sum(Price) > 100 " +
                            "output last every 1 seconds";
             TryAssertion15_16(env, stmtText, "last", milestone);
         }
@@ -532,10 +532,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             AtomicLong milestone)
         {
             var stmtText = opt.GetHint() +
-                           "@name('s0') select sum(price) " +
+                           "@name('s0') select sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec), " +
-                           "SupportBean#keepall where theString=symbol " +
-                           "having sum(price) > 100 " +
+"SupportBean#keepall where TheString=Symbol "+
+                           "having sum(Price) > 100 " +
                            "output last every 1 seconds";
             TryAssertion15_16(env, stmtText, "last", milestone);
         }
@@ -544,7 +544,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select sum(price) " +
+                var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec) " +
                                "output first every 1 seconds";
                 TryAssertion17(env, stmtText, "first", new AtomicLong());
@@ -555,7 +555,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select sum(price) " +
+                var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec) " +
                                "output snapshot every 1 seconds";
                 TryAssertion18(env, stmtText, "first", new AtomicLong());
@@ -576,9 +576,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select sum(volume) as result " +
+                var stmtText = "@name('s0') select sum(Volume) as result " +
                                "from SupportMarketDataBean#length(10) as two " +
-                               "having sum(volume) > 0 " +
+                               "having sum(Volume) > 0 " +
                                "output every 5 events";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -601,11 +601,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select sum(volume) as result " +
+                var stmtText = "@name('s0') select sum(Volume) as result " +
                                "from SupportMarketDataBean#length(10) as one," +
                                "SupportBean#length(10) as two " +
-                               "where one.symbol=two.theString " +
-                               "having sum(volume) > 0 " +
+"where one.Symbol=two.TheString "+
+                               "having sum(Volume) > 0 " +
                                "output every 5 events";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -631,9 +631,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimer(env, 0);
 
-                var epl = "@name('s0') select irstream max(price) as maxVol" +
-                          " from SupportMarketDataBean#sort(1,volume desc) as s0, " +
-                          "SupportBean#keepall as s1 where s1.theString=s0.symbol " +
+                var epl = "@name('s0') select irstream max(Price) as maxVol" +
+                          " from SupportMarketDataBean#sort(1,Volume desc) as s0, " +
+"SupportBean#keepall as s1 where s1.TheString=s0.Symbol "+
                           "output every 1.0d seconds";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -672,7 +672,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimer(env, 0);
 
-                var epl = "@name('s0') select irstream max(price) as maxVol" +
+                var epl = "@name('s0') select irstream max(Price) as maxVol" +
                           " from SupportMarketDataBean#time(1.1 sec) " +
                           "output every 1 seconds";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -801,7 +801,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var fields = new string[] { "cnt" };
                 SendTimer(env, 0);
                 var selectStmt =
-                    "@name('s0') select count(*) as cnt from SupportBean#time(10 seconds) where intPrimitive > 0 output snapshot every 1 seconds";
+                    "@name('s0') select count(*) as cnt from SupportBean#time(10 seconds) where IntPrimitive > 0 output snapshot every 1 seconds";
                 env.CompileDeploy(selectStmt).AddListener("s0");
 
                 SendEvent(env, "s0", 1);
@@ -849,7 +849,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 0);
                 var selectStmt = "@name('s0') select count(*) as cnt from " +
                                  "SupportBean#time(10 seconds) as s, " +
-                                 "SupportMarketDataBean#keepall as m where m.symbol = s.theString and intPrimitive > 0 output snapshot every 1 seconds";
+"SupportMarketDataBean#keepall as m where m.Symbol = s.TheString and IntPrimitive > 0 output snapshot every 1 seconds";
                 env.CompileDeploy(selectStmt).AddListener("s0");
 
                 env.SendEventBean(new SupportMarketDataBean("s0", 0, 0L, ""));
@@ -909,7 +909,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             RegressionEnvironment env,
             bool join)
         {
-            var epl = "@name('s0') select customagg(intPrimitive) as c0 from SupportBean" +
+            var epl = "@name('s0') select customagg(IntPrimitive) as c0 from SupportBean" +
                       (join ? "#keepall, SupportBean_S0#lastevent" : "") +
                       " output snapshot every 3 events";
             env.CompileDeploy(epl).AddListener("s0");
@@ -940,7 +940,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SupportOutputLimitOpt opt)
         {
             var epl = opt.GetHint() +
-                      "insert into MyStream select sum(intPrimitive) as thesum from SupportBean#keepall " +
+                      "insert into MyStream select sum(IntPrimitive) as thesum from SupportBean#keepall " +
                       "output last every 2 events;\n" +
                       "@name('s0') select * from MyStream;\n";
             env.CompileDeploy(epl).AddListener("s0");
@@ -961,7 +961,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var fields = new string[] { "sum(price)" };
+            var fields = new string[] { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(
                 200,
@@ -1037,7 +1037,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var fields = new string[] { "sum(price)" };
+            var fields = new string[] { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(4300, 1, new object[][] { new object[] { 109d } }, null);
             expected.AddResultInsRem(
@@ -1060,7 +1060,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var fields = new string[] { "sum(price)" };
+            var fields = new string[] { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(
                 1200,
@@ -1111,7 +1111,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var fields = new string[] { "sum(price)" };
+            var fields = new string[] { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(1200, 0, null, null);
             expected.AddResultInsRem(2200, 0, null, null);
@@ -1138,7 +1138,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var fields = new string[] { "sum(price)" };
+            var fields = new string[] { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(1200, 0, null, null);
             expected.AddResultInsRem(2200, 0, null, null);
@@ -1165,7 +1165,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var fields = new string[] { "sum(price)" };
+            var fields = new string[] { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(
                 1200,
@@ -1216,7 +1216,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var fields = new string[] { "sum(price)" };
+            var fields = new string[] { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(
                 200,
@@ -1262,7 +1262,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            var fields = new string[] { "sum(price)" };
+            var fields = new string[] { "sum(Price)" };
             var expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
             expected.AddResultInsRem(1200, 0, new object[][] { new object[] { 34d } }, null);
             expected.AddResultInsRem(2200, 0, new object[][] { new object[] { 85d } }, null);

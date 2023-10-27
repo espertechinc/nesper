@@ -366,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select case when intPrimitive = 1 then { 1, 2 } else { 1, 2 } end as c1 from SupportBean";
+                    "@name('s0') select case when IntPrimitive = 1 then { 1, 2 } else { 1, 2 } end as c1 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -385,8 +385,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // Testing the two forms of the case expression
                 // Furthermore the test checks the different when clauses and actions related.
                 var epl = "@name('s0') select case " +
-                          " when symbol='GE' then volume " +
-                          " when symbol='DELL' then sum(price) " +
+" when Symbol='GE' then Volume "+
+" when Symbol='DELL' then sum(Price) "+
                           "end as p1 from SupportMarketDataBean#length(10)";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -408,8 +408,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .SelectClause = SelectClause.Create()
                     .Add(
                         Expressions.CaseWhenThen()
-                            .Add(Expressions.Eq("symbol", "GE"), Expressions.Property("volume"))
-                            .Add(Expressions.Eq("symbol", "DELL"), Expressions.Sum("price")),
+                            .Add(Expressions.Eq("Symbol", "GE"), Expressions.Property("Volume"))
+                            .Add(Expressions.Eq("Symbol", "DELL"), Expressions.Sum("Price")),
                         "p1");
                 model.FromClause = FromClause.Create(
                     FilterStream.Create(nameof(SupportMarketDataBean))
@@ -417,8 +417,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 model = copier.Copy(model);
 
                 var epl = "select case" +
-                          " when symbol=\"GE\" then volume" +
-                          " when symbol=\"DELL\" then sum(price) " +
+" when Symbol=\"GE\" then Volume"+
+" when Symbol=\"DELL\" then sum(Price) "+
                           "end as p1 from SupportMarketDataBean.win:length(10)";
 
                 Assert.AreEqual(epl, model.ToEPL());
@@ -438,8 +438,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select case" +
-                          " when symbol=\"GE\" then volume" +
-                          " when symbol=\"DELL\" then sum(price) " +
+" when Symbol=\"GE\" then Volume"+
+" when Symbol=\"DELL\" then sum(Price) "+
                           "end as p1 from SupportMarketDataBean#length(10)";
                 env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
 
@@ -473,8 +473,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // Adding to the EPL statement an else expression
                 // when a CSCO ticker is sent the property for the else expression is selected
                 var epl = "@name('s0') select case " +
-                          " when symbol='DELL' then 3 * volume " +
-                          " else volume " +
+" when Symbol='DELL' then 3 * Volume "+
+                          " else Volume " +
                           "end as p1 from SupportMarketDataBean#length(3)";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -495,18 +495,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 model.SelectClause = SelectClause.Create()
                     .Add(
                         Expressions.CaseWhenThen()
-                            .SetElse(Expressions.Property("volume"))
+                            .SetElse(Expressions.Property("Volume"))
                             .Add(
-                                Expressions.Eq("symbol", "DELL"),
-                                Expressions.Multiply(Expressions.Property("volume"), Expressions.Constant(3))),
+                                Expressions.Eq("Symbol", "DELL"),
+                                Expressions.Multiply(Expressions.Property("Volume"), Expressions.Constant(3))),
                         "p1");
                 model.FromClause = FromClause.Create(
                     FilterStream.Create(nameof(SupportMarketDataBean)).AddView("length", Expressions.Constant(10)));
                 model = copier.Copy(model);
 
                 var epl = "select case " +
-                          "when symbol=\"DELL\" then volume*3 " +
-                          "else volume " +
+"when Symbol=\"DELL\" then Volume*3 "+
+                          "else Volume " +
                           "end as p1 from SupportMarketDataBean#length(10)";
                 Assert.AreEqual(epl, model.ToEPL());
 
@@ -526,8 +526,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select case " +
-                          "when symbol=\"DELL\" then volume*3 " +
-                          "else volume " +
+"when Symbol=\"DELL\" then Volume*3 "+
+                          "else Volume " +
                           "end as p1 from SupportMarketDataBean#length(10)";
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
 
@@ -556,9 +556,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var builder = new SupportEvalBuilder("SupportMarketDataBean")
                     .WithExpressions(
                         fields,
-                        "case when (symbol='GE') then volume " +
-                        " when (symbol='DELL') then volume / 2.0 " +
-                        " when (symbol='MSFT') then volume / 3.0 " +
+"case when (Symbol='GE') then Volume "+
+" when (Symbol='DELL') then Volume / 2.0 "+
+" when (Symbol='MSFT') then Volume / 3.0 "+
                         " end")
                     .WithStatementConsumer(
                         stmt => Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));
@@ -580,11 +580,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var builder = new SupportEvalBuilder("SupportBean")
                     .WithExpressions(
                         fields,
-                        "case intPrimitive " +
-                        " when longPrimitive then (intPrimitive + longPrimitive) " +
-                        " when doublePrimitive then intPrimitive * doublePrimitive" +
-                        " when floatPrimitive then floatPrimitive / doublePrimitive " +
-                        " else (intPrimitive + longPrimitive + floatPrimitive + doublePrimitive) end")
+                        "case IntPrimitive " +
+                        " when LongPrimitive then (IntPrimitive + LongPrimitive) " +
+                        " when DoublePrimitive then IntPrimitive * DoublePrimitive" +
+                        " when FloatPrimitive then FloatPrimitive / DoublePrimitive " +
+                        " else (IntPrimitive + LongPrimitive + FloatPrimitive + DoublePrimitive) end")
                     .WithStatementConsumer(
                         stmt => Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));
 
@@ -1056,7 +1056,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select case theString " +
+                var epl = "@name('s0') select case TheString " +
                           " when null then true " +
                           " when '' then false end as p1" +
                           " from SupportBean#length(100)";
@@ -1085,8 +1085,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select case " +
-                          " when theString is null then true " +
-                          " when theString = '' then false end as p1" +
+                          " when TheString is null then true " +
+                          " when TheString = '' then false end as p1" +
                           " from SupportBean#length(100)";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -1112,7 +1112,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "select case intPrimitive " +
+                var epl = "select case IntPrimitive " +
                           "when 1 then null " +
                           "when 2 then 1.0d " +
                           "when 3 then null " +
@@ -1124,7 +1124,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create()
                     .Add(
-                        Expressions.CaseSwitch("intPrimitive")
+                        Expressions.CaseSwitch("IntPrimitive")
                             .SetElse(Expressions.Constant(2))
                             .Add(Expressions.Constant(1), Expressions.Constant(null))
                             .Add(Expressions.Constant(2), Expressions.Constant(1.0))
@@ -1149,7 +1149,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select case intPrimitive " +
+                var epl = "@name('s0') select case IntPrimitive " +
                           "when 1 then null " +
                           "when 2 then 1.0d " +
                           "when 3 then null " +
@@ -1169,7 +1169,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select case intPrimitive " +
+                var epl = "@name('s0') select case IntPrimitive " +
                           " when 1 then null " +
                           " when 2 then 1.0" +
                           " when 3 then null " +
@@ -1201,7 +1201,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select case boolBoxed " +
+                var epl = "@name('s0') select case BoolBoxed " +
                           " when null then 1 " +
                           " when true then 2l" +
                           " when false then 3 " +
@@ -1225,7 +1225,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select case intPrimitive " +
+                var epl = "@name('s0') select case IntPrimitive " +
                           " when 1.0 then null " +
                           " when 4/2.0 then 'x'" +
                           " end as p1 from SupportBean#length(100)";
@@ -1250,7 +1250,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select 2 * (case " +
-                          " intPrimitive when 1 then 2 " +
+                          " IntPrimitive when 1 then 2 " +
                           " when 2 then 3 " +
                           " else 10 end) as p1 " +
                           " from SupportBean#length(1)";
@@ -1275,9 +1275,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select case intPrimitive when 1 then sum(longPrimitive) " +
-                          " when 2 then sum(floatPrimitive) " +
-                          " else sum(intPrimitive) end as p1 " +
+                var epl = "@name('s0') select case IntPrimitive when 1 then sum(LongPrimitive) " +
+                          " when 2 then sum(FloatPrimitive) " +
+                          " else sum(IntPrimitive) end as p1 " +
                           " from SupportBean#length(10)";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -1309,7 +1309,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select case supportEnum " +
+                var epl = "@name('s0') select case SupportEnum " +
                           " when " +
                           nameof(SupportEnum) +
                           ".getValueForEnum(0) then 1 " +
@@ -1341,7 +1341,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select case intPrimitive * 2 " +
+                var epl = "@name('s0') select case IntPrimitive * 2 " +
                           " when 2 then " +
                           nameof(SupportEnum) +
                           ".getValueForEnum(0) " +
@@ -1374,7 +1374,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var caseSubExpr = "case intPrimitive when 1 then 0 end";
+                var caseSubExpr = "case IntPrimitive when 1 then 0 end";
                 var epl = "@name('s0') select " +
                           caseSubExpr +
                           " from SupportBean#length(10)";

@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Abstract base class for all pattern expressions.
     /// </summary>
-    [Serializable]
     public abstract class PatternExprBase : PatternExpr
     {
         public string TreeObjectName { get; set; }

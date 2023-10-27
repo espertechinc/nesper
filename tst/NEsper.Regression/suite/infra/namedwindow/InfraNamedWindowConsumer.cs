@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "theString".SplitCsv();
+                var fields = "TheString".SplitCsv();
                 var epl = "@name('create') create window MyWindow.win:keepall() as SupportBean;\n" +
                           "@name('insert') insert into MyWindow select * from SupportBean;\n" +
                           "@name('select') select irstream * from MyWindow;\n";
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var fields = "c0,c1".SplitCsv();
                 var epl = "create window MyWindow#length(2) as SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "@name('s0') select theString as c0, sum(intPrimitive) as c1 from MyWindow;\n";
+                          "@name('s0') select TheString as c0, sum(IntPrimitive) as c1 from MyWindow;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -111,15 +111,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@buseventtype @public create schema IncomingEvent(id int);\n" +
-                          "create schema RetainedEvent(id int);\n" +
+                var epl = "@buseventtype @public create schema IncomingEvent(Id int);\n" +
+                          "create schema RetainedEvent(Id int);\n" +
                           "insert into RetainedEvent select * from IncomingEvent#expr_batch(current_count >= 10000);\n" +
                           "create window RetainedEventWindow#keepall as RetainedEvent;\n" +
                           "insert into RetainedEventWindow select * from RetainedEvent;\n";
                 env.CompileDeploy(epl, new RegressionPath());
 
                 IDictionary<string, object> @event = new Dictionary<string, object>();
-                @event.Put("id", 1);
+                @event.Put("Id", 1);
                 for (var i = 0; i < 10000; i++) {
                     env.SendEventMap(@event, "IncomingEvent");
                 }

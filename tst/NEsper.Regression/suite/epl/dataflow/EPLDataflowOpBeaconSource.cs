@@ -150,13 +150,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "    locY : 20 \n" +
                           "  }\n" +
                           "  \n" +
-                          "  // BeaconSource that produces 10 object-array events populating the price property \n" +
+                          "  // BeaconSource that produces 10 object-array events populating the Price property \n" +
                           "  // with a random value.\n" +
                           "  BeaconSource -> stream.three {\n" +
                           "    iterations : 1,\n" +
                           "    interval : 10, // every 10 seconds\n" +
                           "    initialDelay : 5, // start after 5 seconds\n" +
-                          "    price : Math.random() * 100,\n" +
+                          "    Price : Math.random() * 100,\n" +
                           "  }";
                 env.CompileDeploy(epl);
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow");
@@ -169,13 +169,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.CompileDeploy(eplMinimal);
 
                 var options = new EPDataFlowInstantiationOptions();
-                options.AddParameterURI("BeaconSource/theString", "E1");
+                options.AddParameterURI("BeaconSource/TheString", "E1");
                 var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyGraph", options);
 
                 env.CompileDeploy("@name('s0') select * from SupportBean").AddListener("s0");
                 instance.Run();
                 Sleep(200);
-                env.AssertPropsNew("s0", "theString".SplitCsv(), new object[] { "E1" });
+                env.AssertPropsNew("s0", "TheString".SplitCsv(), new object[] { "E1" });
 
                 // invalid: no output stream
                 env.TryInvalidCompile(

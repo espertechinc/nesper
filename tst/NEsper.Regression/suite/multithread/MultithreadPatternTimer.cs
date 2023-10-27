@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED, RegressionFlag.MULTITHREADED);
         }
-        
+
         public void Configure(Configuration configuration)
         {
             configuration.Common.AddEventType(typeof(SupportByteArrEventLongId));
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
                 var supportCountListener = new SupportCountListener();
                 _supportCountListeners[statementName] = supportCountListener;
-                
+
                 env.CompileDeploy(
                     stmtText,
                     options => options.SetStatementUserObject(
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             env.UndeployAll();
         }
-        
+
         private long GetCount(
             RegressionEnvironment env,
             int numStatements)

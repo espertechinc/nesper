@@ -48,8 +48,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 string epl;
 
                 epl =
-                    "@name('s0') select sb.theString as sbs, sb.intPrimitive as sbi, sbr.id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
-                    "where intPrimitive between rangeStartLong and rangeEndLong";
+                    "@name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.Id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
+                    "where IntPrimitive between rangeStartLong and rangeEndLong";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
                 env.SendEventBean(SupportBeanRange.MakeLong("R1", "G", 100L, 200L));
@@ -72,8 +72,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.UndeployAll();
 
                 epl =
-                    "@name('s0') select sb.theString as sbs, sb.intPrimitive as sbi, sbr.id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
-                    "where sbr.key = sb.theString and intPrimitive between rangeStartLong and rangeEndLong";
+                    "@name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.Id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
+                    "where sbr.key = sb.TheString and IntPrimitive between rangeStartLong and rangeEndLong";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
                 env.SendEventBean(SupportBeanRange.MakeLong("R1", "G", 100L, 200L));
@@ -101,14 +101,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var joinStatement = "@name('s0') select volume from " +
+                var joinStatement = "@name('s0') select Volume from " +
                                     "SupportMarketDataBean#length(3) as s0," +
                                     "SupportBean#length(3) as s1 " +
-                                    " where s0.volume = s1.intPrimitive";
+                                    " where s0.Volume = s1.IntPrimitive";
                 env.CompileDeployAddListenerMileZero(joinStatement, "s0");
                 SendBeanEvent(env, 100);
                 SendMarketEvent(env, 100);
-                env.AssertEqualsNew("s0", "volume", 100L);
+                env.AssertEqualsNew("s0", "Volume", 100L);
                 env.UndeployAll();
             }
         }

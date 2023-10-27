@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.@internal.@event.util;
 using com.espertech.esper.compat.collections;
@@ -23,10 +24,18 @@ namespace com.espertech.esper.common.client.dataflow.core
         private bool _cpuStatistics;
         private string _dataFlowInstanceId;
         private object _dataFlowInstanceUserObject;
-        [NonSerialized] private EPDataFlowOperatorProvider _operatorProvider;
-        [NonSerialized] private EPDataFlowOperatorParameterProvider _parameterProvider;
-        [NonSerialized] private EPDataFlowExceptionHandler _exceptionHandler;
-        [NonSerialized] private EPRuntimeEventProcessWrapped _surrogateEventSender;
+        [JsonIgnore]
+        [NonSerialized]
+        private EPDataFlowOperatorProvider _operatorProvider;
+        [JsonIgnore]
+        [NonSerialized]
+        private EPDataFlowOperatorParameterProvider _parameterProvider;
+        [JsonIgnore]
+        [NonSerialized]
+        private EPDataFlowExceptionHandler _exceptionHandler;
+        [JsonIgnore]
+        [NonSerialized]
+        private EPRuntimeEventProcessWrapped _surrogateEventSender;
         private bool _operatorStatistics;
         private IDictionary<string, object> _parametersUrIs;
 

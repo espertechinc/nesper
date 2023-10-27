@@ -23,15 +23,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 {
     public class SubselectForgeNRExistsWGroupByWHaving : SubselectForgeNR
     {
-        private readonly ExprSubselectNode subselect;
-        private readonly ExprForge havingEval;
+        private readonly ExprSubselectNode _subselect;
+        private readonly ExprForge _havingEval;
 
         public SubselectForgeNRExistsWGroupByWHaving(
             ExprSubselectNode subselect,
             ExprForge havingEval)
         {
-            this.subselect = subselect;
-            this.havingEval = havingEval;
+            _subselect = subselect;
+            _havingEval = havingEval;
         }
 
         public CodegenExpression EvaluateMatchesCodegen(
@@ -39,8 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
-                new CodegenFieldNameSubqueryAgg(subselect.SubselectNumber),
+            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
+                new CodegenFieldNameSubqueryAgg(_subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
             var method = parent.MakeChild(typeof(bool), GetType(), classScope);
@@ -49,14 +49,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .ApplyTri(new ReturnIfNoMatch(ConstantFalse(), ConstantFalse()), method, symbols)
                 .DeclareVar(typeof(int), "cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar(
-                    typeof(AggregationService),
-                    "aggregationService",
-                    ExprDotMethod(aggService, "getContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar(
-                    typeof(ICollection<object>),
-                    "groupKeys",
-                    ExprDotMethod(Ref("aggregationService"), "getGroupKeys", evalCtx));
+                .DeclareVar(typeof(AggregationService), "aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar(typeof(ICollection<object>), "groupKeys", ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx));
             method.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
 
             var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
@@ -69,8 +63,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     ConstantNull());
                 CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
                     forEach,
-                    havingEval.EvaluationType,
-                    havingEval.EvaluateCodegen(havingEval.EvaluationType, method, symbols, classScope));
+                    _havingEval.EvaluationType,
+                    _havingEval.EvaluateCodegen(_havingEval.EvaluationType, method, symbols, classScope));
                 forEach.BlockReturn(ConstantTrue());
             }
             method.Block.MethodReturn(ConstantFalse());

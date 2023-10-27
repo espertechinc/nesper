@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 RowDotMember(row, _refSet),
                 Cast(
                     typeof(LinkedHashMap<EventBean, object>),
-                    ExprDotMethod(GetSerde(classScope), "Read", input, unitKey)));
+                    ExprDotMethod(GetSerde(classScope), "ReadValue", input, unitKey)));
         }
 
         public override void CollectFabricType(FabricTypeCollector collector)

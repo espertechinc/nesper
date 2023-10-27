@@ -64,8 +64,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create table MyTable(tablecol string primary key);\n" +
-                          "insert into MyTable select p00 as tablecol from SupportBean_S0;\n" +
-                          "@name('s0') select * from SupportBean(theString=(select tablecol from MyTable).orderBy().firstOf())";
+                          "insert into MyTable select P00 as tablecol from SupportBean_S0;\n" +
+                          "@name('s0') select * from SupportBean(TheString=(select tablecol from MyTable).orderBy().firstOf())";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssert(env, "E", false);
@@ -111,14 +111,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy(
                     "@public create table varagg as (" +
-                    "key string primary key, total sum(int))",
+"key string primary key, Total sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table varagg " +
-                    "select sum(intPrimitive) as total from SupportBean group by theString",
+"select sum(IntPrimitive) as Total from SupportBean group by TheString",
                     path);
                 env.CompileDeploy(
-                        "@name('s0') select (select total from varagg where key = s0.p00) as value " +
+"@name('s0') select (select Total from varagg where key = s0.P00) as value "+
                         "from SupportBean_S0 as s0",
                         path)
                     .AddListener("s0");
@@ -141,13 +141,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
 
-                env.CompileDeploy("@public create table InfraOne (string string, intPrimitive int)", path);
+                env.CompileDeploy("@public create table InfraOne (string string, IntPrimitive int)", path);
                 env.CompileDeploy(
-                        "@name('s0') select (select intPrimitive from InfraOne where string = s0.p00) as c0 from SupportBean_S0 as s0",
+                        "@name('s0') select (select IntPrimitive from InfraOne where string = s0.P00) as c0 from SupportBean_S0 as s0",
                         path)
                     .AddListener("s0");
                 env.CompileDeploy(
-                    "insert into InfraOne select theString as string, intPrimitive from SupportBean",
+                    "insert into InfraOne select TheString as string, IntPrimitive from SupportBean",
                     path);
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -175,13 +175,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(eplIndex, path);
 
                 var eplInto = "on SupportBean_S0 merge MyTable " +
-                              "where p00 = k0 and p01 = k1 " +
-                              "when not matched then insert select p00 as k0, p01 as k1, p02 as p2, id as value " +
-                              "when matched then update set p2 = p02, value = id ";
+                              "where P00 = k0 and P01 = k1 " +
+                              "when not matched then insert select P00 as k0, P01 as k1, P02 as p2, Id as value " +
+                              "when matched then update set p2 = P02, value = Id ";
                 env.CompileDeploy(eplInto, path);
 
                 var eplSubselect =
-                    "@name('s0') select (select value from MyTable as tbl where sb.theString = tbl.p2) as c0 from SupportBean as sb";
+                    "@name('s0') select (select value from MyTable as tbl where sb.TheString = tbl.p2) as c0 from SupportBean as sb";
                 env.CompileDeploy(eplSubselect, path).AddListener("s0");
 
                 SendInsertUpdate(env, "G1", "SG1", "P2_1", 10);

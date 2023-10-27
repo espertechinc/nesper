@@ -52,8 +52,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile(
-                    "select countever(distinct intPrimitive) from SupportBean",
-                    "Failed to validate select-clause expression 'countever(distinct intPrimitive)': Aggregation function 'countever' does now allow distinct [");
+                    "select countever(distinct IntPrimitive) from SupportBean",
+                    "Failed to validate select-clause expression 'countever(distinct IntPrimitive)': Aggregation function 'countever' does now allow distinct [");
             }
         }
 
@@ -64,9 +64,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var fields = "firsteverstring,lasteverstring,counteverall".SplitCsv();
                 var epl = "create window MyWindow#keepall as select * from SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean;\n" +
-                          "on SupportBean_A delete from MyWindow where theString = id;\n" +
-                          "@name('s0') select firstever(theString) as firsteverstring, " +
-                          "lastever(theString) as lasteverstring," +
+                          "on SupportBean_A delete from MyWindow where TheString = Id;\n" +
+                          "@name('s0') select firstever(TheString) as firsteverstring, " +
+                          "lastever(TheString) as lasteverstring," +
                           "countever(*) as counteverall from MyWindow";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -110,14 +110,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Audit @Name('s0') select " +
-                          "firstever(theString) as firsteverstring, " +
-                          "lastever(theString) as lasteverstring, " +
-                          "first(theString) as firststring, " +
-                          "last(theString) as laststring, " +
+                          "firstever(TheString) as firsteverstring, " +
+                          "lastever(TheString) as lasteverstring, " +
+                          "first(TheString) as firststring, " +
+                          "last(TheString) as laststring, " +
                           "countever(*) as cntstar, " +
-                          "countever(intBoxed) as cntexpr, " +
-                          "countever(*,boolPrimitive) as cntstarfiltered, " +
-                          "countever(intBoxed,boolPrimitive) as cntexprfiltered " +
+                          "countever(IntBoxed) as cntexpr, " +
+                          "countever(*,BoolPrimitive) as cntstarfiltered, " +
+                          "countever(IntBoxed,BoolPrimitive) as cntexprfiltered " +
                           "from SupportBean.win:length(2)";
                 env.CompileDeploy(soda, epl).AddListener("s0");
 

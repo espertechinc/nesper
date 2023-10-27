@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     LocalMethod(
                         generateGroupKeysView,
                         REF_NEWDATA,
-                        ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "getBuffer"),
+                        ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                         ConstantTrue()))
                 .DeclareVar(
                     typeof(object[][]),
@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     LocalMethod(
                         generateGroupKeysView,
                         REF_OLDDATA,
-                        ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "getBuffer"),
+                        ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                         ConstantFalse()))
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .StaticMethod(

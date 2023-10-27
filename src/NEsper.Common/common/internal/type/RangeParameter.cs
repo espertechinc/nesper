@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public string Formatted()
         {
-            return Low + "-" + High;
+            return $"{Low}-{High}";
         }
     }
 }

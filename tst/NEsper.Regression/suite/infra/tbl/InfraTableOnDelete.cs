@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "pkey1 int primary key, thesum sum(long))",
                     path);
                 env.CompileDeploy(
-                    "into table MyTable select sum(longPrimitive) as thesum from SupportBean group by theString, intPrimitive",
+                    "into table MyTable select sum(LongPrimitive) as thesum from SupportBean group by TheString, IntPrimitive",
                     path);
 
                 MakeSendSupportBean(env, "E1", 10, 2L);
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy("create index MyIdx on MyTable(pkey0)", path);
                 env.CompileDeploy(
-                        "@name('s0') on SupportBean_S0 select sum(thesum) as c0 from MyTable where pkey0=p00",
+                        "@name('s0') on SupportBean_S0 select sum(thesum) as c0 from MyTable where pkey0=P00",
                         path)
                     .AddListener("s0");
 
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 AssertSum(env, "E1,E2,E3", new long?[] { 6L, 10L, 77L });
 
                 env.CompileDeploy(
-                    "@name('on-delete') on SupportBean_S1 delete from MyTable where pkey0=p10 and pkey1=id",
+                    "@name('on-delete') on SupportBean_S1 delete from MyTable where pkey0=P10 and pkey1=Id",
                     path);
 
                 env.SendEventBean(new SupportBean_S1(11, "E1")); // deletes {"E1", 11, 4L}
@@ -114,13 +114,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var fields = "key,thesum".SplitCsv();
                 env.CompileDeploy("@public create table varagg as (key string primary key, thesum sum(int))", path);
                 env.CompileDeploy(
-                    "into table varagg select sum(intPrimitive) as thesum from SupportBean group by theString",
+                    "into table varagg select sum(IntPrimitive) as thesum from SupportBean group by TheString",
                     path);
-                env.CompileDeploy("@name('s0') select varagg[p00].thesum as value from SupportBean_S0", path)
+                env.CompileDeploy("@name('s0') select varagg[P00].thesum as value from SupportBean_S0", path)
                     .AddListener("s0");
-                env.CompileDeploy("@name('sdf') on SupportBean_S1(id = 1) delete from varagg where key = p10", path)
+                env.CompileDeploy("@name('sdf') on SupportBean_S1(Id = 1) delete from varagg where key = P10", path)
                     .AddListener("sdf");
-                env.CompileDeploy("@name('sda') on SupportBean_S1(id = 2) delete from varagg", path).AddListener("sda");
+                env.CompileDeploy("@name('sda') on SupportBean_S1(Id = 2) delete from varagg", path).AddListener("sda");
 
                 var expectedType = new object[][]
                     { new object[] { "key", typeof(string) }, new object[] { "thesum", typeof(int?) } };

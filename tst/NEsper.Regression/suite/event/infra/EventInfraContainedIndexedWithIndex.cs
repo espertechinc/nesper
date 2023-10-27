@@ -47,12 +47,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Consumer<string[]> map = ids => {
                 var inners = new IDictionary<string, object>[ids.Length];
                 for (var i = 0; i < ids.Length; i++) {
-                    inners[i] = Collections.SingletonDataMap("id", ids[i]);
+                    inners[i] = Collections.SingletonDataMap("Id", ids[i]);
                 }
 
                 env.SendEventMap(Collections.SingletonDataMap("indexed", inners), "LocalEvent");
             };
-            var mapepl = "@public @buseventtype create schema LocalInnerEvent(id string);\n" +
+            var mapepl = "@public @buseventtype create schema LocalInnerEvent(Id string);\n" +
                          "@public @buseventtype create schema LocalEvent(indexed LocalInnerEvent[]);\n";
             RunAssertion(env, mapepl, map);
 
@@ -65,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
                 env.SendEventObjectArray(new object[] { inners }, "LocalEvent");
             };
-            var oaepl = "@public @buseventtype create objectarray schema LocalInnerEvent(id string);\n" +
+            var oaepl = "@public @buseventtype create objectarray schema LocalInnerEvent(Id string);\n" +
                         "@public @buseventtype create objectarray schema LocalEvent(indexed LocalInnerEvent[]);\n";
             RunAssertion(env, oaepl, oa);
 
@@ -73,13 +73,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Consumer<string[]> json = ids => {
                 var array = new JArray();
                 for (var i = 0; i < ids.Length; i++) {
-                    array.Add(new JObject(new JProperty("id", ids[i])));
+                    array.Add(new JObject(new JProperty("Id", ids[i])));
                 }
 
                 var @event = new JObject(new JProperty("indexed", array));
                 env.SendEventJson(@event.ToString(), "LocalEvent");
             };
-            var jsonepl = "@public @buseventtype create json schema LocalInnerEvent(id string);\n" +
+            var jsonepl = "@public @buseventtype create json schema LocalInnerEvent(Id string);\n" +
                           "@public @buseventtype create json schema LocalEvent(indexed LocalInnerEvent[]);\n";
             RunAssertion(env, jsonepl, json);
 
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 ICollection<GenericRecord> inners = new List<GenericRecord>();
                 for (var i = 0; i < ids.Length; i++) {
                     var inner = new GenericRecord(schemaInner.AsRecordSchema());
-                    inner.Put("id", ids[i]);
+                    inner.Put("Id", ids[i]);
                     inners.Add(inner);
                 }
 
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 @event.Put("indexed", inners);
                 env.SendEventAvro(@event, "LocalEvent");
             };
-            var avroepl = "@name('schema') @public @buseventtype create avro schema LocalInnerEvent(id string);\n" +
+            var avroepl = "@name('schema') @public @buseventtype create avro schema LocalInnerEvent(Id string);\n" +
                           "@public @buseventtype create avro schema LocalEvent(indexed LocalInnerEvent[]);\n";
             RunAssertion(env, avroepl, avro);
         }
@@ -123,8 +123,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 .AddListener("s1");
 
             sender.Invoke(new string[] { "a", "b" });
-            env.AssertEqualsNew("s0", "id", "a");
-            env.AssertEqualsNew("s1", "id", "b");
+            env.AssertEqualsNew("s0", "Id", "a");
+            env.AssertEqualsNew("s1", "Id", "b");
 
             env.UndeployAll();
         }

@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.AssertPropsNew("s0", fields, new object[] { 2L });
 
                 // set output limit to 5
-                var stmtTextSet = "on SupportMarketDataBean set var_output_limit = volume";
+                var stmtTextSet = "on SupportMarketDataBean set var_output_limit = Volume";
                 env.CompileDeploy(stmtTextSet);
                 SendSetterBean(env, 5L);
 
@@ -207,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             env.AssertPropsNew("s0", fields, new object[] { 3L });
 
             // set output limit to 5
-            var stmtTextSet = "on SupportMarketDataBean set var_output_limit = volume";
+            var stmtTextSet = "on SupportMarketDataBean set var_output_limit = Volume";
             env.CompileDeploy(stmtTextSet);
             SendSetterBean(env, 5L);
 

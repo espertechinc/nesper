@@ -61,14 +61,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var milestone = new AtomicLong();
                 var eplSingleIndex =
-                    "@name('s0') select (select p00 from SupportBean_S0#keepall as s0 where s0.p01 in (s1.p10, s1.p11)) as c0 from SupportBean_S1 as s1";
+                    "@name('s0') select (select P00 from SupportBean_S0#keepall as s0 where s0.P01 in (s1.P10, s1.P11)) as c0 from SupportBean_S1 as s1";
                 env.CompileDeployAddListenerMile(eplSingleIndex, "s0", milestone.GetAndIncrement());
 
                 TryAssertionPerformanceInKeywordAsPartOfSubquery(env);
                 env.UndeployAll();
 
                 var eplMultiIdx =
-                    "@name('s0') select (select p00 from SupportBean_S0#keepall as s0 where s1.p11 in (s0.p00, s0.p01)) as c0 from SupportBean_S1 as s1";
+                    "@name('s0') select (select P00 from SupportBean_S0#keepall as s0 where s1.P11 in (s0.P00, s0.P01)) as c0 from SupportBean_S1 as s1";
                 env.CompileDeployAddListenerMile(eplMultiIdx, "s0", milestone.GetAndIncrement());
 
                 TryAssertionPerformanceInKeywordAsPartOfSubquery(env);
@@ -87,8 +87,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select intPrimitive from SupportBean(theString='A') as s0 where intPrimitive in (" +
-                    "select longBoxed from SupportBean(theString='B')#length(10000) where s0.intPrimitive = longBoxed)";
+                    "@name('s0') select IntPrimitive from SupportBean(TheString='A') as s0 where IntPrimitive in (" +
+                    "select LongBoxed from SupportBean(TheString='B')#length(10000) where s0.IntPrimitive = LongBoxed)";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     bean.TheString = "A";
                     bean.IntPrimitive = index;
                     env.SendEventBean(bean);
-                    env.AssertEqualsNew("s0", "intPrimitive", index);
+                    env.AssertEqualsNew("s0", "IntPrimitive", index);
                 }
 
                 var endTime = PerformanceObserver.MilliTime;
@@ -127,8 +127,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select id from SupportBean_S0 as s0 where p00 in (" +
-                               "select p10 from SupportBean_S1#length(10000) where s0.p00 = p10)";
+                var stmtText = "@name('s0') select Id from SupportBean_S0 as s0 where P00 in (" +
+                               "select P10 from SupportBean_S1#length(10000) where s0.P00 = P10)";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload with 10k events
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 for (var i = 0; i < 10000; i++) {
                     var index = 5000 + i % 1000;
                     env.SendEventBean(new SupportBean_S0(index, Convert.ToString(index)));
-                    env.AssertEqualsNew("s0", "id", index);
+                    env.AssertEqualsNew("s0", "Id", index);
                 }
 
                 var endTime = PerformanceObserver.MilliTime;

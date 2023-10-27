@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace com.espertech.esper.common.client.configuration.common
 {
@@ -24,6 +25,15 @@ namespace com.espertech.esper.common.client.configuration.common
         {
             VariantTypeNames = new List<string>();
             TypeVariance = TypeVariance.PREDEFINED;
+        }
+
+        [JsonConstructor]
+        public ConfigurationCommonVariantStream(
+            TypeVariance typeVariance,
+            IList<string> variantTypeNames)
+        {
+            TypeVariance = typeVariance;
+            VariantTypeNames = variantTypeNames;
         }
 
         /// <summary>

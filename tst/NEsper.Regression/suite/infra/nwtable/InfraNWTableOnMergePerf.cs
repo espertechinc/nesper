@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // preload events
                 env.CompileDeploy(
-                    "@name('insert') insert into MyWindow select theString as c1, intPrimitive as c2 from SupportBean",
+                    "@name('insert') insert into MyWindow select TheString as c1, IntPrimitive as c2 from SupportBean",
                     path);
                 var totalUpdated = 5000;
                 for (var i = 0; i < totalUpdated; i++) {
@@ -80,8 +80,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.UndeployModuleContaining("insert");
 
-                var epl = "@name('s0') on SupportBean sb merge MyWindow nw where nw.c1 = sb.theString " +
-                          "when matched then update set nw.c2=sb.intPrimitive";
+                var epl = "@name('s0') on SupportBean sb merge MyWindow nw where nw.c1 = sb.TheString " +
+                          "when matched then update set nw.c2=sb.IntPrimitive";
                 env.CompileDeploy(epl, path);
 
                 // prime

@@ -54,13 +54,13 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         {
             method.Block.Apply(Instblock(classScope, "qOutputProcessNonBuffered", REF_NEWDATA, REF_OLDDATA));
 
-            GenerateRSPCall("processViewResult", method, classScope);
+            GenerateRSPCall("ProcessViewResult", method, classScope);
 
             var newOldIsNull = And(
                 EqualsNull(ExprDotName(Ref("newOldEvents"), "First")),
                 EqualsNull(ExprDotName(Ref("newOldEvents"), "Second")));
             method.Block
-                .DeclareVar(typeof(bool?), "forceOutput", Constant(false))
+                .DeclareVar(typeof(bool), "forceOutput", Constant(false))
                 .IfCondition(And(EqualsNull(REF_NEWDATA), EqualsNull(REF_OLDDATA)))
                 .IfCondition(Or(EqualsNull(Ref("newOldEvents")), newOldIsNull))
                 .AssignRef("forceOutput", ConstantTrue());
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         {
             method.Block.Apply(Instblock(classScope, "qOutputProcessNonBufferedJoin", REF_NEWDATA, REF_OLDDATA));
 
-            GenerateRSPCall("processJoinResult", method, classScope);
+            GenerateRSPCall("ProcessJoinResult", method, classScope);
 
             method.Block.IfRefNull("newOldEvents")
                 .Apply(Instblock(classScope, "aOutputProcessNonBufferedJoin"))
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             method.Block.MethodReturn(
                 StaticMethod(
                     typeof(OutputStrategyUtil),
-                    "getIterator",
+                    "GetEnumerator",
                     Ref(NAME_JOINEXECSTRATEGY),
                     Ref(NAME_RESULTSETPROCESSOR),
                     Ref(NAME_PARENTVIEW),
@@ -121,13 +121,13 @@ namespace com.espertech.esper.common.@internal.epl.output.core
         {
             method.Block
                 .DeclareVar(
-                    typeof(bool?),
+                    typeof(bool),
                     "isGenerateSynthetic",
-                    ExprDotMethod(Member("o." + NAME_STATEMENTRESULTSVC), "isMakeSynthetic"))
+                    ExprDotName(Member("o." + NAME_STATEMENTRESULTSVC), "IsMakeSynthetic"))
                 .DeclareVar(
-                    typeof(bool?),
+                    typeof(bool),
                     "isGenerateNatural",
-                    ExprDotMethod(Member("o." + NAME_STATEMENTRESULTSVC), "isMakeNatural"))
+                    ExprDotName(Member("o." + NAME_STATEMENTRESULTSVC), "IsMakeNatural"))
                 .DeclareVar<UniformPair<EventBean[]>>(
                     "newOldEvents",
                     ExprDotMethod(

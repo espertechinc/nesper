@@ -48,10 +48,10 @@ namespace com.espertech.esper.common.@internal.@event.propertyparser
             property = PropertyParser.ParseAndWalk("a", true);
             Assert.AreEqual("a", ((DynamicSimpleProperty) property).PropertyNameAtomic);
 
-            property = PropertyParser.ParseAndWalk("`order`.p0", false);
+            property = PropertyParser.ParseAndWalk("`Order`.p0", false);
             nested = ((NestedProperty) property).Properties;
             Assert.AreEqual(2, nested.Count);
-            Assert.AreEqual("order", ((SimpleProperty) nested[0]).PropertyNameAtomic);
+            Assert.AreEqual("Order", ((SimpleProperty) nested[0]).PropertyNameAtomic);
             Assert.AreEqual("p0", ((SimpleProperty) nested[1]).PropertyNameAtomic);
 
             property = PropertyParser.ParseAndWalk("`jim's strings`.p0", false);
