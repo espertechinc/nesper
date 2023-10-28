@@ -236,9 +236,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 // test for ESPER-185
                 var fields = "Volume,Symbol,Price,mycount".SplitCsv();
-                var epl = "@name('s0') select irstream Volume,Symbol,Price,count(Price) as mycount "+
+                var epl = "@name('s0') select irstream Volume,Symbol,Price,count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
-"group by Symbol, Price";
+                          "group by Symbol, Price";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, SYMBOL_DELL, 1000, 10);
@@ -332,10 +332,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@name('s0') select irstream Symbol, Volume, sum(Price) as mySum "+
+                var epl = "@name('s0') select irstream Symbol, Volume, sum(Price) as mySum " +
                           "from SupportMarketDataBean#length(3) " +
-"where Symbol='DELL' or Symbol='IBM' or Symbol='GE' "+
-"group by Symbol";
+                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
+                          "group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertionSum(env);
@@ -349,12 +349,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@name('s0') select irstream Symbol, Volume, sum(Price) as mySum "+
+                var epl = "@name('s0') select irstream Symbol, Volume, sum(Price) as mySum " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
-"where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') "+
-"  and one.TheString = two.Symbol "+
-"group by Symbol";
+                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
+                          "  and one.TheString = two.Symbol " +
+                          "group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
@@ -371,7 +371,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var stmt =
-"@name('s0') select Symbol as Symbol, avg(Price) as Average, sum(Volume) as sumation from SupportMarketDataBean#length(3000)";
+                    "@name('s0') select Symbol as Symbol, avg(Price) as Average, sum(Volume) as sumation from SupportMarketDataBean#length(3000)";
                 env.CompileDeploy(stmt).AddListener("s0");
 
                 env.SendEventBean(new SupportMarketDataBean("IBM", 10D, 20000L, null));
@@ -385,7 +385,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 // create insert into statements
                 stmt =
-"@name('s1') insert into StockAverages select Symbol as Symbol, avg(Price) as Average, sum(Volume) as sumation "+
+                    "@name('s1') insert into StockAverages select Symbol as Symbol, avg(Price) as Average, sum(Volume) as sumation " +
                     "from SupportMarketDataBean#length(3000);\n" +
                     "@name('s2') select * from StockAverages";
                 env.CompileDeploy(stmt).AddListener("s1").AddListener("s2");
@@ -513,7 +513,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             env.AssertPropsIRPair(
                 "s0",
-"Symbol,Volume,mySum".SplitCsv(),
+                "Symbol,Volume,mySum".SplitCsv(),
                 new object[] { symbolNew, volumeNew, sumNew },
                 new object[] { symbolOld, volumeOld, sumOld });
         }

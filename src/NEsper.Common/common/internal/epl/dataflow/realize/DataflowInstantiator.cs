@@ -210,7 +210,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
         {
             if (isPunctuation) {
                 foreach (var method in target.GetMethods()) {
-                    if (method.Name.Equals("onSignal")) {
+                    if (method.Name.Equals("OnSignal")) {
                         return new LogicalChannelBindingMethodDesc(method, LogicalChannelBindingTypePassAlong.INSTANCE);
                     }
                 }
@@ -248,7 +248,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             }
 
             foreach (var method in target.GetMethods()) {
-                var eligible = method.Name.Equals("onInput");
+                var eligible = method.Name.Equals("OnInput");
                 if (!eligible && method.Name.Equals(channelSpecificMethodName)) {
                     eligible = true;
                 }

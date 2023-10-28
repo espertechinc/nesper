@@ -258,8 +258,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var feedReu = "REU";
 
                 // Listen to all ticks
-                var epl = "@name('s0') select irstream datapoints as size, Symbol, Feed, Volume "+
-"from SupportMarketDataBean#groupwin(Symbol, Feed, Volume)#uni(Price) Order by Symbol, Feed, Volume";
+                var epl = "@name('s0') select irstream datapoints as size, Symbol, Feed, Volume " +
+                          "from SupportMarketDataBean#groupwin(Symbol, Feed, Volume)#uni(Price) order by Symbol, Feed, Volume";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, symbolGe, feedInfo, 1);
@@ -436,16 +436,16 @@ namespace com.espertech.esper.regressionlib.suite.view
                 string epl;
                 var filter = "select * from SupportMarketDataBean";
 
-                epl = $"@name('priceLast3Stats'){filter}#groupwin(Symbol)#length(3)#uni(Price) Order by Symbol asc";
+                epl = $"@name('priceLast3Stats'){filter}#groupwin(Symbol)#length(3)#uni(Price) order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("priceLast3Stats");
 
-                epl = $"@name('volumeLast3Stats'){filter}#groupwin(Symbol)#length(3)#uni(Volume) Order by Symbol asc";
+                epl = $"@name('volumeLast3Stats'){filter}#groupwin(Symbol)#length(3)#uni(Volume) order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("volumeLast3Stats");
 
-                epl = $"@name('priceAllStats'){filter}#groupwin(Symbol)#uni(Price) Order by Symbol asc";
+                epl = $"@name('priceAllStats'){filter}#groupwin(Symbol)#uni(Price) order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("priceAllStats");
 
-                epl = $"@name('volumeAllStats'){filter}#groupwin(Symbol)#uni(Volume) Order by Symbol asc";
+                epl = $"@name('volumeAllStats'){filter}#groupwin(Symbol)#uni(Volume) order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("volumeAllStats");
 
                 var expectedList = new List<IDictionary<string, object>>();
@@ -493,7 +493,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 AssertLastNewRow(env, "volumeLast3Stats", SYMBOL_GE, 1200d);
 
                 // Check iterator results
-                var fields = new string[] { "Symbol", "Average"};
+                var fields = new string[] { "Symbol", "Average" };
                 env.AssertPropsPerRowIterator(
                     "priceAllStats",
                     fields,
@@ -547,7 +547,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 // further math tests can be found in the view unit test
                 var epl =
-"@name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#correl(Price, Volume, Feed)";
+                    "@name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#correl(Price, Volume, Feed)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertStatement(
@@ -556,7 +556,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("correlation"));
                     });
 
-                var fields = new string[] { "Symbol", "correlation", "Feed"};
+                var fields = new string[] { "Symbol", "correlation", "Feed" };
 
                 env.SendEventBean(new SupportMarketDataBean("ABC", 10.0, 1000L, "f1"));
                 env.AssertPropsNew("s0", fields, new object[] { "ABC", double.NaN, "f1" });
@@ -582,7 +582,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 // further math tests can be found in the view unit test
                 var epl =
-"@name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#linest(Price, Volume, Feed)";
+                    "@name('s0') select * from SupportMarketDataBean#groupwin(Symbol)#length(1000000)#linest(Price, Volume, Feed)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertStatement(
@@ -613,7 +613,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumYSq"));
                     });
 
-                var fields = new string[] { "Symbol", "Slope", "YIntercept", "Feed"};
+                var fields = new string[] { "Symbol", "Slope", "YIntercept", "Feed" };
 
                 env.SendEventBean(new SupportMarketDataBean("ABC", 10.0, 50000L, "f1"));
                 env.AssertPropsNew("s0", fields, new object[] { "ABC", double.NaN, double.NaN, "f1" });
@@ -749,7 +749,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(1000);
 
                 var text =
-"@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_accum(10 sec)";
+                    "@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_accum(10 sec)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 // 1st event S1 group
@@ -795,7 +795,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(1000);
 
                 var text =
-"@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_batch(10 sec)";
+                    "@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_batch(10 sec)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 // 1st event S1 group
@@ -914,7 +914,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(1000);
 
                 var text =
-"@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_length_batch(10 sec, 100)";
+                    "@name('s0') select irstream * from  SupportMarketDataBean#groupwin(Symbol)#time_length_batch(10 sec, 100)";
                 env.CompileDeploy(text).AddListener("s0").Milestone(0);
 
                 // 1st event S1 group
@@ -972,7 +972,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var fields = "Symbol,Price".SplitCsv();
                 var text =
-"@name('s0') select irstream * from SupportMarketDataBean#groupwin(Symbol)#length_batch(3) Order by Symbol asc";
+                    "@name('s0') select irstream * from SupportMarketDataBean#groupwin(Symbol)#length_batch(3) order by Symbol asc";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeMarketDataEvent("S1", 1));

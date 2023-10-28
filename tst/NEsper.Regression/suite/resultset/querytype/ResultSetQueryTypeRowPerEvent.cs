@@ -198,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var epl =
                     "@name('s0') select 'IBM stats' as title, Volume, avg(Volume) as myAvg, sum(Volume) as mySum " +
                     "from SupportMarketDataBean#length(3)" +
-"where Symbol='IBM'";
+                    "where Symbol='IBM'";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendMarketDataEvent(env, "GE", 10L);
@@ -227,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@name('s0') select irstream Symbol, sum(distinct Volume) as volSum "+
+                var epl = "@name('s0') select irstream Symbol, sum(distinct Volume) as volSum " +
                           "from SupportMarketDataBean#length(3) ";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -268,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select irstream " +
-"avg(distinct Volume) as avgVolume, count(distinct Symbol) as countDistinctSymbol "+
+                          "avg(distinct Volume) as avgVolume, count(distinct Symbol) as countDistinctSymbol " +
                           "from SupportMarketDataBean";
                 env.CompileDeploy(epl).AddListener("s0");
 

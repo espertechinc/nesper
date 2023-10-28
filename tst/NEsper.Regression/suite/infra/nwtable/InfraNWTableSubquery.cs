@@ -166,11 +166,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create consumer
                 var stmtTextSelectOne =
-"select irstream (select sum(b) from MyInfraUCS) as value, Symbol from SupportMarketDataBean";
+                    "select irstream (select sum(b) from MyInfraUCS) as value, Symbol from SupportMarketDataBean";
                 env.CompileDeploy("@name('selectOne')" + stmtTextSelectOne, path).AddListener("selectOne");
 
                 SendMarketBean(env, "M1");
-                var fieldsStmt = new string[] { "value", "Symbol"};
+                var fieldsStmt = new string[] { "value", "Symbol" };
                 env.AssertPropsNew("selectOne", fieldsStmt, new object[] { null, "M1" });
 
                 env.Milestone(0);

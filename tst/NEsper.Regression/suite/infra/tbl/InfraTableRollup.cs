@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy("@public create table MyTableR1D(pk string primary key, Total sum(int))", path);
                 env.CompileDeploy(
-"@name('into') into table MyTableR1D insert into MyStreamOne select TheString, sum(IntPrimitive) as Total from SupportBean#length(4) group by rollup(TheString)",
+                        "@name('into') into table MyTableR1D insert into MyStreamOne select TheString, sum(IntPrimitive) as Total from SupportBean#length(4) group by rollup(TheString)",
                         path)
                     .AddListener("into");
                 env.CompileDeploy("@name('s0') select MyTableR1D[P00].Total as c0 from SupportBean_S0", path)
@@ -141,10 +141,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@public @buseventtype create objectarray schema MyEventTwo(k0 int, k1 int, col int)",
                     path);
                 env.CompileDeploy(
-"@public create table MyTableR2D(k0 int primary key, k1 int primary key, Total sum(int))",
+                    "@public create table MyTableR2D(k0 int primary key, k1 int primary key, Total sum(int))",
                     path);
                 env.CompileDeploy(
-"into table MyTableR2D insert into MyStreamTwo select sum(col) as Total from MyEventTwo#length(3) group by rollup(k0,k1)",
+                    "into table MyTableR2D insert into MyStreamTwo select sum(col) as Total from MyEventTwo#length(3) group by rollup(k0,k1)",
                     path);
 
                 env.SendEventObjectArray(new object[] { 1, 10, 100 }, "MyEventTwo");
@@ -189,10 +189,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path);
 
                 env.CompileDeploy(
-"@public create table MyTableGS3D(k0 int primary key, k1 int primary key, k2 int primary key, Total sum(int))",
+                    "@public create table MyTableGS3D(k0 int primary key, k1 int primary key, k2 int primary key, Total sum(int))",
                     path);
                 env.CompileDeploy(
-"into table MyTableGS3D insert into MyStreamThree select sum(col) as Total from MyEventThree#length(3) group by grouping sets(k0,k1,k2)",
+                    "into table MyTableGS3D insert into MyStreamThree select sum(col) as Total from MyEventThree#length(3) group by grouping sets(k0,k1,k2)",
                     path);
 
                 var fields = "k0,k1,k2,Total".SplitCsv();

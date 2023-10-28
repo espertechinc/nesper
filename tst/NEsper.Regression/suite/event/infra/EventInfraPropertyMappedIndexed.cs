@@ -227,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
                     foreach (var prop in Arrays.AsList(
                                  "xxxx",
-                                 "myString[0]",
+                                 "MyString[0]",
                                  "indexed('a')",
                                  "indexed.x",
                                  "mapped[0]",

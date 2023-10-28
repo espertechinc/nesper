@@ -95,11 +95,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, Volume, sum(Price) as mySum from "+
+                var epl = "@name('s0') select Symbol, Volume, sum(Price) as mySum from " +
                           "SupportMarketDataBean#length(20) " +
-"group by Symbol "+
+                          "group by Symbol " +
                           "output every 6 events " +
-"Order by sum(Price), Symbol";
+                          "order by sum(Price), Symbol";
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
 
                 TryAssertionDefault(env);
@@ -122,11 +122,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 model.OrderByClause = OrderByClause.Create(Expressions.Sum("Price")).Add("Symbol", false);
                 model = env.CopyMayFail(model);
 
-                var epl = "select Symbol, Volume, sum(Price) as mySum from "+
+                var epl = "select Symbol, Volume, sum(Price) as mySum from " +
                           "SupportMarketDataBean#length(20) " +
-"group by Symbol "+
+                          "group by Symbol " +
                           "output every 6 events " +
-"Order by sum(Price), Symbol";
+                          "order by sum(Price), Symbol";
                 Assert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -142,11 +142,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, Volume, sum(Price) as mySum from "+
+                var epl = "@name('s0') select Symbol, Volume, sum(Price) as mySum from " +
                           "SupportMarketDataBean#length(20) " +
-"group by Symbol "+
+                          "group by Symbol " +
                           "output every 6 events " +
-"Order by mySum, Symbol";
+                          "order by mySum, Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertionDefault(env);
@@ -162,11 +162,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 // Instead of the row-per-group behavior, these should
                 // get row-per-event behavior since there are properties
                 // in the order-by that are not in the select expression.
-                var epl = "@name('s0') select Symbol, sum(Price) from "+
+                var epl = "@name('s0') select Symbol, sum(Price) from " +
                           "SupportMarketDataBean#length(20) " +
-"group by Symbol "+
+                          "group by Symbol " +
                           "output every 6 events " +
-"Order by sum(Price), Symbol, Volume";
+                          "order by sum(Price), Symbol, Volume";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertionDefaultNoVolume(env);
@@ -180,13 +180,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-"@name('s0') select Symbol, sum(Price) from "+
+                    "@name('s0') select Symbol, sum(Price) from " +
                     "SupportMarketDataBean#length(20) as one, " +
                     "SupportBeanString#length(100) as two " +
-"where one.Symbol = two.TheString "+
-"group by Symbol "+
+                    "where one.Symbol = two.TheString " +
+                    "group by Symbol " +
                     "output every 6 events " +
-"Order by sum(Price), Symbol, Volume";
+                    "order by sum(Price), Symbol, Volume";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanString("CAT"));
@@ -205,11 +205,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, Volume, sum(Price) from "+
+                var epl = "@name('s0') select Symbol, Volume, sum(Price) from " +
                           "SupportMarketDataBean#length(20) " +
-"group by Symbol "+
+                          "group by Symbol " +
                           "output last every 6 events " +
-"Order by sum(Price)";
+                          "order by sum(Price)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertionLast(env);
@@ -222,13 +222,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, Volume, sum(Price) from "+
+                var epl = "@name('s0') select Symbol, Volume, sum(Price) from " +
                           "SupportMarketDataBean#length(20) as one, " +
                           "SupportBeanString#length(100) as two " +
-"where one.Symbol = two.TheString "+
-"group by Symbol "+
+                          "where one.Symbol = two.TheString " +
+                          "group by Symbol " +
                           "output last every 6 events " +
-"Order by sum(Price)";
+                          "order by sum(Price)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanString("CAT"));
@@ -248,12 +248,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
             public void Run(RegressionEnvironment env)
             {
                 var fields = new string[] { "Symbol", "TheString", "sumPrice" };
-                var epl = "@name('s0') select Symbol, TheString, sum(Price) as sumPrice from "+
+                var epl = "@name('s0') select Symbol, TheString, sum(Price) as sumPrice from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-"where one.Symbol = two.TheString "+
-"group by Symbol "+
-"Order by Symbol";
+                          "where one.Symbol = two.TheString " +
+                          "group by Symbol " +
+                          "order by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
                 SendJoinEvents(env);
                 SendEvent(env, "CAT", 50);

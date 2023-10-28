@@ -30,18 +30,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
         public void Run(RegressionEnvironment env)
         {
-            var fields = "company,value,Total".SplitCsv();
+            var fields = "Company,Value,Total".SplitCsv();
 
-            var eplSchema = "@public @buseventtype create schema S2 ( company string, value double, Total double)";
+            var eplSchema = "@public @buseventtype create schema S2 ( Company string, Value double, Total double)";
             var path = new RegressionPath();
             env.CompileDeploy(eplSchema, path);
 
             // ESPER-568
             env.CompileDeploy(
-                "@name('create') @public create window S2Win#time(25 hour)#firstunique(company) as S2",
+                "@name('create') @public create window S2Win#time(25 hour)#firstunique(Company) as S2",
                 path);
             env.CompileDeploy("insert into S2Win select * from S2#firstunique(company)", path);
-            env.CompileDeploy("on S2 as a update S2Win as b set Total = b.value + a.value", path);
+            env.CompileDeploy("on S2 as a update S2Win as b set Total = b.Value + a.Value", path);
             env.CompileDeploy("@name('s0') select count(*) as cnt from S2Win", path).AddListener("s0");
 
             CreateSendEvent(env, "S2", "AComp", 3.0, 0.0);
@@ -92,8 +92,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             double total)
         {
             var map = new LinkedHashMap<string, object>();
-            map.Put("company", company);
-            map.Put("value", value);
+            map.Put("Company", company);
+            map.Put("Value", value);
             map.Put("Total", total);
             if (EventRepresentationChoiceExtensions.GetEngineDefault(env.Configuration).IsObjectArrayEvent()) {
                 env.SendEventObjectArray(map.Values.ToArray(), typeName);

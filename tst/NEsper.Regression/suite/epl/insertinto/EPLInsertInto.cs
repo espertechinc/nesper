@@ -967,9 +967,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 // NOTICE: we are inserting the RSTREAM (removed events)
                 var path = new RegressionPath();
                 var stmtText = "@public insert rstream into StockTicks(mySymbol, myPrice) " +
-"select Symbol, Price from SupportMarketDataBean#time(60) "+
+                               "select Symbol, Price from SupportMarketDataBean#time(60) " +
                                "output every 5 seconds " +
-"Order by Symbol asc";
+                               "order by Symbol asc";
                 env.CompileDeploy(stmtText, path);
 
                 stmtText = "@name('s0') select mySymbol, sum(myPrice) as pricesum from StockTicks#length(100)";
@@ -1028,7 +1028,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var statementOne = "@name('i0') @public insert into streamA select * from SupportBeanSimple#length(5)";
                 var statementTwo =
-                    "@name('i1') @public insert into streamB select *, myInt+myInt as summed, myString||myString as concat from streamA#length(5)";
+                    "@name('i1') @public insert into streamB select *, MyInt+MyInt as summed, MyString||MyString as concat from streamA#length(5)";
                 var statementThree = "@name('i2') @public insert into streamC select * from streamB#length(5)";
 
                 // try one module
@@ -1211,8 +1211,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 listener => {
                     Assert.IsTrue(listener.GetAndClearIsInvoked());
                     var eventBean = listener.LastNewData[0];
-                    Assert.AreEqual(myString, eventBean.Get("myString"));
-                    Assert.AreEqual(myInt, eventBean.Get("myInt"));
+                    Assert.AreEqual(myString, eventBean.Get("MyString"));
+                    Assert.AreEqual(myInt, eventBean.Get("MyInt"));
                     if (additionalString != null) {
                         Assert.AreEqual(additionalString, eventBean.Get("concat"));
                         Assert.AreEqual(additionalInt, eventBean.Get("summed"));

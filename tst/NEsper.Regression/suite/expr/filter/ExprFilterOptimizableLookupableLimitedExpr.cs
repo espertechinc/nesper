@@ -384,7 +384,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-"@name('s0') select * from pattern[every s0=SupportBean_S0 -> every SupportBean_S1('ax' = P10 || P11)] Order by s0.Id asc;\n";
+                    "@name('s0') select * from pattern[every s0=SupportBean_S0 -> every SupportBean_S1('ax' = P10 || P11)] order by s0.Id asc;\n";
 
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBean_S0(1));

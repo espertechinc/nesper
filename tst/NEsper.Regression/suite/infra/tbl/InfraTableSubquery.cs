@@ -111,14 +111,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy(
                     "@public create table varagg as (" +
-"key string primary key, Total sum(int))",
+                    "key string primary key, Total sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table varagg " +
-"select sum(IntPrimitive) as Total from SupportBean group by TheString",
+                    "select sum(IntPrimitive) as Total from SupportBean group by TheString",
                     path);
                 env.CompileDeploy(
-"@name('s0') select (select Total from varagg where key = s0.P00) as value "+
+                        "@name('s0') select (select Total from varagg where key = s0.P00) as value " +
                         "from SupportBean_S0 as s0",
                         path)
                     .AddListener("s0");

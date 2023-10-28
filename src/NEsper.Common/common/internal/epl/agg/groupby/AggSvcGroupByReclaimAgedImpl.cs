@@ -168,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 .ExprDotMethod(Ref("removed"), "Add", ExprDotName(Ref("entry"), "Key"))
                 .BlockEnd()
                 .BlockEnd()
-                .ForEach(typeof(object), "key", Ref("removed"))
+                .ForEach<object>("key", Ref("removed"))
                 .ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Remove", Ref("key"))
                 .ExprDotMethod(REF_REMOVEDCALLBACK, "RemovedAggregationGroupKey", Ref("key"));
             

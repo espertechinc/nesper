@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E1" } }, null);
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "Symbol"},
+                    new string[] { "Symbol" },
                     new object[][] { new object[] { "E1" } });
 
                 env.Milestone(1);
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E2" } }, null);
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "Symbol"},
+                    new string[] { "Symbol" },
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 env.Milestone(2);

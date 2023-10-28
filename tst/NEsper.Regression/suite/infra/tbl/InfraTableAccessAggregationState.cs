@@ -211,11 +211,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 var eplDeclare = "@public create table varTotal (key0 string primary key, key1 int primary key," +
-"key2 long primary key, Total sum(double), cnt count(*))";
+                                 "key2 long primary key, Total sum(double), cnt count(*))";
                 env.CompileDeploy(eplDeclare, path);
 
                 var eplBind = "into table varTotal " +
-"select sum(DoublePrimitive) as Total, count(*) as cnt "+
+                              "select sum(DoublePrimitive) as Total, count(*) as cnt " +
                               "from SupportBean group by TheString, IntPrimitive, LongPrimitive";
                 env.CompileDeploy(eplBind, path);
 
@@ -223,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 var fields = "c0,c1".SplitCsv();
                 var eplUse =
-"@name('s0') select varTotal[P00, id, 100L].Total as c0, varTotal[P00, Id, 100L].cnt as c1 from SupportBean_S0";
+                    "@name('s0') select varTotal[P00, id, 100L].Total as c0, varTotal[P00, Id, 100L].cnt as c1 from SupportBean_S0";
                 env.CompileDeploy(eplUse, path).AddListener("s0");
 
                 MakeSendBean(env, "E1", 10, 100, 1000);

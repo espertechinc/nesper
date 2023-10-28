@@ -537,7 +537,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.AssertThat(
                     () => {
                         var result = env.CompileExecuteFAF(
-"select * from MyInfra where TheString = 'B2' Order by IntPrimitive asc",
+                            "select * from MyInfra where TheString = 'B2' order by IntPrimitive asc",
                             path);
                         EPAssertionUtil.AssertPropsPerRow(
                             result.Array,
@@ -596,7 +596,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.AssertThat(
                     () => {
                         var result = env.CompileExecuteFAF(
-"select * from MyInfraLC where f3='>E1<' Order by f2 asc",
+                            "select * from MyInfraLC where f3='>E1<' order by f2 asc",
                             path);
                         EPAssertionUtil.AssertPropsPerRow(
                             result.Array,
@@ -860,7 +860,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var fields = "Id".SplitCsv();
 
                 var query1 =
-"select * from MyInfraMRAK where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 and key='K1' Order by Id asc";
+                    "select * from MyInfraMRAK where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 and key='K1' order by Id asc";
                 RunQueryAssertion(env, path, query1, fields, null);
 
                 env.SendEventBean(SupportBeanRange.MakeLong("E1", "K1", 1L, 2L, 3L));
@@ -885,7 +885,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new object[][] { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E3" } });
 
                 var query2 =
-"select * from MyInfraMRAK where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 Order by Id asc";
+                    "select * from MyInfraMRAK where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 order by Id asc";
                 RunQueryAssertion(
                     env,
                     path,

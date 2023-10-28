@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                     "distinct",
                     NewInstance(typeof(LinkedHashMap<object, object>)));
 
-                var loop = method.Block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL);
+                var loop = method.Block.ForEach<object>("next", EnumForgeCodegenNames.REF_ENUMCOLL);
                 loop.DeclareVar(arrayMK, "comparable", NewInstance(arrayMK, Cast(_fieldType, Ref("next"))))
                     .Expression(ExprDotMethod(Ref("distinct"), "Put", Ref("comparable"), Ref("next")));
 

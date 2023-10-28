@@ -566,28 +566,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select" +
-" cast(Item?, "+
+                          " cast(Item?, " +
                           typeof(SupportMarkerInterface).FullName +
                           ") as t0, " +
-" cast(Item?, "+
+                          " cast(Item?, " +
                           typeof(ISupportA).FullName +
                           ") as t1, " +
-" cast(Item?, "+
+                          " cast(Item?, " +
                           typeof(ISupportBaseAB).FullName +
                           ") as t2, " +
-" cast(Item?, "+
+                          " cast(Item?, " +
                           typeof(ISupportBaseABImpl).FullName +
                           ") as t3, " +
-" cast(Item?, "+
+                          " cast(Item?, " +
                           typeof(ISupportC).FullName +
                           ") as t4, " +
-" cast(Item?, "+
+                          " cast(Item?, " +
                           typeof(ISupportD).FullName +
                           ") as t5, " +
-" cast(Item?, "+
+                          " cast(Item?, " +
                           typeof(ISupportAImplSuperG).FullName +
                           ") as t6, " +
-" cast(Item?, "+
+                          " cast(Item?, " +
                           typeof(ISupportAImplSuperGImplPlus).FullName +
                           ") as t7 " +
                           " from SupportBeanDynRoot";

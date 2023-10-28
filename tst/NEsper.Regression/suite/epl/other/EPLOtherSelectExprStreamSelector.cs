@@ -435,7 +435,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-"@name('s0') select IntPrimitive, s1.* as s1stream, TheString, Symbol as sym, s0.* as s0stream from SupportBean#length(3) as s0, "+
+                    "@name('s0') select IntPrimitive, s1.* as s1stream, TheString, Symbol as sym, s0.* as s0stream from SupportBean#length(3) as s0, " +
                     "SupportMarketDataBean#keepall as s1";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -503,7 +503,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select IntPrimitive, s1.*, Symbol as sym from SupportBean#length(3) as s0, "+
+                var epl = "@name('s0') select IntPrimitive, s1.*, Symbol as sym from SupportBean#length(3) as s0, " +
                           "SupportMarketDataBean#keepall as s1";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -520,7 +520,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListenerNotInvoked("s0");
 
                 object theEvent = SendMarketEvent(env, "E1");
-                var fields = new string[] { "IntPrimitive", "sym", "Symbol"};
+                var fields = new string[] { "IntPrimitive", "sym", "Symbol" };
                 env.AssertEventNew(
                     "s0",
                     @event => {

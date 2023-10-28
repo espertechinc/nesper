@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             exception = GetSyntaxExceptionView(env, "select Order from SupportBean");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-"Incorrect syntax near 'Order' (a reserved keyword) at line 1 column 7, please check the select clause");
+                "Incorrect syntax near 'Order' (a reserved keyword) at line 1 column 7, please check the select clause");
 
             // invalid view parameter
             exception = GetStatementExceptionView(env, $"select * from {EVENT_NUM}#length('s')");
@@ -283,10 +283,10 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "Failed to validate outer-join expression: Outer join ON-clause cannot refer to properties of the same stream");
 
             // invalid order by
-            exception = GetStatementExceptionView(env, $"select * from {EVENT_NUM}#length(1) as aStr Order by X");
+            exception = GetStatementExceptionView(env, $"select * from {EVENT_NUM}#length(1) as aStr order by X");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-"Failed to validate Order-by-clause expression 'X': Property named 'X' is not valid in any stream");
+                "Failed to validate Order-by-clause expression 'X': Property named 'X' is not valid in any stream");
 
             // insert into with wildcard - not allowed
             exception = GetStatementExceptionView(
@@ -294,7 +294,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 $"insert into Google (a, b) select * from {EVENT_NUM}#length(1) as aStr");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-"Wildcard not allowed when insert-into specifies column Order");
+                "Wildcard not allowed when insert-into specifies column Order");
 
             // insert into with duplicate column names
             exception = GetStatementExceptionView(

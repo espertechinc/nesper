@@ -366,7 +366,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else if (reftype.IsGenericCollection()) {
                     var blockIfNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                     {
-                        var forEach = blockIfNotNull.ForEach(typeof(object), "item", Ref(refname));
+                        var forEach = blockIfNotNull.ForEach<object>("item", Ref(refname));
                         {
                             var ifNotNumber = forEach.IfCondition(Not(InstanceOf(Ref("item"), typeof(object))));
                             {

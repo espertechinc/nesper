@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.client.soda
             var isFirst = true;
             foreach (var child in Children) {
                 if (!isFirst) {
-                    writer.Write(BinaryOp.ExpressionText);
+                    writer.Write(BinaryOp.GetExpressionText());
                 }
 
                 child.ToEPL(writer, Precedence);

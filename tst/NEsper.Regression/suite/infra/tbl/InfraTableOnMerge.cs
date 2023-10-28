@@ -134,11 +134,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "inlined_class \"\"\"\n" +
                     "  public class Helper {\n" +
                     "    public static double computeInitialValue(double alpha, double[] burnValues) {\n" +
-"      double Total = 0;\n"+
+                    "      double Total = 0;\n" +
                     "      for (int i = 0; i < burnValues.length; i++) {\n" +
-"        Total = Total + burnValues[i];\n"+
+                    "        Total = Total + burnValues[i];\n" +
                     "      }\n" +
-"      double value = Total / burnValues.length;\n"+
+                    "      double value = Total / burnValues.length;\n" +
                     "      for (int i = 0; i < burnValues.length; i++) {\n" +
                     "        value = alpha * burnValues[i] + (1 - alpha) * value;\n" +
                     "      }\n" +
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "  when matched then update set value = ALPHA * x + (1 - ALPHA) * value;\n" +
                     "" +
                     "// Output value\n" +
-                    "@name('output') select EMA.value as burn from MyEvent;\n";
+                    "@name('output') select EMA.Value as burn from MyEvent;\n";
                 env.CompileDeploy(epl).AddListener("output");
 
                 SendAssertEMA(env, "E1", 1, null);
@@ -302,15 +302,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-"@public create table varaggMS (eventset window(*) @type(SupportBean), Total sum(int))",
+                    "@public create table varaggMS (eventset window(*) @type(SupportBean), Total sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table varaggMS select window(*) as eventset, " +
-"sum(IntPrimitive) as Total from SupportBean#length(2)",
+                    "sum(IntPrimitive) as Total from SupportBean#length(2)",
                     path);
                 env.CompileDeploy(
                     "@public on SupportBean_S0 merge varaggMS " +
-"when matched then insert into ResultStream select eventset, Total, eventset.takeLast(1) as c0",
+                    "when matched then insert into ResultStream select eventset, Total, eventset.takeLast(1) as c0",
                     path);
                 env.CompileDeploy("@name('s0') select * from ResultStream", path).AddListener("s0");
 

@@ -34,14 +34,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             // Reservation Events status change, aggregation, sla definition and DB cache update
             sb = new StringBuilder();
             sb.Append(
-"@name('s0') @public insert into SumOfReservations(cid, type, series, Total, insla, bordersla, outsla) ");
+                "@name('s0') @public insert into SumOfReservations(cid, type, series, Total, insla, bordersla, outsla) ");
             sb.Append("select istream cid, type, series, ");
             sb.Append("count(*) as Total, ");
             sb.Append("sum(case when elapsed < 600000 then 1 else 0 end) as insla, ");
             sb.Append("sum(case when elapsed between 600000 and 900000 then 1 else 0 end) as bordersla, ");
             sb.Append("sum(case when elapsed > 900000 then 1 else 0 end) as outsla ");
             sb.Append("from ReservationEvents#time_batch(10 sec) ");
-            sb.Append("group by cid, type, series Order by series asc");
+            sb.Append("group by cid, type, series order by series asc");
 
             env.CompileDeploy(sb.ToString(), path).AddListener("s0");
 

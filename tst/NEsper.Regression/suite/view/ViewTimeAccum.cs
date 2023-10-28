@@ -601,7 +601,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var events = Get100Events();
 
                 var epl =
-"@name('s0') select irstream * from SupportMarketDataBean#groupwin(Symbol)#time_accum(10 sec)";
+                    "@name('s0') select irstream * from SupportMarketDataBean#groupwin(Symbol)#time_accum(10 sec)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // 1st S1 event

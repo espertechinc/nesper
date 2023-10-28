@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.@ba
                 methodNode.Block.AssignArrayElement(Ref("props"), Constant(1), ExprDotName(REF_ENUMCOLL, "Count"));
             }
 
-            var forEach = methodNode.Block.ForEach(typeof(EventBean), "next", REF_ENUMCOLL)
+            var forEach = methodNode.Block.ForEach<EventBean>("next", REF_ENUMCOLL)
                 .IncrementRef("count")
                 .AssignArrayElement("props", Constant(0), Ref("count"))
                 .AssignArrayElement(REF_EPS, Constant(StreamNumLambda), Ref("next"));

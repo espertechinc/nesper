@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             var filter = CodegenLegoMethodExpression.CodegenExpression(filterEval, method, classScope);
             method.Block
-                .ForEach(typeof(EventBean), "subselectEvent", symbols.GetAddMatchingEvents(method))
+                .ForEach<EventBean>("subselectEvent", symbols.GetAddMatchingEvents(method))
                 .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("subselectEvent"))
                 .DeclareVar<bool?>(
                     "pass",

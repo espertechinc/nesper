@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 .BlockReturn(PublicConstValue(typeof(CollectionUtil), "NULL_EVENT_ITERATOR"));
 
             {
-                var loop = method.Block.ForEach(typeof(EventBean), "aParent", REF_VIEWABLE);
+                var loop = method.Block.ForEach<EventBean>("aParent", REF_VIEWABLE);
                 loop.AssignArrayElement("eventsPerStream", Constant(0), Ref("aParent"))
                     .DeclareVar(
                         typeof(object),

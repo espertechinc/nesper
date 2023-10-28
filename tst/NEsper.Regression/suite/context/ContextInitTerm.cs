@@ -2006,7 +2006,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c1,c2".Split(",");
                 env.CompileDeploy(
                     "@name('s0') context EveryMinute " +
-"select TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString output all every 2 events and when terminated Order by TheString asc",
+                    "select TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString output all every 2 events and when terminated order by TheString asc",
                     path);
                 env.AddListener("s0");
 

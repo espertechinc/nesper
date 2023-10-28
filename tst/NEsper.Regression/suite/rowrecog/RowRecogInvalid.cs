@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             // aggregation over multiple groups
             text = "select * from SupportRecogBean#keepall " +
                    "match_recognize (" +
-                   "  measures sum(A.value+B.value) as mytotal" +
+                   "  measures sum(A.Value+B.Value) as mytotal" +
                    "  pattern (A* B*) " +
                    "  define " +
                    "    A as A.TheString like 'A%'" +
@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             // aggregation over no groups
             text = "select * from SupportRecogBean#keepall " +
                    "match_recognize (" +
-                   "  measures sum(A.value) as mytotal" +
+                   "  measures sum(A.Value) as mytotal" +
                    "  pattern (A B*) " +
                    "  define " +
                    "    A as A.TheString like 'A%'" +
@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                    "  measures A.TheString as astring" +
                    "  pattern (A B) " +
                    "  define " +
-                   "    A as sum(A.value + A.value) > 3000" +
+                   "    A as sum(A.Value + A.Value) > 3000" +
                    ")";
             env.TryInvalidCompile(
                 text,
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             // join disallowed
             text = "select * from SupportRecogBean#keepall, SupportRecogBean#keepall " +
                    "match_recognize (" +
-                   "  measures A.value as aval" +
+                   "  measures A.Value as aval" +
                    "  pattern (A B*) " +
                    "  define " +
                    "    A as A.TheString like 'A%'" +

@@ -381,13 +381,13 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 // test window
                 epl =
-"@name('s0') select irstream TheString from SupportBean#length_batch(3)#unique(IntPrimitive) Order by TheString asc";
+                    "@name('s0') select irstream TheString from SupportBean#length_batch(3)#unique(IntPrimitive) order by TheString asc";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
                 TryAssertionUniqueAndBatch(env, milestone);
                 env.UndeployAll();
 
                 epl =
-"@name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#length_batch(3) Order by TheString asc";
+                    "@name('s0') select irstream TheString from SupportBean#unique(IntPrimitive)#length_batch(3) order by TheString asc";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
                 TryAssertionUniqueAndBatch(env, milestone);
                 env.UndeployAll();
@@ -439,7 +439,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Total"};
+                var fields = new string[] { "Total" };
 
                 var epl =
                     "@name('s0') select * from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#uni(DoublePrimitive)";
@@ -941,7 +941,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-"@name('s0') select irstream Symbol, Price from SupportMarketDataBean#length(1)#unique(Symbol)";
+                    "@name('s0') select irstream Symbol, Price from SupportMarketDataBean#length(1)#unique(Symbol)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
                 env.SendEventBean(MakeMarketDataEvent("S1", 100));
                 env.AssertPropsNV(
@@ -1038,7 +1038,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-"@name('s0') SELECT irstream * FROM SupportSensorEvent#groupwin(type)#time(1 hour)#unique(device)#sort(1, measurement desc) as high Order by measurement asc";
+                    "@name('s0') SELECT irstream * FROM SupportSensorEvent#groupwin(type)#time(1 hour)#unique(device)#sort(1, measurement desc) as high order by measurement asc";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var eventOne = new SupportSensorEvent(1, "Temperature", "Device1", 5.0, 96.5);

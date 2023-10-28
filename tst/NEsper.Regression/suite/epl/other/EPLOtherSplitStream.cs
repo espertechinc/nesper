@@ -209,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.TryInvalidCompile(
                     "on SupportBean insert into AStream select * where IntPrimitive=1 group by string insert into BStream select * where 1=2",
-"A group-by clause, having-clause or Order-by clause is not allowed for the split stream syntax");
+                    "A group-by clause, having-clause or Order-by clause is not allowed for the split stream syntax");
 
                 env.TryInvalidCompile(
                     "on SupportBean insert into AStream select * where IntPrimitive=1 insert into BStream select avg(IntPrimitive) where 1=2",
@@ -650,8 +650,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             var path = new RegressionPath();
             var epl = "@public on OrderBean as oe " +
                       "insert into StartEvent select oe.orderdetail.OrderId as oi " +
-"insert into ThenEvent select * from [select oe.orderdetail.OrderId as oi, ItemId from orderdetail.Items] as Item "+
-"insert into MoreEvent select oe.orderdetail.OrderId as oi, Item.ItemId as ItemId from [select oe, * from orderdetail.Items] as Item "+
+                      "insert into ThenEvent select * from [select oe.orderdetail.OrderId as oi, ItemId from orderdetail.Items] as Item " +
+                      "insert into MoreEvent select oe.orderdetail.OrderId as oi, Item.ItemId as ItemId from [select oe, * from orderdetail.Items] as Item " +
                       "output all";
             env.CompileDeploy(soda, epl, path);
 
@@ -690,7 +690,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             var path = new RegressionPath();
             var epl = "@name('split') @public on OrderBean " +
                       "insert into BeginEvent select orderdetail.OrderId as OrderId " +
-"insert into OrderItem select * from [select orderdetail.OrderId as OrderId, * from orderdetail.Items] "+
+                      "insert into OrderItem select * from [select orderdetail.OrderId as OrderId, * from orderdetail.Items] " +
                       "insert into EndEvent select orderdetail.OrderId as OrderId " +
                       "output all";
             env.CompileDeploy(soda, epl, path);
@@ -746,9 +746,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             var fieldsOrderId = "oe.orderdetail.OrderId".SplitCsv();
             var epl = "@public on OrderBean as oe " +
                       "insert into HeaderEvent select orderdetail.OrderId as OrderId where 1=2 " +
-"insert into StreamOne select * from [select oe, * from orderdetail.Items] where ProductId=\"10020\" "+
-"insert into StreamTwo select * from [select oe, * from orderdetail.Items] where ProductId=\"10022\" "+
-"insert into StreamThree select * from [select oe, * from orderdetail.Items] where ProductId in (\"10020\",\"10025\",\"10022\")";
+                      "insert into StreamOne select * from [select oe, * from orderdetail.Items] where ProductId=\"10020\" " +
+                      "insert into StreamTwo select * from [select oe, * from orderdetail.Items] where ProductId=\"10022\" " +
+                      "insert into StreamThree select * from [select oe, * from orderdetail.Items] where ProductId in (\"10020\",\"10025\",\"10022\")";
             env.CompileDeploy(soda, epl, path);
 
             var listenerEPL = new string[]
@@ -784,10 +784,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var epl =
                 "create schema MyOrderItem(ItemId string);\n" +
-"@public @buseventtype create schema MyOrderEvent(OrderId string, Items MyOrderItem[]);\n"+
+                "@public @buseventtype create schema MyOrderEvent(OrderId string, Items MyOrderItem[]);\n" +
                 "on MyOrderEvent\n" +
                 "  insert into MyOrderBeginEvent select OrderId\n" +
-"  insert into MyOrderItemEvent select * from [select OrderId, * from Items]\n"+
+                "  insert into MyOrderItemEvent select * from [select OrderId, * from Items]\n" +
                 "  insert into MyOrderEndEvent select OrderId\n" +
                 "  output all;\n" +
                 "create context MyOrderContext \n" +
@@ -799,7 +799,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             IDictionary<string, object> @event = new Dictionary<string, object>();
             @event.Put("OrderId", "1010");
             @event.Put(
-"Items",
+                "Items",
                 new IDictionary<string, object>[] {
                     Collections.SingletonDataMap("ItemId", "A0001")
                 });

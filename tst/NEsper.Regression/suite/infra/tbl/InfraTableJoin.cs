@@ -108,14 +108,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@public create table varaggFC as (" +
-"key string primary key, Total sum(int))",
+                    "key string primary key, Total sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table varaggFC " +
-"select sum(IntPrimitive) as Total from SupportBean group by TheString",
+                    "select sum(IntPrimitive) as Total from SupportBean group by TheString",
                     path);
                 env.CompileDeploy(
-"@name('s0') select Total as value from SupportBean_S0 as s0, varaggFC as va "+
+                        "@name('s0') select Total as value from SupportBean_S0 as s0, varaggFC as va " +
                         "where va.key = s0.P00",
                         path)
                     .AddListener("s0");
@@ -135,9 +135,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var eplDeclare =
-"@public create table varagg as (k0 string primary key, k1 int primary key, v1 string, Total sum(long))";
+                    "@public create table varagg as (k0 string primary key, k1 int primary key, v1 string, Total sum(long))";
                 var eplPopulate =
-"into table varagg select sum(LongPrimitive) as Total from SupportBean group by TheString, IntPrimitive";
+                    "into table varagg select sum(LongPrimitive) as Total from SupportBean group by TheString, IntPrimitive";
                 var eplQuery = "select Total as value from SupportBean_S0 as s0 unidirectional";
 
                 var createIndexEmpty = new string[] { };
@@ -436,7 +436,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var eplDeclare = "@public create table varagg as (k0 int primary key, Total sum(long))";
                 var eplPopulate =
-"into table varagg select sum(LongPrimitive) as Total from SupportBean group by IntPrimitive";
+                    "into table varagg select sum(LongPrimitive) as Total from SupportBean group by IntPrimitive";
                 var eplQuery = "select Total as value from SupportBeanRange unidirectional";
 
                 var createIndexEmpty = new string[] { };

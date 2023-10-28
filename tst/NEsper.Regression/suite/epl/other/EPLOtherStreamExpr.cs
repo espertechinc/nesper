@@ -198,10 +198,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var textOne = "@name('s0') select Symbol, s1.getTheString() as TheString from "+
+                var textOne = "@name('s0') select Symbol, s1.getTheString() as TheString from " +
                               "SupportMarketDataBean#keepall as s0 " +
                               "left outer join " +
-"SupportBean#keepall as s1 on s0.Symbol=s1.TheString";
+                              "SupportBean#keepall as s1 on s0.Symbol=s1.TheString";
                 env.CompileDeploy(textOne).AddListener("s0");
 
                 var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
@@ -217,10 +217,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var textOne =
-"@name('s0') select Symbol, s1.getSimpleProperty() as simpleprop, s1.makeDefaultBean() as def from "+
+                    "@name('s0') select Symbol, s1.getSimpleProperty() as simpleprop, s1.makeDefaultBean() as def from " +
                     "SupportMarketDataBean#keepall as s0 " +
                     "left outer join " +
-"SupportBeanComplexProps#keepall as s1 on s0.Symbol=s1.SimpleProperty";
+                    "SupportBeanComplexProps#keepall as s1 on s0.Symbol=s1.SimpleProperty";
                 env.CompileDeploy(textOne).AddListener("s0");
 
                 var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
@@ -257,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var textOne =
-"@name('s0') select s0.getVolume() as Volume, s0.getSymbol() as Symbol, s0.getPriceTimesVolume(2) as pvf from "+
+                    "@name('s0') select s0.getVolume() as Volume, s0.getSymbol() as Symbol, s0.getPriceTimesVolume(2) as pvf from " +
                     "SupportMarketDataBean as s0 ";
                 env.CompileDeploy(textOne).AddListener("s0");
 

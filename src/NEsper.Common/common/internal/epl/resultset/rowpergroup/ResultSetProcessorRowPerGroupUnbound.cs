@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             {
                 var ifNew = method.Block.IfCondition(NotEqualsNull(REF_NEWDATA));
                 {
-                    var newLoop = ifNew.ForEach(typeof(EventBean), "aNewData", REF_NEWDATA);
+                    var newLoop = ifNew.ForEach<EventBean>("aNewData", REF_NEWDATA);
                     newLoop.AssignArrayElement(NAME_EPS, Constant(0), Ref("aNewData"))
                         .DeclareVar<object>("mk", LocalMethod(forge.GenerateGroupKeySingle, REF_EPS, ConstantTrue()))
                         .ExprDotMethod(Ref("groupReps"), "Put", Ref("mk"), Ref("aNewData"))
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             {
                 var ifOld = method.Block.IfCondition(NotEqualsNull(REF_OLDDATA));
                 {
-                    var oldLoop = ifOld.ForEach(typeof(EventBean), "anOldData", REF_OLDDATA);
+                    var oldLoop = ifOld.ForEach<EventBean>("anOldData", REF_OLDDATA);
                     oldLoop.AssignArrayElement(NAME_EPS, Constant(0), Ref("anOldData"))
                         .DeclareVar<object>("mk", LocalMethod(forge.GenerateGroupKeySingle, REF_EPS, ConstantFalse()))
                         .ExprDotMethod(MEMBER_AGGREGATIONSVC, "ApplyLeave", REF_EPS, Ref("mk"), MEMBER_EXPREVALCONTEXT);

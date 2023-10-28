@@ -360,8 +360,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-"@public @buseventType create schema MyEvent as (Item Nullable<Integer>);\n"+
-"@name('s0') select (select Item from MyEvent#keepall).sumOf(v => v.get()) as c0 from SupportBean;\n";
+                    "@public @buseventType create schema MyEvent as (Item Nullable<Integer>);\n" +
+                    "@name('s0') select (select Item from MyEvent#keepall).sumOf(v => v.get()) as c0 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, 10);
@@ -520,8 +520,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var epl =
                     "@public @buseventtype create schema MyEvent(Id string, value int);\n" +
                     "insert into StreamWithAll select * from pattern[[4] me=MyEvent];\n" +
-                    "insert into StreamGreaterZero select me.where(v => v.value>0) @eventbean as megt from StreamWithAll;\n" +
-                    "insert into StreamLessThenTen select megt.where(v => v.value<10) @eventbean as melt from StreamGreaterZero;\n" +
+                    "insert into StreamGreaterZero select me.where(v => v.Value>0) @eventbean as megt from StreamWithAll;\n" +
+                    "insert into StreamLessThenTen select megt.where(v => v.Value<10) @eventbean as melt from StreamGreaterZero;\n" +
                     "@name('s0') select * from StreamLessThenTen;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -780,7 +780,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl =
                     "@name('s0') select * from SupportSelectorEvent#keepall as sel, SupportContainerEvent#keepall as cont " +
-"where cont.Items.anyOf(i => sel.selector = i.selected)";
+                    "where cont.Items.anyOf(i => sel.selector = i.selected)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportSelectorEvent("S1", "sel1"));
@@ -966,9 +966,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 // test subselect that delivers events
-                var epl = "@public @buseventtype create schema AEvent (Symbol string);\n"+
+                var epl = "@public @buseventtype create schema AEvent (Symbol string);\n" +
                           "@public @buseventtype create schema BEvent (a AEvent);\n" +
-"@name('s0') select (select a from BEvent#keepall).anyOf(v => Symbol = 'GE') as flag from SupportBean;\n";
+                          "@name('s0') select (select a from BEvent#keepall).anyOf(v => Symbol = 'GE') as flag from SupportBean;\n";
                 env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
 
                 env.SendEventMap(MakeBEvent("XX"), "BEvent");
@@ -1080,13 +1080,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test map event type with object-array prop
                 var path = new RegressionPath();
-                env.CompileDeploy("@buseventtype @public create schema MySchema (books BookDesc[])", path);
+                env.CompileDeploy("@buseventtype @public create schema MySchema (Books BookDesc[])", path);
 
-                env.CompileDeploy("@name('s0') select books.max(i => i.Price) as mymax from MySchema", path);
+                env.CompileDeploy("@name('s0') select Books.max(i => i.Price) as mymax from MySchema", path);
                 env.AddListener("s0");
 
                 var @event = Collections.SingletonDataMap(
-                    "books",
+                    "Books",
                     new BookDesc[] { new BookDesc("1", "book1", "dave", 1.00, null) });
                 env.SendEventMap(@event, "MySchema");
                 env.AssertPropsNew("s0", "mymax".Split(","), new object[] { 1.0 });

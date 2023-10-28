@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            " define" +
                            " A as A.TheString like \"A%\"," +
                            " B as B.TheString like \"B%\"" +
-") Order by a, b0, b1, lastb";
+                           ") order by a, b0, b1, lastb";
 
                 var milestone = new AtomicLong();
                 env.CompileDeploy(text).AddListener("s0");
@@ -170,14 +170,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a,b0,b1,lastb".SplitCsv();
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  partition by cat " +
+                           "  partition by Cat " +
                            "  measures A.TheString as a, B[0].TheString as b0, B[1].TheString as b1, last(B.TheString) as lastb" +
                            "  pattern (A B*) " +
                            "  INTERVAL 10 seconds " +
                            "  define " +
                            "    A as A.TheString like 'A%'," +
                            "    B as B.TheString like 'B%'" +
-") Order by a, b0, b1, lastb";
+                           ") order by a, b0, b1, lastb";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -256,7 +256,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  define " +
                            "    A as A.TheString like 'A%'," +
                            "    B as B.TheString like 'B%'" +
-") Order by a, b0, b1, lastb";
+                           ") order by a, b0, b1, lastb";
 
                 env.CompileDeploy(text).AddListener("s0");
 

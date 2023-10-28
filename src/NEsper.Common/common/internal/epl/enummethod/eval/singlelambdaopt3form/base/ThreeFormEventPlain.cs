@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
             if (HasForEachLoop()) {
                 var forEach = block
-                    .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+                    .ForEach<EventBean>("next", EnumForgeCodegenNames.REF_ENUMCOLL)
                     .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"));
                 ForEachBlock(forEach, methodNode, scope, codegenClassScope);
             }

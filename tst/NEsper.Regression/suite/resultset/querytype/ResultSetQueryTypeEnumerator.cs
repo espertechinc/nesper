@@ -240,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select * from SupportMarketDataBean#length(5) Order by Symbol, Volume";
+                var stmtText = "@name('s0') select * from SupportMarketDataBean#length(5) order by Symbol, Volume";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
@@ -282,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var fields = new string[] { "Symbol", "Volume" };
                 var stmtText =
-"@name('s0') select Symbol, Volume from SupportMarketDataBean#length(3) Order by Symbol, Volume";
+                    "@name('s0') select Symbol, Volume from SupportMarketDataBean#length(3) order by Symbol, Volume";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
@@ -319,7 +319,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new string[] { "Symbol", "vol" };
-                var stmtText = "@name('s0') select Symbol, Volume * 10 as vol from SupportMarketDataBean#length(5)"+
+                var stmtText = "@name('s0') select Symbol, Volume * 10 as vol from SupportMarketDataBean#length(5)" +
                                " where Volume < 0";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -383,10 +383,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new string[] { "Symbol", "sumVol" };
-                var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol "+
+                var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
-"group by Symbol "+
-"Order by Symbol";
+                               "group by Symbol " +
+                               "order by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.Milestone(0);
@@ -441,9 +441,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new string[] { "Symbol", "sumVol" };
-                var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol "+
+                var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
-"group by Symbol";
+                               "group by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
@@ -508,9 +508,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new string[] { "Symbol", "sumVol" };
-                var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol "+
+                var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
-"group by Symbol having sum(Volume) > 10";
+                               "group by Symbol having sum(Volume) > 10";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
 
@@ -566,9 +566,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var fields = new string[] { "Symbol", "msg" };
                 var stmtText = "@name('s0') insert into Cutoff " +
-"select Symbol, (String.valueOf(count(*)) || 'x1000.0') as msg "+
-"from SupportMarketDataBean#groupwin(Symbol)#length(1) "+
-"where Price - Volume >= 1000.0 group by Symbol having count(*) = 1";
+                               "select Symbol, (String.valueOf(count(*)) || 'x1000.0') as msg " +
+                               "from SupportMarketDataBean#groupwin(Symbol)#length(1) " +
+                               "where Price - Volume >= 1000.0 group by Symbol having count(*) = 1";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
 
@@ -594,10 +594,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new string[] { "Symbol", "Price", "sumVol" };
-                var stmtText = "@name('s0') select Symbol, Price, sum(Volume) as sumVol "+
+                var stmtText = "@name('s0') select Symbol, Price, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
-"group by Symbol "+
-"Order by Symbol";
+                               "group by Symbol " +
+                               "order by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
 
@@ -663,9 +663,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new string[] { "Symbol", "Price", "sumVol" };
-                var stmtText = "@name('s0') select Symbol, Price, sum(Volume) as sumVol "+
+                var stmtText = "@name('s0') select Symbol, Price, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
-"group by Symbol";
+                               "group by Symbol";
 
                 env.CompileDeploy(stmtText).AddListener("s0");
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
@@ -730,9 +730,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new string[] { "Symbol", "Price", "sumVol" };
-                var stmtText = "@name('s0') select Symbol, Price, sum(Volume) as sumVol "+
+                var stmtText = "@name('s0') select Symbol, Price, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
-"group by Symbol having sum(Volume) > 20";
+                               "group by Symbol having sum(Volume) > 20";
 
                 env.CompileDeploy(stmtText).AddListener("s0");
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
@@ -798,7 +798,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new string[] { "Symbol", "sumVol" };
-                var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol "+
+                var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(3) ";
 
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -838,9 +838,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new string[] { "Symbol", "sumVol" };
-                var stmtText = "@name('s0') select irstream Symbol, sum(Volume) as sumVol "+
+                var stmtText = "@name('s0') select irstream Symbol, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(3) " +
-" Order by Symbol asc";
+                               " order by Symbol asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
 
@@ -878,7 +878,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var fields = new string[] { "Symbol", "sumVol" };
-                var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol "+
+                var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(3) having sum(Volume) > 100";
 
                 env.CompileDeploy(stmtText).AddListener("s0");

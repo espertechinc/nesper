@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             {
                 var theCount = eventArgs.NewEvents[0].Get("theCount").AsInt64();
                 total += theCount;
-                Console.Out.WriteLine("count " + theCount + " Total "+ total);
+                Console.Out.WriteLine("count " + theCount + " Total " + total);
             }
         }
     }

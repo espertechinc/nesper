@@ -483,7 +483,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // test two values
                 env.SendEventBean(new SupportBean(null, -1));
-                query = Prepare(env, path, "select * from MyInfraOne where f1 is null Order by f2 asc");
+                query = Prepare(env, path, "select * from MyInfraOne where f1 is null order by f2 asc");
                 result = query.Execute();
                 Assert.AreEqual(2, result.Array.Length);
                 Assert.AreEqual(-2, result.Array[0].Get("f2"));

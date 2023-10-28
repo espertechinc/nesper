@@ -82,16 +82,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 builder.WithExpression(fields[0], "Contained.aggregate(0, (result, Item) => result + Item.P00)");
                 builder.WithExpression(
                     fields[1],
-"Contained.aggregate('', (result, Item) => result || ', ' || Item.Id)");
+                    "Contained.aggregate('', (result, Item) => result || ', ' || Item.Id)");
                 builder.WithExpression(
                     fields[2],
-"Contained.aggregate('', (result, Item) => result || (case when result='' then '' else ',' end) || Item.Id)");
+                    "Contained.aggregate('', (result, Item) => result || (case when result='' then '' else ',' end) || Item.Id)");
                 builder.WithExpression(
                     fields[3],
-"Contained.aggregate(0, (result, Item, i) => result + Item.P00 + i*10)");
+                    "Contained.aggregate(0, (result, Item, i) => result + Item.P00 + i*10)");
                 builder.WithExpression(
                     fields[4],
-"Contained.aggregate(0, (result, Item, i, s) => result + Item.P00 + i*10 + s*100)");
+                    "Contained.aggregate(0, (result, Item, i, s) => result + Item.P00 + i*10 + s*100)");
                 builder.WithExpression(fields[5], "Contained.aggregate(0, (result, Item) => null)");
 
                 builder.WithStatementConsumer(
@@ -133,10 +133,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 builder.WithExpression(fields[0], "Strvals.aggregate('', (result, Item) => result || '+' || Item)");
                 builder.WithExpression(
                     fields[1],
-"Strvals.aggregate('', (result, Item, i) => result || '+' || Item || '_' || Integer.toString(i))");
+                    "Strvals.aggregate('', (result, Item, i) => result || '+' || Item || '_' || Integer.toString(i))");
                 builder.WithExpression(
                     fields[2],
-"Strvals.aggregate('', (result, Item, i, s) => result || '+' || Item || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
+                    "Strvals.aggregate('', (result, Item, i, s) => result || '+' || Item || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
                 builder.WithExpression(fields[3], "Strvals.aggregate('', (result, Item, i, s) => null)");
 
                 builder.WithStatementConsumer(

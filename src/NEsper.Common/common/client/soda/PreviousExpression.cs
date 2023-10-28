@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.client.soda
     [Serializable]
     public class PreviousExpression : ExpressionBase
     {
-        private PreviousExpressionType type = PreviousExpressionType.PREV;
+        private PreviousExpressionType _type = PreviousExpressionType.PREV;
 
         /// <summary>
         /// Ctor.
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.client.soda
             PreviousExpressionType type,
             Expression expression)
         {
-            this.type = type;
+            _type = type;
             AddChild(expression);
         }
 
@@ -72,13 +72,13 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <returns>type</returns>
         public PreviousExpressionType Type {
-            get => type;
-            set => type = value;
+            get => _type;
+            set => _type = value;
         }
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            writer.Write(type.ToString().ToLowerInvariant());
+            writer.Write(_type.ToString().ToLowerInvariant());
             writer.Write("(");
             Children[0].ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);
             if (Children.Count > 1) {

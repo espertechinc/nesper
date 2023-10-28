@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
             }
 
             var forEach = block
-                .ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+                .ForEach<EventBean>("next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), Ref("value"));
 
             if (_numParameters > 2) {

@@ -15,6 +15,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 
 using NEsper.Avro.Extensions;
@@ -209,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.SendEventAvro(theEvent, name);
             }
             else if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
-                var json = $"{{\"id\": \"{id}\", \"P00\": {P00}}}";
+                var json = $"{{\"Id\": \"{id}\", \"P00\": {p00}}}";
                 env.SendEventJson(json, name);
             }
             else {

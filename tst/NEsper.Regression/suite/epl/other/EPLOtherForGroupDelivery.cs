@@ -334,7 +334,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test sorted
                 env.UndeployAll();
                 env.CompileDeploy(
-"@name('s0') select * from SupportBean#time_batch(1) Order by IntPrimitive desc for grouped_delivery (IntPrimitive)");
+                    "@name('s0') select * from SupportBean#time_batch(1) order by IntPrimitive desc for grouped_delivery (IntPrimitive)");
                 env.AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -360,7 +360,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test multiple criteria
                 env.UndeployAll();
                 var stmtText =
-"@name('s0') select TheString, DoubleBoxed, enumValue from SupportBean#time_batch(1) Order by TheString, DoubleBoxed, enumValue for grouped_delivery(DoubleBoxed, enumValue)";
+                    "@name('s0') select TheString, DoubleBoxed, enumValue from SupportBean#time_batch(1) order by TheString, DoubleBoxed, enumValue for grouped_delivery(DoubleBoxed, enumValue)";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 var fields = "TheString,DoubleBoxed,enumValue".SplitCsv();
 

@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .DeclareVar(typeof(bool?), "hasRows", ConstantFalse())
                 .DeclareVar(typeof(bool?), "hasNonNullRow", ConstantFalse());
 
-            var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
+            var forEach = method.Block.ForEach<object>("groupKey", Ref("groupKeys"));
             {
                 forEach.ExprDotMethod(
                     Ref("aggregationService"),

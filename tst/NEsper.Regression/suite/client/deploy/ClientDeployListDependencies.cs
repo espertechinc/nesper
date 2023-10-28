@@ -235,10 +235,10 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 env.CompileDeploy(eplProvide, path);
 
                 var eplConsume =
-                    "@name('consume') context MyContext select MyVariable, count(*), MyTable['a'].value from MyWindow;\n" +
+                    "@name('consume') context MyContext select MyVariable, count(*), MyTable['a'].Value from MyWindow;\n" +
                     "select MyExpression(), MyScript('a'), MyClass.doIt() from MyEventType;\n" +
                     "on SupportBean as sb merge MyWindow as mw where sb.IntPrimitive=mw.IntPrimitive when matched then delete;\n" +
-                    "on SupportBean as sb merge MyTable as mt where sb.TheString=mt.value when matched then delete;\n";
+                    "on SupportBean as sb merge MyTable as mt where sb.TheString=mt.Value when matched then delete;\n";
                 env.CompileDeploy(eplConsume, path);
 
                 var deploymentIdProvide = env.DeploymentId("provide");

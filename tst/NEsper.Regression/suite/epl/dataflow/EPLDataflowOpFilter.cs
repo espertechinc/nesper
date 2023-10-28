@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                         "DefaultSupportSourceOp -> instream.with.dot<" +
                         typeName +
                         ">{}\n" +
-                        "Filter(instream.with.dot) -> outstream.dot {filter: myString = 'two'}\n" +
+                        "Filter(instream.with.dot) -> outstream.dot {filter: MyString = 'two'}\n" +
                         "DefaultSupportCaptureOp(outstream.dot) {}";
             env.CompileDeploy(graph);
 

@@ -141,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTimer(env, 0);
                 var stmtText =
-"@name('s0') select irstream sum(Price) as sumPrice from SupportMarketDataBean#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.Symbol = S1.TheString";
+                    "@name('s0') select irstream sum(Price) as sumPrice from SupportMarketDataBean#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.Symbol = S1.TheString";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendSupportEvent(env, "DELL");
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTimer(env, 0);
                 var stmtText =
-"@name('s0') select irstream Symbol, sum(Price) as sumPrice from SupportMarketDataBean#time_batch(1 sec)";
+                    "@name('s0') select irstream Symbol, sum(Price) as sumPrice from SupportMarketDataBean#time_batch(1 sec)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 // send first batch
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTimer(env, 0);
                 var stmtText =
-"@name('s0') select irstream Symbol, sum(Price) as sumPrice from SupportMarketDataBean#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.Symbol = S1.TheString";
+                    "@name('s0') select irstream Symbol, sum(Price) as sumPrice from SupportMarketDataBean#time_batch(1 sec) as S0, SupportBean#keepall as S1 where S0.Symbol = S1.TheString";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendSupportEvent(env, "DELL");
@@ -284,7 +284,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTimer(env, 0);
                 var stmtText =
-"@name('s0') select irstream Symbol, sum(Price) as sumPrice from SupportMarketDataBean#time_batch(1 sec) group by Symbol Order by Symbol asc";
+                    "@name('s0') select irstream Symbol, sum(Price) as sumPrice from SupportMarketDataBean#time_batch(1 sec) group by Symbol order by Symbol asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 // send first batch
@@ -329,10 +329,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 0);
-                var stmtText = "@name('s0') select irstream Symbol, sum(Price) as sumPrice "+
+                var stmtText = "@name('s0') select irstream Symbol, sum(Price) as sumPrice " +
                                " from SupportMarketDataBean#time_batch(1 sec) as S0, SupportBean#keepall as S1" +
-" where S0.Symbol = S1.TheString "+
-" group by Symbol";
+                               " where S0.Symbol = S1.TheString " +
+                               " group by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendSupportEvent(env, "DELL");
@@ -377,7 +377,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 SendTimer(env, 0);
                 var stmtText =
-"@name('s0') select irstream Symbol, sum(Price) as sumPrice, Volume from SupportMarketDataBean#time_batch(1 sec) group by Symbol";
+                    "@name('s0') select irstream Symbol, sum(Price) as sumPrice, Volume from SupportMarketDataBean#time_batch(1 sec) group by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendMDEvent(env, "DELL", 10, 200L);
@@ -420,10 +420,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 0);
-                var stmtText = "@name('s0') select irstream Symbol, sum(Price) as sumPrice, Volume "+
+                var stmtText = "@name('s0') select irstream Symbol, sum(Price) as sumPrice, Volume " +
                                "from SupportMarketDataBean#time_batch(1 sec) as S0, SupportBean#keepall as S1" +
-" where S0.Symbol = S1.TheString "+
-" group by Symbol";
+                               " where S0.Symbol = S1.TheString " +
+                               " group by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendSupportEvent(env, "DELL");

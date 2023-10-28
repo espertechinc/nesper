@@ -116,9 +116,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.TheString as a_string, B.TheString as b_string " +
                            "  all matches " +
                            "  pattern (A B) " +
-                           "  define B as B.value > A.value" +
+                           "  define B as B.Value > A.Value" +
                            ") " +
-"Order by a_string, b_string";
+                           "order by a_string, b_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -194,11 +194,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  all matches " +
                            "  pattern (A B* C) " +
                            "  define \n" +
-                           "    A as A.value = 10,\n" +
-                           "    B as B.value > 10,\n" +
-                           "    C as C.value < 10\n" +
+                           "    A as A.Value = 10,\n" +
+                           "    B as B.Value > 10,\n" +
+                           "    C as C.Value < 10\n" +
                            ") " +
-"Order by a_string, c_string";
+                           "order by a_string, c_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -288,11 +288,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  all matches " +
                            "  pattern (A B+ C) " +
                            "  define \n" +
-                           "    A as (A.value = 10),\n" +
-                           "    B as (B.value > 10),\n" +
-                           "    C as (C.value < 10)\n" +
+                           "    A as (A.Value = 10),\n" +
+                           "    B as (B.Value > 10),\n" +
+                           "    C as (C.Value < 10)\n" +
                            ") " +
-"Order by a_string, c_string";
+                           "order by a_string, c_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -351,11 +351,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  all matches " +
                            "  pattern (A B? C) " +
                            "  define \n" +
-                           "    A as (A.value = 10),\n" +
-                           "    B as (B.value > 10),\n" +
-                           "    C as (C.value < 10)\n" +
+                           "    A as (A.Value = 10),\n" +
+                           "    B as (B.Value > 10),\n" +
+                           "    C as (C.Value < 10)\n" +
                            ") " +
-"Order by a_string";
+                           "order by a_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -434,11 +434,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  partition by TheString" +
-                           "  measures A.TheString as a_string, A.value as a_value, B.value as b_value " +
+                           "  measures A.TheString as a_string, A.Value as a_value, B.Value as b_value " +
                            "  all matches pattern (A B) " +
-                           "  define B as (B.value > A.value)" +
+                           "  define B as (B.Value > A.Value)" +
                            ")" +
-" Order by a_string";
+                           " order by a_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -594,10 +594,10 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string, D.TheString as d_string " +
                            "  all matches pattern ( A B | C D ) " +
                            "  define " +
-                           "    A as (A.value = 1)," +
-                           "    B as (B.value = 2)," +
-                           "    C as (C.value = 3)," +
-                           "    D as (D.value = 4)" +
+                           "    A as (A.Value = 1)," +
+                           "    B as (B.Value = 2)," +
+                           "    C as (C.Value = 3)," +
+                           "    D as (D.Value = 4)" +
                            ")";
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -649,10 +649,10 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string, D.TheString as d_string " +
                            "  all matches pattern ( (A | B) (C | D) ) " +
                            "  define " +
-                           "    A as (A.value = 1)," +
-                           "    B as (B.value = 2)," +
-                           "    C as (C.value = 3)," +
-                           "    D as (D.value = 4)" +
+                           "    A as (A.Value = 1)," +
+                           "    B as (B.Value = 2)," +
+                           "    C as (C.Value = 3)," +
+                           "    D as (D.Value = 4)" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -705,8 +705,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A[0].TheString as a0, B.TheString as b, A[1].TheString as a1 " +
                            "  all matches pattern ( A B A ) " +
                            "  define " +
-                           "    A as (A.value = 1)," +
-                           "    B as (B.value = 2)" +
+                           "    A as (A.Value = 1)," +
+                           "    B as (B.Value = 2)" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");

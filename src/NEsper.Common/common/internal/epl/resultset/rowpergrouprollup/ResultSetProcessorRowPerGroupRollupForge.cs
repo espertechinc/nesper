@@ -127,12 +127,16 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 GetType(),
                 classScope,
                 methodNode => methodNode.Block.MethodReturn(MEMBER_AGGREGATIONSVC));
+            
+#if DEFINED_IN_BASECLASS
             instance.Properties.AddProperty(
                 typeof(ExprEvaluatorContext),
                 "ExprEvaluatorContext",
                 GetType(),
                 classScope,
                 property => property.GetterBlock.BlockReturn(MEMBER_EXPREVALCONTEXT));
+#endif
+            
             instance.Properties.AddProperty(
                 typeof(bool),
                 "IsSelectRStream",

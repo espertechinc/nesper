@@ -254,8 +254,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var text =
-"@name('s0') select irstream * from pattern [every(s0=SupportMarketDataBean(Symbol='S0') and "+
-"s1=SupportMarketDataBean(Symbol='S1'))]#length(1)";
+                    "@name('s0') select irstream * from pattern [every(s0=SupportMarketDataBean(Symbol='S0') and " +
+                    "s1=SupportMarketDataBean(Symbol='S1'))]#length(1)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.Milestone(0);

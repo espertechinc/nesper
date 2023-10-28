@@ -763,7 +763,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     {
                         var ifNewApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("newData")));
                         {
-                            var forNew = ifNewApplyAgg.ForEach(typeof(EventBean), "aNewData", Ref("newData"))
+                            var forNew = ifNewApplyAgg.ForEach<EventBean>("aNewData", Ref("newData"))
                                 .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("aNewData")))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
@@ -788,7 +788,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
                         var ifOldApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
                         {
-                            var forOld = ifOldApplyAgg.ForEach(typeof(EventBean), "anOldData", Ref("oldData"))
+                            var forOld = ifOldApplyAgg.ForEach<EventBean>("anOldData", Ref("oldData"))
                                 .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("anOldData")))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
@@ -813,7 +813,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
                         var ifNewFirst = forEach.IfCondition(NotEqualsNull(Ref("newData")));
                         {
-                            var forNewFirst = ifNewFirst.ForEach(typeof(EventBean), "aNewData", Ref("newData"))
+                            var forNewFirst = ifNewFirst.ForEach<EventBean>("aNewData", Ref("newData"))
                                 .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("aNewData")))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
@@ -884,7 +884,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
                         var ifOldFirst = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
                         {
-                            var forOldFirst = ifOldFirst.ForEach(typeof(EventBean), "anOldData", Ref("oldData"))
+                            var forOldFirst = ifOldFirst.ForEach<EventBean>("anOldData", Ref("oldData"))
                                 .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("anOldData")))
                                 .DeclareVar<object>(
                                     "groupKeyComplete",
@@ -1449,7 +1449,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     {
                         var ifNewApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("newData")));
                         {
-                            var forNew = ifNewApplyAgg.ForEach(typeof(EventBean), "aNewData", Ref("newData"))
+                            var forNew = ifNewApplyAgg.ForEach<EventBean>("aNewData", Ref("newData"))
                                 .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("aNewData")))
                                 .DeclareVar<object>("groupKeyComplete",
                                     LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
@@ -1506,7 +1506,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
                         var ifOldApplyAgg = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
                         {
-                            var forOld = ifOldApplyAgg.ForEach(typeof(EventBean), "anOldData", Ref("oldData"))
+                            var forOld = ifOldApplyAgg.ForEach<EventBean>("anOldData", Ref("oldData"))
                                 .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("anOldData")))
                                 .DeclareVar<object>("groupKeyComplete",
                                     LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
@@ -1999,7 +1999,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 {
                     var ifNew = forEach.IfCondition(NotEqualsNull(Ref("newData")));
                     {
-                        var forNew = ifNew.ForEach(typeof(EventBean), "aNewData", Ref("newData"))
+                        var forNew = ifNew.ForEach<EventBean>("aNewData", Ref("newData"))
                             .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("aNewData")))
                             .DeclareVar<object>("groupKeyComplete",
                                 LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
@@ -2042,7 +2042,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
                     var ifOld = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
                     {
-                        var forOld = ifOld.ForEach(typeof(EventBean), "anOldData", Ref("oldData"))
+                        var forOld = ifOld.ForEach<EventBean>("anOldData", Ref("oldData"))
                             .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("anOldData")))
                             .DeclareVar<object>("groupKeyComplete",
                                 LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
@@ -2284,7 +2284,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 {
                     var ifNew = forEach.IfCondition(NotEqualsNull(Ref("newData")));
                     {
-                        var forNew = ifNew.ForEach(typeof(EventBean), "aNewData", Ref("newData"))
+                        var forNew = ifNew.ForEach<EventBean>("aNewData", Ref("newData"))
                             .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("aNewData")))
                             .DeclareVar<object>("groupKeyComplete",
                                 LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()));
@@ -2327,7 +2327,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
 
                     var ifOld = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
                     {
-                        var forOld = ifOld.ForEach(typeof(EventBean), "anOldData", Ref("oldData"))
+                        var forOld = ifOld.ForEach<EventBean>("anOldData", Ref("oldData"))
                             .AssignRef("eventsPerStream", NewArrayWithInit(typeof(EventBean), Ref("anOldData")))
                             .DeclareVar<object>("groupKeyComplete",
                                 LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()));
@@ -2540,7 +2540,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     "levels",
                     ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"));
 
-                var forLevels = methodNode.Block.ForEach(typeof(AggregationGroupByRollupLevel), "level", Ref("levels"));
+                var forLevels = methodNode.Block.ForEach<AggregationGroupByRollupLevel>("level", Ref("levels"));
                 {
                     var forEvents = forLevels.ForEachVar(
                         "pair",
@@ -2595,7 +2595,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                     "levels",
                     ExprDotMethodChain(Ref("this")).Get("GroupByRollupDesc").Get("Levels"));
 
-                var forLevels = methodNode.Block.ForEach(typeof(AggregationGroupByRollupLevel), "level", Ref("levels"));
+                var forLevels = methodNode.Block.ForEach<AggregationGroupByRollupLevel>("level", Ref("levels"));
                 {
                     var forEvents = forLevels.ForEachVar(
                         "pair",
@@ -2910,7 +2910,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             {
                 var ifNew = method.Block.IfCondition(NotEqualsNull(REF_NEWDATA));
                 {
-                    ifNew.ForEach(typeof(EventBean), "aNewData", REF_NEWDATA)
+                    ifNew.ForEach<EventBean>("aNewData", REF_NEWDATA)
                         .AssignArrayElement("eventsPerStream", Constant(0), Ref("aNewData"))
                         .DeclareVar(
                             typeof(object[]),
@@ -2927,7 +2927,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             {
                 var ifOld = method.Block.IfCondition(NotEqualsNull(REF_OLDDATA));
                 {
-                    ifOld.ForEach(typeof(EventBean), "anOldData", REF_OLDDATA)
+                    ifOld.ForEach<EventBean>("anOldData", REF_OLDDATA)
                         .AssignArrayElement("eventsPerStream", Constant(0), Ref("anOldData"))
                         .DeclareVar(
                             typeof(object[]),

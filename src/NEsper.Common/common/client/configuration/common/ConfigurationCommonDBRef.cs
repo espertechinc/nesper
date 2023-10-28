@@ -14,6 +14,7 @@ using System.Text.Json.Serialization;
 using com.espertech.esper.common.client.db;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -36,6 +37,20 @@ namespace com.espertech.esper.common.client.configuration.common
             ConnectionSettings = new ConnectionSettings();
             MetadataRetrievalEnum = MetadataOriginEnum.DEFAULT;
             ColumnChangeCase = ColumnChangeCaseEnum.NONE;
+            DataTypesMapping = new Dictionary<Type, Type>();
+        }
+
+        [JsonConstructor]
+        public ConfigurationCommonDBRef(
+            ConnectionSettings connectionSettings,
+            ConnectionLifecycleEnum connectionLifecycleEnum,
+            MetadataOriginEnum metadataRetrievalEnum,
+            ColumnChangeCaseEnum columnChangeCase)
+        {
+            ConnectionSettings = connectionSettings;
+            ConnectionLifecycleEnum = connectionLifecycleEnum;
+            MetadataRetrievalEnum = metadataRetrievalEnum;
+            ColumnChangeCase = columnChangeCase;
             DataTypesMapping = new Dictionary<Type, Type>();
         }
 
@@ -89,7 +104,8 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     is true to set auto-commit to true, or false to set auto-commit to false, or null to accepts the
         ///     default
         /// </value>
-        public bool ConnectionAutoCommit {
+        public bool? ConnectionAutoCommit {
+            get => ConnectionSettings.AutoCommit;
             set => ConnectionSettings.AutoCommit = value;
         }
 
@@ -124,7 +140,8 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the mapping of types that the runtime must perform
         ///     when receiving output columns of that sql types.
         /// </summary>
-        public IDictionary<Type, Type> DataTypesMapping { get; }
+        [JsonIgnore]
+        public IDictionary<Type, Type> DataTypesMapping { get; } // TODO - fix serialization
 
         /// <summary>
         ///     Sets and indicator how the runtime should retrieve metadata about the columns
@@ -135,6 +152,7 @@ namespace com.espertech.esper.common.client.configuration.common
         /// </summary>
         /// <value>indication how to retrieve metadata</value>
         public MetadataOriginEnum MetadataOrigin {
+            get => MetadataRetrievalEnum;
             set => MetadataRetrievalEnum = value;
         }
 
@@ -266,10 +284,12 @@ namespace com.espertech.esper.common.client.configuration.common
             }
         }
 
+        [JsonIgnore]
         public DriverConnectionFactoryDesc DatabaseDriver {
             set => ConnectionFactoryDesc = value;
         }
 
+        [JsonIgnore]
         public int LRUCache {
             set => DataCacheDesc = new ConfigurationCommonCacheLRU(value);
         }

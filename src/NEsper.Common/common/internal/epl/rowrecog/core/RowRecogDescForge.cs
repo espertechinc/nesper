@@ -192,17 +192,17 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                     partitionBy == null ? ConstantNull() : partitionByMultiKey.GetExprMKSerde(method, classScope))
                 .SetProperty(desc, "VariableStreams", MakeVariableStreams(method, classScope))
                 .SetProperty(desc, "HasInterval", Constant(hasInterval))
-                .SetProperty(desc, "IterateOnly", Constant(iterateOnly))
-                .SetProperty(desc, "Unbound", Constant(unbound))
-                .SetProperty(desc, "OrTerminated", Constant(orTerminated))
-                .SetProperty(desc, "CollectMultimatches", Constant(collectMultimatches))
-                .SetProperty(desc, "DefineAsksMultimatches", Constant(defineAsksMultimatches))
+                .SetProperty(desc, "IsIterateOnly", Constant(iterateOnly))
+                .SetProperty(desc, "IsUnbound", Constant(unbound))
+                .SetProperty(desc, "IsOrTerminated", Constant(orTerminated))
+                .SetProperty(desc, "IsCollectMultimatches", Constant(collectMultimatches))
+                .SetProperty(desc, "IsDefineAsksMultimatches", Constant(defineAsksMultimatches))
                 .SetProperty(desc, "NumEventsEventsPerStreamDefine", Constant(numEventsEventsPerStreamDefine))
                 .SetProperty(desc, "MultimatchVariablesArray", Constant(multimatchVariablesArray))
                 .SetProperty(desc, "StatesOrdered", MakeStates(method, symbols, classScope))
                 .SetProperty(desc, "NextStatesPerState", MakeNextStates(method, classScope))
                 .SetProperty(desc, "StartStates", Constant(startStateNums))
-                .SetProperty(desc, "AllMatches", Constant(allMatches))
+                .SetProperty(desc, "IsAllMatches", Constant(allMatches))
                 .SetProperty(desc, "Skip", Constant(skip))
                 .SetProperty(
                     desc,
@@ -261,7 +261,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                         .WithParam<AggregationResultFuture>("future");
                     var assignProxy = NewInstance<ProxyAggregationResultFutureAssignable>(assignLambda);
                     
-                    var field = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+                    var field = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                         new CodegenFieldNameMatchRecognizeAgg(i),
                         typeof(AggregationResultFuture));
                     assignLambda.Block.AssignRef(field, Ref("future"));
@@ -330,7 +330,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             method.Block.DeclareVar(
                 typeof(IDictionary<string, Pair<int, bool>>),
                 "vars",
-                NewInstance(typeof(IDictionary<string, Pair<int, bool>>)));
+                NewInstance(typeof(Dictionary<string, Pair<int, bool>>)));
             foreach (var entry in variableStreams) {
                 method.Block.ExprDotMethod(
                     Ref("vars"),

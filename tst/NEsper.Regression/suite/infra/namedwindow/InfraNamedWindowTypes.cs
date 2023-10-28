@@ -263,10 +263,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl =
                     "@name('create') create window MyWindowNW#keepall as select TheString as a, LongPrimitive as b, LongBoxed as c from SupportBean;\n" +
                     "insert into MyWindowNW select TheString as a, LongPrimitive as b, LongBoxed as c from SupportBean;\n" +
-"insert into MyWindowNW select Symbol as a, Volume as b, Volume as c from SupportMarketDataBean;\n"+
+                    "insert into MyWindowNW select Symbol as a, Volume as b, Volume as c from SupportMarketDataBean;\n" +
                     "insert into MyWindowNW select key as a, boxed as b, primitive as c from MyMapWithKeyPrimitiveBoxed;\n" +
                     "@name('s1') select a, b, c from MyWindowNW;\n" +
-"@name('delete') on SupportMarketDataBean as s0 delete from MyWindowNW as s1 where s0.Symbol = s1.a;\n";
+                    "@name('delete') on SupportMarketDataBean as s0 delete from MyWindowNW as s1 where s0.Symbol = s1.a;\n";
                 env.CompileDeploy(epl).AddListener("create").AddListener("s1").AddListener("delete");
 
                 env.AssertStatement(
@@ -316,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl =
                     "@name('create') create window MyWindowNWNA#keepall as select TheString, LongPrimitive, LongBoxed from SupportBean;\n" +
                     "insert into MyWindowNWNA select TheString, LongPrimitive, LongBoxed from SupportBean;\n" +
-"insert into MyWindowNWNA select Symbol as TheString, Volume as LongPrimitive, Volume as LongBoxed from SupportMarketDataBean;\n"+
+                    "insert into MyWindowNWNA select Symbol as TheString, Volume as LongPrimitive, Volume as LongBoxed from SupportMarketDataBean;\n" +
                     "insert into MyWindowNWNA select key as TheString, boxed as LongPrimitive, primitive as LongBoxed from MyMapWithKeyPrimitiveBoxed;\n" +
                     "@name('select') select TheString, LongPrimitive, LongBoxed from MyWindowNWNA;\n";
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
@@ -345,7 +345,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl =
                     "@name('create') create window MyWindowCA#keepall as select '' as TheString, 0L as LongPrimitive, 0L as LongBoxed from MyMapWithKeyPrimitiveBoxed;\n" +
                     "insert into MyWindowCA select TheString, LongPrimitive, LongBoxed from SupportBean;\n" +
-"insert into MyWindowCA select Symbol as TheString, Volume as LongPrimitive, Volume as LongBoxed from SupportMarketDataBean;\n"+
+                    "insert into MyWindowCA select Symbol as TheString, Volume as LongPrimitive, Volume as LongBoxed from SupportMarketDataBean;\n" +
                     "@name('select') select TheString, LongPrimitive, LongBoxed from MyWindowCA;\n";
                 env.CompileDeploy(epl).AddListener("select").AddListener("create");
 

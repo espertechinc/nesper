@@ -102,9 +102,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var xmlTests = new Pair<object, object>[] {
                 new Pair<object, object>("", notExists),
                 new Pair<object, object>(
-"<Item>"+
+                    "<Item>" +
                     "<indexed>1</indexed><indexed>2</indexed><mapped id=\"keyOne\">3</mapped><mapped Id=\"keyTwo\">4</mapped>" +
-"</Item>",
+                    "</Item>",
                     new ValueWithExistsFlag[] {
                         Exists("1"), Exists("2"), NotExists(), Exists("3"), Exists("4"), NotExists()
                     })
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>("{ \"Item\" : {}}", notExists),
                 new Pair<object, object>(
                     "{\n" +
-"  \"Item\": {\n"+
+                    "  \"Item\": {\n" +
                     "    \"indexed\": [1,2],\n" +
                     "    \"mapped\": {\n" +
                     "      \"keyOne\": 3,\n" +
@@ -167,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>("{ \"Item\" : {}}", jsonProvidedNulls),
                 new Pair<object, object>(
                     "{\n" +
-"  \"Item\": {\n"+
+                    "  \"Item\": {\n" +
                     "    \"indexed\": [1,2],\n" +
                     "    \"mapped\": {\n" +
                     "      \"keyOne\": 3,\n" +
@@ -198,18 +198,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RegressionPath path)
         {
             var stmtText = "@name('s0') select " +
-"Item?.indexed[0] as indexed1, "+
-"exists(Item?.indexed[0]) as exists_indexed1, "+
-"Item?.indexed[1]? as indexed2, "+
-"exists(Item?.indexed[1]?) as exists_indexed2, "+
-"Item?.ArrayProperty[1]? as array, "+
-"exists(Item?.ArrayProperty[1]?) as exists_array, "+
-"Item?.mapped('keyOne') as mapped1, "+
-"exists(Item?.mapped('keyOne')) as exists_mapped1, "+
-"Item?.mapped('keyTwo')? as mapped2,  "+
-"exists(Item?.mapped('keyTwo')?) as exists_mapped2,  "+
-"Item?.mapProperty('xOne')? as map, "+
-"exists(Item?.mapProperty('xOne')?) as exists_map "+
+                           "Item?.indexed[0] as indexed1, " +
+                           "exists(Item?.indexed[0]) as exists_indexed1, " +
+                           "Item?.indexed[1]? as indexed2, " +
+                           "exists(Item?.indexed[1]?) as exists_indexed2, " +
+                           "Item?.ArrayProperty[1]? as array, " +
+                           "exists(Item?.ArrayProperty[1]?) as exists_array, " +
+                           "Item?.mapped('keyOne') as mapped1, " +
+                           "exists(Item?.mapped('keyOne')) as exists_mapped1, " +
+                           "Item?.mapped('keyTwo')? as mapped2,  " +
+                           "exists(Item?.mapped('keyTwo')?) as exists_mapped2,  " +
+                           "Item?.mapProperty('xOne')? as map, " +
+                           "exists(Item?.mapProperty('xOne')?) as exists_map " +
                            " from " +
                            typename;
             env.CompileDeploy(stmtText, path).AddListener("s0");

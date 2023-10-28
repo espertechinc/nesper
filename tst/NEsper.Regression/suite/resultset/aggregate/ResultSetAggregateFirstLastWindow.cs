@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "first(IntPrimitive) as firstint, " +
                           "last(IntPrimitive) as lastint, " +
                           "window(IntPrimitive) as allint " +
-"from SupportBean#length(5) group by TheString Order by TheString asc";
+                          "from SupportBean#length(5) group by TheString order by TheString asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = "TheString,firststring,firstint,laststring,lastint,allint".SplitCsv();
@@ -741,7 +741,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "window(sb.Id) as wbs, " +
                           "last(sb.Id) as lbs " +
                           "from SupportBean_A#length(2) as sa, SupportBean_B#length(2) as sb " +
-"Order by ast, bst";
+                          "order by ast, bst";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = "ast,bst,fas,was,las,fbs,wbs,lbs".SplitCsv();
@@ -924,7 +924,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "first(IntPrimitive) as fi, " +
                           "window(IntPrimitive) as wi, " +
                           "last(IntPrimitive) as li " +
-"from SupportBean#length_batch(6) as sb group by TheString Order by TheString asc";
+                          "from SupportBean#length_batch(6) as sb group by TheString order by TheString asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = "TheString,fi,wi,li".SplitCsv();
@@ -1095,7 +1095,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.Milestone(1);
 
                 qc = env.CompileFAF(
-"select TheString as s, first(IntPrimitive) as f, window(IntPrimitive) as w, last(IntPrimitive) as l from MyWindowFour as s group by TheString Order by TheString asc",
+                    "select TheString as s, first(IntPrimitive) as f, window(IntPrimitive) as w, last(IntPrimitive) as l from MyWindowFour as s group by TheString order by TheString asc",
                     path);
                 q = env.Runtime.FireAndForgetService.PrepareQuery(qc);
                 var expected = new object[][] {
@@ -1264,7 +1264,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "last(IntPrimitive) as lastint, " +
                           "window(IntPrimitive) as allint " +
                           "from SupportBean#length(5) " +
-"group by TheString Order by TheString";
+                          "group by TheString order by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 TryAssertionGrouped(env, milestone);
@@ -1363,7 +1363,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var fields = "c0,c1,c2".SplitCsv();
 
                 var epl = "@name('s0') select TheString as c0, sum(IntPrimitive) as c1," +
-"window(IntPrimitive*LongPrimitive) as c2 from SupportBean#length(3) group by TheString Order by TheString asc";
+                          "window(IntPrimitive*LongPrimitive) as c2 from SupportBean#length(3) group by TheString order by TheString asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);

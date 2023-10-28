@@ -229,8 +229,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 TryInvalidFAFCompile(
                     env,
                     path,
-"context MyContext select context.s0.P00 as P00 Order by P00 desc",
-"Fire-and-forget queries without a from-clause and with context do not allow Order-by");
+                    "context MyContext select context.s0.P00 as P00 order by P00 desc",
+                    "Fire-and-forget queries without a from-clause and with context do not allow Order-by");
 
                 env.UndeployAll();
             }

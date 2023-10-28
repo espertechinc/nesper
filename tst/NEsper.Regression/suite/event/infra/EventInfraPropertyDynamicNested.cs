@@ -157,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var schemasJson = "@JsonSchema(dynamic=true) create json schema Undefined();\n" +
                               "@public @buseventtype @name('schema') create json schema " +
                               JSON_TYPENAME +
-"(Item Undefined)";
+                              "(Item Undefined)";
             env.CompileDeploy(schemasJson, path);
             RunAssertion(
                 env,
@@ -179,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 typeof(MyLocalJsonProvided).FullName +
                 "') @public @buseventtype @name('schema') create json schema " +
                 JSONPROVIDED_TYPENAME +
-"(Item Item)";
+                "(Item Item)";
             env.CompileDeploy(schemasJsonProvided, path);
             RunAssertion(
                 env,
@@ -208,8 +208,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                            eventRepresentationEnum.GetAnnotationText() +
                            additionalAnnotations +
                            " select " +
-"Item.Id? as myid, "+
-"exists(Item.Id?) as exists_myid "+
+                           "Item.Id? as myid, " +
+                           "exists(Item.Id?) as exists_myid " +
                            "from " +
                            typename +
                            ";\n" +

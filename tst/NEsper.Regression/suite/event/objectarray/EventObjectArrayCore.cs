@@ -104,8 +104,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                         SupportEventPropUtil.AssertPropsEquals(
                             type.PropertyDescriptors.ToArray(),
-                            new SupportEventPropDesc("myInt", typeof(int?)),
-                            new SupportEventPropDesc("myString", typeof(string)),
+                            new SupportEventPropDesc("MyInt", typeof(int?)),
+                            new SupportEventPropDesc("MyString", typeof(string)),
                             new SupportEventPropDesc("beanA", typeof(SupportBeanComplexProps)).WithFragment());
                     });
             }
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             public void Run(RegressionEnvironment env)
             {
                 var statementText =
-                    "@name('s0') select myInt + 2 as intVal, 'x' || myString || 'x' as stringVal from MyObjectArrayEvent#length(5)";
+                    "@name('s0') select MyInt + 2 as intVal, 'x' || MyString || 'x' as stringVal from MyObjectArrayEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 // send Map<String, Object> event
@@ -174,8 +174,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile("select XXX from MyObjectArrayEvent#length(5)", "skip");
-                env.TryInvalidCompile("select myString * 2 from MyObjectArrayEvent#length(5)", "skip");
-                env.TryInvalidCompile("select String.trim(myInt) from MyObjectArrayEvent#length(5)", "skip");
+                env.TryInvalidCompile("select MyString * 2 from MyObjectArrayEvent#length(5)", "skip");
+                env.TryInvalidCompile("select String.trim(MyInt) from MyObjectArrayEvent#length(5)", "skip");
             }
         }
 

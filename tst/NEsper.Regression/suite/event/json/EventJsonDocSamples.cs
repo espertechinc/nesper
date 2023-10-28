@@ -177,14 +177,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create json schema Names(lastname string, firstname string);\n" +
-                          "@public @buseventtype create json schema BookEvent(isbn string, author Names, editor Names, title string, category string[]);\n" +
-                          "@name('s0') select isbn, author.lastname as authorName, editor.lastname as editorName, \n" +
+                          "@public @buseventtype create json schema BookEvent(isbn string, Author Names, editor Names, title string, category string[]);\n" +
+                          "@name('s0') select isbn, Author.lastname as authorName, editor.lastname as editorName, \n" +
                           "  category[0] as primaryCategory from BookEvent;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var json = "{ \n" +
                            "  \"isbn\": \"123-456-222\",  \n" +
-                           " \"author\": \n" +
+                           " \"Author\": \n" +
                            "    {\n" +
                            "      \"lastname\": \"Doe\",\n" +
                            "      \"firstname\": \"Jane\"\n" +

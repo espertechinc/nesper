@@ -119,12 +119,12 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select irstream Symbol, "+
-"prev(1, Symbol) as prev1, "+
-"prior(1, Symbol) as prio1, "+
-"prevtail(Symbol) as prevtail0, "+
-"prevcount(Symbol) as prevCountSym, "+
-"prevwindow(Symbol) as prevWindowSym "+
+                var text = "@name('s0') select irstream Symbol, " +
+                           "prev(1, Symbol) as prev1, " +
+                           "prior(1, Symbol) as prio1, " +
+                           "prevtail(Symbol) as prevtail0, " +
+                           "prevcount(Symbol) as prevCountSym, " +
+                           "prevwindow(Symbol) as prevWindowSym " +
                            "from SupportMarketDataBean.win:length(2)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
                 var fields = new string[] { "Symbol", "prev1", "prio1", "prevtail0", "prevCountSym", "prevWindowSym" };

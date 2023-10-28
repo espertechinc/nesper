@@ -449,7 +449,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                           " where timer:within(1 hour)" +
                           "]#time(1 hour) as fooWooPair " +
                           "on fooB.LongPrimitive = fooWooPair.fooA.LongPrimitive" +
-" Order by fooWooPair.wooA.TheString asc";
+                          " order by fooWooPair.wooA.TheString asc";
                 env.CompileDeploy(epl);
                 var subscriber = new SupportSubscriberMRD();
                 env.Statement("s0").SetSubscriber(subscriber);
@@ -512,7 +512,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var query =
-"select distinct TheString, IntPrimitive from MyWindow Order by TheString, IntPrimitive";
+                            "select distinct TheString, IntPrimitive from MyWindow order by TheString, IntPrimitive";
                         var result = env.CompileExecuteFAF(query, path);
                         EPAssertionUtil.AssertPropsPerRow(
                             result.Array,
@@ -522,7 +522,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     });
 
                 env.CompileDeploy(
-"@name('s0') on SupportBean_A select distinct TheString, IntPrimitive from MyWindow Order by TheString, IntPrimitive asc",
+                        "@name('s0') on SupportBean_A select distinct TheString, IntPrimitive from MyWindow order by TheString, IntPrimitive asc",
                         path)
                     .AddListener("s0");
 
@@ -740,14 +740,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var fields = new string[] { "TheString", "IntPrimitive" };
                 var statementText =
-"@name('s0') select distinct TheString, IntPrimitive from SupportBean#keepall output snapshot every 3 events Order by TheString asc";
+                    "@name('s0') select distinct TheString, IntPrimitive from SupportBean#keepall output snapshot every 3 events order by TheString asc";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 TryAssertionSnapshotColumn(env, fields);
                 env.UndeployAll();
 
                 statementText =
-"@name('s0') select distinct TheString, IntPrimitive from SupportBean#keepall a, SupportBean_A#keepall b where a.TheString = b.Id output snapshot every 3 events Order by TheString asc";
+                    "@name('s0') select distinct TheString, IntPrimitive from SupportBean#keepall a, SupportBean_A#keepall b where a.TheString = b.Id output snapshot every 3 events order by TheString asc";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("E1"));

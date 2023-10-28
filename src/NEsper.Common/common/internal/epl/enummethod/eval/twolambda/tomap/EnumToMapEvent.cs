@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
                 typeof(IDictionary<object, object>),
                 "map",
                 NewInstance(typeof(NullableDictionary<object, object>)));
-            block.ForEach(typeof(EventBean), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            block.ForEach<EventBean>("next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda), Ref("next"))
                 .DeclareVar<object>(
                     "key",

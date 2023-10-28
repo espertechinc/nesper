@@ -304,7 +304,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     .DeclareVar(typeof(ArrayDeque<EventBean[]>), "eventGenerators", ConstantNull())
                     .DeclareVar<EventBean[]>(NAME_EPS, NewArrayByLength(typeof(EventBean), Constant(1)));
                 {
-                    var forEach = methodNode.Block.ForEach(typeof(EventBean), "theEvent", Ref("events"));
+                    var forEach = methodNode.Block.ForEach<EventBean>("theEvent", Ref("events"));
                     forEach.AssignArrayElement(NAME_EPS, Constant(0), Ref("theEvent"));
                     forEach.IfCondition(
                             Not(
@@ -435,7 +435,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
 
                 {
-                    var forEach = methodNode.Block.ForEach(typeof(EventBean), "theEvent", Ref("events"));
+                    var forEach = methodNode.Block.ForEach<EventBean>("theEvent", Ref("events"));
                     forEach.AssignArrayElement(REF_EPS, Constant(0), Ref("theEvent"));
                     forEach.IfCondition(
                             Not(
@@ -913,7 +913,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
 
                 {
-                    var forEach = methodNode.Block.ForEach(typeof(EventBean), "theEvent", Ref("events"));
+                    var forEach = methodNode.Block.ForEach<EventBean>("theEvent", Ref("events"));
                     forEach.AssignArrayElement(REF_EPS, Constant(0), Ref("theEvent"));
                     forEach.IfCondition(
                             Not(
@@ -1001,7 +1001,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
 
                 {
-                    var forEach = methodNode.Block.ForEach(typeof(EventBean), "theEvent", Ref("events"));
+                    var forEach = methodNode.Block.ForEach<EventBean>("theEvent", Ref("events"));
                     forEach.AssignArrayElement(REF_EPS, Constant(0), Ref("theEvent"));
                     forEach.IfCondition(
                             Not(

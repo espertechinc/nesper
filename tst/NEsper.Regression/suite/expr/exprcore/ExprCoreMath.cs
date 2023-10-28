@@ -272,10 +272,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         stmt => AssertTypes(
                             stmt,
                             fields,
-                            typeof(decimal?),
-                            typeof(decimal?),
-                            typeof(decimal?),
-                            typeof(decimal?)));
+                            typeof(decimal),
+                            typeof(decimal),
+                            typeof(decimal),
+                            typeof(decimal)));
                 builder.WithAssertion(new SupportBean()).Expect(fields, 15.0m, 5.0m, 50.0m, 2.0m);
                 builder.Run(env);
                 env.UndeployAll();
@@ -349,10 +349,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         stmt => AssertTypes(
                             stmt,
                             fields,
-                            typeof(decimal?),
-                            typeof(decimal?),
-                            typeof(decimal?),
-                            typeof(decimal?)));
+                            typeof(decimal),
+                            typeof(decimal),
+                            typeof(decimal),
+                            typeof(decimal)));
                 builder.WithAssertion(new SupportBean()).Expect(fields, 15.0m, 5.0m, 50.0m, 2.0m);
                 builder.Run(env);
                 env.UndeployAll();

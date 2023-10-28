@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             epl = "select Contained.Average(x => x.Id) from SupportBean_ST0_Container";
             env.TryInvalidCompile(
                 epl,
-"Failed to validate select-clause expression 'Contained.Average()': Failed to validate enumeration method 'Average', expected a number-type result for expression parameter 0 but received String [select Contained.Average(x => x.Id) from SupportBean_ST0_Container]");
+                "Failed to validate select-clause expression 'Contained.Average()': Failed to validate enumeration method 'Average', expected a number-type result for expression parameter 0 but received String [select Contained.Average(x => x.Id) from SupportBean_ST0_Container]");
 
             // not a property
             epl = "select Contained.firstof().dummy from SupportBean_ST0_Container";

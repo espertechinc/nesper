@@ -56,8 +56,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.TheString as a_string, B.TheString as b_string " +
                            "  pattern (A?? B?) " +
                            "  define " +
-                           "   A as A.value = 1," +
-                           "   B as B.value = 1" +
+                           "   A as A.Value = 1," +
+                           "   B as B.Value = 1" +
                            ")";
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -87,9 +87,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A[0].TheString as a0, A[1].TheString as a1, A[2].TheString as a2, B.TheString as b, C.TheString as c" +
                            "  pattern (A*? B? C) " +
                            "  define " +
-                           "   A as A.value = 1," +
-                           "   B as B.value in (1, 2)," +
-                           "   C as C.value = 3" +
+                           "   A as A.Value = 1," +
+                           "   B as B.Value in (1, 2)," +
+                           "   C as C.Value = 3" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -146,9 +146,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A[0].TheString as a0, A[1].TheString as a1, A[2].TheString as a2, B.TheString as b, C.TheString as c" +
                            "  pattern (A+? B? C) " +
                            "  define " +
-                           "   A as A.value = 1," +
-                           "   B as B.value in (1, 2)," +
-                           "   C as C.value = 3" +
+                           "   A as A.Value = 1," +
+                           "   B as B.Value in (1, 2)," +
+                           "   C as C.Value = 3" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");

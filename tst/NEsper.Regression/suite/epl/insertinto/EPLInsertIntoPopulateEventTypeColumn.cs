@@ -296,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy("create " + typeType + " schema PurchaseOrder(OrderId string, Items Item[])", path);
             env.CompileDeploy("@public @buseventtype create schema TriggerEvent()", path);
             env.CompileDeploy(
-"@name('s0') insert into PurchaseOrder select '001' as OrderId, new {name= 'i1', Price=10} as Items from TriggerEvent",
+                    "@name('s0') insert into PurchaseOrder select '001' as OrderId, new {name= 'i1', Price=10} as Items from TriggerEvent",
                     path)
                 .AddListener("s0");
 
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
                 @event,
-                new[] { "OrderId", "Items[0].name", "Items[0].Price"},
+                new[] { "OrderId", "Items[0].name", "Items[0].Price" },
                 new object[] { "001", "i1", 10d });
 
             var underlying = (EventBean[])@event.Get("Items");

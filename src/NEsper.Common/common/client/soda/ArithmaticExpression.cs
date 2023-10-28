@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.client.soda
     [Serializable]
     public class ArithmaticExpression : ExpressionBase
     {
-        private string @operator;
+        private string _operator;
 
         /// <summary>
         /// Ctor.
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="operator">can be any of '-', '+', '*', '/' or '%' (modulo).</param>
         public ArithmaticExpression(string @operator)
         {
-            this.@operator = @operator;
+            this._operator = @operator;
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.client.soda
             string @operator,
             Expression right)
         {
-            this.@operator = @operator;
+            this._operator = @operator;
             AddChild(left);
             AddChild(right);
         }
@@ -56,8 +56,8 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <returns>operator</returns>
         public string Operator {
-            get => @operator;
-            set => @operator = value;
+            get => _operator;
+            set => _operator = value;
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace com.espertech.esper.common.client.soda
 
         public override ExpressionPrecedenceEnum Precedence {
             get {
-                if (@operator.Equals("*") || @operator.Equals("/") || @operator.Equals("%")) {
+                if (_operator.Equals("*") || _operator.Equals("/") || _operator.Equals("%")) {
                     return ExpressionPrecedenceEnum.MULTIPLY;
                 }
                 else {
@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.client.soda
             foreach (var child in Children) {
                 writer.Write(delimiter);
                 child.ToEPL(writer, Precedence);
-                delimiter = @operator;
+                delimiter = _operator;
             }
         }
     }

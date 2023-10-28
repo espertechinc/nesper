@@ -133,12 +133,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol, sum(Price) as mySum "+
+                var epl = "@name('s0') select irstream Symbol, sum(Price) as mySum " +
                           "from SupportBeanString#length(100) as one, " +
                           " SupportMarketDataBean#length(3) as two " +
-"where (Symbol='DELL' or Symbol='IBM' or Symbol='GE')"+
-"       and one.TheString = two.Symbol "+
-"group by Symbol "+
+                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE')" +
+                          "       and one.TheString = two.Symbol " +
+                          "group by Symbol " +
                           "having sum(Price) >= 100";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -156,10 +156,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol, sum(Price) as mySum "+
+                var epl = "@name('s0') select irstream Symbol, sum(Price) as mySum " +
                           "from SupportMarketDataBean#length(3) " +
-"where Symbol='DELL' or Symbol='IBM' or Symbol='GE' "+
-"group by Symbol "+
+                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
+                          "group by Symbol " +
                           "having sum(Price) >= 100";
                 env.CompileDeploy(epl).AddListener("s0");
 

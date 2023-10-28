@@ -48,8 +48,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             IDictionary<string, object> mapInner = new Dictionary<string, object>();
             mapInner.Put("myInsideInt", 10);
             IDictionary<string, object> topInner = new Dictionary<string, object>();
-            topInner.Put("myInt", 1);
-            topInner.Put("myString", "abc");
+            topInner.Put("MyInt", 1);
+            topInner.Put("MyString", "abc");
             topInner.Put("Nested", mapInner);
             RunAssertion(env, MAP_TYPENAME, FMAP, topInner, path);
 
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, OA_TYPENAME, FOA, oaTop, path);
 
             // XML
-            var xml = "<myevent myInt=\"1\" myString=\"abc\"><nested myInsideInt=\"10\"/></myevent>";
+            var xml = "<myevent MyInt=\"1\" MyString=\"abc\"><nested myInsideInt=\"10\"/></myevent>";
             RunAssertion(env, XML_TYPENAME, FXML, xml, path);
 
             // Avro
@@ -68,8 +68,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var avroInner = new GenericRecord(innerSchema);
             avroInner.Put("myInsideInt", 10);
             var avro = new GenericRecord(schema);
-            avro.Put("myInt", 1);
-            avro.Put("myString", "abc");
+            avro.Put("MyInt", 1);
+            avro.Put("MyString", "abc");
             avro.Put("Nested", avroInner);
             RunAssertion(env, AVRO_TYPENAME, FAVRO, avro, path);
 
@@ -77,11 +77,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var schemasJson = "create json schema Nested(myInsideInt int);\n" +
                               "@public @buseventtype @name('schema') create json schema " +
                               JSON_TYPENAME +
-                              "(myInt int, myString string, nested Nested)";
+                              "(MyInt int, MyString string, nested Nested)";
             env.CompileDeploy(schemasJson, path);
             var json = "{\n" +
-                       "  \"myInt\": 1,\n" +
-                       "  \"myString\": \"abc\",\n" +
+                       "  \"MyInt\": 1,\n" +
+                       "  \"MyString\": \"abc\",\n" +
                        "  \"Nested\": {\n" +
                        "    \"myInsideInt\": 10\n" +
                        "  }\n" +
@@ -115,12 +115,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 eventBean => {
                     var jsonEventRenderer = env.Runtime.RenderEventService.GetJSONRenderer(eventBean.EventType);
                     var json = jsonEventRenderer.Render(eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
-                    Assert.AreEqual("{\"myInt\":1,\"myString\":\"abc\",\"Nested\":{\"myInsideInt\":10}}", json);
+                    Assert.AreEqual("{\"MyInt\":1,\"MyString\":\"abc\",\"Nested\":{\"myInsideInt\":10}}", json);
 
                     var xmlEventRenderer = env.Runtime.RenderEventService.GetXMLRenderer(eventBean.EventType);
                     var xml = xmlEventRenderer.Render("root", eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
                     Assert.AreEqual(
-                        "<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><myInt>1</myInt><myString>abc</myString><nested><myInsideInt>10</myInsideInt></nested></root>",
+                        "<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><MyInt>1</MyInt><MyString>abc</MyString><nested><myInsideInt>10</myInsideInt></nested></root>",
                         xml);
                 });
 

@@ -211,7 +211,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     "SupportBeanRange#keepall sbr " +
                     "on TheString = key " +
                     "where IntPrimitive between rangeStart and rangeEnd " +
-"Order by rangeStart asc, IntPrimitive asc";
+                    "order by rangeStart asc, IntPrimitive asc";
                 TryAssertion(env, stmtOne, milestone);
 
                 var stmtTwo =
@@ -221,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     "SupportBean#keepall sb " +
                     "on TheString = key " +
                     "where IntPrimitive between rangeStart and rangeEnd " +
-"Order by rangeStart asc, IntPrimitive asc";
+                    "order by rangeStart asc, IntPrimitive asc";
                 TryAssertion(env, stmtTwo, milestone);
 
                 var stmtThree =
@@ -231,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     "SupportBean#keepall sb " +
                     "on TheString = key " +
                     "where IntPrimitive >= rangeStart and IntPrimitive <= rangeEnd " +
-"Order by rangeStart asc, IntPrimitive asc";
+                    "order by rangeStart asc, IntPrimitive asc";
                 TryAssertion(env, stmtThree, milestone);
             }
 
@@ -292,12 +292,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select TheString, IntPrimitive, Symbol, Volume "+
+                var epl = "@name('s0') select TheString, IntPrimitive, Symbol, Volume " +
                           "from SupportMarketDataBean#keepall " +
                           "full outer join SupportBean#groupwin(TheString, IntPrimitive)#length(2) " +
-"on TheString = Symbol "+
-"group by TheString, IntPrimitive, Symbol "+
-"Order by TheString, IntPrimitive, Symbol, Volume";
+                          "on TheString = Symbol " +
+                          "group by TheString, IntPrimitive, Symbol " +
+                          "order by TheString, IntPrimitive, Symbol, Volume";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEventMD(env, "c0", 200L);
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                         Assert.AreEqual(10, events.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             events,
-"TheString,IntPrimitive,Symbol,Volume".Split(","),
+                            "TheString,IntPrimitive,Symbol,Volume".Split(","),
                             new object[][] {
                                 new object[] { null, null, "c3", 400L }, new object[] { "c0", 0, "c0", 200L },
                                 new object[] { "c0", 1, "c0", 200L }, new object[] { "c0", 2, "c0", 200L },

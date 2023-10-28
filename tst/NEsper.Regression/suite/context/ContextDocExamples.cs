@@ -75,9 +75,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "@Public create context CategoryByTemp\n" +
-                "group temp < 65 as cold,\n" +
-                "group temp between 65 and 85 as normal,\n" +
-                "group temp > 85 as large\n" +
+                "group Temp < 65 as cold,\n" +
+                "group Temp between 65 and 85 as normal,\n" +
+                "group Temp > 85 as large\n" +
                 "from SensorEvent");
             Create(env, path, "context CategoryByTemp select context.label, count(*) from SensorEvent");
             Create(
@@ -115,17 +115,17 @@ namespace com.espertech.esper.regressionlib.suite.context
                 "@Public create context CtxEachMinute\n" +
                 "initiated by pattern [every timer:interval(1 minute)]\n" +
                 "terminated after 1 minutes");
-            Create(env, path, "context CtxEachMinute select avg(temp) from SensorEvent");
+            Create(env, path, "context CtxEachMinute select avg(Temp) from SensorEvent");
             Create(
                 env,
                 path,
                 "context CtxEachMinute\n" +
-                "select context.Id, avg(temp) from SensorEvent output snapshot when terminated");
+                "select context.Id, avg(Temp) from SensorEvent output snapshot when terminated");
             Create(
                 env,
                 path,
                 "context CtxEachMinute\n" +
-                "select context.Id, avg(temp) from SensorEvent output snapshot every 1 minute and when terminated");
+                "select context.Id, avg(Temp) from SensorEvent output snapshot every 1 minute and when terminated");
             Create(
                 env,
                 path,
@@ -293,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context CtxPerKeysAndExternallyControlled\n" +
-                "select key1, key2, avg(temp) as avgTemp, count(*) as cnt\n" +
+                "select key1, key2, avg(Temp) as avgTemp, count(*) as cnt\n" +
                 "from SensorEvent\n" +
                 "output snapshot when terminated\n" +
                 "// note: no group-by needed since \n");

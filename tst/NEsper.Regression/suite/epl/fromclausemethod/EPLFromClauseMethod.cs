@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                           "@name('s0') select * from SupportEventWithStaticMethod as e, " +
                           "  method:SupportEventWithStaticMethod.returnLower() as lower,\n" +
                           "  method:SupportEventWithStaticMethod.returnUpper() as upper\n" +
-                          "  where e.value in [lower.getValue():upper.getValue()]";
+                          "  where e.Value in [lower.getValue():upper.getValue()]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssert(env, 9, false);
@@ -408,43 +408,43 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 string stmtText;
 
                 // fetchBetween must execute first, fetchIdDelimited is dependent on the result of fetchBetween
-                stmtText = "select s0.value as valueOne, s1.value as valueTwo from method:" +
+                stmtText = "select s0.Value as valueOne, s1.Value as valueTwo from method:" +
                            className +
                            ".FetchResult12(0) as s0 " +
                            "left outer join " +
                            "method:" +
                            className +
-                           ".FetchResult23(s0.value) as s1 on s0.value = s1.value";
+                           ".FetchResult23(s0.Value) as s1 on s0.Value = s1.Value";
                 AssertJoinHistoricalSubordinateOuter(env, stmtText);
 
-                stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
+                stmtText = "select s0.Value as valueOne, s1.Value as valueTwo from " +
                            "method:" +
                            className +
-                           ".FetchResult23(s0.value) as s1 " +
+                           ".FetchResult23(s0.Value) as s1 " +
                            "right outer join " +
                            "method:" +
                            className +
-                           ".FetchResult12(0) as s0 on s0.value = s1.value";
+                           ".FetchResult12(0) as s0 on s0.Value = s1.Value";
                 AssertJoinHistoricalSubordinateOuter(env, stmtText);
 
-                stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
+                stmtText = "select s0.Value as valueOne, s1.Value as valueTwo from " +
                            "method:" +
                            className +
-                           ".FetchResult23(s0.value) as s1 " +
+                           ".FetchResult23(s0.Value) as s1 " +
                            "full outer join " +
                            "method:" +
                            className +
-                           ".FetchResult12(0) as s0 on s0.value = s1.value";
+                           ".FetchResult12(0) as s0 on s0.Value = s1.Value";
                 AssertJoinHistoricalSubordinateOuter(env, stmtText);
 
-                stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
+                stmtText = "select s0.Value as valueOne, s1.Value as valueTwo from " +
                            "method:" +
                            className +
                            ".FetchResult12(0) as s0 " +
                            "full outer join " +
                            "method:" +
                            className +
-                           ".FetchResult23(s0.value) as s1 on s0.value = s1.value";
+                           ".FetchResult23(s0.Value) as s1 on s0.Value = s1.Value";
                 AssertJoinHistoricalSubordinateOuter(env, stmtText);
             }
         }
@@ -457,13 +457,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 var className = typeof(SupportStaticMethodLib).FullName;
                 string stmtText;
 
-                stmtText = "@name('s0') select s0.value as valueOne, s1.value as valueTwo from method:" +
+                stmtText = "@name('s0') select s0.Value as valueOne, s1.Value as valueTwo from method:" +
                            className +
                            ".FetchResult12(0) as s0 " +
                            "left outer join " +
                            "method:" +
                            className +
-                           ".FetchResult23(0) as s1 on s0.value = s1.value";
+                           ".FetchResult23(0) as s1 on s0.Value = s1.Value";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "s0",
@@ -471,14 +471,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     new object[][] { new object[] { 1, null }, new object[] { 2, 2 } });
                 env.UndeployAll();
 
-                stmtText = "@name('s0') select s0.value as valueOne, s1.value as valueTwo from " +
+                stmtText = "@name('s0') select s0.Value as valueOne, s1.Value as valueTwo from " +
                            "method:" +
                            className +
                            ".FetchResult23(0) as s1 " +
                            "right outer join " +
                            "method:" +
                            className +
-                           ".FetchResult12(0) as s0 on s0.value = s1.value";
+                           ".FetchResult12(0) as s0 on s0.Value = s1.Value";
                 env.CompileDeploy(stmtText);
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "s0",
@@ -486,14 +486,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     new object[][] { new object[] { 1, null }, new object[] { 2, 2 } });
                 env.UndeployAll();
 
-                stmtText = "@name('s0') select s0.value as valueOne, s1.value as valueTwo from " +
+                stmtText = "@name('s0') select s0.Value as valueOne, s1.Value as valueTwo from " +
                            "method:" +
                            className +
                            ".FetchResult23(0) as s1 " +
                            "full outer join " +
                            "method:" +
                            className +
-                           ".FetchResult12(0) as s0 on s0.value = s1.value";
+                           ".FetchResult12(0) as s0 on s0.Value = s1.Value";
                 env.CompileDeploy(stmtText);
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "s0",
@@ -501,14 +501,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     new object[][] { new object[] { 1, null }, new object[] { 2, 2 }, new object[] { null, 3 } });
                 env.UndeployAll();
 
-                stmtText = "@name('s0') select s0.value as valueOne, s1.value as valueTwo from " +
+                stmtText = "@name('s0') select s0.Value as valueOne, s1.Value as valueTwo from " +
                            "method:" +
                            className +
                            ".FetchResult12(0) as s0 " +
                            "full outer join " +
                            "method:" +
                            className +
-                           ".FetchResult23(0) as s1 on s0.value = s1.value";
+                           ".FetchResult23(0) as s1 on s0.Value = s1.Value";
                 env.CompileDeploy(stmtText);
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "s0",
@@ -571,7 +571,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 string stmtText;
 
                 // fetchBetween must execute first, fetchIdDelimited is dependent on the result of fetchBetween
-                stmtText = "select s0.value as valueOne, s1.value as valueTwo from method:" +
+                stmtText = "select s0.Value as valueOne, s1.Value as valueTwo from method:" +
                            className +
                            ".FetchBetween(lower, upper) as s0, " +
                            "method:" +
@@ -579,7 +579,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                            ".FetchBetweenString(lower, upper) as s1";
                 AssertJoinHistoricalOnlyIndependent(env, path, stmtText);
 
-                stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
+                stmtText = "select s0.Value as valueOne, s1.Value as valueTwo from " +
                            "method:" +
                            className +
                            ".fetchBetweenString(lower, upper) as s1, " +
@@ -957,23 +957,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 env.TryInvalidCompile(
                     "select * from method:" +
                     typeof(SupportStaticMethodLib).FullName +
-                    ".FetchBetween(s1.value, s1.value) as s0, method:" +
+                    ".FetchBetween(s1.Value, s1.Value) as s0, method:" +
                     typeof(SupportStaticMethodLib).FullName +
-                    ".FetchBetween(s0.value, s0.value) as s1",
+                    ".FetchBetween(s0.Value, s0.Value) as s1",
                     "Circular dependency detected between historical streams [");
 
                 env.TryInvalidCompile(
                     "select * from method:" +
                     typeof(SupportStaticMethodLib).FullName +
-                    ".FetchBetween(s0.value, s0.value) as s0, method:" +
+                    ".FetchBetween(s0.Value, s0.Value) as s0, method:" +
                     typeof(SupportStaticMethodLib).FullName +
-                    ".FetchBetween(s0.value, s0.value) as s1",
+                    ".FetchBetween(s0.Value, s0.Value) as s1",
                     "Parameters for historical stream 0 indicate that the stream is subordinate to itself as stream parameters originate in the same stream [");
 
                 env.TryInvalidCompile(
                     "select * from method:" +
                     typeof(SupportStaticMethodLib).FullName +
-                    ".FetchBetween(s0.value, s0.value) as s0",
+                    ".FetchBetween(s0.Value, s0.Value) as s0",
                     "Parameters for historical stream 0 indicate that the stream is subordinate to itself as stream parameters originate in the same stream [");
 
                 env.TryInvalidCompile(

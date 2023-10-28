@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 builder.WithExpression(fields[5], "Strvals.Average( (v, i, s) => extractDecimal(v) + i*10 + s*100)");
                 builder.WithExpression(
                     fields[6],
-"Strvals.Average( (v, i, s) => case when i = 1 then null else 2 end)");
+                    "Strvals.Average( (v, i, s) => case when i = 1 then null else 2 end)");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypes(
@@ -197,19 +197,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 epl = "select Strvals.Average() from SupportCollection";
                 env.TryInvalidCompile(
                     epl,
-"Failed to validate select-clause expression 'Strvals.Average()': Invalid input for built-in enumeration method 'Average' and 0-parameter footprint, expecting collection of numeric values as input, received java.util.Collection<String> [select Strvals.Average() from SupportCollection]");
+                    "Failed to validate select-clause expression 'Strvals.Average()': Invalid input for built-in enumeration method 'Average' and 0-parameter footprint, expecting collection of numeric values as input, received java.util.Collection<String> [select Strvals.Average() from SupportCollection]");
 
                 epl = "select beans.Average() from SupportBean_Container";
                 env.TryInvalidCompile(
                     epl,
-"Failed to validate select-clause expression 'beans.Average()': Invalid input for built-in enumeration method 'Average' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '"+
+                    "Failed to validate select-clause expression 'beans.Average()': Invalid input for built-in enumeration method 'Average' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '" +
                     typeof(SupportBean).FullName +
                     "'");
 
                 epl = "select Strvals.Average(v => null) from SupportCollection";
                 env.TryInvalidCompile(
                     epl,
-"Failed to validate select-clause expression 'Strvals.Average()': Failed to validate enumeration method 'Average', expected a non-null result for expression parameter 0 but received a null-typed expression");
+                    "Failed to validate select-clause expression 'Strvals.Average()': Failed to validate enumeration method 'Average', expected a non-null result for expression parameter 0 but received a null-typed expression");
             }
         }
 

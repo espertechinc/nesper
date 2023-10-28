@@ -650,7 +650,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-"select (select Symbol from SupportMarketDataBean(Symbol=?::string)#lastevent) as mysymbol from SupportBean";
+                    "select (select Symbol from SupportMarketDataBean(Symbol=?::string)#lastevent) as mysymbol from SupportBean";
                 var compiled = env.Compile(stmtText);
 
                 DeployWithResolver(env, compiled, "s0", new SupportPortableDeploySubstitutionParams(1, "S1"));

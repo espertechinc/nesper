@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                                     "map.objectOne.indexed[1] as c1, map.objectOne.Nested.NestedValue as c2," +
                                     "map.mapOne.simpleTwo as d1, map.mapOne.objectTwo as d2, map.mapOne.nodefmapTwo as d3, " +
                                     "map.mapOne.mapTwo as e1, map.mapOne.mapTwo.simpleThree as e2, map.mapOne.mapTwo.objectThree as e3, " +
-                                    "map.mapOne.objectTwo.array[1].mapped('1ma').value as f1, map.mapOne.mapTwo.objectThree.Id as f2" +
+                                    "map.mapOne.objectTwo.array[1].mapped('1ma').Value as f1, map.mapOne.mapTwo.objectThree.Id as f2" +
                                     " from NestedMap#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
 

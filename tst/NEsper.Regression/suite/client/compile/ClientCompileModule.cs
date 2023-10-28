@@ -578,7 +578,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             for (var i = 0; i < expecteds.Length; i++) {
                 var expected = expecteds[i];
                 var actual = module.Items[i];
-                var message = "Failed to Item#"+ i;
+                var message = "Failed to Item#" + i;
                 Assert.AreEqual(expected.IsCommentOnly, actual.IsCommentOnly, message);
                 Assert.AreEqual(expected.LineNumber, actual.LineNumber, message);
                 Assert.AreEqual(expected.LineNumberEnd, actual.LineNumberEnd, message);

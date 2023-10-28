@@ -1408,7 +1408,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fieldsIterate = "IntPrimitive".Split(",");
                 env.CompileDeploy(
                     "@name('s0') context SegmentedByString " +
-"select irstream IntPrimitive, prevwindow(Items) as pw from SupportBean#length(2) as Items",
+                    "select irstream IntPrimitive, prevwindow(Items) as pw from SupportBean#length(2) as Items",
                     path);
                 env.AddListener("s0");
 
@@ -1449,7 +1449,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(
                     "@name('s0') context SegmentedByString " +
                     "select context.name as c1, context.Id as c2, context.key1 as c3, TheString as c4 " +
-"from SupportBean#length(2) as Items",
+                    "from SupportBean#length(2) as Items",
                     path);
                 env.AddListener("s0");
 

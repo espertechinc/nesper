@@ -8,6 +8,9 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
+
+using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.client.soda
 {
@@ -18,6 +21,7 @@ namespace com.espertech.esper.common.client.soda
     /// <para />Certain types of nodes have certain requirements towards the number or types of nodes that
     /// are expected as sub-expressions to an expression.
     /// </summary>
+    [JsonConverter(typeof(JsonConverterAbstract<Expression>))]
     public interface Expression
     {
         /// <summary>

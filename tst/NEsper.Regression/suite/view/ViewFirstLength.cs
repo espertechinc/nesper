@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E2" } }, null);
                 env.AssertPropsPerRowIterator(
                     "s0",
-"Symbol".SplitCsv(),
+                    "Symbol".SplitCsv(),
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 env.Milestone(2);
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsNV("s0", new object[][] { new object[] { "Symbol", "E3" } }, null);
                 env.AssertPropsPerRowIterator(
                     "s0",
-"Symbol".SplitCsv(),
+                    "Symbol".SplitCsv(),
                     new object[][] { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E3" } });
 
                 env.Milestone(3);
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListenerNotInvoked("s0");
                 env.AssertPropsPerRowIterator(
                     "s0",
-"Symbol".SplitCsv(),
+                    "Symbol".SplitCsv(),
                     new object[][] { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E3" } });
 
                 env.UndeployAll();

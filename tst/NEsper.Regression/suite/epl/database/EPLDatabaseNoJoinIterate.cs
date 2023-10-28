@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
                 // Test multi-parameter and multi-row
                 stmtText =
-"@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where mytesttable.mybigint between ${queryvar_int-2} and ${queryvar_int+2}'] Order by myint";
+                    "@name('s0') select myint from sql:MyDBWithTxnIso1WithReadOnly ['select myint from mytesttable where mytesttable.mybigint between ${queryvar_int-2} and ${queryvar_int+2}'] order by myint";
                 env.CompileDeploy(stmtText, path);
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "s0",
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
                 // Test boolean and multirow
                 stmtText =
-"@name('s0') select * from sql:MyDBWithTxnIso1WithReadOnly ['select mybigint, mybool from mytesttable where ${queryvar_bool} = mytesttable.mybool and myint between ${lower} and ${upper} Order by mybigint']";
+                    "@name('s0') select * from sql:MyDBWithTxnIso1WithReadOnly ['select mybigint, mybool from mytesttable where ${queryvar_bool} = mytesttable.mybool and myint between ${lower} and ${upper} order by mybigint']";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 var fields = new string[] { "mybigint", "mybool" };

@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                           "method:" +
                           typeof(SupportJoinResultIsArray).FullName +
                           ".getArray() as s " +
-                          "where s.doubleArray = e.doubleOne and s.intArray = e.intOne and s.value > e.value";
+                          "where s.doubleArray = e.doubleOne and s.intArray = e.intOne and s.Value > e.Value";
 
                 RunAssertion(env, epl);
 

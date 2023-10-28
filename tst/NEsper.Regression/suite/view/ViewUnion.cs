@@ -283,7 +283,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Total"};
+                var fields = new string[] { "Total" };
 
                 var epl =
                     "@name('s0') select * from SupportBean#unique(IntPrimitive)#unique(IntBoxed)#uni(DoublePrimitive) retain-union";

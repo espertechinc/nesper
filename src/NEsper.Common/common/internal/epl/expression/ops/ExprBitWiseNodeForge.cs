@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         public ExprBitWiseNodeForge(
             ExprBitWiseNode parent,
             Type resultType,
-            BitWiseOpEnum.Computer computer)
+            BitWiseComputer computer)
         {
             ForgeRenderable = parent ?? throw new ArgumentNullException(nameof(parent));
             EvaluationType = resultType ?? throw new ArgumentNullException(nameof(resultType));
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
         public ExprBitWiseNode ForgeRenderable { get; }
 
-        public BitWiseOpEnum.Computer Computer { get; }
+        public BitWiseComputer Computer { get; }
 
         public Type EvaluationType { get; }
 

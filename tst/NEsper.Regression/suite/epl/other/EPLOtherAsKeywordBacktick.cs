@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var stmtText = "on OrderBean insert into ABC select * " +
-"insert into DEF select `Order`.ReviewId from [books][reviews] `Order`";
+                               "insert into DEF select `Order`.ReviewId from [Books][Reviews] `Order`";
                 env.CompileDeploy(stmtText);
                 env.UndeployAll();
             }
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-"@name('s0') select (select `Order`.P00 from SupportBean_S0#lastevent as `Order`) as c0 from SupportBean_S1";
+                    "@name('s0') select (select `Order`.P00 from SupportBean_S0#lastevent as `Order`) as c0 from SupportBean_S1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "A"));
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@public create window MyWindowMerge#keepall as (p0 string, p1 string)", path);
                 env.CompileExecuteFAFNoResult("insert into MyWindowMerge select 'a' as p0, 'b' as p1", path);
                 env.CompileDeploy(
-"on SupportBean_S0 merge MyWindowMerge as `Order` when matched then update set `Order`.p1 = `Order`.p0",
+                    "on SupportBean_S0 merge MyWindowMerge as `Order` when matched then update set `Order`.p1 = `Order`.p0",
                     path);
                 env.CompileDeploy("on SupportBean_S1 update MyWindowMerge as `Order` set p0 = 'x'", path);
 
@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 AssertFAF(env, path, "MyWindowMerge", "x", "a");
 
                 env.CompileDeploy(
-"@name('s0') on SupportBean select `Order`.p0 as c0 from MyWindowMerge as `Order`",
+                        "@name('s0') on SupportBean select `Order`.p0 as c0 from MyWindowMerge as `Order`",
                         path)
                     .AddListener("s0");
 
@@ -215,7 +215,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-"@name('s0') select * from SupportBean_S0#lastevent as `Order`, SupportBean_S1#lastevent as `select`";
+                    "@name('s0') select * from SupportBean_S0#lastevent as `Order`, SupportBean_S1#lastevent as `select`";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var s0 = new SupportBean_S0(1, "S0_1");
@@ -227,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(s1);
                 env.AssertPropsNew(
                     "s0",
-"Order,select,Order.P00,select.P10".SplitCsv(),
+                    "Order,select,Order.P00,select.P10".SplitCsv(),
                     new object[] { s0, s1, "S0_1", "S1_1" });
 
                 env.UndeployAll();

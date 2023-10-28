@@ -624,7 +624,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 var textSelect = "@name('s2') select irstream resvar, durvar, Symbol from SupportMarketDataBean";
                 env.CompileDeploy(textSelect, path).AddListener("s2");
-                var fieldsSelect = new string[] { "resvar", "durvar", "Symbol"};
+                var fieldsSelect = new string[] { "resvar", "durvar", "Symbol" };
 
                 env.Milestone(0);
 

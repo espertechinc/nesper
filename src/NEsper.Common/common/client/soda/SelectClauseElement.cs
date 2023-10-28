@@ -7,12 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.IO;
+using System.Text.Json.Serialization;
+
+using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Item in a select-clause to describe individual select-clause expressions or Wildcard(s).
     /// </summary>
+    [JsonConverter(typeof(JsonConverterAbstract<SelectClauseElement>))]
     public interface SelectClauseElement
     {
         /// <summary>Output the string rendering of the select clause element. </summary>

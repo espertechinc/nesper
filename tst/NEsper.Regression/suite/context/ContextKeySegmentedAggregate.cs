@@ -241,7 +241,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fieldsOne = "IntPrimitive,count(*)".SplitCsv();
                 env.CompileDeploy(
-"@name('s0') context SegmentedByString select IntPrimitive, count(*) from SupportBean#length_batch(2) group by IntPrimitive Order by IntPrimitive asc",
+                    "@name('s0') context SegmentedByString select IntPrimitive, count(*) from SupportBean#length_batch(2) group by IntPrimitive order by IntPrimitive asc",
                     path);
                 env.AddListener("s0");
 
@@ -289,7 +289,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // add "string" : add context property
                 var fieldsTwo = "TheString,IntPrimitive,count(*)".SplitCsv();
                 env.CompileDeploy(
-"@name('s0') context SegmentedByString select TheString, IntPrimitive, count(*) from SupportBean#length_batch(2) group by IntPrimitive Order by TheString, IntPrimitive asc",
+                    "@name('s0') context SegmentedByString select TheString, IntPrimitive, count(*) from SupportBean#length_batch(2) group by IntPrimitive order by TheString, IntPrimitive asc",
                     path);
                 env.AddListener("s0");
 
@@ -346,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@name('s0') context SegmentedByString " +
                     "select IntPrimitive, count(*) as col1, toArray(window(*).selectFrom(v=>v.LongPrimitive)) as col2, first().LongPrimitive as col3 " +
                     "from SupportBean#keepall as sb " +
-"group by IntPrimitive Order by IntPrimitive asc",
+                    "group by IntPrimitive order by IntPrimitive asc",
                     path);
                 env.AddListener("s0");
 
@@ -496,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@name('s0') context SegmentedByString " +
                     "select IntPrimitive, count(*) as col1 " +
                     "from SupportBean unidirectional, SupportBean_S0#keepall " +
-"group by IntPrimitive Order by IntPrimitive asc",
+                    "group by IntPrimitive order by IntPrimitive asc",
                     path);
                 env.AddListener("s0");
 

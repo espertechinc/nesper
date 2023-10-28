@@ -31,26 +31,26 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprForge,
         ExprNodeDeployTimeConst
     {
-        private string optionalName;
-        private ClassDescriptor optionalType;
-        private Type type = typeof(object);
-        private CodegenExpressionField field;
+        private readonly string _optionalName;
+        private readonly ClassDescriptor _optionalType;
+        private Type _type = typeof(object);
+        private CodegenExpressionField _field;
 
         public ExprSubstitutionNode(
             string optionalName,
             ClassDescriptor optionalType)
         {
-            this.optionalName = optionalName;
-            this.optionalType = optionalType;
+            this._optionalName = optionalName;
+            this._optionalType = optionalType;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (optionalType != null) {
+            if (_optionalType != null) {
                 Type clazz = null;
                 try {
                     clazz = TypeHelper.GetTypeForName(
-                        optionalType.ClassIdentifier,
+                        _optionalType.ClassIdentifier,
                         validationContext.ImportService.TypeResolver);
                 }
                 catch (TypeLoadException) {
@@ -58,20 +58,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                 if (clazz == null) {
                     clazz = TypeHelper.GetTypeForSimpleName(
-                        optionalType.ClassIdentifier,
+                        _optionalType.ClassIdentifier,
                         validationContext.ImportService.TypeResolver);
                 }
 
                 if (clazz == null) {
                     try {
                         clazz = validationContext.ImportService.ResolveType(
-                            optionalType.ClassIdentifier,
+                            _optionalType.ClassIdentifier,
                             false,
                             validationContext.ClassProvidedExtension);
                     }
                     catch (ImportException e) {
                         throw new ExprValidationException(
-                            "Failed to resolve type '" + optionalType.ClassIdentifier + "': " + e.Message,
+                            "Failed to resolve type '" + _optionalType.ClassIdentifier + "': " + e.Message,
                             e);
                     }
                 }
@@ -90,10 +90,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     }
                 }
 
-                type = ImportTypeUtil.ParameterizeType(
+                _type = ImportTypeUtil.ParameterizeType(
                     true,
                     clazz,
-                    optionalType,
+                    _optionalType,
                     validationContext.ImportService,
                     validationContext.ClassProvidedExtension);
             }
@@ -146,31 +146,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         public void RenderForFilterPlan(StringBuilder @out)
         {
             @out.Append("substitution parameter");
-            if (optionalName != null) {
-                @out.Append(" name '").Append(optionalName).Append("'");
+            if (_optionalName != null) {
+                @out.Append(" name '").Append(_optionalName).Append("'");
             }
 
-            if (optionalType != null) {
-                @out.Append(" type '").Append(optionalType.ToEPL()).Append("'");
+            if (_optionalType != null) {
+                @out.Append(" type '").Append(_optionalType.ToEPL()).Append("'");
             }
         }
 
         private CodegenExpressionField AsField(CodegenClassScope classScope)
         {
-            if (field == null) {
-                field = Field(classScope.AddSubstitutionParameter(optionalName, type));
+            if (_field == null) {
+                _field = Field(classScope.AddSubstitutionParameter(_optionalName, _type));
             }
 
-            return field;
+            return _field;
         }
 
-        public string OptionalName => optionalName;
+        public string OptionalName => _optionalName;
 
         public ExprEvaluator ExprEvaluator => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
 
         public override ExprForge Forge => this;
 
-        public Type EvaluationType => type;
+        public Type EvaluationType => _type;
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.DEPLOYCONST;
 
@@ -187,8 +187,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
         }
 
-        public ClassDescriptor OptionalType => optionalType;
+        public ClassDescriptor OptionalType => _optionalType;
 
-        public Type ResolvedType => type;
+        public Type ResolvedType => _type;
     }
 } // end of namespace

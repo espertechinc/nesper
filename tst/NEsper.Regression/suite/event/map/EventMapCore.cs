@@ -28,8 +28,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         static EventMapCore()
         {
             map = new Dictionary<string, object>();
-            map.Put("myInt", 3);
-            map.Put("myString", "some string");
+            map.Put("MyInt", 3);
+            map.Put("MyString", "some string");
             map.Put("beanA", SupportBeanComplexProps.MakeDefaultBean());
         }
 
@@ -125,8 +125,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                         SupportEventPropUtil.AssertPropsEquals(
                             type.PropertyDescriptors.ToArray(),
-                            new SupportEventPropDesc("myInt", typeof(int?)),
-                            new SupportEventPropDesc("myString", typeof(string)),
+                            new SupportEventPropDesc("MyInt", typeof(int?)),
+                            new SupportEventPropDesc("MyString", typeof(string)),
                             new SupportEventPropDesc("beanA", typeof(SupportBeanComplexProps)).WithFragment(),
                             new SupportEventPropDesc("myStringArray", typeof(string[]))
                                 .WithComponentType(typeof(string))
@@ -164,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 var statementText =
-                    "@name('s0') select myInt as intVal, myString as stringVal from myMapEvent#length(5)";
+                    "@name('s0') select MyInt as intVal, MyString as stringVal from myMapEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 // send Map<String, Object> event
@@ -178,8 +178,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 // send Map base event
                 IDictionary<string, object> mapNoType = new Dictionary<string, object>();
-                mapNoType.Put("myInt", 4);
-                mapNoType.Put("myString", "string2");
+                mapNoType.Put("MyInt", 4);
+                mapNoType.Put("MyString", "string2");
                 env.SendEventMap(mapNoType, "myMapEvent");
                 env.AssertEventNew(
                     "s0",
@@ -197,8 +197,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile("select XXX from myMapEvent#length(5)", "skip");
-                env.TryInvalidCompile("select myString * 2 from myMapEvent#length(5)", "skip");
-                env.TryInvalidCompile("select String.trim(myInt) from myMapEvent#length(5)", "skip");
+                env.TryInvalidCompile("select MyString * 2 from myMapEvent#length(5)", "skip");
+                env.TryInvalidCompile("select String.trim(MyInt) from myMapEvent#length(5)", "skip");
             }
         }
 

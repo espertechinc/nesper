@@ -59,10 +59,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int numGroups)
         {
             var eplDeclare =
-"@public create table varTotal (key string primary key, Total sum(int));\n"+
+                "@public create table varTotal (key string primary key, Total sum(int));\n" +
                 "@public create context ByStringHash\n" +
                 "  coalesce by consistent_hash_crc32(TheString) from SupportBean granularity 16 preallocate\n;" +
-"context ByStringHash into table varTotal select TheString, sum(IntPrimitive) as Total from SupportBean group by TheString;\n";
+                "context ByStringHash into table varTotal select TheString, sum(IntPrimitive) as Total from SupportBean group by TheString;\n";
             var eplAssert = "select varTotal[P00].Total as c0 from SupportBean_S0";
 
             RunAndAssert(env, eplDeclare, eplAssert, numThreads, numLoops, numGroups);

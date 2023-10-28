@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select coalesce(a.TheString, b.TheString) as myString, coalesce(a, b) as myBean" +
+                    "@name('s0') select coalesce(a.TheString, b.TheString) as MyString, coalesce(a, b) as myBean" +
                     " from pattern [every (a=SupportBean(TheString='s0') or b=SupportBean(TheString='s1'))]";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertEventNew(
                     "s0",
                     eventReceived => {
-                        Assert.AreEqual("s0", eventReceived.Get("myString"));
+                        Assert.AreEqual("s0", eventReceived.Get("MyString"));
                         Assert.AreSame(theEventOne, eventReceived.Get("myBean"));
                     });
 
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertEventNew(
                     "s0",
                     eventReceived => {
-                        Assert.AreEqual("s1", eventReceived.Get("myString"));
+                        Assert.AreEqual("s1", eventReceived.Get("MyString"));
                         Assert.AreSame(theEventTwo, eventReceived.Get("myBean"));
                     });
 

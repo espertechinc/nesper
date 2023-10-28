@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.client.soda
     [Serializable]
     public class CompareListExpression : ExpressionBase
     {
-        private string @operator;
+        private string _operator;
 
         /// <summary>
         ///     Ctor.
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.client.soda
             string @operator)
         {
             IsAll = all;
-            this.@operator = @operator;
+            this._operator = @operator;
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <returns>operator</returns>
         public string Operator {
-            get => @operator;
-            set => @operator = value;
+            get => _operator;
+            set => _operator = value;
         }
 
         public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.RELATIONAL_BETWEEN_IN;
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.client.soda
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
             Children[0].ToEPL(writer, Precedence);
-            writer.Write(@operator);
+            writer.Write(_operator);
             if (IsAll) {
                 writer.Write("all(");
             }

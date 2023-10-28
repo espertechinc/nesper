@@ -336,8 +336,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select istream avg(Price) as aprice, Symbol from SupportMarketDataBean"+
-"#length(2) group by Symbol";
+                var stmtText = "@name('s0') select istream avg(Price) as aprice, Symbol from SupportMarketDataBean" +
+                               "#length(2) group by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var fields = "aprice,Symbol".SplitCsv();
@@ -500,7 +500,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 // with order-by
                 epl =
                     "@name('s0') select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by TheString " +
-"output snapshot every 3 events Order by TheString asc";
+                    "output snapshot every 3 events order by TheString asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -610,7 +610,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.CompileDeploy(epl, path);
 
                 epl =
-"@Hint('DISABLE_RECLAIM_GROUP') @name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString Order by TheString";
+                    "@Hint('DISABLE_RECLAIM_GROUP') @name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
                 env.CompileDeploy(epl, path).AddListener("s0");
                 var fields = "TheString,mysum".SplitCsv();
 
@@ -620,7 +620,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.SendEventBean(new SupportBean_B("delete"));
 
                 epl =
-"@name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString Order by TheString";
+                    "@name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 TryAssertionNamedWindowDelete(env, fields, milestone);
@@ -790,7 +790,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var fields = "mycount".SplitCsv();
                 var epl = "@name('s0') select irstream count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
-"group by Symbol, Price";
+                          "group by Symbol, Price";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, SYMBOL_DELL, 10);
@@ -830,9 +830,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 // test for ESPER-185
                 var fields = "Symbol,Price,mycount".SplitCsv();
-                var epl = "@name('s0') select irstream Symbol,Price,count(Price) as mycount "+
+                var epl = "@name('s0') select irstream Symbol,Price,count(Price) as mycount " +
                           "from SupportMarketDataBean#length(5) " +
-"group by Symbol, Price Order by Symbol asc";
+                          "group by Symbol, Price order by Symbol asc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, SYMBOL_DELL, 10);
@@ -933,10 +933,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 SendTimer(env, 0);
-                var epl = "insert into MyStream select Symbol, Price from SupportMarketDataBean#time_batch(1 sec);\n"+
-"@name('s0') select Symbol "+
-"from MyStream#time_batch(1 sec)#unique(Symbol) "+
-"group by Symbol";
+                var epl = "insert into MyStream select Symbol, Price from SupportMarketDataBean#time_batch(1 sec);\n" +
+                          "@name('s0') select Symbol " +
+                          "from MyStream#time_batch(1 sec)#unique(Symbol) " +
+                          "group by Symbol";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, "IBM", 100);
@@ -1043,14 +1043,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol,"+
+                var epl = "@name('s0') select irstream Symbol," +
                           "sum(Price) as mySum," +
                           "avg(Price) as myAvg " +
                           "from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
-"where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') "+
-"       and one.TheString = two.Symbol "+
-"group by Symbol";
+                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
+                          "       and one.TheString = two.Symbol " +
+                          "group by Symbol";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
@@ -1067,12 +1067,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol,"+
+                var epl = "@name('s0') select irstream Symbol," +
                           "sum(Price) as mySum," +
                           "avg(Price) as myAvg " +
                           "from SupportMarketDataBean#length(3) " +
-"where Symbol='DELL' or Symbol='IBM' or Symbol='GE' "+
-"group by Symbol";
+                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
+                          "group by Symbol";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryAssertionSum(env);

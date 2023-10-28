@@ -252,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select (select Id from SupportEventWithManyArray#keepall as sm " +
-                          "where sm.intOne = se.array and sm.value > se.value) as value from SupportEventWithIntArray as se";
+                          "where sm.intOne = se.array and sm.Value > se.Value) as value from SupportEventWithIntArray as se";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendManyArray(env, "MA1", new int[] { 1, 2 }, 100);
@@ -276,7 +276,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select (select Id from SupportEventWithManyArray#keepall as sm " +
-                          "where sm.intOne = se.array and sm.value = se.value) as value from SupportEventWithIntArray as se";
+                          "where sm.intOne = se.array and sm.Value = se.Value) as value from SupportEventWithIntArray as se";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendManyArray(env, "MA1", new int[] { 1, 2 }, 10);
@@ -561,9 +561,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = new string[] { "s0price", "s1price" };
                 var text = "@name('s0') select irstream s0.Price as s0price, " +
-" (select Price from SupportMarketDataBean(Symbol='S1')#length(10) s1"+
+                           " (select Price from SupportMarketDataBean(Symbol='S1')#length(10) s1" +
                            " where s0.Volume = s1.Volume) as s1price " +
-" from  SupportMarketDataBean(Symbol='S0')#length(2) s0";
+                           " from  SupportMarketDataBean(Symbol='S0')#length(2) s0";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(MakeMarketDataEvent("S0", 100, 1));

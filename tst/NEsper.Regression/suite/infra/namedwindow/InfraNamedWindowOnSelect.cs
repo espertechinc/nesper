@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 var epl = "@name('create') @public create window MyWindow#keepall as select * from SupportBean;\n" +
                           "insert into MyWindow select * from SupportBean(TheString like 'E%');\n" +
-"@name('select') on SupportBean_A insert into MyStream select mywin.* from MyWindow as mywin Order by TheString asc;\n"+
+                          "@name('select') on SupportBean_A insert into MyStream select mywin.* from MyWindow as mywin order by TheString asc;\n" +
                           "@name('consumer') select * from MyStream;\n" +
                           "insert into MyStream select * from SupportBean(TheString like 'I%');\n";
                 env.CompileDeploy(epl, path).AddListener("select").AddListener("consumer");

@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 return ConstantNull();
             }
 
-            CodegenExpression aggService = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            var aggService = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryAgg(Subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
             var method = parent.MakeChild(Subselect.EvaluationType, GetType(), classScope);
@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .IfCondition(ExprDotMethod(Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar(typeof(ICollection<EventBean>), "events", NewInstance(typeof(ArrayDeque<EventBean>), ExprDotName(Ref("groupKeys"), "Count")))
-                .ForEach(typeof(object), "groupKey", Ref("groupKeys"))
+                .ForEach<object>("groupKey", Ref("groupKeys"))
                 .ExprDotMethod(aggService, "SetCurrentAccess", Ref("groupKey"), Ref("cpid"), ConstantNull())
                 .DeclareVar(
                     typeof(ICollection<string, object>),

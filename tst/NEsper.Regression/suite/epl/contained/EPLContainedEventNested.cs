@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.CompileDeploy("insert into OrderWindowNWF select * from OrderBean", path);
 
                 var stmtText =
-"@name('s0') select reviewId from OrderWindowNWF[books][reviews] bookReviews Order by ReviewId asc";
+                    "@name('s0') select ReviewId from OrderWindowNWF[Books][Reviews] bookReviews order by ReviewId asc";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -145,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.CompileDeploy("insert into OrderWindowNWS select * from OrderBean", path);
 
                 var stmtText =
-                    "@name('s0') select *, (select sum(Price) from OrderWindowNWS[books]) as totalPrice from SupportBean";
+                    "@name('s0') select *, (select sum(Price) from OrderWindowNWS[Books]) as totalPrice from SupportBean";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.CompileDeploy("insert into OrderWindowNWOT select * from OrderBean", path);
 
                 var stmtText =
-                    "@name('s0') on OrderWindowNWOT[books] owb select sbw.* from SupportBeanWindow sbw where TheString = title";
+                    "@name('s0') on OrderWindowNWOT[Books] owb select sbw.* from SupportBeanWindow sbw where TheString = title";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -195,7 +195,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var fields = "ReviewId".SplitCsv();
 
                 var stmtText =
-"@name('s0') select reviewId from OrderBean[books][reviews] bookReviews Order by ReviewId asc";
+                    "@name('s0') select ReviewId from OrderBean[Books][Reviews] bookReviews order by ReviewId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 SupportAdminUtil.AssertStatelessStmt(env, "s0", true);
 
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
                 // try where in root
                 var stmtText =
-"@name('s0') select reviewId from OrderBean[books where title = 'Enders Game'][reviews] bookReviews Order by ReviewId asc";
+                    "@name('s0') select ReviewId from OrderBean[Books where title = 'Enders Game'][Reviews] bookReviews order by ReviewId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -229,7 +229,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // try where in different levels
                 env.UndeployAll();
                 stmtText =
-"@name('s0') select reviewId from OrderBean[books where title = 'Enders Game'][reviews where reviewId in (1, 10)] bookReviews Order by ReviewId asc";
+                    "@name('s0') select ReviewId from OrderBean[Books where title = 'Enders Game'][Reviews where ReviewId in (1, 10)] bookReviews order by ReviewId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -238,7 +238,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // try where in combination
                 env.UndeployAll();
                 stmtText =
-"@name('s0') select reviewId from OrderBean[books as bc][reviews as rw where rw.reviewId in (1, 10) and bc.title = 'Enders Game'] bookReviews Order by ReviewId asc";
+                    "@name('s0') select ReviewId from OrderBean[Books as bc][Reviews as rw where rw.ReviewId in (1, 10) and bc.title = 'Enders Game'] bookReviews order by ReviewId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -254,45 +254,45 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 // columns supplied
                 var stmtText =
-"@name('s0') select * from OrderBean[select BookId, orderdetail.OrderId as OrderId from books][select reviewId from reviews] bookReviews Order by ReviewId asc";
+                    "@name('s0') select * from OrderBean[select BookId, orderdetail.OrderId as OrderId from Books][select ReviewId from Reviews] bookReviews order by ReviewId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 TryAssertionColumnSelect(env);
                 env.UndeployAll();
 
                 // stream wildcards identify fragments
                 stmtText =
-                    "@name('s0') select orderFrag.orderdetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.reviewId as ReviewId " +
-"from OrderBean[books as Book][select myorder.* as orderFrag, Book.* as bookFrag, review.* as reviewFrag from reviews as review] as myorder";
+                    "@name('s0') select orderFrag.orderdetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +
+                    "from OrderBean[Books as Book][select myorder.* as orderFrag, Book.* as bookFrag, review.* as reviewFrag from Reviews as review] as myorder";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 TryAssertionColumnSelect(env);
                 env.UndeployAll();
 
                 // one event type dedicated as underlying
                 stmtText =
-                    "@name('s0') select orderdetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.reviewId as ReviewId " +
-"from OrderBean[books as Book][select myorder.*, Book.* as bookFrag, review.* as reviewFrag from reviews as review] as myorder";
+                    "@name('s0') select orderdetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +
+                    "from OrderBean[Books as Book][select myorder.*, Book.* as bookFrag, review.* as reviewFrag from Reviews as review] as myorder";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 TryAssertionColumnSelect(env);
                 env.UndeployAll();
 
                 // wildcard unnamed as underlying
                 stmtText = "@name('s0') select orderFrag.orderdetail.OrderId as OrderId, BookId, ReviewId " +
-                           "from OrderBean[select * from books][select myorder.* as orderFrag, ReviewId from reviews as review] as myorder";
+                           "from OrderBean[select * from Books][select myorder.* as orderFrag, ReviewId from Reviews as review] as myorder";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 TryAssertionColumnSelect(env);
                 env.UndeployAll();
 
                 // wildcard named as underlying
                 stmtText =
-                    "@name('s0') select orderFrag.orderdetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.reviewId as ReviewId " +
-                    "from OrderBean[select * from books as bookFrag][select myorder.* as orderFrag, review.* as reviewFrag from reviews as review] as myorder";
+                    "@name('s0') select orderFrag.orderdetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +
+                    "from OrderBean[select * from Books as bookFrag][select myorder.* as orderFrag, review.* as reviewFrag from Reviews as review] as myorder";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 TryAssertionColumnSelect(env);
                 env.UndeployAll();
 
                 // object model
                 stmtText = "@name('s0') select orderFrag.orderdetail.OrderId as OrderId, BookId, ReviewId " +
-                           "from OrderBean[select * from books][select myorder.* as orderFrag, ReviewId from reviews as review] as myorder";
+                           "from OrderBean[select * from Books][select myorder.* as orderFrag, ReviewId from Reviews as review] as myorder";
                 env.EplToModelCompileDeploy(stmtText).AddListener("s0");
                 TryAssertionColumnSelect(env);
                 env.UndeployAll();
@@ -310,7 +310,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 env.CompileDeploy(
                         "@name('s0') select * from pattern [" +
-                        "every r=OrderBean[books][reviews] -> SupportBean(IntPrimitive = r[0].ReviewId)]")
+                        "every r=OrderBean[Books][Reviews] -> SupportBean(IntPrimitive = r[0].ReviewId)]")
                     .AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -335,7 +335,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 env.CompileDeploy(
                         "@name('s0') select TheString from SupportBean s0 where " +
-                        "exists (select * from OrderBean[books][reviews]#unique(reviewId) where ReviewId = s0.IntPrimitive)")
+                        "exists (select * from OrderBean[Books][Reviews]#unique(ReviewId) where ReviewId = s0.IntPrimitive)")
                     .AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -361,8 +361,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var fields = "OrderId,BookId,ReviewId".SplitCsv();
 
                 var stmtText =
-                    "@name('s0') select orderdetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.reviewId as ReviewId " +
-"from OrderBean[books as Book][select myorder.*, Book.* as bookFrag, review.* as reviewFrag from reviews as review] as myorder";
+                    "@name('s0') select orderdetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +
+                    "from OrderBean[Books as Book][select myorder.*, Book.* as bookFrag, review.* as reviewFrag from Reviews as review] as myorder";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -389,36 +389,36 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile(
-                    "select BookId from OrderBean[select count(*) from books]",
-                    "Expression in a property-selection may not utilize an aggregation function [select BookId from OrderBean[select count(*) from books]]");
+                    "select BookId from OrderBean[select count(*) from Books]",
+                    "Expression in a property-selection may not utilize an aggregation function [select BookId from OrderBean[select count(*) from Books]]");
 
                 env.TryInvalidCompile(
-                    "select BookId from OrderBean[select BookId, (select abc from review#lastevent) from books]",
-                    "Expression in a property-selection may not utilize a subselect [select BookId from OrderBean[select BookId, (select abc from review#lastevent) from books]]");
+                    "select BookId from OrderBean[select BookId, (select abc from review#lastevent) from Books]",
+                    "Expression in a property-selection may not utilize a subselect [select BookId from OrderBean[select BookId, (select abc from review#lastevent) from Books]]");
 
                 env.TryInvalidCompile(
-                    "select BookId from OrderBean[select prev(1, BookId) from books]",
-                    "Failed to validate contained-event expression 'prev(1,BookId)': Previous function cannot be used in this context [select BookId from OrderBean[select prev(1, BookId) from books]]");
+                    "select BookId from OrderBean[select prev(1, BookId) from Books]",
+                    "Failed to validate contained-event expression 'prev(1,BookId)': Previous function cannot be used in this context [select BookId from OrderBean[select prev(1, BookId) from Books]]");
 
                 env.TryInvalidCompile(
-                    "select BookId from OrderBean[select * from books][select * from reviews]",
-                    "A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation [select BookId from OrderBean[select * from books][select * from reviews]]");
+                    "select BookId from OrderBean[select * from Books][select * from Reviews]",
+                    "A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation [select BookId from OrderBean[select * from Books][select * from Reviews]]");
 
                 env.TryInvalidCompile(
-                    "select BookId from OrderBean[select abc from books][reviews]",
-                    "Failed to validate contained-event expression 'abc': Property named 'abc' is not valid in any stream [select BookId from OrderBean[select abc from books][reviews]]");
+                    "select BookId from OrderBean[select abc from Books][Reviews]",
+                    "Failed to validate contained-event expression 'abc': Property named 'abc' is not valid in any stream [select BookId from OrderBean[select abc from Books][Reviews]]");
 
                 env.TryInvalidCompile(
-                    "select BookId from OrderBean[books][reviews]",
-                    "Failed to validate select-clause expression 'BookId': Property named 'BookId' is not valid in any stream [select BookId from OrderBean[books][reviews]]");
+                    "select BookId from OrderBean[Books][Reviews]",
+                    "Failed to validate select-clause expression 'BookId': Property named 'BookId' is not valid in any stream [select BookId from OrderBean[Books][Reviews]]");
 
                 env.TryInvalidCompile(
-                    "select OrderId from OrderBean[books]",
-                    "Failed to validate select-clause expression 'OrderId': Property named 'OrderId' is not valid in any stream [select OrderId from OrderBean[books]]");
+                    "select OrderId from OrderBean[Books]",
+                    "Failed to validate select-clause expression 'OrderId': Property named 'OrderId' is not valid in any stream [select OrderId from OrderBean[Books]]");
 
                 env.TryInvalidCompile(
-                    "select * from OrderBean[books where abc=1]",
-                    "Failed to validate contained-event expression 'abc=1': Property named 'abc' is not valid in any stream [select * from OrderBean[books where abc=1]]");
+                    "select * from OrderBean[Books where abc=1]",
+                    "Failed to validate contained-event expression 'abc=1': Property named 'abc' is not valid in any stream [select * from OrderBean[Books where abc=1]]");
 
                 env.TryInvalidCompile(
                     "select * from OrderBean[abc]",

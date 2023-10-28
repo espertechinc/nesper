@@ -178,9 +178,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  all matches " +
                            "  after match skip to next row " +
                            "  pattern (A B) " +
-                           "  define B as B.value > A.value" +
+                           "  define B as B.Value > A.Value" +
                            ") " +
-"Order by a_string, b_string";
+                           "order by a_string, b_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -268,8 +268,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  after match skip to next row " +
                            "  pattern ( A B A ) " +
                            "  define " +
-                           "    A as (A.value = 1)," +
-                           "    B as (B.value = 2)" +
+                           "    A as (A.Value = 1)," +
+                           "    B as (B.Value = 2)" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -324,13 +324,13 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
                            "  partition by TheString" +
-                           "  measures A.TheString as a_string, A.value as a_value, B.value as b_value " +
+                           "  measures A.TheString as a_string, A.Value as a_value, B.Value as b_value " +
                            "  all matches " +
                            "  after match skip to next row " +
                            "  pattern (A B) " +
-                           "  define B as (B.value > A.value)" +
+                           "  define B as (B.Value > A.Value)" +
                            ")" +
-" Order by a_string";
+                           " order by a_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -463,9 +463,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  all matches " +
                            "  after match skip past last row" +
                            "  pattern (A B) " +
-                           "  define B as B.value > A.value" +
+                           "  define B as B.Value > A.Value" +
                            ") " +
-"Order by a_string, b_string";
+                           "order by a_string, b_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 

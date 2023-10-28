@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 .AddParam(EnumForgeCodegenNames.PARAMS)
                 .Block
                 .DeclareVar<object>("result", ConstantNull())
-                .ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+                .ForEach<object>("next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignRef("result", Ref("next"))
                 .BlockEnd()
                 .MethodReturn(FlexCast(type, Ref("result")));

@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select P00 like P01 as r1, " +
+                var stmtText = "@Name('s0') select P00 like P01 as r1, " +
                                "P00 like P01 escape \"!\" as r2, " +
                                "P02 regexp P03 as r3 " +
                                "from SupportBean_S0";

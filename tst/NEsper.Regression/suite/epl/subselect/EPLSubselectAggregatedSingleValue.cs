@@ -304,9 +304,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-"create table MyTableWith2Keys(k1 string primary key, k2 string primary key, Total sum(int));\n"+
-"into table MyTableWith2Keys select P10 as k1, P11 as k2, sum(Id) as Total from SupportBean_S1 group by P10, P11;\n"+
-"@name('s0') @name('s0')select (select sum(Total) from MyTableWith2Keys group by k1 having sum(Total) > 100) as c0 from SupportBean_S0;\n";
+                    "create table MyTableWith2Keys(k1 string primary key, k2 string primary key, Total sum(int));\n" +
+                    "into table MyTableWith2Keys select P10 as k1, P11 as k2, sum(Id) as Total from SupportBean_S1 group by P10, P11;\n" +
+                    "@name('s0') @name('s0')select (select sum(Total) from MyTableWith2Keys group by k1 having sum(Total) > 100) as c0 from SupportBean_S0;\n";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEventS1(env, 50, "G1", "S1");
@@ -330,7 +330,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.CompileDeploy("@public create table MyTable(Total sum(int))", path);
                 env.CompileDeploy("into table MyTable select sum(IntPrimitive) as Total from SupportBean", path);
                 env.CompileDeploy(
-"@name('s0') select (select sum(Total) from MyTable having sum(Total) > 100) as c0 from SupportBean_S0",
+                    "@name('s0') select (select sum(Total) from MyTable having sum(Total) > 100) as c0 from SupportBean_S0",
                     path);
                 env.AddListener("s0");
 
@@ -698,7 +698,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select * from SupportMarketDataBean " +
-"where Price > (select max(Price) from SupportMarketDataBean(Symbol='GOOG')#lastevent) ";
+                          "where Price > (select max(Price) from SupportMarketDataBean(Symbol='GOOG')#lastevent) ";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEventMD(env, "GOOG", 1);

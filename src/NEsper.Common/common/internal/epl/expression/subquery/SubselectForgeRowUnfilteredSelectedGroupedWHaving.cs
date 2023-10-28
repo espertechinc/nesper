@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .DeclareVar(typeof(bool?), "haveResult", ConstantFalse())
                 .DeclareVar<object>("groupKeyMatch", ConstantNull());
 
-            var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
+            var forEach = method.Block.ForEach<object>("groupKey", Ref("groupKeys"));
             {
                 var havingExpr = CodegenLegoMethodExpression.CodegenExpression(
                     Subselect.havingExpr,
@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     "result",
                     NewInstance(typeof(ArrayDeque<EventBean>), ExprDotName(Ref("groupKeys"), "Count")));
 
-            var forEach = method.Block.ForEach(typeof(object), "groupKey", Ref("groupKeys"));
+            var forEach = method.Block.ForEach<object>("groupKey", Ref("groupKeys"));
             {
                 var havingExpr = CodegenLegoMethodExpression.CodegenExpression(
                     Subselect.havingExpr,

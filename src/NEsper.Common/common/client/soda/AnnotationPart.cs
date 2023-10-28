@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.compat.collections;
 
@@ -49,6 +50,17 @@ namespace com.espertech.esper.common.client.soda
             IList<AnnotationAttribute> attributes)
         {
             Name = name;
+            Attributes = attributes;
+        }
+
+        [JsonConstructor]
+        public AnnotationPart(
+            string name,
+            string treeObjectName,
+            IList<AnnotationAttribute> attributes)
+        {
+            Name = name;
+            TreeObjectName = treeObjectName;
             Attributes = attributes;
         }
 

@@ -18,7 +18,9 @@ using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
-using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A; // assertEquals
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
+
+//using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
@@ -107,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl = "@name('create') create window MyWindow#keepall as SupportEventWithManyArray;\n" +
                           "insert into MyWindow select * from SupportEventWithManyArray;\n" +
                           "on SupportEventWithIntArray as sewia " +
-                          "update MyWindow as mw set value = sewia.value " +
+                          "update MyWindow as mw set value = sewia.Value " +
                           "where mw.Id = sewia.Id and mw.intOne = sewia.array;\n";
                 env.CompileDeploy(epl);
 
@@ -140,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl = "@name('create') create window MyWindow#keepall as SupportEventWithManyArray;\n" +
                           "insert into MyWindow select * from SupportEventWithManyArray;\n" +
                           "on SupportEventWithIntArray as sewia " +
-                          "update MyWindow as mw set value = sewia.value " +
+                          "update MyWindow as mw set value = sewia.Value " +
                           "where mw.intOne = sewia.array;\n";
                 env.CompileDeploy(epl);
 

@@ -17,18 +17,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
 {
     public class EventAvroSupertypeInsertInto : RegressionExecution
     {
-        private static readonly string[] FIELDS = new string[] { "Symbol"};
+        private static readonly string[] FIELDS = new string[] { "Symbol" };
 
         public void Run(RegressionEnvironment env)
         {
-            var epl = "@name('input') @public @buseventtype create avro schema Input(Symbol string, Price double);\n"+
+            var epl = "@name('input') @public @buseventtype create avro schema Input(Symbol string, Price double);\n" +
                       "\n" +
-"@public @buseventtype create avro schema SuperType(Symbol string);\n"+
+                      "@public @buseventtype create avro schema SuperType(Symbol string);\n" +
                       "@public @buseventtype create avro schema B() inherits SuperType;\n" +
                       "@public @buseventtype create avro schema A() inherits SuperType;\n" +
                       "\n" +
-"insert into B select Symbol from Input(Symbol = 'B');\n"+
-"insert into A select Symbol from Input(Symbol = 'A');\n"+
+                      "insert into B select Symbol from Input(Symbol = 'B');\n" +
+                      "insert into A select Symbol from Input(Symbol = 'A');\n" +
                       "\n" +
                       "@name('ss') select * from SuperType;\n" +
                       "@name('sa') select * from A;\n" +

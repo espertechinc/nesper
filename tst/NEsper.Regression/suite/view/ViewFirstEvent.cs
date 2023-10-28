@@ -88,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "Symbol"},
+                    new string[] { "Symbol" },
                     new object[][] { new object[] { "E1" } });
 
                 env.Milestone(2);
@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListenerNotInvoked("s0");
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "Symbol"},
+                    new string[] { "Symbol" },
                     new object[][] { new object[] { "E1" } });
 
                 env.UndeployAll();

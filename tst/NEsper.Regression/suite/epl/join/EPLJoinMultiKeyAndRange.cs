@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var eplOne = "@name('s0') select * " +
                              "from SupportEventWithIntArray#keepall as si, SupportEventWithManyArray#keepall as sm " +
-                             "where si.array = sm.intOne and si.value > sm.value";
+                             "where si.array = sm.intOne and si.Value > sm.Value";
                 env.CompileDeploy(eplOne).AddListener("s0");
 
                 SendIntArray(env, "I1", new int[] { 1, 2 }, 10);

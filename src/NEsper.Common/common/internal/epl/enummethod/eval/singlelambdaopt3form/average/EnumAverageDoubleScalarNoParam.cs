@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 .Block
                 .DeclareVar<double>("sum", Constant(0d))
                 .DeclareVar<int>("count", Constant(0))
-                .ForEach(typeof(object), "num", EnumForgeCodegenNames.REF_ENUMCOLL)
+                .ForEach<object>("num", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .IfRefNull("num")
                 .BlockContinue()
                 .IncrementRef("count")

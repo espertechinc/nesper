@@ -127,7 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
             var eps = exprSymbol.GetAddEPS(method);
 
             // see ExprPriorEvalStrategyBase
-            CodegenExpression future = codegenClassScope.NamespaceScope.AddOrGetFieldWellKnown(
+            var future = codegenClassScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 priorStrategyFieldName,
                 typeof(PriorEvalStrategy));
             method.Block

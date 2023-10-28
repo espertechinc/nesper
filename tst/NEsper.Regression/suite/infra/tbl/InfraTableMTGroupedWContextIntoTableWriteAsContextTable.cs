@@ -54,8 +54,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "  coalesce by consistent_hash_crc32(TheString) from SupportBean, " +
                 "    consistent_hash_crc32(P00) from SupportBean_S0 " +
                 "  granularity 16 preallocate\n;" +
-"@public context ByStringHash create table varTotal (key string primary key, Total sum(int));\n"+
-"@public context ByStringHash into table varTotal select TheString, sum(IntPrimitive) as Total from SupportBean group by TheString;\n";
+                "@public context ByStringHash create table varTotal (key string primary key, Total sum(int));\n" +
+                "@public context ByStringHash into table varTotal select TheString, sum(IntPrimitive) as Total from SupportBean group by TheString;\n";
             var eplAssert = "context ByStringHash select varTotal[P00].Total as c0 from SupportBean_S0";
 
             InfraTableMTGroupedWContextIntoTableWriteAsSharedTable.RunAndAssert(

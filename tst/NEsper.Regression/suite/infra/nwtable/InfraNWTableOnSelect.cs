@@ -453,9 +453,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     ? "@name('create') @public create window MyInfraSAG#keepall as select TheString as a, IntPrimitive as b from SupportBean;\n"
                     : "@name('create') @public create table MyInfraSAG(a string primary key, b int primary key);\n";
                 epl +=
-"@name('select') on SupportBean_A select a, sum(b) as sumb from MyInfraSAG group by a Order by a desc;\n";
+                    "@name('select') on SupportBean_A select a, sum(b) as sumb from MyInfraSAG group by a order by a desc;\n";
                 epl +=
-"@name('selectTwo') on SupportBean_A select a, sum(b) as sumb from MyInfraSAG group by a having sum(b) > 5 Order by a desc;\n";
+                    "@name('selectTwo') on SupportBean_A select a, sum(b) as sumb from MyInfraSAG group by a having sum(b) > 5 order by a desc;\n";
                 epl +=
                     "@name('insert') insert into MyInfraSAG select TheString as a, IntPrimitive as b from SupportBean;\n";
                 env.CompileDeploy(epl, path).AddListener("select").AddListener("selectTwo");
@@ -702,7 +702,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create select stmt
                 var stmtTextSelect =
-"@name('select') on SupportBean_A as trigger select trigger.Id as triggerid, win.a as wina, b from MyInfraSA as win Order by wina";
+                    "@name('select') on SupportBean_A as trigger select trigger.Id as triggerid, win.a as wina, b from MyInfraSA as win order by wina";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
 
                 // create insert into
@@ -730,7 +730,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // try limit clause
                 env.UndeployModuleContaining("select");
                 stmtTextSelect =
-"@name('select') on SupportBean_A as trigger select trigger.Id as triggerid, win.a as wina, b from MyInfraSA as win Order by wina limit 1";
+                    "@name('select') on SupportBean_A as trigger select trigger.Id as triggerid, win.a as wina, b from MyInfraSA as win order by wina limit 1";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
 
                 env.Milestone(1);
@@ -780,7 +780,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                                      infraName +
                                      " as mywin where " +
                                      infraName +
-".b < 3 Order by a asc";
+                                     ".b < 3 order by a asc";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
                 env.AssertStatement(
                     "select",

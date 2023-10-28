@@ -618,7 +618,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.CompileDeploy("insert into VarStreamAny select * from SupportBeanVariantStream");
                 env.CompileDeploy("insert into VarStreamAny select * from SupportBean_A");
                 env.CompileDeploy(
-"insert into VarStreamAny select Symbol as TheString, Volume as IntPrimitive, Feed as Id from SupportMarketDataBean");
+                    "insert into VarStreamAny select Symbol as TheString, Volume as IntPrimitive, Feed as Id from SupportMarketDataBean");
                 env.CompileDeploy("@name('s0') select * from VarStreamAny").AddListener("s0");
                 env.AssertStatement("s0", statement => Assert.AreEqual(0, statement.EventType.PropertyNames.Length));
 

@@ -116,24 +116,24 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 testCaseList.AddTest(testCase);
 
                 testCase = new EventExpressionCase(
-                    "s=SupportBeanCombinedProps(indexed[1].mapped('1mb').value = '1ma1')");
+                    "s=SupportBeanCombinedProps(indexed[1].mapped('1mb').Value = '1ma1')");
                 testCase.Add("e2", "s", events.GetEvent("e2"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("s=SupportBeanCombinedProps(indexed[0].mapped('1ma').value = 'x')");
+                testCase = new EventExpressionCase("s=SupportBeanCombinedProps(indexed[0].mapped('1ma').Value = 'x')");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("s=SupportBeanCombinedProps(array[0].mapped('0ma').value = '0ma0')");
+                testCase = new EventExpressionCase("s=SupportBeanCombinedProps(array[0].mapped('0ma').Value = '0ma0')");
                 testCase.Add("e2", "s", events.GetEvent("e2"));
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("s=SupportBeanCombinedProps(array[2].mapped('x').value = 'x')");
+                testCase = new EventExpressionCase("s=SupportBeanCombinedProps(array[2].mapped('x').Value = 'x')");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("s=SupportBeanCombinedProps(array[879787].mapped('x').value = 'x')");
+                testCase = new EventExpressionCase("s=SupportBeanCombinedProps(array[879787].mapped('x').Value = 'x')");
                 testCaseList.AddTest(testCase);
 
-                testCase = new EventExpressionCase("s=SupportBeanCombinedProps(array[0].mapped('xxx').value = 'x')");
+                testCase = new EventExpressionCase("s=SupportBeanCombinedProps(array[0].mapped('xxx').Value = 'x')");
                 testCaseList.AddTest(testCase);
 
                 var util = new PatternTestHarness(events, testCaseList);

@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@public create table MyStats (\n" +
                     "  myKey string primary key,\n" +
                     "  myAvedev avedev(int), // column holds a mean deviation of int-typed values\n" +
-"  myAvg avg(double), // column holds a Average of double-typed values\n"+
+                    "  myAvg avg(double), // column holds a Average of double-typed values\n" +
                     "  myCount count(*), // column holds a number of values\n" +
                     "  myMax max(int), // column holds a highest int-typed value\n" +
                     "  myMedian median(float), // column holds the median of float-typed values\n" +
@@ -115,9 +115,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "@public create table MyStatsMore (\n" +
                     "  myKey string primary key,\n" +
-"  myAvgFiltered avg(double, boolean), // column holds a Average of double-typed values\n"+
+                    "  myAvgFiltered avg(double, boolean), // column holds a Average of double-typed values\n" +
                     "                      // and filtered by a boolean expression to be provided\n" +
-"  myAvgDistinct avg(distinct double) // column holds a Average of distinct double-typed values\n"+
+                    "  myAvgDistinct avg(distinct double) // column holds a Average of distinct double-typed values\n" +
                     ")",
                     path);
 

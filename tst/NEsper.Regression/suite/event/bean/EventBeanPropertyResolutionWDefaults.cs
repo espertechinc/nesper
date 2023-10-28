@@ -90,14 +90,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 // test back-tick with spaces etc
                 env.CompileDeploy(
-"@name('s0') select `candidate Book` as c0, `XML Message Type` as c1, `select` as c2, `children's books`[0] as c3, `my <> map`('xx') as c4 from MyType")
+                        "@name('s0') select `candidate Book` as c0, `XML Message Type` as c1, `select` as c2, `children's Books`[0] as c3, `my <> map`('xx') as c4 from MyType")
                     .AddListener("s0");
 
                 IDictionary<string, object> defValues = new Dictionary<string, object>();
                 defValues.Put("candidate Book", "Enders Game");
                 defValues.Put("XML Message Type", "Book");
                 defValues.Put("select", 100);
-                defValues.Put("children's books", new int[] { 50, 51 });
+                defValues.Put("children's Books", new int[] { 50, 51 });
                 defValues.Put("my <> map", Collections.SingletonMap("xx", "abc"));
                 env.SendEventMap(defValues, "MyType");
                 env.AssertPropsNew(
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 // test escape in column name
                 env.CompileDeploy(
-"@name('s0') select TheString as `Order`, TheString as `Price.for.goods` from SupportBean")
+                        "@name('s0') select TheString as `Order`, TheString as `Price.for.goods` from SupportBean")
                     .AddListener("s0");
                 env.AssertStatement(
                     "s0",

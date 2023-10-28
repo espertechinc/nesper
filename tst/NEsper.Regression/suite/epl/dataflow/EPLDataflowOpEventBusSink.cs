@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             env.AssertPropsPerRowNewFlattened(
                 "s0",
-                "myDouble,myInt,myString".SplitCsv(),
+                "MyDouble,MyInt,MyString".SplitCsv(),
                 new object[][] { new object[] { 1.1d, 1, "one" }, new object[] { 2.2d, 2, "two" } });
 
             env.UndeployAll();

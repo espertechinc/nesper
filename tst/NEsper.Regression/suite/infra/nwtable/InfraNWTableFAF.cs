@@ -287,7 +287,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(MakeBean("E2", 0, 10));
                 env.SendEventBean(MakeBean("E3", 0, 11));
 
-                query = "select distinct LongPrimitive from MyInfra Order by LongPrimitive asc";
+                query = "select distinct LongPrimitive from MyInfra order by LongPrimitive asc";
                 fields = "LongPrimitive".SplitCsv();
                 result = env.CompileExecuteFAF(query, path);
                 EPAssertionUtil.AssertPropsPerRow(
@@ -642,11 +642,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = SetupInfraJoin(env, namedWindow);
 
                 var queryAgg =
-"select w1.key, sum(value) from Infra1 w1, Infra2 w2 WHERE w1.keyJoin = w2.keyJoin GROUP BY w1.key Order by w1.key";
+                    "select w1.key, sum(value) from Infra1 w1, Infra2 w2 WHERE w1.keyJoin = w2.keyJoin GROUP BY w1.key order by w1.key";
                 var fieldsAgg = "w1.key,sum(value)".SplitCsv();
                 var queryNoagg =
-"select w1.key, w2.value from Infra1 w1, Infra2 w2 where w1.keyJoin = w2.keyJoin and value = 1 Order by w1.key";
-                var fieldsNoagg = "w1.key,w2.value".SplitCsv();
+                    "select w1.key, w2.Value from Infra1 w1, Infra2 w2 where w1.keyJoin = w2.keyJoin and value = 1 order by w1.key";
+                var fieldsNoagg = "w1.key,w2.Value".SplitCsv();
 
                 var result = env.CompileExecuteFAF(queryAgg, path).Array;
                 Assert.AreEqual(0, result.Length);
@@ -733,7 +733,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean("E1", 0));
                 env.SendEventBean(new SupportBean("E2", 11));
                 env.SendEventBean(new SupportBean("E3", 5));
-                var fields = new string[] { "TheString", "Total"};
+                var fields = new string[] { "TheString", "Total" };
 
                 var query = "select TheString, sum(IntPrimitive) as Total from MyInfra";
                 var result = env.CompileExecuteFAF(query, path);
@@ -861,10 +861,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", 11));
                 env.SendEventBean(new SupportBean("E1", 5));
-                var fields = new string[] { "TheString", "Total"};
+                var fields = new string[] { "TheString", "Total" };
 
                 var query =
-"select TheString, sum(IntPrimitive) as Total from MyInfra group by TheString Order by TheString asc";
+                    "select TheString, sum(IntPrimitive) as Total from MyInfra group by TheString order by TheString asc";
                 var result = env.CompileExecuteFAF(query, path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.GetEnumerator(),
@@ -1007,7 +1007,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean("E1", 0));
                 env.SendEventBean(new SupportBean("E2", 11));
                 env.SendEventBean(new SupportBean("E3", 5));
-                var fields = new string[] { "Total"};
+                var fields = new string[] { "Total" };
 
                 var query = "select sum(IntPrimitive) as Total from MyInfra";
                 var result = env.CompileExecuteFAF(query, path);

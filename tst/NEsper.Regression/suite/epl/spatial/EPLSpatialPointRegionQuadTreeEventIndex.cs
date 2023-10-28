@@ -523,7 +523,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     "insert into MyWindow select * from SupportSpatialPoint;\n" +
                     IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                     "@name('s0') select (select Id from MyWindow as mw where point(mw.px,mw.py).inside(rectangle(aabb.x,aabb.y,aabb.width,aabb.height))).aggregate('', \n" +
-"  (result, Item) => result || (case when result='' then '' else ',' end) || Item) as c0 from SupportSpatialAABB aabb";
+                    "  (result, Item) => result || (case when result='' then '' else ',' end) || Item) as c0 from SupportSpatialAABB aabb";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertThat(

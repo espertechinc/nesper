@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // test order-by
                 var epl =
-"@name('s0') select * from pattern @DiscardPartialsOnMatch [every a=SupportIdEventA -> SupportIdEventB] Order by a.Id desc";
+                    "@name('s0') select * from pattern @DiscardPartialsOnMatch [every a=SupportIdEventA -> SupportIdEventB] order by a.Id desc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportIdEventA("A1", null, null));

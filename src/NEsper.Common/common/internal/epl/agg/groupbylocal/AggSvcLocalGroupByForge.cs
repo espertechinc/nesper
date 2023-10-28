@@ -633,7 +633,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupbylocal
         {
             var method = scope.MakeChild(typeof(void), GetType(), classScope);
             method.Block.IfCondition(Not(ExprDotMethod(MEMBER_REMOVEDKEYS, "IsEmpty")))
-                .ForEach(typeof(AggSvcLocalGroupLevelKeyPair), "removedKey", MEMBER_REMOVEDKEYS)
+                .ForEach<AggSvcLocalGroupLevelKeyPair>("removedKey", MEMBER_REMOVEDKEYS)
                 .ExprDotMethod(
                     ArrayAtIndex(MEMBER_AGGREGATORSPERLEVELANDGROUP, ExprDotName(Ref("removedKey"), "Level")),
                     "Remove",

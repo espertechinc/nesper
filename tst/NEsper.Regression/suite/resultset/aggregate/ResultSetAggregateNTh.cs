@@ -22,7 +22,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                       "TheString, " +
                       "nth(IntPrimitive,0) as int1, " + // current
                       "nth(IntPrimitive,1) as int2 " + // one before
-"from SupportBean#keepall group by TheString output last every 3 events Order by TheString";
+                      "from SupportBean#keepall group by TheString output last every 3 events order by TheString";
             env.CompileDeploy(epl).AddListener("s0");
 
             RunAssertion(env, milestone);

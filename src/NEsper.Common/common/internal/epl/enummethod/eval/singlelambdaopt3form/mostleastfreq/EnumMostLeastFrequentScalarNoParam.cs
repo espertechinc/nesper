@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 .BlockReturn(ConstantNull())
                 .DeclareVar<IDictionary<object, int>>("items", NewInstance(typeof(Dictionary<object, int>)));
 
-            var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            var forEach = block.ForEach<object>("next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .DeclareVar<int?>(
                     "existing",
                     ExprDotMethod(ExprDotMethod(Ref("items"), "Get", Ref("next")), "AsBoxedInt32"))

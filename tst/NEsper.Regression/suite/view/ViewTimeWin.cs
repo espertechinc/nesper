@@ -393,8 +393,8 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
-                var epl = "@name('s0') select Symbol, Volume, sum(Price) as mySum "+
-"from SupportMarketDataBean#time(30) group by Symbol";
+                var epl = "@name('s0') select Symbol, Volume, sum(Price) as mySum " +
+                          "from SupportMarketDataBean#time(30) group by Symbol";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TryGroupByAssertions(env);
@@ -409,7 +409,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 // Every event generates a new row, this time we sum the price by symbol and output volume
                 var epl =
-"@name('s0') select Symbol, Volume, sum(Price) as mySum from SupportMarketDataBean(Symbol = 'IBM')#time(30)";
+                    "@name('s0') select Symbol, Volume, sum(Price) as mySum from SupportMarketDataBean(Symbol = 'IBM')#time(30)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 TrySingleAssertion(env);
@@ -442,7 +442,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // test iterator
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "Symbol"},
+                    new string[] { "Symbol" },
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 env.AdvanceTime(1500);
@@ -530,11 +530,11 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.AdvanceTime(0);
 
-                var text = "@name('s0') select irstream Symbol, "+
-"prev(1, Symbol) as prev1, "+
-"prevtail(Symbol) as prevtail, "+
-"prevcount(Symbol) as prevCountSym, "+
-"prevwindow(Symbol) as prevWindowSym "+
+                var text = "@name('s0') select irstream Symbol, " +
+                           "prev(1, Symbol) as prev1, " +
+                           "prevtail(Symbol) as prevtail, " +
+                           "prevcount(Symbol) as prevCountSym, " +
+                           "prevwindow(Symbol) as prevWindowSym " +
                            "from SupportMarketDataBean#time(1 sec)";
                 env.CompileDeployAddListenerMileZero(text, "s0");
                 var fields = new string[] { "Symbol", "prev1", "prevtail", "prevCountSym", "prevWindowSym" };
@@ -570,7 +570,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(1600);
                 env.AssertPropsPerRowOldFlattened(
                     "s0",
-"Symbol".SplitCsv(),
+                    "Symbol".SplitCsv(),
                     new object[][] { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E3" } });
 
                 env.Milestone(3);

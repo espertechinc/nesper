@@ -135,8 +135,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') @Audit expression Total alias for {sum(IntPrimitive)} "+
-"select Total, Total+1 from SupportBean";
+                var epl = "@name('s0') @Audit expression Total alias for {sum(IntPrimitive)} " +
+                          "select Total, Total+1 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = "Total,Total+1".SplitCsv();
@@ -182,20 +182,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile(
-"expression Total alias for {sum(xxx)} select Total+1 from SupportBean",
-"Failed to validate select-clause expression 'Total+1': Failed to validate expression alias 'Total': Failed to validate alias expression body expression 'sum(xxx)': Property named 'xxx' is not valid in any stream [expression Total alias for {sum(xxx)} select Total+1 from SupportBean]");
+                    "expression Total alias for {sum(xxx)} select Total+1 from SupportBean",
+                    "Failed to validate select-clause expression 'Total+1': Failed to validate expression alias 'Total': Failed to validate alias expression body expression 'sum(xxx)': Property named 'xxx' is not valid in any stream [expression Total alias for {sum(xxx)} select Total+1 from SupportBean]");
                 env.TryInvalidCompile(
-"expression Total xxx for {1} select Total+1 from SupportBean",
-"For expression alias 'Total' expecting 'alias' keyword but received 'xxx' [expression Total xxx for {1} select Total+1 from SupportBean]");
+                    "expression Total xxx for {1} select Total+1 from SupportBean",
+                    "For expression alias 'Total' expecting 'alias' keyword but received 'xxx' [expression Total xxx for {1} select Total+1 from SupportBean]");
                 env.TryInvalidCompile(
-"expression Total(a) alias for {1} select Total+1 from SupportBean",
-"For expression alias 'Total' expecting no parameters but received 'a' [expression Total(a) alias for {1} select Total+1 from SupportBean]");
+                    "expression Total(a) alias for {1} select Total+1 from SupportBean",
+                    "For expression alias 'Total' expecting no parameters but received 'a' [expression Total(a) alias for {1} select Total+1 from SupportBean]");
                 env.TryInvalidCompile(
-"expression Total alias for {a -> 1} select Total+1 from SupportBean",
-"For expression alias 'Total' expecting an expression without parameters but received 'a ->' [expression Total alias for {a -> 1} select Total+1 from SupportBean]");
+                    "expression Total alias for {a -> 1} select Total+1 from SupportBean",
+                    "For expression alias 'Total' expecting an expression without parameters but received 'a ->' [expression Total alias for {a -> 1} select Total+1 from SupportBean]");
                 env.TryInvalidCompile(
-"expression Total alias for ['some text'] select Total+1 from SupportBean",
-"For expression alias 'Total' expecting an expression but received a script [expression Total alias for ['some text'] select Total+1 from SupportBean]");
+                    "expression Total alias for ['some text'] select Total+1 from SupportBean",
+                    "For expression alias 'Total' expecting an expression but received a script [expression Total alias for ['some text'] select Total+1 from SupportBean]");
             }
         }
     }

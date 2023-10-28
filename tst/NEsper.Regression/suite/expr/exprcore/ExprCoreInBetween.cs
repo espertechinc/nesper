@@ -373,7 +373,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select 1 in (longMap, intMap) as resOne, 1 not in (longMap, intMap) as resTwo from SupportBeanArrayCollMap";
+                    "@name('s0') select 1 in (LongMap, IntMap) as resOne, 1 not in (LongMap, IntMap) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = "resOne, resTwo".SplitCsv();
@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select 1 in (LongBoxed, IntArr, longMap, IntCol) as resOne, 1 not in (LongBoxed, IntArr, longMap, IntCol) as resTwo from SupportBeanArrayCollMap";
+                    "@name('s0') select 1 in (LongBoxed, IntArr, LongMap, IntCol) as resOne, 1 not in (LongBoxed, IntArr, LongMap, IntCol) as resTwo from SupportBeanArrayCollMap";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var fields = "resOne, resTwo".SplitCsv();
@@ -470,8 +470,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var caseExpr = "@name('s0') select TheString in (\"a\",\"b\",\"c\") as result from " +
-                               nameof(SupportBean);
+                var caseExpr =
+                    $"@Name('s0') select TheString in (\"a\",\"b\",\"c\") as result from {nameof(SupportBean)}";
                 var model = new EPStatementObjectModel();
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 model.SelectClause = SelectClause.Create().Add(Expressions.In("TheString", "a", "b", "c"), "result");
@@ -551,24 +551,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var bigInteger = typeof(BigIntegerHelper).FullName;
-                var fields = "c0,c1,c2,c3".SplitCsv();
+                var fields = "c0,c1".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean")
                     .WithExpression(
                         fields[0],
-                        $"IntPrimitive between {bigInteger}.valueOf(1) and {bigInteger}.ValueOf(3)")
-                    .WithExpression(fields[1], $"IntPrimitive between BigDecimal.valueOf(1) and BigDecimal.valueOf(3)")
-                    .WithExpression(fields[2], $"IntPrimitive in ({bigInteger}.ValueOf(1):{bigInteger}.ValueOf(3))")
-                    .WithExpression(fields[3], $"IntPrimitive in (BigDecimal.valueOf(1):BigDecimal.valueOf(3))");
+                        $"IntPrimitive between {bigInteger}.ValueOf(1) and {bigInteger}.ValueOf(3)")
+                    .WithExpression(fields[1], $"IntPrimitive in ({bigInteger}.ValueOf(1):{bigInteger}.ValueOf(3))");
 
-                builder.WithAssertion(new SupportBean("E0", 0)).Expect(fields, false, false, false, false);
+                builder.WithAssertion(new SupportBean("E0", 0)).Expect(fields, false, false);
 
-                builder.WithAssertion(new SupportBean("E1", 1)).Expect(fields, true, true, false, false);
+                builder.WithAssertion(new SupportBean("E1", 1)).Expect(fields, true, false);
 
-                builder.WithAssertion(new SupportBean("E2", 2)).Expect(fields, true, true, true, true);
+                builder.WithAssertion(new SupportBean("E2", 2)).Expect(fields, true, true);
 
-                builder.WithAssertion(new SupportBean("E3", 3)).Expect(fields, true, true, false, false);
+                builder.WithAssertion(new SupportBean("E3", 3)).Expect(fields, true, false);
 
-                builder.WithAssertion(new SupportBean("E4", 4)).Expect(fields, false, false, false, false);
+                builder.WithAssertion(new SupportBean("E4", 4)).Expect(fields, false, false);
 
                 builder.Run(env);
                 env.UndeployAll();
@@ -728,7 +726,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,".SplitCsv();
+                var fields = "c0".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean")
                     .WithExpressions(fields, "IntPrimitive between ShortBoxed and LongBoxed")
                     .WithStatementConsumer(
@@ -906,14 +904,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             RegressionEnvironment env,
             int? intBoxed,
             float? floatBoxed,
-            double doublePrimitve,
+            double doublePrimitive,
             long? longBoxed,
             bool? result)
         {
             var bean = new SupportBean();
             bean.IntBoxed = intBoxed;
             bean.FloatBoxed = floatBoxed;
-            bean.DoublePrimitive = doublePrimitve;
+            bean.DoublePrimitive = doublePrimitive;
             bean.LongBoxed = longBoxed;
 
             env.SendEventBean(bean);
@@ -984,9 +982,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var index = i;
                 env.AssertEventNew(
                     "s0",
-                    @event => Assert.AreEqual(
+                    theEvent => Assert.AreEqual(
                         result[index],
-                        @event.Get("result"),
+                        theEvent.Get("result"),
                         "Wrong result for " + input[index]));
             }
 

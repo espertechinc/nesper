@@ -82,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.CompileDeploy("@public create window MyNamedWindow#keepall as SupportRecogBean", path);
                 env.CompileDeploy("insert into MyNamedWindow select * from SupportRecogBean", path);
                 env.CompileDeploy(
-                    "on SupportBean as d delete from MyNamedWindow w where d.IntPrimitive = w.value",
+                    "on SupportBean as d delete from MyNamedWindow w where d.IntPrimitive = w.Value",
                     path);
 
                 var fields = "a_string,b_string".SplitCsv();
@@ -92,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  all matches pattern (A B) " +
                            "  define " +
                            "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4'," +
-                           "    B as B.value in (PREV(B.value, 4), PREV(B.value, 2))" +
+                           "    B as B.Value in (PREV(B.Value, 4), PREV(B.Value, 2))" +
                            ")";
 
                 env.CompileDeploy(text, path).AddListener("s0");
@@ -184,9 +184,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A[0].TheString as a0, A[1].TheString as a1, B[0].TheString as b0, B[1].TheString as b1, C.TheString as c" +
                            "  pattern ( A+ B* C ) " +
                            "  define " +
-                           "    A as (A.value = 1)," +
-                           "    B as (B.value = 2)," +
-                           "    C as (C.value = 3)" +
+                           "    A as (A.Value = 1)," +
+                           "    B as (B.Value = 2)," +
+                           "    C as (C.Value = 3)" +
                            ")";
                 env.CompileDeploy(text, path).AddListener("s0");
 
@@ -283,8 +283,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A[0].TheString as a0, A[1].TheString as a1, B.TheString as b" +
                            "  pattern ( A* B ) " +
                            "  define " +
-                           "    A as (A.value = 1)," +
-                           "    B as (B.value = 2)" +
+                           "    A as (A.Value = 1)," +
+                           "    B as (B.Value = 2)" +
                            ")";
 
                 env.CompileDeploy(text, path).AddListener("s0");

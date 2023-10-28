@@ -11,6 +11,7 @@ using System.ComponentModel;
 using System.Linq;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.type
@@ -37,6 +38,8 @@ namespace com.espertech.esper.common.@internal.type
 
         internal static ClassDescriptor Parse(string classIdent)
         {
+            classIdent = classIdent.UnmaskTypeName();
+            
             try {
                 var tokens = tokenizer.Tokenize(classIdent);
                 var parser = new ClassDescriptorParserWalker(tokens);

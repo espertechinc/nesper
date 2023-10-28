@@ -31,7 +31,9 @@ using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
 
-using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
+
+// using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -440,7 +442,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "@name('create') @public create table MyInfra(c1 string primary key, c2 string)";
                 env.CompileDeploy(stmtTextCreateOne, path);
 
-                var epl = "@name('merge') on OrderBean[books] " +
+                var epl = "@name('merge') on OrderBean[Books] " +
                           "merge MyInfra mw " +
                           "insert select BookId as c1, title as c2 ";
                 env.CompileDeploy(epl, path).AddListener("merge");
@@ -1726,7 +1728,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                           "on MyEvent as eme\n" +
                           "  merge MyInfraIOS as MyInfraIOS where MyInfraIOS.name = eme.name\n" +
                           "   when matched then\n" +
-                          "      insert into OtherStreamOne select eme.name as event_name, MyInfraIOS.value as status\n" +
+                          "      insert into OtherStreamOne select eme.name as event_name, MyInfraIOS.Value as status\n" +
                           "   when not matched then\n" +
                           "      insert into OtherStreamOne select eme.name as event_name, 0d as status;\n" +
                           "@name('s0') select * from OtherStreamOne;\n";

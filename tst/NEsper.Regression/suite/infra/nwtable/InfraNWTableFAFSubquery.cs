@@ -234,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 var start = PerformanceObserver.MilliTime;
-                var query = "select (select Id from Infra as i where i.value = wsb.TheString) as c0 from WinSB as wsb";
+                var query = "select (select Id from Infra as i where i.Value = wsb.TheString) as c0 from WinSB as wsb";
                 var result = CompileExecute(env, path, query);
                 var delta = PerformanceObserver.MilliTime - start;
                 Assert.That(delta, Is.LessThan(1000), "delta is " + delta);
@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     SendS0(env, i, "v" + i);
                 }
 
-                var query = "select (select Id from Infra as i where i.value = ?:p0:string) as c0 from WinSB";
+                var query = "select (select Id from Infra as i where i.Value = ?:p0:string) as c0 from WinSB";
                 var compiled = env.CompileFAF(query, path);
                 var prepared = env.Runtime.FireAndForgetService.PrepareQueryWithParameters(compiled);
 

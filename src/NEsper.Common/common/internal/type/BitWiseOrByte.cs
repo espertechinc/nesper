@@ -8,24 +8,18 @@
 
 namespace com.espertech.esper.common.@internal.type
 {
-    public partial class BitWiseOpEnum
+    /// <summary>
+    ///     Bit Wise Or.
+    /// </summary>
+    public class BitWiseOrByte : BitWiseComputer
     {
-        /// <summary>
-        ///     Computer for type-specific arith. operations.
-        /// </summary>
-        /// <summary>
-        ///     Bit Wise And.
-        /// </summary>
-        public class BAndByte : Computer
+        public object Compute(
+            object objOne,
+            object objTwo)
         {
-            public object Compute(
-                object objOne,
-                object objTwo)
-            {
-                var n1 = (byte)objOne;
-                var n2 = (byte)objTwo;
-                return (byte)(n1 & n2);
-            }
+            var n1 = (byte)objOne;
+            var n2 = (byte)objTwo;
+            return (byte)(n1 | n2);
         }
     }
 }

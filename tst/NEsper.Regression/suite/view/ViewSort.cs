@@ -273,7 +273,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // test iterator
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "Symbol"},
+                    new string[] { "Symbol" },
                     new object[][] { new object[] { "A1" }, new object[] { "B1" }, new object[] { "B2" } });
 
                 env.UndeployAll();
@@ -349,12 +349,12 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select irstream Symbol, "+
-"prev(1, Symbol) as prev1,"+
-"prevtail(Symbol) as prevtail, "+
-"prevcount(Symbol) as prevCountSym, "+
-"prevwindow(Symbol) as prevWindowSym "+
-"from SupportMarketDataBean#sort(3, Symbol)";
+                var text = "@name('s0') select irstream Symbol, " +
+                           "prev(1, Symbol) as prev1," +
+                           "prevtail(Symbol) as prevtail, " +
+                           "prevcount(Symbol) as prevCountSym, " +
+                           "prevwindow(Symbol) as prevWindowSym " +
+                           "from SupportMarketDataBean#sort(3, Symbol)";
                 env.CompileDeploy(text).AddListener("s0");
                 var fields = new string[] { "Symbol", "prev1", "prevtail", "prevCountSym", "prevWindowSym" };
 

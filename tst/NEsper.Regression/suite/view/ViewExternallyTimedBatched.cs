@@ -253,16 +253,16 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var fields =
                     "currSymbol,prev0Symbol,prev0Price,prev1Symbol,prev1Price,prev2Symbol,prev2Price,prevTail0Symbol,prevTail0Price,prevTail1Symbol,prevTail1Price,prevCountPrice,prevWindowPrice"
                         .SplitCsv();
-                var epl = "@name('s0') select irstream Symbol as currSymbol, "+
-"prev(0, Symbol) as prev0Symbol, "+
+                var epl = "@name('s0') select irstream Symbol as currSymbol, " +
+                          "prev(0, Symbol) as prev0Symbol, " +
                           "prev(0, Price) as prev0Price, " +
-"prev(1, Symbol) as prev1Symbol, "+
+                          "prev(1, Symbol) as prev1Symbol, " +
                           "prev(1, Price) as prev1Price, " +
-"prev(2, Symbol) as prev2Symbol, "+
+                          "prev(2, Symbol) as prev2Symbol, " +
                           "prev(2, Price) as prev2Price," +
-"prevtail(0, Symbol) as prevTail0Symbol, "+
+                          "prevtail(0, Symbol) as prevTail0Symbol, " +
                           "prevtail(0, Price) as prevTail0Price, " +
-"prevtail(1, Symbol) as prevTail1Symbol, "+
+                          "prevtail(1, Symbol) as prevTail1Symbol, " +
                           "prevtail(1, Price) as prevTail1Price, " +
                           "prevcount(Price) as prevCountPrice, " +
                           "prevwindow(Price) as prevWindowPrice " +

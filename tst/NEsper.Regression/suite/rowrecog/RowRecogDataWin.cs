@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "string,value".SplitCsv();
                 var text = "@name('s0') select * from SupportRecogBean " +
                            "match_recognize (" +
-                           "  measures A.TheString as string, A.value as value" +
+                           "  measures A.TheString as string, A.Value as value" +
                            "  all matches pattern (A) " +
                            "  define " +
                            "    A as PREV(A.TheString, 1) = TheString" +
@@ -127,9 +127,9 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +
                            "  all matches pattern ( A B C ) " +
                            "  define " +
-                           "    A as (A.value = 1)," +
-                           "    B as (B.value = 2)," +
-                           "    C as (C.value = 3)" +
+                           "    A as (A.Value = 1)," +
+                           "    B as (B.Value = 2)," +
+                           "    C as (C.Value = 3)" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -199,14 +199,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a_string,b_string,c_string".SplitCsv();
                 var text = "@name('s0') select * from SupportRecogBean#time_batch(5 sec) " +
                            "match_recognize (" +
-                           "  partition by cat " +
+                           "  partition by Cat " +
                            "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +
                            "  all matches pattern ( (A | B) C ) " +
                            "  define " +
                            "    A as A.TheString like 'A%'," +
                            "    B as B.TheString like 'B%'," +
-                           "    C as C.TheString like 'C%' and C.value in (A.value, B.value)" +
-") Order by a_string";
+                           "    C as C.TheString like 'C%' and C.Value in (A.Value, B.Value)" +
+                           ") order by a_string";
 
                 env.CompileDeploy(text).AddListener("s0");
 
@@ -335,14 +335,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 var fields = "a_string,b_string,c_string".SplitCsv();
                 var text = "@name('s0') select * from SupportRecogBean#time_batch(5 sec) " +
                            "match_recognize (" +
-                           "  partition by cat " +
+                           "  partition by Cat " +
                            "  measures A.TheString as a_string, B.TheString as b_string, C.TheString as c_string" +
                            "  all matches pattern ( (A | B) C ) " +
                            "  define " +
                            "    A as A.TheString like 'A%'," +
                            "    B as B.TheString like 'B%'," +
-                           "    C as C.TheString like 'C%' and C.value in (A.value, B.value)" +
-") Order by a_string";
+                           "    C as C.TheString like 'C%' and C.Value in (A.Value, B.Value)" +
+                           ") order by a_string";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.AdvanceTime(50);

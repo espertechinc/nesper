@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
@@ -522,10 +523,10 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
                 return CollectionUtil.NULL_EVENT_ITERATOR;
             }
 
-            var it = Parent.GetEnumerator();
+            var en = Parent.GetEnumerator();
 
             var regexPartitionStateRepoNew = _regexPartitionStateRepo.CopyForIterate(false);
-            var iteratorResult = ProcessIterator(false, it, regexPartitionStateRepoNew);
+            var iteratorResult = ProcessIterator(false, en, regexPartitionStateRepoNew);
             var endStates = iteratorResult.EndStates;
             if (endStates.IsEmpty()) {
                 return CollectionUtil.NULL_EVENT_ITERATOR;
@@ -609,7 +610,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             var endStatesPerBeginEvent = new SortedDictionary<int, object>();
             foreach (var entry in endStates) {
                 var beginNum = entry.MatchBeginEventSeqNo;
-                if (!endStatesPerBeginEvent.TryGetValue(beginNum, out var value)) {
+                var value = endStatesPerBeginEvent.Get(beginNum);
+                if (value == null) {
                     endStatesPerBeginEvent.Put(beginNum, entry);
                 }
                 else if (value is IList<RowRecogNFAStateEntry> entriesList) {
@@ -1011,6 +1013,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             RowRecogNFAStateEntry entry,
             AggregationService[] aggregationServices)
         {
+            Debug.Assert(entry != null);
+            
             var rowDataRaw = _compositeEventBean.Properties;
             // we first generate a raw row of <String, Object> for each variable name.
             foreach (var variableDef in _factory.Desc.VariableStreams) {

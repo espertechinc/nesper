@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             var forEach = method.Block
                 .IfRefNull("events")
                 .BlockReturnNoValue()
-                .ForEach(typeof(EventBean), "routed", Ref("events"));
+                .ForEach<EventBean>("routed", Ref("events"));
 
             if (audit) {
                 forEach.Expression(
@@ -219,7 +219,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 Constant(isRouted),
                 insertIntoStreamSelector == null
                     ? ConstantNull()
-                    : EnumValue(typeof(SelectClauseStreamSelectorEnum), insertIntoStreamSelector.GetName()),
+                    : EnumValue(typeof(SelectClauseStreamSelectorEnum), insertIntoStreamSelector.Value.GetName()),
                 EnumValue(typeof(SelectClauseStreamSelectorEnum), selectStreamSelector.GetName()),
                 Constant(routeToFront),
                 resolveTable,

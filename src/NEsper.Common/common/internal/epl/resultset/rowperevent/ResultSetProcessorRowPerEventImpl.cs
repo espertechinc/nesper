@@ -177,7 +177,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 .DeclareVar(typeof(IList<object>), "orderKeys", NewInstance(typeof(List<object>)));
 
             {
-                var forEach = iterator.Block.ForEach(typeof(EventBean), "candidate", REF_VIEWABLE);
+                var forEach = iterator.Block.ForEach<EventBean>("candidate", REF_VIEWABLE);
                 forEach.AssignArrayElement("eventsPerStream", Constant(0), Ref("candidate"));
                 if (forge.OptionalHavingNode != null) {
                     forEach.IfCondition(

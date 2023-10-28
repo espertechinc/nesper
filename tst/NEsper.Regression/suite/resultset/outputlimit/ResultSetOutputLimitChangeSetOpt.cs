@@ -43,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 null,
                 null,
                 "last",
-"Order by IntPrimitive");
+                "order by IntPrimitive");
 
             TryAssertion(
                 env,
@@ -334,8 +334,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.TryInvalidCompile(
                 SupportOutputLimitOpt.ENABLED.GetHint() +
                 " select sum(IntPrimitive) " +
-"from SupportBean output last every 4 events Order by TheString",
-"The ENABLE_OUTPUTLIMIT_OPT hint is not supported with Order-by");
+                "from SupportBean output last every 4 events order by TheString",
+                "The ENABLE_OUTPUTLIMIT_OPT hint is not supported with Order-by");
         }
 
         private void TryAssertion(

@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
@@ -90,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 .DeclareVar(primitive, "r", Unbox(Ref("right"), rightType));
 
             block.MethodReturn(
-                Cast(primitive, Op(Ref("l"), forge.ForgeRenderable.BitWiseOpEnum.ExpressionText, Ref("r"))));
+                Cast(primitive, Op(Ref("l"), forge.ForgeRenderable.BitWiseOpEnum.GetExpressionText(), Ref("r"))));
             return LocalMethod(methodNode);
         }
     }

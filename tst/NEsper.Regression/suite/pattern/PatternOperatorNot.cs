@@ -285,7 +285,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var text = "@name('s0') select A.TheString as TheString from pattern " +
-"[every A=SupportBean(IntPrimitive=123) -> (timer:interval(30 seconds) and not SupportMarketDataBean(Volume=123, Symbol=A.TheString))]";
+                           "[every A=SupportBean(IntPrimitive=123) -> (timer:interval(30 seconds) and not SupportMarketDataBean(Volume=123, Symbol=A.TheString))]";
                 env.CompileDeploy(text);
 
                 env.AddListener("s0");

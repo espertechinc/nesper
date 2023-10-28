@@ -7,6 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
+
+using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.client.soda
 {
@@ -43,6 +46,7 @@ namespace com.espertech.esper.common.client.soda
             set => name = value;
         }
 
+        [JsonConverter(typeof(JsonConverterAbstract<object>))]
         public object Value {
             get => value;
             set => this.value = value;

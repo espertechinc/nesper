@@ -94,11 +94,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create delete stmt
                 var stmtTextDelete =
-"@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.key";
+                    "@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.key";
                 var modelDelete = env.EplToModel(stmtTextDelete);
                 env.CompileDeploy(modelDelete, path).AddListener("delete");
                 Assert.AreEqual(
-"@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.key",
+                    "@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.key",
                     modelDelete.ToEPL());
 
                 // send delete event

@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var epl =
                     "@name('s0') select TheString as c0, sum(IntPrimitive) as c1 from SupportBean group by rollup(TheString) " +
                     "output snapshot every 1 seconds " +
-"Order by sum(IntPrimitive) "+
+                    "order by sum(IntPrimitive) " +
                     "limit 3";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -199,9 +199,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select Symbol, sum(Price) "+
+                var stmtText = "@name('s0') select Symbol, sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec)" +
-"group by rollup(Symbol)";
+                               "group by rollup(Symbol)";
                 SendTimer(env, 0);
                 env.CompileDeploy(stmtText).AddListener("s0");
 
@@ -279,9 +279,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select Symbol, sum(Price) "+
+                var stmtText = "@name('s0') select Symbol, sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec)" +
-"group by rollup(Symbol)"+
+                               "group by rollup(Symbol)" +
                                "output every 1 seconds";
                 SendTimer(env, 0);
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -376,9 +376,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             AtomicLong milestone)
         {
             var stmtText = outputLimitOpt.GetHint() +
-"@name('s0') select Symbol, sum(Price) "+
+                           "@name('s0') select Symbol, sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec)" +
-"group by rollup(Symbol)"+
+                           "group by rollup(Symbol)" +
                            "output all every 1 seconds";
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
@@ -479,9 +479,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             AtomicLong milestone)
         {
             var stmtText = opt.GetHint() +
-"@name('s0') select Symbol, sum(Price) "+
+                           "@name('s0') select Symbol, sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec)" +
-"group by rollup(Symbol)"+
+                           "group by rollup(Symbol)" +
                            "output last every 1 seconds";
             SendTimer(env, 0);
             env.CompileDeploy(stmtText).AddListener("s0");
@@ -537,9 +537,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select Symbol, sum(Price) "+
+                var stmtText = "@name('s0') select Symbol, sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec)" +
-"group by rollup(Symbol)"+
+                               "group by rollup(Symbol)" +
                                "output first every 1 seconds";
                 SendTimer(env, 0);
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -620,10 +620,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select Symbol, sum(Price) "+
+                var stmtText = "@name('s0') select Symbol, sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec)" +
                                (join ? ",SupportBean#keepall " : " ") +
-"group by rollup(Symbol)"+
+                               "group by rollup(Symbol)" +
                                "output snapshot every 1 seconds";
                 SendTimer(env, 0);
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -1019,7 +1019,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                           (join ? ", SupportBean_S0#lastevent " : "") +
                           "group by rollup(TheString, IntPrimitive) " +
                           "output first every 1 second " +
-"Order by TheString, IntPrimitive";
+                          "order by TheString, IntPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBean_S0(1));
 
@@ -1333,7 +1333,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                           (join ? ", SupportBean_S0#lastevent " : "") +
                           "group by rollup(TheString, IntPrimitive) " +
                           "output every 1 second " +
-"Order by TheString, IntPrimitive";
+                          "order by TheString, IntPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBean_S0(1));
 
@@ -1629,7 +1629,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                           (join ? ", SupportBean_S0#lastevent " : "") +
                           "group by rollup(TheString, IntPrimitive) " +
                           "output all every 1 second " +
-"Order by TheString, IntPrimitive";
+                          "order by TheString, IntPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBean_S0(1));
 
@@ -1914,7 +1914,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                           (join ? ", SupportBean_S0#lastevent " : "") +
                           "group by rollup(TheString, IntPrimitive) " +
                           "output last every 1 second " +
-"Order by TheString, IntPrimitive";
+                          "order by TheString, IntPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1));

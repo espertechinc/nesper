@@ -260,12 +260,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var epl = "create schema SchemaA (account string, foo " +
                           typeof(MyLocalValueObject).Name +
                           ");\n" +
-"create schema SchemaB (Symbol string) copyfrom SchemaA;\n"+
+                          "create schema SchemaB (Symbol string) copyfrom SchemaA;\n" +
                           "create schema SchemaC () copyfrom SchemaB;\n" +
                           "create schema SchemaD () copyfrom SchemaB;\n" +
                           "insert into SchemaD select account, " +
                           typeof(EPLOtherCreateSchema).Name +
-".getLocalValueObject() as foo, Symbol from SchemaC;\n";
+                          ".getLocalValueObject() as foo, Symbol from SchemaC;\n";
                 env.CompileDeploy(epl).UndeployAll();
             }
         }

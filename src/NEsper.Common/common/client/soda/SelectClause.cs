@@ -34,12 +34,32 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="selectList">is a list of elements in the select-clause</param>
         protected SelectClause(
             StreamSelector streamSelector,
-            List<SelectClauseElement> selectList)
+            IList<SelectClauseElement> selectList)
         {
             _streamSelector = streamSelector;
             _selectList = selectList;
         }
 
+        /// <summary>Returns the list of expressions in the select clause. </summary>
+        /// <value>list of expressions with column names</value>
+        public IList<SelectClauseElement> SelectList {
+            get => _selectList;
+            set => _selectList = value;
+        }
+
+        /// <summary>Returns indicator whether distinct or not. </summary>
+        /// <value>distinct indicator</value>
+        public bool IsDistinct { get; set; }
+
+        /// <summary>
+        /// Gets or sets the stream selector.
+        /// </summary>
+        /// <value>The stream selector.</value>
+        public StreamSelector StreamSelector {
+            get => _streamSelector;
+            set => _streamSelector = value;
+        }
+        
         /// <summary>Creates a wildcard select-clause, additional expressions can still be added. </summary>
         /// <returns>select-clause</returns>
         public static SelectClause CreateWildcard()
@@ -158,13 +178,6 @@ namespace com.espertech.esper.common.client.soda
             return this;
         }
 
-        /// <summary>Returns the list of expressions in the select clause. </summary>
-        /// <value>list of expressions with column names</value>
-        public IList<SelectClauseElement> SelectList {
-            get => _selectList;
-            set => _selectList = value;
-        }
-
         /// <summary>Adds to the select-clause a stream wildcard selector (e.g. select streamName.* from MyStream as streamName) </summary>
         /// <param name="streamName">is the name given to a stream</param>
         /// <returns>select-clause</returns>
@@ -207,15 +220,6 @@ namespace com.espertech.esper.common.client.soda
         {
             _streamSelector = streamSelector;
             return this;
-        }
-
-        /// <summary>
-        /// Gets or sets the stream selector.
-        /// </summary>
-        /// <value>The stream selector.</value>
-        public StreamSelector StreamSelector {
-            get => _streamSelector;
-            set => _streamSelector = value;
         }
 
         /// <summary>Add a select expression element. </summary>
@@ -270,10 +274,6 @@ namespace com.espertech.esper.common.client.soda
                 writer.Write('*');
             }
         }
-
-        /// <summary>Returns indicator whether distinct or not. </summary>
-        /// <value>distinct indicator</value>
-        public bool IsDistinct { get; set; }
 
         /// <summary>Sets distinct </summary>
         /// <param name="distinct">distinct indicator</param>

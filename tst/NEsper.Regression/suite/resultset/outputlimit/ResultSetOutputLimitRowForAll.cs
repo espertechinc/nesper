@@ -272,7 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec), " +
-"SupportBean#keepall where TheString=Symbol";
+                               "SupportBean#keepall where TheString=Symbol";
                 TryAssertion12(env, stmtText, "none", new AtomicLong());
             }
         }
@@ -294,7 +294,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec), " +
-"SupportBean#keepall where TheString=Symbol "+
+                               "SupportBean#keepall where TheString=Symbol " +
                                " having sum(Price) > 100";
                 TryAssertion34(env, stmtText, "none", new AtomicLong());
             }
@@ -317,7 +317,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec), " +
-"SupportBean#keepall where TheString=Symbol "+
+                               "SupportBean#keepall where TheString=Symbol " +
                                "output every 1 seconds";
                 TryAssertion56(env, stmtText, "default", new AtomicLong());
             }
@@ -341,7 +341,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 var stmtText = "@name('s0') select sum(Price) " +
                                "from SupportMarketDataBean#time(5.5 sec), " +
-"SupportBean#keepall where TheString=Symbol "+
+                               "SupportBean#keepall where TheString=Symbol " +
                                "having sum(Price) > 100" +
                                "output every 1 seconds";
                 TryAssertion78(env, stmtText, "default", new AtomicLong());
@@ -390,7 +390,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             var stmtText = opt.GetHint() +
                            "@name('s0') select sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec), " +
-"SupportBean#keepall where TheString=Symbol "+
+                           "SupportBean#keepall where TheString=Symbol " +
                            "output all every 1 seconds";
             TryAssertion56(env, stmtText, "all", milestone);
         }
@@ -438,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             var stmtText = opt.GetHint() +
                            "@name('s0') select sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec), " +
-"SupportBean#keepall where TheString=Symbol "+
+                           "SupportBean#keepall where TheString=Symbol " +
                            "having sum(Price) > 100" +
                            "output all every 1 seconds";
             TryAssertion78(env, stmtText, "all", milestone);
@@ -486,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             var stmtText = opt.GetHint() +
                            "@name('s0') select sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec), " +
-"SupportBean#keepall where TheString=Symbol "+
+                           "SupportBean#keepall where TheString=Symbol " +
                            "output last every 1 seconds";
             TryAssertion13_14(env, stmtText, "last", milestone);
         }
@@ -534,7 +534,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             var stmtText = opt.GetHint() +
                            "@name('s0') select sum(Price) " +
                            "from SupportMarketDataBean#time(5.5 sec), " +
-"SupportBean#keepall where TheString=Symbol "+
+                           "SupportBean#keepall where TheString=Symbol " +
                            "having sum(Price) > 100 " +
                            "output last every 1 seconds";
             TryAssertion15_16(env, stmtText, "last", milestone);
@@ -604,7 +604,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var stmtText = "@name('s0') select sum(Volume) as result " +
                                "from SupportMarketDataBean#length(10) as one," +
                                "SupportBean#length(10) as two " +
-"where one.Symbol=two.TheString "+
+                               "where one.Symbol=two.TheString " +
                                "having sum(Volume) > 0 " +
                                "output every 5 events";
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -633,7 +633,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 var epl = "@name('s0') select irstream max(Price) as maxVol" +
                           " from SupportMarketDataBean#sort(1,Volume desc) as s0, " +
-"SupportBean#keepall as s1 where s1.TheString=s0.Symbol "+
+                          "SupportBean#keepall as s1 where s1.TheString=s0.Symbol " +
                           "output every 1.0d seconds";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -849,7 +849,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendTimer(env, 0);
                 var selectStmt = "@name('s0') select count(*) as cnt from " +
                                  "SupportBean#time(10 seconds) as s, " +
-"SupportMarketDataBean#keepall as m where m.Symbol = s.TheString and IntPrimitive > 0 output snapshot every 1 seconds";
+                                 "SupportMarketDataBean#keepall as m where m.Symbol = s.TheString and IntPrimitive > 0 output snapshot every 1 seconds";
                 env.CompileDeploy(selectStmt).AddListener("s0");
 
                 env.SendEventBean(new SupportMarketDataBean("s0", 0, 0L, ""));

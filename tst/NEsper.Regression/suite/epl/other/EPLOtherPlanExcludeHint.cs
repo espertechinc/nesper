@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.join.support;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.epl.lookupsubord;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
@@ -66,10 +67,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var schema =
                     "@public create schema AEvent as " +
-                    typeof(AEvent).FullName +
+                    typeof(AEvent).MaskTypeName() +
                     ";\n" +
                     "@public create schema BEvent as " +
-                    typeof(BEvent).FullName +
+                    typeof(BEvent).MaskTypeName() +
                     ";\n";
                 var path = new RegressionPath();
                 env.CompileDeploy(schema, path);

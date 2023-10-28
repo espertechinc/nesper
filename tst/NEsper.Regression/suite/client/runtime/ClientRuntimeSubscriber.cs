@@ -566,7 +566,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
             var stmt = env.CompileDeploy(
-"@name('s0') select null, s1, s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.Symbol")
+                    "@name('s0') select null, s1, s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.Symbol")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
 
@@ -584,7 +584,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
             var stmt = env.CompileDeploy(
-"@name('s0') select * from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.Symbol")
+                    "@name('s0') select * from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.Symbol")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
 
@@ -602,7 +602,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
             var stmt = env.CompileDeploy(
-"@name('s0') select TheString || '<', s1.* as s1, s0.* as s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.Symbol")
+                    "@name('s0') select TheString || '<', s1.* as s1, s0.* as s0 from SupportBean#keepall as s0, SupportMarketDataBean#keepall as s1 where s0.TheString = s1.Symbol")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
 
@@ -655,7 +655,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             SupportSubscriberRowByRowSpecificBase subscriber)
         {
             var stmt = env.CompileDeploy(
-"@name('s0') select TheString, IntPrimitive from SupportBean#keepall, SupportMarketDataBean#keepall where Symbol = TheString output every 2 events")
+                    "@name('s0') select TheString, IntPrimitive from SupportBean#keepall, SupportMarketDataBean#keepall where Symbol = TheString output every 2 events")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
 
@@ -961,7 +961,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             // test on-delete
             var subscriberDelete = new SubscriberMap();
             var stmtTextDelete =
-"@name('ondelete') on SupportMarketDataBean s0 delete from MyWindow s1 where s0.Symbol = s1.key";
+                "@name('ondelete') on SupportMarketDataBean s0 delete from MyWindow s1 where s0.Symbol = s1.key";
             stmt = env.CompileDeploy(stmtTextDelete, path).Statement("ondelete");
             stmt.SetSubscriber(subscriberDelete);
 

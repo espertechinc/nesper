@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
                     Constant(_streamCount))
                 .SetProperty(
                     spec,
-                    "Terminable",
+                    "IsTerminable",
                     Constant(terminable))
                 .SetProperty(
                     spec,

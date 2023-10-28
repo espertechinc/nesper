@@ -421,7 +421,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
         {
             var method = scope.MakeChild(typeof(void), typeof(AggregationServiceGroupByForge), classScope);
             method.Block.IfCondition(Not(ExprDotMethod(MEMBER_REMOVEDKEYS, "IsEmpty")))
-                .ForEach(typeof(object), "removedKey", MEMBER_REMOVEDKEYS)
+                .ForEach<object>("removedKey", MEMBER_REMOVEDKEYS)
                 .ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Remove", Ref("removedKey"))
                 .BlockEnd()
                 .ExprDotMethod(MEMBER_REMOVEDKEYS, "Clear");

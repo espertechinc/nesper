@@ -8,22 +8,18 @@
 
 namespace com.espertech.esper.common.@internal.type
 {
-    public partial class BitWiseOpEnum
+    /// <summary>
+    ///     Bit Wise Xor.
+    /// </summary>
+    public class BitWiseXorBoolean : BitWiseComputer
     {
-        /// <summary>
-        ///     Computer for relational op.
-        /// </summary>
-        public interface Computer
+        public object Compute(
+            object objOne,
+            object objTwo)
         {
-            /// <summary>
-            ///     Computes using the 2 numbers or boolean a result object.
-            /// </summary>
-            /// <param name="objOne">is the first number or boolean</param>
-            /// <param name="objTwo">is the second number or boolean</param>
-            /// <returns>result</returns>
-            object Compute(
-                object objOne,
-                object objTwo);
+            var b1 = (bool)objOne;
+            var b2 = (bool)objTwo;
+            return b1 ^ b2;
         }
     }
 }

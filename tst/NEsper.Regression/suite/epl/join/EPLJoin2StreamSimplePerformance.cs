@@ -175,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             var epl = "@name('s0') select * from " +
                       "SupportMarketDataBean#length(1000000)," +
                       "SupportBean#length(1000000)" +
-" where Symbol=TheString";
+                      " where Symbol=TheString";
             env.CompileDeployAddListenerMileZero(epl, "s0");
         }
 

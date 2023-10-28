@@ -167,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                                  "from SupportBeanInt#lastevent as s0, " +
                                  "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
                                  "method:SupportJoinMethods.FetchVal('H1', P01) as h1 " +
-"Order by h0.val, h1.val";
+                                 "order by h0.val, h1.val";
                 env.CompileDeploy(expression).AddListener("s0");
 
                 var fields = "Id,valh0,valh1".SplitCsv();
@@ -275,14 +275,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "from SupportBeanInt#keepall as s0, " +
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
                              "method:SupportJoinMethods.FetchVal(h0.val, P01) as h1 " +
-"Order by h0.val, h1.val";
+                             "order by h0.val, h1.val";
                 TryAssertionTwo(env, expression, milestone);
 
                 expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 from " +
                              "method:SupportJoinMethods.FetchVal(h0.val, P01) as h1, " +
                              "SupportBeanInt#keepall as s0, " +
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0 " +
-"Order by h0.val, h1.val";
+                             "order by h0.val, h1.val";
                 TryAssertionTwo(env, expression, milestone);
             }
 
@@ -347,7 +347,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
                              "method:SupportJoinMethods.FetchVal('H1', P01) as h1, " +
                              "method:SupportJoinMethods.FetchVal('H2', P02) as h2 " +
-"Order by h0.val, h1.val, h2.val";
+                             "order by h0.val, h1.val, h2.val";
                 TryAssertionThree(env, expression);
 
                 expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
@@ -355,7 +355,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "method:SupportJoinMethods.FetchVal('H1', P01) as h1, " +
                              "method:SupportJoinMethods.FetchVal('H0', P00) as h0, " +
                              "SupportBeanInt#lastevent as s0 " +
-"Order by h0.val, h1.val, h2.val";
+                             "order by h0.val, h1.val, h2.val";
                 TryAssertionThree(env, expression);
             }
 
@@ -494,7 +494,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                                  "SupportBeanInt(Id like 'S1%')#lastevent as s1, " +
                                  "method:SupportJoinMethods.FetchVal(s0.Id||'H1', s0.P00) as h0, " +
                                  "method:SupportJoinMethods.FetchVal(s1.Id||'H2', s1.P00) as h1 " +
-"Order by s0.Id asc";
+                                 "order by s0.Id asc";
                 env.CompileDeploy(expression).AddListener("s0");
 
                 var fields = "ids0,ids1,valh0,valh1".SplitCsv();
@@ -537,7 +537,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                                  "SupportBeanInt(Id like 'S1%')#lastevent as s1, " +
                                  "SupportBeanInt(Id like 'S2%')#lastevent as s2, " +
                                  "method:SupportJoinMethods.FetchVal(s1.Id||s2.Id||'H1', s0.P00) as h0 " +
-"Order by s0.Id, s1.Id, s2.Id, h0.val";
+                                 "order by s0.Id, s1.Id, s2.Id, h0.val";
                 env.CompileDeploy(expression).AddListener("s0");
 
                 var fields = "ids0,ids1,ids2,valh0".SplitCsv();

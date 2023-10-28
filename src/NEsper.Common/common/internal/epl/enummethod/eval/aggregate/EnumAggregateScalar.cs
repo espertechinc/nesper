@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
                 block.DeclareVar<int>("count", Constant(-1));
             }
 
-            var forEach = block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            var forEach = block.ForEach<object>("next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), Ref("value"))
                 .AssignArrayElement("props", Constant(1), Ref("next"));
             if (_numParameters > 2) {

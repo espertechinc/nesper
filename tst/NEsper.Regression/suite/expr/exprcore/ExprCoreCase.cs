@@ -385,8 +385,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // Testing the two forms of the case expression
                 // Furthermore the test checks the different when clauses and actions related.
                 var epl = "@name('s0') select case " +
-" when Symbol='GE' then Volume "+
-" when Symbol='DELL' then sum(Price) "+
+                          " when Symbol='GE' then Volume " +
+                          " when Symbol='DELL' then sum(Price) " +
                           "end as p1 from SupportMarketDataBean#length(10)";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -417,8 +417,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 model = copier.Copy(model);
 
                 var epl = "select case" +
-" when Symbol=\"GE\" then Volume"+
-" when Symbol=\"DELL\" then sum(Price) "+
+                          " when Symbol=\"GE\" then Volume" +
+                          " when Symbol=\"DELL\" then sum(Price) " +
                           "end as p1 from SupportMarketDataBean.win:length(10)";
 
                 Assert.AreEqual(epl, model.ToEPL());
@@ -438,8 +438,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select case" +
-" when Symbol=\"GE\" then Volume"+
-" when Symbol=\"DELL\" then sum(Price) "+
+                          " when Symbol=\"GE\" then Volume" +
+                          " when Symbol=\"DELL\" then sum(Price) " +
                           "end as p1 from SupportMarketDataBean#length(10)";
                 env.EplToModelCompileDeploy(epl).AddListener("s0").Milestone(0);
 
@@ -473,7 +473,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // Adding to the EPL statement an else expression
                 // when a CSCO ticker is sent the property for the else expression is selected
                 var epl = "@name('s0') select case " +
-" when Symbol='DELL' then 3 * Volume "+
+                          " when Symbol='DELL' then 3 * Volume " +
                           " else Volume " +
                           "end as p1 from SupportMarketDataBean#length(3)";
 
@@ -505,7 +505,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 model = copier.Copy(model);
 
                 var epl = "select case " +
-"when Symbol=\"DELL\" then Volume*3 "+
+                          "when Symbol=\"DELL\" then Volume*3 " +
                           "else Volume " +
                           "end as p1 from SupportMarketDataBean#length(10)";
                 Assert.AreEqual(epl, model.ToEPL());
@@ -526,7 +526,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select case " +
-"when Symbol=\"DELL\" then Volume*3 "+
+                          "when Symbol=\"DELL\" then Volume*3 " +
                           "else Volume " +
                           "end as p1 from SupportMarketDataBean#length(10)";
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
@@ -556,9 +556,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var builder = new SupportEvalBuilder("SupportMarketDataBean")
                     .WithExpressions(
                         fields,
-"case when (Symbol='GE') then Volume "+
-" when (Symbol='DELL') then Volume / 2.0 "+
-" when (Symbol='MSFT') then Volume / 3.0 "+
+                        "case when (Symbol='GE') then Volume " +
+                        " when (Symbol='DELL') then Volume / 2.0 " +
+                        " when (Symbol='MSFT') then Volume / 3.0 " +
                         " end")
                     .WithStatementConsumer(
                         stmt => Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));

@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol"};
+                var fields = new string[] { "Symbol" };
                 SendTimer(env, 1000);
 
                 var text = "@name('s0') select irstream * from SupportMarketDataBean#time_length_batch(10 sec, 3)";
@@ -314,7 +314,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol"};
+                var fields = new string[] { "Symbol" };
                 SendTimer(env, 1000);
 
                 var text =
@@ -585,7 +585,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol"};
+                var fields = new string[] { "Symbol" };
                 SendTimer(env, 1000);
 
                 var text =
@@ -747,7 +747,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, startTime);
 
                 var epl =
-"@name('s0') select Symbol, sum(Price) as s from SupportMarketDataBean#time_length_batch(5, 10, \"START_EAGER\") group by Symbol Order by Symbol asc";
+                    "@name('s0') select Symbol, sum(Price) as s from SupportMarketDataBean#time_length_batch(5, 10, \"START_EAGER\") group by Symbol order by Symbol asc";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendTimer(env, startTime + 4000);

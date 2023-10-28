@@ -15,7 +15,9 @@ using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
-using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A; // assertEquals
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
+
+//using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -75,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create consumer
                 var stmtTextSelectOne =
-"@name('select') select irstream (select a from MyInfra) as value, Symbol from SupportMarketDataBean";
+                    "@name('select') select irstream (select a from MyInfra) as value, Symbol from SupportMarketDataBean";
                 if (disableIndexShareConsumer) {
                     stmtTextSelectOne = "@Hint('disable_window_subquery_indexshare') " + stmtTextSelectOne;
                 }
@@ -86,13 +88,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     statement => {
                         EPAssertionUtil.AssertEqualsAnyOrder(
                             statement.EventType.PropertyNames,
-                            new string[] { "value", "Symbol"});
+                            new string[] { "value", "Symbol" });
                         Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("value"));
                         Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
                     });
 
                 SendMarketBean(env, "M1");
-                var fieldsStmt = new string[] { "value", "Symbol"};
+                var fieldsStmt = new string[] { "value", "Symbol" };
                 env.AssertPropsNew("select", fieldsStmt, new object[] { null, "M1" });
 
                 SendSupportBean(env, "S1", 1L, 2L);
@@ -107,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // create consumer 2 -- note that this one should not start empty now
                 var stmtTextSelectTwo =
-"@name('selectTwo') select irstream (select a from MyInfra) as value, Symbol from SupportMarketDataBean";
+                    "@name('selectTwo') select irstream (select a from MyInfra) as value, Symbol from SupportMarketDataBean";
                 if (disableIndexShareConsumer) {
                     stmtTextSelectTwo = "@Hint('disable_window_subquery_indexshare') " + stmtTextSelectTwo;
                 }

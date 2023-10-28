@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                 return ConstantNull();
             }
 
-            CodegenExpression future = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            var future = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 aggregationResultFutureMemberName,
                 typeof(AggregationResultFuture));
             var method = parent.MakeChild(returnType, GetType(), classScope);

@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             InitBlock(block, methodNode, scope, codegenClassScope);
 
             if (HasForEachLoop()) {
-                var forEach = block.ForEach(typeof(EventBean), "next", REF_ENUMCOLL)
+                var forEach = block.ForEach<EventBean>("next", REF_ENUMCOLL)
                     .IncrementRef("count")
                     .AssignArrayElement("props", Constant(0), Ref("count"))
                     .AssignArrayElement(REF_EPS, Constant(StreamNumLambda), Ref("next"));

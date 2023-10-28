@@ -74,13 +74,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
             if (lhsTypeClass.IsFloatingPointClass() || rhsTypeClass.IsFloatingPointClass()) {
                 throw new ExprValidationException(
-                    "Invalid type for bitwise " + bitWiseOpEnum.ComputeDescription + " operator");
+                    "Invalid type for bitwise " + bitWiseOpEnum.GetComputeDescription() + " operator");
             }
 
             if (!lhsTypeClass.Equals(rhsTypeClass)) {
                 throw new ExprValidationException(
                     "Bitwise expressions must be of the same type for bitwise " +
-                    bitWiseOpEnum.ComputeDescription +
+                    bitWiseOpEnum.GetComputeDescription() +
                     " operator");
             }
 
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprNodeRenderableFlags flags)
         {
             ChildNodes[0].ToEPL(writer, Precedence, flags);
-            writer.Write(bitWiseOpEnum.ComputeDescription);
+            writer.Write(bitWiseOpEnum.GetComputeDescription());
             ChildNodes[1].ToEPL(writer, Precedence, flags);
         }
 

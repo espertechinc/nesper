@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var statementOne =
                     "@name('s0') @public insert into StreamA select irstream * from SupportBeanSimple#length(2)";
                 var statementTwo =
-                    "@name('s1') @public insert into StreamB select irstream *, myString||'A' as propA from StreamA#length(2)";
+                    "@name('s1') @public insert into StreamB select irstream *, MyString||'A' as propA from StreamA#length(2)";
                 var statementThree =
                     "@name('s2') @public insert into StreamC select irstream *, propA||'B' as propB from StreamB#length(2)";
 
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AssertEventNew(
                     "s2",
                     @event => {
-                        Assert.AreEqual("e1", @event.Get("myString"));
+                        Assert.AreEqual("e1", @event.Get("MyString"));
                         Assert.AreEqual("e1AB", @event.Get("propB"));
                     });
 
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AssertEventNew(
                     "s2",
                     @event => {
-                        Assert.AreEqual("e2", @event.Get("myString"));
+                        Assert.AreEqual("e2", @event.Get("MyString"));
                         Assert.AreEqual("e2AB", @event.Get("propB"));
                     });
 
@@ -163,10 +163,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s2",
                     listener => {
                         var @event = listener.LastNewData[0];
-                        Assert.AreEqual("e3", @event.Get("myString"));
+                        Assert.AreEqual("e3", @event.Get("MyString"));
                         Assert.AreEqual("e3AB", @event.Get("propB"));
                         @event = listener.LastOldData[0];
-                        Assert.AreEqual("e1", @event.Get("myString"));
+                        Assert.AreEqual("e1", @event.Get("MyString"));
                         Assert.AreEqual("e1AB", @event.Get("propB"));
                     });
 

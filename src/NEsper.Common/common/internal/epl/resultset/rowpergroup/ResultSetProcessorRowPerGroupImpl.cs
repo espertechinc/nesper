@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         {
             method.Block.DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .IfCondition(NotEqualsNull(REF_NEWDATA))
-                .ForEach(typeof(EventBean), "aNewData", REF_NEWDATA)
+                .ForEach<EventBean>("aNewData", REF_NEWDATA)
                 .AssignArrayElement("eventsPerStream", Constant(0), Ref("aNewData"))
                 .DeclareVar<object>(
                     "mk",
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 .BlockEnd()
                 .BlockEnd()
                 .IfCondition(NotEqualsNull(REF_OLDDATA))
-                .ForEach(typeof(EventBean), "anOldData", REF_OLDDATA)
+                .ForEach<EventBean>("anOldData", REF_OLDDATA)
                 .AssignArrayElement("eventsPerStream", Constant(0), Ref("anOldData"))
                 .DeclareVar<object>(
                     "mk",
@@ -1931,7 +1931,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 {
                     var ifNewData = forEach.IfCondition(NotEqualsNull(Ref("newData")));
                     {
-                        var forNew = ifNewData.ForEach(typeof(EventBean), "aNewData", Ref("newData"));
+                        var forNew = ifNewData.ForEach<EventBean>("aNewData", Ref("newData"));
                         forNew.DeclareVar<EventBean[]>(
                                 "eventsPerStream",
                                 NewArrayWithInit(typeof(EventBean), Ref("aNewData")))
@@ -1964,7 +1964,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 {
                     var ifOldData = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
                     {
-                        var forOld = ifOldData.ForEach(typeof(EventBean), "anOldData", Ref("oldData"));
+                        var forOld = ifOldData.ForEach<EventBean>("anOldData", Ref("oldData"));
                         forOld.DeclareVar<EventBean[]>(
                                 "eventsPerStream",
                                 NewArrayWithInit(typeof(EventBean), Ref("anOldData")))
@@ -2075,7 +2075,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     {
                         var ifNewData = forEach.IfCondition(NotEqualsNull(Ref("newData")));
                         {
-                            var forloop = ifNewData.ForEach(typeof(EventBean), "aNewData", Ref("newData"));
+                            var forloop = ifNewData.ForEach<EventBean>("aNewData", Ref("newData"));
                             forloop.DeclareVar<EventBean[]>(
                                     "eventsPerStream",
                                     NewArrayWithInit(typeof(EventBean), Ref("aNewData")))
@@ -2125,7 +2125,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                     {
                         var ifOldData = forEach.IfCondition(NotEqualsNull(Ref("oldData")));
                         {
-                            var forloop = ifOldData.ForEach(typeof(EventBean), "anOldData", Ref("oldData"));
+                            var forloop = ifOldData.ForEach<EventBean>("anOldData", Ref("oldData"));
                             forloop.DeclareVar<EventBean[]>(
                                     "eventsPerStream",
                                     NewArrayWithInit(typeof(EventBean), Ref("anOldData")))
@@ -2419,7 +2419,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 {
                     var ifNewData = forLoop.IfCondition(NotEqualsNull(Ref("newData")));
                     {
-                        var forNew = ifNewData.ForEach(typeof(EventBean), "aNewData", Ref("newData"));
+                        var forNew = ifNewData.ForEach<EventBean>("aNewData", Ref("newData"));
                         forNew.AssignArrayElement(Ref("eventsPerStream"), Constant(0), Ref("aNewData"))
                             .DeclareVar<object>(
                                 "mk",
@@ -2455,7 +2455,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
                 {
                     var ifOldData = forLoop.IfCondition(NotEqualsNull(Ref("oldData")));
                     {
-                        var forOld = ifOldData.ForEach(typeof(EventBean), "anOldData", Ref("oldData"));
+                        var forOld = ifOldData.ForEach<EventBean>("anOldData", Ref("oldData"));
                         forOld.AssignArrayElement(Ref("eventsPerStream"), Constant(0), Ref("anOldData"))
                             .DeclareVar<object>(
                                 "mk",

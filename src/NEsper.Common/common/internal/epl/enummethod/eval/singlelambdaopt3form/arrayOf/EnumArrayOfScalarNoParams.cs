@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                     "result",
                     NewArrayByLength(_arrayComponentType, ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")))
                 .DeclareVar<int>("count", Constant(0));
-            block.ForEach(typeof(object), "next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            block.ForEach<object>("next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(Ref("result"), Ref("count"), Cast(_arrayComponentType, Ref("next")))
                 .IncrementRef("count");
             block.MethodReturn(Ref("result"));

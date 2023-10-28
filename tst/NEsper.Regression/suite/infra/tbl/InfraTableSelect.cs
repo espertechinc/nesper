@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var epl =
                     "@public create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, value int);\n" +
                     "insert into MyTable select intOne as k1, intTwo as k2, value from SupportEventWithManyArray(Id = 'I');\n" +
-                    "@name('s0') select t.value as c0 from SupportEventWithManyArray(Id='Q'), MyTable as t where k1 = intOne and k2 = intTwo;\n";
+                    "@name('s0') select t.Value as c0 from SupportEventWithManyArray(Id='Q'), MyTable as t where k1 = intOne and k2 = intTwo;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 SendManyArray(env, "I", new int[] { 1, 2 }, new int[] { 3, 4 }, 10);
@@ -182,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 var epl = "@public create table MyTable(k int[primitive] primary key, value int);\n" +
                           "insert into MyTable select array as k, value from SupportEventWithIntArray;\n" +
-                          "@name('s0') select t.value as c0 from SupportEventWithManyArray, MyTable as t where k = intOne;\n";
+                          "@name('s0') select t.Value as c0 from SupportEventWithManyArray, MyTable as t where k = intOne;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 SendIntArray(env, "E1", new int[] { 1, 2 }, 10);

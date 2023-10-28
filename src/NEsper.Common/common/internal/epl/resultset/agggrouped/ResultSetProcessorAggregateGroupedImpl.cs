@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     "eventsPerStream",
                     NewArrayByLength(typeof(EventBean), Constant(1)))
                 .IfCondition(NotEqualsNull(REF_NEWDATA))
-                .ForEach(typeof(EventBean), "aNewData", REF_NEWDATA)
+                .ForEach<EventBean>("aNewData", REF_NEWDATA)
                 .AssignArrayElement("eventsPerStream", Constant(0), Ref("aNewData"))
                 .DeclareVar<object>("mk",
                     LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()))
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 .BlockEnd()
                 .BlockEnd()
                 .IfCondition(NotEqualsNull(REF_OLDDATA))
-                .ForEach(typeof(EventBean), "anOldData", REF_OLDDATA)
+                .ForEach<EventBean>("anOldData", REF_OLDDATA)
                 .AssignArrayElement("eventsPerStream", Constant(0), Ref("anOldData"))
                 .DeclareVar<object>("mk",
                     LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantFalse()))
@@ -564,7 +564,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 .DeclareVar(typeof(IList<object>), "orderKeys", NewInstance(typeof(List<object>)));
 
             {
-                var forLoop = iterator.Block.ForEach(typeof(EventBean), "candidate", REF_VIEWABLE);
+                var forLoop = iterator.Block.ForEach<EventBean>("candidate", REF_VIEWABLE);
                 forLoop.AssignArrayElement(Ref("eventsPerStream"), Constant(0), Ref("candidate"))
                     .DeclareVar<object>("groupKey",
                         LocalMethod(forge.GenerateGroupKeySingle, Ref("eventsPerStream"), ConstantTrue()))
@@ -858,7 +858,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     .DeclareVar<int>("count", Constant(0));
 
                 {
-                    var forEach = methodNode.Block.ForEach(typeof(EventBean), "outputEvent", Ref("outputEvents"));
+                    var forEach = methodNode.Block.ForEach<EventBean>("outputEvent", Ref("outputEvents"));
                     forEach.DeclareVar<object>("groupKey", ArrayAtIndex(Ref("groupByKeys"), Ref("count")))
                         .ExprDotMethod(
                             MEMBER_AGGREGATIONSVC,
@@ -2342,7 +2342,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                         .DeclareVar<int>("count", Constant(0));
 
                     {
-                        ifNewData.ForEach(typeof(EventBean), "aNewData", Ref("newData"))
+                        ifNewData.ForEach<EventBean>("aNewData", Ref("newData"))
                             .DeclareVar<object>("mk", ArrayAtIndex(Ref("newDataMultiKey"), Ref("count")))
                             .AssignArrayElement(Ref("eventsPerStream"), Constant(0), Ref("aNewData"))
                             .ExprDotMethod(
@@ -2363,7 +2363,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     var ifOldData = forEach.IfCondition(NotEqualsNull(Ref("oldData")))
                         .DeclareVar<int>("count", Constant(0));
                     {
-                        ifOldData.ForEach(typeof(EventBean), "anOldData", Ref("oldData"))
+                        ifOldData.ForEach<EventBean>("anOldData", Ref("oldData"))
                             .DeclareVar<object>("mk", ArrayAtIndex(Ref("oldDataMultiKey"), Ref("count")))
                             .AssignArrayElement(Ref("eventsPerStream"), Constant(0), Ref("anOldData"))
                             .ExprDotMethod(
@@ -2632,7 +2632,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                     .DeclareVar<int>("count", Constant(0));
 
                 {
-                    var forEach = methodNode.Block.ForEach(typeof(EventBean), "outputEvent", Ref("outputEvents"));
+                    var forEach = methodNode.Block.ForEach<EventBean>("outputEvent", Ref("outputEvents"));
                     forEach.ExprDotMethod(
                             MEMBER_AGGREGATIONSVC,
                             "SetCurrentAccess",

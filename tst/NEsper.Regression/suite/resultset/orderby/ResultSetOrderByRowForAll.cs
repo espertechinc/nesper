@@ -13,7 +13,9 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
+
+//using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 {
@@ -56,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 var epl =
                     "@name('s0') select irstream sum(IntPrimitive) as c0, last(TheString) as c1 from SupportBean#length(2) " +
                     (join ? ",SupportBean_A#keepall " : "") +
-"output every 3 events Order by sum(IntPrimitive) desc";
+                    "output every 3 events order by sum(IntPrimitive) desc";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -97,8 +99,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 var epl = "@name('s0')select sum(Price) as sumPrice from " +
                           "SupportMarketDataBean#length(10) as one, " +
                           "SupportBeanString#length(100) as two " +
-"where one.Symbol = two.TheString "+
-"Order by Price";
+                          "where one.Symbol = two.TheString " +
+                          "order by Price";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendJoinEvents(env);

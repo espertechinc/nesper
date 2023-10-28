@@ -163,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                        "    \"isleId\": \"I1\",\n" +
                        "    \"shelf\": {\n" +
                        "      \"shelfId\": \"S11\",\n" +
-"      \"Book\": {\n"+
+                       "      \"Book\": {\n" +
                        "        \"BookId\": \"B111\",\n" +
                        "        \"Price\": 20\n" +
                        "      }\n" +
@@ -193,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                        "    \"isleId\": \"I1\",\n" +
                        "    \"shelf\": {\n" +
                        "      \"shelfId\": \"S11\",\n" +
-"      \"Book\": null\n"+
+                       "      \"Book\": null\n" +
                        "    }\n" +
                        "  }\n" +
                        "}";
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                         AssertJsonWrite(json, @event);
                         EPAssertionUtil.AssertProps(
                             @event,
-"libraryId,isle.isleId,isle.shelf.shelfId,isle.shelf.Book.BookId".SplitCsv(),
+                            "libraryId,isle.isleId,isle.shelf.shelfId,isle.shelf.Book.BookId".SplitCsv(),
                             new object[] { libraryId, isleId, shelfId, bookId });
                     });
             }
@@ -229,7 +229,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("@public create json schema Book(BookId string, Price decimal);\n", path);
-                env.CompileDeploy("@public create json schema Shelf(shelfId string, books Book[]);\n", path);
+                env.CompileDeploy("@public create json schema Shelf(shelfId string, Books Book[]);\n", path);
                 env.CompileDeploy("@public create json schema Isle(isleId string, shelfs Shelf[]);\n", path);
                 env.CompileDeploy(
                     "@public @buseventtype create json schema Library(libraryId string, isles Isle[]);\n",
@@ -244,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                               "      \"shelfs\": [\n" +
                               "        {\n" +
                               "          \"shelfId\": \"S1\",\n" +
-                              "          \"books\": [\n" +
+                              "          \"Books\": [\n" +
                               "            {\n" +
                               "              \"BookId\": \"B1\",\n" +
                               "              \"Price\": 10\n" +
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 env.AssertEventNew("s0", @event => AssertJsonWrite(jsonTwo, @event));
 
                 var book112 = BuildBook("B112", 21);
-                ((JArray)shelf11.Get("books")).Add(book112);
+                ((JArray)shelf11.Get("Books")).Add(book112);
                 var shelf12 = BuildShelf("S12", book111, book112);
                 var isle2 = BuildIsle("I2", shelf11, shelf12);
                 var libraryTwo = BuildLibrary("L", isle1, isle2);
@@ -940,7 +940,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
         {
             var shelf = new JObject();
             shelf.Add("shelfId", shelfId);
-            shelf.Add("books", ArrayOfObjects(books));
+            shelf.Add("Books", ArrayOfObjects(books));
             return shelf;
         }
 

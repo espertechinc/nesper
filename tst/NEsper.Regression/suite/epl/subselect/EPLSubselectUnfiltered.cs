@@ -379,8 +379,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     "Subselects not allowed within group-by [select * from SupportBean_S0 group by id + (select Id from SupportBean_S1)]");
 
                 env.TryInvalidCompile(
-"select * from SupportBean_S0 Order by (select Id from SupportBean_S1) asc",
-"Subselects not allowed within Order-by clause [select * from SupportBean_S0 Order by (select Id from SupportBean_S1) asc]");
+                    "select * from SupportBean_S0 order by (select Id from SupportBean_S1) asc",
+                    "Subselects not allowed within Order-by clause [select * from SupportBean_S0 order by (select Id from SupportBean_S1) asc]");
 
                 env.TryInvalidCompile(
                     "select (select Id from SupportBean_S1#lastevent where 'a') from SupportBean_S0",

@@ -299,7 +299,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           "from SupportBean#time_batch(1 sec) " +
                           (join ? ", SupportBean_S0#lastevent " : "") +
                           "group by rollup(TheString, IntPrimitive) " +
-"Order by TheString, IntPrimitive";
+                          "order by TheString, IntPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -389,7 +389,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var epl = "@name('s0')" +
                           "select irstream TheString as c0, IntPrimitive as c1, sum(LongPrimitive) as c2 from SupportBean#time_batch(1 sec) " +
                           "group by rollup(TheString, IntPrimitive) " +
-"Order by TheString desc;";
+                          "order by TheString desc;";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(MakeEvent("E2", 10, 100));

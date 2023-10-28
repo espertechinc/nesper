@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace com.espertech.esper.common.client.configuration.common
+namespace com.espertech.esper.common.@internal.util.serde
 {
     public class JsonConverterAbstract<T> : JsonConverter<T>
     {

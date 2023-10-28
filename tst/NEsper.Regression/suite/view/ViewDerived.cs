@@ -227,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "size", "Symbol"},
+                    new string[] { "size", "Symbol" },
                     new object[][] { new object[] { 2L, "E2" } });
 
                 env.UndeployAll();
@@ -411,7 +411,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // test iterator
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "average"},
+                    new string[] { "average" },
                     new object[][] { new object[] { 10.61111111111111 } });
 
                 env.SendEventBean(MakeBean(9.5, 600));
@@ -431,7 +431,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-"@name('s0') select irstream * from SupportMarketDataBean#length(3)#weighted_avg(Price, Volume, Feed)";
+                    "@name('s0') select irstream * from SupportMarketDataBean#length(3)#weighted_avg(Price, Volume, Feed)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeBean(10, 1000, "f1"));
@@ -516,7 +516,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var text =
-"@name('s0') select irstream * from SupportMarketDataBean#length(3)#linest(Price, Volume, Feed)";
+                    "@name('s0') select irstream * from SupportMarketDataBean#length(3)#linest(Price, Volume, Feed)";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(MakeBean(70, 1000, "f1"));
@@ -548,7 +548,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 // test iterator
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    new string[] { "slope", "YIntercept", "Feed"},
+                    new string[] { "slope", "YIntercept", "Feed" },
                     new object[][] { new object[] { 1000.0, -69000.0, "f2" } });
 
                 env.SendEventBean(MakeBean(70.1, 1200, "f3"));

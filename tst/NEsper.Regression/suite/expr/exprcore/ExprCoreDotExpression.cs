@@ -403,7 +403,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 epl += "insert into NodeWithDataWindow " +
                        "select node, data from NodeWindow node join NodeDataWindow as data on node.Id = data.nodeId;\n";
                 epl +=
-                    "@name('s0') select node.Id, data.nodeId, data.value, node.compute(data) from NodeWithDataWindow;\n";
+                    "@name('s0') select node.Id, data.nodeId, data.Value, node.compute(data) from NodeWithDataWindow;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportEventNode("1"));

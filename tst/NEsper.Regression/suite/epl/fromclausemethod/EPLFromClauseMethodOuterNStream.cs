@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              " left outer join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H1', P01, P05) as h1 " +
                              " on s0.P03 = h1.index" +
-                             " Order by valh0, valh1";
+                             " order by valh0, valh1";
                 TryAssertionOne(env, expression, milestone);
 
                 expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 from " +
@@ -121,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              " left outer join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H0', P00, P04) as h0 " +
                              " on s0.P02 = h0.index" +
-                             " Order by valh0, valh1";
+                             " order by valh0, valh1";
                 TryAssertionOne(env, expression, milestone);
 
                 expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 from " +
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              " left outer join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H1', P01, P05) as h1 " +
                              " on s0.P03 = h1.index " +
-                             " Order by valh0, valh1";
+                             " order by valh0, valh1";
                 TryAssertionOne(env, expression, milestone);
 
                 expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 from " +
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              " full outer join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H1', P01, P05) as h1 " +
                              " on s0.P03 = h1.index " +
-                             " Order by valh0, valh1";
+                             " order by valh0, valh1";
                 TryAssertionOne(env, expression, milestone);
             }
         }
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              " inner join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H1', P01, P05) as h1 " +
                              " on s0.P03 = h1.index" +
-                             " Order by valh0, valh1";
+                             " order by valh0, valh1";
                 TryAssertionTwo(env, expression);
 
                 expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1 from " +
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              " inner join " +
                              "method:SupportJoinMethods.FetchValMultiRow('H1', P01, P05) as h1 " +
                              " on s0.P03 = h1.index" +
-                             " Order by valh0, valh1";
+                             " order by valh0, valh1";
                 TryAssertionTwo(env, expression);
             }
         }
@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              " left outer join " +
                              "method:SupportJoinMethods.FetchVal('H1', P01) as h1 " +
                              " on h0.index = h1.index" +
-                             " Order by valh0, valh1";
+                             " order by valh0, valh1";
                 TryAssertionThree(env, expression);
             }
 
@@ -251,7 +251,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              " left outer join " +
                              "method:SupportJoinMethods.FetchVal('H2', P02) as h2 " +
                              " on h1.index = h2.index" +
-                             " Order by valh0, valh1, valh2";
+                             " order by valh0, valh1, valh2";
                 TryAssertionFour(env, expression);
 
                 expression = "@name('s0') select s0.Id as Id, h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
@@ -265,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              " full outer join " +
                              "method:SupportJoinMethods.FetchVal('H2', P02) as h2 " +
                              " on h1.index = h2.index" +
-                             " Order by valh0, valh1, valh2";
+                             " order by valh0, valh1, valh2";
                 TryAssertionFour(env, expression);
             }
 
@@ -324,7 +324,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              " left outer join " +
                              "method:SupportJoinMethods.FetchVal(h1.val || '-H2', P02) as h2 " +
                              " on h1.index = h2.index" +
-                             " Order by valh0, valh1, valh2";
+                             " order by valh0, valh1, valh2";
                 TryAssertionFive(env, expression);
             }
 

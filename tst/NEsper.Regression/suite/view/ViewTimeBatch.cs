@@ -413,7 +413,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 0);
 
                 var text =
-"@name('s0') select irstream Symbol from SupportMarketDataBean#time_batch(1 sec, \"START_EAGER, FORCE_UPDATE\")";
+                    "@name('s0') select irstream Symbol from SupportMarketDataBean#time_batch(1 sec, \"START_EAGER, FORCE_UPDATE\")";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 SendTimer(env, 1000);
@@ -432,7 +432,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 3000);
                 env.AssertPropsPerRowLastNew(
                     "s0",
-                    new string[] { "Symbol"},
+                    new string[] { "Symbol" },
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 env.Milestone(2);
@@ -440,7 +440,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 SendTimer(env, 4000);
                 env.AssertPropsPerRowLastOld(
                     "s0",
-                    new string[] { "Symbol"},
+                    new string[] { "Symbol" },
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 SendTimer(env, 5000);

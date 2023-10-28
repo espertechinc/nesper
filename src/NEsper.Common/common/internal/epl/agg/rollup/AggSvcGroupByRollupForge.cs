@@ -454,7 +454,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                 .ForLoopIntSimple("i", ArrayLength(MEMBER_REMOVEDKEYS))
                 .IfCondition(ExprDotMethod(ArrayAtIndex(MEMBER_REMOVEDKEYS, Ref("i")), "IsEmpty"))
                 .BlockContinue()
-                .ForEach(typeof(object), "removedKey", ArrayAtIndex(MEMBER_REMOVEDKEYS, Ref("i")))
+                .ForEach<object>("removedKey", ArrayAtIndex(MEMBER_REMOVEDKEYS, Ref("i")))
                 .ExprDotMethod(ArrayAtIndex(MEMBER_AGGREGATORSPERGROUP, Ref("i")), "Remove", Ref("removedKey"))
                 .BlockEnd()
                 .ExprDotMethod(ArrayAtIndex(MEMBER_REMOVEDKEYS, Ref("i")), "Clear");

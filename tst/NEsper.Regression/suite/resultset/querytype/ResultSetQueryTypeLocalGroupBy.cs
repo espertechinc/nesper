@@ -752,7 +752,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           " from SupportBean#keepall" +
                           " group by TheString, IntPrimitive" +
                           " output snapshot every 10 seconds" +
-" Order by TheString, IntPrimitive";
+                          " order by TheString, IntPrimitive";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var b1 = MakeSendEvent(env, "E1", 10, 100);
@@ -1429,7 +1429,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           "@name('s0') context StartS0EndS1 select TheString, sum(IntPrimitive, group_by:TheString) as c0 " +
                           " from SupportBean#keepall " +
                           " output snapshot when terminated" +
-" Order by sum(IntPrimitive, group_by:TheString)"+
+                          " order by sum(IntPrimitive, group_by:TheString)" +
                           ";";
                 env.CompileDeploy(epl).AddListener("s0");
 

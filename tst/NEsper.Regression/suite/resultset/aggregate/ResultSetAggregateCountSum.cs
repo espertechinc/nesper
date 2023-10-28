@@ -296,13 +296,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 model.GroupByClause = GroupByClause.Create("Symbol");
                 model = env.CopyMayFail(model);
 
-                var epl = "select irstream Symbol, "+
+                var epl = "select irstream Symbol, " +
                           "count(*) as countAll, " +
                           "count(distinct Volume) as countDistVol, " +
                           "count(Volume) as countVol" +
                           " from SupportMarketDataBean#length(3) " +
-"where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" "+
-"group by Symbol";
+                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
+                          "group by Symbol";
                 Assert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -320,8 +320,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 // test for ESPER-328
                 var epl =
-"@name('s0') select Symbol, count(*) as cnt, avg(count(*)) as val from SupportMarketDataBean#length(3)"+
-"group by Symbol Order by Symbol asc";
+                    "@name('s0') select Symbol, count(*) as cnt, avg(count(*)) as val from SupportMarketDataBean#length(3)" +
+                    "group by Symbol order by Symbol asc";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendEvent(env, SYMBOL_DELL, 50L);
@@ -338,7 +338,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 SendEvent(env, "IBM", 52L);
                 env.AssertPropsPerRowNewOnly(
                     "s0",
-"Symbol,cnt,val".SplitCsv(),
+                    "Symbol,cnt,val".SplitCsv(),
                     new object[][] { new object[] { "DELL", 2L, 2d }, new object[] { "IBM", 1L, 1d } });
 
                 env.Milestone(2);
@@ -354,13 +354,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol, "+
+                var epl = "@name('s0') select irstream Symbol, " +
                           "count(*) as countAll, " +
                           "count(distinct Volume) as countDistVol, " +
                           "count(Volume) as countVol" +
                           " from SupportMarketDataBean#length(3) " +
-"where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" "+
-"group by Symbol";
+                          "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
+                          "group by Symbol";
                 env.EplToModelCompileDeploy(epl).AddListener("s0");
 
                 TryAssertionCount(env, new AtomicLong());
@@ -374,13 +374,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select irstream Symbol, "+
+                var epl = "@name('s0') select irstream Symbol, " +
                           "count(*) as countAll," +
                           "count(distinct Volume) as countDistVol," +
                           "count(all Volume) as countVol" +
                           " from SupportMarketDataBean#length(3) " +
-"where Symbol='DELL' or Symbol='IBM' or Symbol='GE' "+
-"group by Symbol";
+                          "where Symbol='DELL' or Symbol='IBM' or Symbol='GE' " +
+                          "group by Symbol";
 
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
@@ -395,15 +395,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var milestone = new AtomicLong();
-                var epl = "@name('s0') select irstream Symbol, "+
+                var epl = "@name('s0') select irstream Symbol, " +
                           "count(*) as countAll," +
                           "count(distinct Volume) as countDistVol," +
                           "count(Volume) as countVol " +
                           " from SupportBeanString#length(100) as one, " +
                           "SupportMarketDataBean#length(3) as two " +
-"where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') "+
-"  and one.TheString = two.Symbol "+
-"group by Symbol";
+                          "where (Symbol='DELL' or Symbol='IBM' or Symbol='GE') " +
+                          "  and one.TheString = two.Symbol " +
+                          "group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanString(SYMBOL_DELL));
@@ -421,8 +421,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select irstream Symbol, count(distinct Price) as countDistinctPrice "+
-"from SupportMarketDataBean group by Symbol";
+                var epl = "@name('s0') select irstream Symbol, count(distinct Price) as countDistinctPrice " +
+                          "from SupportMarketDataBean group by Symbol";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.Milestone(0);
@@ -442,7 +442,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "insert into MyWindow select * from SupportBean;\n" +
                           "on SupportBean_A a delete from MyWindow w where w.TheString = a.Id;\n" +
                           "on SupportBean_B delete from MyWindow;\n" +
-"@name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString Order by TheString";
+                          "@name('s0') select TheString, sum(IntPrimitive) as mysum from MyWindow group by TheString order by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("A", 100));

@@ -130,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 //   LocalSymbols={companies={{symbol='123', value=600}, new object[] {symbol='456', value=100}, new object[] {symbol='789', value=200}}}
                 var path = new RegressionPath();
                 var epl =
-"create schema Symbol(Symbol string, value double);\n"+
+                    "create schema Symbol(Symbol string, value double);\n" +
                     "@public @buseventtype create schema ForeignSymbols(companies Symbol[]);\n" +
                     "@public @buseventtype create schema LocalSymbols(companies Symbol[]);\n" +
                     "\n" +
@@ -150,17 +150,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     "create context SymbolsPairContext start SymbolsPairBeginEvent end SymbolsPairEndEvent;\n" +
                     "context SymbolsPairContext create table Result(foreignSymbol string primary key, localSymbol string primary key, value double);\n" +
                     "\n" +
-"context SymbolsPairContext on ForeignSymbolRow as fsr merge Result as result where result.foreignSymbol = fsr.Symbol\n"+
-"  when not matched then insert select fsr.Symbol as foreignSymbol,\n"+
-"    (select localSymbol from Mapping as mapping where mapping.foreignSymbol = fsr.Symbol) as localSymbol, fsr.value as value\n"+
-                    "  when matched and fsr.value > result.value then update set value = fsr.value;\n" +
+                    "context SymbolsPairContext on ForeignSymbolRow as fsr merge Result as result where result.foreignSymbol = fsr.Symbol\n" +
+                    "  when not matched then insert select fsr.Symbol as foreignSymbol,\n" +
+                    "    (select localSymbol from Mapping as mapping where mapping.foreignSymbol = fsr.Symbol) as localSymbol, fsr.Value as value\n" +
+                    "  when matched and fsr.Value > result.Value then update set value = fsr.Value;\n" +
                     "\n" +
-"context SymbolsPairContext on LocalSymbolRow as lsr merge Result as result where result.localSymbol = lsr.Symbol\n"+
-"  when not matched then insert select (select foreignSymbol from Mapping as mapping where mapping.localSymbol = lsr.Symbol) as foreignSymbol,"+
-"    lsr.Symbol as localSymbol, lsr.value as value\n"+
-                    "  when matched and lsr.value > result.value then update set value = lsr.value;\n" +
+                    "context SymbolsPairContext on LocalSymbolRow as lsr merge Result as result where result.localSymbol = lsr.Symbol\n" +
+                    "  when not matched then insert select (select foreignSymbol from Mapping as mapping where mapping.localSymbol = lsr.Symbol) as foreignSymbol," +
+                    "    lsr.Symbol as localSymbol, lsr.Value as value\n" +
+                    "  when matched and lsr.Value > result.Value then update set value = lsr.Value;\n" +
                     "\n" +
-"@name('out') context SymbolsPairContext on SymbolsPairOutputEvent select foreignSymbol, localSymbol, value from Result Order by foreignSymbol asc;\n";
+                    "@name('out') context SymbolsPairContext on SymbolsPairOutputEvent select foreignSymbol, localSymbol, value from Result order by foreignSymbol asc;\n";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 // load mapping table
@@ -352,7 +352,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-"@name('s0') select Book.BookId,Item.ItemId from MediaOrder[Books.Book] as Book, MediaOrder[Items.Item] as Item where ProductId = BookId Order by BookId, Item.ItemId asc";
+                    "@name('s0') select Book.BookId,Item.ItemId from MediaOrder[Books.Book] as Book, MediaOrder[Items.Item] as Item where ProductId = BookId order by BookId, Item.ItemId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var fieldsItems = "Book.BookId,Item.ItemId".SplitCsv();
@@ -383,7 +383,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.UndeployAll();
                 var fieldsCount = "count(*)".SplitCsv();
                 stmtText =
-"@name('s0') select count(*) from MediaOrder[Books.Book] as Book, MediaOrder[Items.Item] as Item where ProductId = BookId Order by BookId asc";
+                    "@name('s0') select count(*) from MediaOrder[Books.Book] as Book, MediaOrder[Items.Item] as Item where ProductId = BookId order by BookId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventXMLDOM(eventDocTwo, "MediaOrder");
@@ -395,7 +395,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // unidirectional count
                 env.UndeployAll();
                 stmtText =
-"@name('s0') select count(*) from MediaOrder[Books.Book] as Book unidirectional, MediaOrder[Items.Item] as Item where ProductId = BookId Order by BookId asc";
+                    "@name('s0') select count(*) from MediaOrder[Books.Book] as Book unidirectional, MediaOrder[Items.Item] as Item where ProductId = BookId order by BookId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventXMLDOM(eventDocTwo, "MediaOrder");
@@ -424,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-"@name('s0') select Book.BookId,Item.ItemId from MediaOrder[Books.Book] as Book left outer join MediaOrder[Items.Item] as Item on ProductId = BookId Order by BookId, Item.ItemId asc";
+                    "@name('s0') select Book.BookId,Item.ItemId from MediaOrder[Books.Book] as Book left outer join MediaOrder[Items.Item] as Item on ProductId = BookId order by BookId, Item.ItemId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var fieldsItems = "Book.BookId,Item.ItemId".SplitCsv();
@@ -493,7 +493,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-"@name('s0') select OrderId, Book.BookId,Item.ItemId from MediaOrder[Books.Book] as Book full outer join MediaOrder[select OrderId, * from Items.Item] as Item on ProductId = BookId Order by BookId, Item.ItemId asc";
+                    "@name('s0') select OrderId, Book.BookId,Item.ItemId from MediaOrder[Books.Book] as Book full outer join MediaOrder[select OrderId, * from Items.Item] as Item on ProductId = BookId order by BookId, Item.ItemId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 var fieldsItems = "Book.BookId,Item.ItemId".SplitCsv();
@@ -553,7 +553,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 var fields = "Category,SubEventType,AvgTime".SplitCsv();
                 var stmtText =
-"@name('s0') select Category, SubEventType, avg(ResponseTimeMillis) as AvgTime from SupportResponseEvent[select Category, * from subEvents]#time(1 min) group by Category, SubEventType Order by Category, SubEventType";
+                    "@name('s0') select Category, SubEventType, avg(ResponseTimeMillis) as AvgTime from SupportResponseEvent[select Category, * from subEvents]#time(1 min) group by Category, SubEventType order by Category, SubEventType";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(

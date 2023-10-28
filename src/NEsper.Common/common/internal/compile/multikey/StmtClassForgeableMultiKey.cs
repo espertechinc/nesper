@@ -228,7 +228,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
         {
             if (!type.IsArray) {
                 var cond = NotEqualsNull(self);
-                var condTrue = Not(ExprDotMethod(self, "DeepEquals", other));
+                var condTrue = Not(StaticMethod(typeof(CompatExtensions), "DeepEquals", self, other));
                 var condFalse = NotEqualsNull(other);
                 return Conditional(cond, condTrue, condFalse);
             }

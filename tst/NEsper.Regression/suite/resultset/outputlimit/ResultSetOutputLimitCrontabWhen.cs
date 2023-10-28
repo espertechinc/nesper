@@ -232,7 +232,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.CompileDeploy("on SupportBean set myvar = IntPrimitive");
 
                 var expression =
-"@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
                 env.CompileDeploy(expression).AddListener("s0").SetSubscriber("s0");
                 TryAssertion(env, 1);
                 env.UndeployAll();
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.CompileDeploy("on SupportBean set myvar = IntPrimitive");
 
                 var expression =
-"@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myvar=1 then set myvar=0, count_insert_var=count_insert";
                 var model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.Create("Symbol");
                 model.FromClause = FromClause.Create(
@@ -372,7 +372,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.CompileDeploy("on SupportBean set myint = IntPrimitive, mystring = TheString");
 
                 var expression =
-"@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myint = 1 and mystring like 'F%'";
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when myint = 1 and mystring like 'F%'";
                 env.CompileDeploy(expression).SetSubscriber("s0");
                 SendEvent(env, "S1", 0);
 
@@ -421,7 +421,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var expression =
-"@name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_insert >= 3";
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_insert >= 3";
                 env.CompileDeploy(expression).SetSubscriber("s0");
 
                 SendEvent(env, "S1", 0);
@@ -458,7 +458,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             public void Run(RegressionEnvironment env)
             {
                 var expression =
-"@name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_remove >= 2";
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when count_remove >= 2";
                 env.CompileDeploy(expression).SetSubscriber("s0");
 
                 SendEvent(env, "S1", 0);
@@ -496,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             {
                 SendTimeEvent(env, 1, 8, 0, 0, 0);
                 var expression =
-"@name('s0') select Symbol from SupportMarketDataBean#length(2) output when current_timestamp - last_output_timestamp >= 2000";
+                    "@name('s0') select Symbol from SupportMarketDataBean#length(2) output when current_timestamp - last_output_timestamp >= 2000";
                 env.CompileDeploy(expression).SetSubscriber("s0");
 
                 SendEvent(env, "S1", 0);

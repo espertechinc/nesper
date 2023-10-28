@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.TheString as a" +
                            "  all matches " +
                            "  pattern (A) " +
-                           "  define A as prev(A.value, 2) = value" +
+                           "  define A as prev(A.Value, 2) = value" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");
@@ -145,14 +145,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "a,cat".SplitCsv();
+                var fields = "a,Cat".SplitCsv();
                 var text = "@name('s0') @Hint('iterate_only') select * from SupportRecogBean#lastevent " +
                            "match_recognize (" +
-                           "  partition by cat" +
-                           "  measures A.TheString as a, A.cat as cat" +
+                           "  partition by Cat" +
+                           "  measures A.TheString as a, A.Cat as Cat" +
                            "  all matches " +
                            "  pattern (A) " +
-                           "  define A as prev(A.value, 2) = value" +
+                           "  define A as prev(A.Value, 2) = value" +
                            ")";
 
                 env.CompileDeploy(text).AddListener("s0");

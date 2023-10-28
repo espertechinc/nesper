@@ -1641,7 +1641,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var fields = "c0,c1,c2".SplitCsv();
 
                 var epl = "@name('s0') select sum(IntPrimitive) as c0, TheString as c1, window(*) as c2 " +
-"from SupportBean#length(2) sb group by rollup(TheString) Order by TheString";
+                          "from SupportBean#length(2) sb group by rollup(TheString) order by TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 object eventOne = new SupportBean("E1", 1);

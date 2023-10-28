@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var graph = "@name('flow') create dataflow MySelect\n" +
                             "Emitter -> instream_s0<SupportBean>{name: 'emitterS0'}\n" +
                             "@Audit Select(instream_s0 as ALIAS) -> outstream {\n" +
-"  select: (select TheString, sum(IntPrimitive) as sumInt from ALIAS group by TheString Order by TheString asc),\n"+
+                            "  select: (select TheString, sum(IntPrimitive) as sumInt from ALIAS group by TheString order by TheString asc),\n" +
                             "  iterate: true" +
                             "}\n" +
                             "DefaultSupportCaptureOp(outstream) {}\n";
@@ -617,7 +617,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                         "DefaultSupportSourceOp -> instream<" +
                         typeName +
                         ">{}\n" +
-"Select(instream as ME) -> outstream {select: (select myString, sum(myInt) as Total from ME)}\n"+
+                        "Select(instream as ME) -> outstream {select: (select MyString, sum(MyInt) as Total from ME)}\n" +
                         "DefaultSupportCaptureOp(outstream) {}";
             env.CompileDeploy(graph);
 
@@ -633,7 +633,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             EPAssertionUtil.AssertPropsPerRow(
                 env.Container,
                 result,
-"myString,Total".SplitCsv(),
+                "MyString,Total".SplitCsv(),
                 new object[][] {
                     new object[] { "one", 1 },
                     new object[] { "two", 3 }

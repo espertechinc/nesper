@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var insertInto = typeof(EPLInsertIntoPopulateCreateStreamAvro).FullName;
                 var epl = "@name('s0') " +
                           EventRepresentationChoice.AVRO.GetAnnotationText() +
-                          " select 1 as myInt," +
+                          " select 1 as MyInt," +
                           "{1L, 2L} as myLongArray," +
                           $"{insertInto}.MakeByteArray() as myByteArray, " +
                           $"{insertInto}.MakeMapStringString() as myMap " +
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     @event => {
                         var json = SupportAvroUtil.AvroToJson(@event);
                         Console.Out.WriteLine(json);
-                        Assert.AreEqual(1, @event.Get("myInt"));
+                        Assert.AreEqual(1, @event.Get("MyInt"));
                         EPAssertionUtil.AssertEqualsExactOrder(
                             new[] { 1L, 2L },
                             @event.Get("myLongArray").UnwrapIntoArray<long>());
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                         var designSchema = SchemaBuilder.Record(
                             "name",
-                            RequiredInt("myInt"),
+                            RequiredInt("MyInt"),
                             Field("myLongArray", Array(LongType())),
                             Field("myByteArray", BytesType()),
                             Field(

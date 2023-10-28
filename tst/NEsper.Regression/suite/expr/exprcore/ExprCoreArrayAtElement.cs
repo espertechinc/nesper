@@ -118,8 +118,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-				var stringExtensions = typeof(StringExtensions).FullName;
-				var epl = $"@Name('s0') select {stringExtensions}.SplitCsv('a,b')[IntPrimitive] as c0 from SupportBean";
+                var stringExtensions = typeof(StringExtensions).FullName;
+                var epl = $"@Name('s0') select {stringExtensions}.SplitCsv('a,b')[IntPrimitive] as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "s0",
@@ -137,24 +137,24 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var eplNoAnArrayIsString =
-					"create schema Lvl3 (Id string);\n" +
-					"create schema Lvl2 (Lvl3 Lvl3);\n" +
-					"create schema Lvl1 (Lvl2 Lvl2);\n" +
-					"create schema Lvl0 (Lvl1 Lvl1, IndexNumber int);\n" +
-					"select Lvl1.Lvl2.Lvl3.Id[IndexNumber] from Lvl0;\n";
+                    "create schema Lvl3 (Id string);\n" +
+                    "create schema Lvl2 (Lvl3 Lvl3);\n" +
+                    "create schema Lvl1 (Lvl2 Lvl2);\n" +
+                    "create schema Lvl0 (Lvl1 Lvl1, IndexNumber int);\n" +
+                    "select Lvl1.Lvl2.Lvl3.Id[IndexNumber] from Lvl0;\n";
                 env.TryInvalidCompile(
                     eplNoAnArrayIsString,
-					"Failed to validate select-clause expression 'Lvl1.Lvl2.Lvl3.Id[IndexNumber]': Could not perform array operation on type class System.String");
+                    "Failed to validate select-clause expression 'Lvl1.Lvl2.Lvl3.Id[IndexNumber]': Could not perform array operation on type class System.String");
 
                 var eplNoAnArrayIsType =
-					"create schema Lvl3 (Id string);\n" +
-					"create schema Lvl2 (Lvl3 Lvl3);\n" +
-					"create schema Lvl1 (Lvl2 Lvl2);\n" +
-					"create schema Lvl0 (Lvl1 Lvl1, IndexNumber int);\n" +
-					"select Lvl1.Lvl2.Lvl3[IndexNumber] from Lvl0;\n";
-				env.TryInvalidCompile(
+                    "create schema Lvl3 (Id string);\n" +
+                    "create schema Lvl2 (Lvl3 Lvl3);\n" +
+                    "create schema Lvl1 (Lvl2 Lvl2);\n" +
+                    "create schema Lvl0 (Lvl1 Lvl1, IndexNumber int);\n" +
+                    "select Lvl1.Lvl2.Lvl3[IndexNumber] from Lvl0;\n";
+                env.TryInvalidCompile(
                     eplNoAnArrayIsType,
-					"Failed to validate select-clause expression 'Lvl1.Lvl2.Lvl3[IndexNumber]': Could not perform array operation on type event type 'Lvl3'");
+                    "Failed to validate select-clause expression 'Lvl1.Lvl2.Lvl3[IndexNumber]': Could not perform array operation on type event type 'Lvl3'");
             }
         }
 
@@ -172,10 +172,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var namespc = NamespaceGenerator.Create();
                 var epl = "@name('s0') inlined_class \"\"\"\n" +
                           "  using com.espertech.esper.common.client.hook.singlerowfunc;\n" +
-				          "  namespace " + namespc + " {\n" +
-				          "    [ExtensionSingleRowFunction(Name=\"toArray\", MethodName=\"ToArray\")]\n" +
+                          "  namespace " +
+                          namespc +
+                          " {\n" +
+                          "    [ExtensionSingleRowFunction(Name=\"toArray\", MethodName=\"ToArray\")]\n" +
                           "    public class Helper {\n" +
-				          "      public static int[] ToArray(int a, int b) {\n" +
+                          "      public static int[] ToArray(int a, int b) {\n" +
                           "        return new int[] {a, b};\n" +
                           "      }\n" +
                           "    }\n" +
@@ -218,8 +220,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-				var epl =
-					$"import {typeof(MyHolder).MaskTypeName()};\n" +
+                var epl =
+                    $"import {typeof(MyHolder).MaskTypeName()};\n" +
                     "create variable MyHolder[] var_mh = new MyHolder[] {new MyHolder('a'), new MyHolder('b')};\n" +
                     "@name('s0') select var_mh[IntPrimitive].get_Id() as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");

@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.@ba
                 methodNode.Block.AssignArrayElement(Ref("props"), Constant(2), ExprDotName(REF_ENUMCOLL, "Count"));
             }
 
-            var forEach = methodNode.Block.ForEach(typeof(object), "next", REF_ENUMCOLL)
+            var forEach = methodNode.Block.ForEach<object>("next", REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), Ref("next"));
             if (hasIndex) {
                 forEach.IncrementRef("count").AssignArrayElement("props", Constant(1), Ref("count"));

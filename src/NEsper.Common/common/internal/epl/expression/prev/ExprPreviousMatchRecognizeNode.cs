@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
 
             var method = parent.MakeChild((Type)resultType, GetType(), classScope);
             var eps = symbols.GetAddEPS(method);
-            var strategy = classScope.NamespaceScope.AddOrGetFieldWellKnown(
+            var strategy = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 previousStrategyFieldName,
                 typeof(RowRecogPreviousStrategy));
             var innerEval = CodegenLegoMethodExpression.CodegenExpression(ChildNodes[0].Forge, method, classScope);
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 .DeclareVar<
                     RowRecogStateRandomAccess>(
                     "access",
-                    ExprDotMethod(strategy, "Access", symbols.GetAddExprEvalCtx(method)))
+                    ExprDotMethod(strategy, "GetAccess", symbols.GetAddExprEvalCtx(method)))
                 .DeclareVar<
                     EventBean>(
                     "substituteEvent",

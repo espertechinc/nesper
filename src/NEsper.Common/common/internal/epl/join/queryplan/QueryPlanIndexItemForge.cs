@@ -238,7 +238,8 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplan
                     Constant(IsUnique),
                     AdvancedIndexProvisionDesc == null
                         ? ConstantNull()
-                        : AdvancedIndexProvisionDesc.CodegenMake(method, classScope)));
+                        : AdvancedIndexProvisionDesc.CodegenMake(method, classScope),
+                    _stateMgmtSettings.ToExpression()));
             return LocalMethod(method);
         }
 

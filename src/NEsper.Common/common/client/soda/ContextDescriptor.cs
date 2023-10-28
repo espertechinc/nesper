@@ -7,12 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.IO;
+using System.Text.Json.Serialization;
+
+using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Interface for context dimension descriptors.
     /// </summary>
+    [JsonConverter(typeof(JsonConverterAbstract<ContextDescriptor>))]
     public interface ContextDescriptor
     {
         /// <summary>
